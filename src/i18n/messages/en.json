@@ -266,7 +266,13 @@
     "downPaymentFrom": "Down payment from",
     "termUpTo": "Term up to",
     "interestRate": "Interest rate",
-    "monthsSuffix": "months"
+    "monthsSuffix": "months",
+    "tabDescripcion": "Overview",
+    "tabGeo": "Location",
+    "tabRentabilidad": "Returns",
+    "geoMapComingSoon": "Interactive map coming soon",
+    "geoAddress": "Address",
+    "geoZone": "Zone"
   },
   "stages": {
     "preventa": "Pre-sale",

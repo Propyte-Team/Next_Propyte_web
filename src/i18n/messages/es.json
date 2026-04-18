@@ -266,7 +266,13 @@
     "downPaymentFrom": "Enganche desde",
     "termUpTo": "Plazo hasta",
     "interestRate": "Tasa de interés",
-    "monthsSuffix": "meses"
+    "monthsSuffix": "meses",
+    "tabDescripcion": "Descripción",
+    "tabGeo": "Análisis Geográfico",
+    "tabRentabilidad": "Rentabilidad",
+    "geoMapComingSoon": "Mapa interactivo próximamente",
+    "geoAddress": "Dirección",
+    "geoZone": "Zona"
   },
   "stages": {
     "preventa": "Preventa",

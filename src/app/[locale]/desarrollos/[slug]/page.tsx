@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Building2, Calendar, ExternalLink, FileDown } from 'lucide-react';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import { getDevelopmentBySlug, getDevelopmentWithUnits, getRentalEstimate, getDevelopmentFinancials, getMlRentalEstimates, getAirdnaMarketSummary, APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
@@ -336,6 +337,8 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
     : mainType === 'penthouse' ? 'Penthouse'
     : mainType;
 
+  const tProp = await getTranslations({ locale, namespace: 'property' });
+
   return (
     <>
       {/* Schema: RealEstateListing */}
@@ -435,119 +438,163 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
               )}
             </div>
 
-            {/* Rental Estimate */}
-            <RentalEstimate
-              city={property.city}
-              zone={property.zone}
-              propertyType={property.property_types?.[0] || property.property_type || 'departamento'}
-              bedrooms={null}
-              locale={locale}
-              areaM2={representativeArea}
-              priceMin={propertyPrice > 0 ? propertyPrice : null}
-              state={propertyState}
+            {/* 3-tab layout: Descripción / Análisis Geográfico / Rentabilidad */}
+            <Tabs
+              tablistLabel={tProp('specs')}
+              items={[
+                {
+                  id: 'descripcion',
+                  label: tProp('tabDescripcion'),
+                  panel: (
+                    <div className="space-y-8">
+                      {/* Key Details grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="bg-gray-50 rounded-xl p-4 text-center">
+                          <Building2 size={24} className="mx-auto text-[#5CE0D2] mb-2" />
+                          <div className="text-sm font-bold text-gray-900">{typeLabel}</div>
+                          <div className="text-xs text-gray-500">{isEn ? 'Property Type' : 'Tipo'}</div>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-4 text-center">
+                          <Calendar size={24} className="mx-auto text-[#5CE0D2] mb-2" />
+                          <div className="text-sm font-bold text-gray-900">{stageLabel}</div>
+                          <div className="text-xs text-gray-500">{isEn ? 'Stage' : 'Etapa'}</div>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-4 text-center">
+                          <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
+                          <div className="text-sm font-bold text-gray-900">{property.zone || property.city}</div>
+                          <div className="text-xs text-gray-500">{isEn ? 'Zone' : 'Zona'}</div>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-4 text-center">
+                          <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
+                          <div className="text-sm font-bold text-gray-900">{property.state}</div>
+                          <div className="text-xs text-gray-500">{isEn ? 'State' : 'Estado'}</div>
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      {description && (
+                        <div>
+                          <h2 className="text-xl font-bold text-gray-900 mb-3">
+                            {isEn ? 'About this Development' : 'Sobre este Desarrollo'}
+                          </h2>
+                          <p className="text-gray-600 leading-relaxed">{description}</p>
+                        </div>
+                      )}
+
+                      {/* Unit Models Table */}
+                      <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
+
+                      {/* Amenities */}
+                      {property.amenities?.length > 0 && (
+                        <div>
+                          <h2 className="text-xl font-bold text-gray-900 mb-3">
+                            {isEn ? 'Amenities' : 'Amenidades'}
+                          </h2>
+                          <div className="flex flex-wrap gap-2">
+                            {property.amenities.map((amenity: string) => (
+                              <span key={amenity} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full">
+                                {amenity}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Brochure download */}
+                      {property.brochure_url && (
+                        <div>
+                          <a
+                            href={property.brochure_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-xl transition-colors"
+                          >
+                            <FileDown size={20} />
+                            {isEn ? 'Download Brochure' : 'Descargar Brochure'}
+                          </a>
+                        </div>
+                      )}
+
+                      {/* Developer info */}
+                      {property.developer_name && (
+                        <div className="bg-gray-50 rounded-2xl p-6">
+                          <h2 className="text-lg font-bold text-gray-900 mb-2">
+                            {isEn ? 'Developer' : 'Desarrolladora'}
+                          </h2>
+                          <div className="flex items-center gap-3">
+                            {property.developer_logo_url && (
+                              <img src={property.developer_logo_url} alt={property.developer_name} className="w-12 h-12 rounded-lg object-contain bg-white" />
+                            )}
+                            <div>
+                              <div className="font-bold text-gray-900">{property.developer_name}</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ),
+                },
+                {
+                  id: 'geo',
+                  label: tProp('tabGeo'),
+                  panel: (
+                    <div className="space-y-6">
+                      <div className="aspect-[16/9] bg-[#F4F6F8] rounded-xl flex flex-col items-center justify-center text-gray-400">
+                        <MapPin size={40} strokeWidth={1.5} className="mb-3" />
+                        <p className="text-sm font-medium">{tProp('geoMapComingSoon')}</p>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <div className="text-xs text-gray-500 mb-1">{tProp('geoAddress')}</div>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {property.address || `${property.zone || ''}, ${property.city}`}
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <div className="text-xs text-gray-500 mb-1">{tProp('geoZone')}</div>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {property.zone || property.city}, {property.state}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ),
+                },
+                {
+                  id: 'rentabilidad',
+                  label: tProp('tabRentabilidad'),
+                  panel: (
+                    <div className="space-y-8">
+                      <RentalEstimate
+                        city={property.city}
+                        zone={property.zone}
+                        propertyType={property.property_types?.[0] || property.property_type || 'departamento'}
+                        bedrooms={null}
+                        locale={locale}
+                        areaM2={representativeArea}
+                        priceMin={propertyPrice > 0 ? propertyPrice : null}
+                        state={propertyState}
+                      />
+                      {devFinancials && (
+                        <InvestmentSummary
+                          financials={devFinancials}
+                          locale={locale}
+                          price={propertyPrice > 0 ? propertyPrice : null}
+                          state={propertyState}
+                          estimatedRent={
+                            rentalPerM2 && representativeArea
+                              ? Math.round(rentalPerM2 * representativeArea)
+                              : rentalMedian
+                          }
+                          estimatedRentVac={rentalMedianVac}
+                          airdnaOccupancy={airdnaOccupancy}
+                        />
+                      )}
+                    </div>
+                  ),
+                },
+              ] satisfies TabItem[]}
             />
-
-            {/* Investment Analysis (ML-powered + comparables) */}
-            {devFinancials && (
-              <InvestmentSummary
-                financials={devFinancials}
-                locale={locale}
-                price={propertyPrice > 0 ? propertyPrice : null}
-                state={propertyState}
-                estimatedRent={
-                  rentalPerM2 && representativeArea
-                    ? Math.round(rentalPerM2 * representativeArea)
-                    : rentalMedian
-                }
-                estimatedRentVac={rentalMedianVac}
-                airdnaOccupancy={airdnaOccupancy}
-              />
-            )}
-
-            {/* Key Details */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <Building2 size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                <div className="text-sm font-bold text-gray-900">{typeLabel}</div>
-                <div className="text-xs text-gray-500">{isEn ? 'Property Type' : 'Tipo'}</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <Calendar size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                <div className="text-sm font-bold text-gray-900">{stageLabel}</div>
-                <div className="text-xs text-gray-500">{isEn ? 'Stage' : 'Etapa'}</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                <div className="text-sm font-bold text-gray-900">{property.zone || property.city}</div>
-                <div className="text-xs text-gray-500">{isEn ? 'Zone' : 'Zona'}</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                <div className="text-sm font-bold text-gray-900">{property.state}</div>
-                <div className="text-xs text-gray-500">{isEn ? 'State' : 'Estado'}</div>
-              </div>
-            </div>
-
-            {/* Description */}
-            {description && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">
-                  {isEn ? 'About this Development' : 'Sobre este Desarrollo'}
-                </h2>
-                <p className="text-gray-600 leading-relaxed">{description}</p>
-              </div>
-            )}
-
-            {/* Unit Models Table */}
-            <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
-
-            {/* Amenities */}
-            {property.amenities?.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-3">
-                  {isEn ? 'Amenities' : 'Amenidades'}
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {property.amenities.map((amenity: string) => (
-                    <span key={amenity} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full">
-                      {amenity}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Brochure download */}
-            {property.brochure_url && (
-              <div>
-                <a
-                  href={property.brochure_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-xl transition-colors"
-                >
-                  <FileDown size={20} />
-                  {isEn ? 'Download Brochure' : 'Descargar Brochure'}
-                </a>
-              </div>
-            )}
-
-            {/* Developer info */}
-            {property.developer_name && (
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-2">
-                  {isEn ? 'Developer' : 'Desarrolladora'}
-                </h2>
-                <div className="flex items-center gap-3">
-                  {property.developer_logo_url && (
-                    <img src={property.developer_logo_url} alt={property.developer_name} className="w-12 h-12 rounded-lg object-contain bg-white" />
-                  )}
-                  <div>
-                    <div className="font-bold text-gray-900">{property.developer_name}</div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Sidebar */}
