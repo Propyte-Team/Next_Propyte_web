@@ -453,6 +453,9 @@
     "formSubject": "Asunto",
     "formMessage": "Mensaje",
     "formPhone": "Teléfono",
+    "formBudget": "Presupuesto estimado",
+    "formInvestmentType": "Tipo de inversión",
+    "formPlusvalia": "Plusvalía",
     "formSubmit": "Enviar mensaje",
     "subjectOptions": {
       "general": "Consulta general",

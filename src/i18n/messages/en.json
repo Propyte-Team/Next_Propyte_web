@@ -452,6 +452,9 @@
     "formPhone": "Phone",
     "formSubject": "Subject",
     "formMessage": "Message",
+    "formBudget": "Estimated budget",
+    "formInvestmentType": "Investment type",
+    "formPlusvalia": "Appreciation",
     "formSubmit": "Send message",
     "subjectOptions": {
       "general": "General inquiry",
