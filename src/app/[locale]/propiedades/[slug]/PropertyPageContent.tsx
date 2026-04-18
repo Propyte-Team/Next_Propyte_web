@@ -135,6 +135,17 @@ export default function PropertyPageContent({ property, similar, locale, smartRe
                   {locale === 'es' ? 'por' : 'by'} <span className="font-semibold text-[#2C2C2C]">{property.developer}</span>
                 </span>
               </div>
+
+              {/* Parent development link — only when kind='unit' */}
+              {property.kind === 'unit' && property.parentDevelopmentSlug && (
+                <Link
+                  href={`/${locale}/desarrollos/${property.parentDevelopmentSlug}`}
+                  className="inline-flex items-center gap-1 mt-3 text-sm text-[#5CE0D2] hover:text-[#4BCEC0] font-semibold"
+                >
+                  {locale === 'es' ? '← Ver desarrollo' : '← View development'}
+                  {property.parentDevelopmentName && `: ${property.parentDevelopmentName}`}
+                </Link>
+              )}
             </div>
 
             <hr className="border-gray-200" />

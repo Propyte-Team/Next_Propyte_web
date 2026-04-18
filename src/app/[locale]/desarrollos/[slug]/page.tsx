@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Building2, Calendar, ExternalLink, FileDown } from 'lucide-react';
-import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
-import { getPropertyBySlug, getDevelopmentWithUnits, getRentalEstimate, getDevelopmentFinancials, getMlRentalEstimates, getAirdnaMarketSummary } from '@/lib/supabase/queries';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getDevelopmentBySlug, getDevelopmentWithUnits, getRentalEstimate, getDevelopmentFinancials, getMlRentalEstimates, getAirdnaMarketSummary, APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
@@ -28,19 +28,20 @@ export async function generateStaticParams() {
   const cityParams = Object.keys(CITY_MAP).map(city => ({ slug: city }));
 
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     const { data } = await supabase
-      .from('developments')
+      .schema('real_estate_hub' as 'public')
+      .from('v_developments')
       .select('slug')
-      .eq('published', true)
-      .is('deleted_at', null)
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .limit(1000);
 
     if (data && data.length > 0) {
       return [...cityParams, ...data.map((p: { slug: string }) => ({ slug: p.slug }))];
     }
-  } catch {
-    // Supabase not available
+  } catch (err) {
+    console.error('generateStaticParams failed:', err);
   }
 
   return cityParams;
@@ -65,11 +66,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   // ── Development page metadata ──
   let property: any = null;
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
-    const { data } = await getPropertyBySlug(supabase, slug);
+    const supabase = await createServerSupabaseClient();
+    const { data } = await getDevelopmentBySlug(supabase, slug);
     if (data) property = data;
-  } catch {
-    // fallback
+  } catch (err) {
+    console.error('Metadata query failed:', err);
   }
   if (!property) return {};
   const title = isEn
@@ -105,14 +106,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-// Helper to safely get supabase client
-// Uses service role to bypass RLS (safe for public read-only queries)
+// Helper to safely get supabase anon client (service_role fails permission on views)
 async function getSupabase() {
   try {
-    const client = await createServiceRoleClient();
-    if (client) return client;
     return await createServerSupabaseClient();
-  } catch {
+  } catch (err) {
+    console.error('Supabase client init failed:', err);
     return null;
   }
 }
@@ -132,10 +131,11 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
     try {
       if (!supabase) throw new Error('No Supabase');
       const { data, count: dbCount } = await supabase
-        .from('developments')
-        .select('id, slug, name, city, zone, state, price_min_mxn, stage, property_types, images, developers(name, logo_url)', { count: 'exact' })
-        .eq('published', true)
-        .is('deleted_at', null)
+        .schema('real_estate_hub' as 'public')
+        .from('v_developments')
+        .select('id, slug, name, city, zone, state, price_min_mxn, stage, property_types, images, developer_name, developer_logo_url', { count: 'exact' })
+        .not('approved_at', 'is', null)
+        .in('zoho_pipeline_status', APPROVED_STATUSES)
         .ilike('city', `%${cityInfo.name}%`)
         .order('price_min_mxn', { ascending: false, nullsFirst: false })
         .limit(100);
@@ -244,15 +244,15 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
       property = devData;
       units = devUnits || [];
     }
-  } catch {
-    // Supabase not available — try basic query
+  } catch (err) {
+    console.error('Development query failed:', err);
     try {
       if (supabase) {
-        const { data } = await getPropertyBySlug(supabase, slug);
+        const { data } = await getDevelopmentBySlug(supabase, slug);
         if (data) property = data;
       }
-    } catch {
-      // Also failed
+    } catch (err2) {
+      console.error('Fallback query failed:', err2);
     }
   }
 
@@ -266,15 +266,17 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
   try {
     if (!supabase) throw new Error('No Supabase');
     const { data } = await supabase
-      .from('developments')
-      .select('id, slug, name, city, zone, price_min_mxn, stage, property_types, images, developers(name)')
-      .eq('published', true)
-      .is('deleted_at', null)
+      .schema('real_estate_hub' as 'public')
+      .from('v_developments')
+      .select('id, slug, name, city, zone, price_min_mxn, stage, property_types, images, developer_name')
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .eq('city', property.city)
       .neq('id', property.id)
       .limit(6);
     if (data) similar = data;
-  } catch {
+  } catch (err) {
+    console.error('Similar query failed:', err);
     similar = [];
   }
 
@@ -495,7 +497,7 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
             )}
 
             {/* Unit Models Table */}
-            <UnitModelsTable units={units} mlEstimates={mlEstimates} isEn={isEn} />
+            <UnitModelsTable units={units} mlEstimates={mlEstimates} />
 
             {/* Amenities */}
             {property.amenities?.length > 0 && (
@@ -529,17 +531,17 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
             )}
 
             {/* Developer info */}
-            {property.developers?.name && (
+            {property.developer_name && (
               <div className="bg-gray-50 rounded-2xl p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-2">
                   {isEn ? 'Developer' : 'Desarrolladora'}
                 </h2>
                 <div className="flex items-center gap-3">
-                  {property.developers.logo_url && (
-                    <img src={property.developers.logo_url} alt={property.developers.name} className="w-12 h-12 rounded-lg object-contain bg-white" />
+                  {property.developer_logo_url && (
+                    <img src={property.developer_logo_url} alt={property.developer_name} className="w-12 h-12 rounded-lg object-contain bg-white" />
                   )}
                   <div>
-                    <div className="font-bold text-gray-900">{property.developers.name}</div>
+                    <div className="font-bold text-gray-900">{property.developer_name}</div>
                   </div>
                 </div>
               </div>

@@ -17,6 +17,8 @@ import {
   calculateVacNetRent,
   calculateVacGrossYield,
   calculateVacNetYield,
+  buildCashflows,
+  calculateRemainingBalanceLinear,
   VAC,
   RES,
 } from '@/lib/calculator';
@@ -93,16 +95,26 @@ export default function FinancialSimulator({
     const roi5 = calculateROI(price, downPaymentPct, annualRent, appreciation, 5);
     const projectedValue = calculateProjectedValue(price, appreciation, 5);
 
-    // IRR
+    // IRR — uses shared buildCashflows + calculateRemainingBalanceLinear helpers
     const annualNetFlow = monthlyNet * 12;
-    const sale5 = calculateProjectedValue(price, appreciation, 5);
-    const remaining5 = Math.max(0, price * (1 - downPaymentPct / 100) - monthly * 60);
-    const cf5 = [-totalInvested, ...Array(4).fill(annualNetFlow), annualNetFlow + sale5 - remaining5];
+    const cf5 = buildCashflows({
+      totalInvested,
+      annualNetFlow,
+      price,
+      appreciationPct: appreciation,
+      years: 5,
+      remainingBalance: calculateRemainingBalanceLinear(price, downPaymentPct, monthly, 60),
+    });
     const irr5 = calculateIRR(cf5);
 
-    const sale10 = calculateProjectedValue(price, appreciation, 10);
-    const remaining10 = Math.max(0, price * (1 - downPaymentPct / 100) - monthly * 120);
-    const cf10 = [-totalInvested, ...Array(9).fill(annualNetFlow), annualNetFlow + sale10 - remaining10];
+    const cf10 = buildCashflows({
+      totalInvested,
+      annualNetFlow,
+      price,
+      appreciationPct: appreciation,
+      years: 10,
+      remainingBalance: calculateRemainingBalanceLinear(price, downPaymentPct, monthly, 120),
+    });
     const irr10 = calculateIRR(cf10);
 
     return {

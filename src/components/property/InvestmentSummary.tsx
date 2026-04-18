@@ -13,6 +13,7 @@ import {
   calculateVacGrossYield,
   calculateVacNetYield,
   calculateVacNetRent,
+  buildCashflows,
   VAC,
   RES,
 } from '@/lib/calculator';
@@ -57,14 +58,30 @@ function computeMetrics(
   const cashOnCash = calculateCashOnCash(annualNet, totalInv);
   const breakeven = calculateBreakeven(totalInv, netMonthly);
 
-  const appreciation = 0.08;
+  // IRR — uses shared buildCashflows helper (annualNet does NOT subtract mortgage here — cash-purchase model)
+  // NOTE: preserves legacy behavior (downPayment as initial outflow, totalInv-downPayment as "remaining")
+  // — this is tracked for audit against WP `propyteIRR()` golden tests before Fase 4 1b.
+  const appreciationPct = 8;
   const downPct = 0.30;
   const downPayment = totalInv * downPct;
-  const saleValue5yr = price * Math.pow(1 + appreciation, 5);
-  const cf5 = [-downPayment, ...Array(4).fill(annualNet), annualNet + saleValue5yr - (totalInv - downPayment)];
+  const remainingBalance = totalInv - downPayment;
+  const cf5 = buildCashflows({
+    totalInvested: downPayment,
+    annualNetFlow: annualNet,
+    price,
+    appreciationPct,
+    years: 5,
+    remainingBalance,
+  });
   const irr5yr = calculateIRR(cf5);
-  const saleValue10yr = price * Math.pow(1 + appreciation, 10);
-  const cf10 = [-downPayment, ...Array(9).fill(annualNet), annualNet + saleValue10yr - (totalInv - downPayment)];
+  const cf10 = buildCashflows({
+    totalInvested: downPayment,
+    annualNetFlow: annualNet,
+    price,
+    appreciationPct,
+    years: 10,
+    remainingBalance,
+  });
   const irr10yr = calculateIRR(cf10);
 
   return {
@@ -79,7 +96,6 @@ export default async function InvestmentSummary({
   financials, locale, price, state, estimatedRent, estimatedRentVac, airdnaOccupancy,
 }: InvestmentSummaryProps) {
   const t = await getTranslations({ locale, namespace: 'simulator' });
-  const isEn = locale === 'en';
 
   const rentRes = estimatedRent || financials.estimated_rent_residencial;
   const rentVac = estimatedRentVac || financials.estimated_rent_vacacional;
@@ -118,63 +134,64 @@ export default async function InvestmentSummary({
     irr10yr: financials.irr_10yr,
   };
 
+  const monthLabel = t('monthlyLabel');
   const rows: Array<{ label: string; resValue: string; vacValue?: string; resColor?: string; vacColor?: string }> = [
     {
-      label: isEn ? 'Monthly rent' : 'Renta mensual',
+      label: t('monthlyRent'),
       resValue: formatPrice(displayMetrics.rent),
       vacValue: vac ? formatPrice(vac.rent) : undefined,
     },
     {
-      label: isEn ? 'Occupancy' : 'Ocupación',
+      label: t('occupancy'),
       resValue: `${Math.round((res?.occupancy ?? 0.95) * 100)}%`,
       vacValue: vac ? `${Math.round(vac.occupancy * 100)}%` : undefined,
     },
     {
-      label: isEn ? 'Expenses' : 'Gastos',
+      label: t('expenses'),
       resValue: `${Math.round((res?.expenseRatio ?? 0.20) * 100)}%`,
       vacValue: vac ? `${Math.round(vac.expenseRatio * 100)}%` : undefined,
     },
     {
-      label: isEn ? 'Net monthly' : 'Neto mensual',
+      label: t('netCashFlow'),
       resValue: formatPrice(displayMetrics.netMonthly),
       vacValue: vac ? formatPrice(vac.netMonthly) : undefined,
       resColor: (displayMetrics.netMonthly ?? 0) >= 0 ? '#22C55E' : '#EF4444',
       vacColor: vac ? ((vac.netMonthly ?? 0) >= 0 ? '#22C55E' : '#EF4444') : undefined,
     },
     {
-      label: 'Yield bruto',
+      label: t('grossYield'),
       resValue: formatPercentage(displayMetrics.grossYield),
       vacValue: vac ? formatPercentage(vac.grossYield) : undefined,
     },
     {
-      label: 'Yield neto',
+      label: t('netYield'),
       resValue: formatPercentage(displayMetrics.netYield),
       vacValue: vac ? formatPercentage(vac.netYield) : undefined,
     },
     {
-      label: 'Cap rate',
+      label: t('capRate'),
       resValue: formatPercentage(displayMetrics.capRate),
       vacValue: vac ? formatPercentage(vac.capRate) : undefined,
     },
     {
-      label: 'Cash-on-cash',
+      label: t('cashOnCash'),
       resValue: formatPercentage(displayMetrics.cashOnCash),
       vacValue: vac ? formatPercentage(vac.cashOnCash) : undefined,
       resColor: (displayMetrics.cashOnCash ?? 0) >= 0 ? '#22C55E' : '#EF4444',
       vacColor: vac ? ((vac.cashOnCash ?? 0) >= 0 ? '#22C55E' : '#EF4444') : undefined,
     },
     {
-      label: isEn ? 'Breakeven' : 'Punto de equilibrio',
-      resValue: displayMetrics.breakeven ? `${displayMetrics.breakeven} ${isEn ? 'mo' : 'meses'}` : '—',
-      vacValue: vac ? (vac.breakeven ? `${vac.breakeven} ${isEn ? 'mo' : 'meses'}` : '—') : undefined,
+      label: t('breakeven'),
+      resValue: displayMetrics.breakeven ? `${displayMetrics.breakeven} ${monthLabel}` : '—',
+      vacValue: vac ? (vac.breakeven ? `${vac.breakeven} ${monthLabel}` : '—') : undefined,
     },
     {
-      label: 'TIR 5yr',
+      label: t('irr5yr'),
       resValue: displayMetrics.irr5yr != null ? formatPercentage(displayMetrics.irr5yr) : '—',
       vacValue: vac ? (vac.irr5yr != null ? formatPercentage(vac.irr5yr) : '—') : undefined,
     },
     {
-      label: 'TIR 10yr',
+      label: t('irr10yr'),
       resValue: displayMetrics.irr10yr != null ? formatPercentage(displayMetrics.irr10yr) : '—',
       vacValue: vac ? (vac.irr10yr != null ? formatPercentage(vac.irr10yr) : '—') : undefined,
     },
@@ -185,7 +202,7 @@ export default async function InvestmentSummary({
       <div className="flex items-center gap-3 mb-6">
         <h2 className="text-xl font-semibold text-[#2C2C2C]">{t('investmentAnalysis')}</h2>
         <span className="px-2 py-0.5 bg-[#5CE0D2]/15 text-[#5CE0D2] text-xs font-medium rounded-full">
-          {res ? (isEn ? 'Comparables-based' : 'Basado en comparables') : t('mlEstimated')}
+          {res ? t('comparablesBased') : t('mlEstimated')}
         </span>
       </div>
 
@@ -193,15 +210,15 @@ export default async function InvestmentSummary({
       {canCompute && (
         <div className="mb-6 p-4 bg-white rounded-xl border border-gray-100 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{isEn ? 'Property price' : 'Precio del inmueble'}</span>
+            <span className="text-gray-500">{t('propertyPrice')}</span>
             <span className="font-medium">{formatPrice(price)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{isEn ? 'Closing costs' : 'Escrituración'} ({Math.round(closingRate * 100)}%)</span>
+            <span className="text-gray-500">{t('closingCosts')} ({Math.round(closingRate * 100)}%)</span>
             <span className="font-medium">{formatPrice(closingCosts)}</span>
           </div>
           <div className="flex justify-between text-sm border-t border-gray-100 pt-2">
-            <span className="font-semibold text-gray-700">{isEn ? 'Total investment' : 'Inversión total'}</span>
+            <span className="font-semibold text-gray-700">{t('totalInvestment')}</span>
             <span className="font-bold text-gray-900">{formatPrice(totalInv)}</span>
           </div>
         </div>
@@ -212,16 +229,16 @@ export default async function InvestmentSummary({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[#0F1923] text-white">
-              <th className="px-4 py-3 text-left font-medium text-gray-300">{isEn ? 'Metric' : 'Métrica'}</th>
+              <th className="px-4 py-3 text-left font-medium text-gray-300">{t('metric')}</th>
               <th className="px-4 py-3 text-right font-semibold">
                 <span className="inline-flex items-center gap-1.5">
-                  Residencial
+                  {t('residencial')}
                 </span>
               </th>
               {showDual && (
                 <th className="px-4 py-3 text-right font-semibold">
                   <span className="inline-flex items-center gap-1.5">
-                    Vacacional
+                    {t('vacacional')}
                     {airdnaOccupancy != null && (
                       <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] rounded">AirDNA</span>
                     )}
@@ -265,9 +282,7 @@ export default async function InvestmentSummary({
 
       <p className="mt-4 text-xs text-gray-400">
         {res
-          ? (isEn
-            ? `Analysis based on market comparables. Closing costs: ${Math.round(closingRate * 100)}% (${state}).`
-            : `Análisis basado en comparables de mercado. Escrituración: ${Math.round(closingRate * 100)}% (${state}).`)
+          ? t('marketAnalysis', { rate: Math.round(closingRate * 100), state: state || '' })
           : t('mlDisclaimer')
         }
         {' · v'}{financials.model_version}

@@ -1,22 +1,21 @@
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 import PropertyPageContent from './PropertyPageContent';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
-import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
-import { getPropertyBySlug as getPropertyBySlugDb, getRentalEstimate, getAirdnaMarketSummary } from '@/lib/supabase/queries';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getUnitBySlug, getRentalEstimate, getAirdnaMarketSummary } from '@/lib/supabase/queries';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
+import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     const { data } = await supabase
-      .from('units')
+      .schema('real_estate_hub' as 'public')
+      .from('v_units')
       .select('slug')
-      .eq('status', 'disponible')
-      .is('deleted_at', null)
       .limit(1000);
     return (data || []).map((p: { slug: string }) => ({ slug: p.slug }));
   } catch {
@@ -28,8 +27,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, slug } = await params;
 
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
-    const { data: property } = await getPropertyBySlugDb(supabase, slug);
+    const supabase = await createServerSupabaseClient();
+    const { data: property } = await getUnitBySlug(supabase, slug);
     if (!property) return {};
 
     const description = (locale === 'en' ? property.description_en : property.description_es) || '';
@@ -61,16 +60,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function PropertyPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
 
-  let property: any = null;
+  let row: UnitRow | null = null;
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
-    const { data } = await getPropertyBySlugDb(supabase, slug);
-    if (data) property = data;
-  } catch {
-    // Supabase unavailable
+    const supabase = await createServerSupabaseClient();
+    const { data } = await getUnitBySlug(supabase, slug);
+    if (data) row = data as UnitRow;
+  } catch (err) {
+    console.error('Unit query failed:', err);
   }
 
-  if (!property) notFound();
+  if (!row) notFound();
+  const property = mapUnitToProperty(row);
 
   // Fetch rental estimate + AirDNA market data
   let smartRentEstimate: number | null = null;
@@ -83,17 +83,21 @@ export default async function PropertyPage({ params }: { params: Promise<{ local
   try {
     const supabase = await createServerSupabaseClient();
     if (supabase) {
-      const propType = property.property_type || 'departamento';
-      const airdnaMarket = CITY_TO_AIRDNA[property.city] || '';
+      const propType = property.specs.type || 'departamento';
+      const city = property.location.city;
+      const zone = property.location.zone;
+      const bedrooms = property.specs.bedrooms;
+      const area = property.specs.area;
+      const airdnaMarket = CITY_TO_AIRDNA[city] || '';
       const [result, vacResult, countResult, airdnaResult] = await Promise.all([
-        getRentalEstimate(supabase, property.city, propType, property.bedrooms, property.zone, 'residencial'),
-        getRentalEstimate(supabase, property.city, propType, property.bedrooms, property.zone, 'vacacional'),
+        getRentalEstimate(supabase, city, propType, bedrooms, zone, 'residencial'),
+        getRentalEstimate(supabase, city, propType, bedrooms, zone, 'vacacional'),
         supabase.from('rental_comparables').select('id', { count: 'exact', head: true }).eq('active', true),
         airdnaMarket ? getAirdnaMarketSummary(supabase, airdnaMarket) : Promise.resolve(null),
       ]);
       if (result.data) {
-        if (result.data.avg_rent_per_m2 && result.data.avg_rent_per_m2 > 0 && property.area_m2 > 0) {
-          smartRentEstimate = Math.round(result.data.avg_rent_per_m2 * property.area_m2);
+        if (result.data.avg_rent_per_m2 && result.data.avg_rent_per_m2 > 0 && area > 0) {
+          smartRentEstimate = Math.round(result.data.avg_rent_per_m2 * area);
         } else {
           smartRentEstimate = result.data.median_rent_mxn;
         }
@@ -105,12 +109,12 @@ export default async function PropertyPage({ params }: { params: Promise<{ local
       if (countResult.count) totalComparables = countResult.count;
       if (airdnaResult) {
         airdnaOccupancy = airdnaResult.current_occupancy ?? undefined;
-        const bedKey = `${property.bedrooms}_bedroom`;
+        const bedKey = `${bedrooms}_bedroom`;
         airdnaAdr = airdnaResult.adr_by_beds?.[bedKey] ?? airdnaResult.current_adr ?? undefined;
       }
     }
-  } catch {
-    // Rental data not available
+  } catch (err) {
+    console.error('Rental estimate fetch failed:', err);
   }
 
   return (
@@ -119,20 +123,20 @@ export default async function PropertyPage({ params }: { params: Promise<{ local
         type="realEstateListing"
         data={{
           name: property.name,
-          description: (locale === 'en' ? property.description_en : property.description_es) || '',
+          description: property.description[locale as 'es' | 'en'] || property.description.es || '',
           url: `https://propyte.com/${locale}/propiedades/${slug}`,
           image: property.images?.[0],
-          ...(property.price_mxn > 0 && {
+          ...(property.price.mxn > 0 && {
             offers: {
               '@type': 'Offer',
-              price: property.price_mxn,
+              price: property.price.mxn,
               priceCurrency: 'MXN',
             },
           }),
           address: {
             '@type': 'PostalAddress',
-            addressLocality: property.city,
-            addressRegion: property.state,
+            addressLocality: property.location.city,
+            addressRegion: property.location.state,
             addressCountry: 'MX',
           },
         }}

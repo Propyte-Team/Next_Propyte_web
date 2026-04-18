@@ -271,7 +271,30 @@
     "penthouse": "Penthouse",
     "terreno": "Terreno",
     "macrolote": "Macrolote",
-    "casa": "Casa"
+    "casa": "Casa",
+    "studio": "Studio",
+    "townhouse": "Townhouse",
+    "local_comercial": "Local",
+    "departamentoShort": "Depto"
+  },
+  "availability": {
+    "disponible": "Disponible",
+    "apartada": "Apartada",
+    "vendida": "Vendida",
+    "no_disponible": "No disponible"
+  },
+  "unitModels": {
+    "title": "Modelos de Unidades",
+    "unitsSuffix": "unidades",
+    "model": "Modelo",
+    "type": "Tipo",
+    "beds": "Rec",
+    "baths": "Baños",
+    "price": "Precio",
+    "estRent": "Renta Est./mes",
+    "status": "Estatus",
+    "bedsBaths": "Rec/Baños",
+    "estRentShort": "Renta Est."
   },
   "usages": {
     "residencial": "Residencial",
@@ -310,7 +333,16 @@
     "irrProjected": "TIR proyectada",
     "mlDisclaimer": "Estimaciones generadas por modelo ML basado en comparables de mercado. No constituyen consejo de inversión",
     "closingCosts": "Escrituración",
-    "totalInvestment": "Inversión total"
+    "totalInvestment": "Inversión total",
+    "metric": "Métrica",
+    "residencial": "Residencial",
+    "vacacional": "Vacacional",
+    "monthly": "mo",
+    "monthlyLabel": "meses",
+    "occupancy": "Ocupación",
+    "expenses": "Gastos",
+    "comparablesBased": "Basado en comparables",
+    "marketAnalysis": "Análisis basado en comparables de mercado. Escrituración: {rate}% ({state})."
   },
   "developers": {
     "heroTitle": "Vende tu desarrollo más rápido",

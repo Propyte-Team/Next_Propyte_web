@@ -269,6 +269,62 @@ export function calculateNetYield(
   return (annualRent * (1 - expenseRatio) / price) * 100;
 }
 
+// ── Cashflow construction helpers ──
+
+export interface BuildCashflowsParams {
+  /** Initial outflow (e.g. down payment + closing costs, or full price + closing for cash purchase) */
+  totalInvested: number;
+  /** Annual net cash flow (monthly net × 12). Caller is responsible for whether mortgage payments are already subtracted */
+  annualNetFlow: number;
+  /** Base price used to compute terminal sale value */
+  price: number;
+  /** Appreciation per year as percentage (e.g. 8 for 8%) */
+  appreciationPct: number;
+  /** Horizon in years (e.g. 5 or 10) */
+  years: number;
+  /** Mortgage balance at year `years`. Pass 0 for cash purchase */
+  remainingBalance?: number;
+}
+
+/**
+ * Build an annual cashflow array suitable for `calculateIRR()`.
+ * Convention: [-totalInvested, netY1, netY2, ..., netYn + saleValue - remainingBalance]
+ *
+ * This helper is mechanics-only — the caller decides what `annualNetFlow` represents
+ * (whether mortgage payments are subtracted, which expense ratios apply, etc.).
+ * Used by FinancialSimulator and InvestmentSummary to avoid duplicate inline builders.
+ */
+export function buildCashflows(p: BuildCashflowsParams): number[] {
+  if (p.years < 1) return [-p.totalInvested];
+  const saleValue = p.price * Math.pow(1 + p.appreciationPct / 100, p.years);
+  const cf: number[] = [-p.totalInvested];
+  for (let y = 1; y < p.years; y++) cf.push(p.annualNetFlow);
+  cf.push(p.annualNetFlow + saleValue - (p.remainingBalance ?? 0));
+  return cf;
+}
+
+/**
+ * Remaining mortgage balance using LINEAR amortization.
+ *
+ * **WARNING:** This is NOT actuarially correct. True amortization uses:
+ *   remaining = principal × [(1+r)^n − (1+r)^p] / [(1+r)^n − 1]
+ *
+ * Preserved as-is until validated against WP `propyteIRR()` golden tests.
+ * If WP uses the same linear formula, this matches and we keep it.
+ * If WP uses actuarial, this helper must be swapped for `calculateRemainingBalanceActuarial`.
+ *
+ * TODO(luis): validate with WP golden tests before Fase 4 1b starts.
+ */
+export function calculateRemainingBalanceLinear(
+  price: number,
+  downPaymentPct: number,
+  monthlyPayment: number,
+  paidMonths: number
+): number {
+  const principal = price * (1 - downPaymentPct / 100);
+  return Math.max(0, principal - monthlyPayment * paidMonths);
+}
+
 /**
  * Calculate Internal Rate of Return using Newton-Raphson method.
  * cashFlows: array of annual cash flows (negative initial investment, positive returns).

@@ -1,3 +1,4 @@
+import { getTranslations, getLocale } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 
 interface Unit {
@@ -26,7 +27,6 @@ interface MlEstimate {
 interface UnitModelsTableProps {
   units: Unit[];
   mlEstimates: MlEstimate[];
-  isEn: boolean;
 }
 
 const statusStyles: Record<string, string> = {
@@ -36,24 +36,6 @@ const statusStyles: Record<string, string> = {
   no_disponible: 'bg-gray-100 text-gray-500',
 };
 
-const statusLabels: Record<string, { es: string; en: string }> = {
-  disponible: { es: 'Disponible', en: 'Available' },
-  apartada: { es: 'Apartada', en: 'Reserved' },
-  vendida: { es: 'Vendida', en: 'Sold' },
-  no_disponible: { es: 'No disponible', en: 'Unavailable' },
-};
-
-const typeLabels: Record<string, { es: string; en: string }> = {
-  departamento: { es: 'Depto', en: 'Apt' },
-  penthouse: { es: 'Penthouse', en: 'Penthouse' },
-  casa: { es: 'Casa', en: 'House' },
-  studio: { es: 'Studio', en: 'Studio' },
-  townhouse: { es: 'Townhouse', en: 'Townhouse' },
-  terreno: { es: 'Terreno', en: 'Land' },
-  local_comercial: { es: 'Local', en: 'Commercial' },
-  macrolote: { es: 'Macrolote', en: 'Large Lot' },
-};
-
 function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null {
   const match = mlEstimates.find(
     (e) => e.unit_type === unit.unit_type && e.bedrooms === unit.bedrooms
@@ -61,15 +43,39 @@ function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null 
   return match?.estimated_rent_residencial || match?.estimated_rent_vacacional || null;
 }
 
-export default function UnitModelsTable({ units, mlEstimates, isEn }: UnitModelsTableProps) {
+export default async function UnitModelsTable({ units, mlEstimates }: UnitModelsTableProps) {
   if (units.length === 0) return null;
+
+  const locale = await getLocale();
+  const t = await getTranslations('unitModels');
+  const tAvail = await getTranslations('availability');
+  const tTypes = await getTranslations('types');
+  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
+
+  // Type label lookup with short-form fallback for departamento
+  const typeLabel = (type: string) => {
+    if (type === 'departamento') return tTypes('departamentoShort');
+    try {
+      return tTypes(type as 'departamento');
+    } catch {
+      return type;
+    }
+  };
+
+  const statusLabel = (status: string) => {
+    try {
+      return tAvail(status as 'disponible');
+    } catch {
+      return status;
+    }
+  };
 
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-900 mb-4">
-        {isEn ? 'Unit Models' : 'Modelos de Unidades'}
+        {t('title')}
         <span className="ml-2 text-sm font-normal text-gray-400">
-          ({units.length} {isEn ? 'units' : 'unidades'})
+          ({units.length} {t('unitsSuffix')})
         </span>
       </h2>
 
@@ -78,14 +84,14 @@ export default function UnitModelsTable({ units, mlEstimates, isEn }: UnitModels
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              <th className="px-4 py-3">{isEn ? 'Model' : 'Modelo'}</th>
-              <th className="px-4 py-3">{isEn ? 'Type' : 'Tipo'}</th>
-              <th className="px-4 py-3 text-center">{isEn ? 'Beds' : 'Rec'}</th>
-              <th className="px-4 py-3 text-center">{isEn ? 'Baths' : 'Baños'}</th>
+              <th className="px-4 py-3">{t('model')}</th>
+              <th className="px-4 py-3">{t('type')}</th>
+              <th className="px-4 py-3 text-center">{t('beds')}</th>
+              <th className="px-4 py-3 text-center">{t('baths')}</th>
               <th className="px-4 py-3 text-right">m²</th>
-              <th className="px-4 py-3 text-right">{isEn ? 'Price' : 'Precio'}</th>
-              <th className="px-4 py-3 text-right">{isEn ? 'Est. Rent/mo' : 'Renta Est./mes'}</th>
-              <th className="px-4 py-3 text-center">Status</th>
+              <th className="px-4 py-3 text-right">{t('price')}</th>
+              <th className="px-4 py-3 text-right">{t('estRent')}</th>
+              <th className="px-4 py-3 text-center">{t('status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -97,12 +103,10 @@ export default function UnitModelsTable({ units, mlEstimates, isEn }: UnitModels
                   <td className="px-4 py-3 font-semibold text-gray-900">
                     {unit.typology || unit.unit_number || '—'}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
-                    {(isEn ? typeLabels[unit.unit_type]?.en : typeLabels[unit.unit_type]?.es) || unit.unit_type}
-                  </td>
+                  <td className="px-4 py-3 text-gray-600">{typeLabel(unit.unit_type)}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bedrooms}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bathrooms}</td>
-                  <td className="px-4 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString('es-MX')}</td>
+                  <td className="px-4 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
                   <td className="px-4 py-3 text-right font-semibold text-gray-900">
                     {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
                   </td>
@@ -111,7 +115,7 @@ export default function UnitModelsTable({ units, mlEstimates, isEn }: UnitModels
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-500'}`}>
-                      {(isEn ? statusLabels[status]?.en : statusLabels[status]?.es) || status}
+                      {statusLabel(status)}
                     </span>
                   </td>
                 </tr>
@@ -133,25 +137,23 @@ export default function UnitModelsTable({ units, mlEstimates, isEn }: UnitModels
                   {unit.typology || unit.unit_number || '—'}
                 </span>
                 <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-500'}`}>
-                  {(isEn ? statusLabels[status]?.en : statusLabels[status]?.es) || status}
+                  {statusLabel(status)}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="text-gray-500">{isEn ? 'Type' : 'Tipo'}</div>
-                <div className="text-right text-gray-700">
-                  {(isEn ? typeLabels[unit.unit_type]?.en : typeLabels[unit.unit_type]?.es) || unit.unit_type}
-                </div>
-                <div className="text-gray-500">{isEn ? 'Beds/Baths' : 'Rec/Baños'}</div>
+                <div className="text-gray-500">{t('type')}</div>
+                <div className="text-right text-gray-700">{typeLabel(unit.unit_type)}</div>
+                <div className="text-gray-500">{t('bedsBaths')}</div>
                 <div className="text-right text-gray-700">{unit.bedrooms} / {unit.bathrooms}</div>
                 <div className="text-gray-500">m²</div>
-                <div className="text-right text-gray-700">{unit.area_m2?.toLocaleString('es-MX')}</div>
-                <div className="text-gray-500">{isEn ? 'Price' : 'Precio'}</div>
+                <div className="text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</div>
+                <div className="text-gray-500">{t('price')}</div>
                 <div className="text-right font-bold text-gray-900">
                   {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
                 </div>
                 {rentEst && (
                   <>
-                    <div className="text-gray-500">{isEn ? 'Est. Rent' : 'Renta Est.'}</div>
+                    <div className="text-gray-500">{t('estRentShort')}</div>
                     <div className="text-right font-semibold text-[#4BCEC0]">{formatPrice(rentEst)}/mes</div>
                   </>
                 )}

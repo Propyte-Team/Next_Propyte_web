@@ -25,7 +25,7 @@ export interface DevelopmentFilters {
   orderBy?: 'price_asc' | 'price_desc' | 'newest' | 'roi' | 'units';
 }
 
-const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
+export const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
 
 export async function getDevelopments(client: Client, filters: DevelopmentFilters = {}) {
   const hub = client.schema('real_estate_hub' as 'public');
@@ -222,10 +222,10 @@ export async function getBatchFinancials(client: Client, developmentIds: string[
 
 export async function getUnitBySlug(client: Client, slug: string) {
   return client
-    .from('units')
-    .select('*, developments(name, slug, city, zone, developers(name, logo_url))')
+    .schema('real_estate_hub' as 'public')
+    .from('v_units')
+    .select('*')
     .eq('slug', slug)
-    .is('deleted_at', null)
     .single();
 }
 
