@@ -2,7 +2,7 @@
 ## WordPress → Next.js + Hub Backend
 
 > **Versión:** 3.0 | **Fecha:** 2026-04-17 | **Revisión:** 2026-04-17  
-> **Tipo:** Solo Planeación — Documento de Especificación Completa  
+> **Tipo:** Documento de Especificación Completa — Activo  
 > **Objetivo:** Migrar propyte.com de WordPress a Next.js con calca exacta del diseño y funcionalidad, consolidando el backend del plugin y el sistema de aprobación del CRM en hub.propyte.com  
 > **Deploy:** Producción en Hostinger (standalone) · Staging en Vercel  
 > **Repos:** `Next_Propyte_web` (frontend público) · `Propyte_hub` (backend admin) — repos separados  
