@@ -168,7 +168,7 @@ export async function getGlobalStats(client: Client) {
   const [devsRes, unitsRes] = await Promise.all([
     hub
       .from('v_developments')
-      .select('id, city, zone, property_types', { count: 'exact' })
+      .select('*', { count: 'exact' })
       .eq('published', true),
     hub
       .from('v_units')
@@ -176,9 +176,9 @@ export async function getGlobalStats(client: Client) {
       .eq('published', true),
   ]);
 
-  const devs = devsRes.data || [];
-  const cities = new Set(devs.map(d => d.city).filter(Boolean));
-  const zones = new Set(devs.map(d => d.zone).filter(Boolean));
+  const devs = (devsRes.data || []) as Array<Record<string, unknown>>;
+  const cities = new Set(devs.map(d => d.city as string).filter(Boolean));
+  const zones = new Set(devs.map(d => d.zone as string).filter(Boolean));
 
   // Count by property type (flatten arrays)
   const typeCounts: Record<string, number> = {};
