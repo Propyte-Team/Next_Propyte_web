@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getGlobalStats, getDevelopers } from '@/lib/supabase/queries';
+import { getGlobalStats, getDevelopers, getFeaturedDevelopments } from '@/lib/supabase/queries';
 import Hero from '@/components/home/Hero';
 import ExploreCategories from '@/components/home/ExploreCategories';
 import FeaturedProperties from '@/components/home/FeaturedProperties';
@@ -11,6 +11,7 @@ import DeveloperLogos from '@/components/home/DeveloperLogos';
 import Testimonials from '@/components/home/Testimonials';
 import LeadMagnet from '@/components/home/LeadMagnet';
 import AppDownloadBanner from '@/components/home/AppDownloadBanner';
+import JoinTeamBanner from '@/components/home/JoinTeamBanner';
 import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 
@@ -31,20 +32,23 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function HomePage() {
-  // Fetch global stats + developers for home page sections
+  // Fetch global stats, developers, and featured developments
   let stats = { developments: 170, units: 500, cities: 5, zones: 30, typeCounts: {} as Record<string, number> };
   let developers: Array<{ name: string; logo_url: string | null; slug: string }> = [];
+  let featured: any[] = [];
 
   try {
     const supabase = await createServerSupabaseClient();
-    const [statsData, devsRes] = await Promise.all([
+    const [statsData, devsRes, featuredRes] = await Promise.all([
       getGlobalStats(supabase),
       getDevelopers(supabase),
+      getFeaturedDevelopments(supabase, 6),
     ]);
     stats = statsData;
     developers = (devsRes.data || [])
       .filter((d: any) => d.logo_url && d.verified)
       .map((d: any) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug }));
+    featured = featuredRes.data || [];
   } catch {
     // Supabase not available — use fallback stats
   }
@@ -54,10 +58,11 @@ export default async function HomePage() {
       <SchemaMarkup type="organization" />
       <Hero stats={stats} />
       <ExploreCategories typeCounts={stats.typeCounts} />
-      <FeaturedProperties />
+      <FeaturedProperties developments={featured} />
       <Testimonials />
       <TrendingMarket />
       <WhyPropyte />
+      <JoinTeamBanner />
       <DeveloperBanner />
       {developers.length > 0 && <DeveloperLogos developers={developers} />}
       <LeadMagnet />

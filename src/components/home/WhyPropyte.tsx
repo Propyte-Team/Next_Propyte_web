@@ -1,8 +1,26 @@
-import { useTranslations } from 'next-intl';
-import { Shield, BarChart3, Headphones, Zap, Award, Globe } from 'lucide-react';
+import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
+import {
+  Shield,
+  BarChart3,
+  Headphones,
+  Zap,
+  Award,
+  Globe,
+  TrendingUp,
+  Building2,
+  Users,
+} from 'lucide-react';
 
 export default function WhyPropyte() {
   const t = useTranslations('whyPropyte');
+  const locale = useLocale();
+
+  const audience = [
+    { icon: TrendingUp, titleKey: 'aud1Title', descKey: 'aud1Desc', ctaKey: 'aud1Cta', href: `/${locale}/desarrollos` },
+    { icon: Building2, titleKey: 'aud2Title', descKey: 'aud2Desc', ctaKey: 'aud2Cta', href: `/${locale}/desarrolladores` },
+    { icon: Users, titleKey: 'aud3Title', descKey: 'aud3Desc', ctaKey: 'aud3Cta', href: `/${locale}/unete` },
+  ];
 
   const features = [
     { icon: BarChart3, title: t('feature1Title'), desc: t('feature1Desc') },
@@ -14,26 +32,52 @@ export default function WhyPropyte() {
   ];
 
   return (
-    <section className="py-12 md:py-16 bg-[#F4F6F8]">
+    <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        {/* Audience cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+          {audience.map((aud) => {
+            const Icon = aud.icon;
+            return (
+              <div
+                key={aud.titleKey}
+                className="p-6 md:p-8 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
+              >
+                <div className="w-12 h-12 mb-4 bg-[#1A2F3F]/10 rounded-lg flex items-center justify-center">
+                  <Icon size={24} strokeWidth={1.75} className="text-[#1A2F3F]" />
+                </div>
+                <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{t(aud.titleKey)}</h3>
+                <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
+                <Link href={aud.href} className="text-[#0D9488] font-medium hover:underline">
+                  {t(aud.ctaKey)} &rarr;
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Feature cards heading */}
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
           <p className="text-gray-500 mt-2 max-w-xl mx-auto">{t('subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((feat, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow border border-gray-100"
-            >
-              <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                <feat.icon size={24} className="text-[#5CE0D2]" />
+          {features.map((feat, i) => {
+            const Icon = feat.icon;
+            return (
+              <div
+                key={i}
+                className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow border border-gray-100"
+              >
+                <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
+                  <Icon size={24} strokeWidth={1.75} className="text-[#5CE0D2]" />
+                </div>
+                <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>
               </div>
-              <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

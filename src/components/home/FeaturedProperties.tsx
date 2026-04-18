@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Heart, MapPin, Bed, Bath, Maximize } from 'lucide-react';
+import { ArrowRight, MapPin, Bed, Bath, Maximize } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 
 interface FeaturedDevelopment {
@@ -42,9 +42,9 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
           </div>
           <Link
             href={`/${locale}/desarrollos`}
-            className="hidden md:flex items-center gap-1.5 text-[#5CE0D2] font-semibold hover:underline"
+            className="hidden md:flex items-center gap-1.5 text-[#0D9488] font-semibold hover:underline"
           >
-            {t('viewAll')} <ArrowRight size={16} />
+            {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>
         </div>
 
@@ -73,13 +73,6 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
                     )}
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                      className="absolute top-3 right-3 w-8 h-8 bg-white/80 hover:bg-white rounded-full flex items-center justify-center transition-colors shadow-sm"
-                      aria-label="Guardar"
-                    >
-                      <Heart size={16} className="text-gray-600" />
-                    </button>
                     {dev.stage && (
                       <div className="absolute top-3 left-3">
                         <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
@@ -148,9 +141,9 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
         <div className="mt-8 text-center md:hidden">
           <Link
             href={`/${locale}/desarrollos`}
-            className="inline-flex items-center gap-1 text-[#5CE0D2] font-semibold"
+            className="inline-flex items-center gap-1 text-[#0D9488] font-semibold"
           >
-            {t('viewAll')} <ArrowRight size={16} />
+            {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>
         </div>
       </div>

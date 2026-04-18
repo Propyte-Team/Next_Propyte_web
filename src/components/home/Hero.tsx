@@ -1,14 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Search, MapPin, Building2, Home, Map, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
-
-// TODO: Habilitar 'rentar' cuando haya inventario de renta
-const TABS = ['comprar', 'preventa'] as const;
-type Tab = typeof TABS[number];
+import { Search, MapPin, Building2, Key } from 'lucide-react';
+import { useSearchType } from '@/context/SearchContext';
+import StatCounter from '@/components/shared/StatCounter';
 
 interface HeroProps {
   stats?: {
@@ -21,19 +19,24 @@ interface HeroProps {
 
 export default function Hero({ stats }: HeroProps) {
   const t = useTranslations('hero');
+  const tNav = useTranslations('nav');
   const locale = useLocale();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<Tab>('comprar');
+  const { type, setType } = useSearchType();
   const [query, setQuery] = useState('');
 
-  function handleSubmit(e: React.FormEvent) {
+  const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
+  const imageUrl =
+    process.env.NEXT_PUBLIC_HERO_IMAGE_URL ||
+    'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1920&h=1080&fit=crop';
+
+  function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (query.trim()) params.set('search', query.trim());
-    // TODO: Habilitar cuando haya inventario de renta
-    // if (activeTab === 'rentar') params.set('usage', 'renta');
-    if (activeTab === 'preventa') params.set('stage', 'preventa');
-    router.push(`/${locale}/propiedades${params.toString() ? '?' + params.toString() : ''}`);
+    const path = type === 'propiedades' ? 'propiedades' : 'desarrollos';
+    const url = query
+      ? `/${locale}/${path}?search=${encodeURIComponent(query)}`
+      : `/${locale}/${path}`;
+    router.push(url);
   }
 
   const quickLinks = [
@@ -43,19 +46,37 @@ export default function Hero({ stats }: HeroProps) {
     { label: t('quickUnder3M'), href: `/${locale}/propiedades?priceMax=3000000` },
   ];
 
-  return (
-    <section className="relative w-full min-h-[520px] md:min-h-[600px] lg:min-h-[680px] flex items-center justify-center overflow-hidden">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1920&h=1080&fit=crop)',
-        }}
-      />
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+  const placeholderKey = type === 'propiedades' ? 'searchPlaceholderUnit' : 'searchPlaceholderDev';
 
-      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24">
+  return (
+    <section className="propyte-hero hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
+      {/* 3-tier background fallback: video → image → gradient */}
+      {videoUrl ? (
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="none"
+          poster={imageUrl}
+        >
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+      ) : imageUrl ? (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${imageUrl})` }}
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0D2740]" />
+      )}
+
+      {/* Gradient overlay (top translucent, bottom darker for contrast) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/65" />
+
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
         {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-white leading-tight mb-3 drop-shadow-lg">
           {t('title')}
@@ -64,48 +85,111 @@ export default function Hero({ stats }: HeroProps) {
           {t('subtitle')}
         </p>
 
-        {/* Zillow-style tabbed search */}
+        {/* Tabbed search */}
         <div className="max-w-2xl mx-auto">
-          {/* Tabs */}
-          <div className="flex justify-center mb-0">
-            {TABS.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-6 py-3 text-sm font-bold uppercase tracking-wide rounded-t-lg transition-all ${
-                  activeTab === tab
-                    ? 'bg-white text-[#1A2F3F] shadow-sm'
-                    : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-                }`}
-              >
-                {t(`tab_${tab}`)}
-              </button>
-            ))}
+          {/* Tab pills */}
+          <div className="flex justify-center gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setType('desarrollos')}
+              className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
+                type === 'desarrollos'
+                  ? 'bg-white text-[#1A2F3F] shadow-lg'
+                  : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
+              }`}
+            >
+              <Building2 size={15} strokeWidth={1.75} />
+              {tNav('searchTypeDev')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setType('propiedades')}
+              className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
+                type === 'propiedades'
+                  ? 'bg-white text-[#1A2F3F] shadow-lg'
+                  : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
+              }`}
+            >
+              <Key size={15} strokeWidth={1.75} />
+              {tNav('searchTypeUnit')}
+            </button>
           </div>
 
-          {/* Search bar */}
-          <form onSubmit={handleSubmit} className="relative">
-            <div className="flex bg-white rounded-b-lg rounded-tr-lg shadow-2xl overflow-hidden">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={t('searchPlaceholder')}
-                  className="w-full h-14 md:h-16 pl-12 pr-4 text-base md:text-lg text-gray-800 placeholder:text-gray-400 focus:outline-none"
-                />
-              </div>
-              <button
-                type="submit"
-                className="h-14 md:h-16 px-8 md:px-10 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base transition-colors flex items-center gap-2 whitespace-nowrap"
-              >
-                <Search size={18} />
-                {t('searchButton')}
-              </button>
-            </div>
+          {/* Search bubble (calca header bubble) */}
+          <form
+            onSubmit={handleSubmit}
+            className="propyte-search-bubble flex items-center w-full h-14 md:h-[60px] rounded-full pl-5 pr-1.5 md:pr-2 gap-2 mx-auto max-w-xl"
+            role="search"
+          >
+            <Search size={20} strokeWidth={2} className="text-gray-400 shrink-0" />
+            <label htmlFor="hero-search-input" className="sr-only">
+              {tNav('search')}
+            </label>
+            <input
+              id="hero-search-input"
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={tNav(placeholderKey)}
+              autoComplete="off"
+              className="flex-1 h-full text-base md:text-lg text-gray-800 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
+            />
+            <button
+              type="submit"
+              aria-label={tNav('search')}
+              className="search-bubble-btn flex items-center justify-center w-10 h-10 md:w-11 md:h-11 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white rounded-full shrink-0 transition-all hover:scale-105"
+            >
+              <Search size={18} strokeWidth={2} />
+            </button>
           </form>
         </div>
+
+        {/* Social proof stats */}
+        {stats && stats.developments > 0 && (
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 mt-8 mb-2">
+            <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
+              <StatCounter
+                to={stats.developments}
+                suffix="+"
+                className="text-[#5CE0D2] text-xl md:text-2xl font-bold"
+              />
+              <span className="text-white/80 text-sm font-medium">{tNav('searchTypeDev')}</span>
+            </div>
+            {stats.units > 0 && (
+              <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
+                <StatCounter
+                  to={stats.units}
+                  suffix="+"
+                  className="text-[#5CE0D2] text-xl md:text-2xl font-bold"
+                />
+                <span className="text-white/80 text-sm font-medium">{tNav('searchTypeUnit')}</span>
+              </div>
+            )}
+            {stats.cities > 0 && (
+              <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
+                <StatCounter
+                  to={stats.cities}
+                  className="text-[#5CE0D2] text-xl md:text-2xl font-bold"
+                />
+                <span className="text-white/80 text-sm font-medium">
+                  {locale === 'es' ? 'Ciudades' : 'Cities'}
+                </span>
+              </div>
+            )}
+            {stats.zones > 0 && (
+              <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
+                <StatCounter
+                  to={stats.zones}
+                  suffix="+"
+                  className="text-[#5CE0D2] text-xl md:text-2xl font-bold"
+                />
+                <span className="text-white/80 text-sm font-medium">
+                  {locale === 'es' ? 'Zonas' : 'Zones'}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Quick links */}
         <div className="flex flex-wrap justify-center gap-3 mt-6">
@@ -113,31 +197,13 @@ export default function Hero({ stats }: HeroProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-white/15 hover:bg-white/25 rounded-full backdrop-blur-sm border border-white/20 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200"
             >
-              <MapPin size={14} />
+              <MapPin size={14} strokeWidth={1.75} />
               {link.label}
             </Link>
           ))}
         </div>
-
-        {/* Social proof stats */}
-        {stats && (
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mt-8">
-            {[
-              { icon: Building2, value: `${stats.developments}+`, label: locale === 'es' ? 'Desarrollos' : 'Developments' },
-              { icon: Home, value: `${stats.units}+`, label: locale === 'es' ? 'Unidades' : 'Units' },
-              { icon: Map, value: `${stats.cities}`, label: locale === 'es' ? 'Ciudades' : 'Cities' },
-              { icon: BarChart3, value: `${stats.zones}+`, label: locale === 'es' ? 'Zonas analizadas' : 'Zones Analyzed' },
-            ].map((stat) => (
-              <div key={stat.label} className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/15">
-                <stat.icon size={16} className="text-[#5CE0D2]" />
-                <span className="text-white font-bold text-sm">{stat.value}</span>
-                <span className="text-white/70 text-xs">{stat.label}</span>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );
