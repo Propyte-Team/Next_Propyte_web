@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
@@ -20,6 +20,9 @@ export default async function LocaleLayout({
   if (!routing.locales.includes(locale as 'es' | 'en')) {
     notFound();
   }
+
+  // Enable static rendering — opts pages out of cookies()-based locale resolution
+  setRequestLocale(locale);
 
   const messages = await getMessages({ locale });
 

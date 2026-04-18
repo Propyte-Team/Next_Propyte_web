@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { setRequestLocale } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 import PropertyPageContent from './PropertyPageContent';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
@@ -59,6 +60,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function PropertyPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
 
   let row: UnitRow | null = null;
   try {

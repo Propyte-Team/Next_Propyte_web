@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Building2, Calendar, ExternalLink, FileDown } from 'lucide-react';
+import { setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopmentBySlug, getDevelopmentWithUnits, getRentalEstimate, getDevelopmentFinancials, getMlRentalEstimates, getAirdnaMarketSummary, APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
@@ -118,6 +119,7 @@ async function getSupabase() {
 
 export default async function DesarrolloDetailPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const isEn = locale === 'en';
   const supabase = await getSupabase();
 
