@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
+import { MAX_PRICE } from '@/shared/constants/marketplace';
 
 export interface Filters {
   search: string;
@@ -20,7 +21,7 @@ const defaultFilters: Filters = {
   city: '',
   type: '',
   priceMin: 0,
-  priceMax: 50_000_000,
+  priceMax: MAX_PRICE,
   roiMin: 0,
   stage: '',
   usage: '',
@@ -45,7 +46,7 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   if (priceMin) { const n = Number(priceMin); if (n > 0) parsed.priceMin = n; }
 
   const priceMax = params.get('priceMax');
-  if (priceMax) { const n = Number(priceMax); if (n > 0 && n < 50_000_000) parsed.priceMax = n; }
+  if (priceMax) { const n = Number(priceMax); if (n > 0 && n < MAX_PRICE) parsed.priceMax = n; }
 
   const roiMin = params.get('roiMin');
   if (roiMin) { const n = Number(roiMin); if (n > 0) parsed.roiMin = n; }
@@ -90,7 +91,7 @@ export function useFilters(properties: Property[]) {
     if (filters.city) count++;
     if (filters.type) count++;
     if (filters.priceMin > 0) count++;
-    if (filters.priceMax < 50_000_000) count++;
+    if (filters.priceMax < MAX_PRICE) count++;
     if (filters.roiMin > 0) count++;
     if (filters.stage) count++;
     if (filters.usage) count++;

@@ -44,8 +44,8 @@ export default function PropertyList({ properties, sortBy, onSortChange }: Prope
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            {properties.map(property => (
-              <MarketplaceCard key={property.id} property={property} />
+            {properties.map((property, i) => (
+              <MarketplaceCard key={property.id} property={property} priority={i < 6} />
             ))}
           </div>
         )}

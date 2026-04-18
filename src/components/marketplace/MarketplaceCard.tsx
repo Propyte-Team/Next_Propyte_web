@@ -9,15 +9,18 @@ import type { Property } from '@/types/property';
 
 interface MarketplaceCardProps {
   property: Property;
+  priority?: boolean;
 }
 
-export default function MarketplaceCard({ property }: MarketplaceCardProps) {
+export default function MarketplaceCard({ property, priority = false }: MarketplaceCardProps) {
   const locale = useLocale();
   const tStages = useTranslations('stages');
+  const tMkt = useTranslations('marketplace');
   const [currentImg, setCurrentImg] = useState(0);
   const [saved, setSaved] = useState(false);
 
-  const formattedPrice = new Intl.NumberFormat('es-MX', {
+  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
+  const formattedPrice = new Intl.NumberFormat(intlLocale, {
     style: 'currency',
     currency: 'MXN',
     minimumFractionDigits: 0,
@@ -50,7 +53,7 @@ export default function MarketplaceCard({ property }: MarketplaceCardProps) {
                 fill
                 sizes="(max-width: 1023px) 100vw, 25vw"
                 className="object-cover"
-                priority={i === 0}
+                priority={priority && i === 0}
               />
             </div>
           ))}
@@ -65,7 +68,7 @@ export default function MarketplaceCard({ property }: MarketplaceCardProps) {
                   setCurrentImg(i => (i === 0 ? property.images.length - 1 : i - 1));
                 }}
                 className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                aria-label="Previous"
+                aria-label={tMkt('cardPrevImage')}
               >
                 <ChevronLeft size={14} />
               </button>
@@ -76,7 +79,7 @@ export default function MarketplaceCard({ property }: MarketplaceCardProps) {
                   setCurrentImg(i => (i === property.images.length - 1 ? 0 : i + 1));
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                aria-label="Next"
+                aria-label={tMkt('cardNextImage')}
               >
                 <ChevronRight size={14} />
               </button>
@@ -91,7 +94,7 @@ export default function MarketplaceCard({ property }: MarketplaceCardProps) {
               setSaved(!saved);
             }}
             className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center"
-            aria-label="Save"
+            aria-label={tMkt('cardSave')}
           >
             <Heart
               size={20}
@@ -132,18 +135,18 @@ export default function MarketplaceCard({ property }: MarketplaceCardProps) {
             {property.specs.bedrooms > 0 && (
               <>
                 <span className="font-semibold">{property.specs.bedrooms}</span>
-                <span className="text-gray-400">rec</span>
+                <span className="text-gray-400">{tMkt('cardBedShort')}</span>
                 <span className="text-gray-300 mx-0.5">|</span>
               </>
             )}
             {property.specs.bathrooms > 0 && (
               <>
                 <span className="font-semibold">{property.specs.bathrooms}</span>
-                <span className="text-gray-400">ba</span>
+                <span className="text-gray-400">{tMkt('cardBathShort')}</span>
                 <span className="text-gray-300 mx-0.5">|</span>
               </>
             )}
-            <span className="font-semibold">{property.specs.area.toLocaleString('es-MX')}</span>
+            <span className="font-semibold">{property.specs.area.toLocaleString(intlLocale)}</span>
             <span className="text-gray-400">m²</span>
           </div>
 

@@ -2,6 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
+import { useTranslations } from 'next-intl';
+import { MapPin } from 'lucide-react';
 import { formatPriceShort } from '@/lib/formatters';
 import type { Property } from '@/types/property';
 
@@ -14,6 +16,7 @@ const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
 const DEFAULT_ZOOM = 9;
 
 export default function MapView({ properties, onPropertyClick }: MapViewProps) {
+  const t = useTranslations('marketplace');
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState<Property | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -28,13 +31,10 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8">
           <div className="w-16 h-16 mx-auto mb-4 bg-[#1A2F3F]/10 rounded-full flex items-center justify-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A2F3F" strokeWidth="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
+            <MapPin size={24} strokeWidth={2} className="text-[#1A2F3F]" />
           </div>
-          <p className="text-gray-600 font-medium">Configura tu API Key de Google Maps</p>
-          <p className="text-sm text-gray-400 mt-1">Agrega NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en .env.local</p>
+          <p className="text-gray-600 font-medium">{t('mapApiKeyMissing')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('mapApiKeyHint')}</p>
         </div>
       </div>
     );
@@ -44,14 +44,29 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
     return (
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8">
-          <p className="text-gray-600 font-medium">Error cargando el mapa</p>
-          <p className="text-sm text-gray-400 mt-1">Verifica tu API Key de Google Maps</p>
+          <p className="text-gray-600 font-medium">{t('mapError')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('mapErrorHint')}</p>
         </div>
       </div>
     );
   }
 
   const validProperties = properties.filter((p) => p.location.lat && p.location.lng);
+
+  // Empty state cuando hay properties pero ninguna tiene coords (data gap en Supabase)
+  if (properties.length > 0 && validProperties.length === 0) {
+    return (
+      <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
+        <div className="text-center p-8 max-w-sm">
+          <div className="w-16 h-16 mx-auto mb-4 bg-[#F5A623]/15 rounded-full flex items-center justify-center">
+            <MapPin size={24} strokeWidth={1.75} className="text-[#F5A623]" />
+          </div>
+          <p className="text-gray-600 font-medium">{t('mapNoCoords')}</p>
+          <p className="text-sm text-gray-400 mt-2">{t('mapNoCoordsHint')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <APIProvider apiKey={apiKey} onError={() => setError(true)}>

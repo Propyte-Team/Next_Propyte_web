@@ -214,7 +214,22 @@
     "filterDeveloper": "Desarrollador",
     "mapView": "Mapa",
     "listView": "Lista",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "h1Desarrollos": "Nuevos Desarrollos y Preventas",
+    "h1Propiedades": "Propiedades en Riviera Maya",
+    "subtitleDesarrollos": "Desarrollos inmobiliarios aprobados en Playa del Carmen, Tulum, Cancún y la Riviera Maya",
+    "subtitlePropiedades": "Encuentra tu propiedad ideal con análisis de datos y ROI proyectado",
+    "cardBedShort": "rec",
+    "cardBathShort": "ba",
+    "cardPrevImage": "Imagen anterior",
+    "cardNextImage": "Imagen siguiente",
+    "cardSave": "Guardar",
+    "mapApiKeyMissing": "Configura tu API Key de Google Maps",
+    "mapApiKeyHint": "Agrega NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en .env.local",
+    "mapError": "Error cargando el mapa",
+    "mapErrorHint": "Verifica tu API Key de Google Maps",
+    "mapNoCoords": "Las ubicaciones aún no están disponibles",
+    "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas"
   },
   "property": {
     "bedrooms": "Recámaras",

@@ -214,7 +214,22 @@
     "filterDeveloper": "Developer",
     "mapView": "Map",
     "listView": "List",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "h1Desarrollos": "New Developments & Pre-Sales",
+    "h1Propiedades": "Properties in Riviera Maya",
+    "subtitleDesarrollos": "Approved real estate developments in Playa del Carmen, Tulum, Cancun and the Riviera Maya",
+    "subtitlePropiedades": "Find your ideal property with data analysis and projected ROI",
+    "cardBedShort": "bd",
+    "cardBathShort": "ba",
+    "cardPrevImage": "Previous image",
+    "cardNextImage": "Next image",
+    "cardSave": "Save",
+    "mapApiKeyMissing": "Configure your Google Maps API Key",
+    "mapApiKeyHint": "Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to .env.local",
+    "mapError": "Error loading the map",
+    "mapErrorHint": "Verify your Google Maps API Key",
+    "mapNoCoords": "Locations not available yet",
+    "mapNoCoordsHint": "Developments will appear on the map once their coordinates are loaded"
   },
   "property": {
     "bedrooms": "Bedrooms",

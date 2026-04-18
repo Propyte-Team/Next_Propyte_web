@@ -12,27 +12,58 @@ import PropertyList from '@/components/marketplace/PropertyList';
 import MapView from '@/components/marketplace/MapView';
 import FilterChip from '@/components/ui/FilterChip';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
+import { MAX_PRICE } from '@/shared/constants/marketplace';
 
 interface MarketplaceContentProps {
   properties: Property[];
+  titleKey?: 'h1Desarrollos' | 'h1Propiedades';
+  subtitleKey?: 'subtitleDesarrollos' | 'subtitlePropiedades';
 }
 
-export default function MarketplaceContent({ properties }: MarketplaceContentProps) {
+export default function MarketplaceContent({
+  properties,
+  titleKey = 'h1Propiedades',
+  subtitleKey = 'subtitlePropiedades',
+}: MarketplaceContentProps) {
   const t = useTranslations('marketplace');
   const isMobile = useIsMobile();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('list');
-  const { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy } = useFilters(properties);
+  const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy } = useFilters(properties);
+
+  const priceFmt = (n: number) =>
+    n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(1)}M` : `$${(n / 1_000).toFixed(0)}K`;
 
   const activeChips: { label: string; onRemove: () => void }[] = [];
+  if (filters.search) {
+    activeChips.push({ label: `"${filters.search}"`, onRemove: () => updateFilter('search', '') });
+  }
   if (filters.city) activeChips.push({ label: filters.city, onRemove: () => updateFilter('city', '') });
   if (filters.type) activeChips.push({ label: filters.type, onRemove: () => updateFilter('type', '') });
   if (filters.stage) activeChips.push({ label: filters.stage, onRemove: () => updateFilter('stage', '') });
   if (filters.usage) activeChips.push({ label: filters.usage, onRemove: () => updateFilter('usage', '') });
   if (filters.roiMin) activeChips.push({ label: `ROI ${filters.roiMin}%+`, onRemove: () => updateFilter('roiMin', 0) });
+  if (filters.priceMin > 0) {
+    activeChips.push({
+      label: `≥ ${priceFmt(filters.priceMin)}`,
+      onRemove: () => updateFilter('priceMin', 0),
+    });
+  }
+  if (filters.priceMax < MAX_PRICE) {
+    activeChips.push({
+      label: `≤ ${priceFmt(filters.priceMax)}`,
+      onRemove: () => updateFilter('priceMax', MAX_PRICE),
+    });
+  }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)]">
+    <div className="flex flex-col h-[calc(100dvh-64px)]">
+      {/* SEO heading — visible al top */}
+      <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t(titleKey)}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t(subtitleKey)}</p>
+      </div>
+
       <FilterBar
         filters={filters}
         onFilterChange={updateFilter}
@@ -70,7 +101,6 @@ export default function MarketplaceContent({ properties }: MarketplaceContentPro
       )}
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Desktop: split view */}
         {!isMobile ? (
           <>
             <div className="w-[60%] h-full">

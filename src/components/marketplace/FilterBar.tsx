@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { SlidersHorizontal, ChevronDown, Search, Bookmark } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, Search } from 'lucide-react';
 import type { Filters } from '@/hooks/useFilters';
+import { MAX_PRICE } from '@/shared/constants/marketplace';
 
 interface FilterBarProps {
   filters: Filters;
@@ -60,9 +61,9 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
 
-  const priceActive = filters.priceMin > 0 || filters.priceMax < 50_000_000;
+  const priceActive = filters.priceMin > 0 || filters.priceMax < MAX_PRICE;
   const priceLabel = priceActive
-    ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= 50_000_000 ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
+    ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= MAX_PRICE ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
     : undefined;
 
   const typeOptions = [
@@ -79,7 +80,11 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
         {/* Search input */}
         <div className="relative flex-shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <label htmlFor="marketplace-search" className="sr-only">
+            {t('searchPlaceholder')}
+          </label>
           <input
+            id="marketplace-search"
             type="text"
             value={filters.search}
             onChange={e => onFilterChange('search', e.target.value)}
@@ -124,8 +129,8 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
               <span className="text-gray-400 text-sm">—</span>
               <input
                 type="number"
-                value={filters.priceMax < 50_000_000 ? filters.priceMax : ''}
-                onChange={e => onFilterChange('priceMax', Number(e.target.value) || 50_000_000)}
+                value={filters.priceMax < MAX_PRICE ? filters.priceMax : ''}
+                onChange={e => onFilterChange('priceMax', Number(e.target.value) || MAX_PRICE)}
                 placeholder="Max"
                 className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
               />
@@ -135,7 +140,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
                 { label: '< $3M', min: 0, max: 3_000_000 },
                 { label: '$3M–$5M', min: 3_000_000, max: 5_000_000 },
                 { label: '$5M–$10M', min: 5_000_000, max: 10_000_000 },
-                { label: '$10M+', min: 10_000_000, max: 50_000_000 },
+                { label: '$10M+', min: 10_000_000, max: MAX_PRICE },
               ].map(p => (
                 <button
                   key={p.label}
@@ -210,12 +215,6 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
 
         {/* Spacer */}
         <div className="flex-1" />
-
-        {/* Save search */}
-        <button className="hidden md:flex h-10 px-4 items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0">
-          <Bookmark size={14} />
-          {t('saveSearch')}
-        </button>
 
         {/* Result count */}
         <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
