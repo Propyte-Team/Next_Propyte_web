@@ -119,7 +119,7 @@ export async function getSimilarDevelopments(client: Client, dev: { id: string; 
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
-  return client
+  const featured = await client
     .from('developments')
     .select('*, developers(name, logo_url)')
     .eq('published', true)
@@ -127,6 +127,20 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(limit);
+
+  // Fallback (calca WP featured-properties.php): si no hay featured,
+  // mostrar los más recientes publicados para no dejar la grid vacía.
+  if (!featured.data || featured.data.length === 0) {
+    return client
+      .from('developments')
+      .select('*, developers(name, logo_url)')
+      .eq('published', true)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+  }
+
+  return featured;
 }
 
 export async function getDevelopmentsByCity(client: Client, city: string) {
