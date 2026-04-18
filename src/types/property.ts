@@ -2,8 +2,8 @@ export interface PropertyLocation {
   city: string;
   zone: string;
   state: string;
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
   address: string;
 }
 
@@ -38,7 +38,15 @@ export interface PropertyDescription {
 
 export type PropertyStage = 'preventa' | 'construccion' | 'entrega_inmediata';
 export type PropertyUsage = 'residencial' | 'vacacional' | 'renta' | 'mixto';
-export type PropertyBadge = 'preventa' | 'nuevo' | 'entrega_inmediata' | null;
+export type PropertyBadge =
+  | 'preventa'
+  | 'nuevo'
+  | 'construccion'
+  | 'entrega_inmediata'
+  | 'proximamente'
+  | 'reservado'
+  | 'vendido'
+  | null;
 
 export interface PropertyMedia {
   virtualTour?: string;   // URL to 360° tour (Matterport, Kuula, etc.)

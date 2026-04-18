@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Heart, ChevronLeft, ChevronRight, MapPin, Bed, Bath, Maximize } from 'lucide-react';
-import type { Property } from '@/types/property';
+import type { Property, PropertyBadge } from '@/types/property';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -27,12 +27,13 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
     maximumFractionDigits: 0,
   }).format(property.price.mxn);
 
-  const badgeColors: Record<string, string> = {
+  const badgeColors: Record<Exclude<PropertyBadge, null>, string> = {
     preventa: 'bg-[#F5A623]',
     nuevo: 'bg-[#22C55E]',
     construccion: 'bg-[#1A2F3F]',
     entrega_inmediata: 'bg-[#5CE0D2]',
     proximamente: 'bg-[#6366F1]',
+    reservado: 'bg-[#F5A623]/80',
     vendido: 'bg-gray-500',
   };
 

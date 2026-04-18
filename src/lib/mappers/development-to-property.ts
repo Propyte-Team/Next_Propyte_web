@@ -140,8 +140,8 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
       city: row.city || '',
       zone: row.zone || row.neighborhood || row.city || '',
       state: row.state || '',
-      lat: row.lat || 0,
-      lng: row.lng || 0,
+      lat: row.lat ?? null,
+      lng: row.lng ?? null,
       address: row.address || '',
     },
     price: {

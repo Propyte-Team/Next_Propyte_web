@@ -5,7 +5,11 @@ import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-goog
 import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
 import { formatPriceShort } from '@/lib/formatters';
-import type { Property } from '@/types/property';
+import type { Property, PropertyLocation } from '@/types/property';
+
+type PropertyWithCoords = Property & {
+  location: PropertyLocation & { lat: number; lng: number };
+};
 
 interface MapViewProps {
   properties: Property[];
@@ -18,10 +22,10 @@ const DEFAULT_ZOOM = 9;
 export default function MapView({ properties, onPropertyClick }: MapViewProps) {
   const t = useTranslations('marketplace');
   const [error, setError] = useState(false);
-  const [selected, setSelected] = useState<Property | null>(null);
+  const [selected, setSelected] = useState<PropertyWithCoords | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const handleMarkerClick = useCallback((property: Property) => {
+  const handleMarkerClick = useCallback((property: PropertyWithCoords) => {
     setSelected(property);
     if (onPropertyClick) onPropertyClick(property);
   }, [onPropertyClick]);
@@ -51,7 +55,9 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
     );
   }
 
-  const validProperties = properties.filter((p) => p.location.lat && p.location.lng);
+  const validProperties = properties.filter(
+    (p): p is PropertyWithCoords => p.location.lat != null && p.location.lng != null
+  );
 
   // Empty state cuando hay properties pero ninguna tiene coords (data gap en Supabase)
   if (properties.length > 0 && validProperties.length === 0) {
@@ -93,7 +99,7 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
           </AdvancedMarker>
         ))}
 
-        {selected && selected.location.lat && selected.location.lng && (
+        {selected && (
           <InfoWindow
             position={{ lat: selected.location.lat, lng: selected.location.lng }}
             onCloseClick={() => setSelected(null)}

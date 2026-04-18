@@ -1,15 +1,18 @@
+import type { PropertyBadge } from '@/types/property';
+
 interface BadgeProps {
-  type: 'preventa' | 'nuevo' | 'entrega_inmediata' | 'construccion' | 'proximamente' | 'vendido';
+  type: Exclude<PropertyBadge, null>;
   label: string;
   className?: string;
 }
 
-const badgeStyles: Record<string, string> = {
+const badgeStyles: Record<Exclude<PropertyBadge, null>, string> = {
   preventa: 'bg-[#F5A623] text-white',
   nuevo: 'bg-[#5CE0D2] text-white',
   entrega_inmediata: 'bg-[#22C55E] text-white',
   construccion: 'bg-[#1A2F3F] text-white',
   proximamente: 'bg-[#6366F1] text-white',
+  reservado: 'bg-[#F5A623]/80 text-white',
   vendido: 'bg-gray-500 text-white',
 };
 

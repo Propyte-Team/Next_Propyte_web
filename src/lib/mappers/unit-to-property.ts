@@ -69,12 +69,10 @@ export interface UnitRow {
 
 const VALID_STAGES: ReadonlyArray<PropertyStage> = ['preventa', 'construccion', 'entrega_inmediata'];
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
-const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
-
 const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
   disponible: 'nuevo',
-  reservado: 'nuevo',
-  vendido: 'entrega_inmediata',
+  reservado: 'reservado',
+  vendido: 'vendido',
 };
 
 /**
@@ -101,9 +99,7 @@ export function mapUnitToProperty(row: UnitRow): Property {
 
   // Availability → badge
   const statusKey = (row.availability_status || '').toLowerCase();
-  const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusKey] && VALID_BADGES.includes(AVAILABILITY_TO_BADGE[statusKey])
-    ? AVAILABILITY_TO_BADGE[statusKey]
-    : null;
+  const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusKey] ?? null;
 
   return {
     id: row.id,
@@ -117,8 +113,8 @@ export function mapUnitToProperty(row: UnitRow): Property {
       city: row.city || '',
       zone: row.zone || row.neighborhood || row.city || '',
       state: row.state || '',
-      lat: row.lat || 0,
-      lng: row.lng || 0,
+      lat: row.lat ?? null,
+      lng: row.lng ?? null,
       address: row.address || '',
     },
     price: {
