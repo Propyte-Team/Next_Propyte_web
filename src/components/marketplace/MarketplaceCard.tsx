@@ -37,9 +37,11 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
     vendido: 'bg-gray-500',
   };
 
+  const detailBase = property.kind === 'unit' ? 'propiedades' : 'desarrollos';
+
   return (
     <div className="border-b border-r border-gray-100 hover:shadow-md transition-shadow group">
-      <Link href={`/${locale}/propiedades/${property.slug}`} className="block">
+      <Link href={`/${locale}/${detailBase}/${property.slug}`} className="block">
         {/* Image with carousel */}
         <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
           {property.images.map((src, i) => (
