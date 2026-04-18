@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getDevelopments } from '@/lib/supabase/queries';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
@@ -32,7 +32,7 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
 
   let properties: Property[] = [];
   try {
-    const supabase = (await createServiceRoleClient()) || (await createServerSupabaseClient());
+    const supabase = await createServerSupabaseClient();
     if (supabase) {
       const { data } = await getDevelopments(supabase, { limit: 100, orderBy: 'newest' });
       if (data) {
