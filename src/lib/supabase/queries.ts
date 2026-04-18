@@ -25,12 +25,15 @@ export interface DevelopmentFilters {
   orderBy?: 'price_asc' | 'price_desc' | 'newest' | 'roi' | 'units';
 }
 
+const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
+
 export async function getDevelopments(client: Client, filters: DevelopmentFilters = {}) {
-  let query = client
-    .from('developments')
-    .select('*, developers(name, logo_url, verified, slug)', { count: 'exact' })
-    .eq('published', true)
-    .is('deleted_at', null);
+  const hub = client.schema('real_estate_hub' as 'public');
+  let query = hub
+    .from('v_developments')
+    .select('*', { count: 'exact' })
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES);
 
   if (filters.city) query = query.eq('city', filters.city);
   if (filters.zone) query = query.eq('zone', filters.zone);
@@ -44,7 +47,7 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   if (filters.featured) query = query.eq('featured', true);
 
   if (filters.search) {
-    query = query.textSearch('fts', filters.search, { type: 'websearch', config: 'spanish' });
+    query = query.or(`name.ilike.*${filters.search}*,city.ilike.*${filters.search}*,zone.ilike.*${filters.search}*`);
   }
 
   switch (filters.orderBy) {
@@ -75,30 +78,27 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
 
 export async function getDevelopmentBySlug(client: Client, slug: string) {
   return client
-    .from('developments')
-    .select('*, developers(name, logo_url, verified, slug)')
+    .schema('real_estate_hub' as 'public')
+    .from('v_developments')
+    .select('*')
     .eq('slug', slug)
-    .is('deleted_at', null)
     .single();
 }
 
 export async function getDevelopmentWithUnits(client: Client, slug: string) {
-  // Get development
-  const { data: dev, error: devError } = await client
-    .from('developments')
-    .select('*, developers(name, logo_url, verified, slug)')
+  const hub = client.schema('real_estate_hub' as 'public');
+  const { data: dev, error: devError } = await hub
+    .from('v_developments')
+    .select('*')
     .eq('slug', slug)
-    .is('deleted_at', null)
     .single();
 
   if (devError || !dev) return { data: null, error: devError };
 
-  // Get its units
-  const { data: units, error: unitsError } = await client
-    .from('units')
+  const { data: units, error: unitsError } = await hub
+    .from('v_units')
     .select('*')
-    .eq('development_id', dev.id)
-    .is('deleted_at', null)
+    .eq('development_id', (dev as { id: string }).id)
     .order('unit_number', { ascending: true });
 
   return {
@@ -109,10 +109,11 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
 
 export async function getSimilarDevelopments(client: Client, dev: { id: string; city: string; stage: string }, limit = 4) {
   return client
-    .from('developments')
-    .select('*, developers(name, logo_url)')
-    .eq('published', true)
-    .is('deleted_at', null)
+    .schema('real_estate_hub' as 'public')
+    .from('v_developments')
+    .select('*')
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .neq('id', dev.id)
     .or(`city.eq.${dev.city},stage.eq.${dev.stage}`)
     .limit(limit);
@@ -122,7 +123,6 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
   // Data vive en schema real_estate_hub (view v_developments), matching WP sync.
   // Filter schema matches WP sync-manager.php (approved_at + zoho_pipeline_status).
   const hub = client.schema('real_estate_hub' as 'public');
-  const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
 
   const featured = await hub
     .from('v_developments')
@@ -150,26 +150,27 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
 
 export async function getDevelopmentsByCity(client: Client, city: string) {
   return client
-    .from('developments')
-    .select('*, developers(name, logo_url)', { count: 'exact' })
-    .eq('published', true)
+    .schema('real_estate_hub' as 'public')
+    .from('v_developments')
+    .select('*', { count: 'exact' })
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .eq('city', city)
-    .is('deleted_at', null)
     .order('created_at', { ascending: false });
 }
 
 export async function getCityCounts(client: Client) {
   // Returns count of developments per city
   return client
-    .from('developments')
+    .schema('real_estate_hub' as 'public')
+    .from('v_developments')
     .select('city', { count: 'exact', head: false })
-    .eq('published', true)
-    .is('deleted_at', null);
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES);
 }
 
 export async function getGlobalStats(client: Client) {
   const hub = client.schema('real_estate_hub' as 'public');
-  const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
   const [devsRes, unitsRes] = await Promise.all([
     hub
       .from('v_developments')
