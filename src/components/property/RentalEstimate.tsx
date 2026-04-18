@@ -1,4 +1,4 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getRentalEstimates, getAirdnaMarketSummary } from '@/lib/supabase/queries';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
@@ -196,7 +196,7 @@ export default async function RentalEstimate({
   let airdnaSummary: AirdnaMarketSummary | null = null;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     if (!supabase) return null;
 
     const airdnaMarket = CITY_TO_AIRDNA[city] || '';

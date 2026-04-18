@@ -497,7 +497,7 @@ export default async function DesarrolloDetailPage({ params }: { params: Promise
             )}
 
             {/* Unit Models Table */}
-            <UnitModelsTable units={units} mlEstimates={mlEstimates} />
+            <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
 
             {/* Amenities */}
             {property.amenities?.length > 0 && (

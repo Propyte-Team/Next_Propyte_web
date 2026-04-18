@@ -1,4 +1,4 @@
-import { getTranslations, getLocale } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 
 interface Unit {
@@ -27,6 +27,7 @@ interface MlEstimate {
 interface UnitModelsTableProps {
   units: Unit[];
   mlEstimates: MlEstimate[];
+  locale: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -43,13 +44,12 @@ function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null 
   return match?.estimated_rent_residencial || match?.estimated_rent_vacacional || null;
 }
 
-export default async function UnitModelsTable({ units, mlEstimates }: UnitModelsTableProps) {
+export default async function UnitModelsTable({ units, mlEstimates, locale }: UnitModelsTableProps) {
   if (units.length === 0) return null;
 
-  const locale = await getLocale();
-  const t = await getTranslations('unitModels');
-  const tAvail = await getTranslations('availability');
-  const tTypes = await getTranslations('types');
+  const t = await getTranslations({ locale, namespace: 'unitModels' });
+  const tAvail = await getTranslations({ locale, namespace: 'availability' });
+  const tTypes = await getTranslations({ locale, namespace: 'types' });
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
 
   // Type label lookup with short-form fallback for departamento
