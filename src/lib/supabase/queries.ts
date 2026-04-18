@@ -119,23 +119,24 @@ export async function getSimilarDevelopments(client: Client, dev: { id: string; 
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
-  const featured = await client
-    .from('developments')
-    .select('*, developers(name, logo_url)')
+  // Data vive en schema real_estate_hub (view v_developments), matching WP sync
+  const hub = client.schema('real_estate_hub' as 'public');
+
+  const featured = await hub
+    .from('v_developments')
+    .select('*')
     .eq('published', true)
     .eq('featured', true)
-    .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(limit);
 
   // Fallback (calca WP featured-properties.php): si no hay featured,
   // mostrar los más recientes publicados para no dejar la grid vacía.
   if (!featured.data || featured.data.length === 0) {
-    return client
-      .from('developments')
-      .select('*, developers(name, logo_url)')
+    return hub
+      .from('v_developments')
+      .select('*')
       .eq('published', true)
-      .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .limit(limit);
   }
@@ -163,17 +164,16 @@ export async function getCityCounts(client: Client) {
 }
 
 export async function getGlobalStats(client: Client) {
+  const hub = client.schema('real_estate_hub' as 'public');
   const [devsRes, unitsRes] = await Promise.all([
-    client
-      .from('developments')
+    hub
+      .from('v_developments')
       .select('id, city, zone, property_types', { count: 'exact' })
-      .eq('published', true)
-      .is('deleted_at', null),
-    client
-      .from('units')
+      .eq('published', true),
+    hub
+      .from('v_units')
       .select('id', { count: 'exact', head: true })
-      .eq('published', true)
-      .is('deleted_at', null),
+      .eq('published', true),
   ]);
 
   const devs = devsRes.data || [];
@@ -266,8 +266,9 @@ export async function updateContactStatus(client: Client, id: string, status: st
 
 export async function getDevelopers(client: Client) {
   return client
-    .from('developers')
-    .select('*, developments(count)')
+    .schema('real_estate_hub' as 'public')
+    .from('v_developers')
+    .select('*')
     .order('name');
 }
 
