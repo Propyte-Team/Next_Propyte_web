@@ -1,0 +1,92 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+Thumbs.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ===========================================
+# SECURITY — env files — NEVER commit secrets
+# ===========================================
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+.env*.local
+# .env.example is safe to commit (template only)
+!.env.example
+
+# ===========================================
+# SECURITY — keys, certs, credentials
+# ===========================================
+*.pem
+*.key
+*.p12
+*.pfx
+*.cert
+*.csr
+credentials.json
+service-account.json
+serviceAccountKey.json
+*.keystore
+.ssh/
+.aws/
+
+# ===========================================
+# SECURITY — secrets & tokens
+# ===========================================
+# Common secret file patterns
+secrets.json
+secrets.yaml
+secrets.yml
+**/secrets/
+token.json
+oauth2.json
+
+# vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS
+Desktop.ini
+ehthumbs.db
