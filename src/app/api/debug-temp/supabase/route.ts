@@ -8,33 +8,42 @@ export async function GET() {
 
   const hub = supabase.schema('real_estate_hub' as 'public');
 
-  const [devs, units, devsWithFilter, unitsWithFilter, devCol, unitCol] = await Promise.all([
-    hub.from('v_developments').select('id', { count: 'exact', head: true }),
-    hub.from('v_units').select('id', { count: 'exact', head: true }),
-    hub
-      .from('v_developments')
-      .select('id', { count: 'exact', head: true })
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', ['aprobado', 'Aprobado', 'listo', 'Listo']),
-    hub
-      .from('v_units')
-      .select('id', { count: 'exact', head: true })
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', ['aprobado', 'Aprobado', 'listo', 'Listo']),
-    hub.from('v_developments').select('*').limit(1),
-    hub.from('v_units').select('*').limit(1),
-  ]);
+  const devs = await hub
+    .from('v_developments')
+    .select('id, name, zone, city, property_types, available_units, total_units')
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', ['aprobado', 'Aprobado', 'listo', 'Listo']);
+
+  const data = (devs.data || []) as Array<Record<string, unknown>>;
+  const zonesSet = new Set(data.map((d) => d.zone as string).filter(Boolean));
+  const citiesSet = new Set(data.map((d) => d.city as string).filter(Boolean));
+  const typeCounts: Record<string, number> = {};
+  let totalAvailable = 0;
+  let totalUnits = 0;
+  for (const d of data) {
+    if (d.property_types && Array.isArray(d.property_types)) {
+      for (const t of d.property_types) typeCounts[t] = (typeCounts[t] || 0) + 1;
+    }
+    if (typeof d.available_units === 'number') totalAvailable += d.available_units;
+    if (typeof d.total_units === 'number') totalUnits += d.total_units;
+  }
 
   return NextResponse.json({
-    counts_raw: { devs: devs.count, units: units.count },
-    counts_filtered: { devs: devsWithFilter.count, units: unitsWithFilter.count },
-    devErr: devs.error?.message,
-    unitErr: units.error?.message,
-    devFiltErr: devsWithFilter.error?.message,
-    unitFiltErr: unitsWithFilter.error?.message,
-    dev_sample_keys: devCol.data?.[0] ? Object.keys(devCol.data[0]) : [],
-    unit_sample_keys: unitCol.data?.[0] ? Object.keys(unitCol.data[0]) : [],
-    dev_sample_status: devCol.data?.[0] ? { approved_at: (devCol.data[0] as any).approved_at, zoho: (devCol.data[0] as any).zoho_pipeline_status } : null,
-    unit_sample_status: unitCol.data?.[0] ? { approved_at: (unitCol.data[0] as any).approved_at, zoho: (unitCol.data[0] as any).zoho_pipeline_status } : null,
+    total: data.length,
+    zonesCount: zonesSet.size,
+    zones: [...zonesSet].slice(0, 10),
+    citiesCount: citiesSet.size,
+    cities: [...citiesSet],
+    typeCounts,
+    totalAvailableUnits: totalAvailable,
+    totalUnits,
+    sample: data.slice(0, 3).map((d) => ({
+      name: d.name,
+      zone: d.zone,
+      city: d.city,
+      types: d.property_types,
+      available: d.available_units,
+      total: d.total_units,
+    })),
   });
 }
