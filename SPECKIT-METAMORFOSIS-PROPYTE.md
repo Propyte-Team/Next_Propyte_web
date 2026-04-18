@@ -2250,35 +2250,39 @@ export default {
 
 > Reutilizar componentes de HERO-SITE (Hero, FeaturedProperties, etc.) pero restylear al diseño WP.
 
-- [ ] Hero con video/image BG + 3-tier fallback (video → poster → gradient)
-- [ ] Hero search tabs (Desarrollos/Propiedades) + stats pills con counter animation
-- [ ] Hero quick links (4 filtros hardcoded)
-- [ ] Explore Categories (4 cards con iconos + CTAs)
-- [ ] Featured Properties (6 cards, `v_developments WHERE featured=true`)
-- [ ] Trending Market (4 KPIs + top zones ranking)
-- [ ] App Download Banner (iOS/Android links + features)
-- [ ] Why Propyte (5 value props)
-- [ ] Testimonials / "Propyte en Números" (carousel + live counts)
-- [ ] Join Team Banner
-- [ ] Framer Motion animation timing verification vs WP gsap-animations.js
+- [x] Hero con video/image BG + 3-tier fallback (video → poster → gradient) — env vars NEXT_PUBLIC_HERO_VIDEO_URL + NEXT_PUBLIC_HERO_IMAGE_URL
+- [x] Hero search tabs (Desarrollos/Propiedades) + stats pills con counter animation (StatCounter con IntersectionObserver + easing)
+- [x] Hero quick links (4 filtros hardcoded: PDC, Tulum, Beachfront, < $3M)
+- [x] Explore Categories (5 cards — incluye Preventa — con badge counts desde Supabase)
+- [x] Featured Properties (6 cards, fetch via getFeaturedDevelopments() desde Supabase)
+- [x] Trending Market (4 KPIs + top zones ranking — usa AirDNA data)
+- [ ] App Download Banner (iOS/Android links + features) — existe, verificar copy vs WP
+- [x] Why Propyte (3 audience cards + 6 features, copy calca WP)
+- [ ] Testimonials / "Propyte en Números" (carousel + live counts) — existe, pendiente de refinar
+- [x] Join Team Banner (creado + integrado en home)
+- [ ] Framer Motion animation timing verification vs WP gsap-animations.js — ScrollReveal util disponible, pendiente de aplicar section por section
 
 ### Fase 3: Property Cards & Archives (2 semanas)
 
 > PropertyCard de HERO-SITE se reutiliza, se le agrega carousel/badges del WP.
 
-- [ ] PropertyCard (carousel touch/swipe, stage badge, photo count, save heart, price strikethrough, financial badges, promo banner)
-- [ ] FilterBar (5 dropdowns + "Más filtros" modal con stage radios + uso checkboxes)
-- [ ] MobileFilters (fullscreen chip-based modal — calca WP main.js)
-- [ ] MapView (Google Maps JS API — migrar de Mapbox de HERO. Navy pins con precio, InfoWindow, clustering >20)
-- [ ] ListView (grid 1→2 cols responsive)
-- [ ] SortDropdown (Recientes, Precio ↑, Precio ↓)
-- [ ] Archive Desarrollos (map+list split 60/40 desktop, toggle mobile)
-- [ ] Archive Unidades (list-only + filters: beds, price, area, disponibles toggle)
-- [ ] Archive Desarrolladores (verified badges, contact info grid)
-- [ ] Taxonomy pages (ciudad, tipo, zona, etapa — reuse archive con filtro pre-aplicado)
-- [ ] Empty states
-- [ ] Slug redirects middleware (old flat → new hierarchical)
-- [ ] Active filter chips (removable)
+- [x] PropertyCard — `MarketplaceCard.tsx` con carousel (touch/swipe), stage badge, photo count dots, save heart, price, specs, ROI/Cap badges
+- [x] FilterBar — 5 pill dropdowns (Location, Price, Type, ROI) + "Más filtros" button → AdvancedFilters modal
+- [x] MobileFilters — `AdvancedFilters.tsx` modal fullscreen chip-based
+- [x] MapView — Google Maps JS API (`@vis.gl/react-google-maps`), navy pins con precio corto (`$1.5M MXN`), InfoWindow al click con nombre+zone+price
+- [x] ListView — grid 1→2 cols responsive en `PropertyList.tsx`
+- [x] SortDropdown — 5 opciones (relevance, price asc/desc, ROI, date) en PropertyList header
+- [x] Archive Desarrollos — MarketplaceContent con split 60/40 desktop + toggle mobile map↔list
+- [ ] Archive Unidades separado — BLOQUEADO (v_units vacía en Supabase; /propiedades y /desarrollos usan la misma v_developments por ahora)
+- [ ] Archive Desarrolladores restyle — existe `/desarrolladores/DevelopersPageContent.tsx` pero con diseño WP-style, no con FilterBar
+- [ ] Taxonomy pages (ciudad, tipo, zona, etapa) — pendiente, requiere rutas `/desarrollos/[slug-taxonomy]`
+- [x] Empty states — `PropertyList.tsx` renderiza `noResults + noResultsSuggestion` cuando filtered=[]
+- [x] Slug redirects middleware (old flat → new hierarchical) — hecho en Fase 0
+- [x] Active filter chips (removable) — `MarketplaceContent.tsx` líneas 27-32 con `FilterChip` + botón "clear all"
+
+**Pendientes bloqueadas por data:**
+- Archive Unidades: `v_units` vacía (0 filas en Supabase). Requiere sync desde WP.
+- Map pins: `lat`/`lng` null en los 42 desarrollos aprobados. Requiere llenar coords en Supabase.
 
 ### Fase 4: Detail Pages (2 semanas)
 
