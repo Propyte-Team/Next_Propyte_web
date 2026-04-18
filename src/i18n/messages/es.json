@@ -91,6 +91,22 @@
     "title": "¿Quieres ser parte del equipo Propyte?",
     "cta": "Únete al Equipo"
   },
+  "roiSimulator": {
+    "eyebrow": "Simulador Financiero",
+    "title": "Calcula tu ROI en segundos",
+    "subtitle": "Simula rendimientos, calcula enganche y proyecta tu retorno de inversión con datos reales del mercado de la Riviera Maya.",
+    "ctaPrimary": "Abrir Simulador",
+    "ctaSecondary": "Ver Inteligencia de Mercado",
+    "metric1Value": "12%",
+    "metric1Label": "ROI anual vacacional",
+    "metric2Value": "35%",
+    "metric2Label": "Plusvalía promedio 3 años",
+    "metric3Value": "$200K",
+    "metric3Label": "Inversión mínima",
+    "metric4Value": "6 sem",
+    "metric4Label": "Tiempo promedio de cierre",
+    "footnote": "Datos promedio del portafolio activo"
+  },
   "appBanner": {
     "title": "Explora propiedades disponibles",
     "subtitle": "Departamentos, penthouses y terrenos en preventa en Playa del Carmen y Tulum. Habla con un asesor para recibir un análisis personalizado.",

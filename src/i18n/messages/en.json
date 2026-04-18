@@ -91,6 +91,22 @@
     "title": "Want to join the Propyte team?",
     "cta": "Join the Team"
   },
+  "roiSimulator": {
+    "eyebrow": "Financial Simulator",
+    "title": "Calculate your ROI in seconds",
+    "subtitle": "Simulate returns, calculate down payments and project your investment ROI with real Riviera Maya market data.",
+    "ctaPrimary": "Open Simulator",
+    "ctaSecondary": "View Market Intelligence",
+    "metric1Value": "12%",
+    "metric1Label": "Annual vacation ROI",
+    "metric2Value": "35%",
+    "metric2Label": "3-year avg appreciation",
+    "metric3Value": "$200K",
+    "metric3Label": "Minimum investment",
+    "metric4Value": "6 wks",
+    "metric4Label": "Avg time to close",
+    "footnote": "Portfolio average from active listings"
+  },
   "appBanner": {
     "title": "Explore available properties",
     "subtitle": "Apartments, penthouses and land in pre-sale in Playa del Carmen and Tulum. Talk to an advisor for a personalized analysis.",

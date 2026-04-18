@@ -14,6 +14,7 @@ import AppDownloadBanner from '@/components/home/AppDownloadBanner';
 import JoinTeamBanner from '@/components/home/JoinTeamBanner';
 import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import ScrollReveal from '@/components/shared/ScrollReveal';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -57,16 +58,38 @@ export default async function HomePage() {
     <>
       <SchemaMarkup type="organization" />
       <Hero stats={stats} />
-      <ExploreCategories typeCounts={stats.typeCounts} />
-      <FeaturedProperties developments={featured} />
-      <Testimonials />
-      <TrendingMarket />
-      <WhyPropyte />
-      <JoinTeamBanner />
-      <DeveloperBanner />
-      {developers.length > 0 && <DeveloperLogos developers={developers} />}
-      <LeadMagnet />
-      <AppDownloadBanner />
+      <ScrollReveal>
+        <ExploreCategories typeCounts={stats.typeCounts} />
+      </ScrollReveal>
+      <ScrollReveal delay={0.05}>
+        <FeaturedProperties developments={featured} />
+      </ScrollReveal>
+      <ScrollReveal>
+        <Testimonials />
+      </ScrollReveal>
+      <ScrollReveal delay={0.05}>
+        <TrendingMarket />
+      </ScrollReveal>
+      <ScrollReveal>
+        <WhyPropyte />
+      </ScrollReveal>
+      <ScrollReveal delay={0.05}>
+        <JoinTeamBanner />
+      </ScrollReveal>
+      <ScrollReveal>
+        <DeveloperBanner />
+      </ScrollReveal>
+      {developers.length > 0 && (
+        <ScrollReveal delay={0.05}>
+          <DeveloperLogos developers={developers} />
+        </ScrollReveal>
+      )}
+      <ScrollReveal>
+        <LeadMagnet />
+      </ScrollReveal>
+      <ScrollReveal delay={0.05}>
+        <AppDownloadBanner />
+      </ScrollReveal>
       {/* TODO: Habilitar cuando haya articulos reales — fase de contenido */}
       {/* <RecentBlog /> */}
     </>
