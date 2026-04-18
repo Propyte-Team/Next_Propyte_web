@@ -1,7 +1,9 @@
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { getDevelopments } from '@/lib/supabase/queries';
+import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import MarketplaceContent from './MarketplaceContent';
+import type { Property } from '@/types/property';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -21,15 +23,17 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function MarketplacePage() {
-  let properties: any[] = [];
+  let properties: Property[] = [];
   try {
-    const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
+    const supabase = (await createServiceRoleClient()) || (await createServerSupabaseClient());
     if (supabase) {
-      const { data } = await getDevelopments(supabase, {});
-      if (data) properties = data;
+      const { data } = await getDevelopments(supabase, { limit: 100 });
+      if (data) {
+        properties = (data as DevelopmentRow[]).map(mapDevelopmentToProperty);
+      }
     }
-  } catch {
-    // Supabase unavailable
+  } catch (error) {
+    console.error('[MarketplacePage] getDevelopments failed:', error);
   }
 
   return <MarketplaceContent properties={properties} />;

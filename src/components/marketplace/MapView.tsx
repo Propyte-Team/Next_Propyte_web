@@ -1,22 +1,13 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import { formatPriceShort } from '@/lib/formatters';
-
-interface MapProperty {
-  id: string;
-  slug: string;
-  name: string;
-  lat?: number;
-  lng?: number;
-  price_mxn?: number;
-  price_min_mxn?: number;
-}
+import type { Property } from '@/types/property';
 
 interface MapViewProps {
-  properties: MapProperty[];
-  onPropertyClick?: (property: MapProperty) => void;
+  properties: Property[];
+  onPropertyClick?: (property: Property) => void;
 }
 
 const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
@@ -24,9 +15,11 @@ const DEFAULT_ZOOM = 9;
 
 export default function MapView({ properties, onPropertyClick }: MapViewProps) {
   const [error, setError] = useState(false);
+  const [selected, setSelected] = useState<Property | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const handleMarkerClick = useCallback((property: MapProperty) => {
+  const handleMarkerClick = useCallback((property: Property) => {
+    setSelected(property);
     if (onPropertyClick) onPropertyClick(property);
   }, [onPropertyClick]);
 
@@ -58,7 +51,7 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
     );
   }
 
-  const validProperties = properties.filter(p => p.lat && p.lng);
+  const validProperties = properties.filter((p) => p.location.lat && p.location.lng);
 
   return (
     <APIProvider apiKey={apiKey} onError={() => setError(true)}>
@@ -73,17 +66,35 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
         {validProperties.map((property) => (
           <AdvancedMarker
             key={property.id}
-            position={{ lat: property.lat!, lng: property.lng! }}
+            position={{ lat: property.location.lat, lng: property.location.lng }}
             onClick={() => handleMarkerClick(property)}
           >
             <div
               className="bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-colors"
               style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
             >
-              {formatPriceShort(property.price_min_mxn || property.price_mxn || 0)}
+              {formatPriceShort(property.price.mxn)}
             </div>
           </AdvancedMarker>
         ))}
+
+        {selected && selected.location.lat && selected.location.lng && (
+          <InfoWindow
+            position={{ lat: selected.location.lat, lng: selected.location.lng }}
+            onCloseClick={() => setSelected(null)}
+            pixelOffset={[0, -8]}
+          >
+            <div className="p-1 min-w-[180px]">
+              <div className="text-sm font-bold text-[#1A2F3F] mb-1 line-clamp-1">{selected.name}</div>
+              <div className="text-xs text-gray-500 mb-2">
+                {selected.location.zone}, {selected.location.city}
+              </div>
+              <div className="text-sm font-bold text-[#0D9488]">
+                {formatPriceShort(selected.price.mxn)}
+              </div>
+            </div>
+          </InfoWindow>
+        )}
       </Map>
     </APIProvider>
   );
