@@ -396,6 +396,18 @@
     "ctaButton": "Contact advisor",
     "disclaimer": "Propyte is not a regulated real estate agent. Projections shown are estimates."
   },
+  "legal": {
+    "privacyTitle": "Privacy Policy",
+    "privacyDescription": "How Propyte collects, uses and protects your personal information.",
+    "termsTitle": "Terms and Conditions",
+    "termsDescription": "Terms of use for the Propyte site and services.",
+    "cookiesTitle": "Cookie Policy",
+    "cookiesDescription": "Use of cookies and similar technologies on propyte.com.",
+    "inReview": "Under legal review",
+    "reviewBody1": "This document is being drafted and reviewed by our legal team to comply with current Mexican regulations and international best practices for data protection.",
+    "reviewBody2": "In the meantime, if you have questions about how we handle your information or the terms under which you use this site, contact us directly and we'll reply promptly.",
+    "contactLegal": "Contact the team"
+  },
   "seo": {
     "homeTitle": "Real Estate in Playa del Carmen & Tulum | Riviera Maya",
     "homeDescription": "Find apartments, penthouses and land in Playa del Carmen and Tulum. Real estate marketplace with data analysis, financial simulator and professional advisory.",

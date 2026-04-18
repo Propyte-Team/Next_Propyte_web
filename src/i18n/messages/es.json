@@ -396,6 +396,18 @@
     "ctaButton": "Contactar asesor",
     "disclaimer": "Propyte no es un agente inmobiliario regulado. Las proyecciones mostradas son estimaciones."
   },
+  "legal": {
+    "privacyTitle": "Aviso de Privacidad",
+    "privacyDescription": "Cómo Propyte recopila, usa y protege tu información personal.",
+    "termsTitle": "Términos y Condiciones",
+    "termsDescription": "Términos de uso del sitio y servicios de Propyte.",
+    "cookiesTitle": "Política de Cookies",
+    "cookiesDescription": "Uso de cookies y tecnologías similares en propyte.com.",
+    "inReview": "En revisión legal",
+    "reviewBody1": "Este documento está siendo redactado y revisado por nuestro equipo legal para cumplir con la normativa mexicana vigente y las mejores prácticas internacionales de protección de datos.",
+    "reviewBody2": "Mientras tanto, si tienes dudas sobre el tratamiento de tu información o los términos bajo los cuales usas este sitio, contáctanos directamente y te responderemos a la brevedad.",
+    "contactLegal": "Contactar al equipo"
+  },
   "seo": {
     "homeTitle": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya",
     "homeDescription": "Encuentra departamentos, penthouses y terrenos en Playa del Carmen y Tulum. Marketplace inmobiliario con análisis de datos, simulador financiero y asesoría profesional.",

@@ -85,9 +85,9 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{locale === 'es' ? 'Legal' : 'Legal'}</h4>
             <ul className="space-y-2.5">
-              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{t('privacy')}</span></li>
-              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{t('terms')}</span></li>
-              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{locale === 'es' ? 'Cookies' : 'Cookies'}</span></li>
+              <li><Link href={`/${locale}/privacidad`} className="text-sm text-white/50 hover:text-white transition-colors">{t('privacy')}</Link></li>
+              <li><Link href={`/${locale}/terminos`} className="text-sm text-white/50 hover:text-white transition-colors">{t('terms')}</Link></li>
+              <li><Link href={`/${locale}/cookies`} className="text-sm text-white/50 hover:text-white transition-colors">{locale === 'es' ? 'Cookies' : 'Cookies'}</Link></li>
             </ul>
           </div>
 

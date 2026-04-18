@@ -13,6 +13,7 @@ const config: Config = {
           teal: '#5CE0D2',
           'teal-dark': '#4BCEC0',
           'teal-a11y': '#0D9488',
+          'aqua-bright': '#99FFFF',
           navy: '#1A2F3F',
           aztec: '#0F1923',
           'deep-onyx': '#1A1A2E',
@@ -22,7 +23,9 @@ const config: Config = {
         },
         // Shorthand aliases
         navy: '#1A2F3F',
-        teal: { DEFAULT: '#5CE0D2', dark: '#4BCEC0' },
+        aztec: '#0F1923',
+        teal: { DEFAULT: '#5CE0D2', dark: '#4BCEC0', a11y: '#0D9488' },
+        'aqua-bright': '#99FFFF',
         amber: '#F5A623',
         graphite: '#2C2C2C',
         'gray-light': '#F4F6F8',
@@ -58,8 +61,9 @@ const config: Config = {
         'pin': '4px',
       },
       boxShadow: {
-        'card': '0 2px 8px rgba(0,0,0,0.08)',
-        'card-hover': '0 4px 16px rgba(0,0,0,0.12)',
+        // Calca WP — 2-layer shadows
+        'card': '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
+        'card-hover': '0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05)',
         'pin': '0 2px 6px rgba(0,0,0,0.2)',
       },
     },

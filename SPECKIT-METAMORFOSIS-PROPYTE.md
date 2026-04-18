@@ -33,6 +33,9 @@ El repositorio `HERO-SITE-ZILLOW-/` es un proyecto Next.js 16 con ~87 componente
 - Data mock (`src/data/properties.ts`, `src/data/desarrollos.ts`) → no se necesita
 - Framer Motion permanece como librería de animaciones (ya incluida en HERO-SITE)
 
+**Excepción de diseño — se conserva el look de HERO-SITE:**
+- **Página de Reclutamiento (`/reclutamiento`)** — Decisión Luis, 2026-04-18: La versión de HERO-SITE es superior a la de WP (hero dark + grid de beneficios + CTA de aplicación). Es la ÚNICA página del sitio que mantiene su diseño original de HERO-SITE. Todas las demás páginas siguen WP canónico sin excepción.
+
 **Se construye nuevo (no existe en ninguno):**
 - Blog completo (listing + detail + categories) con AI generator en hub
 - Share/Download modal (PDF + redes sociales)
@@ -2301,7 +2304,7 @@ export default {
 - [ ] Promociones (offers grid)
 - [ ] Brokers (agent cards, contact links)
 - [ ] Proveedores (form: empresa, tipo, ciudad, sitio_web)
-- [ ] Reclutamiento (job listings)
+- [ ] Reclutamiento (job listings) — **EXCEPCIÓN DE DISEÑO:** Esta es la única página que conserva el diseño de HERO-SITE-ZILLOW en lugar del canónico WP. Decisión (2026-04-18, Luis): La versión de HERO-SITE es superior (hero con fondo dark, grid de beneficios, CTA de aplicación). Todas las demás páginas siguen WP canónico.
 - [ ] Privacidad / Términos
 
 ### Fase 6: Built Portfolio (1 semana)
