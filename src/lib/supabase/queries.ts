@@ -4,6 +4,15 @@ import { RENT_BOUNDS, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
 
+/**
+ * Schema helpers — tables live in different Postgres schemas in Propyte Supabase.
+ * All three must be added to PostgREST → Exposed Schemas in Supabase dashboard
+ * or queries will fail with PGRST002.
+ */
+const hub = (c: Client) => c.schema('real_estate_hub' as 'public');
+const inv = (c: Client) => c.schema('investment_analytics' as 'public');
+const crm = (c: Client) => c.schema('propyte_crm' as 'public');
+
 // ============================================================
 // DEVELOPMENT QUERIES (replaces old property queries)
 // ============================================================
@@ -209,7 +218,7 @@ export async function getGlobalStats(client: Client) {
 
 export async function getBatchFinancials(client: Client, developmentIds: string[]) {
   if (developmentIds.length === 0) return [];
-  const { data } = await client
+  const { data } = await inv(client)
     .from('development_financials')
     .select('development_id, cap_rate, estimated_rent_residencial, roi_annual_pct')
     .in('development_id', developmentIds);
@@ -230,7 +239,7 @@ export async function getUnitBySlug(client: Client, slug: string) {
 }
 
 export async function getAvailableUnits(client: Client, developmentId: string) {
-  return client
+  return crm(client)
     .from('units')
     .select('*')
     .eq('development_id', developmentId)
@@ -244,11 +253,11 @@ export async function getAvailableUnits(client: Client, developmentId: string) {
 // ============================================================
 
 export async function createContact(client: Client, data: Record<string, unknown>) {
-  return client.from('contacts').insert(data).select().single();
+  return crm(client).from('contacts').insert(data).select().single();
 }
 
 export async function getContacts(client: Client, filters: { status?: string; temperature?: string; limit?: number; offset?: number } = {}) {
-  let query = client
+  let query = crm(client)
     .from('contacts')
     .select('*, developments:source_development_id(name, slug, city)', { count: 'exact' })
     .is('deleted_at', null)
@@ -265,7 +274,7 @@ export async function getContacts(client: Client, filters: { status?: string; te
 }
 
 export async function updateContactStatus(client: Client, id: string, status: string) {
-  return client.from('contacts').update({ status }).eq('id', id);
+  return crm(client).from('contacts').update({ status }).eq('id', id);
 }
 
 // ============================================================
@@ -437,7 +446,7 @@ export async function getRentalEstimate(
   const RENT_PER_M2_MAX = 2000;
 
   for (const attempt of attempts) {
-    let query = client
+    let query = inv(client)
       .from('rental_comparables')
       .select('monthly_rent_mxn, area_m2, bedrooms, zone')
       .eq('active', true)
@@ -540,7 +549,7 @@ export async function getRentalEstimates(
 // ============================================================
 
 export async function getDevelopmentFinancials(client: Client, developmentId: string) {
-  const { data, error } = await client
+  const { data, error } = await inv(client)
     .from('development_financials')
     .select('*')
     .eq('development_id', developmentId)
@@ -551,7 +560,7 @@ export async function getDevelopmentFinancials(client: Client, developmentId: st
 }
 
 export async function getMlRentalEstimates(client: Client, developmentId: string) {
-  const { data } = await client
+  const { data } = await inv(client)
     .from('rental_ml_estimates')
     .select('*')
     .eq('development_id', developmentId)
@@ -566,7 +575,7 @@ export async function getMlRentalEstimateForUnit(
   unitType: string,
   bedrooms: number,
 ) {
-  const { data } = await client
+  const { data } = await inv(client)
     .from('rental_ml_estimates')
     .select('*')
     .eq('development_id', developmentId)
@@ -609,31 +618,31 @@ export async function getAirdnaMarketSummary(
   // Fetch latest data points in parallel
   const [occResult, adrResult, adrBedsResult, listingsResult, tiersResult] = await Promise.all([
     // Occupancy trend (last 12 unique dates, market-level)
-    client.from('airdna_metrics')
+    inv(client).from('airdna_metrics')
       .select('metric_date, metric_value')
       .eq('market', market).eq('section', 'occupancy').eq('chart', 'chart_1').eq('metric_name', 'occupancy')
       .is('submarket', null)
       .order('metric_date', { ascending: false }).limit(12),
     // ADR overall
-    client.from('airdna_metrics')
+    inv(client).from('airdna_metrics')
       .select('metric_value, metric_date')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_1').eq('metric_name', 'daily_rate')
       .is('submarket', null)
       .order('metric_date', { ascending: false }).limit(1),
     // ADR by bedrooms (latest)
-    client.from('airdna_metrics')
+    inv(client).from('airdna_metrics')
       .select('metric_name, metric_value, metric_date')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_2')
       .is('submarket', null)
       .order('metric_date', { ascending: false }).limit(12),
     // Listings by bedrooms (latest)
-    client.from('airdna_metrics')
+    inv(client).from('airdna_metrics')
       .select('metric_name, metric_value, metric_date')
       .eq('market', market).eq('section', 'listings').eq('chart', 'chart_1')
       .is('submarket', null)
       .order('metric_date', { ascending: false }).limit(6),
     // Rate tiers (latest)
-    client.from('airdna_metrics')
+    inv(client).from('airdna_metrics')
       .select('metric_name, metric_value')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_3')
       .is('submarket', null)
@@ -701,7 +710,7 @@ async function fetchSubmarketZones(
   market: string,
 ): Promise<AirdnaZoneSummary[]> {
   // Get latest occupancy and ADR per submarket
-  const { data } = await client
+  const { data } = await inv(client)
     .from('airdna_metrics')
     .select('submarket, section, chart, metric_name, metric_value, metric_date')
     .eq('market', market)
@@ -740,20 +749,20 @@ async function fetchSubmarketZones(
 // ============================================================
 
 export async function createDevelopment(client: Client, data: Record<string, unknown>) {
-  return client.from('developments').insert(data).select().single();
+  return crm(client).from('developments').insert(data).select().single();
 }
 
 export async function updateDevelopment(client: Client, id: string, data: Record<string, unknown>) {
-  return client.from('developments').update(data).eq('id', id).select().single();
+  return crm(client).from('developments').update(data).eq('id', id).select().single();
 }
 
 export async function deleteDevelopment(client: Client, id: string) {
   // Soft delete
-  return client.from('developments').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+  return crm(client).from('developments').update({ deleted_at: new Date().toISOString() }).eq('id', id);
 }
 
 export async function bulkInsertDevelopments(client: Client, developments: Record<string, unknown>[]) {
-  return client.from('developments').insert(developments).select();
+  return crm(client).from('developments').insert(developments).select();
 }
 
 // ============================================================
@@ -761,15 +770,15 @@ export async function bulkInsertDevelopments(client: Client, developments: Recor
 // ============================================================
 
 export async function createUnit(client: Client, data: Record<string, unknown>) {
-  return client.from('units').insert(data).select().single();
+  return crm(client).from('units').insert(data).select().single();
 }
 
 export async function updateUnit(client: Client, id: string, data: Record<string, unknown>) {
-  return client.from('units').update(data).eq('id', id).select().single();
+  return crm(client).from('units').update(data).eq('id', id).select().single();
 }
 
 export async function bulkInsertUnits(client: Client, units: Record<string, unknown>[]) {
-  return client.from('units').insert(units).select();
+  return crm(client).from('units').insert(units).select();
 }
 
 // ============================================================
@@ -1047,7 +1056,7 @@ export async function getOccupancyTrend(
   submarket?: string | null,
   months = 24,
 ): Promise<Array<{ date: string; value: number }>> {
-  let query = client
+  let query = inv(client)
     .from('airdna_metrics')
     .select('metric_date, metric_value')
     .eq('market', market)
@@ -1085,7 +1094,7 @@ export async function getADRTrend(
   submarket?: string | null,
   months = 24,
 ): Promise<Array<{ date: string; value: number }>> {
-  let query = client
+  let query = inv(client)
     .from('airdna_metrics')
     .select('metric_date, metric_value')
     .eq('market', market)
