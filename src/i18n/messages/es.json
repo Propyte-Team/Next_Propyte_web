@@ -409,6 +409,16 @@
     "ctaButton": "Contactar asesor",
     "disclaimer": "Propyte no es un agente inmobiliario regulado. Las proyecciones mostradas son estimaciones."
   },
+  "providers": {
+    "title": "Programa de Proveedores",
+    "description": "Estamos construyendo una red de proveedores certificados para acompañar cada etapa del proceso inmobiliario: notarios, financieras, arquitectos, diseñadores, mudanzas, legal y más.",
+    "comingSoon": "Próximamente",
+    "benefit1": "Clientes de alto valor adquisitivo — inversionistas nacionales e internacionales activamente comprando en la Riviera Maya",
+    "benefit2": "Leads pre-calificados — todos nuestros referidos pasan por filtros de necesidad y capacidad",
+    "benefit3": "Alcance internacional — plataforma bilingüe expuesta a mercado México, USA y Canadá",
+    "benefit4": "Aparición en nuestro directorio oficial con perfil, reseñas verificadas y enlace directo",
+    "ctaContact": "Registrar interés"
+  },
   "legal": {
     "privacyTitle": "Aviso de Privacidad",
     "privacyDescription": "Cómo Propyte recopila, usa y protege tu información personal.",
