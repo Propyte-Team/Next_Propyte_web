@@ -1,30 +1,37 @@
 <?php
 /**
- * IRR Golden Fixtures — WP reference for Next_Propyte_web parity tests.
+ * IRR Reference — WP legacy behavior (documentation only, NOT used as golden test).
  *
  * Ports propyteIRR() + propyteBuildCashFlows() from
- * propyte-web-master/theme/assets/js/investment-calculator.js (JS) to PHP
- * and captures outputs for 10 scenarios.
+ * propyte-web-master/theme/assets/js/investment-calculator.js (JS) to PHP.
  *
  * ────────────────────────────────────────────────────────────────────
- *  HOW TO USE
- *  1. Copy this file to propyte-web-master/scripts/ on WP prod
- *  2. From prod: `wp eval-file scripts/irr-fixtures.php > fixtures.json`
- *     (or locally: `php scripts/irr-fixtures.php > fixtures.json`)
- *  3. Send fixtures.json back to Luis / commit to Next_Propyte_web
- *  4. Vitest will consume it at tests/calculator/irr-parity.test.ts
+ *  STATUS: REFERENCE ONLY (decision 2026-04-18, Luis → option B)
+ *
+ *  Next_Propyte_web intentionally DIVERGES from WP by ~1-3 pp in IRR because
+ *  Next now models the mortgage correctly (actuarial remaining balance +
+ *  mortgage payment subtracted from annual cashflow) while WP's legacy
+ *  simulator does NOT model the mortgage at all.
+ *
+ *  Keep this file for:
+ *    - Documenting WP's historical behavior
+ *    - Measuring expected divergence when QA compares sites
+ *    - Optional future "WP parity mode" toggle
+ *
+ *  HOW TO RUN
+ *    php scripts/irr-fixtures.php > fixtures-wp-reference.json
  * ────────────────────────────────────────────────────────────────────
  *
- * IMPORTANT — WP's cashflow model (what this captures):
- *   - Initial outflow = downPayment + closingCosts
+ * WP's cashflow model (what this captures — NOT what Next does):
+ *   - Initial outflow = downPayment + closingCosts ✓ (Next matches)
  *   - Annual net = (rent × occupancy × (1 - expenseRatio)) × 12
- *     → Does NOT subtract monthly mortgage payment
+ *     → WP does NOT subtract monthly mortgage payment
+ *     → Next DOES subtract it (this is the fix)
  *   - Terminal year = annualNet + price × (1 + appreciation%)^years
- *     → Does NOT subtract remaining mortgage balance
+ *     → WP does NOT subtract remaining mortgage balance
+ *     → Next DOES subtract actuarial remaining balance (this is the fix)
  *   - IRR: Newton-Raphson, initial 0.10, tolerance 1e-7, max 100 iter,
- *     divergence guards [-0.99, 10]
- *
- * This mirrors propyteBuildCashFlows / propyteIRR exactly as shipped.
+ *     divergence guards [-0.99, 10]  ✓ (Next matches bit-for-bit)
  */
 
 // ─────────────────────────────────────────────────────────────────────

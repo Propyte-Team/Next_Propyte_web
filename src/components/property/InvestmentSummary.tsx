@@ -13,6 +13,8 @@ import {
   calculateVacGrossYield,
   calculateVacNetYield,
   calculateVacNetRent,
+  calculateMonthlyPayment,
+  calculateRemainingBalanceActuarial,
   buildCashflows,
   VAC,
   RES,
@@ -43,6 +45,13 @@ interface ComputedSet {
   irr10yr: number | null;
 }
 
+// Default financing assumptions for server-side InvestmentSummary (no user sliders here —
+// FinancialSimulator on the client exposes tunables). Keep in sync with WP defaults.
+const DEFAULT_APPRECIATION_PCT = 8;
+const DEFAULT_DOWN_PAYMENT_PCT = 30;
+const DEFAULT_INTEREST_RATE_PCT = 12;
+const DEFAULT_LOAN_MONTHS = 120;
+
 function computeMetrics(
   rent: number, price: number, totalInv: number,
   occupancy: number, expenseRatio: number,
@@ -58,29 +67,48 @@ function computeMetrics(
   const cashOnCash = calculateCashOnCash(annualNet, totalInv);
   const breakeven = calculateBreakeven(totalInv, netMonthly);
 
-  // IRR — uses shared buildCashflows helper (annualNet does NOT subtract mortgage here — cash-purchase model)
-  // NOTE: preserves legacy behavior (downPayment as initial outflow, totalInv-downPayment as "remaining")
-  // — this is tracked for audit against WP `propyteIRR()` golden tests before Fase 4 1b.
-  const appreciationPct = 8;
-  const downPct = 0.30;
-  const downPayment = totalInv * downPct;
-  const remainingBalance = totalInv - downPayment;
-  const cf5 = buildCashflows({
-    totalInvested: downPayment,
-    annualNetFlow: annualNet,
+  // IRR — actuarial model: Next's numbers diverge from WP legacy by ~1-3 pp because
+  // WP does not model the mortgage at all in its IRR. Documented in calculator.ts.
+  const downPayment = price * (DEFAULT_DOWN_PAYMENT_PCT / 100);
+  const closingCosts = totalInv - price; // totalInv = price + closingCosts
+  const totalInvestedAtStart = downPayment + closingCosts;
+  const monthlyPayment = calculateMonthlyPayment(
     price,
-    appreciationPct,
+    DEFAULT_DOWN_PAYMENT_PCT,
+    DEFAULT_LOAN_MONTHS,
+    DEFAULT_INTEREST_RATE_PCT
+  );
+  const annualNetFlow = annualNet - monthlyPayment * 12;
+
+  const cf5 = buildCashflows({
+    totalInvested: totalInvestedAtStart,
+    annualNetFlow,
+    price,
+    appreciationPct: DEFAULT_APPRECIATION_PCT,
     years: 5,
-    remainingBalance,
+    remainingBalance: calculateRemainingBalanceActuarial(
+      price,
+      DEFAULT_DOWN_PAYMENT_PCT,
+      DEFAULT_INTEREST_RATE_PCT,
+      DEFAULT_LOAN_MONTHS,
+      60
+    ),
   });
   const irr5yr = calculateIRR(cf5);
+
   const cf10 = buildCashflows({
-    totalInvested: downPayment,
-    annualNetFlow: annualNet,
+    totalInvested: totalInvestedAtStart,
+    annualNetFlow,
     price,
-    appreciationPct,
+    appreciationPct: DEFAULT_APPRECIATION_PCT,
     years: 10,
-    remainingBalance,
+    remainingBalance: calculateRemainingBalanceActuarial(
+      price,
+      DEFAULT_DOWN_PAYMENT_PCT,
+      DEFAULT_INTEREST_RATE_PCT,
+      DEFAULT_LOAN_MONTHS,
+      120
+    ),
   });
   const irr10yr = calculateIRR(cf10);
 

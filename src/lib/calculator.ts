@@ -304,16 +304,44 @@ export function buildCashflows(p: BuildCashflowsParams): number[] {
 }
 
 /**
- * Remaining mortgage balance using LINEAR amortization.
+ * Remaining mortgage balance using actuarial amortization.
  *
- * **WARNING:** This is NOT actuarially correct. True amortization uses:
  *   remaining = principal × [(1+r)^n − (1+r)^p] / [(1+r)^n − 1]
  *
- * Preserved as-is until validated against WP `propyteIRR()` golden tests.
- * If WP uses the same linear formula, this matches and we keep it.
- * If WP uses actuarial, this helper must be swapped for `calculateRemainingBalanceActuarial`.
+ * Where r = monthly rate, n = total months, p = paid months.
  *
- * TODO(luis): validate with WP golden tests before Fase 4 1b starts.
+ * This is the correct formula for a fixed-rate fully-amortizing loan.
+ * Replaces the legacy `calculateRemainingBalanceLinear` helper which
+ * overestimated remaining balance (Next had this bug until 2026-04-18).
+ *
+ * Decision (Luis, 2026-04-18): Next uses actuarial, WP legacy stays with
+ * its no-mortgage-modeling approach. Numbers will diverge from WP by
+ * ~1-3 percentage points in IRR; documented in commit message.
+ */
+export function calculateRemainingBalanceActuarial(
+  price: number,
+  downPaymentPct: number,
+  annualRatePct: number,
+  totalMonths: number,
+  paidMonths: number
+): number {
+  const principal = price * (1 - downPaymentPct / 100);
+  if (paidMonths >= totalMonths) return 0;
+  if (annualRatePct === 0) {
+    // Zero-rate loan: pure linear payoff
+    return Math.max(0, principal * (1 - paidMonths / totalMonths));
+  }
+  const r = annualRatePct / 100 / 12;
+  const factor = Math.pow(1 + r, totalMonths);
+  const paidFactor = Math.pow(1 + r, paidMonths);
+  const remaining = (principal * (factor - paidFactor)) / (factor - 1);
+  return Math.max(0, remaining);
+}
+
+/**
+ * @deprecated Use `calculateRemainingBalanceActuarial` — this linear approximation
+ * overestimates remaining balance and produces IRR drift of 1-3 pp on 5-10yr horizons.
+ * Kept temporarily for rollback comparison; remove after Fase 4 1b.
  */
 export function calculateRemainingBalanceLinear(
   price: number,

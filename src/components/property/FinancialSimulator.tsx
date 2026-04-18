@@ -18,7 +18,7 @@ import {
   calculateVacGrossYield,
   calculateVacNetYield,
   buildCashflows,
-  calculateRemainingBalanceLinear,
+  calculateRemainingBalanceActuarial,
   VAC,
   RES,
 } from '@/lib/calculator';
@@ -95,15 +95,16 @@ export default function FinancialSimulator({
     const roi5 = calculateROI(price, downPaymentPct, annualRent, appreciation, 5);
     const projectedValue = calculateProjectedValue(price, appreciation, 5);
 
-    // IRR — uses shared buildCashflows + calculateRemainingBalanceLinear helpers
+    // IRR — actuarial amortization (Next's model, diverges from WP legacy by 1-3 pp)
     const annualNetFlow = monthlyNet * 12;
+    const totalLoanMonths = months;
     const cf5 = buildCashflows({
       totalInvested,
       annualNetFlow,
       price,
       appreciationPct: appreciation,
       years: 5,
-      remainingBalance: calculateRemainingBalanceLinear(price, downPaymentPct, monthly, 60),
+      remainingBalance: calculateRemainingBalanceActuarial(price, downPaymentPct, interestRate, totalLoanMonths, 60),
     });
     const irr5 = calculateIRR(cf5);
 
@@ -113,7 +114,7 @@ export default function FinancialSimulator({
       price,
       appreciationPct: appreciation,
       years: 10,
-      remainingBalance: calculateRemainingBalanceLinear(price, downPaymentPct, monthly, 120),
+      remainingBalance: calculateRemainingBalanceActuarial(price, downPaymentPct, interestRate, totalLoanMonths, 120),
     });
     const irr10 = calculateIRR(cf10);
 
