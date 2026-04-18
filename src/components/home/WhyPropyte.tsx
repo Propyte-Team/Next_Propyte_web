@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Building2,
   Users,
+  ArrowRight,
 } from 'lucide-react';
 
 export default function WhyPropyte() {
@@ -35,6 +36,7 @@ export default function WhyPropyte() {
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         {/* Audience cards */}
+        <h2 className="sr-only">{t('audienceHeading')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
           {audience.map((aud) => {
             const Icon = aud.icon;
@@ -48,8 +50,12 @@ export default function WhyPropyte() {
                 </div>
                 <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{t(aud.titleKey)}</h3>
                 <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
-                <Link href={aud.href} className="text-[#0D9488] font-medium hover:underline">
-                  {t(aud.ctaKey)} &rarr;
+                <Link
+                  href={aud.href}
+                  className="inline-flex items-center gap-1.5 text-[#0D9488] font-medium hover:underline"
+                >
+                  {t(aud.ctaKey)}
+                  <ArrowRight size={14} strokeWidth={2} />
                 </Link>
               </div>
             );

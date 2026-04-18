@@ -51,16 +51,26 @@
   "featured": {
     "title": "Featured properties",
     "subtitle": "Handpicked by our market analysis team",
-    "viewAll": "View all properties"
+    "viewAll": "View all properties",
+    "loading": "Loading featured developments…",
+    "from": "From",
+    "photos": "photos",
+    "bedShort": "bd",
+    "bathShort": "ba",
+    "roiAnnual": "ROI {value}% annual"
   },
   "trending": {
     "title": "Real estate market data",
-    "subtitle": "Riviera Maya — updated March 2026",
+    "subtitle": "Riviera Maya — real-time",
     "stat1Label": "Average annual ROI",
     "stat2Label": "Pre-sale vs delivery appreciation",
     "stat3Label": "International buyers",
     "stat4Label": "Annual demand growth",
-    "zonesTitle": "Highest appreciation zones in Riviera Maya"
+    "zonesTitle": "Highest appreciation zones in Riviera Maya",
+    "footnoteWithData": "Data based on AirDNA analysis and rental comparables. Updated weekly.",
+    "footnoteNoData": "Sources: estimates based on Riviera Maya market analysis. Past performance does not guarantee future results.",
+    "occupancy": "Occupancy",
+    "adr": "ADR"
   },
   "whyPropyte": {
     "title": "Why Propyte?",
@@ -85,7 +95,8 @@
     "aud2Cta": "Learn More",
     "aud3Title": "For Advisors",
     "aud3Desc": "Join our commercial team and access exclusive inventory, tools and competitive commissions.",
-    "aud3Cta": "Join the Team"
+    "aud3Cta": "Join the Team",
+    "audienceHeading": "Who Propyte is for"
   },
   "joinTeam": {
     "title": "Want to join the Propyte team?",
@@ -106,6 +117,21 @@
     "metric4Value": "6 wks",
     "metric4Label": "Avg time to close",
     "footnote": "Portfolio average from active listings"
+  },
+  "testimonials": {
+    "title": "What Our Clients Say",
+    "subtitle": "Real experiences from real investors",
+    "verified": "Verified",
+    "prev": "Previous",
+    "next": "Next",
+    "items": [
+      { "name": "Carlos M.", "city": "Mexico City", "rating": 5, "text": "The financial simulator helped me compare investment options I hadn't considered. I bought pre-sale in Tulum and already have 25% appreciation." },
+      { "name": "Patricia R.", "city": "Monterrey", "rating": 5, "text": "As a foreigner, the process seemed complicated. The Propyte team explained everything about the fideicomiso and accompanied me every step. Excellent service." },
+      { "name": "Roberto L.", "city": "Guadalajara", "rating": 5, "text": "The market data is incredible. I could compare yields by zone before deciding. My apartment in Playa is already generating Airbnb income." },
+      { "name": "Ana G.", "city": "Miami, FL", "rating": 5, "text": "The platform is amazing. I found exactly what I was looking for with data I hadn't found on other portals." },
+      { "name": "Fernando T.", "city": "Querétaro", "rating": 5, "text": "I invested in two apartments thanks to the Cap Rate analysis the platform offers. AirDNA data gave me confidence to make the decision." },
+      { "name": "Laura S.", "city": "Cancún", "rating": 5, "text": "I already had experience buying properties, but Propyte opened my eyes with zone analysis. I found opportunities I didn't know existed." }
+    ]
   },
   "appBanner": {
     "title": "Explore available properties",

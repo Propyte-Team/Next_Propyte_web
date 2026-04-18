@@ -28,13 +28,13 @@ export default function TrendingMarket() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/zone-scores?city=Cancun')
+    const controller = new AbortController();
+    fetch('/api/zone-scores', { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => {
         if (data.scores && data.scores.length > 0) {
           const scores: ZoneScore[] = data.scores;
 
-          // Top 5 zones by score
           const sorted = [...scores]
             .filter((s) => s.score != null)
             .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
@@ -49,7 +49,6 @@ export default function TrendingMarket() {
             adr: s.median_adr ? `$${Math.round(s.median_adr).toLocaleString()}` : '—',
           })));
 
-          // Aggregate stats
           const validScores = scores.filter((s) => s.score != null);
           const avgScore = validScores.length > 0
             ? Math.round(validScores.reduce((sum, s) => sum + (s.score ?? 0), 0) / validScores.length)
@@ -73,7 +72,11 @@ export default function TrendingMarket() {
         }
         setLoaded(true);
       })
-      .catch(() => setLoaded(true));
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        setLoaded(true);
+      });
+    return () => controller.abort();
   }, []);
 
   const statCards = [
@@ -129,7 +132,7 @@ export default function TrendingMarket() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-white/70 text-xs hidden sm:inline">
-                    Occ: {zone.occupancy} · ADR: {zone.adr}
+                    {t('occupancy')}: {zone.occupancy} · {t('adr')}: {zone.adr}
                   </span>
                   {zone.score > 0 && (
                     <span className="text-[#22C55E] font-bold text-sm">{zone.score}/100</span>
@@ -141,9 +144,7 @@ export default function TrendingMarket() {
           </div>
         </div>
         <p className="text-xs text-gray-400 mt-6 text-center">
-          {loaded && zones.length > 0
-            ? 'Datos basados en análisis de AirDNA y comparables de renta. Actualizado semanalmente.'
-            : 'Fuentes: datos estimados basados en análisis de mercado de la Riviera Maya. Rendimientos pasados no garantizan resultados futuros.'}
+          {loaded && zones.length > 0 ? t('footnoteWithData') : t('footnoteNoData')}
         </p>
       </div>
     </section>

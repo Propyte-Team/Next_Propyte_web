@@ -26,9 +26,7 @@ export default function Hero({ stats }: HeroProps) {
   const [query, setQuery] = useState('');
 
   const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
-  const imageUrl =
-    process.env.NEXT_PUBLIC_HERO_IMAGE_URL ||
-    'https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1920&h=1080&fit=crop';
+  const imageUrl = process.env.NEXT_PUBLIC_HERO_IMAGE_URL;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();

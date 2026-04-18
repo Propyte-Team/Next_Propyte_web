@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
+import { useLocale } from 'next-intl';
 
 interface StatCounterProps {
   to: number;
@@ -18,6 +19,7 @@ export default function StatCounter({
   className = '',
   format = 'number',
 }: StatCounterProps) {
+  const locale = useLocale();
   const [value, setValue] = useState(0);
   const elementRef = useRef<HTMLSpanElement>(null);
   const animatedRef = useRef(false);
@@ -52,7 +54,8 @@ export default function StatCounter({
     return () => observer.disconnect();
   }, [to, duration, reduce]);
 
-  const formatted = format === 'number' ? value.toLocaleString('es-MX') : value.toString();
+  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
+  const formatted = format === 'number' ? value.toLocaleString(intlLocale) : value.toString();
 
   return (
     <span ref={elementRef} className={className}>

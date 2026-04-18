@@ -50,8 +50,8 @@ export default async function HomePage() {
       .filter((d: any) => d.logo_url && d.verified)
       .map((d: any) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug }));
     featured = featuredRes.data || [];
-  } catch {
-    // Supabase not available — use fallback stats
+  } catch (error) {
+    console.error('[HomePage] Supabase fetch failed, using fallback stats:', error);
   }
 
   return (

@@ -51,16 +51,26 @@
   "featured": {
     "title": "Propiedades destacadas",
     "subtitle": "Seleccionadas por nuestro equipo de análisis de mercado",
-    "viewAll": "Ver todas las propiedades"
+    "viewAll": "Ver todas las propiedades",
+    "loading": "Cargando desarrollos destacados…",
+    "from": "Desde",
+    "photos": "fotos",
+    "bedShort": "rec",
+    "bathShort": "ba",
+    "roiAnnual": "ROI {value}% anual"
   },
   "trending": {
     "title": "Datos del mercado inmobiliario",
-    "subtitle": "Riviera Maya — actualizado marzo 2026",
+    "subtitle": "Riviera Maya — actualizado en tiempo real",
     "stat1Label": "ROI promedio anual",
     "stat2Label": "Plusvalía preventa vs entrega",
     "stat3Label": "Compradores internacionales",
     "stat4Label": "Crecimiento demanda anual",
-    "zonesTitle": "Zonas con mayor plusvalía en Riviera Maya"
+    "zonesTitle": "Zonas con mayor plusvalía en Riviera Maya",
+    "footnoteWithData": "Datos basados en análisis de AirDNA y comparables de renta. Actualizado semanalmente.",
+    "footnoteNoData": "Fuentes: datos estimados basados en análisis de mercado de la Riviera Maya. Rendimientos pasados no garantizan resultados futuros.",
+    "occupancy": "Ocupación",
+    "adr": "ADR"
   },
   "whyPropyte": {
     "title": "¿Por qué Propyte?",
@@ -85,7 +95,8 @@
     "aud2Cta": "Conoce Más",
     "aud3Title": "Para Asesores",
     "aud3Desc": "Únete a nuestro equipo comercial y accede a inventario exclusivo, herramientas y comisiones competitivas.",
-    "aud3Cta": "Únete al Equipo"
+    "aud3Cta": "Únete al Equipo",
+    "audienceHeading": "Para quién es Propyte"
   },
   "joinTeam": {
     "title": "¿Quieres ser parte del equipo Propyte?",
@@ -106,6 +117,21 @@
     "metric4Value": "6 sem",
     "metric4Label": "Tiempo promedio de cierre",
     "footnote": "Datos promedio del portafolio activo"
+  },
+  "testimonials": {
+    "title": "Lo que Dicen Nuestros Clientes",
+    "subtitle": "Experiencias reales de inversionistas reales",
+    "verified": "Verificado",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "items": [
+      { "name": "Carlos M.", "city": "CDMX", "rating": 5, "text": "El simulador financiero me ayudó a comparar opciones de inversión que no había considerado. Compré en preventa en Tulum y ya tengo un 25% de plusvalía." },
+      { "name": "Patricia R.", "city": "Monterrey", "rating": 5, "text": "Como extranjera, el proceso parecía complicado. El equipo de Propyte me explicó todo sobre el fideicomiso y me acompañó en cada paso. Excelente servicio." },
+      { "name": "Roberto L.", "city": "Guadalajara", "rating": 5, "text": "Los datos de mercado son increíbles. Pude comparar rendimientos por zona antes de decidir. Mi departamento en Playa ya está generando ingresos en Airbnb." },
+      { "name": "Ana G.", "city": "Miami, FL", "rating": 5, "text": "La plataforma es increíble. Encontré exactamente lo que buscaba y con datos que no había encontrado en otros portales." },
+      { "name": "Fernando T.", "city": "Querétaro", "rating": 5, "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los datos de AirDNA me dieron confianza para tomar la decisión." },
+      { "name": "Laura S.", "city": "Cancún", "rating": 5, "text": "Ya tenía experiencia comprando propiedades, pero Propyte me abrió los ojos con el análisis de zonas. Encontré oportunidades que no conocía." }
+    ]
   },
   "appBanner": {
     "title": "Explora propiedades disponibles",

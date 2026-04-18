@@ -1,8 +1,6 @@
-'use client';
-
-import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { ArrowRight, MapPin, Bed, Bath, Maximize } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 
@@ -26,10 +24,10 @@ interface FeaturedPropertiesProps {
   developments?: FeaturedDevelopment[];
 }
 
-export default function FeaturedProperties({ developments = [] }: FeaturedPropertiesProps) {
-  const t = useTranslations('featured');
-  const tStages = useTranslations('stages');
-  const locale = useLocale();
+export default async function FeaturedProperties({ developments = [] }: FeaturedPropertiesProps) {
+  const t = await getTranslations('featured');
+  const tStages = await getTranslations('stages');
+  const locale = await getLocale();
   const items = developments.slice(0, 6);
 
   return (
@@ -49,9 +47,7 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
         </div>
 
         {items.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            {locale === 'es' ? 'Cargando desarrollos destacados...' : 'Loading featured developments...'}
-          </div>
+          <div className="text-center py-12 text-gray-400">{t('loading')}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {items.map((dev) => (
@@ -88,7 +84,7 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
                     )}
                     {dev.images && dev.images.length > 1 && (
                       <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-md backdrop-blur-sm">
-                        {dev.images.length} fotos
+                        {dev.images.length} {t('photos')}
                       </div>
                     )}
                   </div>
@@ -96,19 +92,19 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
                   <div className="p-4">
                     {dev.price_min_mxn && dev.price_min_mxn > 0 && (
                       <div className="text-xl font-bold text-[#2C2C2C] mb-1">
-                        {locale === 'es' ? 'Desde ' : 'From '}{formatPrice(dev.price_min_mxn)}
+                        {t('from')} {formatPrice(dev.price_min_mxn)}
                       </div>
                     )}
 
                     <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
                       {dev.bedrooms_min && dev.bedrooms_min > 0 && (
                         <span className="flex items-center gap-1">
-                          <Bed size={14} /> <strong>{dev.bedrooms_min}</strong> rec
+                          <Bed size={14} /> <strong>{dev.bedrooms_min}</strong> {t('bedShort')}
                         </span>
                       )}
                       {dev.bathrooms_min && dev.bathrooms_min > 0 && (
                         <span className="flex items-center gap-1">
-                          <Bath size={14} /> <strong>{dev.bathrooms_min}</strong> ba
+                          <Bath size={14} /> <strong>{dev.bathrooms_min}</strong> {t('bathShort')}
                         </span>
                       )}
                       {dev.area_min && dev.area_min > 0 && (
@@ -128,7 +124,7 @@ export default function FeaturedProperties({ developments = [] }: FeaturedProper
 
                     {dev.roi_estimated && dev.roi_estimated > 0 && (
                       <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#4BCEC0] text-xs font-bold rounded-full">
-                        ROI {dev.roi_estimated}% anual
+                        {t('roiAnnual', { value: dev.roi_estimated })}
                       </div>
                     )}
                   </div>
