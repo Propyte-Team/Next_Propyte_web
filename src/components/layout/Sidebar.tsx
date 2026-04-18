@@ -1,0 +1,147 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  Home,
+  Building2,
+  Key,
+  Globe,
+  Store,
+  Menu as MenuIcon,
+  Award,
+  Users,
+  Truck,
+  Zap,
+  Layout as LayoutIcon,
+} from 'lucide-react';
+
+type NavItem = {
+  id: string;
+  labelKey: string;
+  href: string;
+  icon: typeof Home;
+};
+
+export default function Sidebar() {
+  const locale = useLocale();
+  const t = useTranslations('nav');
+  const pathname = usePathname();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleOutside(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleOutside);
+    return () => document.removeEventListener('mousedown', handleOutside);
+  }, []);
+
+  const mainItems: NavItem[] = [
+    { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
+    { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
+    { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
+    { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
+    { id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store },
+  ];
+
+  const moreItems: NavItem[] = [
+    { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },
+    { id: 'brokers', labelKey: 'brokers', href: `/${locale}/corredores`, icon: Users },
+    { id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck },
+    { id: 'recruitment', labelKey: 'recruitment', href: `/${locale}/unete`, icon: Zap },
+    { id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon },
+  ];
+
+  function isActive(id: string, href: string): boolean {
+    const bare = pathname.replace(/^\/(es|en)/, '') || '/';
+    if (id === 'home') return bare === '/' || bare === '';
+    if (id === 'developments') return bare.startsWith('/desarrollos');
+    if (id === 'properties') return bare.startsWith('/propiedades');
+    if (id === 'nosotros') return bare.startsWith('/nosotros');
+    if (id === 'mercado') return bare.startsWith('/mercado') || bare.startsWith('/zonas');
+    return bare.startsWith(href.replace(`/${locale}`, ''));
+  }
+
+  return (
+    <aside
+      aria-label={t('openMenu')}
+      className="hidden lg:flex fixed left-0 top-0 bottom-0 w-[72px] bg-[#0F1923] flex-col items-center z-40"
+    >
+      {/* Logo top */}
+      <div className="pt-4 pb-2 flex justify-center">
+        <Link
+          href={`/${locale}`}
+          className="flex items-center justify-center w-9 h-9 rounded-lg hover:opacity-80 transition-opacity"
+          aria-label="Propyte Home"
+        >
+          <span className="text-[22px] font-black leading-none text-white">P</span>
+        </Link>
+      </div>
+
+      {/* Main nav (vertically centered) */}
+      <nav
+        className="flex-1 flex flex-col items-stretch justify-center gap-0.5 w-full px-2"
+        aria-label="Main navigation"
+      >
+        {mainItems.map((item) => {
+          const active = isActive(item.id, item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              title={t(item.labelKey)}
+              aria-current={active ? 'page' : undefined}
+              className={`group flex flex-col items-center gap-1 w-full py-2.5 rounded-xl transition-colors ${
+                active ? 'bg-white/10 text-[#5CE0D2]' : 'text-white/50 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Icon size={20} strokeWidth={1.75} />
+              <span className="text-[10px] font-medium leading-tight text-center px-1">
+                {t(item.labelKey)}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* "Más" popup */}
+      <div ref={moreRef} className="relative flex flex-col items-center pb-4">
+        <button
+          onClick={() => setMoreOpen((v) => !v)}
+          aria-expanded={moreOpen}
+          aria-haspopup="true"
+          className="flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+        >
+          <MenuIcon size={18} strokeWidth={1.75} />
+          <span className="text-[10px] font-medium">{t('more')}</span>
+        </button>
+
+        {moreOpen && (
+          <div className="absolute left-[72px] bottom-0 w-56 bg-[#0F1923] border border-white/10 rounded-xl shadow-2xl py-2 z-50">
+            {moreItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setMoreOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <Icon size={16} strokeWidth={1.75} className="shrink-0" />
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </aside>
+  );
+}

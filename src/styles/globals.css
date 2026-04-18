@@ -72,7 +72,115 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Slide down animation for StickyBar */
+/* ─────────────────────────────────────────────────────────
+   Floating Search Bubble (desktop + mobile)
+   ───────────────────────────────────────────────────────── */
+.propyte-search-bubble {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.propyte-search-bubble:focus-within {
+  border-color: rgba(92, 224, 210, 0.5);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 3px rgba(92, 224, 210, 0.15);
+}
+
+.search-type-toggle {
+  color: #1A2F3F;
+  background: transparent;
+}
+.search-type-toggle:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.search-bubble-divider {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.search-type-option[data-active="true"] {
+  color: #0D9488;
+  font-weight: 600;
+  background: #f0fdfa;
+}
+
+.search-bubble-btn:hover {
+  box-shadow: 0 2px 12px rgba(92, 224, 210, 0.4);
+}
+
+/* Dark variant (on dark hero or before scroll on home) */
+.propyte-search-bubble--dark {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+.propyte-search-bubble--dark input {
+  color: #ffffff;
+}
+.propyte-search-bubble--dark input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+.propyte-search-bubble--dark .search-type-toggle {
+  color: rgba(255, 255, 255, 0.9);
+}
+.propyte-search-bubble--dark .search-type-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.propyte-search-bubble--dark .search-bubble-divider {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Mobile header gradient (fade white → transparent)
+   ───────────────────────────────────────────────────────── */
+.propyte-mobile-header-bg {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(255, 255, 255, 0.88) 45%,
+    rgba(255, 255, 255, 0.4) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  padding-bottom: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Actions Pill (desktop)
+   ───────────────────────────────────────────────────────── */
+.propyte-actions-pill-inner {
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.propyte-actions-pill-inner:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Hero grain texture (SVG noise, opacity 0.04)
+   ───────────────────────────────────────────────────────── */
+.hero-grain {
+  position: relative;
+}
+.hero-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Animations
+   ───────────────────────────────────────────────────────── */
 @keyframes slide-down {
   from {
     transform: translateY(-100%);
@@ -83,9 +191,19 @@ html {
     opacity: 1;
   }
 }
-
 .animate-slide-down {
   animation: slide-down 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Hide scrollbar utility */

@@ -25,10 +25,12 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <Header />
-      <main id="main-content" className="flex-1">
-        {children}
-      </main>
-      <Footer />
+      <div className="lg:ml-[72px]">
+        <main id="main-content" className="flex-1 pt-16 lg:pt-20">
+          {children}
+        </main>
+        <Footer />
+      </div>
       <WhatsAppButton />
       <Analytics />
     </NextIntlClientProvider>

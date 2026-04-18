@@ -90,3 +90,5 @@ next-env.d.ts
 # OS
 Desktop.ini
 ehthumbs.db
+
+.vercel

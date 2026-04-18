@@ -2219,16 +2219,16 @@ export default {
 
 > HERO-SITE ya tiene Header/Footer/Logo — pero el diseño WP es diferente. Se reescribe layout completo.
 
-- [ ] Sidebar desktop (72px, bg `#0F1923`, 5 items + "Más" popup — calca WP header.php)
-- [ ] Mobile header (gradient `rgba(255,255,255,0.97)`, burger + search bubble 42px)
-- [ ] Search bubble (frosted glass: `backdrop-filter: blur(16px)`, dark variant para hero)
-- [ ] Search type toggle (Desarrollos ↔ Propiedades — synced desktop + mobile)
-- [ ] Footer (6 cols, CTA strip navy, WhatsApp float 60×60 after 300px scroll)
-- [ ] Framer Motion scroll reveal setup (`whileInView`, viewport threshold 0.12)
-- [ ] Header scroll state machine (home/dark/default variants — ver Sección 18.4)
-- [ ] Icon system (78 Lucide icons mapped — ver Sección 30)
-- [ ] Hero grain texture (SVG noise `:after`, opacity 0.04)
-- [ ] Typography + color verification pixel-perfect vs WP prod
+- [x] Sidebar desktop (72px, bg `#0F1923`, 5 items + "Más" popup — calca WP header.php)
+- [x] Mobile header (gradient `rgba(255,255,255,0.97)`, burger + search bubble 42px)
+- [x] Search bubble (frosted glass: `backdrop-filter: blur(16px)`, dark variant para hero)
+- [x] Search type toggle (Desarrollos ↔ Propiedades — synced desktop + mobile)
+- [x] Footer (6 cols, CTA strip navy, WhatsApp float 60×60 after 300px scroll)
+- [x] Framer Motion scroll reveal setup (`whileInView`, viewport threshold 0.12)
+- [x] Header scroll state machine (home/dark/default variants — ver Sección 18.4)
+- [x] Icon system (Lucide icons, imports on demand per componente)
+- [x] Hero grain texture (SVG noise `:after`, opacity 0.04)
+- [ ] Typography + color verification pixel-perfect vs WP prod (QA visual pendiente)
 
 ### Fase 2: Homepage (1 semana)
 

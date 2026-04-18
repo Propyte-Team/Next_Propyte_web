@@ -1,153 +1,94 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { useLocale, useTranslations } from 'next-intl';
-import { Menu, ChevronDown, User } from 'lucide-react';
-import Logo from './Logo';
-import LanguageToggle from './LanguageToggle';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Sidebar from './Sidebar';
+import SearchBubble from './SearchBubble';
+import ActionsPill from './ActionsPill';
+import MobileHeader from './MobileHeader';
 import MobileMenu from './MobileMenu';
 
+type HeaderMode = 'home' | 'dark' | 'default';
+
+function deriveMode(pathname: string): HeaderMode {
+  const bare = pathname.replace(/^\/(es|en)/, '') || '/';
+  if (bare === '/' || bare === '') return 'home';
+  if (bare.startsWith('/destacados') || bare.startsWith('/built') || bare.startsWith('/mercado')) {
+    return 'dark';
+  }
+  return 'default';
+}
+
 export default function Header() {
-  const locale = useLocale();
-  const t = useTranslations('nav');
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const moreRef = useRef<HTMLDivElement>(null);
+  const mode = deriveMode(pathname);
+
+  // Archives: hide floating header on desktop (archive has its own filter bar)
+  const isArchive =
+    pathname.match(/\/(es|en)\/propiedades(\/|$|\?)/) ||
+    pathname.match(/\/(es|en)\/desarrollos(\/|$|\?)/);
+  const showPill = !isArchive;
 
   useEffect(() => {
     function handleScroll() {
       setScrolled(window.scrollY > 10);
     }
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close "Más" dropdown on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setMoreOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const tMercado = useTranslations('mercado');
-
-  const mainLinks = [
-    { href: `/${locale}/propiedades`, label: t('properties') },
-    { href: `/${locale}/propiedades?stage=preventa`, label: t('presale') },
-    { href: `/${locale}/mercado`, label: tMercado('navLabel') },
-    { href: `/${locale}/nosotros/quienes-somos`, label: locale === 'es' ? 'Nosotros' : 'About' },
-    { href: `/${locale}/contacto`, label: t('contact') },
-  ];
-
-  const moreLinks = [
-    { href: `/${locale}/como-comprar`, label: locale === 'es' ? 'Cómo Comprar' : 'How to Buy' },
-    { href: `/${locale}/como-invertir`, label: locale === 'es' ? 'Cómo Invertir' : 'How to Invest' },
-    { href: `/${locale}/financiamiento`, label: locale === 'es' ? 'Financiamiento' : 'Financing' },
-    { href: `/${locale}/promociones`, label: locale === 'es' ? 'Promociones' : 'Promotions' },
-    { href: `/${locale}/desarrolladores`, label: t('developers') },
-    { href: `/${locale}/corredores`, label: t('brokers') },
-    { href: `/${locale}/built`, label: t('built') },
-    { href: `/${locale}/faq`, label: 'FAQ' },
-    { href: `/${locale}/unete`, label: locale === 'es' ? 'Únete' : 'Join Us' },
-  ];
-
-  const linkClass = "px-3 py-2 text-sm font-semibold text-[#2C2C2C] hover:text-[#5CE0D2] rounded-lg hover:bg-gray-50 transition-colors";
+  const hideBubbleOnHome = mode === 'home' && !scrolled;
+  const darkBubble = (mode === 'home' || mode === 'dark') && !scrolled;
 
   return (
     <>
-      <a href="#main-content" className="skip-to-content">Skip to content</a>
-      <header className={`sticky top-0 z-30 bg-white transition-shadow duration-200 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Left: Logo + Nav */}
-            <div className="flex items-center gap-8">
-              <Logo variant="compact" />
+      <a href="#main-content" className="skip-to-content">
+        Skip to content
+      </a>
 
-              <nav className="hidden lg:flex items-center gap-1" aria-label="Main navigation">
-                {mainLinks.map(link => (
-                  <Link key={link.href} href={link.href} className={linkClass}>
-                    {link.label}
-                  </Link>
-                ))}
+      {/* Desktop sidebar (72px) */}
+      <Sidebar />
 
-                {/* "Más" dropdown */}
-                <div ref={moreRef} className="relative">
-                  <button
-                    onClick={() => setMoreOpen(!moreOpen)}
-                    className={`${linkClass} flex items-center gap-1`}
-                    aria-expanded={moreOpen}
-                    aria-haspopup="true"
-                  >
-                    {t('more')} <ChevronDown size={14} className={`transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {moreOpen && (
-                    <div className="absolute top-full right-0 mt-1 w-[400px] bg-white rounded-xl shadow-lg border border-gray-100 p-4 z-50">
-                      <div className="grid grid-cols-2 gap-1">
-                        {moreLinks.map(link => (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className="block px-3 py-2.5 text-sm font-medium text-[#2C2C2C] hover:text-[#5CE0D2] hover:bg-gray-50 rounded-lg transition-colors"
-                            onClick={() => setMoreOpen(false)}
-                          >
-                            {link.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </nav>
-            </div>
+      {/* Desktop floating header (search bubble + actions pill) */}
+      <header
+        className="hidden lg:block fixed top-0 left-0 right-0 z-40 lg:ml-[72px]"
+        style={{ pointerEvents: 'none' }}
+      >
+        <div className="flex items-start pt-4 pb-2 px-4 gap-4">
+          {/* Left spacer to balance the pill on the right */}
+          {showPill && <div className="w-0 xl:w-[280px] 2xl:w-[320px] shrink-0" />}
 
-            {/* Right: Actions */}
-            <div className="flex items-center gap-2">
-              <LanguageToggle />
-
-              <Link
-                href={`/${locale}/desarrolladores`}
-                className="hidden md:flex items-center h-9 px-4 text-sm font-semibold text-[#2C2C2C] hover:text-[#5CE0D2] hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                {t('advertise')}
-              </Link>
-
-              <Link
-                href={`/${locale}/contacto`}
-                className="hidden sm:flex items-center gap-1.5 h-10 px-5 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-sm rounded-lg transition-colors"
-              >
-                <User size={16} />
-                {t('contact')}
-              </Link>
-
-              <button
-                onClick={() => setMobileOpen(true)}
-                className="lg:hidden p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-50"
-                aria-label="Open menu"
-              >
-                <Menu size={24} />
-              </button>
-            </div>
+          {/* Search bubble (centered), hidden before scroll on home */}
+          <div
+            className={`flex-1 max-w-[600px] mx-auto transition-all duration-300 ${
+              hideBubbleOnHome ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'
+            }`}
+            style={{ pointerEvents: hideBubbleOnHome ? 'none' : 'auto' }}
+          >
+            <SearchBubble variant="desktop" dark={darkBubble} />
           </div>
+
+          {/* Actions pill (right) */}
+          {showPill && (
+            <div className="shrink-0" style={{ pointerEvents: 'auto' }}>
+              <ActionsPill />
+            </div>
+          )}
         </div>
       </header>
 
-      <MobileMenu
-        isOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        locale={locale}
-        translations={{
-          home: t('home'),
-          properties: t('properties'),
-          developers: t('developers'),
-          contact: t('contact'),
-        }}
+      {/* Mobile header (gradient, 2 rows) */}
+      <MobileHeader
+        mode={mode}
+        onOpenMenu={() => setMobileOpen(true)}
+        isScrolled={scrolled}
       />
+
+      {/* Mobile menu drawer */}
+      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
   );
 }
