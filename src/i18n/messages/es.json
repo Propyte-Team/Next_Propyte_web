@@ -195,7 +195,7 @@
     "filterPriceRange": "Rango de precio",
     "saveSearch": "Guardar búsqueda",
     "noResults": "No se encontraron propiedades con estos filtros",
-    "noResultsSuggestión": "Intenta ampliar tu búsqueda o modificar los filtros",
+    "noResultsSuggestion": "Intenta ampliar tu búsqueda o modificar los filtros",
     "clearAll": "Limpiar todo",
     "moreFilters": "Más filtros",
     "sortBy": "Ordenar por",
@@ -271,7 +271,7 @@
   "stages": {
     "preventa": "Preventa",
     "nuevo": "Nuevo",
-    "construcción": "En construcción",
+    "construccion": "En construcción",
     "entrega_inmediata": "Entrega inmediata",
     "proximamente": "Próximamente",
     "reservado": "Reservado",
