@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Building2, Calendar, ExternalLink, FileDown } from 'lucide-react';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopmentBySlug, getDevelopmentWithUnits, getRentalEstimate, getDevelopmentFinancials, getMlRentalEstimates, getAirdnaMarketSummary, APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
@@ -28,7 +28,7 @@ export async function generateStaticParams() {
   const cityParams = Object.keys(CITY_MAP).map(city => ({ slug: city }));
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await supabase
       .schema('real_estate_hub' as 'public')
       .from('v_developments')
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   // ── Development page metadata ──
   let property: any = null;
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await getDevelopmentBySlug(supabase, slug);
     if (data) property = data;
   } catch (err) {
@@ -109,7 +109,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 // Helper to safely get supabase anon client (service_role fails permission on views)
 async function getSupabase() {
   try {
-    return await createServerSupabaseClient();
+    return createPublicSupabaseClient();
   } catch (err) {
     console.error('Supabase client init failed:', err);
     return null;

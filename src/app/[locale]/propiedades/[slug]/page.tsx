@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { formatPrice } from '@/lib/formatters';
 import PropertyPageContent from './PropertyPageContent';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnitBySlug, getRentalEstimate, getAirdnaMarketSummary } from '@/lib/supabase/queries';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
@@ -11,7 +11,7 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await supabase
       .schema('real_estate_hub' as 'public')
       .from('v_units')
@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, slug } = await params;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data: property } = await getUnitBySlug(supabase, slug);
     if (!property) return {};
 
@@ -62,7 +62,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ local
 
   let row: UnitRow | null = null;
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     const { data } = await getUnitBySlug(supabase, slug);
     if (data) row = data as UnitRow;
   } catch (err) {
@@ -81,7 +81,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ local
   let airdnaAdr: number | undefined;
 
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
     if (supabase) {
       const propType = property.specs.type || 'departamento';
       const city = property.location.city;
