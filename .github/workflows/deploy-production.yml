@@ -1,0 +1,49 @@
+name: Deploy to Production (Hostinger)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # Package standalone output
+      - name: Package standalone
+        run: |
+          cp -r .next/standalone deploy
+          cp -r .next/static deploy/.next/static
+          cp -r public deploy/public
+
+      # Deploy via SCP to Hostinger VPS
+      - name: Deploy to Hostinger
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          source: deploy/
+          target: /home/${{ secrets.HOSTINGER_USER }}/propyte-web/
+          strip_components: 1
+
+      # Restart PM2 process
+      - name: Restart PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.HOSTINGER_USER }}/propyte-web
+            pm2 restart propyte-web || pm2 start server.js --name propyte-web
