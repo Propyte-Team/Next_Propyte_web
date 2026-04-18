@@ -4,27 +4,24 @@ import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Building2, Key, ChevronDown, Search } from 'lucide-react';
-
-type SearchType = 'desarrollos' | 'propiedades';
+import { useSearchType } from '@/context/SearchContext';
 
 interface SearchBubbleProps {
   variant?: 'desktop' | 'mobile';
   dark?: boolean;
-  defaultType?: SearchType;
   className?: string;
 }
 
 export default function SearchBubble({
   variant = 'desktop',
   dark = false,
-  defaultType = 'desarrollos',
   className = '',
 }: SearchBubbleProps) {
   const locale = useLocale();
   const router = useRouter();
   const t = useTranslations('nav');
+  const { type, setType } = useSearchType();
 
-  const [type, setType] = useState<SearchType>(defaultType);
   const [query, setQuery] = useState('');
   const [typeOpen, setTypeOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);

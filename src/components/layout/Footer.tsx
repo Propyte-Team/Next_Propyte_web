@@ -26,7 +26,7 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 md:gap-10">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-baseline mb-4">
@@ -70,15 +70,24 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources & Legal */}
+          {/* Resources */}
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{locale === 'es' ? 'Recursos' : 'Resources'}</h4>
             <ul className="space-y-2.5">
               <li><Link href={`/${locale}/faq`} className="text-sm text-white/50 hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href={`/${locale}/glosario`} className="text-sm text-white/50 hover:text-white transition-colors">{locale === 'es' ? 'Glosario' : 'Glossary'}</Link></li>
               <li><Link href={`/${locale}/promociones`} className="text-sm text-white/50 hover:text-white transition-colors">{locale === 'es' ? 'Promociones' : 'Promotions'}</Link></li>
-              <li><span className="text-sm text-white/30 cursor-default" title="Próximamente" aria-disabled="true">{t('privacy')}</span></li>
-              <li><span className="text-sm text-white/30 cursor-default" title="Próximamente" aria-disabled="true">{t('terms')}</span></li>
+              <li><Link href={`/${locale}/mercado`} className="text-sm text-white/50 hover:text-white transition-colors">{locale === 'es' ? 'Mercado' : 'Market'}</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{locale === 'es' ? 'Legal' : 'Legal'}</h4>
+            <ul className="space-y-2.5">
+              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{t('privacy')}</span></li>
+              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{t('terms')}</span></li>
+              <li><span className="text-sm text-white/30 cursor-default" title={locale === 'es' ? 'Próximamente' : 'Coming soon'} aria-disabled="true">{locale === 'es' ? 'Cookies' : 'Cookies'}</span></li>
             </ul>
           </div>
 

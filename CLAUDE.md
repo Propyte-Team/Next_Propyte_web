@@ -80,8 +80,8 @@ propyte.com (this repo)
     → crm.propyte.com (leads webhook)
 ```
 
-- **Hosting prod:** Hostinger VPS (standalone + PM2 + Nginx)
-- **Hosting staging:** Vercel (auto-deploy from develop branch)
+- **Hosting prod:** Hostinger VPS (standalone + PM2 + Nginx) — auto-deploy via GitHub Actions en push a `main`
+- **Hosting staging:** Vercel (manual CLI — `vercel --prod` desde rama `develop`) — dev.propyte.com. GitHub auto-deploy desconectado.
 - **Database:** Supabase (oaijxdpevakashxshhvm)
 - **Schemas:** real_estate_hub (R/W), investment_analytics (R), public (R)
 
@@ -108,8 +108,11 @@ Hostinger (prod) / Vercel CDN (staging)
 | Shared types | `src/shared/types/` |
 | Shared constants | `src/shared/constants/` |
 | Components | `src/components/` |
+| Layout system | `src/components/layout/` (Sidebar, SearchBubble, ActionsPill, MobileHeader, MobileMenu, Header, Footer) |
+| Scroll reveal | `src/components/shared/ScrollReveal.tsx` (Framer Motion `whileInView`) |
+| Icon vocabulary | `src/lib/icons.ts` (canonical Lucide re-exports) |
 | Hooks | `src/hooks/` |
-| Context | `src/context/` |
+| Context | `src/context/` (incl. `SearchContext` — sincroniza search type toggle desktop+mobile) |
 
 ## Supabase Client Usage
 
@@ -161,8 +164,11 @@ npm run dev
 # Build (standalone for Hostinger)
 npm run build
 
-# Deploy: push to main → GitHub Actions → SCP to Hostinger → PM2 restart
-# Staging: push to develop → Vercel auto-deploy
+# Producción: push a main → GitHub Actions → SCP a Hostinger → PM2 restart
+# Staging (dev.propyte.com): manual via Vercel CLI
+git checkout develop
+# hacer cambios, commit + push a origin/develop
+vercel --prod --yes
 ```
 
 ## Related Repos

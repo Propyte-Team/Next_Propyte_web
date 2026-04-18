@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
+import { SearchProvider } from '@/context/SearchContext';
 
 export default async function LocaleLayout({
   children,
@@ -24,15 +25,17 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Header />
-      <div className="lg:ml-[72px]">
-        <main id="main-content" className="flex-1 pt-16 lg:pt-20">
-          {children}
-        </main>
-        <Footer />
-      </div>
-      <WhatsAppButton />
-      <Analytics />
+      <SearchProvider>
+        <Header />
+        <div className="lg:ml-[72px]">
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </div>
+        <WhatsAppButton />
+        <Analytics />
+      </SearchProvider>
     </NextIntlClientProvider>
   );
 }
