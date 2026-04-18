@@ -130,25 +130,59 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           {/* Price */}
           <div className="text-lg font-bold text-[#2C2C2C]">{formattedPrice}</div>
 
-          {/* Specs: Zillow pipe format */}
-          <div className="flex items-center gap-1 text-sm text-gray-600 mt-0.5">
-            {property.specs.bedrooms > 0 && (
-              <>
-                <span className="font-semibold">{property.specs.bedrooms}</span>
-                <span className="text-gray-400">{tMkt('cardBedShort')}</span>
-                <span className="text-gray-300 mx-0.5">|</span>
-              </>
-            )}
-            {property.specs.bathrooms > 0 && (
-              <>
-                <span className="font-semibold">{property.specs.bathrooms}</span>
-                <span className="text-gray-400">{tMkt('cardBathShort')}</span>
-                <span className="text-gray-300 mx-0.5">|</span>
-              </>
-            )}
-            <span className="font-semibold">{property.specs.area.toLocaleString(intlLocale)}</span>
-            <span className="text-gray-400">m²</span>
-          </div>
+          {/* Specs: solo cuando haya algún valor real (units tienen, developments aggregate no) */}
+          {(property.specs.bedrooms > 0 || property.specs.bathrooms > 0 || property.specs.area > 0) && (
+            <div className="flex items-center gap-1 text-sm text-gray-600 mt-0.5">
+              {property.specs.bedrooms > 0 && (
+                <>
+                  <span className="font-semibold">{property.specs.bedrooms}</span>
+                  <span className="text-gray-400">{tMkt('cardBedShort')}</span>
+                  {(property.specs.bathrooms > 0 || property.specs.area > 0) && (
+                    <span className="text-gray-300 mx-0.5">|</span>
+                  )}
+                </>
+              )}
+              {property.specs.bathrooms > 0 && (
+                <>
+                  <span className="font-semibold">{property.specs.bathrooms}</span>
+                  <span className="text-gray-400">{tMkt('cardBathShort')}</span>
+                  {property.specs.area > 0 && <span className="text-gray-300 mx-0.5">|</span>}
+                </>
+              )}
+              {property.specs.area > 0 && (
+                <>
+                  <span className="font-semibold">{property.specs.area.toLocaleString(intlLocale)}</span>
+                  <span className="text-gray-400">m²</span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Development-only: inventory + delivery */}
+          {property.kind === 'development' && (property.inventory || property.delivery) && (
+            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+              {property.inventory && property.inventory.available !== undefined && (
+                <span>
+                  {property.inventory.total
+                    ? tMkt('cardAvailableOfTotal', {
+                        available: property.inventory.available,
+                        total: property.inventory.total,
+                      })
+                    : tMkt('cardAvailableOnly', { available: property.inventory.available })}
+                </span>
+              )}
+              {property.delivery && (property.delivery.text || property.delivery.estimated) && (
+                <>
+                  {property.inventory?.available !== undefined && (
+                    <span className="text-gray-300">·</span>
+                  )}
+                  <span>
+                    {tMkt('cardDeliveryLabel')}: {property.delivery.text || property.delivery.estimated}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Address */}
           <div className="flex items-center gap-1 text-xs text-gray-500 mt-1 line-clamp-1">
@@ -157,9 +191,9 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           </div>
 
           {/* Developer attribution */}
-          <div className="text-[10px] text-gray-400 mt-1.5">
-            {property.developer}
-          </div>
+          {property.developer && (
+            <div className="text-[10px] text-gray-400 mt-1.5">{property.developer}</div>
+          )}
 
           {/* Investment metrics row */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
@@ -175,7 +209,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             )}
             {property.annualRevenue != null && property.annualRevenue > 0 && (
               <span className="text-[10px] text-gray-400 font-medium">
-                ${(property.annualRevenue / 1000).toFixed(0)}K/{locale === 'es' ? 'año' : 'yr'}
+                ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
               </span>
             )}
           </div>

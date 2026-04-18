@@ -2,42 +2,77 @@ import type { Property, PropertyStage, PropertyUsage, PropertyBadge } from '@/ty
 
 /**
  * Raw row from `real_estate_hub.v_developments`.
- * Fields are loose — many are null in current data (see debug endpoint).
+ * Fields are loose — many are null in current data.
  */
 export interface DevelopmentRow {
   id: string;
   slug: string;
   name: string;
+  publication_title: string | null;
+  // Location
   city: string | null;
   zone: string | null;
+  neighborhood: string | null;
   state: string | null;
+  country: string | null;
+  municipality: string | null;
   lat: number | null;
   lng: number | null;
   address: string | null;
+  zip_code: string | null;
+  maps_url: string | null;
+  // Proximity
+  beach_distance: number | null;
+  airport_name: string | null;
+  airport_distance: number | null;
+  // Price
   price_min_mxn: number | null;
   price_max_mxn: number | null;
+  currency: string | null;
+  // Meta/classification
   stage: string | null;
   property_types: string[] | null;
   usage: string[] | null;
   amenities: string[] | null;
+  badge: string | null;
+  featured: boolean | null;
+  plaza: string | null;
+  // Media + assets
   images: string[] | null;
   virtual_tour_url: string | null;
   video_url: string | null;
+  brochure_url: string | null;
+  masterplan: string | null;
+  price_list_url: string | null;
+  drive_url: string | null;
+  // Inventory aggregates
+  total_units: number | null;
+  available_units: number | null;
+  reserved_units: number | null;
+  sold_units: number | null;
+  // Delivery
+  estimated_delivery: string | null;
+  delivery_text: string | null;
+  construction_progress: number | null;
+  // Financials
   roi_projected: number | null;
   roi_rental_monthly: number | null;
   roi_appreciation: number | null;
   financing_down_payment: number | null;
   financing_months: number[] | null;
   financing_interest: number | null;
+  // Copy
   description_es: string | null;
   description_en: string | null;
-  badge: string | null;
-  featured: boolean | null;
+  // Workflow
   created_at: string | null;
-  bedrooms_min: number | null;
-  bathrooms_min: number | null;
-  area_min: number | null;
+  updated_at: string | null;
+  approved_at: string | null;
+  zoho_pipeline_status: string | null;
+  // Developer FK
+  developer_id: string | null;
   developer_name: string | null;
+  developer_slug: string | null;
   [key: string]: unknown;
 }
 
@@ -46,8 +81,10 @@ const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional',
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
 
 /**
- * Maps a Supabase v_developments row to the UI Property type.
- * Defaults nulls to empty/zero so downstream components don't crash.
+ * Maps a Supabase v_developments row to the UI Property type (kind='development').
+ *
+ * Note: bedrooms/bathrooms/area are 0 at the development level — those specs
+ * live at the unit level (v_units). Cards hide them when 0.
  */
 export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
   const stage: PropertyStage = VALID_STAGES.includes(row.stage as PropertyStage)
@@ -69,14 +106,39 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
     ? (firstType as Property['specs']['type'])
     : 'departamento';
 
+  const inventory = {
+    available: row.available_units ?? undefined,
+    total: row.total_units ?? undefined,
+    reserved: row.reserved_units ?? undefined,
+    sold: row.sold_units ?? undefined,
+  };
+  const hasInventory = Object.values(inventory).some((v) => v !== undefined);
+
+  const delivery = {
+    estimated: row.estimated_delivery ?? undefined,
+    text: row.delivery_text ?? undefined,
+    progress: row.construction_progress ?? undefined,
+  };
+  const hasDelivery = Object.values(delivery).some((v) => v !== undefined);
+
+  const assets = {
+    brochure: row.brochure_url ?? undefined,
+    masterplan: row.masterplan ?? undefined,
+    priceList: row.price_list_url ?? undefined,
+    drive: row.drive_url ?? undefined,
+  };
+  const hasAssets = Object.values(assets).some((v) => v !== undefined);
+
   return {
     id: row.id,
     slug: row.slug,
-    name: row.name,
+    name: row.publication_title || row.name,
     developer: row.developer_name || '',
+    developerSlug: row.developer_slug || undefined,
+    kind: 'development',
     location: {
       city: row.city || '',
-      zone: row.zone || row.city || '',
+      zone: row.zone || row.neighborhood || row.city || '',
       state: row.state || '',
       lat: row.lat || 0,
       lng: row.lng || 0,
@@ -86,10 +148,12 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
       mxn: row.price_min_mxn || 0,
       currency: 'MXN',
     },
+    priceMax: row.price_max_mxn ?? undefined,
     specs: {
-      bedrooms: row.bedrooms_min || 0,
-      bathrooms: row.bathrooms_min || 0,
-      area: row.area_min || 0,
+      // Developments have no single unit's specs — surfaced only for units
+      bedrooms: 0,
+      bathrooms: 0,
+      area: 0,
       type: specType,
     },
     stage,
@@ -117,5 +181,8 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
     badge,
     featured: row.featured === true,
     createdAt: row.created_at || new Date().toISOString(),
+    inventory: hasInventory ? inventory : undefined,
+    delivery: hasDelivery ? delivery : undefined,
+    assets: hasAssets ? assets : undefined,
   };
 }
