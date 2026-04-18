@@ -36,6 +36,19 @@ El repositorio `HERO-SITE-ZILLOW-/` es un proyecto Next.js 16 con ~87 componente
 **Excepción de diseño — se conserva el look de HERO-SITE:**
 - **Página de Reclutamiento (`/reclutamiento`)** — Decisión Luis, 2026-04-18: La versión de HERO-SITE es superior a la de WP (hero dark + grid de beneficios + CTA de aplicación). Es la ÚNICA página del sitio que mantiene su diseño original de HERO-SITE. Todas las demás páginas siguen WP canónico sin excepción.
 
+**Mejoras intencionales sobre WP (NO son bugs, son especificación):**
+
+Durante el QA pixel-perfect pueden aparecer diferencias visuales entre `dev.propyte.com` y `propyte.com` (WP). Las siguientes son mejoras deliberadas — no deben "corregirse" para matchear WP:
+
+| # | Área | WP (anterior) | Next (nuevo) | Razón |
+|---|------|---------------|--------------|-------|
+| 1 | H1 homepage | "Encuentra tu inversión ideal…" | "Invierte con datos. Decide con confianza." | Nueva voz de marca 2026 (decide + data-driven) |
+| 2 | Hero tabs | Sin tabs | Tabs **COMPRAR / PREVENTA** | Mejora definida en Speckit Sección 18 |
+| 3 | Layout navegación | Topbar horizontal | Sidebar vertical 72px | Speckit v3.0 pide rediseño explícito a sidebar |
+| 4 | Hero stats | No existen | Pills: "170+ Desarrollos / 500+ Unidades / 5 Ciudades / 30+ Zonas" | Mejora de prueba social, live counts desde Supabase |
+
+Cualquier otra diferencia visual con WP sí cuenta como bug/pendiente de revisión.
+
 **Se construye nuevo (no existe en ninguno):**
 - Blog completo (listing + detail + categories) con AI generator en hub
 - Share/Download modal (PDF + redes sociales)
