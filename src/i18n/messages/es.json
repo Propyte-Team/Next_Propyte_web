@@ -255,7 +255,18 @@
     "specs": "Ficha técnica",
     "deliveryDate": "Entrega estimada",
     "gallery": "Galería",
-    "photoCount": "{count} fotos"
+    "photoCount": "{count} fotos",
+    "tour360": "Tour 360°",
+    "whatsappMessage": "Hola, me interesa {name} (Ref: {id}).",
+    "whatsappMessageWithSource": "Hola, me interesa {name} (Ref: {id}). Vi su sitio web.",
+    "estRent": "Renta estimada",
+    "verifiedAdvisor": "Asesor verificado",
+    "callNow": "Llamar ahora",
+    "financing": "Financiamiento",
+    "downPaymentFrom": "Enganche desde",
+    "termUpTo": "Plazo hasta",
+    "interestRate": "Tasa de interés",
+    "monthsSuffix": "meses"
   },
   "stages": {
     "preventa": "Preventa",

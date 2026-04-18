@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X, Camera, Move3D, Play } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import type { PropertyMedia } from '@/types/property';
 
 interface ImageGalleryProps {
@@ -16,7 +16,6 @@ export default function ImageGallery({ images, alt, media }: ImageGalleryProps) 
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
   const t = useTranslations('property');
-  const locale = useLocale();
 
   const prev = useCallback(() => setCurrent(i => (i === 0 ? images.length - 1 : i - 1)), [images.length]);
   const next = useCallback(() => setCurrent(i => (i === images.length - 1 ? 0 : i + 1)), [images.length]);
@@ -76,7 +75,7 @@ export default function ImageGallery({ images, alt, media }: ImageGalleryProps) 
               className="flex items-center gap-1.5 px-3 py-2 bg-white/95 hover:bg-white text-[#2C2C2C] text-sm font-semibold rounded-lg shadow-md backdrop-blur-sm transition-colors"
             >
               <Move3D size={14} className="text-[#5CE0D2]" />
-              {locale === 'es' ? 'Tour 360°' : '360° Tour'}
+              {t('tour360')}
             </a>
           )}
           {media?.video && (

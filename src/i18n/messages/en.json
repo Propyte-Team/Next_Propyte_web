@@ -255,7 +255,18 @@
     "specs": "Technical specs",
     "deliveryDate": "Estimated delivery",
     "gallery": "Gallery",
-    "photoCount": "{count} photos"
+    "photoCount": "{count} photos",
+    "tour360": "360° Tour",
+    "whatsappMessage": "Hi, I'm interested in {name} (Ref: {id}).",
+    "whatsappMessageWithSource": "Hi, I'm interested in {name} (Ref: {id}). I saw your website.",
+    "estRent": "Est. rent",
+    "verifiedAdvisor": "Verified advisor",
+    "callNow": "Call now",
+    "financing": "Financing",
+    "downPaymentFrom": "Down payment from",
+    "termUpTo": "Term up to",
+    "interestRate": "Interest rate",
+    "monthsSuffix": "months"
   },
   "stages": {
     "preventa": "Pre-sale",

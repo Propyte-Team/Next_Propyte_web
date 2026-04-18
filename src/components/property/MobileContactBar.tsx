@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { MessageCircle, Calendar, Phone } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 import type { Property } from '@/types/property';
@@ -10,14 +10,10 @@ interface MobileContactBarProps {
 }
 
 export default function MobileContactBar({ property }: MobileContactBarProps) {
-  const locale = useLocale();
   const t = useTranslations('property');
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '521XXXXXXXXXX';
 
-  const msg = locale === 'es'
-    ? `Hola, me interesa ${property.name} (Ref: ${property.id}).`
-    : `Hi, I'm interested in ${property.name} (Ref: ${property.id}).`;
-
+  const msg = t('whatsappMessage', { name: property.name, id: property.id });
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 
   return (

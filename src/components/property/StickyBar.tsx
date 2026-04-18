@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { MessageCircle, Calendar, Bed, Bath, Maximize } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 import type { Property } from '@/types/property';
@@ -11,7 +11,6 @@ interface StickyBarProps {
 }
 
 export default function StickyBar({ property }: StickyBarProps) {
-  const locale = useLocale();
   const t = useTranslations('property');
   const [visible, setVisible] = useState(false);
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '521XXXXXXXXXX';
@@ -26,9 +25,7 @@ export default function StickyBar({ property }: StickyBarProps) {
 
   if (!visible) return null;
 
-  const msg = locale === 'es'
-    ? `Hola, me interesa ${property.name} (Ref: ${property.id}).`
-    : `Hi, I'm interested in ${property.name} (Ref: ${property.id}).`;
+  const msg = t('whatsappMessage', { name: property.name, id: property.id });
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 
   return (
