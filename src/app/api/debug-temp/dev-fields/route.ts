@@ -24,18 +24,28 @@ export async function GET(req: Request) {
     }
   }
 
-  let directDevelopersQuery: unknown = null;
-  let directDevelopersError: unknown = null;
+  const probeDevTables: Record<string, unknown> = {};
   if (dev && (dev as { developer_id?: string }).developer_id) {
     const devId = (dev as { developer_id: string }).developer_id;
-    const r = await supabase
-      .schema('real_estate_hub' as 'public')
-      .from('v_developers')
-      .select('*')
-      .eq('id', devId)
-      .maybeSingle();
-    directDevelopersQuery = r.data;
-    directDevelopersError = r.error;
+    const probes: Array<{ schema: string; table: string }> = [
+      { schema: 'real_estate_hub', table: 'v_developers' },
+      { schema: 'real_estate_hub', table: 'Propyte_desarrolladores' },
+      { schema: 'real_estate_hub', table: 'developers' },
+      { schema: 'propyte_crm', table: 'developers' },
+    ];
+    for (const { schema, table } of probes) {
+      try {
+        const r = await supabase
+          .schema(schema as 'public')
+          .from(table)
+          .select('*')
+          .eq('id', devId)
+          .maybeSingle();
+        probeDevTables[`${schema}.${table}`] = { data: r.data, error: r.error?.message };
+      } catch (e) {
+        probeDevTables[`${schema}.${table}`] = { exception: e instanceof Error ? e.message : String(e) };
+      }
+    }
   }
 
   let projectCount = 0;
@@ -56,8 +66,7 @@ export async function GET(req: Request) {
     devError: devErr,
     allKeys,
     developerFields,
-    directDevelopersQuery,
-    directDevelopersError,
+    probeDevTables,
     projectCount,
     projectCountError,
   }, { status: 200 });
