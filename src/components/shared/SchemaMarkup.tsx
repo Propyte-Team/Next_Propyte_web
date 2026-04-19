@@ -1,5 +1,5 @@
 interface SchemaMarkupProps {
-  type: 'organization' | 'realEstateListing' | 'localBusiness' | 'professionalService' | 'breadcrumb';
+  type: 'organization' | 'realEstateListing' | 'localBusiness' | 'professionalService' | 'breadcrumb' | 'faq';
   data?: Record<string, unknown>;
 }
 
@@ -62,6 +62,13 @@ export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
       schema = {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
+        ...data,
+      };
+      break;
+    case 'faq':
+      schema = {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
         ...data,
       };
       break;

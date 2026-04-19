@@ -1,0 +1,549 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { Home, Plane, Calculator, TrendingUp } from 'lucide-react';
+import {
+  calculateMonthlyPayment,
+  calculateClosingCosts,
+  getClosingCostRate,
+  calculateGrossYield,
+  calculateNetYield,
+  calculateCapRate,
+  calculateCashOnCash,
+  calculateROI,
+  calculateProjectedValue,
+  calculateIRR,
+  calculateBreakeven,
+  calculateVacGrossYield,
+  calculateVacNetYield,
+  calculateVacNetRent,
+  buildCashflows,
+  calculateRemainingBalanceActuarial,
+  VAC,
+  RES,
+} from '@/lib/calculator';
+import { formatPrice, formatPercentage } from '@/lib/formatters';
+import Tabs, { type TabItem } from '@/components/ui/Tabs';
+
+interface UnitInvestmentCalculatorProps {
+  price: number;
+  state: string;
+  monthlyRentRes: number;
+  monthlyRentVac: number;
+  airdnaOccupancy: number | null;
+  downPaymentMinPct: number;
+  financingMonths: number[];
+  interestRateDefault: number;
+  appreciationDefault: number;
+  locale: string;
+}
+
+export default function UnitInvestmentCalculator({
+  price, state, monthlyRentRes, monthlyRentVac, airdnaOccupancy,
+  downPaymentMinPct, financingMonths, interestRateDefault, appreciationDefault, locale,
+}: UnitInvestmentCalculatorProps) {
+  const isEn = locale === 'en';
+
+  const [downPaymentPct, setDownPaymentPct] = useState(Math.max(downPaymentMinPct || 20, 10));
+  const [months, setMonths] = useState(financingMonths[1] || financingMonths[0] || 120);
+  const [interestRate, setInterestRate] = useState(interestRateDefault || 9.5);
+  const [appreciation, setAppreciation] = useState(appreciationDefault || 8);
+  const [occupancyVac, setOccupancyVac] = useState(
+    airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100
+  );
+
+  const closingCostRate = getClosingCostRate(state);
+  const closingCosts = calculateClosingCosts(price, state);
+  const totalPropertyCost = price + closingCosts;
+  const downPayment = price * (downPaymentPct / 100);
+  const totalInvested = downPayment + closingCosts;
+
+  const monthlyPayment = useMemo(
+    () => calculateMonthlyPayment(price, downPaymentPct, months, interestRate),
+    [price, downPaymentPct, months, interestRate]
+  );
+
+  // ── Residencial metrics ──
+  const res = useMemo(() => {
+    const effectiveMonthly = Math.round(monthlyRentRes * RES.OCCUPANCY);
+    const netMonthly = Math.round(effectiveMonthly * (1 - RES.EXPENSE_RATIO));
+    const annualGross = effectiveMonthly * 12;
+    const annualNet = netMonthly * 12;
+    return {
+      effectiveMonthly,
+      netMonthly,
+      grossYield: calculateGrossYield(annualGross, totalPropertyCost),
+      netYield: calculateNetYield(annualGross, totalPropertyCost, RES.EXPENSE_RATIO),
+      capRate: calculateCapRate(annualNet, totalPropertyCost),
+      cashOnCash: calculateCashOnCash(annualNet, totalInvested),
+      monthlyNet: netMonthly - monthlyPayment,
+      annualNet,
+    };
+  }, [monthlyRentRes, totalPropertyCost, totalInvested, monthlyPayment]);
+
+  // ── Vacacional metrics ──
+  const vac = useMemo(() => {
+    const occ = occupancyVac / 100;
+    const effectiveMonthly = Math.round(monthlyRentVac * occ);
+    const netMonthly = calculateVacNetRent(monthlyRentVac, occ);
+    const annualNet = netMonthly * 12;
+    return {
+      effectiveMonthly,
+      netMonthly,
+      grossYield: calculateVacGrossYield(monthlyRentVac, occ, totalPropertyCost),
+      netYield: calculateVacNetYield(monthlyRentVac, occ, totalPropertyCost),
+      capRate: calculateCapRate(annualNet, totalPropertyCost),
+      cashOnCash: calculateCashOnCash(annualNet, totalInvested),
+      monthlyNet: netMonthly - monthlyPayment,
+      annualNet,
+    };
+  }, [monthlyRentVac, occupancyVac, totalPropertyCost, totalInvested, monthlyPayment]);
+
+  // ── ROI Projection (uses residencial as the conservative base) ──
+  const projection = useMemo(() => {
+    const annualGrossRes = res.effectiveMonthly * 12;
+    const roi1 = calculateROI(price, downPaymentPct, annualGrossRes, appreciation, 1);
+    const roi5 = calculateROI(price, downPaymentPct, annualGrossRes, appreciation, 5);
+    const roi10 = calculateROI(price, downPaymentPct, annualGrossRes, appreciation, 10);
+    const projectedValue5 = calculateProjectedValue(price, appreciation, 5);
+    const projectedValue10 = calculateProjectedValue(price, appreciation, 10);
+
+    const cf5 = buildCashflows({
+      totalInvested,
+      annualNetFlow: res.monthlyNet * 12,
+      price,
+      appreciationPct: appreciation,
+      years: 5,
+      remainingBalance: calculateRemainingBalanceActuarial(price, downPaymentPct, interestRate, months, 60),
+    });
+    const cf10 = buildCashflows({
+      totalInvested,
+      annualNetFlow: res.monthlyNet * 12,
+      price,
+      appreciationPct: appreciation,
+      years: 10,
+      remainingBalance: calculateRemainingBalanceActuarial(price, downPaymentPct, interestRate, months, 120),
+    });
+
+    const irr5 = calculateIRR(cf5);
+    const irr10 = calculateIRR(cf10);
+
+    return {
+      roi1, roi5, roi10, projectedValue5, projectedValue10, irr5, irr10, cf5, cf10,
+    };
+  }, [price, downPaymentPct, appreciation, totalInvested, res.effectiveMonthly, res.monthlyNet, interestRate, months]);
+
+  const breakeven = calculateBreakeven(totalInvested, Math.max(res.monthlyNet, 0));
+
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
+        <h2 className="text-xl font-bold text-[#2C2C2C]">
+          {isEn ? 'Investment Calculator' : 'Calculadora de Inversión'}
+        </h2>
+        <div className="text-xs text-gray-500">
+          {isEn ? 'Price' : 'Precio'}{' '}
+          <span className="font-bold text-[#2C2C2C]">{formatPrice(price)}</span>
+          {' · '}
+          {isEn ? 'Total investment' : 'Inversión total'}{' '}
+          <span className="font-bold text-[#2C2C2C]">{formatPrice(totalPropertyCost)}</span>
+        </div>
+      </div>
+
+      <Tabs
+        variant="pill"
+        tablistLabel={isEn ? 'Investment scenarios' : 'Escenarios de inversión'}
+        items={[
+          {
+            id: 'residencial',
+            label: isEn ? 'Residential' : 'Residencial',
+            icon: <Home size={16} />,
+            panel: (
+              <MetricsPanel
+                title={isEn ? 'Long-term residential rental' : 'Renta residencial a largo plazo'}
+                subtitle={isEn
+                  ? `${Math.round(RES.OCCUPANCY * 100)}% occupancy · ${Math.round(RES.EXPENSE_RATIO * 100)}% expenses`
+                  : `Ocupación ${Math.round(RES.OCCUPANCY * 100)}% · Gastos ${Math.round(RES.EXPENSE_RATIO * 100)}%`}
+                grossRent={monthlyRentRes}
+                effectiveRent={res.effectiveMonthly}
+                netRent={res.netMonthly}
+                monthlyPayment={monthlyPayment}
+                grossYield={res.grossYield}
+                netYield={res.netYield}
+                capRate={res.capRate}
+                cashOnCash={res.cashOnCash}
+                monthlyNet={res.monthlyNet}
+                breakeven={breakeven}
+                locale={locale}
+              />
+            ),
+          },
+          {
+            id: 'vacacional',
+            label: isEn ? 'Vacation (Airbnb)' : 'Vacacional (Airbnb)',
+            icon: <Plane size={16} />,
+            panel: (
+              <div className="space-y-4">
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-gray-700">
+                      {isEn ? 'Occupancy' : 'Ocupación'}
+                      {airdnaOccupancy != null && (
+                        <span className="ml-2 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 px-2 py-0.5 rounded-full">AirDNA</span>
+                      )}
+                    </label>
+                    <span className="text-sm font-bold text-[#2C2C2C]">{occupancyVac.toFixed(0)}%</span>
+                  </div>
+                  <input
+                    type="range" min={40} max={100} step={1}
+                    value={occupancyVac}
+                    onChange={(e) => setOccupancyVac(Number(e.target.value))}
+                    className="w-full accent-[#5CE0D2]"
+                  />
+                </div>
+                <MetricsPanel
+                  title={isEn ? 'Short-term vacation rental' : 'Renta vacacional corta'}
+                  subtitle={isEn
+                    ? `${occupancyVac.toFixed(0)}% occupancy · ${Math.round((VAC.EXPENSE_RATIO + VAC.PLATFORM_FEE + VAC.MGMT_FEE) * 100)}% expenses (ops + platform + mgmt)`
+                    : `Ocupación ${occupancyVac.toFixed(0)}% · Gastos ${Math.round((VAC.EXPENSE_RATIO + VAC.PLATFORM_FEE + VAC.MGMT_FEE) * 100)}% (ops + plataforma + admin)`}
+                  grossRent={monthlyRentVac}
+                  effectiveRent={vac.effectiveMonthly}
+                  netRent={vac.netMonthly}
+                  monthlyPayment={monthlyPayment}
+                  grossYield={vac.grossYield}
+                  netYield={vac.netYield}
+                  capRate={vac.capRate}
+                  cashOnCash={vac.cashOnCash}
+                  monthlyNet={vac.monthlyNet}
+                  breakeven={calculateBreakeven(totalInvested, Math.max(vac.monthlyNet, 0))}
+                  locale={locale}
+                />
+              </div>
+            ),
+          },
+          {
+            id: 'financiamiento',
+            label: isEn ? 'Financing' : 'Financiamiento',
+            icon: <Calculator size={16} />,
+            panel: (
+              <div className="space-y-5">
+                <Slider
+                  label={isEn ? 'Down payment' : 'Enganche'}
+                  value={downPaymentPct}
+                  display={`${downPaymentPct}% (${formatPrice(downPayment)})`}
+                  min={10} max={100} step={1}
+                  onChange={setDownPaymentPct}
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {isEn ? 'Term' : 'Plazo'}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {financingMonths.map((m) => (
+                      <button
+                        key={m}
+                        onClick={() => setMonths(m)}
+                        className={`px-4 py-2 rounded-lg text-sm border transition-colors ${
+                          months === m
+                            ? 'bg-[#5CE0D2] text-white border-[#5CE0D2]'
+                            : 'border-gray-200 hover:border-[#5CE0D2] text-gray-700'
+                        }`}
+                      >
+                        {m} {isEn ? 'months' : 'meses'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <Slider
+                  label={isEn ? 'Interest rate' : 'Tasa de interés'}
+                  value={interestRate}
+                  display={`${interestRate.toFixed(1)}%`}
+                  min={0} max={15} step={0.5}
+                  onChange={setInterestRate}
+                />
+
+                <div className="bg-[#0F1923] rounded-2xl p-6 text-white">
+                  <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                    {isEn ? 'Estimated monthly payment' : 'Mensualidad estimada'}
+                  </div>
+                  <div className="text-3xl font-extrabold">
+                    {monthlyPayment > 0 ? formatPrice(monthlyPayment) : '—'}
+                  </div>
+                  <div className="grid grid-cols-3 gap-3 mt-5 text-sm">
+                    <FinKV label={isEn ? 'Down' : 'Enganche'} value={formatPrice(downPayment)} />
+                    <FinKV label={isEn ? 'Closing' : 'Escrituración'} value={formatPrice(closingCosts)} note={`${Math.round(closingCostRate * 100)}%`} />
+                    <FinKV label={isEn ? 'Loan principal' : 'Monto a financiar'} value={formatPrice(price - downPayment)} />
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-gray-500 leading-relaxed">
+                  {isEn
+                    ? `Total out-of-pocket at closing: ${formatPrice(totalInvested)}. Assumes actuarial amortization.`
+                    : `Desembolso total al cierre: ${formatPrice(totalInvested)}. Cálculo con amortización actuarial.`}
+                </p>
+              </div>
+            ),
+          },
+          {
+            id: 'proyeccion',
+            label: isEn ? 'ROI Projection' : 'Proyección ROI',
+            icon: <TrendingUp size={16} />,
+            panel: (
+              <div className="space-y-5">
+                <Slider
+                  label={isEn ? 'Annual appreciation' : 'Apreciación anual'}
+                  value={appreciation}
+                  display={`${appreciation.toFixed(1)}%`}
+                  min={0} max={20} step={0.5}
+                  onChange={setAppreciation}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <ProjTile
+                    label={isEn ? 'IRR 5 years' : 'TIR 5 años'}
+                    value={projection.irr5 != null ? formatPercentage(projection.irr5) : '—'}
+                    highlight
+                  />
+                  <ProjTile
+                    label={isEn ? 'IRR 10 years' : 'TIR 10 años'}
+                    value={projection.irr10 != null ? formatPercentage(projection.irr10) : '—'}
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <ProjTile
+                    label={isEn ? 'ROI 1 yr' : 'ROI 1 año'}
+                    value={`${projection.roi1.toFixed(1)}%`}
+                  />
+                  <ProjTile
+                    label={isEn ? 'ROI 5 yr' : 'ROI 5 años'}
+                    value={`${projection.roi5.toFixed(1)}%`}
+                  />
+                  <ProjTile
+                    label={isEn ? 'ROI 10 yr' : 'ROI 10 años'}
+                    value={`${projection.roi10.toFixed(1)}%`}
+                  />
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-4">
+                  <div className="text-xs text-gray-400 mb-1">
+                    {isEn ? 'Projected value (10 yr)' : 'Valor proyectado (10 años)'}
+                  </div>
+                  <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projection.projectedValue10)}</div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#22C55E] rounded-full transition-all"
+                      style={{ width: `${Math.min((projection.projectedValue10 / price) * 33, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                    <span>{formatPrice(price)}</span>
+                    <span>{formatPrice(projection.projectedValue10)}</span>
+                  </div>
+                </div>
+
+                <CashflowTable
+                  cashflows={projection.cf10}
+                  locale={locale}
+                  totalInvested={totalInvested}
+                />
+
+                <p className="text-[11px] text-gray-400 leading-relaxed">
+                  {isEn
+                    ? 'IRR computed using Newton-Raphson with actuarial mortgage amortization. Projections are estimates, not guarantees.'
+                    : 'TIR calculada con Newton-Raphson y amortización actuarial. Las proyecciones son estimaciones, no garantías.'}
+                </p>
+              </div>
+            ),
+          },
+        ] satisfies TabItem[]}
+      />
+    </div>
+  );
+}
+
+// ── Sub-components ──
+
+interface MetricsPanelProps {
+  title: string;
+  subtitle: string;
+  grossRent: number;
+  effectiveRent: number;
+  netRent: number;
+  monthlyPayment: number;
+  grossYield: number;
+  netYield: number;
+  capRate: number;
+  cashOnCash: number;
+  monthlyNet: number;
+  breakeven: number;
+  locale: string;
+}
+
+function MetricsPanel({
+  title, subtitle, grossRent, effectiveRent, netRent, monthlyPayment,
+  grossYield, netYield, capRate, cashOnCash, monthlyNet, breakeven, locale,
+}: MetricsPanelProps) {
+  const isEn = locale === 'en';
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="text-sm font-semibold text-[#2C2C2C]">{title}</div>
+        <div className="text-xs text-gray-500">{subtitle}</div>
+      </div>
+
+      <div className="bg-[#0F1923] rounded-2xl p-5 text-white">
+        <div className="flex items-baseline justify-between mb-3">
+          <span className="text-xs text-gray-400 uppercase tracking-wider">
+            {isEn ? 'Gross rent' : 'Renta bruta'}
+          </span>
+          <span className="text-2xl font-bold">{formatPrice(Math.round(grossRent))}<span className="text-xs font-normal text-gray-400">/mo</span></span>
+        </div>
+        <div className="flex items-baseline justify-between text-sm pt-2 border-t border-white/10">
+          <span className="text-gray-400">{isEn ? 'Effective (after occupancy)' : 'Efectiva (tras ocupación)'}</span>
+          <span className="font-semibold">{formatPrice(effectiveRent)}/mo</span>
+        </div>
+        <div className="flex items-baseline justify-between text-sm pt-2">
+          <span className="text-[#5CE0D2] font-medium">{isEn ? 'Net (after expenses)' : 'Neta (tras gastos)'}</span>
+          <span className="font-bold text-[#5CE0D2]">{formatPrice(netRent)}/mo</span>
+        </div>
+        {monthlyPayment > 0 && (
+          <div className="flex items-baseline justify-between text-sm pt-2 border-t border-white/10 mt-2">
+            <span className="text-gray-400">{isEn ? '− Monthly loan payment' : '− Mensualidad préstamo'}</span>
+            <span className="font-medium">−{formatPrice(monthlyPayment)}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <MetricTile label={isEn ? 'Gross yield' : 'Yield bruto'} value={formatPercentage(grossYield)} />
+        <MetricTile label={isEn ? 'Net yield' : 'Yield neto'} value={formatPercentage(netYield)} />
+        <MetricTile label="Cap rate" value={formatPercentage(capRate)} />
+        <MetricTile label="Cash-on-cash" value={formatPercentage(cashOnCash)} color={cashOnCash >= 0 ? '#22C55E' : '#EF4444'} />
+        <MetricTile
+          label={isEn ? 'Monthly net flow' : 'Flujo mensual neto'}
+          value={formatPrice(Math.round(monthlyNet))}
+          color={monthlyNet >= 0 ? '#22C55E' : '#EF4444'}
+        />
+        <MetricTile
+          label={isEn ? 'Break-even' : 'Punto de equilibrio'}
+          value={breakeven === Infinity ? '—' : `${breakeven} ${isEn ? 'mo' : 'meses'}`}
+        />
+      </div>
+    </div>
+  );
+}
+
+function MetricTile({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div className="bg-gray-50 rounded-xl p-3">
+      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</div>
+      <div className="text-base font-bold" style={{ color: color || '#1A2F3F' }}>{value}</div>
+    </div>
+  );
+}
+
+function Slider({
+  label, value, display, min, max, step, onChange,
+}: {
+  label: string; value: number; display: string;
+  min: number; max: number; step: number; onChange: (n: number) => void;
+}) {
+  return (
+    <div>
+      <div className="flex justify-between text-sm mb-1">
+        <label className="font-medium text-gray-700">{label}</label>
+        <span className="font-semibold text-[#2C2C2C]">{display}</span>
+      </div>
+      <input
+        type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-[#5CE0D2]"
+      />
+    </div>
+  );
+}
+
+function FinKV({ label, value, note }: { label: string; value: string; note?: string }) {
+  return (
+    <div>
+      <div className="text-[10px] text-gray-400 uppercase tracking-wider">{label}</div>
+      <div className="font-bold">{value}</div>
+      {note && <div className="text-[10px] text-gray-500">{note}</div>}
+    </div>
+  );
+}
+
+function ProjTile({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className={`rounded-xl p-4 text-center ${highlight ? 'bg-[#0F1923] text-white' : 'bg-gray-50'}`}>
+      <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#1A2F3F]'}`}>{value}</div>
+      <div className={`text-xs mt-1 ${highlight ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
+    </div>
+  );
+}
+
+function CashflowTable({
+  cashflows, locale, totalInvested,
+}: { cashflows: number[]; locale: string; totalInvested: number }) {
+  const isEn = locale === 'en';
+  return (
+    <div className="overflow-hidden rounded-xl border border-gray-100">
+      <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+        <div className="text-sm font-bold text-[#2C2C2C]">
+          {isEn ? 'Annual cashflow (10 yr horizon)' : 'Flujo anual (horizonte 10 años)'}
+        </div>
+        <div className="text-[10px] text-gray-500">
+          {isEn ? 'Year 0 = capital outflow · Year 10 = sale + remaining balance' : 'Año 0 = capital invertido · Año 10 = venta + saldo pendiente'}
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-white">
+              <th className="px-3 py-2 text-left text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                {isEn ? 'Year' : 'Año'}
+              </th>
+              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                {isEn ? 'Cashflow' : 'Flujo'}
+              </th>
+              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+                {isEn ? 'Cumulative' : 'Acumulado'}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {cashflows.map((cf, i) => {
+              const cum = cashflows.slice(0, i + 1).reduce((s, n) => s + n, 0);
+              const cumPositive = cum >= 0;
+              return (
+                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-3 py-2 text-gray-700 font-medium">{i}</td>
+                  <td className={`px-3 py-2 text-right font-semibold ${cf < 0 ? 'text-red-500' : 'text-gray-900'}`}>
+                    {cf < 0 ? '−' : ''}{formatPrice(Math.abs(Math.round(cf)))}
+                  </td>
+                  <td className={`px-3 py-2 text-right font-semibold ${cumPositive ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {cum < 0 ? '−' : ''}{formatPrice(Math.abs(Math.round(cum)))}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="bg-[#0F1923] text-white">
+              <td className="px-3 py-2 text-xs uppercase tracking-wider">
+                {isEn ? 'Invested' : 'Invertido'}
+              </td>
+              <td colSpan={2} className="px-3 py-2 text-right font-bold">
+                {formatPrice(totalInvested)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}

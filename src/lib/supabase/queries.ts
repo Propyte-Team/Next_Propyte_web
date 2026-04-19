@@ -248,6 +248,41 @@ export async function getAvailableUnits(client: Client, developmentId: string) {
     .order('price_mxn', { ascending: true });
 }
 
+/**
+ * 4-level fallback for similar units. Returns the first non-empty bucket.
+ *   L1: same unit_type + same zone
+ *   L2: same zone (any type)
+ *   L3: same city (any type)
+ *   L4: featured units (any city)
+ */
+export async function getSimilarUnits(
+  client: Client,
+  seed: { id: string; city: string; zone: string | null; unit_type: string | null },
+  limit = 4
+) {
+  const base = () =>
+    hub(client)
+      .from('v_units')
+      .select('id, slug, name, unit_number, development_name, city, zone, images, price_mxn, bedrooms, bathrooms, area_m2, unit_type')
+      .neq('id', seed.id)
+      .limit(limit);
+
+  if (seed.zone && seed.unit_type) {
+    const r = await base().eq('zone', seed.zone).eq('unit_type', seed.unit_type);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  if (seed.zone) {
+    const r = await base().eq('zone', seed.zone);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  if (seed.city) {
+    const r = await base().eq('city', seed.city);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  const r = await base().order('created_at', { ascending: false });
+  return r.data || [];
+}
+
 // ============================================================
 // CONTACT/LEAD QUERIES (unified)
 // ============================================================
