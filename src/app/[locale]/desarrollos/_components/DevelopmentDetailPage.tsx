@@ -16,9 +16,18 @@ import {
   getDeveloperProjectCount,
   getDeveloperById,
   getSimilarDevelopments,
+  getZoneDetail,
 } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { CITY_TO_AIRDNA } from '@/lib/calculator';
+import {
+  CITY_TO_AIRDNA,
+  RES,
+  buildCashflows,
+  calculateClosingCosts,
+  calculateIRR,
+  calculateMonthlyPayment,
+  calculateRemainingBalanceActuarial,
+} from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -31,6 +40,10 @@ import UnitModelsTable from '@/components/property/UnitModelsTable';
 import AmenityList from '@/components/property/AmenityList';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
+import GeoAnalysis from '@/components/property/GeoAnalysis';
+import AirdnaInsights from '@/components/property/AirdnaInsights';
+import MarketSentiment, { type SentimentIndicator } from '@/components/property/MarketSentiment';
+import CetesComparison from '@/components/property/CetesComparison';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
@@ -109,16 +122,19 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   let devFinancials: Awaited<ReturnType<typeof getDevelopmentFinancials>> = null;
   let mlEstimates: Awaited<ReturnType<typeof getMlRentalEstimates>> = [];
   let airdnaOccupancy: number | null = null;
+  let airdnaSummary: Awaited<ReturnType<typeof getAirdnaMarketSummary>> = null;
+  let zoneScore: Awaited<ReturnType<typeof getZoneDetail>>['score'] = null;
+  const airdnaMarket = CITY_TO_AIRDNA[property.city] || '';
   try {
     if (supabase) {
       const propType = property.property_types?.[0] || property.property_type || 'departamento';
-      const airdnaMarket = CITY_TO_AIRDNA[property.city] || '';
-      const [rentalResult, vacResult, financialsResult, mlEstimatesResult, airdnaResult] = await Promise.all([
+      const [rentalResult, vacResult, financialsResult, mlEstimatesResult, airdnaResult, zoneResult] = await Promise.all([
         getRentalEstimate(supabase, property.city, propType, null, property.zone, 'residencial'),
         getRentalEstimate(supabase, property.city, propType, null, property.zone, 'vacacional'),
         getDevelopmentFinancials(supabase, property.id),
         getMlRentalEstimates(supabase, property.id),
         airdnaMarket ? getAirdnaMarketSummary(supabase, airdnaMarket) : Promise.resolve(null),
+        property.zone ? getZoneDetail(supabase, property.city, property.zone) : Promise.resolve({ score: null, submarkets: [] }),
       ]);
       if (rentalResult.data) {
         rentalMedian = rentalResult.data.median_rent_mxn;
@@ -127,7 +143,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       if (vacResult.data) rentalMedianVac = vacResult.data.median_rent_mxn;
       devFinancials = financialsResult;
       mlEstimates = mlEstimatesResult;
+      airdnaSummary = airdnaResult;
       if (airdnaResult) airdnaOccupancy = airdnaResult.current_occupancy;
+      zoneScore = zoneResult.score;
     }
   } catch (err) {
     console.error('Rental/financial fetch failed:', err);
@@ -216,6 +234,112 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   // ── ROI projection from financials ──
   const roiDisplay = devFinancials?.roi_annual_pct ?? property.roi_projected ?? null;
+
+  // ── IRR 5yr + 10yr for CetesComparison ──
+  // Prefer precomputed financials. Fall back to in-line calc matching unit/PDF model.
+  const appreciationPct = (property.roi_appreciation as number | null) ?? 8;
+  const DOWN_PCT = 30;
+  const RATE_PCT = 12;
+  const LOAN_MONTHS = 120;
+  const effectiveRent = rentalPerM2 && representativeArea && representativeArea > 0
+    ? Math.round(rentalPerM2 * representativeArea)
+    : rentalMedian;
+  let irr5y: number | null = devFinancials?.irr_5yr ?? null;
+  let irr10y: number | null = devFinancials?.irr_10yr ?? null;
+  if ((irr5y == null || irr10y == null) && propertyPrice > 0 && effectiveRent && effectiveRent > 0) {
+    const closing = calculateClosingCosts(propertyPrice, propertyState);
+    const totalInvested = propertyPrice * (DOWN_PCT / 100) + closing;
+    const monthlyNet = Math.round(effectiveRent * RES.OCCUPANCY * (1 - RES.EXPENSE_RATIO));
+    const monthlyPmt = calculateMonthlyPayment(propertyPrice, DOWN_PCT, LOAN_MONTHS, RATE_PCT);
+    const annualNetFlow = monthlyNet * 12 - monthlyPmt * 12;
+    if (irr5y == null) {
+      irr5y = calculateIRR(buildCashflows({
+        totalInvested, annualNetFlow, price: propertyPrice,
+        appreciationPct, years: 5,
+        remainingBalance: calculateRemainingBalanceActuarial(propertyPrice, DOWN_PCT, RATE_PCT, LOAN_MONTHS, 60),
+      }));
+    }
+    if (irr10y == null) {
+      irr10y = calculateIRR(buildCashflows({
+        totalInvested, annualNetFlow, price: propertyPrice,
+        appreciationPct, years: 10,
+        remainingBalance: calculateRemainingBalanceActuarial(propertyPrice, DOWN_PCT, RATE_PCT, LOAN_MONTHS, 120),
+      }));
+    }
+  }
+
+  // ── Market sentiment indicators ──
+  const sentimentIndicators: SentimentIndicator[] = [];
+  // (a) Appreciation signal
+  if (appreciationPct != null) {
+    const dir: 'bullish' | 'neutral' | 'bearish' = appreciationPct >= 8
+      ? 'bullish' : appreciationPct >= 5 ? 'neutral' : 'bearish';
+    sentimentIndicators.push({
+      id: 'appreciation',
+      label: isEn ? 'Annual appreciation' : 'Plusvalía anual',
+      direction: dir,
+      value: `${appreciationPct.toFixed(1)}%`,
+      rationale: isEn
+        ? dir === 'bullish'
+          ? 'Above market benchmark of 8% — strong capital growth outlook.'
+          : dir === 'neutral'
+            ? 'Aligned with market benchmark — stable but moderate growth.'
+            : 'Below market benchmark — weaker capital growth outlook.'
+        : dir === 'bullish'
+          ? 'Por encima del benchmark de 8% — fuerte crecimiento esperado.'
+          : dir === 'neutral'
+            ? 'Alineado con el benchmark — crecimiento estable y moderado.'
+            : 'Por debajo del benchmark — menor crecimiento esperado.',
+    });
+  }
+  // (b) Occupancy demand (AirDNA trend last 3 vs first 3)
+  if (airdnaSummary?.occupancy_trend && airdnaSummary.occupancy_trend.length >= 6) {
+    const trend = airdnaSummary.occupancy_trend;
+    const early = trend.slice(0, 3).reduce((s, p) => s + p.value, 0) / 3;
+    const late = trend.slice(-3).reduce((s, p) => s + p.value, 0) / 3;
+    const delta = (late - early) * 100;
+    const dir: 'bullish' | 'neutral' | 'bearish' = delta > 3 ? 'bullish' : delta < -3 ? 'bearish' : 'neutral';
+    sentimentIndicators.push({
+      id: 'occupancy',
+      label: isEn ? 'Demand trend' : 'Tendencia de demanda',
+      direction: dir,
+      value: `${delta >= 0 ? '+' : ''}${delta.toFixed(1)} pp`,
+      rationale: isEn
+        ? dir === 'bullish'
+          ? 'Occupancy trending up — demand strengthening in this market.'
+          : dir === 'bearish'
+            ? 'Occupancy trending down — demand softening.'
+            : 'Occupancy stable — demand is steady.'
+        : dir === 'bullish'
+          ? 'Ocupación al alza — demanda creciendo en este mercado.'
+          : dir === 'bearish'
+            ? 'Ocupación a la baja — demanda moderándose.'
+            : 'Ocupación estable — demanda sin cambios.',
+    });
+  }
+  // (c) Supply pressure from zone score
+  if (zoneScore?.supply_pressure_component != null) {
+    const sp = zoneScore.supply_pressure_component;
+    // Higher supply_pressure_component = LESS pressure (better for investor)
+    const dir: 'bullish' | 'neutral' | 'bearish' = sp >= 70 ? 'bullish' : sp >= 40 ? 'neutral' : 'bearish';
+    sentimentIndicators.push({
+      id: 'supply',
+      label: isEn ? 'Supply pressure' : 'Presión de oferta',
+      direction: dir,
+      value: `${Math.round(sp)}/100`,
+      rationale: isEn
+        ? dir === 'bullish'
+          ? 'Supply constrained — favorable for pricing power.'
+          : dir === 'bearish'
+            ? 'High supply — competitive pressure on rates.'
+            : 'Balanced supply dynamics.'
+        : dir === 'bullish'
+          ? 'Oferta limitada — favorable para el precio.'
+          : dir === 'bearish'
+            ? 'Alta oferta — presión competitiva sobre tarifas.'
+            : 'Dinámica de oferta equilibrada.',
+    });
+  }
 
   const stageLabel =
     property.stage === 'preventa'
@@ -558,25 +682,24 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   id: 'geo',
                   label: tProp('tabGeo'),
                   panel: (
-                    <div className="space-y-6">
-                      <div className="aspect-[16/9] bg-[#F4F6F8] rounded-xl flex flex-col items-center justify-center text-gray-400">
-                        <MapPin size={40} strokeWidth={1.5} className="mb-3" />
-                        <p className="text-sm font-medium">{tProp('geoMapComingSoon')}</p>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{tProp('geoAddress')}</div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            {property.address || `${property.zone || ''}, ${property.city}`}
-                          </div>
-                        </div>
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{tProp('geoZone')}</div>
-                          <div className="text-sm font-semibold text-gray-900">
-                            {property.zone || property.city}, {property.state}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="space-y-8">
+                      <GeoAnalysis
+                        lat={property.lat ?? null}
+                        lng={property.lng ?? null}
+                        address={property.address || null}
+                        city={property.city}
+                        zone={property.zone || null}
+                        state={property.state || null}
+                        zoneScore={zoneScore}
+                        locale={locale}
+                      />
+                      {airdnaSummary && airdnaMarket && (
+                        <AirdnaInsights
+                          data={airdnaSummary}
+                          locale={locale}
+                          market={airdnaMarket}
+                        />
+                      )}
                     </div>
                   ),
                 },
@@ -608,6 +731,17 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                           }
                           estimatedRentVac={rentalMedianVac}
                           airdnaOccupancy={airdnaOccupancy}
+                        />
+                      )}
+                      {sentimentIndicators.length > 0 && (
+                        <MarketSentiment indicators={sentimentIndicators} locale={locale} />
+                      )}
+                      {propertyPrice > 0 && (irr5y != null || irr10y != null) && (
+                        <CetesComparison
+                          initialInvestment={propertyPrice}
+                          irr5y={irr5y}
+                          irr10y={irr10y}
+                          locale={locale}
                         />
                       )}
                     </div>

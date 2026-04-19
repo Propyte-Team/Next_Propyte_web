@@ -39,6 +39,12 @@ export async function GET(req: Request) {
   const localeParam = url.searchParams.get('locale');
 
   if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 });
+  if (kindParam !== null && !isKind(kindParam)) {
+    return NextResponse.json({ error: 'Invalid kind (expected development|unit)' }, { status: 400 });
+  }
+  if (localeParam !== null && !isLocale(localeParam)) {
+    return NextResponse.json({ error: 'Invalid locale (expected es|en)' }, { status: 400 });
+  }
   const kind = isKind(kindParam) ? kindParam : 'development';
   const locale = isLocale(localeParam) ? localeParam : 'es';
 
