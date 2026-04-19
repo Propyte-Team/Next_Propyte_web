@@ -132,7 +132,7 @@ export async function getSimilarDevelopments(
   const base = () =>
     hub(client)
       .from('v_developments')
-      .select('id, slug, name, city, zone, images, price_min_mxn, price_mxn, stage, property_types, developer_name')
+      .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name')
       .not('approved_at', 'is', null)
       .in('zoho_pipeline_status', APPROVED_STATUSES)
       .neq('id', seed.id)

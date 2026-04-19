@@ -92,7 +92,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         city: d.city,
         zone: d.zone,
         images: d.images,
-        price: d.price_min_mxn || d.price_mxn || null,
+        price: d.price_min_mxn || null,
       }));
     }
   } catch (err) {
