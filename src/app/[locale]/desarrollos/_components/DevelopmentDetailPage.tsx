@@ -292,12 +292,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
             : 'Por debajo del benchmark — menor crecimiento esperado.',
     });
   }
-  // (b) Occupancy demand (AirDNA trend last 3 vs first 3)
+  // (b) Occupancy demand (AirDNA trend last 3 vs first 3). Values come in percent scale (0-100).
   if (airdnaSummary?.occupancy_trend && airdnaSummary.occupancy_trend.length >= 6) {
     const trend = airdnaSummary.occupancy_trend;
     const early = trend.slice(0, 3).reduce((s, p) => s + p.value, 0) / 3;
     const late = trend.slice(-3).reduce((s, p) => s + p.value, 0) / 3;
-    const delta = (late - early) * 100;
+    const delta = late - early;
     const dir: 'bullish' | 'neutral' | 'bearish' = delta > 3 ? 'bullish' : delta < -3 ? 'bearish' : 'neutral';
     sentimentIndicators.push({
       id: 'occupancy',

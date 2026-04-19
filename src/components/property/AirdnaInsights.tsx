@@ -23,7 +23,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
   const chartData = data.occupancy_trend.map((p) => ({
     date: p.date,
     label: formatMonthShort(p.date, locale),
-    occupancy: Math.round(p.value * 100),
+    occupancy: Math.round(p.value),
   }));
 
   const adrByBedsEntries = Object.entries(data.adr_by_beds).slice(0, 5);
@@ -52,9 +52,9 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
         <KpiCard
           icon={<TrendingUp size={18} />}
           label={isEn ? 'Current occupancy' : 'Ocupación actual'}
-          value={data.current_occupancy != null ? `${Math.round(data.current_occupancy * 100)}%` : '—'}
+          value={data.current_occupancy != null ? `${Math.round(data.current_occupancy)}%` : '—'}
           subtitle={data.avg_occupancy_12m != null
-            ? `${isEn ? 'Avg 12m' : 'Prom. 12m'}: ${Math.round(data.avg_occupancy_12m * 100)}%`
+            ? `${isEn ? 'Avg 12m' : 'Prom. 12m'}: ${Math.round(data.avg_occupancy_12m)}%`
             : undefined}
         />
         <KpiCard
@@ -74,7 +74,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
           label={isEn ? 'Projected revenue' : 'Ingreso proyectado'}
           value={
             data.current_occupancy != null && data.current_adr != null
-              ? `$${Math.round(data.current_occupancy * data.current_adr * 30).toLocaleString()}`
+              ? `$${Math.round((data.current_occupancy / 100) * data.current_adr * 30).toLocaleString()}`
               : '—'
           }
           subtitle={isEn ? 'per month (est.)' : 'mensual (est.)'}

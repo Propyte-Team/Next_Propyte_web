@@ -160,7 +160,7 @@ export default function GeoAnalysis({
             {zoneScore.median_occupancy != null && (
               <RawMetric
                 label={isEn ? 'Median occupancy' : 'Ocupación media'}
-                value={`${Math.round(zoneScore.median_occupancy * 100)}%`}
+                value={`${Math.round(zoneScore.median_occupancy)}%`}
               />
             )}
             {zoneScore.median_adr != null && (
