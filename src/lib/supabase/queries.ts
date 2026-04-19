@@ -117,11 +117,12 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
 }
 
 /**
- * 4-level fallback for similar developments. Returns the first non-empty bucket.
+ * 5-level fallback for similar developments. Returns the first non-empty bucket.
  *   L1: same property_type + same zone
  *   L2: same zone (any type)
  *   L3: same city (any type)
  *   L4: featured developments (any city)
+ *   L5: any approved development (guaranteed non-empty if any other dev exists)
  */
 export async function getSimilarDevelopments(
   client: Client,
@@ -149,8 +150,11 @@ export async function getSimilarDevelopments(
     const r = await base().eq('city', seed.city);
     if (r.data && r.data.length > 0) return r.data;
   }
-  const r = await base().eq('featured', true).order('created_at', { ascending: false });
-  return r.data || [];
+  const featured = await base().eq('featured', true).order('created_at', { ascending: false });
+  if (featured.data && featured.data.length > 0) return featured.data;
+
+  const any = await base().order('created_at', { ascending: false });
+  return any.data || [];
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {

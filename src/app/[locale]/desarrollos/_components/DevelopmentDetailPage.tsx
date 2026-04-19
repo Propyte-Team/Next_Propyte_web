@@ -161,7 +161,19 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     verified: developerRecord?.verified || false,
     yearsExperience: developerRecord?.yearsExperience ?? null,
     unitsDelivered: developerRecord?.unitsDelivered ?? null,
+    description: (isEn ? developerRecord?.descriptionEn : developerRecord?.descriptionEs)
+      || developerRecord?.descriptionEs
+      || null,
   };
+
+  const developerInitials: string | null = developerDisplay.name
+    ? (developerDisplay.name as string)
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w: string) => w[0]?.toUpperCase() || '')
+        .join('') || null
+    : null;
 
   // ── Unit aggregates (ranges) derived from units array ──
   interface UnitLite {
@@ -481,6 +493,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                   alt={developerDisplay.name}
                                   className="w-full h-full object-contain"
                                 />
+                              ) : developerInitials ? (
+                                <span className="text-xl font-extrabold text-[#0D9488] tracking-tight">
+                                  {developerInitials}
+                                </span>
                               ) : (
                                 <Building2 size={28} className="text-gray-300" />
                               )}
@@ -523,6 +539,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               </Link>
                             )}
                           </div>
+                          {developerDisplay.description && (
+                            <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
+                              {developerDisplay.description}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
