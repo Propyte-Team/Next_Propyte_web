@@ -8,8 +8,13 @@ const intlMiddleware = createIntlMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip API routes and static assets
-  if (pathname.startsWith('/api') || pathname.startsWith('/_next') || pathname.includes('.')) {
+  // Skip API routes, static assets y el Design Playground (/admin/*)
+  if (
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/admin') ||
+    pathname.includes('.')
+  ) {
     return NextResponse.next();
   }
 

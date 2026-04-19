@@ -97,6 +97,47 @@ export async function GET(req: Request) {
     similarError = e instanceof Error ? e.message : String(e);
   }
 
+  // Additional anon probes: read each filter variant of Propyte_desarrolladores for Avica's id
+  const avicaProbes: Record<string, unknown> = {};
+  if (developerId) {
+    const probeDefs: Array<[string, (q: ReturnType<typeof makeQ>) => ReturnType<typeof makeQ>]> = [
+      ['bareEq', (q) => q.eq('id', developerId)],
+      ['byApprovedAt', (q) => q.eq('id', developerId).not('approved_at', 'is', null)],
+      ['byPipelineIn', (q) => q.eq('id', developerId).in('zoho_pipeline_status', ['aprobado', 'Aprobado', 'Listo', 'listo'])],
+      ['ilikeName', (q) => q.ilike('nombre_desarrollador', '%avica%')],
+    ];
+
+    function makeQ() {
+      return supabase!.schema('real_estate_hub' as 'public')
+        .from('Propyte_desarrolladores')
+        .select('id, nombre_desarrollador, ext_slug_desarrollador, approved_at, zoho_pipeline_status, ext_publicado, deleted_at');
+    }
+
+    for (const [name, build] of probeDefs) {
+      try {
+        const r = await build(makeQ());
+        avicaProbes[name] = { data: r.data, error: r.error?.message };
+      } catch (e) {
+        avicaProbes[name] = { exception: e instanceof Error ? e.message : String(e) };
+      }
+    }
+  }
+
+  // Also probe v_developers directly
+  let vDevelopersForAvica: unknown = null;
+  if (developerId) {
+    try {
+      const r = await supabase.schema('real_estate_hub' as 'public')
+        .from('v_developers')
+        .select('*')
+        .eq('id', developerId)
+        .maybeSingle();
+      vDevelopersForAvica = { data: r.data, error: r.error?.message };
+    } catch (e) {
+      vDevelopersForAvica = { exception: e instanceof Error ? e.message : String(e) };
+    }
+  }
+
   return NextResponse.json({
     slug,
     queryPath,
@@ -108,5 +149,7 @@ export async function GET(req: Request) {
     projectCountError,
     similarCount,
     similarError,
+    avicaProbes,
+    vDevelopersForAvica,
   }, { status: 200 });
 }
