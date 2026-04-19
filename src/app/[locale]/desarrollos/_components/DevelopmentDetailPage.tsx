@@ -24,6 +24,7 @@ import SimilarListings, { type SimilarListingItem } from '@/components/shared/Si
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
+import ShareButton from '@/components/property/ShareButton';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -319,14 +320,23 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   {property.city}, {property.state}
                 </span>
               </div>
-              {(property.price_min_mxn || property.price_mxn) > 0 && (
-                <div className="mt-4">
-                  <span className="text-sm text-gray-500">{isEn ? 'Starting from' : 'Desde'}</span>
-                  <div className="text-3xl font-bold text-gray-900">
-                    {formatPrice(property.price_min_mxn || property.price_mxn)}
+              <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
+                {(property.price_min_mxn || property.price_mxn) > 0 ? (
+                  <div>
+                    <span className="text-sm text-gray-500">{isEn ? 'Starting from' : 'Desde'}</span>
+                    <div className="text-3xl font-bold text-gray-900">
+                      {formatPrice(property.price_min_mxn || property.price_mxn)}
+                    </div>
                   </div>
-                </div>
-              )}
+                ) : <div />}
+                <ShareButton
+                  propertyName={property.name}
+                  propertyUrl={`https://propyte.com/${locale}/desarrollos/${slug}`}
+                  slug={slug}
+                  kind="development"
+                  locale={locale}
+                />
+              </div>
             </div>
 
             {/* 3-tab layout */}

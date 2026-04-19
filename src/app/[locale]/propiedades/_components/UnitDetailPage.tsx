@@ -19,6 +19,7 @@ import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
+import ShareButton from '@/components/property/ShareButton';
 import Badge from '@/components/ui/Badge';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
@@ -224,17 +225,26 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 </span>
               </div>
 
-              {/* Price */}
-              {property.price.mxn > 0 && (
-                <div className="mt-4 flex items-baseline gap-4">
-                  <div className="text-4xl font-extrabold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</div>
-                  {property.specs.area > 0 && (
-                    <div className="text-sm text-gray-500">
-                      {formatPrice(Math.round(property.price.mxn / property.specs.area))}/m²
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Price + Share */}
+              <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
+                {property.price.mxn > 0 && (
+                  <div className="flex items-baseline gap-4">
+                    <div className="text-4xl font-extrabold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</div>
+                    {property.specs.area > 0 && (
+                      <div className="text-sm text-gray-500">
+                        {formatPrice(Math.round(property.price.mxn / property.specs.area))}/m²
+                      </div>
+                    )}
+                  </div>
+                )}
+                <ShareButton
+                  propertyName={property.name}
+                  propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
+                  slug={slug}
+                  kind="unit"
+                  locale={locale}
+                />
+              </div>
 
               {/* Specs chips */}
               <div className="flex flex-wrap gap-2 mt-4">
