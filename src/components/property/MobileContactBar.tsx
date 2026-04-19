@@ -1,56 +1,87 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { MessageCircle, Calendar, Phone } from 'lucide-react';
+import { useCallback } from 'react';
+import { MessageCircle, ArrowDown } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
-import type { Property } from '@/types/property';
 
 interface MobileContactBarProps {
-  property: Property;
+  price: number;
+  propertyName: string;
+  propertyUrl: string;
+  contactTargetId?: string;
+  locale: string;
+  /** Optional ROI badge to show next to price */
+  roiPct?: number;
 }
 
-export default function MobileContactBar({ property }: MobileContactBarProps) {
-  const t = useTranslations('property');
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '521XXXXXXXXXX';
+/**
+ * Fixed floating bar shown below md breakpoint on detail pages.
+ * Price left + WhatsApp + "Contactar" (scrolls smoothly to contact form).
+ * Parent must add pb-20 md:pb-0 to avoid overlap.
+ */
+export default function MobileContactBar({
+  price, propertyName, propertyUrl, contactTargetId = 'contact-form', locale, roiPct,
+}: MobileContactBarProps) {
+  const isEn = locale === 'en';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
 
-  const msg = t('whatsappMessage', { name: property.name, id: property.id });
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  const msg = isEn
+    ? `Hi, I'm interested in ${propertyName}. I saw it on Propyte: ${propertyUrl}`
+    : `Hola, me interesa ${propertyName}. Lo vi en Propyte: ${propertyUrl}`;
+  const whatsappUrl = phone
+    ? `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`
+    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+  const onContactClick = useCallback(() => {
+    const el = document.getElementById(contactTargetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const firstInput = el.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+      if (firstInput) {
+        setTimeout(() => firstInput.focus({ preventScroll: true }), 500);
+      }
+    }
+  }, [contactTargetId]);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-30 lg:hidden">
-      {/* Price strip */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-100">
-        <div>
-          <div className="text-lg font-bold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</div>
-          <div className="text-xs text-gray-500">{property.name}</div>
+    <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] md:hidden">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <div className="flex-none min-w-0">
+          <div className="text-[10px] text-gray-500 uppercase tracking-wider">
+            {isEn ? 'From' : 'Desde'}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-base font-extrabold text-[#2C2C2C] leading-none">
+              {price > 0 ? formatPrice(price) : '—'}
+            </span>
+            {roiPct != null && roiPct > 0 && (
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0D9488] rounded-full whitespace-nowrap">
+                ROI {roiPct}%
+              </span>
+            )}
+          </div>
         </div>
-        {property.roi.projected > 0 && (
-          <span className="text-xs font-bold px-2 py-0.5 bg-[#5CE0D2]/10 text-[#4BCEC0] rounded-full">
-            ROI {property.roi.projected}%
-          </span>
-        )}
-      </div>
-      {/* CTA buttons */}
-      <div className="flex gap-2 p-3">
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 flex items-center justify-center gap-2 h-11 bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold rounded-lg transition-colors text-sm"
-        >
-          <MessageCircle size={16} />
-          WhatsApp
-        </a>
-        <button className="flex-1 flex items-center justify-center gap-2 h-11 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-lg transition-colors text-sm">
-          <Calendar size={16} />
-          {t('scheduleVisit')}
-        </button>
-        <a
-          href={`tel:+${phone}`}
-          className="flex items-center justify-center w-11 h-11 bg-gray-100 hover:bg-gray-200 text-[#2C2C2C] rounded-lg transition-colors"
-        >
-          <Phone size={16} />
-        </a>
+
+        <div className="flex-1 flex gap-2">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold rounded-xl transition-colors text-sm"
+            aria-label={isEn ? 'Contact via WhatsApp' : 'Contactar por WhatsApp'}
+          >
+            <MessageCircle size={16} />
+            WhatsApp
+          </a>
+          <button
+            type="button"
+            onClick={onContactClick}
+            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#0D9488] hover:bg-[#0B7F75] text-white font-bold rounded-xl transition-colors text-sm"
+          >
+            <ArrowDown size={16} />
+            {isEn ? 'Contact' : 'Contactar'}
+          </button>
+        </div>
       </div>
     </div>
   );

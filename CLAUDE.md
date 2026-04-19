@@ -26,6 +26,13 @@
 
 Antes de ejecutar cualquier tarea, evaluar si la instruccion es lo suficientemente especifica. Si detectas alcance indefinido, multiples interpretaciones, o impacto no obvio — preguntar antes de actuar.
 
+## Supabase — reglas específicas del proyecto
+
+- **Public components → usar `v_developers` view**, NUNCA `Propyte_desarrolladores` raw. La view tiene GRANT anon explícito + aliases en inglés (`name`, `slug`, `logo_url`, `delivered_units`, etc.). La tabla base tiene RLS policy `select_published` (filtro `ext_publicado = true AND deleted_at IS NULL`).
+- **Cualquier seed nuevo en `Propyte_desarrolladores` DEBE tener `ext_publicado = TRUE`**. Sin esto, anon no lo ve y la dev card no renderiza aunque approved_at/zoho_pipeline_status estén correctos.
+- **ISR cache no se regenera al fixear RLS/data**. Si reparas un gap y el detail page sigue stale, requiere redeploy o on-demand revalidation endpoint.
+- **Lookups de developer → usar `getDeveloperById` con `v_developers` primary + base table fallback**. Ver `src/lib/supabase/queries.ts`.
+
 ## Project Context
 
 - **Repo:** Propyte-Team/Next_Propyte_web

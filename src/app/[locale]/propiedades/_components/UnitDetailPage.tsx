@@ -17,6 +17,8 @@ import { CITY_TO_AIRDNA, VAC } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
+import ImageGallery from '@/components/property/ImageGallery';
+import MobileContactBar from '@/components/property/MobileContactBar';
 import Badge from '@/components/ui/Badge';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
@@ -169,7 +171,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         }}
       />
 
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
         {/* Breadcrumbs */}
         <nav aria-label={isEn ? 'Breadcrumb' : 'Migas de pan'} className="flex items-center gap-1 text-xs text-gray-500 mb-4">
           <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{isEn ? 'Home' : 'Inicio'}</Link>
@@ -182,34 +184,16 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         </nav>
 
         {/* Hero gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-2xl overflow-hidden">
-          <div className="md:col-span-2 md:row-span-2 aspect-[4/3] bg-gray-100 relative">
-            {property.images?.[0] ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={property.images[0]} alt={property.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-300">
-                <Building2 size={80} strokeWidth={1} />
-              </div>
-            )}
-            <div className="absolute top-4 left-4 flex gap-2">
+        <ImageGallery
+          images={property.images}
+          alt={property.name}
+          badgeTopLeft={
+            <>
               <span className="px-3 py-1.5 bg-[#5CE0D2] text-white text-xs font-bold rounded-full">{stageLabel}</span>
               {property.badge && <Badge type={property.badge} label={stageLabel} />}
-            </div>
-          </div>
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="hidden md:block aspect-[4/3] bg-gray-100">
-              {property.images?.[i] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={property.images[i]} alt={`${property.name} ${i}`} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-300">
-                  <Building2 size={40} strokeWidth={1} />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+            </>
+          }
+        />
 
         <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main */}
@@ -363,7 +347,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 locale={locale}
               />
 
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 scroll-mt-24">
                 <h3 className="text-base font-bold text-[#2C2C2C] mb-1">
                   {isEn ? 'Interested in this unit?' : '¿Te interesa esta unidad?'}
                 </h3>
@@ -397,6 +381,14 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           locale={locale}
         />
       </div>
+
+      <MobileContactBar
+        price={property.price.mxn}
+        propertyName={property.name}
+        propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
+        locale={locale}
+        roiPct={property.roi.projected}
+      />
     </>
   );
 }

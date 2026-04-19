@@ -22,6 +22,8 @@ import { CITY_TO_AIRDNA } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
+import ImageGallery from '@/components/property/ImageGallery';
+import MobileContactBar from '@/components/property/MobileContactBar';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -284,8 +286,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         }}
       />
 
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4">
-        <nav className="flex items-center gap-1 text-xs text-gray-500 mb-6">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
+        <nav aria-label={isEn ? 'Breadcrumb' : 'Migas de pan'} className="flex items-center gap-1 text-xs text-gray-500 mb-6">
           <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{isEn ? 'Home' : 'Inicio'}</Link>
           <ChevronRight size={12} />
           <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">{isEn ? 'Developments' : 'Desarrollos'}</Link>
@@ -298,21 +300,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Hero */}
-            <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden relative">
-              {property.images?.[0] ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={property.images[0]} alt={property.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
-                  <Building2 size={64} />
-                  <p className="mt-2 text-sm">{isEn ? 'Images coming soon' : 'Imagenes proximamente'}</p>
-                </div>
-              )}
-              <div className="absolute top-4 left-4">
+            {/* Hero gallery */}
+            <ImageGallery
+              images={(property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0)}
+              alt={property.name}
+              badgeTopLeft={
                 <span className="px-3 py-1.5 bg-[#5CE0D2] text-white text-sm font-bold rounded-full">{stageLabel}</span>
-              </div>
-            </div>
+              }
+            />
 
             {/* Title & Location */}
             <div>
@@ -614,7 +609,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24">
+            <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24 scroll-mt-24">
               {property.contact_name && (
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5CE0D2] to-[#1A2F3F] flex items-center justify-center text-white font-bold text-sm">
@@ -657,6 +652,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
         <SimilarListings items={similar} kind="development" locale={locale} />
       </div>
+
+      <MobileContactBar
+        price={propertyPrice}
+        propertyName={property.name}
+        propertyUrl={`https://propyte.com/${locale}/desarrollos/${slug}`}
+        locale={locale}
+        roiPct={roiDisplay ?? undefined}
+      />
     </>
   );
 }
