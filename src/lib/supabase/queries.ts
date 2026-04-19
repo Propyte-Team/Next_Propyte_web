@@ -370,6 +370,41 @@ export interface DeveloperRecord {
 
 export async function getDeveloperById(client: Client, developerId: string): Promise<DeveloperRecord | null> {
   if (!developerId) return null;
+
+  // Primary: v_developers (English-aliased view with anon GRANT — preferred
+  // for public consumption, not subject to per-row policies on the base table).
+  try {
+    const { data: v } = await hub(client)
+      .from('v_developers')
+      .select('*')
+      .eq('id', developerId)
+      .maybeSingle();
+    if (v) {
+      const d = v as Record<string, unknown>;
+      const name = (d.name as string | null) || (d.nombre_desarrollador as string | null) || '';
+      if (name) {
+        return {
+          id: d.id as string,
+          name,
+          slug: (d.slug as string | null) || (d.ext_slug_desarrollador as string | null) || null,
+          logoUrl: (d.logo_url as string | null) || (d.logo as string | null) || null,
+          descriptionEs: (d.description_es as string | null) || (d.descripcion as string | null) || null,
+          descriptionEn: (d.description_en as string | null) || (d.ext_descripcion_en as string | null) || null,
+          website: (d.website as string | null) || (d.sitio_web as string | null) || null,
+          verified: !!(d.verified ?? d.es_verificado),
+          rating: (d.rating as number | null) ?? (d.calificacion as number | null) ?? null,
+          activeProjects: (d.active_projects as number | null) ?? (d.proyectos_activos as number | null) ?? null,
+          yearsExperience: (d.years_experience as number | null) ?? (d.anos_experiencia as number | null) ?? null,
+          projectsDelivered: (d.projects_delivered as number | null) ?? (d.proyectos_entregados as number | null) ?? null,
+          unitsDelivered: (d.units_delivered as number | null) ?? (d.unidades_entregadas as number | null) ?? null,
+        };
+      }
+    }
+  } catch {
+    // fall through to base table fallback
+  }
+
+  // Fallback: Propyte_desarrolladores (Spanish columns, RLS-gated).
   try {
     const { data } = await hub(client)
       .from('Propyte_desarrolladores')
