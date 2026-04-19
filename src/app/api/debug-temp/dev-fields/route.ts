@@ -60,6 +60,39 @@ export async function GET(req: Request) {
 
   const allKeys = dev ? Object.keys(dev).sort() : [];
 
+  // Probe: list all developers to see actual IDs
+  const listProbes: Record<string, unknown> = {};
+  const listProbeSet: Array<{ schema: string; table: string }> = [
+    { schema: 'real_estate_hub', table: 'v_developers' },
+    { schema: 'real_estate_hub', table: 'Propyte_desarrolladores' },
+  ];
+  for (const { schema, table } of listProbeSet) {
+    try {
+      const r = await supabase
+        .schema(schema as 'public')
+        .from(table)
+        .select('id, name, slug')
+        .limit(10);
+      listProbes[`${schema}.${table}`] = { data: r.data, error: r.error?.message, count: r.data?.length };
+    } catch (e) {
+      listProbes[`${schema}.${table}`] = { exception: e instanceof Error ? e.message : String(e) };
+    }
+  }
+
+  // Probe: search by ilike name=avica
+  let avicaSearch: unknown = null;
+  try {
+    const r = await supabase
+      .schema('real_estate_hub' as 'public')
+      .from('v_developers')
+      .select('*')
+      .ilike('name', '%avica%')
+      .maybeSingle();
+    avicaSearch = { data: r.data, error: r.error?.message };
+  } catch (e) {
+    avicaSearch = { exception: e instanceof Error ? e.message : String(e) };
+  }
+
   return NextResponse.json({
     slug,
     devFound: !!dev,
@@ -67,6 +100,8 @@ export async function GET(req: Request) {
     allKeys,
     developerFields,
     probeDevTables,
+    listProbes,
+    avicaSearch,
     projectCount,
     projectCountError,
   }, { status: 200 });
