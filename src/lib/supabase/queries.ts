@@ -316,6 +316,26 @@ export async function updateContactStatus(client: Client, id: string, status: st
 // DEVELOPER QUERIES
 // ============================================================
 
+/**
+ * Count of approved developments for a given developer.
+ * Runs during ISR revalidate — cost is amortized across 3600s.
+ * Returns 0 on error or if developerId is falsy.
+ */
+export async function getDeveloperProjectCount(client: Client, developerId: string): Promise<number> {
+  if (!developerId) return 0;
+  try {
+    const { count } = await hub(client)
+      .from('v_developments')
+      .select('id', { count: 'exact', head: true })
+      .eq('developer_id', developerId)
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES);
+    return count || 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function getDevelopers(client: Client) {
   return client
     .schema('real_estate_hub' as 'public')

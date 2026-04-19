@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronRight, MapPin, Building2, Calendar, FileDown } from 'lucide-react';
+import {
+  ChevronRight, MapPin, Building2, Calendar, FileText, TrendingUp,
+  Package, DollarSign, Bed, Bath, Square, Download,
+} from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
@@ -10,6 +13,7 @@ import {
   getDevelopmentFinancials,
   getMlRentalEstimates,
   getAirdnaMarketSummary,
+  getDeveloperProjectCount,
   APPROVED_STATUSES,
 } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
@@ -19,8 +23,11 @@ import ContactForm from '@/components/property/ContactForm';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
+import AmenityList from '@/components/property/AmenityList';
+import VirtualTour from '@/components/property/VirtualTour';
+import VideoPlayer from '@/components/property/VideoPlayer';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
-import { slugify } from '@/lib/utils';
+import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
 interface DevelopmentDetailPageProps {
   locale: string;
@@ -114,6 +121,55 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const propertyState = property.state || 'Quintana Roo';
   const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
   const representativeArea = property.area_m2 || property.area_min || null;
+
+  // ── Developer project count (ISR, amortized) ──
+  let developerProjects = 0;
+  if (supabase && property.developer_id) {
+    try {
+      developerProjects = await getDeveloperProjectCount(supabase, property.developer_id);
+    } catch (err) {
+      console.error('Developer count failed:', err);
+    }
+  }
+
+  // ── Unit aggregates (ranges) derived from units array ──
+  interface UnitLite {
+    bedrooms: number | null;
+    bathrooms: number | null;
+    area_m2: number | null;
+    price_mxn: number | null;
+    availability_status: string | null;
+  }
+  const unitList = units as UnitLite[];
+  const rangeOf = (key: keyof UnitLite) => {
+    const values = unitList
+      .map((u) => u[key])
+      .filter((v): v is number => typeof v === 'number' && v > 0);
+    if (values.length === 0) return null;
+    return { min: Math.min(...values), max: Math.max(...values) };
+  };
+  const bedRange = rangeOf('bedrooms');
+  const bathRange = rangeOf('bathrooms');
+  const areaRange = rangeOf('area_m2');
+  const priceRange = rangeOf('price_mxn');
+  const availableCount = unitList.filter((u) => u.availability_status === 'disponible').length;
+  const totalUnits = property.total_units || unitList.length || null;
+  const derivedAvailable = property.available_units ?? (availableCount > 0 ? availableCount : null);
+
+  // ── Delivery display ──
+  const deliveryDisplay = property.delivery_text
+    || property.estimated_delivery
+    || (property.construction_progress != null
+        ? isEn ? `${property.construction_progress}% complete` : `${property.construction_progress}% completo`
+        : null);
+
+  // ── Starting price $/m² ──
+  const pricePerM2 = propertyPrice > 0 && representativeArea && representativeArea > 0
+    ? Math.round(propertyPrice / representativeArea)
+    : null;
+
+  // ── ROI projection from financials ──
+  const roiDisplay = devFinancials?.roi_annual_pct ?? property.roi_projected ?? null;
 
   const stageLabel =
     property.stage === 'preventa'
@@ -244,27 +300,76 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   label: tProp('tabDescripcion'),
                   panel: (
                     <div className="space-y-8">
+                      {/* Unit range chips */}
+                      {(bedRange || bathRange || areaRange || priceRange) && (
+                        <div className="flex flex-wrap gap-2">
+                          {bedRange && (
+                            <RangeChip
+                              icon={<Bed size={16} />}
+                              label={isEn
+                                ? formatRange(bedRange, bedRange.max === 1 ? 'bed' : 'beds')
+                                : formatRange(bedRange, 'rec')}
+                            />
+                          )}
+                          {bathRange && (
+                            <RangeChip
+                              icon={<Bath size={16} />}
+                              label={isEn
+                                ? formatRange(bathRange, bathRange.max === 1 ? 'bath' : 'baths')
+                                : formatRange(bathRange, 'baños')}
+                            />
+                          )}
+                          {areaRange && (
+                            <RangeChip
+                              icon={<Square size={16} />}
+                              label={formatRange(areaRange, 'm²')}
+                            />
+                          )}
+                          <RangeChip
+                            icon={<Building2 size={16} />}
+                            label={typeLabel}
+                          />
+                        </div>
+                      )}
+
+                      {/* 4 metric cards */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-gray-50 rounded-xl p-4 text-center">
-                          <Building2 size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                          <div className="text-sm font-bold text-gray-900">{typeLabel}</div>
-                          <div className="text-xs text-gray-500">{isEn ? 'Property Type' : 'Tipo'}</div>
-                        </div>
-                        <div className="bg-gray-50 rounded-xl p-4 text-center">
-                          <Calendar size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                          <div className="text-sm font-bold text-gray-900">{stageLabel}</div>
-                          <div className="text-xs text-gray-500">{isEn ? 'Stage' : 'Etapa'}</div>
-                        </div>
-                        <div className="bg-gray-50 rounded-xl p-4 text-center">
-                          <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                          <div className="text-sm font-bold text-gray-900">{property.zone || property.city}</div>
-                          <div className="text-xs text-gray-500">{isEn ? 'Zone' : 'Zona'}</div>
-                        </div>
-                        <div className="bg-gray-50 rounded-xl p-4 text-center">
-                          <MapPin size={24} className="mx-auto text-[#5CE0D2] mb-2" />
-                          <div className="text-sm font-bold text-gray-900">{property.state}</div>
-                          <div className="text-xs text-gray-500">{isEn ? 'State' : 'Estado'}</div>
-                        </div>
+                        <MetricCard
+                          icon={<DollarSign size={22} />}
+                          label={isEn ? 'Starting from' : 'Precio desde'}
+                          value={propertyPrice > 0 ? formatPrice(propertyPrice) : '—'}
+                          note={pricePerM2 ? `${formatPrice(pricePerM2)}/m²` : undefined}
+                        />
+                        <MetricCard
+                          icon={<Package size={22} />}
+                          label={isEn ? 'Availability' : 'Disponibilidad'}
+                          value={
+                            derivedAvailable != null && totalUnits
+                              ? `${derivedAvailable} / ${totalUnits}`
+                              : derivedAvailable != null
+                                ? String(derivedAvailable)
+                                : isEn ? 'Inquire' : 'Consultar'
+                          }
+                          note={
+                            derivedAvailable != null && totalUnits
+                              ? (isEn ? 'units available' : 'unidades disp.')
+                              : undefined
+                          }
+                        />
+                        <MetricCard
+                          icon={<Calendar size={22} />}
+                          label={isEn ? 'Delivery' : 'Entrega'}
+                          value={deliveryDisplay || stageLabel}
+                          note={property.construction_progress != null && property.construction_progress > 0
+                            ? `${property.construction_progress}%`
+                            : undefined}
+                        />
+                        <MetricCard
+                          icon={<TrendingUp size={22} />}
+                          label={isEn ? 'Projected ROI' : 'ROI proyectado'}
+                          value={roiDisplay != null ? `${roiDisplay.toFixed(1)}%` : '—'}
+                          note={isEn ? 'annual' : 'anual'}
+                        />
                       </div>
 
                       {description && (
@@ -272,56 +377,101 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
                             {isEn ? 'About this Development' : 'Sobre este Desarrollo'}
                           </h2>
-                          <p className="text-gray-600 leading-relaxed">{description}</p>
+                          <p className="text-gray-600 leading-relaxed whitespace-pre-line">{description}</p>
+                        </div>
+                      )}
+
+                      {/* Virtual Tour + Video */}
+                      {(property.virtual_tour_url || property.video_url) && (
+                        <div>
+                          <h2 className="text-xl font-bold text-gray-900 mb-4">
+                            {isEn ? 'Explore the development' : 'Recorre el desarrollo'}
+                          </h2>
+                          <div className={`grid gap-4 ${property.virtual_tour_url && property.video_url ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                            {property.virtual_tour_url && (
+                              <VirtualTour url={property.virtual_tour_url} propertyName={property.name} />
+                            )}
+                            {property.video_url && (
+                              <VideoPlayer
+                                url={property.video_url}
+                                propertyName={property.name}
+                                thumbnail={property.images?.[0]}
+                              />
+                            )}
+                          </div>
                         </div>
                       )}
 
                       <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
 
-                      {property.amenities?.length > 0 && (
-                        <div>
-                          <h2 className="text-xl font-bold text-gray-900 mb-3">{isEn ? 'Amenities' : 'Amenidades'}</h2>
-                          <div className="flex flex-wrap gap-2">
-                            {property.amenities.map((amenity: string) => (
-                              <span key={amenity} className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm rounded-full">
-                                {amenity}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      <AmenityList locale={locale} amenities={property.amenities || undefined} />
 
                       {property.brochure_url && (
                         <div>
+                          <h2 className="text-xl font-bold text-gray-900 mb-3">
+                            {isEn ? 'Documents' : 'Documentos'}
+                          </h2>
                           <a
                             href={property.brochure_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-xl transition-colors"
+                            className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
                           >
-                            <FileDown size={20} />
-                            {isEn ? 'Download Brochure' : 'Descargar Brochure'}
+                            <div className="w-12 h-12 rounded-lg bg-[#1A2F3F] flex items-center justify-center shrink-0">
+                              <FileText size={22} className="text-[#5CE0D2]" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-gray-900 truncate">
+                                {isEn ? 'Brochure' : 'Brochure'}
+                              </div>
+                              <div className="text-xs text-gray-500 truncate">
+                                {deriveFilenameFromUrl(property.brochure_url, 'brochure.pdf')}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0D9488] group-hover:text-[#5CE0D2] shrink-0">
+                              <Download size={16} />
+                              {isEn ? 'Download' : 'Descargar'}
+                            </div>
                           </a>
                         </div>
                       )}
 
                       {property.developer_name && (
                         <div className="bg-gray-50 rounded-2xl p-6">
-                          <h2 className="text-lg font-bold text-gray-900 mb-2">
+                          <h2 className="text-lg font-bold text-gray-900 mb-4">
                             {isEn ? 'Developer' : 'Desarrolladora'}
                           </h2>
-                          <div className="flex items-center gap-3">
-                            {property.developer_logo_url && (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={property.developer_logo_url}
-                                alt={property.developer_name}
-                                className="w-12 h-12 rounded-lg object-contain bg-white"
-                              />
-                            )}
-                            <div>
-                              <div className="font-bold text-gray-900">{property.developer_name}</div>
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                              {property.developer_logo_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={property.developer_logo_url}
+                                  alt={property.developer_name}
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <Building2 size={28} className="text-gray-300" />
+                              )}
                             </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-gray-900 text-lg">{property.developer_name}</div>
+                              {developerProjects > 0 && (
+                                <div className="text-xs text-gray-500 mt-0.5">
+                                  {isEn
+                                    ? `${developerProjects} ${developerProjects === 1 ? 'project' : 'projects'} on Propyte`
+                                    : `${developerProjects} ${developerProjects === 1 ? 'proyecto' : 'proyectos'} en Propyte`}
+                                </div>
+                              )}
+                            </div>
+                            {property.developer_slug && (
+                              <Link
+                                href={`/${locale}/desarrolladores/${property.developer_slug}`}
+                                className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
+                              >
+                                {isEn ? 'View profile' : 'Ver perfil'}
+                              </Link>
+                            )}
                           </div>
                         </div>
                       )}
@@ -478,5 +628,38 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         )}
       </div>
     </>
+  );
+}
+
+// ── helpers ──
+
+function formatRange(r: { min: number; max: number }, suffix: string): string {
+  const fmt = (n: number) => Number.isInteger(n) ? String(n) : n.toFixed(1);
+  return r.min === r.max
+    ? `${fmt(r.max)} ${suffix}`
+    : `${fmt(r.min)}–${fmt(r.max)} ${suffix}`;
+}
+
+function RangeChip({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
+      <span className="text-[#5CE0D2]">{icon}</span>
+      {label}
+    </div>
+  );
+}
+
+function MetricCard({
+  icon, label, value, note,
+}: { icon: React.ReactNode; label: string; value: string; note?: string }) {
+  return (
+    <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+      <div className="flex items-start justify-between mb-2">
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</span>
+        <span className="text-[#5CE0D2]">{icon}</span>
+      </div>
+      <div className="text-base md:text-lg font-bold text-gray-900 leading-tight truncate">{value}</div>
+      {note && <div className="text-[10px] text-gray-400 mt-0.5">{note}</div>}
+    </div>
   );
 }

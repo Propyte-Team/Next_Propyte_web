@@ -20,7 +20,7 @@ import Badge from '@/components/ui/Badge';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
 import MarketIndicator from './MarketIndicator';
-import AmenityList from './AmenityList';
+import AmenityList from '@/components/property/AmenityList';
 import UnitFAQs from './UnitFAQs';
 import { slugify } from '@/lib/utils';
 
@@ -277,7 +277,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               items={[
                 {
                   id: 'descripcion',
-                  label: isEn ? 'Description' : 'Descripción',
+                  label: isEn ? 'Overview' : 'Descripción',
                   panel: (
                     <div className="space-y-6">
                       <div>
@@ -321,7 +321,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 },
                 {
                   id: 'rentabilidad',
-                  label: isEn ? 'Investment' : 'Rentabilidad',
+                  label: isEn ? 'Returns' : 'Rentabilidad',
                   panel: (
                     <UnitInvestmentCalculator
                       price={property.price.mxn}

@@ -14,3 +14,20 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 }
+
+/**
+ * Extract a human-readable filename from a URL. Strips query strings and
+ * path, decodes URL encoding. Falls back to a generic name if the URL
+ * is malformed.
+ */
+export function deriveFilenameFromUrl(url: string, fallback = 'document.pdf'): string {
+  try {
+    const u = new URL(url);
+    const last = u.pathname.split('/').filter(Boolean).pop();
+    if (!last) return fallback;
+    return decodeURIComponent(last);
+  } catch {
+    const tail = url.split('?')[0].split('#')[0].split('/').filter(Boolean).pop();
+    return tail ? decodeURIComponent(tail) : fallback;
+  }
+}
