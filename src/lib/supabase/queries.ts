@@ -116,16 +116,41 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
   };
 }
 
-export async function getSimilarDevelopments(client: Client, dev: { id: string; city: string; stage: string }, limit = 4) {
-  return client
-    .schema('real_estate_hub' as 'public')
-    .from('v_developments')
-    .select('*')
-    .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
-    .neq('id', dev.id)
-    .or(`city.eq.${dev.city},stage.eq.${dev.stage}`)
-    .limit(limit);
+/**
+ * 4-level fallback for similar developments. Returns the first non-empty bucket.
+ *   L1: same property_type + same zone
+ *   L2: same zone (any type)
+ *   L3: same city (any type)
+ *   L4: featured developments (any city)
+ */
+export async function getSimilarDevelopments(
+  client: Client,
+  seed: { id: string; city: string; zone: string | null; property_type: string | null },
+  limit = 4,
+) {
+  const base = () =>
+    hub(client)
+      .from('v_developments')
+      .select('id, slug, name, city, zone, images, price_min_mxn, price_mxn, stage, property_types, developer_name')
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES)
+      .neq('id', seed.id)
+      .limit(limit);
+
+  if (seed.zone && seed.property_type) {
+    const r = await base().eq('zone', seed.zone).contains('property_types', [seed.property_type]);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  if (seed.zone) {
+    const r = await base().eq('zone', seed.zone);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  if (seed.city) {
+    const r = await base().eq('city', seed.city);
+    if (r.data && r.data.length > 0) return r.data;
+  }
+  const r = await base().eq('featured', true).order('created_at', { ascending: false });
+  return r.data || [];
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
@@ -315,6 +340,61 @@ export async function updateContactStatus(client: Client, id: string, status: st
 // ============================================================
 // DEVELOPER QUERIES
 // ============================================================
+
+/**
+ * Fetch a developer's record from `Propyte_desarrolladores` by id. Returns
+ * a normalized shape with English-aliased keys, since the base table uses
+ * Spanish column names (nombre_desarrollador, ext_slug_desarrollador, logo).
+ * Used as a fallback when `v_developments.developer_name` comes back null
+ * (the view does not always expose the joined fields).
+ */
+export interface DeveloperRecord {
+  id: string;
+  name: string;
+  slug: string | null;
+  logoUrl: string | null;
+  descriptionEs: string | null;
+  descriptionEn: string | null;
+  website: string | null;
+  verified: boolean;
+  rating: number | null;
+  activeProjects: number | null;
+  yearsExperience: number | null;
+  projectsDelivered: number | null;
+  unitsDelivered: number | null;
+}
+
+export async function getDeveloperById(client: Client, developerId: string): Promise<DeveloperRecord | null> {
+  if (!developerId) return null;
+  try {
+    const { data } = await hub(client)
+      .from('Propyte_desarrolladores')
+      .select('id, nombre_desarrollador, ext_slug_desarrollador, logo, descripcion, ext_descripcion_en, sitio_web, es_verificado, calificacion, proyectos_activos, anos_experiencia, proyectos_entregados, unidades_entregadas')
+      .eq('id', developerId)
+      .maybeSingle();
+    if (!data) return null;
+    const d = data as Record<string, unknown>;
+    const name = (d.nombre_desarrollador as string | null) || '';
+    if (!name) return null;
+    return {
+      id: d.id as string,
+      name,
+      slug: (d.ext_slug_desarrollador as string | null) || null,
+      logoUrl: (d.logo as string | null) || null,
+      descriptionEs: (d.descripcion as string | null) || null,
+      descriptionEn: (d.ext_descripcion_en as string | null) || null,
+      website: (d.sitio_web as string | null) || null,
+      verified: !!d.es_verificado,
+      rating: (d.calificacion as number | null) ?? null,
+      activeProjects: (d.proyectos_activos as number | null) ?? null,
+      yearsExperience: (d.anos_experiencia as number | null) ?? null,
+      projectsDelivered: (d.proyectos_entregados as number | null) ?? null,
+      unitsDelivered: (d.unidades_entregadas as number | null) ?? null,
+    };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Count of approved developments for a given developer.

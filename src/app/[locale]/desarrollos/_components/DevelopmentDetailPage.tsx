@@ -14,11 +14,13 @@ import {
   getMlRentalEstimates,
   getAirdnaMarketSummary,
   getDeveloperProjectCount,
-  APPROVED_STATUSES,
+  getDeveloperById,
+  getSimilarDevelopments,
 } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_AIRDNA } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
@@ -68,23 +70,33 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const citySlug = slugify(property.city);
   const description = isEn ? property.description_en || '' : property.description_es || '';
 
-  // ── Similar developments ──
-  let similar: any[] = [];
+  // ── Similar developments (4-level fallback) ──
+  let similar: SimilarListingItem[] = [];
   try {
-    if (!supabase) throw new Error('No Supabase');
-    const { data } = await supabase
-      .schema('real_estate_hub' as 'public')
-      .from('v_developments')
-      .select('id, slug, name, city, zone, price_min_mxn, stage, property_types, images, developer_name')
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
-      .eq('city', property.city)
-      .neq('id', property.id)
-      .limit(6);
-    if (data) similar = data;
+    if (supabase) {
+      const data = await getSimilarDevelopments(
+        supabase,
+        {
+          id: property.id,
+          city: property.city,
+          zone: property.zone || null,
+          property_type: property.property_types?.[0] || property.property_type || null,
+        },
+        4,
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      similar = (data as any[]).map((d) => ({
+        id: d.id,
+        slug: d.slug,
+        name: d.name,
+        city: d.city,
+        zone: d.zone,
+        images: d.images,
+        price: d.price_min_mxn || d.price_mxn || null,
+      }));
+    }
   } catch (err) {
     console.error('Similar query failed:', err);
-    similar = [];
   }
 
   // ── Rental + financial data ──
@@ -122,15 +134,34 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
   const representativeArea = property.area_m2 || property.area_min || null;
 
-  // ── Developer project count (ISR, amortized) ──
+  // ── Developer: project count + fallback record (ISR, amortized) ──
+  // The v_developments view often returns developer_name/slug as null even
+  // when developer_id is set. We fetch the row directly from
+  // Propyte_desarrolladores as fallback so the card renders regardless.
   let developerProjects = 0;
+  let developerRecord: Awaited<ReturnType<typeof getDeveloperById>> = null;
   if (supabase && property.developer_id) {
     try {
-      developerProjects = await getDeveloperProjectCount(supabase, property.developer_id);
+      [developerProjects, developerRecord] = await Promise.all([
+        getDeveloperProjectCount(supabase, property.developer_id),
+        getDeveloperById(supabase, property.developer_id),
+      ]);
     } catch (err) {
-      console.error('Developer count failed:', err);
+      console.error('Developer fetch failed:', err);
     }
   }
+
+  const developerDisplay = {
+    name: developerRecord?.name || property.developer_name || null,
+    logoUrl: developerRecord?.logoUrl || property.developer_logo_url || null,
+    slug: developerRecord?.slug
+      || property.developer_slug
+      || (developerRecord?.name ? slugify(developerRecord.name) : null)
+      || (property.developer_name ? slugify(property.developer_name) : null),
+    verified: developerRecord?.verified || false,
+    yearsExperience: developerRecord?.yearsExperience ?? null,
+    unitsDelivered: developerRecord?.unitsDelivered ?? null,
+  };
 
   // ── Unit aggregates (ranges) derived from units array ──
   interface UnitLite {
@@ -436,18 +467,18 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         </div>
                       )}
 
-                      {property.developer_name && (
+                      {developerDisplay.name && (
                         <div className="bg-gray-50 rounded-2xl p-6">
                           <h2 className="text-lg font-bold text-gray-900 mb-4">
                             {isEn ? 'Developer' : 'Desarrolladora'}
                           </h2>
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                              {property.developer_logo_url ? (
+                              {developerDisplay.logoUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img
-                                  src={property.developer_logo_url}
-                                  alt={property.developer_name}
+                                  src={developerDisplay.logoUrl}
+                                  alt={developerDisplay.name}
                                   className="w-full h-full object-contain"
                                 />
                               ) : (
@@ -455,18 +486,37 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="font-bold text-gray-900 text-lg">{property.developer_name}</div>
-                              {developerProjects > 0 && (
-                                <div className="text-xs text-gray-500 mt-0.5">
-                                  {isEn
-                                    ? `${developerProjects} ${developerProjects === 1 ? 'project' : 'projects'} on Propyte`
-                                    : `${developerProjects} ${developerProjects === 1 ? 'proyecto' : 'proyectos'} en Propyte`}
-                                </div>
-                              )}
+                              <div className="flex items-center gap-2">
+                                <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
+                                {developerDisplay.verified && (
+                                  <span className="px-2 py-0.5 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                    {isEn ? 'Verified' : 'Verificado'}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                                {developerProjects > 0 && (
+                                  <span>
+                                    {isEn
+                                      ? `${developerProjects} ${developerProjects === 1 ? 'project' : 'projects'} on Propyte`
+                                      : `${developerProjects} ${developerProjects === 1 ? 'proyecto' : 'proyectos'} en Propyte`}
+                                  </span>
+                                )}
+                                {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
+                                  <span>
+                                    · {developerDisplay.yearsExperience} {isEn ? 'yrs experience' : 'años de experiencia'}
+                                  </span>
+                                )}
+                                {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
+                                  <span>
+                                    · {developerDisplay.unitsDelivered.toLocaleString()} {isEn ? 'units delivered' : 'unidades entregadas'}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            {property.developer_slug && (
+                            {developerDisplay.slug && (
                               <Link
-                                href={`/${locale}/desarrolladores/${property.developer_slug}`}
+                                href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
                                 className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
                               >
                                 {isEn ? 'View profile' : 'Ver perfil'}
@@ -584,48 +634,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           </div>
         </div>
 
-        {/* Similar developments */}
-        {similar.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              {isEn ? `More Developments in ${property.city}` : `Mas Desarrollos en ${property.city}`}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {similar.map((dev) => (
-                <Link
-                  key={dev.id}
-                  href={`/${locale}/desarrollos/${dev.slug}`}
-                  className="group bg-white rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all overflow-hidden"
-                >
-                  <div className="aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200 relative">
-                    {dev.images?.[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={dev.images[0]} alt={dev.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Building2 size={36} className="text-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-900 group-hover:text-[#5CE0D2] transition-colors line-clamp-1">
-                      {dev.name}
-                    </h3>
-                    <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
-                      <MapPin size={14} />
-                      <span>{dev.zone}, {dev.city}</span>
-                    </div>
-                    {(dev.price_min_mxn || dev.price_mxn) > 0 && (
-                      <div className="mt-2 font-bold text-gray-900">
-                        {isEn ? 'From ' : 'Desde '}{formatPrice(dev.price_min_mxn || dev.price_mxn)}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        <SimilarListings items={similar} kind="development" locale={locale} />
       </div>
     </>
   );

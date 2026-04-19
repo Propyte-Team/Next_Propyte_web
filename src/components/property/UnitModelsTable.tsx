@@ -33,7 +33,9 @@ interface UnitModelsTableProps {
 const statusStyles: Record<string, string> = {
   disponible: 'bg-green-100 text-green-700',
   apartada: 'bg-yellow-100 text-yellow-700',
+  reservado: 'bg-yellow-100 text-yellow-700',
   vendida: 'bg-red-100 text-red-700',
+  vendido: 'bg-red-100 text-red-700',
   no_disponible: 'bg-gray-100 text-gray-500',
 };
 

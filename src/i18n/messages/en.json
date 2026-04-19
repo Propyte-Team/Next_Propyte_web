@@ -297,7 +297,9 @@
   "availability": {
     "disponible": "Available",
     "apartada": "Reserved",
+    "reservado": "Reserved",
     "vendida": "Sold",
+    "vendido": "Sold",
     "no_disponible": "Unavailable"
   },
   "unitModels": {

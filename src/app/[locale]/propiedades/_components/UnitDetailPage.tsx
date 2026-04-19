@@ -15,6 +15,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_AIRDNA, VAC } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import Badge from '@/components/ui/Badge';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -377,51 +378,24 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           </div>
         </div>
 
-        {/* Similar listings */}
-        {similar.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-[#2C2C2C] mb-6">
-              {isEn ? `Similar units in ${property.location.city}` : `Propiedades similares en ${property.location.city}`}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {similar.map((u) => (
-                <Link
-                  key={u.id}
-                  href={`/${locale}/propiedades/${u.slug}`}
-                  className="group bg-white rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/40 hover:shadow-md transition-all overflow-hidden"
-                >
-                  <div className="aspect-[4/3] bg-gray-100 relative">
-                    {u.images?.[0] ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={u.images[0]} alt={u.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Building2 size={36} className="text-gray-300" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-[#2C2C2C] group-hover:text-[#0D9488] transition-colors text-sm line-clamp-1">
-                      {u.development_name || u.name}{u.unit_number ? ` · ${u.unit_number}` : ''}
-                    </h3>
-                    <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
-                      <MapPin size={12} />
-                      <span className="truncate">{u.zone ? `${u.zone}, ` : ''}{u.city}</span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2 text-[11px] text-gray-500">
-                      {u.bedrooms ? <span>{u.bedrooms} {isEn ? 'bd' : 'rec'}</span> : null}
-                      {u.bathrooms ? <span>· {u.bathrooms} {isEn ? 'ba' : 'ba'}</span> : null}
-                      {u.area_m2 ? <span>· {u.area_m2} m²</span> : null}
-                    </div>
-                    {u.price_mxn != null && u.price_mxn > 0 && (
-                      <div className="mt-2 font-bold text-[#2C2C2C]">{formatPrice(u.price_mxn)}</div>
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
+        <SimilarListings
+          items={similar.map((u) => ({
+            id: u.id,
+            slug: u.slug,
+            name: u.name,
+            city: u.city,
+            zone: u.zone,
+            images: u.images,
+            price: u.price_mxn,
+            bedrooms: u.bedrooms,
+            bathrooms: u.bathrooms,
+            area: u.area_m2,
+            unitNumber: u.unit_number,
+            developmentName: u.development_name,
+          }))}
+          kind="unit"
+          locale={locale}
+        />
       </div>
     </>
   );

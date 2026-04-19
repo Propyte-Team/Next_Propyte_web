@@ -268,7 +268,7 @@
     "interestRate": "Tasa de interés",
     "monthsSuffix": "meses",
     "tabDescripcion": "Descripción",
-    "tabGeo": "Análisis Geográfico",
+    "tabGeo": "Ubicación",
     "tabRentabilidad": "Rentabilidad",
     "geoMapComingSoon": "Mapa interactivo próximamente",
     "geoAddress": "Dirección",
@@ -297,7 +297,9 @@
   "availability": {
     "disponible": "Disponible",
     "apartada": "Apartada",
+    "reservado": "Reservado",
     "vendida": "Vendida",
+    "vendido": "Vendido",
     "no_disponible": "No disponible"
   },
   "unitModels": {
