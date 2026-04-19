@@ -395,8 +395,14 @@ export async function getDeveloperById(client: Client, developerId: string): Pro
           rating: (d.rating as number | null) ?? (d.calificacion as number | null) ?? null,
           activeProjects: (d.active_projects as number | null) ?? (d.proyectos_activos as number | null) ?? null,
           yearsExperience: (d.years_experience as number | null) ?? (d.anos_experiencia as number | null) ?? null,
-          projectsDelivered: (d.projects_delivered as number | null) ?? (d.proyectos_entregados as number | null) ?? null,
-          unitsDelivered: (d.units_delivered as number | null) ?? (d.unidades_entregadas as number | null) ?? null,
+          projectsDelivered: (d.delivered_projects as number | null)
+            ?? (d.projects_delivered as number | null)
+            ?? (d.proyectos_entregados as number | null)
+            ?? null,
+          unitsDelivered: (d.delivered_units as number | null)
+            ?? (d.units_delivered as number | null)
+            ?? (d.unidades_entregadas as number | null)
+            ?? null,
         };
       }
     }
