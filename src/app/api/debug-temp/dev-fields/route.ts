@@ -79,7 +79,7 @@ export async function GET(req: Request) {
     }
   }
 
-  // Probe: search by ilike name=avica
+  // Probe: search by ilike name=avica in v_developers
   let avicaSearch: unknown = null;
   try {
     const r = await supabase
@@ -93,6 +93,35 @@ export async function GET(req: Request) {
     avicaSearch = { exception: e instanceof Error ? e.message : String(e) };
   }
 
+  // Probe: raw Propyte_desarrolladores — all columns, limit 3
+  let rawDesarrolladores: unknown = null;
+  try {
+    const r = await supabase
+      .schema('real_estate_hub' as 'public')
+      .from('Propyte_desarrolladores')
+      .select('*')
+      .limit(3);
+    rawDesarrolladores = { data: r.data, error: r.error?.message };
+  } catch (e) {
+    rawDesarrolladores = { exception: e instanceof Error ? e.message : String(e) };
+  }
+
+  // Probe: Propyte_desarrolladores by id
+  let desById: unknown = null;
+  if (dev && (dev as { developer_id?: string }).developer_id) {
+    try {
+      const r = await supabase
+        .schema('real_estate_hub' as 'public')
+        .from('Propyte_desarrolladores')
+        .select('*')
+        .eq('id', (dev as { developer_id: string }).developer_id)
+        .maybeSingle();
+      desById = { data: r.data, error: r.error?.message };
+    } catch (e) {
+      desById = { exception: e instanceof Error ? e.message : String(e) };
+    }
+  }
+
   return NextResponse.json({
     slug,
     devFound: !!dev,
@@ -102,6 +131,8 @@ export async function GET(req: Request) {
     probeDevTables,
     listProbes,
     avicaSearch,
+    rawDesarrolladores,
+    desById,
     projectCount,
     projectCountError,
   }, { status: 200 });
