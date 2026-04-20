@@ -1,8 +1,13 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 
 interface Unit {
   id: string;
+  slug?: string | null;
   unit_number?: string;
   typology?: string;
   unit_type: string;
@@ -46,15 +51,15 @@ function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null 
   return match?.estimated_rent_residencial || match?.estimated_rent_vacacional || null;
 }
 
-export default async function UnitModelsTable({ units, mlEstimates, locale }: UnitModelsTableProps) {
-  if (units.length === 0) return null;
-
-  const t = await getTranslations({ locale, namespace: 'unitModels' });
-  const tAvail = await getTranslations({ locale, namespace: 'availability' });
-  const tTypes = await getTranslations({ locale, namespace: 'types' });
+export default function UnitModelsTable({ units, mlEstimates, locale }: UnitModelsTableProps) {
+  const router = useRouter();
+  const t = useTranslations('unitModels');
+  const tAvail = useTranslations('availability');
+  const tTypes = useTranslations('types');
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
 
-  // Type label lookup with short-form fallback for departamento
+  if (units.length === 0) return null;
+
   const typeLabel = (type: string) => {
     if (type === 'departamento') return tTypes('departamentoShort');
     try {
@@ -71,6 +76,9 @@ export default async function UnitModelsTable({ units, mlEstimates, locale }: Un
       return status;
     }
   };
+
+  const unitHref = (unit: Unit) =>
+    unit.slug ? `/${locale}/propiedades/${unit.slug}` : null;
 
   return (
     <div>
@@ -100,10 +108,44 @@ export default async function UnitModelsTable({ units, mlEstimates, locale }: Un
             {units.map((unit) => {
               const rentEst = findRentEstimate(unit, mlEstimates);
               const status = unit.status || 'disponible';
+              const href = unitHref(unit);
+              const isClickable = !!href;
+              const rowLabel = unit.unit_number || unit.typology || t('model');
               return (
-                <tr key={unit.id} className="hover:bg-gray-50/50 transition-colors">
+                <tr
+                  key={unit.id}
+                  role={isClickable ? 'link' : undefined}
+                  aria-label={isClickable ? `${rowLabel} — ${formatPrice(unit.price_mxn)}` : undefined}
+                  tabIndex={isClickable ? 0 : undefined}
+                  onClick={isClickable ? () => router.push(href!) : undefined}
+                  onKeyDown={
+                    isClickable
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            router.push(href!);
+                          }
+                        }
+                      : undefined
+                  }
+                  className={`transition-colors ${
+                    isClickable
+                      ? 'hover:bg-[#5CE0D2]/5 cursor-pointer focus:bg-[#5CE0D2]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]/40'
+                      : 'hover:bg-gray-50/50'
+                  }`}
+                >
                   <td className="px-4 py-3 font-semibold text-gray-900">
-                    {unit.typology || unit.unit_number || '—'}
+                    {href ? (
+                      <Link
+                        href={href}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-[#0D9488] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
+                      >
+                        {unit.typology || unit.unit_number || '—'}
+                      </Link>
+                    ) : (
+                      unit.typology || unit.unit_number || '—'
+                    )}
                   </td>
                   <td className="px-4 py-3 text-gray-600">{typeLabel(unit.unit_type)}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bedrooms}</td>
@@ -132,8 +174,10 @@ export default async function UnitModelsTable({ units, mlEstimates, locale }: Un
         {units.map((unit) => {
           const rentEst = findRentEstimate(unit, mlEstimates);
           const status = unit.status || 'disponible';
-          return (
-            <div key={unit.id} className="bg-white border border-gray-100 rounded-xl p-4">
+          const href = unitHref(unit);
+
+          const cardBody = (
+            <>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-gray-900">
                   {unit.typology || unit.unit_number || '—'}
@@ -160,6 +204,23 @@ export default async function UnitModelsTable({ units, mlEstimates, locale }: Un
                   </>
                 )}
               </div>
+            </>
+          );
+
+          return href ? (
+            <Link
+              key={unit.id}
+              href={href}
+              className="block bg-white border border-gray-100 rounded-xl p-4 hover:border-[#5CE0D2] hover:shadow-sm transition-all active:scale-[0.99]"
+            >
+              {cardBody}
+            </Link>
+          ) : (
+            <div
+              key={unit.id}
+              className="bg-white border border-gray-100 rounded-xl p-4"
+            >
+              {cardBody}
             </div>
           );
         })}
