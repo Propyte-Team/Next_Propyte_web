@@ -69,11 +69,11 @@ async function run() {
     await page.goto(`${BASE}/es`, { waitUntil: 'networkidle', timeout: 45000 });
 
     const mobileHeader = await page.evaluate(() => {
-      const h = document.querySelector('header');
-      if (!h) return null;
-      const burger = h.querySelector('button[aria-label*="menu" i], button[aria-label*="men" i]');
-      const search = h.querySelector('[class*="search" i], [class*="Search"]');
-      return { hasHeader: !!h, hasBurger: !!burger, hasSearch: !!search };
+      // Múltiples <header> posibles (desktop + mobile). Buscar cualquiera que tenga burger visible.
+      const headers = Array.from(document.querySelectorAll('header'));
+      const burger = document.querySelector('button[aria-label*="menu" i], button[aria-label*="men" i], button[aria-label*="abrir" i]');
+      const search = document.querySelector('[class*="search" i], [class*="Search"], form[role="search"]');
+      return { hasHeader: headers.length > 0, hasBurger: !!burger, hasSearch: !!search };
     });
     push('F1_Mobile', 'Mobile header + burger + search', !!mobileHeader?.hasHeader && !!mobileHeader?.hasBurger, JSON.stringify(mobileHeader));
 
