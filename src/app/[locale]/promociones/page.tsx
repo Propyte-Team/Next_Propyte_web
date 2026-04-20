@@ -1,133 +1,246 @@
 import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
+import Image from 'next/image';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getDevelopments } from '@/lib/supabase/queries';
+import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { MapPin, Building2, Tag, ArrowRight } from 'lucide-react';
+import { MapPin, Building2, Tag, ArrowRight, Sparkles } from 'lucide-react';
+
+export const revalidate = 600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isEn = locale === 'en';
+  const t = await getTranslations({ locale, namespace: 'promociones' });
+  const title = t('heroTitle');
+  const brandedTitle = `${title} | Propyte`;
+  const description = t('metaDescription');
   return {
-    title: isEn ? 'Special Offers & Promotions | Propyte' : 'Promociones y Ofertas Especiales | Propyte',
-    description: isEn
-      ? 'Discover real estate projects with special offers, discounts, and exclusive promotions in Mexico\'s Riviera Maya.'
-      : 'Descubre proyectos inmobiliarios con ofertas especiales, descuentos y promociones exclusivas en la Riviera Maya.',
+    title,
+    description,
+    openGraph: {
+      type: 'website',
+      title: brandedTitle,
+      description,
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
       canonical: `/${locale}/promociones`,
-      languages: { es: '/es/promociones', en: '/en/promociones', 'x-default': '/es/promociones' },
+      languages: {
+        es: '/es/promociones',
+        en: '/en/promociones',
+        'x-default': '/es/promociones',
+      },
     },
   };
 }
 
+interface PromoDev {
+  id: string;
+  slug: string;
+  name: string;
+  city: string | null;
+  zone?: string | null;
+  stage?: string | null;
+  price_min_mxn?: number | null;
+  price_mxn?: number | null;
+  images?: string[] | null;
+  roi_estimated?: number | null;
+  roi_projected?: number | null;
+}
+
 export default async function PromocionesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isEn = locale === 'en';
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'promociones' });
 
-  let developments: any[] = [];
+  let items: PromoDev[] = [];
   try {
     const supabase = await createServerSupabaseClient();
-    const { data } = await getDevelopments(supabase, { featured: true });
-    if (data) developments = data;
-  } catch {
-    // Supabase not available
+    const res = await getFeaturedDevelopments(supabase, 12);
+    items = ((res.data as PromoDev[] | null) || []).slice(0, 12);
+  } catch (error) {
+    console.error('[PromocionesPage] Supabase fetch failed:', error);
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+
+  // Offers valid 90 days from now (referential — no real expiration in data yet)
+  const validThrough = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: t('heroTitle'),
+    description: t('metaDescription'),
+    url: `${baseUrl}/${locale}/promociones`,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: items.length,
+      itemListElement: items.map((dev, i) => {
+        const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
+        return {
+          '@type': 'ListItem',
+          position: i + 1,
+          item: {
+            '@type': 'Offer',
+            name: dev.name,
+            url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+            availability: 'https://schema.org/InStock',
+            validThrough,
+            priceSpecification: {
+              '@type': 'PriceSpecification',
+              price: price > 0 ? price : undefined,
+              priceCurrency: 'MXN',
+            },
+            itemOffered: {
+              '@type': 'RealEstateListing',
+              name: dev.name,
+              url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+              address: {
+                '@type': 'PostalAddress',
+                addressLocality: dev.city || undefined,
+                addressRegion: dev.zone || undefined,
+                addressCountry: 'MX',
+              },
+              ...(dev.images?.[0] ? { image: dev.images[0] } : {}),
+            },
+          },
+        };
+      }),
+    },
+  };
+
   return (
-    <div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+
       {/* Hero */}
-      <section className="bg-[#1A2F3F] py-16 md:py-20">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F5A623]/20 text-[#F5A623] rounded-full text-sm font-bold mb-6">
-            <Tag size={16} />
-            {isEn ? 'Limited Time Offers' : 'Ofertas por Tiempo Limitado'}
+      <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#F5A623]/10 rounded-full blur-3xl" />
+
+        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#F5A623]/20 rounded-full mb-6">
+            <Tag size={14} strokeWidth={2} className="text-[#F5A623]" />
+            <span className="text-[#F5A623] text-sm font-semibold tracking-wide uppercase">
+              {t('heroEyebrow')}
+            </span>
           </div>
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            {isEn ? 'Promotions & Special Offers' : 'Promociones y Ofertas Especiales'}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+            {t('heroTitle')}
           </h1>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            {isEn
-              ? 'Featured developments with exclusive discounts, incentives, and special financing plans.'
-              : 'Desarrollos destacados con descuentos exclusivos, incentivos y planes de financiamiento especiales.'}
+          <p className="text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
+            {t('heroSubtitle')}
           </p>
+          {items.length > 0 && (
+            <p className="mt-6 text-sm text-[#5CE0D2] font-semibold uppercase tracking-wide">
+              {t('countLabel', { count: items.length })}
+            </p>
+          )}
         </div>
       </section>
 
-      {/* Featured Developments */}
-      <section className="py-16 md:py-20">
+      {/* Promotions grid */}
+      <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          {developments.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {developments.map((dev: any) => (
-                <Link
-                  key={dev.id}
-                  href={`/${locale}/desarrollos/${dev.slug}`}
-                  className="group bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-all overflow-hidden"
-                >
-                  <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
-                    {dev.images?.[0] ? (
-                      <img src={dev.images[0]} alt={dev.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <Building2 size={36} className="text-gray-300" />
-                      </div>
-                    )}
-                    {/* Promo banner */}
-                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-4 py-2 text-white text-xs font-bold uppercase tracking-wider text-center">
-                      {isEn ? 'Featured Promotion' : 'Promoción Destacada'}
-                    </div>
-                    {dev.stage && (
-                      <div className="absolute bottom-2 left-2">
-                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase text-white rounded bg-[#1A2F3F]/80">
-                          {dev.stage}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-bold text-gray-900 group-hover:text-[#5CE0D2] transition-colors mb-1 line-clamp-1">
-                      {dev.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
-                      <MapPin size={14} />
-                      <span>{dev.zone}, {dev.city}</span>
-                    </div>
-                    {(dev.price_min_mxn > 0 || dev.price_mxn > 0) && (
-                      <div className="font-bold text-lg text-gray-900">
-                        {isEn ? 'From ' : 'Desde '}{formatPrice(dev.price_min_mxn || dev.price_mxn)}
-                      </div>
-                    )}
-                    {dev.roi_projected > 0 && (
-                      <div className="mt-2 inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/8 text-[#4BCEC0] text-xs font-bold rounded-full">
-                        ROI {dev.roi_projected}%
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              ))}
+          {items.length === 0 ? (
+            <div className="max-w-md mx-auto text-center bg-white p-10 rounded-xl border border-gray-100">
+              <Sparkles size={40} className="mx-auto text-[#5CE0D2] mb-4" />
+              <h2 className="text-xl font-bold text-[#1A2F3F] mb-2">{t('emptyTitle')}</h2>
+              <p className="text-sm text-gray-600 mb-6">{t('emptyDesc')}</p>
+              <Link
+                href={`/${locale}/desarrollos`}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+              >
+                {t('emptyCta')}
+                <ArrowRight size={16} />
+              </Link>
             </div>
           ) : (
-            <div className="text-center py-16">
-              <Building2 size={48} className="mx-auto text-gray-300 mb-4" />
-              <h3 className="text-xl font-bold text-gray-700 mb-2">
-                {isEn ? 'No active promotions right now' : 'No hay promociones activas en este momento'}
-              </h3>
-              <p className="text-gray-500 mb-6">
-                {isEn
-                  ? 'Check back soon or browse all available developments.'
-                  : 'Vuelve pronto o explora todos los desarrollos disponibles.'}
-              </p>
-              <Link
-                href={`/${locale}/propiedades`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-xl transition-colors"
-              >
-                {isEn ? 'View All Properties' : 'Ver Todas las Propiedades'}
-                <ArrowRight size={18} />
-              </Link>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((dev) => {
+                const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
+                const roi = dev.roi_estimated ?? dev.roi_projected ?? 0;
+                return (
+                  <Link
+                    key={dev.id}
+                    href={`/${locale}/desarrollos/${dev.slug}`}
+                    className="group bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-all overflow-hidden h-full flex flex-col"
+                  >
+                    <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
+                      {dev.images?.[0] ? (
+                        <Image
+                          src={dev.images[0]}
+                          alt={`${dev.name} — ${dev.city ?? ''}`}
+                          fill
+                          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Building2 size={36} className="text-gray-300" />
+                        </div>
+                      )}
+                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-4 py-2 text-white text-xs font-bold uppercase tracking-wider text-center">
+                        {t('featuredLabel')}
+                      </div>
+                    </div>
+                    <div className="p-4 flex-1 flex flex-col">
+                      <h3 className="font-bold text-[#1A2F3F] group-hover:text-[#0D9488] transition-colors mb-1 line-clamp-1">
+                        {dev.name}
+                      </h3>
+                      <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+                        <MapPin size={14} />
+                        <span>
+                          {dev.zone ? `${dev.zone}, ` : ''}
+                          {dev.city}
+                        </span>
+                      </div>
+                      {price > 0 && (
+                        <div className="font-bold text-lg text-[#1A2F3F]">
+                          {t('fromLabel')} {formatPrice(price)}
+                        </div>
+                      )}
+                      {roi > 0 && (
+                        <div className="mt-2 inline-flex self-start items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0D9488] text-xs font-bold rounded-full">
+                          {t('roiBadge')} {roi}%
+                        </div>
+                      )}
+                      <div className="mt-auto pt-4 flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0D9488] group-hover:underline">
+                          {t('viewCta')} <ArrowRight size={12} />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
       </section>
-    </div>
+
+      {/* CTA */}
+      <section className="py-16 md:py-20 bg-[#1A2F3F]">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            {t('ctaTitle')}
+          </h2>
+          <p className="text-white/70 max-w-lg mx-auto mb-8">{t('ctaDesc')}</p>
+          <Link
+            href={`/${locale}/contacto`}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+          >
+            {t('ctaButton')}
+            <ArrowRight size={18} />
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }

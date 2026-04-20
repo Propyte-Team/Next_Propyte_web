@@ -1359,5 +1359,33 @@
     "ctaDesc": "Explore the complete catalog of developments filtering by city, zone, stage, and price.",
     "ctaAll": "View full catalog",
     "ctaMercado": "Explore market"
+  },
+  "promociones": {
+    "heroEyebrow": "Limited time offers",
+    "heroTitle": "Promotions and special offers",
+    "heroSubtitle": "Developments with exclusive discounts, incentives, and special financing plans in Riviera Maya.",
+    "metaDescription": "Discover real estate developments with active promotions, early-payment discounts, and special financing plans in Riviera Maya.",
+    "countLabel": "{count} active promotions",
+    "featuredLabel": "Featured promotion",
+    "emptyTitle": "No active promotions right now",
+    "emptyDesc": "We're preparing the next campaign. Meanwhile, browse the full catalog.",
+    "emptyCta": "View full catalog",
+    "fromLabel": "From",
+    "viewCta": "View development",
+    "roiBadge": "ROI",
+    "validUntilLabel": "Promotion valid",
+    "ctaTitle": "Looking for a tailored deal?",
+    "ctaDesc": "Our advisors can negotiate special conditions directly with the developer.",
+    "ctaButton": "Contact advisor"
+  },
+  "unete": {
+    "heroEyebrow": "Join the team",
+    "heroTitle": "Join the Propyte Team",
+    "heroSubtitle": "Mexico's most innovative real estate agent network. Competitive commissions, cutting-edge technology, and the country's most dynamic market.",
+    "metaDescription": "Work with Propyte: the real estate agent network of the Mexican Caribbean. Access to 700+ developments, proprietary technology, transparent commissions, and continuous training."
+  },
+  "mercadoMeta": {
+    "title": "Market intelligence — Vacation and traditional rentals",
+    "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +2M records, 10,000+ comparables, daily updates."
   }
 }

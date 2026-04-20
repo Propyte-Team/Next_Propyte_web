@@ -15,20 +15,26 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  const isEn = locale === 'en';
+  const { getTranslations } = await import('next-intl/server');
+  const t = await getTranslations({ locale, namespace: 'mercadoMeta' });
 
-  const title = isEn
-    ? 'Rental Market Intelligence — Vacation & Traditional Rentals in Mexico | Propyte'
-    : 'Inteligencia de Mercado — Rentas Vacacionales y Tradicionales en México | Propyte';
-  const description = isEn
-    ? 'Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +2M records, 10,000+ comparables, daily updates.'
-    : 'Analiza el mercado de rentas vacacionales y tradicionales en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. +2M registros, 10,000+ comparables, actualización diaria.';
+  const title = t('title');
+  const brandedTitle = `${title} | Propyte`;
+  const description = t('description');
 
   return {
     title,
     description,
-    openGraph: { title, description, type: 'website', locale: isEn ? 'en_US' : 'es_MX' },
+    openGraph: {
+      title: brandedTitle,
+      description,
+      type: 'website',
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
+      canonical: `/${locale}/mercado`,
       languages: { es: '/es/mercado', en: '/en/mercado', 'x-default': '/es/mercado' },
     },
   };

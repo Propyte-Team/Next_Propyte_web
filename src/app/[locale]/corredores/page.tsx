@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BrokersPageContent from './BrokersPageContent';
 
@@ -6,16 +6,23 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'seo' });
 
+  const title = t('brokersTitle');
+  const brandedTitle = `${title} | Propyte`;
+  const description = t('brokersDescription');
+
   return {
-    title: t('brokersTitle'),
-    description: t('brokersDescription'),
+    title,
+    description,
     openGraph: {
-      title: t('brokersTitle'),
-      description: t('brokersDescription'),
+      title: brandedTitle,
+      description,
       type: 'website',
-      locale: locale === 'es' ? 'es_MX' : 'en_US',
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
     },
+    twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
+      canonical: `/${locale}/corredores`,
       languages: {
         es: '/es/corredores',
         en: '/en/corredores',
@@ -27,6 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function BrokersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   return (
     <>

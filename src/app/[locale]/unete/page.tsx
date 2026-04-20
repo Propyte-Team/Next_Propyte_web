@@ -1,10 +1,69 @@
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import UnetePageContent from './UnetePageContent';
 
-export const metadata = {
-  title: 'Únete al Equipo | La inmobiliaria digital del Caribe Mexicano',
-  description: 'Únete a la red de agentes inmobiliarios más innovadora de México. Comisiones competitivas, tecnología de punta, y el mercado más dinámico del país.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'unete' });
+  const title = t('heroTitle');
+  const brandedTitle = `${title} | Propyte`;
+  const description = t('metaDescription');
+  return {
+    title,
+    description,
+    openGraph: {
+      type: 'website',
+      title: brandedTitle,
+      description,
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image', title: brandedTitle, description },
+    alternates: {
+      canonical: `/${locale}/unete`,
+      languages: {
+        es: '/es/unete',
+        en: '/en/unete',
+        'x-default': '/es/unete',
+      },
+    },
+  };
+}
 
-export default function UnetePage() {
-  return <UnetePageContent />;
+export default async function UnetePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: 'unete' });
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: t('heroTitle'),
+    description: t('metaDescription'),
+    url: `${baseUrl}/${locale}/unete`,
+    inLanguage: locale === 'en' ? 'en-US' : 'es-MX',
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'Propyte',
+      url: baseUrl,
+    },
+    about: {
+      '@type': 'Organization',
+      name: 'Propyte',
+      description: locale === 'en'
+        ? 'Real estate marketplace in the Riviera Maya with data-driven tools for investors.'
+        : 'Marketplace inmobiliario en la Riviera Maya con herramientas de análisis para inversionistas.',
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <UnetePageContent />
+    </>
+  );
 }

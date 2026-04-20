@@ -1360,5 +1360,33 @@
     "ctaDesc": "Explora el catálogo completo de desarrollos filtrando por ciudad, zona, etapa y precio.",
     "ctaAll": "Ver catálogo completo",
     "ctaMercado": "Explorar mercado"
+  },
+  "promociones": {
+    "heroEyebrow": "Ofertas por tiempo limitado",
+    "heroTitle": "Promociones y ofertas especiales",
+    "heroSubtitle": "Desarrollos con descuentos exclusivos, incentivos y planes de financiamiento especiales en Riviera Maya.",
+    "metaDescription": "Descubre desarrollos inmobiliarios con promociones activas, descuentos por pronto pago y planes de financiamiento especiales en Riviera Maya.",
+    "countLabel": "{count} promociones activas",
+    "featuredLabel": "Promoción destacada",
+    "emptyTitle": "No hay promociones activas",
+    "emptyDesc": "Estamos preparando la próxima campaña. Mientras tanto, explora todo el catálogo.",
+    "emptyCta": "Ver catálogo completo",
+    "fromLabel": "Desde",
+    "viewCta": "Ver desarrollo",
+    "roiBadge": "ROI",
+    "validUntilLabel": "Promoción vigente",
+    "ctaTitle": "¿Buscas una oferta a tu medida?",
+    "ctaDesc": "Nuestros asesores pueden negociar condiciones especiales directamente con el desarrollador.",
+    "ctaButton": "Contactar asesor"
+  },
+  "unete": {
+    "heroEyebrow": "Únete al equipo",
+    "heroTitle": "Únete al Equipo Propyte",
+    "heroSubtitle": "La red de agentes inmobiliarios más innovadora de México. Comisiones competitivas, tecnología de punta y el mercado más dinámico del país.",
+    "metaDescription": "Trabaja con Propyte: la red de agentes inmobiliarios del Caribe Mexicano. Acceso a +700 desarrollos, tecnología propia, comisiones transparentes y capacitación continua."
+  },
+  "mercadoMeta": {
+    "title": "Inteligencia de mercado — Rentas vacacionales y tradicionales",
+    "description": "Analiza el mercado de rentas vacacionales y tradicionales en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. +2M registros, 10,000+ comparables, actualización diaria."
   }
 }
