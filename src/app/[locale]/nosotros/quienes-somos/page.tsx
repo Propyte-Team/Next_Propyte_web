@@ -1,15 +1,37 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import Image from 'next/image';
 import Link from 'next/link';
-import { Building2, Users, BarChart3, ShieldCheck, UserCheck, TrendingUp, Landmark, Handshake } from 'lucide-react';
+import {
+  Building2,
+  Users,
+  BarChart3,
+  ShieldCheck,
+  UserCheck,
+  TrendingUp,
+  Landmark,
+  Handshake,
+  Sparkles,
+} from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isEn = locale === 'en';
+  const tSeo = await getTranslations({ locale, namespace: 'seo' });
+  const tAbout = await getTranslations({ locale, namespace: 'about' });
+
+  const title = tSeo('aboutTitle');
+  const description = tSeo('aboutDescription');
+
   return {
-    title: isEn ? 'Who We Are | Propyte' : 'Quiénes Somos | Propyte',
-    description: isEn
-      ? 'Meet the team behind Propyte: mission, vision, and values driving the leading real estate marketplace in Mexico\'s Riviera Maya.'
-      : 'Conoce al equipo detrás de Propyte: misión, visión y valores del marketplace inmobiliario líder en la Riviera Maya de México.',
+    title,
+    description,
+    openGraph: {
+      type: 'website',
+      title,
+      description,
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image', title, description },
     alternates: {
       canonical: `/${locale}/nosotros/quienes-somos`,
       languages: {
@@ -18,11 +40,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         'x-default': '/es/nosotros/quienes-somos',
       },
     },
+    other: { 'page:section': tAbout('label') },
   };
 }
 
 export default async function QuienesSomosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'about' });
 
   const missionCards = [
@@ -51,7 +75,28 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
   ];
 
   return (
-    <div>
+    <>
+      {/* Hero */}
+      <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+
+        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
+            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+              {t('label')}
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+            {t('title')}
+          </h1>
+          <p className="text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
+            {t('subtitle')}
+          </p>
+        </div>
+      </section>
+
       {/* Section 1: Intro */}
       <section className="py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
@@ -62,12 +107,15 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               <p className="text-gray-600 leading-relaxed">{t('introP2')}</p>
             </div>
             <div className="lg:col-span-2">
-              {/* TODO: Foto del Real Estate Lab o equipo */}
-              <div className="aspect-[4/3] bg-[#F4F6F8] rounded-2xl flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                  <Building2 size={48} className="mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Foto próximamente</p>
-                </div>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-[#F4F6F8]">
+                <Image
+                  src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=1200&q=80"
+                  alt={t('introTitle')}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A2F3F]/40 via-transparent to-transparent" />
               </div>
             </div>
           </div>
@@ -154,7 +202,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('ctaTitle')}</h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">{t('ctaSubtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-xl transition-all flex items-center justify-center">
+            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center">
               {t('ctaJoin')}
             </Link>
             <Link href={`/${locale}/nosotros/equipo-comercial`} className="h-14 px-8 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center">
@@ -163,6 +211,6 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

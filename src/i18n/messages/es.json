@@ -460,8 +460,11 @@
     "finalCtaButton": "Solicitar propuesta ahora"
   },
   "contact": {
-    "title": "Contacto",
-    "subtitle": "¿Tienes preguntas? Estamos aquí para ayudarte.",
+    "title": "Hablemos",
+    "subtitle": "Inversionistas, desarrolladores y aliados — nuestro equipo responde en menos de 24 horas hábiles.",
+    "heroEyebrow": "Contacto directo",
+    "formHeading": "Cuéntanos en qué podemos ayudarte",
+    "formIntro": "Describe tu interés y un asesor especializado se pondrá en contacto.",
     "formName": "Nombre",
     "formEmail": "Email",
     "formSubject": "Asunto",
@@ -471,6 +474,7 @@
     "formInvestmentType": "Tipo de inversión",
     "formPlusvalia": "Plusvalía",
     "formSubmit": "Enviar mensaje",
+    "formSubjectPlaceholder": "Selecciona una opción",
     "subjectOptions": {
       "general": "Consulta general",
       "property": "Información de propiedad",
@@ -478,13 +482,22 @@
       "developer": "Soy desarrollador",
       "career": "Oportunidades laborales"
     },
+    "labels": {
+      "address": "Dirección",
+      "phone": "Teléfono",
+      "email": "Email",
+      "hours": "Horario",
+      "contactInfo": "Información de contacto",
+      "mapTitle": "Mapa de nuestra ubicación"
+    },
     "info": {
-      "address": "5ta Avenida, Playa del Carmen, Q. Roo",
-      "phone": "+52 XXX XXX XXXX",
-      "email": "info@propyte.com",
+      "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, México",
+      "phone": "+52 984 000 0000",
+      "email": "hola@propyte.com",
       "hours": "Lunes a Viernes 9:00 – 18:00, Sábado 10:00 – 14:00"
     },
-    "whatsappCta": "Escríbenos por WhatsApp"
+    "whatsappCta": "Escríbenos por WhatsApp",
+    "whatsappMessage": "Hola Propyte, me interesa recibir información sobre inversión inmobiliaria en la Riviera Maya."
   },
   "common": {
     "learnMore": "Conocer más",
@@ -933,7 +946,11 @@
     "recruitCta": "Postúlate ahora",
     "recruitWhatsapp": "Escríbenos por WhatsApp",
     "recruitLocation": "Real Estate Lab — Calle 5 Norte, 5ta Avenida, Playa del Carmen",
-    "hiring": "En contratación"
+    "hiring": "En contratación",
+    "comingSoonPerson": "Próximamente",
+    "openRole": "Gerente de Ventas",
+    "requirement": "Requisito",
+    "recruitWhatsappMessage": "Hola, me interesa unirme a Propyte"
   },
   "notFound": {
     "title": "Página no encontrada",

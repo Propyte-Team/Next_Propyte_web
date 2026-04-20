@@ -459,8 +459,11 @@
     "finalCtaButton": "Request proposal now"
   },
   "contact": {
-    "title": "Contact",
-    "subtitle": "Have questions? We're here to help.",
+    "title": "Let's talk",
+    "subtitle": "Investors, developers and partners — our team replies in under 24 business hours.",
+    "heroEyebrow": "Direct contact",
+    "formHeading": "Tell us how we can help",
+    "formIntro": "Describe your inquiry and a specialized advisor will reach out.",
     "formName": "Name",
     "formEmail": "Email",
     "formPhone": "Phone",
@@ -470,6 +473,7 @@
     "formInvestmentType": "Investment type",
     "formPlusvalia": "Appreciation",
     "formSubmit": "Send message",
+    "formSubjectPlaceholder": "Select an option",
     "subjectOptions": {
       "general": "General inquiry",
       "property": "Property information",
@@ -477,13 +481,22 @@
       "developer": "I'm a developer",
       "career": "Career opportunities"
     },
+    "labels": {
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "hours": "Business hours",
+      "contactInfo": "Contact information",
+      "mapTitle": "Map of our location"
+    },
     "info": {
-      "address": "5ta Avenida, Playa del Carmen, Q. Roo",
-      "phone": "+52 XXX XXX XXXX",
-      "email": "info@propyte.com",
+      "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, Mexico",
+      "phone": "+52 984 000 0000",
+      "email": "hola@propyte.com",
       "hours": "Monday to Friday 9:00 AM – 6:00 PM, Saturday 10:00 AM – 2:00 PM"
     },
-    "whatsappCta": "Message us on WhatsApp"
+    "whatsappCta": "Message us on WhatsApp",
+    "whatsappMessage": "Hi Propyte, I'd like to receive information about real estate investment in the Riviera Maya."
   },
   "common": {
     "learnMore": "Learn more",
@@ -932,7 +945,11 @@
     "recruitCta": "Apply now",
     "recruitWhatsapp": "Message us on WhatsApp",
     "recruitLocation": "Real Estate Lab — Calle 5 Norte, 5th Avenue, Playa del Carmen",
-    "hiring": "Hiring"
+    "hiring": "Hiring",
+    "comingSoonPerson": "Coming soon",
+    "openRole": "Sales Manager",
+    "requirement": "Requirement",
+    "recruitWhatsappMessage": "Hi, I'm interested in joining Propyte"
   },
   "notFound": {
     "title": "Page not found",

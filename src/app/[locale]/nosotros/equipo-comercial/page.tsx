@@ -1,14 +1,38 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import {
   BookOpen, Monitor, GraduationCap, DollarSign, Users, TrendingUp,
-  Check, X, ArrowRight, MessageCircle, MapPin
+  Check, X, ArrowRight, MessageCircle, MapPin, Sparkles,
 } from 'lucide-react';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const isEn = locale === 'en';
-  return { title: isEn ? 'Sales Team' : 'Equipo Comercial' };
+  const tSeo = await getTranslations({ locale, namespace: 'seo' });
+  const tAbout = await getTranslations({ locale, namespace: 'about' });
+
+  const title = tAbout('tab3') + ' — Propyte';
+  const description = tSeo('aboutDescription');
+
+  return {
+    title,
+    description,
+    openGraph: {
+      type: 'website',
+      title,
+      description,
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
+    twitter: { card: 'summary_large_image', title, description },
+    alternates: {
+      canonical: `/${locale}/nosotros/equipo-comercial`,
+      languages: {
+        es: '/es/nosotros/equipo-comercial',
+        en: '/en/nosotros/equipo-comercial',
+        'x-default': '/es/nosotros/equipo-comercial',
+      },
+    },
+  };
 }
 
 function Avatar({ initials, name, color = '#1A2F3F' }: { initials: string; name: string; color?: string }) {
@@ -21,13 +45,17 @@ function Avatar({ initials, name, color = '#1A2F3F' }: { initials: string; name:
 
 export default async function EquipoComercialPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'about' });
+
+  const waPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219840000000';
+  const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(t('recruitWhatsappMessage'))}`;
 
   const leaders = [
     { initials: 'JBP', name: 'José Benjamín Paredes', role: 'CEO — Director General', color: '#1A2F3F' },
     { initials: 'FL', name: 'Felipe Luksic', role: 'CSO — Director Comercial', color: '#1A2F3F' },
     { initials: 'LF', name: 'Luis Flores', role: 'Coordinador de Marketing', color: '#5CE0D2' },
-    { initials: '?', name: locale === 'es' ? 'Próximamente' : 'Coming soon', role: locale === 'es' ? 'Gerente de Ventas' : 'Sales Manager', color: '#9CA3AF', hiring: true },
+    { initials: '?', name: t('comingSoonPerson'), role: t('openRole'), color: '#9CA3AF', hiring: true },
   ];
 
   const levels = Array.from({ length: 5 }, (_, i) => ({
@@ -50,12 +78,31 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
   const noItems = Array.from({ length: 5 }, (_, i) => t(`no${i + 1}`));
 
   return (
-    <div>
+    <>
+      {/* Hero */}
+      <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
+        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+
+        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
+            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+              {t('label')}
+            </span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+            {t('teamTitle')}
+          </h1>
+          <p className="text-lg md:text-xl text-white/75 max-w-3xl mx-auto leading-relaxed">
+            {t('teamSubtitle')}
+          </p>
+        </div>
+      </section>
+
       {/* Section 1: Team */}
       <section className="py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-3">{t('teamTitle')}</h2>
-          <p className="text-[#5CE0D2] text-center font-medium mb-6">{t('teamSubtitle')}</p>
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -73,7 +120,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
 
           <p className="text-center text-gray-500 mb-4">{t('teamMore')}</p>
           <div className="text-center">
-            <Link href={`/${locale}/contacto`} className="text-[#5CE0D2] font-semibold hover:underline">{t('teamCta')}</Link>
+            <Link href={`/${locale}/contacto`} className="text-[#0D9488] font-semibold hover:underline">{t('teamCta')}</Link>
           </div>
         </div>
       </section>
@@ -97,8 +144,8 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                   <h3 className="text-lg font-bold text-[#1A2F3F]">{level.title}</h3>
                   <p className="text-gray-500 text-sm mt-1">{level.desc}</p>
                   {level.req && (
-                    <p className="text-xs text-[#5CE0D2] font-medium mt-2 bg-[#5CE0D2]/10 px-3 py-1 rounded-full inline-block">
-                      {locale === 'es' ? 'Requisito' : 'Requirement'}: {level.req}
+                    <p className="text-xs text-[#0D9488] font-medium mt-2 bg-[#5CE0D2]/10 px-3 py-1 rounded-full inline-block">
+                      {t('requirement')}: {level.req}
                     </p>
                   )}
                 </div>
@@ -144,7 +191,6 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-12">{t('lookingForTitle')}</h2>
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {/* Yes */}
             <div className="bg-green-50 rounded-2xl p-6 border border-green-100">
               <h3 className="font-bold text-green-800 mb-4">{t('yesLabel')}</h3>
               <ul className="space-y-3">
@@ -156,7 +202,6 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                 ))}
               </ul>
             </div>
-            {/* No */}
             <div className="bg-red-50 rounded-2xl p-6 border border-red-100">
               <h3 className="font-bold text-red-800 mb-4">{t('noLabel')}</h3>
               <ul className="space-y-3">
@@ -178,10 +223,10 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('recruitTitle')}</h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">{t('recruitSubtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2">
               {t('recruitCta')} <ArrowRight size={18} />
             </Link>
-            <a href="https://wa.me/5219843235354?text=Hola%2C%20me%20interesa%20unirme%20a%20Propyte" target="_blank" rel="noopener noreferrer" className="h-14 px-8 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="h-14 px-8 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
               <MessageCircle size={18} /> {t('recruitWhatsapp')}
             </a>
           </div>
@@ -190,6 +235,6 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           </p>
         </div>
       </section>
-    </div>
+    </>
   );
 }
