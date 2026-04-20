@@ -8,11 +8,17 @@ const intlMiddleware = createIntlMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip API routes, static assets y el Design Playground (/admin/*)
+  // Skip API routes, static assets, Design Playground (/admin/*),
+  // y rutas de metadata de Next (icon/apple-icon/manifest/sitemap/robots).
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/admin') ||
+    pathname === '/icon' ||
+    pathname === '/apple-icon' ||
+    pathname === '/manifest.webmanifest' ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt' ||
     pathname.includes('.')
   ) {
     return NextResponse.next();
@@ -57,5 +63,9 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(es|en)/:path*', '/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/',
+    '/(es|en)/:path*',
+    '/((?!api|_next|_vercel|icon|apple-icon|manifest\\.webmanifest|sitemap\\.xml|robots\\.txt|.*\\..*).*)',
+  ],
 };
