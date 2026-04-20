@@ -9,7 +9,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'comoComprar' });
 
-  const title = `${t('heroTitle')} | Propyte`;
+  const title = t('heroTitle');
+  const brandedTitle = `${title} | Propyte`;
   const description = t('heroSubtitle');
 
   return {
@@ -17,12 +18,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description,
     openGraph: {
       type: 'article',
-      title,
+      title: brandedTitle,
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
     },
-    twitter: { card: 'summary_large_image', title, description },
+    twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
       canonical: `/${locale}/como-comprar`,
       languages: {
