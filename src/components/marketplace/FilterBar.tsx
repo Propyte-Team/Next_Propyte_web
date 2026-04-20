@@ -38,6 +38,9 @@ function PillDropdown({
   return (
     <div ref={ref} className="relative flex-shrink-0">
       <button
+        type="button"
+        data-filter-pill={label}
+        aria-label={label}
         onClick={() => setOpen(!open)}
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive

@@ -52,7 +52,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
   const darkTopRow = (mode === 'home' || mode === 'dark') && !isScrolled;
 
   return (
-    <div className="lg:hidden fixed top-0 left-0 right-0 z-50 propyte-mobile-header-bg">
+    <header className="lg:hidden fixed top-0 left-0 right-0 z-50 propyte-mobile-header-bg" role="banner" aria-label={t('openMenu')}>
       {/* Row 1: Logo | Lang | Hamburger */}
       <div className="flex items-center justify-between h-11 px-3">
         <Link
@@ -123,6 +123,6 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
           <SearchBubble variant="mobile" dark={darkTopRow} className="w-full" />
         </div>
       )}
-    </div>
+    </header>
   );
 }
