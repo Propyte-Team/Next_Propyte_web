@@ -171,19 +171,32 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .order('created_at', { ascending: false })
     .limit(limit);
 
-  // Fallback (calca WP featured-properties.php): si no hay featured marcados,
-  // mostrar los más recientes aprobados para no dejar la grid vacía.
-  if (!featured.data || featured.data.length === 0) {
-    return hub
-      .from('v_developments')
-      .select('*')
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+  const featuredRows = (featured.data || []) as Array<{ id: string }>;
+
+  // Si featured llenó la grid, devolver tal cual.
+  if (featuredRows.length >= limit) return featured;
+
+  // Llenar el resto con los más recientes aprobados no-featured (calca WP featured-properties.php).
+  const fillLimit = limit - featuredRows.length;
+  const featuredIds = featuredRows.map((r) => r.id);
+  let recentQuery = hub
+    .from('v_developments')
+    .select('*')
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES)
+    .order('created_at', { ascending: false })
+    .limit(fillLimit);
+
+  if (featuredIds.length > 0) {
+    recentQuery = recentQuery.not('id', 'in', `(${featuredIds.map((id) => `"${id}"`).join(',')})`);
   }
 
-  return featured;
+  const recent = await recentQuery;
+  return {
+    data: [...featuredRows, ...((recent.data || []) as typeof featuredRows)],
+    error: featured.error || recent.error,
+    count: featuredRows.length + (recent.data?.length || 0),
+  };
 }
 
 export async function getDevelopmentsByCity(client: Client, city: string) {

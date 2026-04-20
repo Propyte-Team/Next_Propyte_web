@@ -44,6 +44,7 @@ import GeoAnalysis from '@/components/property/GeoAnalysis';
 import AirdnaInsights from '@/components/property/AirdnaInsights';
 import MarketSentiment, { type SentimentIndicator } from '@/components/property/MarketSentiment';
 import CetesComparison from '@/components/property/CetesComparison';
+import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndicator';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
@@ -708,6 +709,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   label: tProp('tabRentabilidad'),
                   panel: (
                     <div className="space-y-8">
+                      <MarketIndicator
+                        city={property.city}
+                        price={propertyPrice > 0 ? propertyPrice : 0}
+                        monthlyRent={rentalMedian ?? null}
+                        capRate={devFinancials?.cap_rate ?? null}
+                        airdnaOccupancy={airdnaOccupancy ?? null}
+                        locale={locale}
+                      />
                       <RentalEstimate
                         city={property.city}
                         zone={property.zone}
