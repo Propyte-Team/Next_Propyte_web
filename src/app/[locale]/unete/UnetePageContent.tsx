@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Play,
   TrendingUp,
@@ -30,7 +31,14 @@ import {
 // HERO SECTION
 // ============================================================
 function HeroSection() {
+  const t = useTranslations('unete');
   const [showVideo, setShowVideo] = useState(false);
+
+  const stats = [
+    { value: t('heroStat1Value'), label: t('heroStat1Label') },
+    { value: t('heroStat2Value'), label: t('heroStat2Label') },
+    { value: t('heroStat3Value'), label: t('heroStat3Label') },
+  ];
 
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
@@ -43,55 +51,47 @@ function HeroSection() {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300B4C8' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
-        {/* Gradient orbs */}
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#F5A623]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Content */}
           <div>
             <div className="inline-flex items-center gap-2 bg-[#5CE0D2]/20 text-[#5CE0D2] text-sm font-bold px-4 py-2 rounded-full mb-6">
               <Zap size={14} />
-              La inmobiliaria digital #1 del Caribe Mexicano
+              {t('heroEyebrow')}
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Tu carrera inmobiliaria{' '}
-              <span className="text-[#5CE0D2]">sin límites</span>
+              {t('heroTitlePart1')}{' '}
+              <span className="text-[#5CE0D2]">{t('heroTitleHighlight')}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-8 max-w-xl">
-              Únete a Propyte y accede a la tecnología, capacitación y red de contactos
-              que necesitas para dominar el mercado más dinámico de México.
-              Comisiones competitivas y sin cuotas de escritorio.
+              {t('heroSubtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <a
                 href="#aplicar"
-                className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-lg rounded-xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5CE0D2]/20"
+                className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-lg rounded-xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5CE0D2]/20"
               >
-                Quiero unirme
+                {t('heroCtaJoin')}
                 <ArrowRight size={20} />
               </a>
               <button
+                type="button"
                 onClick={() => setShowVideo(true)}
                 className="inline-flex items-center justify-center gap-2 h-14 px-8 border-2 border-white/20 hover:border-white/40 text-white font-bold text-lg rounded-xl transition-all hover:bg-white/5"
               >
                 <Play size={20} className="fill-white" />
-                Ver video
+                {t('heroCtaVideo')}
               </button>
             </div>
 
-            {/* Quick stats */}
             <div className="grid grid-cols-3 gap-6">
-              {[
-                { value: '500+', label: 'Agentes activos' },
-                { value: '$2B+', label: 'MXN en ventas' },
-                { value: '95%', label: 'Satisfacción' },
-              ].map((stat) => (
+              {stats.map((stat) => (
                 <div key={stat.label}>
                   <div className="text-2xl md:text-3xl font-bold text-[#5CE0D2]">{stat.value}</div>
                   <div className="text-sm text-white/50">{stat.label}</div>
@@ -100,7 +100,6 @@ function HeroSection() {
             </div>
           </div>
 
-          {/* Right: Video/Image card */}
           <div className="relative">
             <div className="relative bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
               {showVideo ? (
@@ -109,22 +108,23 @@ function HeroSection() {
                   className="absolute inset-0 w-full h-full"
                   allow="autoplay; encrypted-media"
                   allowFullScreen
+                  title={t('heroVideoLabel')}
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  {/* Placeholder visual */}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-transparent to-transparent" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors cursor-pointer group"
+                      <button
+                        type="button"
+                        className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors group"
                         onClick={() => setShowVideo(true)}
                       >
                         <Play size={36} className="text-white fill-white ml-1 group-hover:scale-110 transition-transform" />
-                      </div>
-                      <p className="text-white/60 text-sm mt-4 font-medium">Conoce Propyte en 2 minutos</p>
+                      </button>
+                      <p className="text-white/60 text-sm mt-4 font-medium">{t('heroVideoLabel')}</p>
                     </div>
                   </div>
-                  {/* Decorative grid */}
                   <div className="absolute inset-4 border border-white/5 rounded-xl" />
                   <div className="absolute top-4 left-4 flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-400/60" />
@@ -134,15 +134,13 @@ function HeroSection() {
                 </div>
               )}
             </div>
-            {/* Floating badge */}
             <div className="absolute -bottom-4 -left-4 bg-[#F5A623] text-[#2C2C2C] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
-              ⭐ Top 1% en Riviera Maya
+              {t('heroTopBadge')}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Video modal overlay */}
       {showVideo && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 lg:hidden"
@@ -154,6 +152,7 @@ function HeroSection() {
               className="w-full h-full rounded-xl"
               allow="autoplay; encrypted-media"
               allowFullScreen
+              title={t('heroVideoLabel')}
             />
           </div>
         </div>
@@ -163,23 +162,22 @@ function HeroSection() {
 }
 
 // ============================================================
-// LOGOS / SOCIAL PROOF
+// SOCIAL PROOF
 // ============================================================
 function SocialProofBar() {
-  const logos = [
-    'Riviera Maya', 'Playa del Carmen', 'Tulum', 'Cancún', 'Mérida', 'CDMX', 'Vallarta', 'Los Cabos',
-  ];
+  const t = useTranslations('unete');
+  const cityKeys = ['city1', 'city2', 'city3', 'city4', 'city5', 'city6', 'city7', 'city8'] as const;
   return (
     <section className="bg-white border-y border-gray-100 py-8">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <p className="text-center text-xs text-gray-400 uppercase tracking-wider font-semibold mb-6">
-          Presencia en los mercados más importantes de México
+          {t('socialProofLabel')}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
-          {logos.map((city) => (
-            <div key={city} className="flex items-center gap-2 text-gray-400 hover:text-[#1A2F3F] transition-colors">
+          {cityKeys.map((key) => (
+            <div key={key} className="flex items-center gap-2 text-gray-400 hover:text-[#1A2F3F] transition-colors">
               <MapPin size={14} />
-              <span className="text-sm font-semibold">{city}</span>
+              <span className="text-sm font-semibold">{t(key)}</span>
             </div>
           ))}
         </div>
@@ -192,77 +190,52 @@ function SocialProofBar() {
 // WHY PROPYTE
 // ============================================================
 function WhyPropyte() {
-  const benefits = [
-    {
-      icon: DollarSign,
-      title: 'Comisiones del 80% al 100%',
-      description: 'Gana lo que mereces. Nuestro modelo progresivo te permite quedarte con hasta el 100% de tu comisión una vez alcanzas tu cap anual.',
-      highlight: '80-100%',
-    },
-    {
-      icon: Laptop,
-      title: 'Plataforma 100% digital',
-      description: 'CRM inteligente, firma electrónica, marketing automatizado, reportes en tiempo real. Todo desde tu celular o laptop.',
-      highlight: 'Tech-first',
-    },
-    {
-      icon: GraduationCap,
-      title: 'Academia Propyte',
-      description: 'Más de 200 horas de capacitación en ventas, marketing digital, inversión inmobiliaria, y desarrollo personal.',
-      highlight: '200+ hrs',
-    },
-    {
-      icon: Users,
-      title: 'Red de revenue sharing',
-      description: 'Invita agentes a Propyte y gana un porcentaje de las transacciones de tu red, hasta 5 niveles de profundidad.',
-      highlight: '5 niveles',
-    },
-    {
-      icon: Globe,
-      title: 'Mercado internacional',
-      description: 'Conecta con compradores de EE.UU., Canadá y Europa que buscan invertir en el Caribe Mexicano. Leads calificados incluidos.',
-      highlight: 'Global',
-    },
-    {
-      icon: Shield,
-      title: 'Respaldo y marca',
-      description: 'Operamos bajo una marca reconocida con respaldo legal, seguros, y un equipo de soporte dedicado para cada agente.',
-      highlight: 'Confianza',
-    },
-  ];
+  const t = useTranslations('unete');
+  const ICONS = [DollarSign, Laptop, GraduationCap, Users, Globe, Shield] as const;
+  const benefits = ICONS.map((Icon, i) => {
+    const n = i + 1;
+    return {
+      icon: Icon,
+      title: t(`benefit${n}Title` as 'benefit1Title'),
+      description: t(`benefit${n}Desc` as 'benefit1Desc'),
+      highlight: t(`benefit${n}Highlight` as 'benefit1Highlight'),
+    };
+  });
 
   return (
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">¿Por qué Propyte?</span>
+          <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('whyEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
-            Todo lo que necesitas para <span className="text-[#1A2F3F]">triunfar</span>
+            {t('whyTitlePart1')} <span className="text-[#1A2F3F]">{t('whyTitleHighlight')}</span>
           </h2>
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-            No somos una inmobiliaria tradicional. Somos una plataforma tecnológica que empodera
-            a agentes independientes con las mejores herramientas del mercado.
+            {t('whySubtitle')}
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {benefits.map((b) => (
-            <div
-              key={b.title}
-              className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center group-hover:bg-[#5CE0D2]/20 transition-colors">
-                  <b.icon size={24} className="text-[#5CE0D2]" />
+          {benefits.map((b) => {
+            const Icon = b.icon;
+            return (
+              <div
+                key={b.title}
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center group-hover:bg-[#5CE0D2]/20 transition-colors">
+                    <Icon size={24} className="text-[#0D9488]" />
+                  </div>
+                  <span className="text-xs font-bold text-[#0D9488] bg-[#5CE0D2]/10 px-2.5 py-1 rounded-full">
+                    {b.highlight}
+                  </span>
                 </div>
-                <span className="text-xs font-bold text-[#5CE0D2] bg-[#5CE0D2]/10 px-2.5 py-1 rounded-full">
-                  {b.highlight}
-                </span>
+                <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{b.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{b.description}</p>
               </div>
-              <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{b.title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{b.description}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -273,22 +246,26 @@ function WhyPropyte() {
 // COMMISSION MODEL
 // ============================================================
 function CommissionModel() {
+  const t = useTranslations('unete');
+  const tiers = [1, 2, 3].map((n) => ({
+    range: t(`tier${n}Range` as 'tier1Range'),
+    pct: t(`tier${n}Pct` as 'tier1Pct'),
+    you: t(`tier${n}You` as 'tier1You'),
+    propyte: t(`tier${n}Propyte` as 'tier1Propyte'),
+    bar: n === 1 ? 80 : n === 2 ? 85 : 100,
+  }));
+  const points = [1, 2, 3, 4, 5, 6].map((n) => t(`commissionPoint${n}` as 'commissionPoint1'));
+
   return (
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Visual */}
           <div className="relative">
             <div className="bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl p-8 md:p-10">
-              <h3 className="text-white text-xl font-bold mb-8">Tu plan de comisiones</h3>
+              <h3 className="text-white text-xl font-bold mb-8">{t('commissionPlanHeader')}</h3>
 
-              {/* Commission tiers */}
               <div className="space-y-4">
-                {[
-                  { range: '$0 - $500K MXN', pct: '80%', you: '$400K', propyte: '$100K', bar: 80 },
-                  { range: '$500K - $1.5M MXN', pct: '85%', you: '$850K', propyte: '$150K', bar: 85 },
-                  { range: 'Cap alcanzado', pct: '100%', you: 'Todo tuyo', propyte: '$0', bar: 100 },
-                ].map((tier) => (
+                {tiers.map((tier) => (
                   <div key={tier.range} className="bg-white/5 rounded-xl p-4 border border-white/10">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-white/60">{tier.range}</span>
@@ -301,53 +278,43 @@ function CommissionModel() {
                       />
                     </div>
                     <div className="flex justify-between mt-2 text-xs">
-                      <span className="text-[#5CE0D2]">Tú: {tier.you}</span>
-                      <span className="text-white/40">Propyte: {tier.propyte}</span>
+                      <span className="text-[#5CE0D2]">{t('youLabel')}: {tier.you}</span>
+                      <span className="text-white/40">{t('propyteLabel')}: {tier.propyte}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Cap info */}
               <div className="mt-6 bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 flex items-start gap-3">
                 <Award size={20} className="text-[#F5A623] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-bold text-white">Cap anual: $180,000 MXN</p>
+                  <p className="text-sm font-bold text-white">{t('capAnnualLabel')}</p>
                   <p className="text-xs text-white/50 mt-1">
-                    Una vez alcanzas el cap, te quedas con el 100% de todas tus comisiones por el resto del año.
+                    {t('capAnnualDesc')}
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right: Content */}
           <div>
-            <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Modelo de comisiones</span>
+            <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('commissionEyebrow')}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
-              Gana más,{' '}
-              <span className="text-[#1A2F3F]">quédate con más</span>
+              {t('commissionTitlePart1')}{' '}
+              <span className="text-[#1A2F3F]">{t('commissionTitleHighlight')}</span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-8">
-              Nuestro modelo progresivo está diseñado para que los agentes más productivos
-              maximicen sus ingresos. Sin cuotas de escritorio, sin cargos ocultos.
+              {t('commissionSubtitle')}
             </p>
 
-            <div className="space-y-4">
-              {[
-                'Split inicial del 80/20 — mejor que el promedio del mercado',
-                'Cap anual bajo de $180K MXN — alcánzalo en pocas ventas',
-                'Una vez alcanzado el cap: 100% de comisión para ti',
-                'Sin cuota mensual de escritorio ni cargos fijos',
-                'Revenue sharing: gana de las ventas de tu red',
-                'Bonos trimestrales por volumen y productividad',
-              ].map((item) => (
-                <div key={item} className="flex items-start gap-3">
-                  <CheckCircle size={20} className="text-[#5CE0D2] flex-shrink-0 mt-0.5" />
+            <ul className="space-y-4">
+              {points.map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <CheckCircle size={20} className="text-[#0D9488] flex-shrink-0 mt-0.5" />
                   <span className="text-[#2C2C2C] font-medium">{item}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </div>
       </div>
@@ -359,50 +326,47 @@ function CommissionModel() {
 // REVENUE SHARING
 // ============================================================
 function RevenueSharing() {
+  const t = useTranslations('unete');
   const levels = [
-    { level: 1, pct: '3.5%', agents: 'Tú invitas', color: '#5CE0D2' },
-    { level: 2, pct: '1.5%', agents: 'Ellos invitan', color: '#4BCEC0' },
-    { level: 3, pct: '1.0%', agents: 'Nivel 3', color: '#0D7A8A' },
-    { level: 4, pct: '0.5%', agents: 'Nivel 4', color: '#1A2F3F' },
-    { level: 5, pct: '0.25%', agents: 'Nivel 5', color: '#0F1923' },
-  ];
+    { level: 1, pct: '3.5%', whoKey: 'level1Who', color: '#5CE0D2' },
+    { level: 2, pct: '1.5%', whoKey: 'level2Who', color: '#4BCEC0' },
+    { level: 3, pct: '1.0%', whoKey: 'level3Who', color: '#0D7A8A' },
+    { level: 4, pct: '0.5%', whoKey: 'level4Who', color: '#1A2F3F' },
+    { level: 5, pct: '0.25%', whoKey: 'level5Who', color: '#0F1923' },
+  ] as const;
 
   return (
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Content */}
           <div>
-            <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Revenue sharing</span>
+            <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('revenueEyebrow')}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
-              Construye tu propia{' '}
-              <span className="text-[#1A2F3F]">red de ingresos</span>
+              {t('revenueTitlePart1')}{' '}
+              <span className="text-[#1A2F3F]">{t('revenueTitleHighlight')}</span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-8">
-              Cada agente que invites a Propyte genera ingresos para ti. Y cuando ellos inviten más agentes,
-              sigues ganando hasta 5 niveles de profundidad. Es como tener tu propia inmobiliaria,
-              pero sin las complicaciones.
+              {t('revenueSubtitle')}
             </p>
 
             <div className="bg-white rounded-2xl p-6 border border-gray-100">
-              <h4 className="font-bold text-[#2C2C2C] mb-4">Ejemplo de ingresos mensuales</h4>
+              <h4 className="font-bold text-[#2C2C2C] mb-4">{t('revenueExampleTitle')}</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#5CE0D2]">10</div>
-                  <div className="text-xs text-gray-500 mt-1">Agentes directos</div>
+                  <div className="text-2xl font-bold text-[#0D9488]">10</div>
+                  <div className="text-xs text-gray-500 mt-1">{t('revenueDirectAgents')}</div>
                 </div>
                 <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
                   <div className="text-2xl font-bold text-[#F5A623]">$45K</div>
-                  <div className="text-xs text-gray-500 mt-1">MXN/mes extra</div>
+                  <div className="text-xs text-gray-500 mt-1">{t('revenueMonthlyExtra')}</div>
                 </div>
               </div>
               <p className="text-xs text-gray-400 mt-3">
-                *Basado en producción promedio por agente de $5M MXN/año en ventas
+                {t('revenueAssumption')}
               </p>
             </div>
           </div>
 
-          {/* Right: Levels visual */}
           <div className="space-y-3">
             {levels.map((l) => (
               <div
@@ -417,10 +381,10 @@ function RevenueSharing() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#2C2C2C]">Nivel {l.level}</span>
-                    <span className="text-lg font-bold text-[#5CE0D2]">{l.pct}</span>
+                    <span className="font-bold text-[#2C2C2C]">{t('levelPrefix')} {l.level}</span>
+                    <span className="text-lg font-bold text-[#0D9488]">{l.pct}</span>
                   </div>
-                  <span className="text-sm text-gray-400">{l.agents}</span>
+                  <span className="text-sm text-gray-400">{t(l.whoKey)}</span>
                 </div>
                 <div className="h-2 flex-1 bg-gray-100 rounded-full overflow-hidden max-w-[120px]">
                   <div
@@ -436,8 +400,7 @@ function RevenueSharing() {
 
             <div className="bg-[#5CE0D2]/5 border border-[#5CE0D2]/20 rounded-xl p-4 mt-4">
               <p className="text-sm text-[#2C2C2C] font-medium">
-                💡 Los ingresos por revenue sharing son <strong>adicionales</strong> a tus comisiones
-                por ventas propias. No hay límite en el tamaño de tu red.
+                {t('revenueNote')}
               </p>
             </div>
           </div>
@@ -451,50 +414,57 @@ function RevenueSharing() {
 // TECHNOLOGY PLATFORM
 // ============================================================
 function TechPlatform() {
-  const tools = [
-    { icon: BarChart3, name: 'CRM Inteligente', desc: 'Seguimiento de leads, pipeline de ventas, y automatización de seguimiento' },
-    { icon: Globe, name: 'Portal de Propiedades', desc: 'Tu propia página de agente con listings sincronizados en tiempo real' },
-    { icon: Laptop, name: 'App Móvil', desc: 'Gestiona tu negocio desde cualquier lugar con nuestra app nativa' },
-    { icon: TrendingUp, name: 'Analytics Avanzados', desc: 'Dashboards con métricas de conversión, ROI de marketing, y proyecciones' },
-    { icon: Zap, name: 'Marketing Automatizado', desc: 'Campañas de email, redes sociales, y publicidad digital configuradas para ti' },
-    { icon: Headphones, name: 'Soporte 24/7', desc: 'Equipo de soporte dedicado via WhatsApp, chat, y videollamada' },
+  const t = useTranslations('unete');
+  const ICONS = [BarChart3, Globe, Laptop, TrendingUp, Zap, Headphones] as const;
+  const tools = ICONS.map((Icon, i) => {
+    const n = i + 1;
+    return {
+      icon: Icon,
+      name: t(`tool${n}Name` as 'tool1Name'),
+      desc: t(`tool${n}Desc` as 'tool1Desc'),
+    };
+  });
+  const dashStats = [
+    { label: t('dashStat1Label'), value: t('dashStat1Value'), change: t('dashStat1Change') },
+    { label: t('dashStat2Label'), value: t('dashStat2Value'), change: t('dashStat2Change') },
+    { label: t('dashStat3Label'), value: t('dashStat3Value'), change: '' },
+    { label: t('dashStat4Label'), value: t('dashStat4Value'), change: t('dashStat4Change') },
   ];
 
   return (
     <section className="py-20 md:py-28 bg-white relative overflow-hidden">
-      {/* Background decoration */}
       <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#F4F6F8] to-transparent" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Tecnología</span>
+          <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('techEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
-            Herramientas de <span className="text-[#1A2F3F]">clase mundial</span>
+            {t('techTitlePart1')} <span className="text-[#1A2F3F]">{t('techTitleHighlight')}</span>
           </h2>
           <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-            Cada agente Propyte recibe acceso a nuestra suite completa de herramientas
-            diseñadas para el mercado inmobiliario mexicano.
+            {t('techSubtitle')}
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {tools.map((tool) => (
-            <div key={tool.name} className="flex items-start gap-4 p-5 rounded-2xl hover:bg-[#F4F6F8] transition-colors">
-              <div className="w-10 h-10 bg-[#1A2F3F] rounded-lg flex items-center justify-center flex-shrink-0">
-                <tool.icon size={20} className="text-[#5CE0D2]" />
+          {tools.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <div key={tool.name} className="flex items-start gap-4 p-5 rounded-2xl hover:bg-[#F4F6F8] transition-colors">
+                <div className="w-10 h-10 bg-[#1A2F3F] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Icon size={20} className="text-[#5CE0D2]" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-[#2C2C2C] mb-1">{tool.name}</h4>
+                  <p className="text-sm text-gray-500">{tool.desc}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-bold text-[#2C2C2C] mb-1">{tool.name}</h4>
-                <p className="text-sm text-gray-500">{tool.desc}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Platform screenshot placeholder */}
         <div className="mt-14 bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl p-1 mx-auto max-w-4xl">
           <div className="bg-[#0F1923] rounded-xl overflow-hidden">
-            {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-red-400/60" />
@@ -507,14 +477,8 @@ function TechPlatform() {
                 </div>
               </div>
             </div>
-            {/* Dashboard mock */}
             <div className="p-6 grid grid-cols-4 gap-4">
-              {[
-                { label: 'Leads activos', value: '47', change: '+12%' },
-                { label: 'Ventas del mes', value: '3', change: '+50%' },
-                { label: 'Comisión acum.', value: '$234K', change: '' },
-                { label: 'Revenue share', value: '$18K', change: '+8%' },
-              ].map((s) => (
+              {dashStats.map((s) => (
                 <div key={s.label} className="bg-white/5 rounded-lg p-4">
                   <div className="text-xs text-white/40">{s.label}</div>
                   <div className="text-xl font-bold text-white mt-1">{s.value}</div>
@@ -540,44 +504,33 @@ function TechPlatform() {
 // TESTIMONIALS
 // ============================================================
 function Testimonials() {
-  const testimonials = [
-    {
-      name: 'María Fernanda López',
-      role: 'Top Producer, Playa del Carmen',
-      quote: 'En mi primer año con Propyte cerré 12 operaciones y generé más ingresos que en 3 años con mi agencia anterior. La tecnología y los leads internacionales hacen toda la diferencia.',
-      stats: '$18M MXN en ventas',
-      avatar: 'ML',
-    },
-    {
-      name: 'Roberto García Mendoza',
-      role: 'Team Leader, Tulum',
-      quote: 'El revenue sharing me cambió la vida. Construí un equipo de 15 agentes y ahora genero ingresos pasivos de más de $60K mensuales, además de mis propias ventas.',
-      stats: '15 agentes en su red',
-      avatar: 'RG',
-    },
-    {
-      name: 'Ana Sofía Hernández',
-      role: 'Agente Senior, Cancún',
-      quote: 'Lo que más valoro es la capacitación. La Academia Propyte me dio las herramientas para pasar de vendedora a consultora de inversión. Mis clientes confían más y mis comisiones subieron un 40%.',
-      stats: '40% más en comisiones',
-      avatar: 'AH',
-    },
-  ];
+  const t = useTranslations('unete');
+  const testimonials = [1, 2, 3].map((n) => ({
+    name: t(`t${n}Name` as 't1Name'),
+    role: t(`t${n}Role` as 't1Role'),
+    quote: t(`t${n}Quote` as 't1Quote'),
+    stats: t(`t${n}Stats` as 't1Stats'),
+    avatar: t(`t${n}Name` as 't1Name')
+      .split(' ')
+      .slice(0, 2)
+      .map((s) => s[0])
+      .join(''),
+  }));
 
   return (
     <section className="py-20 md:py-28 bg-[#0F1923]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Testimonios</span>
+          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">{t('testimonialsEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-white mt-3">
-            Lo que dicen nuestros agentes
+            {t('testimonialsTitle')}
           </h2>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t) => (
+          {testimonials.map((tt) => (
             <div
-              key={t.name}
+              key={tt.name}
               className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-[#5CE0D2]/30 transition-all"
             >
               <div className="flex gap-1 mb-4">
@@ -585,18 +538,18 @@ function Testimonials() {
                   <Star key={i} size={16} className="text-[#F5A623] fill-[#F5A623]" />
                 ))}
               </div>
-              <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{t.quote}&rdquo;</p>
+              <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{tt.quote}&rdquo;</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-[#5CE0D2]/20 rounded-full flex items-center justify-center text-[#5CE0D2] font-bold text-sm">
-                  {t.avatar}
+                  {tt.avatar}
                 </div>
                 <div>
-                  <div className="text-white font-semibold text-sm">{t.name}</div>
-                  <div className="text-white/40 text-xs">{t.role}</div>
+                  <div className="text-white font-semibold text-sm">{tt.name}</div>
+                  <div className="text-white/40 text-xs">{tt.role}</div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-white/10">
-                <span className="text-[#5CE0D2] font-bold text-sm">{t.stats}</span>
+                <span className="text-[#5CE0D2] font-bold text-sm">{tt.stats}</span>
               </div>
             </div>
           ))}
@@ -610,28 +563,33 @@ function Testimonials() {
 // STATS SECTION
 // ============================================================
 function StatsSection() {
-  const stats = [
-    { value: '500+', label: 'Agentes en la red', icon: Users },
-    { value: '$2B+', label: 'MXN en transacciones', icon: DollarSign },
-    { value: '8', label: 'Ciudades con presencia', icon: MapPin },
-    { value: '15K+', label: 'Propiedades vendidas', icon: Building2 },
-    { value: '95%', label: 'Retención de agentes', icon: Award },
-    { value: '48hrs', label: 'Pago de comisiones', icon: Zap },
-  ];
+  const t = useTranslations('unete');
+  const ICONS = [Users, DollarSign, MapPin, Building2, Award, Zap] as const;
+  const stats = ICONS.map((Icon, i) => {
+    const n = i + 1;
+    return {
+      icon: Icon,
+      value: t(`stat${n}Value` as 'stat1Value'),
+      label: t(`stat${n}Label` as 'stat1Label'),
+    };
+  });
 
   return (
     <section className="py-16 bg-white">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="w-12 h-12 mx-auto bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-3">
-                <s.icon size={24} className="text-[#5CE0D2]" />
+          {stats.map((s) => {
+            const Icon = s.icon;
+            return (
+              <div key={s.label} className="text-center">
+                <div className="w-12 h-12 mx-auto bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-3">
+                  <Icon size={24} className="text-[#0D9488]" />
+                </div>
+                <div className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{s.value}</div>
+                <div className="text-xs text-gray-500 mt-1">{s.label}</div>
               </div>
-              <div className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{s.value}</div>
-              <div className="text-xs text-gray-500 mt-1">{s.label}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -639,59 +597,42 @@ function StatsSection() {
 }
 
 // ============================================================
-// HOW TO JOIN / PROCESS
+// JOIN PROCESS
 // ============================================================
 function JoinProcess() {
-  const steps = [
-    {
-      num: '01',
-      title: 'Aplica en línea',
-      desc: 'Completa el formulario con tu información y experiencia. Te responderemos en menos de 24 horas.',
-    },
-    {
-      num: '02',
-      title: 'Entrevista virtual',
-      desc: 'Conoce a tu futuro Team Leader en una videollamada de 30 minutos para alinear expectativas.',
-    },
-    {
-      num: '03',
-      title: 'Onboarding acelerado',
-      desc: 'Completa nuestro programa de onboarding de 1 semana: herramientas, capacitación, y tu primer portafolio.',
-    },
-    {
-      num: '04',
-      title: '¡Comienza a vender!',
-      desc: 'Desde el día 1 tienes acceso a leads, portafolio de propiedades, y todas nuestras herramientas.',
-    },
-  ];
+  const t = useTranslations('unete');
+  const steps = [1, 2, 3, 4].map((n) => ({
+    num: String(n).padStart(2, '0'),
+    title: t(`step${n}Title` as 'step1Title'),
+    desc: t(`step${n}Desc` as 'step1Desc'),
+  }));
 
   return (
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Proceso</span>
+          <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('processEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
-            Únete en <span className="text-[#1A2F3F]">4 simples pasos</span>
+            {t('processTitlePart1')} <span className="text-[#1A2F3F]">{t('processTitleHighlight')}</span>
           </h2>
         </div>
 
-        <div className="grid md:grid-cols-4 gap-6">
+        <ol className="grid md:grid-cols-4 gap-6">
           {steps.map((step, i) => (
-            <div key={step.num} className="relative">
-              {/* Connector line */}
+            <li key={step.num} className="relative">
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-8 left-[calc(50%+32px)] right-[-calc(50%-32px)] w-[calc(100%-64px)] h-0.5 bg-[#5CE0D2]/20" style={{ left: 'calc(50% + 32px)', width: 'calc(100% - 32px)' }} />
+                <div className="hidden md:block absolute top-8 h-0.5 bg-[#5CE0D2]/20" style={{ left: 'calc(50% + 32px)', width: 'calc(100% - 32px)' }} />
               )}
               <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all relative">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#5CE0D2] to-[#4BCEC0] rounded-2xl flex items-center justify-center text-white text-2xl font-bold mb-4">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#5CE0D2] to-[#4BCEC0] rounded-2xl flex items-center justify-center text-[#0F1923] text-2xl font-bold mb-4">
                   {step.num}
                 </div>
                 <h4 className="font-bold text-[#2C2C2C] text-lg mb-2">{step.title}</h4>
                 <p className="text-sm text-gray-500">{step.desc}</p>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );
@@ -701,68 +642,40 @@ function JoinProcess() {
 // FAQ
 // ============================================================
 function FAQ() {
+  const t = useTranslations('unete');
   const [open, setOpen] = useState<number | null>(null);
-
-  const faqs = [
-    {
-      q: '¿Necesito experiencia previa en bienes raíces?',
-      a: 'No es obligatorio, pero sí valoramos experiencia en ventas, atención al cliente, o marketing. Nuestra Academia Propyte te da toda la capacitación necesaria para iniciar desde cero.',
-    },
-    {
-      q: '¿Cuánto cuesta unirse a Propyte?',
-      a: 'No hay cuota de inscripción. Solo pagas una membresía mensual de $2,500 MXN que incluye todas las herramientas, CRM, capacitación, y soporte. Sin cuota de escritorio ni cargos ocultos.',
-    },
-    {
-      q: '¿Cómo funciona el revenue sharing?',
-      a: 'Cuando invitas a un agente a Propyte, recibes un porcentaje de la comisión que Propyte cobra en cada transacción que ese agente cierre. Esto se extiende hasta 5 niveles de profundidad en tu red.',
-    },
-    {
-      q: '¿Puedo trabajar desde cualquier lugar?',
-      a: 'Sí. Propyte es 100% digital. Puedes trabajar desde casa, una cafetería, o mostrando propiedades en campo. No hay oficina física obligatoria.',
-    },
-    {
-      q: '¿Qué mercados puedo trabajar?',
-      a: 'Actualmente operamos en Riviera Maya, Cancún, Mérida, CDMX, Vallarta, y Los Cabos. Estamos en expansión constante y puedes operar en múltiples mercados simultáneamente.',
-    },
-    {
-      q: '¿Cada cuánto me pagan mis comisiones?',
-      a: 'Las comisiones se pagan dentro de las 48 horas posteriores al cierre de la operación y recepción del pago. Sin esperas de 30, 60 o 90 días como en otras agencias.',
-    },
-    {
-      q: '¿Puedo traer mi cartera de clientes actual?',
-      a: 'Absolutamente. Tu cartera de clientes es tuya. Propyte te da las herramientas para gestionarla mejor y convertir más leads en ventas.',
-    },
-    {
-      q: '¿Qué diferencia a Propyte de una inmobiliaria tradicional?',
-      a: 'Somos una plataforma tecnológica, no una inmobiliaria con oficinas. Eso nos permite ofrecer splits más altos, mejor tecnología, y un modelo de revenue sharing que no existe en las agencias tradicionales.',
-    },
-  ];
+  const faqs = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
+    q: t(`faq${n}Q` as 'faq1Q'),
+    a: t(`faq${n}A` as 'faq1A'),
+  }));
 
   return (
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">Preguntas frecuentes</span>
+          <span className="text-[#0D9488] font-bold text-sm uppercase tracking-wider">{t('faqEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
-            ¿Tienes dudas?
+            {t('faqTitle')}
           </h2>
         </div>
 
         <div className="space-y-3">
           {faqs.map((faq, i) => (
             <div
-              key={i}
+              key={faq.q}
               className={`border rounded-xl overflow-hidden transition-all ${
                 open === i ? 'border-[#5CE0D2]/30 shadow-sm' : 'border-gray-200'
               }`}
             >
               <button
+                type="button"
                 onClick={() => setOpen(open === i ? null : i)}
+                aria-expanded={open === i}
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
               >
                 <span className="font-semibold text-[#2C2C2C] pr-4">{faq.q}</span>
                 {open === i ? (
-                  <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
+                  <ChevronUp size={20} className="text-[#0D9488] flex-shrink-0" />
                 ) : (
                   <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />
                 )}
@@ -784,13 +697,24 @@ function FAQ() {
 // APPLICATION FORM (CTA)
 // ============================================================
 function ApplicationForm() {
+  const t = useTranslations('unete');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const cityOptions: Array<{ value: string; key: 'city2' | 'city3' | 'city4' | 'city5' | 'city6' | 'city7' | 'city8' | 'formCityOther' }> = [
+    { value: 'playa', key: 'city2' },
+    { value: 'tulum', key: 'city3' },
+    { value: 'cancun', key: 'city4' },
+    { value: 'merida', key: 'city5' },
+    { value: 'cdmx', key: 'city6' },
+    { value: 'vallarta', key: 'city7' },
+    { value: 'cabos', key: 'city8' },
+    { value: 'otra', key: 'formCityOther' },
+  ];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    // Simulate submission
     await new Promise(r => setTimeout(r, 1500));
     setLoading(false);
     setSubmitted(true);
@@ -798,123 +722,117 @@ function ApplicationForm() {
 
   return (
     <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden">
-      {/* Background orbs */}
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F5A623]/5 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Content */}
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              ¿Listo para transformar tu{' '}
-              <span className="text-[#5CE0D2]">carrera inmobiliaria</span>?
+              {t('formTitlePart1')}{' '}
+              <span className="text-[#5CE0D2]">{t('formTitleHighlight')}</span>?
             </h2>
             <p className="text-white/70 leading-relaxed mb-8 text-lg">
-              Completa el formulario y un miembro de nuestro equipo te contactará
-              en las próximas 24 horas para agendar tu entrevista.
+              {t('formSubtitle')}
             </p>
 
             <div className="space-y-4">
-              {[
-                { icon: Phone, text: '+52 984 XXX XXXX' },
-                { icon: Mail, text: 'reclutamiento@propyte.com' },
-              ].map((c) => (
-                <div key={c.text} className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                    <c.icon size={18} className="text-[#5CE0D2]" />
-                  </div>
-                  <span className="text-white/80 font-medium">{c.text}</span>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Phone size={18} className="text-[#5CE0D2]" />
                 </div>
-              ))}
+                <span className="text-white/80 font-medium">{t('formPhone')}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                  <Mail size={18} className="text-[#5CE0D2]" />
+                </div>
+                <span className="text-white/80 font-medium">{t('formEmail')}</span>
+              </div>
             </div>
           </div>
 
-          {/* Right: Form */}
           <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
             {submitted ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-4">
                   <CheckCircle size={32} className="text-green-500" />
                 </div>
-                <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">¡Aplicación enviada!</h3>
+                <h3 className="text-xl font-bold text-[#2C2C2C] mb-2">{t('formSubmittedTitle')}</h3>
                 <p className="text-gray-500">
-                  Te contactaremos en menos de 24 horas. Revisa tu correo y WhatsApp.
+                  {t('formSubmittedDesc')}
                 </p>
               </div>
             ) : (
               <form onSubmit={handleSubmit}>
-                <h3 className="text-xl font-bold text-[#2C2C2C] mb-6">Aplica ahora</h3>
+                <h3 className="text-xl font-bold text-[#2C2C2C] mb-6">{t('formHeadline')}</h3>
 
                 <div className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">Nombre completo *</label>
+                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formNameLabel')}</label>
                       <input
                         type="text"
                         required
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
-                        placeholder="Tu nombre"
+                        placeholder={t('formNamePlaceholder')}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">WhatsApp *</label>
+                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
                       <input
                         type="tel"
                         required
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
-                        placeholder="+52 984 ..."
+                        placeholder={t('formWhatsappPlaceholder')}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">Correo electrónico *</label>
+                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formEmailLabel')}</label>
                     <input
                       type="email"
                       required
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
-                      placeholder="tu@correo.com"
+                      placeholder={t('formEmailPlaceholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">Ciudad de operación *</label>
+                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formCityLabel')}</label>
                     <select
                       required
+                      defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
                     >
-                      <option value="">Selecciona tu ciudad</option>
-                      <option value="playa">Playa del Carmen</option>
-                      <option value="tulum">Tulum</option>
-                      <option value="cancun">Cancún</option>
-                      <option value="merida">Mérida</option>
-                      <option value="cdmx">CDMX</option>
-                      <option value="vallarta">Puerto Vallarta</option>
-                      <option value="cabos">Los Cabos</option>
-                      <option value="otra">Otra</option>
+                      <option value="" disabled>{t('formCityPlaceholder')}</option>
+                      {cityOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{t(opt.key)}</option>
+                      ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">Experiencia en bienes raíces</label>
+                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formExpLabel')}</label>
                     <select
+                      defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
                     >
-                      <option value="">Selecciona</option>
-                      <option value="0">Sin experiencia (quiero empezar)</option>
-                      <option value="1-2">1-2 años</option>
-                      <option value="3-5">3-5 años</option>
-                      <option value="5+">Más de 5 años</option>
+                      <option value="" disabled>{t('formExpPlaceholder')}</option>
+                      <option value="0">{t('formExp0')}</option>
+                      <option value="1-2">{t('formExp1')}</option>
+                      <option value="3-5">{t('formExp2')}</option>
+                      <option value="5+">{t('formExp3')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">¿Qué te interesa más de Propyte?</label>
+                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formInterestLabel')}</label>
                     <textarea
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] resize-none"
-                      placeholder="Cuéntanos sobre ti y qué buscas..."
+                      placeholder={t('formInterestPlaceholder')}
                     />
                   </div>
                 </div>
@@ -922,21 +840,20 @@ function ApplicationForm() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-6 h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] disabled:bg-gray-300 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#5CE0D2]/20"
+                  className="w-full mt-6 h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] disabled:bg-gray-300 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#5CE0D2]/20"
                 >
                   {loading ? (
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-[#0F1923]/30 border-t-[#0F1923] rounded-full animate-spin" />
                   ) : (
                     <>
                       <Send size={18} />
-                      Enviar mi aplicación
+                      {t('formSubmit')}
                     </>
                   )}
                 </button>
 
                 <p className="text-xs text-gray-400 text-center mt-4">
-                  Al enviar, aceptas nuestros términos y política de privacidad.
-                  Te contactaremos por WhatsApp y correo electrónico.
+                  {t('formTerms')}
                 </p>
               </form>
             )}
@@ -951,20 +868,21 @@ function ApplicationForm() {
 // FINAL CTA BANNER
 // ============================================================
 function FinalCTA() {
+  const t = useTranslations('unete');
   return (
     <section className="py-16 bg-[#5CE0D2]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-          El futuro de los bienes raíces en México es digital. Sé parte de él.
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0F1923] mb-4">
+          {t('finalTitle')}
         </h2>
-        <p className="text-white/80 mb-8 max-w-2xl mx-auto">
-          Más de 500 agentes ya eligieron Propyte. ¿Qué estás esperando?
+        <p className="text-[#0F1923]/80 mb-8 max-w-2xl mx-auto">
+          {t('finalSubtitle')}
         </p>
         <a
           href="#aplicar"
-          className="inline-flex items-center gap-2 h-14 px-10 bg-white text-[#5CE0D2] font-bold text-lg rounded-xl hover:bg-gray-50 transition-all hover:shadow-lg"
+          className="inline-flex items-center gap-2 h-14 px-10 bg-[#0F1923] text-[#5CE0D2] font-bold text-lg rounded-xl hover:bg-[#1A2F3F] transition-all hover:shadow-lg"
         >
-          Únete hoy
+          {t('finalCta')}
           <ArrowRight size={20} />
         </a>
       </div>
