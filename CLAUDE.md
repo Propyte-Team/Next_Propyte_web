@@ -162,6 +162,27 @@ Add new keys to BOTH `es.json` and `en.json` simultaneously. Never leave a key u
 7. Test both `/es/` and `/en/` versions
 8. Mobile responsive (min 375px)
 
+## Dev Server Troubleshooting (Windows + Turbopack)
+
+Si `curl http://localhost:3000/es` devuelve **HTTP 500** con "Jest worker encountered N child process exceptions, exceeding retry limit":
+
+**Root cause:** proceso `node.exe` zombie en puerto 3000 + caché `.next` corrupta. Ctrl+C en Windows/Git Bash no siempre mata el dev server cleanly.
+
+**Fix (en orden):**
+
+```bash
+# 1. Identificar el zombie
+netstat -ano | grep ":3000.*LISTENING"
+# 2. Matarlo
+taskkill //F //PID <pid>
+# 3. Limpiar cache + fresh start
+cd ~/Projects/Propyte/Next_Propyte_web
+rm -rf .next
+npm run dev
+```
+
+Fresh start normal: `✓ Ready in ~1s` sin Jest worker errors. NO es bug de código — `tsc --noEmit` pasa limpio y `vercel --prod` (webpack) compila OK.
+
 ## Deploy
 
 ```bash
