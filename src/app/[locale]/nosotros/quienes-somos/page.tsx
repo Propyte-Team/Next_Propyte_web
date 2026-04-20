@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
+import NosotrosTabs from '../_components/NosotrosTabs';
 import {
   Building2,
   Users,
@@ -96,6 +97,8 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           </p>
         </div>
       </section>
+
+      <NosotrosTabs locale={locale} active="quienes-somos" />
 
       {/* Section 1: Intro */}
       <section className="py-16 md:py-20">

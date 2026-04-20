@@ -4,6 +4,7 @@ import {
   BookOpen, Monitor, GraduationCap, DollarSign, Users, TrendingUp,
   Check, X, ArrowRight, MessageCircle, MapPin, Sparkles,
 } from 'lucide-react';
+import NosotrosTabs from '../_components/NosotrosTabs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -99,6 +100,8 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           </p>
         </div>
       </section>
+
+      <NosotrosTabs locale={locale} active="equipo-comercial" />
 
       {/* Section 1: Team */}
       <section className="py-16 md:py-20">

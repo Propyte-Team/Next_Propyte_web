@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 import EstructuraPageContent from './EstructuraPageContent';
+import NosotrosTabs from '../_components/NosotrosTabs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -59,6 +60,8 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
           </p>
         </div>
       </section>
+
+      <NosotrosTabs locale={locale} active="estructura" />
 
       <EstructuraPageContent />
     </>
