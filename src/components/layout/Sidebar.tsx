@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -77,10 +78,17 @@ export default function Sidebar() {
       <div className="pt-4 pb-2 flex justify-center">
         <Link
           href={`/${locale}`}
-          className="flex items-center justify-center w-9 h-9 rounded-lg hover:opacity-80 transition-opacity"
+          className="flex items-center justify-center w-10 h-10 rounded-lg hover:opacity-80 transition-opacity"
           aria-label="Propyte Home"
         >
-          <span className="text-[22px] font-black leading-none text-white">P</span>
+          <Image
+            src="/img/logos/logo-icon-white.png"
+            alt="Propyte"
+            width={650}
+            height={650}
+            priority
+            className="w-7 h-7 object-contain"
+          />
         </Link>
       </div>
 

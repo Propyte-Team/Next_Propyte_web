@@ -267,6 +267,64 @@ export async function getUnitBySlug(client: Client, slug: string) {
     .single();
 }
 
+export interface UnitFilters {
+  city?: string;
+  zone?: string;
+  unitType?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minBedrooms?: number;
+  availabilityStatus?: string;
+  developmentId?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+  orderBy?: 'price_asc' | 'price_desc' | 'newest' | 'area_desc';
+}
+
+export async function getUnits(client: Client, filters: UnitFilters = {}) {
+  let query = hub(client)
+    .from('v_units')
+    .select('*', { count: 'exact' })
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES);
+
+  if (filters.city) query = query.eq('city', filters.city);
+  if (filters.zone) query = query.eq('zone', filters.zone);
+  if (filters.unitType) query = query.eq('unit_type', filters.unitType);
+  if (filters.minPrice) query = query.gte('price_mxn', filters.minPrice);
+  if (filters.maxPrice) query = query.lte('price_mxn', filters.maxPrice);
+  if (filters.minBedrooms) query = query.gte('bedrooms', filters.minBedrooms);
+  if (filters.availabilityStatus) query = query.eq('availability_status', filters.availabilityStatus);
+  if (filters.developmentId) query = query.eq('development_id', filters.developmentId);
+
+  if (filters.search) {
+    query = query.or(`name.ilike.*${filters.search}*,city.ilike.*${filters.search}*,zone.ilike.*${filters.search}*,development_name.ilike.*${filters.search}*`);
+  }
+
+  switch (filters.orderBy) {
+    case 'price_asc':
+      query = query.order('price_mxn', { ascending: true, nullsFirst: false });
+      break;
+    case 'price_desc':
+      query = query.order('price_mxn', { ascending: false });
+      break;
+    case 'area_desc':
+      query = query.order('area_m2', { ascending: false, nullsFirst: false });
+      break;
+    case 'newest':
+    default:
+      query = query.order('created_at', { ascending: false });
+      break;
+  }
+
+  const limit = filters.limit || 20;
+  const offset = filters.offset || 0;
+  query = query.range(offset, offset + limit - 1);
+
+  return query;
+}
+
 export async function getAvailableUnits(client: Client, developmentId: string) {
   return crm(client)
     .from('units')

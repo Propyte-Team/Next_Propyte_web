@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { MapPin, Mail, Instagram, Facebook } from 'lucide-react';
@@ -31,10 +32,15 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 md:gap-10">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-baseline mb-4">
-              <span className="text-2xl font-bold tracking-tight text-white">PROP</span>
-              <span className="text-2xl font-bold tracking-tight text-[#5CE0D2]">YTE</span>
-            </div>
+            <Link href={`/${locale}`} className="inline-flex items-center mb-4" aria-label="Propyte">
+              <Image
+                src="/img/logos/logo-horizontal-white.png"
+                alt="Propyte"
+                width={2420}
+                height={452}
+                className="h-7 w-auto object-contain"
+              />
+            </Link>
             <p className="text-sm text-white/50 leading-relaxed mb-4">{t('description')}</p>
             <div className="flex gap-3">
               <a href="#" className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors" aria-label="Instagram">

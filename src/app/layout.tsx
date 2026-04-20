@@ -10,11 +10,21 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com'),
   title: {
     template: '%s | Propyte',
     default: 'Propyte — Real estate en modo inteligente',
   },
   description: 'Real estate, powered by intelligence. La plataforma inmobiliaria mas inteligente de la Riviera Maya.',
+  applicationName: 'Propyte',
+  manifest: '/manifest.webmanifest',
+  openGraph: {
+    type: 'website',
+    siteName: 'Propyte',
+    locale: 'es_MX',
+    alternateLocale: 'en_US',
+  },
+  twitter: { card: 'summary_large_image' },
 };
 
 export default function RootLayout({

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -59,10 +60,14 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
           className="flex items-center shrink-0"
           aria-label="Propyte"
         >
-          <div className="flex items-baseline">
-            <span className={`text-lg font-bold tracking-tight ${darkTopRow ? 'text-white' : 'text-[#1A2F3F]'}`}>PROP</span>
-            <span className="text-lg font-bold tracking-tight text-[#5CE0D2]">YTE</span>
-          </div>
+          <Image
+            src={darkTopRow ? '/img/logos/logo-horizontal-white.png' : '/img/logos/logo-horizontal-dark.png'}
+            alt="Propyte"
+            width={2420}
+            height={452}
+            priority
+            className="h-6 w-auto object-contain"
+          />
         </Link>
 
         <div className="flex items-center gap-1.5">

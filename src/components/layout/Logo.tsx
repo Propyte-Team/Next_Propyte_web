@@ -1,31 +1,48 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
+type Variant = 'dark' | 'teal' | 'white' | 'icon';
+
 interface LogoProps {
-  variant?: 'full' | 'compact' | 'icon';
+  variant?: Variant;
   className?: string;
+  priority?: boolean;
+  href?: string;
 }
 
-export default function Logo({ variant = 'full', className = '' }: LogoProps) {
-  if (variant === 'icon') {
-    return (
-      <Link href="/" className={className}>
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="6" fill="#1A2F3F"/>
-          <text x="8" y="23" fontFamily="Inter, sans-serif" fontWeight="700" fontSize="20" fill="white">P</text>
-        </svg>
-      </Link>
-    );
-  }
+const SRC: Record<Variant, string> = {
+  dark: '/img/logos/logo-horizontal-dark.png',
+  teal: '/img/logos/logo-horizontal-teal.png',
+  white: '/img/logos/logo-horizontal-white.png',
+  icon: '/img/logos/logo-icon-white.png',
+};
+
+const DIMENSIONS: Record<Variant, { width: number; height: number }> = {
+  dark: { width: 2420, height: 452 },
+  teal: { width: 2420, height: 452 },
+  white: { width: 2420, height: 452 },
+  icon: { width: 650, height: 650 },
+};
+
+export default function Logo({
+  variant = 'dark',
+  className = '',
+  priority = false,
+  href = '/',
+}: LogoProps) {
+  const { width, height } = DIMENSIONS[variant];
+  const isIcon = variant === 'icon';
 
   return (
-    <Link href="/" className={`flex flex-col ${className}`}>
-      <div className="flex items-baseline">
-        <span className="text-xl font-bold tracking-tight" style={{ color: '#1A2F3F' }}>PROP</span>
-        <span className="text-xl font-bold tracking-tight" style={{ color: '#5CE0D2' }}>YTE</span>
-      </div>
-      {variant === 'full' && (
-        <span className="text-[9px] text-gray-500 tracking-wider -mt-1">Property + Byte</span>
-      )}
+    <Link href={href} className={`inline-flex items-center ${className}`} aria-label="Propyte">
+      <Image
+        src={SRC[variant]}
+        alt="Propyte"
+        width={width}
+        height={height}
+        priority={priority}
+        className={isIcon ? 'h-9 w-9 object-contain' : 'h-8 md:h-9 w-auto object-contain'}
+      />
     </Link>
   );
 }
