@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { SlidersHorizontal, ChevronDown, Search } from 'lucide-react';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
+import CurrencyToggle from '@/components/ui/CurrencyToggle';
 
 interface FilterBarProps {
   filters: Filters;
@@ -218,6 +219,9 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
 
         {/* Spacer */}
         <div className="flex-1" />
+
+        {/* MXN/USD toggle */}
+        <CurrencyToggle />
 
         {/* Result count */}
         <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
