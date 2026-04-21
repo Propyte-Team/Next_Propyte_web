@@ -17,6 +17,7 @@ export function buildCityMetadata(citySlug: string, locale: string): Metadata {
     openGraph: {
       locale: isEn ? 'en_US' : 'es_MX',
       alternateLocale: isEn ? 'es_MX' : 'en_US',
+      images: [`/${locale}/opengraph-image`],
     },
     alternates: {
       languages: {

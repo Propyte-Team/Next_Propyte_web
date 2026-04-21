@@ -11,6 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     openGraph: {
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+      images: [`/${locale}/opengraph-image`],
     },
     alternates: {
       canonical: `/${locale}/proveedores`,
