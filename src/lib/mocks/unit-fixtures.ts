@@ -56,7 +56,7 @@ const FIXTURES: Record<string, UnitRow> = {
     created_at: '2025-08-15T00:00:00Z',
     updated_at: '2026-04-10T00:00:00Z',
     approved_at: '2025-09-01T00:00:00Z',
-    zoho_pipeline_status: 'Aprobado',
+    zoho_pipeline_status: 'published',
     developer_name: 'Grupo Akora',
   },
   'nativa-jungla-t12-tulum': {
@@ -109,7 +109,7 @@ const FIXTURES: Record<string, UnitRow> = {
     created_at: '2025-11-01T00:00:00Z',
     updated_at: '2026-04-12T00:00:00Z',
     approved_at: '2025-12-10T00:00:00Z',
-    zoho_pipeline_status: 'Aprobado',
+    zoho_pipeline_status: 'published',
     developer_name: 'Nativa Desarrollos',
   },
   'playacar-residencias-b205-playa-del-carmen': {
@@ -162,7 +162,7 @@ const FIXTURES: Record<string, UnitRow> = {
     created_at: '2025-06-01T00:00:00Z',
     updated_at: '2026-04-08T00:00:00Z',
     approved_at: '2025-07-15T00:00:00Z',
-    zoho_pipeline_status: 'Aprobado',
+    zoho_pipeline_status: 'published',
     developer_name: 'Grupo Playacar',
   },
 };

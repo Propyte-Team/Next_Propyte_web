@@ -48,7 +48,18 @@ export interface DevelopmentFilters {
   orderBy?: 'price_asc' | 'price_desc' | 'newest' | 'roi' | 'units';
 }
 
-export const APPROVED_STATUSES = ['aprobado', 'Aprobado', 'listo', 'Listo'];
+// Canonical public gate (alineado con Propyte_hub 2026-04-20).
+// Vocabulario antiguo ES 7 valores (discovery/analisis/presentacion/
+// aprobado/listo/descartado/pausado) → nuevo set EN 5 valores alineados
+// con Genesis: draft | review | published | paused | possible_duplicate.
+// El gate público mostra EXCLUSIVAMENTE `published`. Antes era
+// ['aprobado', 'Aprobado', 'listo', 'Listo'].
+// Source of truth: Propyte_hub/src/lib/status-canonical.ts +
+// scripts/sql/standardize-status.sql (migration idempotente ejecutada
+// en Supabase oaijxdpevakashxshhvm, 1258 unidades migradas).
+// Mantenemos un array para compat con `.in(...)` y posibles extensiones
+// (p.ej. si el Hub permite un modo "draft público" a futuro).
+export const APPROVED_STATUSES = ['published'] as const;
 
 export async function getDevelopments(client: Client, filters: DevelopmentFilters = {}) {
   const hub = client.schema('real_estate_hub' as 'public');
@@ -568,7 +579,7 @@ export async function getDevelopers(client: Client) {
     .from('v_developers')
     .select('*')
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', ['aprobado', 'Aprobado', 'listo', 'Listo'])
+    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .order('name');
 }
 
