@@ -64,6 +64,8 @@ export default function Sidebar() {
     return isNavActive(pathname, id, href, locale);
   }
 
+  const hasActiveChild = moreItems.some((item) => isNavActive(pathname, item.id, item.href, locale));
+
   return (
     <aside
       aria-label={t('openMenu')}
@@ -121,7 +123,10 @@ export default function Sidebar() {
           aria-expanded={moreOpen}
           aria-haspopup="menu"
           aria-controls="sidebar-more-panel"
-          className="flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors"
+          aria-current={hasActiveChild ? 'page' : undefined}
+          className={`flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl transition-colors ${
+            hasActiveChild ? 'bg-white/10 text-[#5CE0D2]' : 'text-white/40 hover:text-white hover:bg-white/5'
+          }`}
         >
           <MenuIcon size={18} strokeWidth={1.75} />
           <span className="text-[10px] font-medium">{t('more')}</span>
