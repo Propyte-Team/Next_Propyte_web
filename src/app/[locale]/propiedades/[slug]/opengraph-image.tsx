@@ -42,7 +42,7 @@ export default async function Image({
       location = [row.zone, row.city].filter(Boolean).join(', ');
       if (row.price_mxn) price = formatPrice(row.price_mxn);
       if (row.unit_type) {
-        badge = isEn ? row.unit_type : row.unit_type;
+        badge = row.unit_type;
       } else if (row.unit_number) {
         badge = row.unit_number;
       }
