@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -19,8 +20,19 @@ import type { DeveloperRow } from '@/lib/supabase/types';
 function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
   const t = useTranslations('developers');
   const locale = useLocale();
-  const [search, setSearch] = useState('');
-  const [city, setCity] = useState('');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [search, setSearch] = useState(searchParams.get('search') ?? '');
+  const [city, setCity] = useState(searchParams.get('city') ?? '');
+
+  function updateUrl(newSearch: string, newCity: string) {
+    const params = new URLSearchParams();
+    if (newSearch) params.set('search', newSearch);
+    if (newCity) params.set('city', newCity);
+    const qs = params.toString();
+    router.replace(pathname + (qs ? `?${qs}` : ''), { scroll: false });
+  }
 
   const cities = useMemo(
     () => [...new Set(developers.map((d) => d.city).filter(Boolean) as string[])].sort(),
@@ -55,7 +67,7 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
               id="dev-search"
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => { setSearch(e.target.value); updateUrl(e.target.value, city); }}
               placeholder={t('searchPlaceholder')}
               className="h-10 w-52 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-[#5CE0D2] focus:outline-none"
             />
@@ -67,7 +79,7 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
             <select
               id="dev-city"
               value={city}
-              onChange={(e) => setCity(e.target.value)}
+              onChange={(e) => { setCity(e.target.value); updateUrl(search, e.target.value); }}
               className="h-10 pl-4 pr-8 rounded-full border border-gray-300 text-sm bg-white focus:border-[#5CE0D2] focus:outline-none appearance-none cursor-pointer"
             >
               <option value="">{t('filterCity')}: {t('filterAll')}</option>
@@ -287,6 +299,7 @@ function FAQ() {
           {faqs.map(({ q, a }, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
               <button
+                type="button"
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
                 aria-expanded={open === i}
@@ -448,7 +461,9 @@ function DeveloperForm() {
 export default function DevelopersPageContent({ developers }: { developers: DeveloperRow[] }) {
   return (
     <div>
-      <DeveloperDirectory developers={developers} />
+      <Suspense fallback={null}>
+        <DeveloperDirectory developers={developers} />
+      </Suspense>
       <JoinBanner />
       <ValueProposition />
       <HowItWorks />

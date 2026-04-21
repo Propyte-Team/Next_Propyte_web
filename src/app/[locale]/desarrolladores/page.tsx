@@ -4,6 +4,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import DevelopersPageContent from './DevelopersPageContent';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopers } from '@/lib/supabase/queries';
+import type { DeveloperRow } from '@/lib/supabase/types';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -44,8 +45,16 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
-  const supabase = createPublicSupabaseClient();
-  const { data: developers = [] } = await getDevelopers(supabase);
+  let developers: DeveloperRow[] = [];
+  try {
+    const supabase = createPublicSupabaseClient();
+    if (supabase) {
+      const { data } = await getDevelopers(supabase);
+      if (data) developers = data as DeveloperRow[];
+    }
+  } catch (error) {
+    console.error('[DevelopersPage] getDevelopers failed:', error);
+  }
 
   return (
     <>
@@ -67,7 +76,7 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: locale === 'es' ? 'Desarrolladores' : 'Developers' }]}
       />
-      <DevelopersPageContent developers={developers ?? []} />
+      <DevelopersPageContent developers={developers} />
     </>
   );
 }
