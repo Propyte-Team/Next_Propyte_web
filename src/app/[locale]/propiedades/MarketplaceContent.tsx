@@ -59,7 +59,7 @@ export default function MarketplaceContent({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-64px)]">
+    <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
       {/* SEO heading — visible al top */}
       <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
         <div className="flex items-start justify-between gap-2">

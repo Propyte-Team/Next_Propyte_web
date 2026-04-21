@@ -2,7 +2,7 @@ import MarketplaceCardSkeleton from '@/components/marketplace/MarketplaceCardSke
 
 export default function Loading() {
   return (
-    <div className="flex flex-col h-[calc(100dvh-64px)]">
+    <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
       <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100 animate-pulse">
         <div className="h-8 bg-gray-200 rounded w-56" />
         <div className="h-4 bg-gray-100 rounded w-80 mt-2" />

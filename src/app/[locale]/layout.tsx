@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import MainPadding from '@/components/layout/MainPadding';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
 import { SearchProvider } from '@/context/SearchContext';
@@ -44,7 +45,7 @@ export default async function LocaleLayout({
             className="flex-1 pb-20 md:pb-0"
             tabIndex={-1}
           >
-            {children}
+            <MainPadding>{children}</MainPadding>
           </main>
           <Footer />
         </div>
