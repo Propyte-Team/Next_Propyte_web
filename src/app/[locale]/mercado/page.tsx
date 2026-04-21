@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
-import { CurrencyProvider } from '@/context/CurrencyContext';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { MercadoHero } from './components/MercadoHero';
 import { TabBar } from './components/TabBar';
@@ -86,7 +85,7 @@ export default async function MercadoPage({
   };
 
   return (
-    <CurrencyProvider>
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
@@ -116,6 +115,6 @@ export default async function MercadoPage({
 
       <MethodologySection activeTab={activeTab} locale={locale} />
       <AdvisorCTA activeTab={activeTab} locale={locale} />
-    </CurrencyProvider>
+    </>
   );
 }
