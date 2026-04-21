@@ -79,14 +79,22 @@ async function auditViewport(viewport, label) {
 
       // 4. Precio cambia (solo desktop, cards visibles en grid)
       if (viewport.width >= 1024) {
+        // Skip si 0 resultados (seed gap local) — no es un bug del toggle
+        const resultsSpan = page.locator('span', { hasText: /resultado|result/i }).first();
+        const txt = await resultsSpan.textContent().catch(() => '');
+        const match = txt?.match(/(\d+)/);
+        if (match && Number(match[1]) === 0) {
+          console.log(`  ⚠️  SKIP price check — 0 properties en ${route} (seed gap)`);
+          continue;
+        }
+
         const priceLocator = page.locator('[data-testid="marketplace-card-price"]').first();
 
-        // Precio DEBE existir — FAIL si no (no silencioso)
+        // Precio DEBE existir — FAIL si hay resultados pero falta el data-testid
         try {
           await expect(priceLocator).toBeVisible({ timeout: 5000 });
         } catch {
           fail(`data-testid="marketplace-card-price" no encontrado en ${route} — verificar que haya cards y el data-testid esté aplicado`);
-          // Reset toggle and continue
           await mxnBtn.click().catch(() => {});
           continue;
         }
@@ -114,24 +122,14 @@ async function auditViewport(viewport, label) {
           fail(`Precio no cambió tras click USD (before="${priceBefore.trim()}" after="${priceAfter.trim()}")`);
         }
 
-        // 5. Focus ring — keyboard focus no lanza error
+        // Reset y verificar ciclo completo
         await mxnBtn.click();
         await page.waitForTimeout(200);
-        await mxnBtn.focus();
-        const outline = await page.evaluate(() => {
-          const el = document.querySelector('[data-testid="marketplace-card-price"]')
-            ?.closest('[role="group"]')
-            ?.querySelector('button[aria-pressed="true"]');
-          if (!el) return null;
-          el.focus();
-          const s = window.getComputedStyle(el);
-          return s.outlineWidth || s.boxShadow;
-        });
-        if (outline && outline !== 'none' && outline !== '0px') {
-          pass(`Focus ring detectado (${outline.slice(0, 60)})`);
-        } else {
-          console.log(`  ⚠️  Focus ring no detectado vía computedStyle (puede ser focus-visible solo con teclado)`);
-        }
+
+        try {
+          await expect(mxnBtn).toBeDisabled();
+          pass('MXN disabled tras reset (ciclo completo verificado)');
+        } catch (e) { fail(`MXN debería estar disabled tras reset: ${e.message}`); }
       }
     } catch (err) {
       fail(`Error inesperado: ${err.message}`);
