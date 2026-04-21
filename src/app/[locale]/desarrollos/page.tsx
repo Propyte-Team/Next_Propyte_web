@@ -17,6 +17,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description: isEn
       ? 'Explore new real estate developments in Cancun, Playa del Carmen, Tulum and Merida. Pre-sale prices, delivery dates, and investment analysis.'
       : 'Explora nuevos desarrollos inmobiliarios en Cancun, Playa del Carmen, Tulum y Merida. Precios de preventa, fechas de entrega y análisis de inversión.',
+    openGraph: {
+      locale: isEn ? 'en_US' : 'es_MX',
+      alternateLocale: isEn ? 'es_MX' : 'en_US',
+    },
     alternates: {
       languages: {
         es: '/es/desarrollos',

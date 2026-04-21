@@ -14,6 +14,10 @@ export function buildCityMetadata(citySlug: string, locale: string): Metadata {
       ? `New Developments in ${city.name}, ${city.state} | Pre-Sales & Prices`
       : `Nuevos Desarrollos en ${city.name}, ${city.state} | Preventas y Precios`,
     description: isEn ? city.descEn : city.descEs,
+    openGraph: {
+      locale: isEn ? 'en_US' : 'es_MX',
+      alternateLocale: isEn ? 'es_MX' : 'en_US',
+    },
     alternates: {
       languages: {
         es: `/es/desarrollos/${citySlug}`,

@@ -8,6 +8,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: `${t('cookiesTitle')} — Propyte`,
     description: t('cookiesDescription'),
     robots: { index: false, follow: true },
+    openGraph: {
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
     alternates: {
       canonical: `/${locale}/cookies`,
       languages: {

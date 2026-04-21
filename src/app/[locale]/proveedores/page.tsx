@@ -8,6 +8,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: `${t('title')} — Propyte`,
     description: t('description'),
+    openGraph: {
+      locale: locale === 'en' ? 'en_US' : 'es_MX',
+      alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+    },
     alternates: {
       canonical: `/${locale}/proveedores`,
       languages: {
