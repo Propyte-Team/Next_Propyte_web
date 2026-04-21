@@ -1582,6 +1582,9 @@
     "finalSubtitle": "Más de 500 agentes ya eligieron Propyte. ¿Qué estás esperando?",
     "finalCta": "Únete hoy"
   },
+  "a11y": {
+    "skipToContent": "Saltar al contenido principal"
+  },
   "mercadoMeta": {
     "title": "Inteligencia de mercado — Rentas vacacionales y tradicionales",
     "description": "Analiza el mercado de rentas vacacionales y tradicionales en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. +2M registros, 10,000+ comparables, actualización diaria."

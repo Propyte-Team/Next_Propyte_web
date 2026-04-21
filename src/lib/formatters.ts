@@ -29,3 +29,11 @@ export function formatPercentage(value: number): string {
 export function formatNumber(value: number): string {
   return value.toLocaleString('es-MX');
 }
+
+// Normaliza nombres de desarrollos/unidades: remueve prefijos de seeds de prueba
+// (`[SAMPLE]`, `[DEMO]`, `[TEST]`) que puedan haber quedado en Supabase pending
+// de limpieza. Se aplica en el borde de render para evitar tocar datos.
+export function cleanListingName(name: string | null | undefined): string {
+  if (!name) return '';
+  return name.replace(/^\s*\[(SAMPLE|DEMO|TEST)\]\s*/i, '').trim();
+}

@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
@@ -24,14 +24,20 @@ export default async function LocaleLayout({
   // Enable static rendering — opts pages out of cookies()-based locale resolution
   setRequestLocale(locale);
 
-  const messages = await getMessages({ locale });
+  const [messages, tA11y] = await Promise.all([
+    getMessages({ locale }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
       <SearchProvider>
+        <a href="#main-content" className="skip-to-content">
+          {tA11y('skipToContent')}
+        </a>
         <Header />
         <div className="lg:ml-[72px]">
-          <main id="main-content" className="flex-1">
+          <main id="main-content" className="flex-1" tabIndex={-1}>
             {children}
           </main>
           <Footer />

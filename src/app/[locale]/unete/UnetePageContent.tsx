@@ -770,19 +770,25 @@ function ApplicationForm() {
                 <div className="space-y-4">
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formNameLabel')}</label>
+                      <label htmlFor="unete-name" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formNameLabel')}</label>
                       <input
+                        id="unete-name"
+                        name="name"
                         type="text"
                         required
+                        autoComplete="name"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
                         placeholder={t('formNamePlaceholder')}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
+                      <label htmlFor="unete-whatsapp" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
                       <input
+                        id="unete-whatsapp"
+                        name="whatsapp"
                         type="tel"
                         required
+                        autoComplete="tel"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
                         placeholder={t('formWhatsappPlaceholder')}
                       />
@@ -790,18 +796,23 @@ function ApplicationForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formEmailLabel')}</label>
+                    <label htmlFor="unete-email" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formEmailLabel')}</label>
                     <input
+                      id="unete-email"
+                      name="email"
                       type="email"
                       required
+                      autoComplete="email"
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
                       placeholder={t('formEmailPlaceholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formCityLabel')}</label>
+                    <label htmlFor="unete-city" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formCityLabel')}</label>
                     <select
+                      id="unete-city"
+                      name="city"
                       required
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
@@ -814,8 +825,10 @@ function ApplicationForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formExpLabel')}</label>
+                    <label htmlFor="unete-experience" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formExpLabel')}</label>
                     <select
+                      id="unete-experience"
+                      name="experience"
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
                     >
@@ -828,8 +841,10 @@ function ApplicationForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formInterestLabel')}</label>
+                    <label htmlFor="unete-interest" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formInterestLabel')}</label>
                     <textarea
+                      id="unete-interest"
+                      name="interest"
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] resize-none"
                       placeholder={t('formInterestPlaceholder')}

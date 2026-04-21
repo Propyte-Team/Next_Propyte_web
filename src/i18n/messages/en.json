@@ -1581,6 +1581,9 @@
     "finalSubtitle": "500+ agents have already chosen Propyte. What are you waiting for?",
     "finalCta": "Join today"
   },
+  "a11y": {
+    "skipToContent": "Skip to main content"
+  },
   "mercadoMeta": {
     "title": "Market intelligence — Vacation and traditional rentals",
     "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +2M records, 10,000+ comparables, daily updates."

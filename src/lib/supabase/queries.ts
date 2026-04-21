@@ -1,8 +1,22 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { RENT_BOUNDS, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { cleanListingName } from '@/lib/formatters';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
+
+// Strip seed prefixes ([SAMPLE], [DEMO], [TEST]) from row.name on read.
+// Applied at the query layer so every consumer sees clean display names
+// without mutating Supabase data.
+function normalizeNames<T extends { name?: string | null } | null>(rows: T[] | null | undefined): T[] | null {
+  if (!rows) return rows ?? null;
+  return rows.map((row) => {
+    if (!row || typeof row !== 'object') return row;
+    const n = (row as { name?: string | null }).name;
+    if (typeof n !== 'string') return row;
+    return { ...(row as object), name: cleanListingName(n) } as T;
+  });
+}
 
 /**
  * Schema helpers — tables live in different Postgres schemas in Propyte Supabase.
@@ -82,16 +96,23 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   const offset = filters.offset || 0;
   query = query.range(offset, offset + limit - 1);
 
-  return query;
+  const res = await query;
+  return { ...res, data: normalizeNames(res.data) };
 }
 
 export async function getDevelopmentBySlug(client: Client, slug: string) {
-  return client
+  const res = await client
     .schema('real_estate_hub' as 'public')
     .from('v_developments')
     .select('*')
     .eq('slug', slug)
     .single();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = res.data as any;
+  const normalized = raw && typeof raw === 'object' && typeof raw.name === 'string'
+    ? { ...raw, name: cleanListingName(raw.name) }
+    : raw;
+  return { ...res, data: normalized };
 }
 
 export async function getDevelopmentWithUnits(client: Client, slug: string) {
@@ -110,8 +131,14 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
     .eq('development_id', (dev as { id: string }).id)
     .order('unit_number', { ascending: true });
 
+  const devRow = dev as { name?: string | null };
+  const normalizedDev = typeof devRow.name === 'string'
+    ? { ...devRow, name: cleanListingName(devRow.name) }
+    : devRow;
+  const normalizedUnits = normalizeNames(units) ?? [];
+
   return {
-    data: { ...dev, units: units || [] },
+    data: { ...normalizedDev, units: normalizedUnits },
     error: unitsError,
   };
 }
@@ -171,10 +198,12 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .order('created_at', { ascending: false })
     .limit(limit);
 
-  const featuredRows = (featured.data || []) as Array<{ id: string }>;
+  const featuredRows = (featured.data || []) as Array<{ id: string; name?: string | null }>;
 
-  // Si featured llenó la grid, devolver tal cual.
-  if (featuredRows.length >= limit) return featured;
+  // Si featured llenó la grid, devolver tal cual (normalizado).
+  if (featuredRows.length >= limit) {
+    return { ...featured, data: normalizeNames(featured.data) };
+  }
 
   // Llenar el resto con los más recientes aprobados no-featured (calca WP featured-properties.php).
   const fillLimit = limit - featuredRows.length;
@@ -192,8 +221,9 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
   }
 
   const recent = await recentQuery;
+  const merged = [...featuredRows, ...((recent.data || []) as typeof featuredRows)];
   return {
-    data: [...featuredRows, ...((recent.data || []) as typeof featuredRows)],
+    data: normalizeNames(merged),
     error: featured.error || recent.error,
     count: featuredRows.length + (recent.data?.length || 0),
   };
