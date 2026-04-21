@@ -1583,7 +1583,34 @@
     "finalCta": "Únete hoy"
   },
   "a11y": {
-    "skipToContent": "Saltar al contenido principal"
+    "skipToContent": "Saltar al contenido principal",
+    "breadcrumbLabel": "Migas de pan",
+    "carouselLabel": "Galería de fotos",
+    "carouselNextSlide": "Siguiente foto",
+    "carouselPrevSlide": "Foto anterior"
+  },
+  "breadcrumbs": {
+    "home": "Inicio",
+    "developments": "Desarrollos",
+    "properties": "Propiedades",
+    "featured": "Destacados",
+    "promotions": "Promociones",
+    "about": "Nosotros",
+    "aboutTeam": "Equipo comercial",
+    "aboutStructure": "Estructura",
+    "aboutWhoWeAre": "Quiénes somos",
+    "howToBuy": "Cómo comprar",
+    "howToInvest": "Cómo invertir",
+    "financing": "Financiamiento",
+    "glossary": "Glosario",
+    "faq": "Preguntas frecuentes",
+    "brokers": "Corredores",
+    "joinTeam": "Únete al equipo",
+    "market": "Mercado",
+    "contact": "Contacto",
+    "zones": "Zonas",
+    "developers": "Desarrolladoras",
+    "providers": "Proveedores"
   },
   "mercadoMeta": {
     "title": "Inteligencia de mercado — Rentas vacacionales y tradicionales",

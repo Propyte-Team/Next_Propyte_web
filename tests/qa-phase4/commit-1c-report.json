@@ -1,0 +1,861 @@
+[
+  {
+    "name": "MOCK /es/propiedades/akora-a301-cancun",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Akora Residencial — A-301",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "75",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/akora-residencial-b73b319b",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Cancun -> /es/propiedades?city=Cancun",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "Akora Residencial — A-301",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "akora-a301-cancun",
+    "locale": "es"
+  },
+  {
+    "name": "MOCK /es/propiedades/nativa-jungla-t12-tulum",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Nativa Jungla — T-12",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "84",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/nativa-jungla",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Tulum -> /es/propiedades?city=Tulum",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "Nativa Jungla — T-12",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "nativa-jungla-t12-tulum",
+    "locale": "es"
+  },
+  {
+    "name": "MOCK /es/propiedades/playacar-residencias-b205-playa-del-carmen",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Playacar Residencias — B-205",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "75",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/playacar-residencias",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Playa del Carmen -> /es/propiedades?city=Playa%20del%20Carmen",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "Playacar Residencias — B-205",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "playacar-residencias-b205-playa-del-carmen",
+    "locale": "es"
+  },
+  {
+    "name": "MOCK-EN /en/propiedades/akora-a301-cancun",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Akora Residencial — A-301",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Description | Location | Investment",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Returns\"",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "NOT FOUND",
+        "ok": false
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "75",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/en/desarrollos/akora-residencial-b73b319b",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Cancun -> /en/propiedades?city=Cancun",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/en/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "Akora Residencial — A-301",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "akora-a301-cancun",
+    "locale": "en"
+  },
+  {
+    "name": "SAMPLE /es/propiedades/sample-azul-vivo-a101-5a4e4a4e",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "[SAMPLE] AZUL VIVO Residences — A101",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "73",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/sample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Playa del Carmen -> /es/propiedades?city=Playa%20del%20Carmen",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "[SAMPLE] AZUL VIVO Residences — A101",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "sample-azul-vivo-a101-5a4e4a4e",
+    "locale": "es"
+  },
+  {
+    "name": "SAMPLE /es/propiedades/sample-azul-vivo-a102-5a4e4a4e",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "[SAMPLE] AZUL VIVO Residences — A102",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "67",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/sample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Playa del Carmen -> /es/propiedades?city=Playa%20del%20Carmen",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "[SAMPLE] AZUL VIVO Residences — A102",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "sample-azul-vivo-a102-5a4e4a4e",
+    "locale": "es"
+  },
+  {
+    "name": "SAMPLE /es/propiedades/sample-azul-vivo-ph501-5a4e4a4e",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "[SAMPLE] AZUL VIVO Residences — PH501",
+        "ok": true
+      },
+      {
+        "k": "Outer tablist count",
+        "v": 1,
+        "ok": true
+      },
+      {
+        "k": "Outer tabs (first list)",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Inner 4-pill tablist (Dual Calc)",
+        "v": "Residencial | Vacacional (Airbnb) | Financiamiento | Proyección ROI",
+        "ok": true
+      },
+      {
+        "k": "Pills: Residencial/Vacacional/Financiamiento/ROI",
+        "v": "true/true/true/true",
+        "ok": true
+      },
+      {
+        "k": "MarketIndicator score visible",
+        "v": "61",
+        "ok": true
+      },
+      {
+        "k": "Amenity-like items (max per panel)",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "FAQ-expandable elements",
+        "v": 10,
+        "ok": true
+      },
+      {
+        "k": "Link a desarrollo padre",
+        "v": "/es/desarrollos/sample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb → /propiedades?city=",
+        "v": "Playa del Carmen -> /es/propiedades?city=Playa%20del%20Carmen",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumb link resuelve",
+        "v": "200 https://dev.propyte.com/es/propiedades",
+        "ok": true
+      },
+      {
+        "k": "JSON-LD blocks",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Has RealEstateListing",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has BreadcrumbList",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has FAQPage",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Has Offer",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "og:title",
+        "v": "[SAMPLE] AZUL VIVO Residences — PH501",
+        "ok": true
+      },
+      {
+        "k": "og:image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "twitter:card",
+        "v": "summary_large_image",
+        "ok": true
+      },
+      {
+        "k": "canonical",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang es/en",
+        "v": "true/true",
+        "ok": true
+      }
+    ],
+    "slug": "sample-azul-vivo-ph501-5a4e4a4e",
+    "locale": "es"
+  },
+  {
+    "name": "404 fallback /es/propiedades/slug-que-no-existe-xyz",
+    "checks": [
+      {
+        "k": "HTTP 404 status",
+        "v": 404,
+        "ok": true
+      }
+    ]
+  }
+]

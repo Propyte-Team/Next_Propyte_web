@@ -1,0 +1,202 @@
+[
+  {
+    "name": "PDF defensive guards",
+    "checks": [
+      {
+        "k": "kind=foo -> 400",
+        "v": 400,
+        "ok": true
+      },
+      {
+        "k": "locale=xx -> 400",
+        "v": 400,
+        "ok": true
+      },
+      {
+        "k": "missing slug -> 400",
+        "v": 400,
+        "ok": true
+      },
+      {
+        "k": "valid -> 200",
+        "v": 200,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "DEV akora-es",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs ES/EN esperadas",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Ubicación\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Google Map renderiza (iframe o gm-style container)",
+        "v": "{\"iframe\":false,\"container\":true,\"ariaRegion\":\"Map\"}",
+        "ok": true
+      },
+      {
+        "k": "Zone scores (X/10 o X/100) renderizan",
+        "v": "NO",
+        "ok": false
+      },
+      {
+        "k": "Geo section headings",
+        "v": "Mercado de renta vacacional | Te interesa este desarrollo? | [SAMPLE] AZUL VIVO Residences | Atzaró Residences Playa del Carmen | Athalia Condos Playa del Carmen | Aura by AWA Playa del Carmen",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "AirdnaInsights recharts chart",
+        "v": "chart=false adr=true occ=true lst=true",
+        "ok": false
+      },
+      {
+        "k": "MarketSentiment 3 indicadores + overall",
+        "v": "{\"hasApprec\":true,\"hasDemand\":true,\"hasSupply\":true,\"hasDirectional\":true}",
+        "ok": true
+      },
+      {
+        "k": "CetesComparison (CETES + banco + FV 5/10y + IRR)",
+        "v": "{\"hasCetes\":true,\"hasBank\":true,\"hasFv\":true,\"hasIrr\":true}",
+        "ok": true
+      },
+      {
+        "k": "IRR akora 24.2% / 20.7% (5y/10y)",
+        "v": "20.7%",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "DEV akora-en",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs ES/EN esperadas",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Location\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Google Map renderiza (iframe o gm-style container)",
+        "v": "{\"iframe\":false,\"container\":true,\"ariaRegion\":\"Map\"}",
+        "ok": true
+      },
+      {
+        "k": "Zone scores (X/10 o X/100) renderizan",
+        "v": "NO",
+        "ok": false
+      },
+      {
+        "k": "Geo section headings",
+        "v": "Vacation rental market | Interested in this development? | [SAMPLE] AZUL VIVO Residences | Atzaró Residences Playa del Carmen | Athalia Condos Playa del Carmen | Aura by AWA Playa del Carmen",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Returns\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "AirdnaInsights recharts chart",
+        "v": "chart=false adr=true occ=true lst=true",
+        "ok": false
+      },
+      {
+        "k": "MarketSentiment 3 indicadores + overall",
+        "v": "{\"hasApprec\":true,\"hasDemand\":true,\"hasSupply\":true,\"hasDirectional\":true}",
+        "ok": true
+      },
+      {
+        "k": "CetesComparison (CETES + banco + FV 5/10y + IRR)",
+        "v": "{\"hasCetes\":true,\"hasBank\":true,\"hasFv\":true,\"hasIrr\":true}",
+        "ok": true
+      },
+      {
+        "k": "IRR akora 24.2% / 20.7% (5y/10y)",
+        "v": "20.7%",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "DEV sample-es",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs ES/EN esperadas",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Ubicación\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Google Map renderiza (iframe o gm-style container)",
+        "v": "{\"iframe\":false,\"container\":true,\"ariaRegion\":\"Map\"}",
+        "ok": true
+      },
+      {
+        "k": "Zone scores (X/10 o X/100) renderizan",
+        "v": "NO",
+        "ok": false
+      },
+      {
+        "k": "Geo section headings",
+        "v": "Mercado de renta vacacional | Te interesa este desarrollo? | AKORA Residencial | Atzaró Residences Playa del Carmen | Athalia Condos Playa del Carmen | Aura by AWA Playa del Carmen",
+        "ok": true
+      },
+      {
+        "k": "Click tab \"Rentabilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "AirdnaInsights recharts chart",
+        "v": "chart=false adr=true occ=true lst=true",
+        "ok": false
+      },
+      {
+        "k": "MarketSentiment 3 indicadores + overall",
+        "v": "{\"hasApprec\":true,\"hasDemand\":true,\"hasSupply\":true,\"hasDirectional\":true}",
+        "ok": true
+      },
+      {
+        "k": "CetesComparison (CETES + banco + FV 5/10y + IRR)",
+        "v": "{\"hasCetes\":true,\"hasBank\":true,\"hasFv\":true,\"hasIrr\":true}",
+        "ok": true
+      }
+    ]
+  }
+]

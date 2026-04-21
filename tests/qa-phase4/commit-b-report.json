@@ -1,0 +1,347 @@
+[
+  {
+    "name": "City /es/desarrollos/cancun",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Nuevos Desarrollos en Cancun",
+        "ok": true
+      },
+      {
+        "k": "Meta title",
+        "v": "Nuevos Desarrollos en Cancun, Quintana Roo | Preventas y Precios | Propyte",
+        "ok": true
+      },
+      {
+        "k": "Meta description",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "OG title",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "OG image",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "Canonical",
+        "v": null
+      },
+      {
+        "k": "hreflang es",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang en",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "body length",
+        "v": 65923,
+        "ok": true
+      },
+      {
+        "k": "Tabs role (should be 0 en city)",
+        "v": 0,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "City /es/desarrollos/playa-del-carmen",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Nuevos Desarrollos en Playa del Carmen",
+        "ok": true
+      },
+      {
+        "k": "Meta title",
+        "v": "Nuevos Desarrollos en Playa del Carmen, Quintana Roo | Preventas y Precios | Pro",
+        "ok": true
+      },
+      {
+        "k": "Meta description",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "OG title",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "OG image",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "Canonical",
+        "v": null
+      },
+      {
+        "k": "hreflang es",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang en",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "body length",
+        "v": 66023,
+        "ok": true
+      },
+      {
+        "k": "Tabs role (should be 0 en city)",
+        "v": 0,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "City /es/desarrollos/tulum",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Nuevos Desarrollos en Tulum",
+        "ok": true
+      },
+      {
+        "k": "Meta title",
+        "v": "Nuevos Desarrollos en Tulum, Quintana Roo | Preventas y Precios | Propyte",
+        "ok": true
+      },
+      {
+        "k": "Meta description",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "OG title",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "OG image",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "Canonical",
+        "v": null
+      },
+      {
+        "k": "hreflang es",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang en",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "body length",
+        "v": 65853,
+        "ok": true
+      },
+      {
+        "k": "Tabs role (should be 0 en city)",
+        "v": 0,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "City /es/desarrollos/merida",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "H1 presente",
+        "v": "Nuevos Desarrollos en Merida",
+        "ok": true
+      },
+      {
+        "k": "Meta title",
+        "v": "Nuevos Desarrollos en Merida, Yucatan | Preventas y Precios | Propyte",
+        "ok": true
+      },
+      {
+        "k": "Meta description",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "OG title",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "OG image",
+        "v": null,
+        "ok": false
+      },
+      {
+        "k": "Canonical",
+        "v": null
+      },
+      {
+        "k": "hreflang es",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "hreflang en",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "body length",
+        "v": 65824,
+        "ok": true
+      },
+      {
+        "k": "Tabs role (should be 0 en city)",
+        "v": 0,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "Detail /es/desarrollos/akora-residencial-b73b319b",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs count (expect 3)",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Tab labels",
+        "v": "Descripción | Análisis Geográfico | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Breadcrumbs detectados",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "Breadcrumb a city",
+        "v": "NO FOUND",
+        "ok": false
+      },
+      {
+        "k": "Detail meta title",
+        "v": "AKORA Residencial — Playa del Carmen | En Construccion | Propyte",
+        "ok": true
+      },
+      {
+        "k": "Detail OG image",
+        "v": "[ok]",
+        "ok": true
+      },
+      {
+        "k": "Detail canonical",
+        "v": null
+      }
+    ]
+  },
+  {
+    "name": "Listing /es/desarrollos — overlap check",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Slugs detectados",
+        "v": 37,
+        "ok": true
+      },
+      {
+        "k": "Overlap con city literals (debe ser 0)",
+        "v": "none",
+        "ok": true
+      },
+      {
+        "k": "Sample slugs",
+        "v": "yutori-residences-bacalar-c916dcda, ximena-wow-condos-08ff245a, villas-ossana-tulum-ca71004f, villa-amanka-tulum-6c8dc429, torre-nikt-cancun-03fab813",
+        "ok": true
+      },
+      {
+        "k": "/yutori-residences-bacalar-c916dcda -> 200 con tabs",
+        "v": "200 tabs=3",
+        "ok": true
+      },
+      {
+        "k": "/ximena-wow-condos-08ff245a -> 200 con tabs",
+        "v": "200 tabs=3",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "Sitemap.xml",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Sitemap contiene /desarrollos/cancun",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Sitemap contiene /desarrollos/playa-del-carmen",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Sitemap contiene /desarrollos/tulum",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Sitemap contiene /desarrollos/merida",
+        "v": true,
+        "ok": true
+      }
+    ]
+  }
+]

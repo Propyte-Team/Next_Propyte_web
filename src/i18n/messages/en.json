@@ -1582,7 +1582,34 @@
     "finalCta": "Join today"
   },
   "a11y": {
-    "skipToContent": "Skip to main content"
+    "skipToContent": "Skip to main content",
+    "breadcrumbLabel": "Breadcrumb",
+    "carouselLabel": "Photo gallery",
+    "carouselNextSlide": "Next photo",
+    "carouselPrevSlide": "Previous photo"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "developments": "Developments",
+    "properties": "Properties",
+    "featured": "Featured",
+    "promotions": "Promotions",
+    "about": "About",
+    "aboutTeam": "Commercial team",
+    "aboutStructure": "Structure",
+    "aboutWhoWeAre": "Who we are",
+    "howToBuy": "How to buy",
+    "howToInvest": "How to invest",
+    "financing": "Financing",
+    "glossary": "Glossary",
+    "faq": "FAQ",
+    "brokers": "Brokers",
+    "joinTeam": "Join the team",
+    "market": "Market",
+    "contact": "Contact",
+    "zones": "Zones",
+    "developers": "Developers",
+    "providers": "Providers"
   },
   "mercadoMeta": {
     "title": "Market intelligence — Vacation and traditional rentals",

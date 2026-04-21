@@ -5,6 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import { MapPin, Building2, Tag, ArrowRight, Sparkles } from 'lucide-react';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export const revalidate = 600;
 
@@ -54,6 +55,10 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'promociones' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   let items: PromoDev[] = [];
   try {
@@ -117,6 +122,13 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('promotions') }]}
       />
 
       {/* Hero */}

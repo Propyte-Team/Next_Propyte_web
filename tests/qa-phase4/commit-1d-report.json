@@ -1,0 +1,252 @@
+[
+  {
+    "name": "SAMPLE /es/desarrollos/sample-azul-vivo-5a4e4a4e",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs labels",
+        "v": "Descripción | Análisis Geográfico | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Tabs match es scheme Descripción/Ubicación/Rentabilidad",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Metric card \"Precio desde\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Disponibilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Entrega\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"ROI\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Unit range chips (X–Y rec/ba/m²)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Section \"Amenidades/Amenities\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "SVG icons in panel (expect ≥10)",
+        "v": 34,
+        "ok": true
+      },
+      {
+        "k": "Brochure/Download CTA",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Brochure link to PDF",
+        "v": "https://picsum.photos/seed/azulvivo-brochure/800/1130",
+        "ok": true
+      },
+      {
+        "k": "Developer \"X proyecto(s)\"",
+        "v": "NO MATCH",
+        "ok": false
+      },
+      {
+        "k": "Iframe (VirtualTour/Video) present",
+        "v": 0,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SAMPLE-EN /en/desarrollos/sample-azul-vivo-5a4e4a4e",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs labels",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "Tabs match en scheme Overview/Location/Returns",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Starting\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Availability\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Delivery\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"ROI\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Unit range chips (X–Y rec/ba/m²)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Section \"Amenidades/Amenities\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "SVG icons in panel (expect ≥10)",
+        "v": 34,
+        "ok": true
+      },
+      {
+        "k": "Brochure/Download CTA",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Brochure link to PDF",
+        "v": "https://picsum.photos/seed/azulvivo-brochure/800/1130",
+        "ok": true
+      },
+      {
+        "k": "Developer \"X proyecto(s)\"",
+        "v": "NO MATCH",
+        "ok": false
+      },
+      {
+        "k": "Iframe (VirtualTour/Video) present",
+        "v": 0,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "REAL /es/desarrollos/akora-residencial-b73b319b",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tabs labels",
+        "v": "Descripción | Análisis Geográfico | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Tabs match es scheme Descripción/Ubicación/Rentabilidad",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Metric card \"Precio desde\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Disponibilidad\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"Entrega\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Metric card \"ROI\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Unit range chips (X–Y rec/ba/m²)",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Section \"Amenidades/Amenities\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "SVG icons in panel (expect ≥10)",
+        "v": 24,
+        "ok": true
+      },
+      {
+        "k": "Brochure/Download CTA",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Brochure link to PDF",
+        "v": "NO LINK",
+        "ok": false
+      },
+      {
+        "k": "Developer \"X proyecto(s)\"",
+        "v": "NO MATCH",
+        "ok": false
+      },
+      {
+        "k": "Iframe (VirtualTour/Video) present",
+        "v": 0,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "EN consistency /propiedades (expect Overview/Location/Returns)",
+    "checks": [
+      {
+        "k": "ES /propiedades tabs",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "EN /propiedades tabs",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "EN /desarrollos tabs",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "EN tabs UNIFIED (desarrollos == propiedades)",
+        "v": true,
+        "ok": true
+      }
+    ]
+  }
+]

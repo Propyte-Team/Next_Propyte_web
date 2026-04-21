@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X, Camera } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ImageGalleryProps {
   images: string[];
@@ -20,6 +21,7 @@ interface ImageGalleryProps {
  * - Tap targets ≥ 44×44 on thumbnails
  */
 export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGalleryProps) {
+  const t = useTranslations('a11y');
   const [current, setCurrent] = useState(0);
   const [modal, setModal] = useState(false);
   const touchStartX = useRef<number | null>(null);
@@ -69,8 +71,23 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
     touchStartX.current = null;
   };
 
+  const onCarouselKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      prev();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      next();
+    }
+  };
+
   return (
-    <>
+    <div
+      role="region"
+      aria-roledescription="carousel"
+      aria-label={t('carouselLabel')}
+      onKeyDown={onCarouselKey}
+    >
       {/* Hero */}
       <button
         type="button"
@@ -174,7 +191,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
                 <button
                   type="button"
                   onClick={prev}
-                  aria-label="Previous image"
+                  aria-label={t('carouselPrevSlide')}
                   className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white"
                 >
                   <ChevronLeft size={26} />
@@ -182,7 +199,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
                 <button
                   type="button"
                   onClick={next}
-                  aria-label="Next image"
+                  aria-label={t('carouselNextSlide')}
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white"
                 >
                   <ChevronRight size={26} />
@@ -211,6 +228,6 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

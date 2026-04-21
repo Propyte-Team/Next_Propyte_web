@@ -1,0 +1,70 @@
+{
+  "runAt": "2026-04-18T23:40:09.673Z",
+  "base": "https://dev.propyte.com/es",
+  "sampleSize": 3,
+  "results": [
+    {
+      "slug": "yutori-residences-bacalar-c916dcda",
+      "url": "https://dev.propyte.com/es/desarrollos/yutori-residences-bacalar-c916dcda",
+      "status": 200,
+      "analysisSectionFound": false,
+      "rawMetrics": {},
+      "values": {
+        "irr5": null,
+        "irr10": null,
+        "cap": null,
+        "netYield": null,
+        "coc": null,
+        "netFlow": null
+      },
+      "flags": [
+        "IRR 5yr missing (shows em-dash or absent)",
+        "IRR 10yr missing"
+      ]
+    },
+    {
+      "slug": "ximena-wow-condos-08ff245a",
+      "url": "https://dev.propyte.com/es/desarrollos/ximena-wow-condos-08ff245a",
+      "status": 200,
+      "analysisSectionFound": false,
+      "rawMetrics": {},
+      "values": {
+        "irr5": null,
+        "irr10": null,
+        "cap": null,
+        "netYield": null,
+        "coc": null,
+        "netFlow": null
+      },
+      "flags": [
+        "IRR 5yr missing (shows em-dash or absent)",
+        "IRR 10yr missing"
+      ]
+    },
+    {
+      "slug": "villas-ossana-tulum-ca71004f",
+      "url": "https://dev.propyte.com/es/desarrollos/villas-ossana-tulum-ca71004f",
+      "status": 200,
+      "analysisSectionFound": false,
+      "rawMetrics": {},
+      "values": {
+        "irr5": null,
+        "irr10": null,
+        "cap": null,
+        "netYield": null,
+        "coc": null,
+        "netFlow": null
+      },
+      "flags": [
+        "IRR 5yr missing (shows em-dash or absent)",
+        "IRR 10yr missing"
+      ]
+    }
+  ],
+  "summary": {
+    "totalSlugs": 37,
+    "audited": 3,
+    "withFlags": 3,
+    "errors": 0
+  }
+}

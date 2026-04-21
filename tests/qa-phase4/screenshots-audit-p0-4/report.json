@@ -1,0 +1,261 @@
+{
+  "phases": {
+    "F1_Layout": [
+      {
+        "key": "Home HTTP 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "Sidebar desktop 72px",
+        "ok": true,
+        "note": "w=72"
+      },
+      {
+        "key": "WhatsApp float 60x60",
+        "ok": true,
+        "note": "size=60x60"
+      },
+      {
+        "key": "Footer 6 cols present",
+        "ok": true,
+        "note": "grids=1"
+      }
+    ],
+    "F1_Mobile": [
+      {
+        "key": "Mobile header + burger + search",
+        "ok": true,
+        "note": "{\"hasHeader\":true,\"hasBurger\":true,\"hasSearch\":true}"
+      }
+    ],
+    "F2_Home": [
+      {
+        "key": "H1 nueva voz (Invierte con datos / Decide con confianza)",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Hero video/image BG",
+        "ok": false,
+        "note": ""
+      },
+      {
+        "key": "Hero tabs Comprar + Preventa",
+        "ok": true,
+        "note": "comprar=true preventa=true"
+      },
+      {
+        "key": "Hero stats pills (170+, 500+, 5 ciudades, 30+)",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Hero quick links (PDC, Tulum, Beachfront, <$3M)",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Explore Categories",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Featured Properties (>=3 cards)",
+        "ok": true,
+        "note": "cards=6"
+      },
+      {
+        "key": "Trending Market KPIs",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Why Propyte section",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Join Team Banner",
+        "ok": true,
+        "note": ""
+      }
+    ],
+    "F3_Archive_Dev": [
+      {
+        "key": "GET /desarrollos 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "FilterBar pills >=4",
+        "ok": true,
+        "note": "pills=4"
+      },
+      {
+        "key": "SortDropdown present",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "MapView (Google Maps)",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Cards render (>=1)",
+        "ok": true,
+        "note": "cards=38"
+      }
+    ],
+    "F3_Archive_Unit": [
+      {
+        "key": "GET /propiedades 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "/propiedades renderiza cards (unidades, no desarrollos)",
+        "ok": true,
+        "note": "cards=6"
+      }
+    ],
+    "F3_Archive_Dev2": [
+      {
+        "key": "GET /desarrolladores 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "FilterBar present (ALTA pending in tracker)",
+        "ok": false,
+        "note": "MISSING (esperado — pending)"
+      }
+    ],
+    "F4_Detail_Dev": [
+      {
+        "key": "GET /desarrollos/akora-residencial-b73b319b 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "Tab system 3 tabs",
+        "ok": true,
+        "note": "Descripción | Ubicación | Rentabilidad"
+      },
+      {
+        "key": "Contact sidebar form",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Similar Listings section",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Click tab Ubicación funciona",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Google Map renderiza en tab Ubicación",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Click tab Rentabilidad funciona",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Market Indicator badge",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "AirDNA ADR + listings",
+        "ok": true,
+        "note": "{\"hasADR\":true,\"hasListings\":true,\"occValue\":65}"
+      },
+      {
+        "key": "AirDNA occupancy scale 0-100 (no inflación)",
+        "ok": true,
+        "note": "occ=65"
+      },
+      {
+        "key": "CetesComparison presente",
+        "ok": true,
+        "note": ""
+      }
+    ],
+    "F4_Mobile_Bar": [
+      {
+        "key": "Mobile floating bar (fixed bottom)",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Share/Download trigger button",
+        "ok": true,
+        "note": ""
+      }
+    ],
+    "F4_Unit": [
+      {
+        "key": "GET /propiedades/a101 (sample unit)",
+        "ok": true,
+        "note": "status=404 (404 OK si slug cambió)"
+      }
+    ],
+    "S18_Brand": [
+      {
+        "key": "Logo PNG real en header/sidebar/footer",
+        "ok": true,
+        "note": ""
+      },
+      {
+        "key": "Favicon dinámico /icon",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "apple-icon dinámico",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "manifest.webmanifest PWA",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "sitemap.xml accesible (middleware excluye)",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "robots.txt accesible (middleware excluye)",
+        "ok": true,
+        "note": "status=200"
+      }
+    ],
+    "i18n": [
+      {
+        "key": "GET /en 200",
+        "ok": true,
+        "note": "status=200"
+      },
+      {
+        "key": "Home /en muestra strings inglés",
+        "ok": true,
+        "note": "{\"english\":true,\"spanishStrong\":false}"
+      }
+    ]
+  },
+  "summary": {
+    "ok": 44,
+    "fail": 2,
+    "warn": 0
+  }
+}

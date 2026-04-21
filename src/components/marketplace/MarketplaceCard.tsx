@@ -63,30 +63,48 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Carousel arrows */}
           {property.images.length > 1 && (
-            <>
+            <div
+              role="region"
+              aria-roledescription="carousel"
+              aria-label={property.name}
+              className="contents"
+              onKeyDown={(e) => {
+                if (e.key === 'ArrowLeft') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImg(i => (i === 0 ? property.images.length - 1 : i - 1));
+                } else if (e.key === 'ArrowRight') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setCurrentImg(i => (i === property.images.length - 1 ? 0 : i + 1));
+                }
+              }}
+            >
               <button
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setCurrentImg(i => (i === 0 ? property.images.length - 1 : i - 1));
                 }}
-                className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity shadow-sm"
                 aria-label={tMkt('cardPrevImage')}
               >
-                <ChevronLeft size={14} />
+                <ChevronLeft size={16} />
               </button>
               <button
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   setCurrentImg(i => (i === property.images.length - 1 ? 0 : i + 1));
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity shadow-sm"
                 aria-label={tMkt('cardNextImage')}
               >
-                <ChevronRight size={14} />
+                <ChevronRight size={16} />
               </button>
-            </>
+            </div>
           )}
 
           {/* Save heart */}

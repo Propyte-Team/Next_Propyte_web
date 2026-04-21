@@ -37,7 +37,11 @@ export default async function LocaleLayout({
         </a>
         <Header />
         <div className="lg:ml-[72px]">
-          <main id="main-content" className="flex-1" tabIndex={-1}>
+          <main
+            id="main-content"
+            className="flex-1 pb-20 md:pb-0"
+            tabIndex={-1}
+          >
             {children}
           </main>
           <Footer />

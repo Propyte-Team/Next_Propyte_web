@@ -4,6 +4,7 @@ import {
   Landmark, Banknote, Building2, ArrowLeftRight, ArrowRight,
   CheckCircle, Sparkles,
 } from 'lucide-react';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -41,6 +42,10 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'financiamiento' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const methods = METHOD_ICONS.map((Icon, i) => {
     const n = i + 1;
@@ -86,6 +91,13 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(financialSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('financing') }]}
       />
 
       {/* Hero */}

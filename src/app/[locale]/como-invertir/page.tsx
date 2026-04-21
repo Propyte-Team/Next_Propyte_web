@@ -4,6 +4,7 @@ import {
   TrendingUp, Home, Palmtree, BarChart3, ArrowRight,
   ShieldCheck, Clock, DollarSign, Sparkles,
 } from 'lucide-react';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -41,6 +42,10 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'comoInvertir' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const strategies = STRATEGY_ICONS.map((Icon, i) => ({
     icon: Icon,
@@ -84,6 +89,13 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('howToInvest') }]}
       />
 
       {/* Hero */}

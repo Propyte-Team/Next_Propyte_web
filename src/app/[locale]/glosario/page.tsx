@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -43,6 +44,10 @@ export default async function GlosarioPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'glosario' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const terms = Array.from({ length: TERM_COUNT }, (_, i) => {
     const n = i + 1;
@@ -81,6 +86,13 @@ export default async function GlosarioPage({ params }: { params: Promise<{ local
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(termSetSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('glossary') }]}
       />
 
       {/* Hero */}

@@ -5,6 +5,7 @@ import {
   Check, X, ArrowRight, MessageCircle, MapPin, Sparkles,
 } from 'lucide-react';
 import NosotrosTabs from '../_components/NosotrosTabs';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -48,6 +49,10 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'about' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const waPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219840000000';
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(t('recruitWhatsappMessage'))}`;
@@ -80,6 +85,16 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
 
   return (
     <>
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[
+          { label: tBC('about'), href: `/${locale}/nosotros/quienes-somos` },
+          { label: tBC('aboutTeam') },
+        ]}
+      />
+
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
         <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />

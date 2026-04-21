@@ -1,0 +1,187 @@
+[
+  {
+    "name": "MOBILE sample-dev",
+    "checks": [
+      {
+        "k": "HTTP",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "No horizontal overflow",
+        "v": "390/390",
+        "ok": true
+      },
+      {
+        "k": "Mobile floating bar detectado",
+        "v": 0,
+        "ok": true
+      },
+      {
+        "k": "Tap targets ≥32px (WCAG)",
+        "v": "25/55 small",
+        "ok": false
+      },
+      {
+        "k": "Broken images",
+        "v": 1,
+        "ok": false
+      },
+      {
+        "k": "Broken img URLs",
+        "v": "https://dev.propyte.com/_next/image?url=https%3A%2F%2Fpicsum.photos%2Fseed%2Fazulvivo-01%2F1600%2F90",
+        "ok": false
+      },
+      {
+        "k": "Console errors (1)",
+        "v": "Failed to load resource: the server responded with a status of 400 ()",
+        "ok": false
+      },
+      {
+        "k": "Network failures (7)",
+        "v": "400:https://dev.propyte.com/_next/image?url=https%3A%2F%2Fpicsum.photos%2Fseed%2Fazulvivo-01%2F1600%2F900&w=1200&q=75 | net::ERR_ABORTED:https://dev.propyte.com/es?_rsc=f6eg5 | net::ERR_ABORTED:https://dev.propyte.com/es/desarrollos?_rsc=zyekj",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE sample-unit",
+    "checks": [
+      {
+        "k": "HTTP",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "No horizontal overflow",
+        "v": "390/390",
+        "ok": true
+      },
+      {
+        "k": "Mobile floating bar detectado",
+        "v": 0,
+        "ok": true
+      },
+      {
+        "k": "Tap targets ≥32px (WCAG)",
+        "v": "25/51 small",
+        "ok": false
+      },
+      {
+        "k": "Broken images",
+        "v": 0,
+        "ok": true
+      },
+      {
+        "k": "Console errors (0)",
+        "v": "none",
+        "ok": true
+      },
+      {
+        "k": "Network failures (3)",
+        "v": "net::ERR_ABORTED:https://dev.propyte.com/es/propiedades?city=Playa%20del%20Carmen&_rsc=5lx3n | net::ERR_ABORTED:https://dev.propyte.com/es/propiedades?city=Playa%20del%20Carmen&_rsc=1i5gp | net::ERR_ABORTED:https://dev.propyte.com/es/propiedades?_rsc=1i5gp",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE real-dev",
+    "checks": [
+      {
+        "k": "HTTP",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "No horizontal overflow",
+        "v": "390/390",
+        "ok": true
+      },
+      {
+        "k": "Mobile floating bar detectado",
+        "v": 0,
+        "ok": true
+      },
+      {
+        "k": "Tap targets ≥32px (WCAG)",
+        "v": "25/51 small",
+        "ok": false
+      },
+      {
+        "k": "Broken images",
+        "v": 0,
+        "ok": true
+      },
+      {
+        "k": "Console errors (0)",
+        "v": "none",
+        "ok": true
+      },
+      {
+        "k": "Network failures (3)",
+        "v": "net::ERR_ABORTED:https://dev.propyte.com/es/desarrollos/playa-del-carmen?_rsc=17hpd | net::ERR_ABORTED:https://dev.propyte.com/es/desarrollos/playa-del-carmen?_rsc=1w4pv | net::ERR_ABORTED:https://dev.propyte.com/es?_rsc=1w4pv",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "KEYBOARD sample-dev",
+    "checks": [
+      {
+        "k": "Skip link (accesibilidad)",
+        "v": "Skip to content",
+        "ok": true
+      },
+      {
+        "k": "First Tab destination",
+        "v": "A \"Skip to content\"",
+        "ok": true
+      },
+      {
+        "k": "Focus visible (outline/boxShadow)",
+        "v": "2px / none",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "KEYBOARD sample-unit",
+    "checks": [
+      {
+        "k": "Skip link (accesibilidad)",
+        "v": "Skip to content",
+        "ok": true
+      },
+      {
+        "k": "First Tab destination",
+        "v": "A \"Skip to content\"",
+        "ok": true
+      },
+      {
+        "k": "Focus visible (outline/boxShadow)",
+        "v": "2px / none",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "KEYBOARD real-dev",
+    "checks": [
+      {
+        "k": "Skip link (accesibilidad)",
+        "v": "Skip to content",
+        "ok": true
+      },
+      {
+        "k": "First Tab destination",
+        "v": "A \"Skip to content\"",
+        "ok": true
+      },
+      {
+        "k": "Focus visible (outline/boxShadow)",
+        "v": "2px / none",
+        "ok": true
+      }
+    ]
+  }
+]

@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BrokersPageContent from './BrokersPageContent';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -35,6 +36,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BrokersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   return (
     <>
@@ -50,14 +55,11 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
           },
         }}
       />
-      <SchemaMarkup
-        type="breadcrumb"
-        data={{
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: locale === 'es' ? 'Inicio' : 'Home', item: `https://propyte.com/${locale}` },
-            { '@type': 'ListItem', position: 2, name: locale === 'es' ? 'Corredores' : 'Brokers', item: `https://propyte.com/${locale}/corredores` },
-          ],
-        }}
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('brokers') }]}
       />
       <BrokersPageContent />
     </>

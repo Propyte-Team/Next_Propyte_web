@@ -1,0 +1,88 @@
+{
+  "runAt": "2026-04-18T20:27:24.716Z",
+  "staging": {
+    "url": "https://dev.propyte.com/es",
+    "desktop": {
+      "title": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya | Propyte",
+      "h1Text": "Invierte con datos. Decide con confianza.",
+      "h1Size": "56px",
+      "h1Color": "#FFFFFF",
+      "h1Weight": "700",
+      "sectionCount": 10,
+      "hero": {
+        "present": true,
+        "heightPx": 680,
+        "hasBubble": true,
+        "tabs": 2,
+        "quickLinks": 4,
+        "statPills": 2
+      },
+      "explore": {
+        "present": true,
+        "cards": 5
+      },
+      "featured": {
+        "present": true,
+        "cards": 6
+      },
+      "testimonials": {
+        "stars": 15,
+        "hasCarousel": true
+      },
+      "trendingMarket": {
+        "statCards": 4,
+        "zonesVisible": 3
+      },
+      "whyPropyte": {
+        "featureCards": 7
+      },
+      "sections": {
+        "appBanner": true,
+        "joinTeam": true,
+        "leadMagnet": true
+      },
+      "framerMotionActive": 9
+    },
+    "mobile": {
+      "title": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya | Propyte",
+      "h1Text": "Invierte con datos. Decide con confianza.",
+      "h1Size": "30px",
+      "h1Color": "#FFFFFF",
+      "h1Weight": "700",
+      "sectionCount": 10,
+      "hero": {
+        "present": true,
+        "heightPx": 764,
+        "hasBubble": true,
+        "tabs": 2,
+        "quickLinks": 4,
+        "statPills": 2
+      },
+      "explore": {
+        "present": true,
+        "cards": 5
+      },
+      "featured": {
+        "present": true,
+        "cards": 6
+      },
+      "testimonials": {
+        "stars": 15,
+        "hasCarousel": true
+      },
+      "trendingMarket": {
+        "statCards": 4,
+        "zonesVisible": 3
+      },
+      "whyPropyte": {
+        "featureCards": 7
+      },
+      "sections": {
+        "appBanner": true,
+        "joinTeam": true,
+        "leadMagnet": true
+      },
+      "framerMotionActive": 9
+    }
+  }
+}

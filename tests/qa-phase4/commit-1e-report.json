@@ -1,0 +1,162 @@
+[
+  {
+    "name": "SAMPLE-ES /es/desarrollos/sample-azul-vivo-5a4e4a4e",
+    "checks": [
+      {
+        "k": "Tabs match es scheme Descripción/Ubicación/Rentabilidad",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.reservado\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.vendido\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Reservado/Reserved\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Vendido/Sold\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Developer card heading present",
+        "v": "NO FOUND",
+        "ok": false
+      },
+      {
+        "k": "Mentions \"Avica\" (expected on sample)",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Similar section heading",
+        "v": null,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SAMPLE-EN /en/desarrollos/sample-azul-vivo-5a4e4a4e",
+    "checks": [
+      {
+        "k": "Tabs match en scheme Overview/Location/Returns",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.reservado\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.vendido\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Reservado/Reserved\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Vendido/Sold\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Developer card heading present",
+        "v": "NO FOUND",
+        "ok": false
+      },
+      {
+        "k": "Mentions \"Avica\" (expected on sample)",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "Similar section heading",
+        "v": null,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "REAL-ES /es/desarrollos/akora-residencial-b73b319b",
+    "checks": [
+      {
+        "k": "Tabs match es scheme Descripción/Ubicación/Rentabilidad",
+        "v": "Descripción | Ubicación | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.reservado\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "NO literal key \"availability.vendido\"",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Reservado/Reserved\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Label \"Vendido/Sold\" renders",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Developer card heading present",
+        "v": "NO FOUND",
+        "ok": false
+      },
+      {
+        "k": "Mentions \"Avica\" (expected on sample)",
+        "v": false,
+        "ok": true
+      },
+      {
+        "k": "Similar section heading",
+        "v": null,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "UNIT-ES /es/propiedades/akora-a301-cancun",
+    "checks": [
+      {
+        "k": "aria-label=\"Propiedades similares\" (o similar)",
+        "v": "Propiedades similares",
+        "ok": true
+      },
+      {
+        "k": "NO literal availability keys",
+        "v": true,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "Debug endpoint removido",
+    "checks": [
+      {
+        "k": "HTTP 404",
+        "v": 404,
+        "ok": true
+      }
+    ]
+  }
+]

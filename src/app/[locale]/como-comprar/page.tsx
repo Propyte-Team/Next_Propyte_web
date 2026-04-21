@@ -4,6 +4,7 @@ import {
   Search, FileText, CreditCard, Home, Key, ClipboardCheck,
   CheckCircle, ArrowRight, Sparkles,
 } from 'lucide-react';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -43,6 +44,11 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'comoComprar' });
 
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
+
   const steps = STEP_ICONS.map((Icon, i) => ({
     icon: Icon,
     title: t(`step${i + 1}Title` as 'step1Title'),
@@ -72,6 +78,13 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('howToBuy') }]}
       />
 
       {/* Hero */}

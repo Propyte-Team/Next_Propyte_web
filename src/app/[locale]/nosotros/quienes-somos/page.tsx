@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import NosotrosTabs from '../_components/NosotrosTabs';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import {
   Building2,
   Users,
@@ -49,6 +50,10 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'about' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const missionCards = [
     { icon: Building2, title: t('mission1Title'), desc: t('mission1Desc') },
@@ -77,6 +82,16 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
 
   return (
     <>
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[
+          { label: tBC('about'), href: `/${locale}/nosotros/quienes-somos` },
+          { label: tBC('aboutWhoWeAre') },
+        ]}
+      />
+
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
         <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />

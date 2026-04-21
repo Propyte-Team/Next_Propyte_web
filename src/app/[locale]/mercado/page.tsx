@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
 import { CurrencyProvider } from '@/context/CurrencyContext';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { MercadoHero } from './components/MercadoHero';
 import { TabBar } from './components/TabBar';
 import { VacacionalTab } from './components/vacacional/VacacionalTab';
@@ -51,6 +53,10 @@ export default async function MercadoPage({
   const { tab: tabParam, city } = await searchParams;
   const isEn = locale === 'en';
   const activeTab: TabId = tabParam === 'tradicional' ? 'tradicional' : 'vacacional';
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   // Pre-fetch STR data for vacacional tab
   const supabase = await createServerSupabaseClient();
@@ -84,6 +90,13 @@ export default async function MercadoPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('market') }]}
       />
 
       <MercadoHero activeTab={activeTab} locale={locale} strStats={strStats} />

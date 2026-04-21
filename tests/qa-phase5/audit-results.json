@@ -1,0 +1,1276 @@
+[
+  {
+    "url": "https://dev.propyte.com/es/contacto",
+    "slug": "es_contacto",
+    "screenshot": "screenshots/es_contacto.png",
+    "status": 200,
+    "title": "Contacto | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/como-comprar?_rsc=carxc",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/glosario?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/faq?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/como-comprar?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/como-invertir?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Tulum&_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Playa+del+Carmen&_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/unete?_rsc=carxc",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/unete?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=s4st0",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 35,
+      "hashOnly": 2,
+      "ctasTotal": 9,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 1,
+      "gridDetails": [
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 192
+        }
+      ],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 1273,
+      "h1Text": "Contacto",
+      "sectionsCount": 1
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/nosotros/quienes-somos",
+    "slug": "es_nosotros_quienes-somos",
+    "screenshot": "screenshots/es_nosotros_quienes-somos.png",
+    "status": 200,
+    "title": "Quiénes Somos | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=pi008",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/unete?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?stage=preventa&_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?type=terreno&_rsc=pud58",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": {
+        "selector": "main > section:first-of-type",
+        "h": 316,
+        "bgImage": null,
+        "innerMedia": 0,
+        "bgColor": "rgb(15, 25, 35)",
+        "text": "NOSOTROS\nConoce Propyte\n\nProperty + Byte. Modernización del corretaje inmobiliario con datos, tecnología y transparencia."
+      },
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 39,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 1,
+      "gridDetails": [
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 348
+        }
+      ],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 4754,
+      "h1Text": "Conoce Propyte",
+      "sectionsCount": 8
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/nosotros/estructura",
+    "slug": "es_nosotros_estructura",
+    "screenshot": "screenshots/es_nosotros_estructura.png",
+    "status": 200,
+    "title": "Nosotros — Conoce Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=tacf4",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": {
+        "selector": "main > section:first-of-type",
+        "h": 316,
+        "bgImage": null,
+        "innerMedia": 0,
+        "bgColor": "rgb(15, 25, 35)",
+        "text": "NOSOTROS\nConoce Propyte\n\nProperty + Byte. Modernización del corretaje inmobiliario con datos, tecnología y transparencia."
+      },
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 37,
+      "hashOnly": 2,
+      "ctasTotal": 20,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 1995,
+      "h1Text": "Conoce Propyte",
+      "sectionsCount": 5
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/nosotros/equipo-comercial",
+    "slug": "es_nosotros_equipo-comercial",
+    "screenshot": "screenshots/es_nosotros_equipo-comercial.png",
+    "status": 200,
+    "title": "Equipo Comercial | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/glosario?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=1dm65",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": {
+        "selector": "main > section:first-of-type",
+        "h": 316,
+        "bgImage": null,
+        "innerMedia": 0,
+        "bgColor": "rgb(15, 25, 35)",
+        "text": "NOSOTROS\nConoce Propyte\n\nProperty + Byte. Modernización del corretaje inmobiliario con datos, tecnología y transparencia."
+      },
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 40,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 4,
+      "gridDetails": [
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 96
+        },
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 96
+        },
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 96
+        }
+      ],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 4296,
+      "h1Text": "Conoce Propyte",
+      "sectionsCount": 7
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/como-comprar",
+    "slug": "es_como-comprar",
+    "screenshot": "screenshots/es_como-comprar.png",
+    "status": 200,
+    "title": "Cómo Comprar Propiedad en México | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=11ajd",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 37,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 2954,
+      "h1Text": "Cómo Comprar Propiedad en México",
+      "sectionsCount": 6
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/como-invertir",
+    "slug": "es_como-invertir",
+    "screenshot": "screenshots/es_como-invertir.png",
+    "status": 200,
+    "title": "Cómo Invertir en Bienes Raíces en México | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=1ag5d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=1ag5d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/faq?_rsc=1ag5d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?type=terreno&_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=19jrq",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 36,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 2644,
+      "h1Text": "Cómo Invertir en Bienes Raíces",
+      "sectionsCount": 6
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/financiamiento",
+    "slug": "es_financiamiento",
+    "screenshot": "screenshots/es_financiamiento.png",
+    "status": 200,
+    "title": "Opciones de Financiamiento | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Playa+del+Carmen&_rsc=1h6ld",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?stage=preventa&_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=ni2zq",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 35,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 2698,
+      "h1Text": "Opciones de Financiamiento",
+      "sectionsCount": 5
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/faq",
+    "slug": "es_faq",
+    "screenshot": "screenshots/es_faq.png",
+    "status": 200,
+    "title": "Propyte — Real estate en modo inteligente",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=prizo",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/glosario?_rsc=1fcru",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 35,
+      "hashOnly": 2,
+      "ctasTotal": 28,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 1649,
+      "h1Text": "Preguntas Frecuentes",
+      "sectionsCount": 3
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/glosario",
+    "slug": "es_glosario",
+    "screenshot": "screenshots/es_glosario.png",
+    "status": 200,
+    "title": "Glosario Inmobiliario | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/como-invertir?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/faq?_rsc=1x027",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/unete?_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?type=terreno&_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Tulum&_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Playa+del+Carmen&_rsc=dsz1d",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 52,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 3987,
+      "h1Text": "Glosario Inmobiliario",
+      "sectionsCount": 4
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/promociones",
+    "slug": "es_promociones",
+    "screenshot": "screenshots/es_promociones.png",
+    "status": 200,
+    "title": "Promociones y Ofertas Especiales | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/faq?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=1adyd",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 4,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 35,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 1,
+      "gridDetails": [
+        {
+          "sel": "[class*=\"grid\" i]",
+          "children": 1,
+          "h": 392
+        }
+      ],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 1147,
+      "h1Text": "Promociones y Ofertas Especiales",
+      "sectionsCount": 3
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/mercado",
+    "slug": "es_mercado",
+    "screenshot": "screenshots/es_mercado.png",
+    "status": 200,
+    "title": "Inteligencia de Mercado — Rentas Vacacionales y Tradicionales en México | Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/mercado?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=1kvri",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/como-comprar?_rsc=1kvri",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=mx84l",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": {
+        "selector": "main > section:first-of-type",
+        "h": 206,
+        "bgImage": null,
+        "innerMedia": 0,
+        "bgColor": "rgba(0, 0, 0, 0)",
+        "text": "Metodología\n\nEl Índice Propyte clasifica cada zona en una escala de 0 a 100 usando cuatro factores ponderados: Ocupación (30%), Crecimiento de tarifa (25%), RevPAR (25%) y Competencia (20%). Puntuaciones más altas indican mercados de renta "
+      },
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 36,
+      "hashOnly": 2,
+      "ctasTotal": 11,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 2150,
+      "h1Text": "Analiza el mercado de rentas en México",
+      "sectionsCount": 5
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/corredores",
+    "slug": "es_corredores",
+    "screenshot": "screenshots/es_corredores.png",
+    "status": 200,
+    "title": "Para Corredores y Agencias Inmobiliarias | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Playa+del+Carmen&_rsc=1d5vo",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/privacidad?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=vw4fg",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 38,
+      "hashOnly": 2,
+      "ctasTotal": 17,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 3843,
+      "h1Text": "Potencia tu negocio inmobiliario con el portafolio de Propyte",
+      "sectionsCount": 8
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/proveedores",
+    "slug": "es_proveedores",
+    "screenshot": "screenshots/es_proveedores.png",
+    "status": 200,
+    "title": "Programa de Proveedores — Propyte | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/contacto?interest=provider&_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=1yin1",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/terminos?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/glosario?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=1wtk4",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": {
+        "selector": "main > section:first-of-type",
+        "h": 890,
+        "bgImage": "linear-gradient(to right bottom in oklab, rgb(15, 25, 35) 0%, rgb(26, 47, 63) 50%, rgb(15, 25, 35) 100%)",
+        "innerMedia": 0,
+        "bgColor": "rgba(0, 0, 0, 0)",
+        "text": "PRÓXIMAMENTE\nPrograma de Proveedores\n\nEstamos construyendo una red de proveedores certificados para acompañar cada etapa del proceso inmobiliario: notarios, financieras, arquitectos, diseñadores, mudanzas, legal y más.\n\nClientes de alto val"
+      },
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 36,
+      "hashOnly": 2,
+      "ctasTotal": 8,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 1484,
+      "h1Text": "Programa de Proveedores",
+      "sectionsCount": 1
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/unete",
+    "slug": "es_unete",
+    "screenshot": "screenshots/es_unete.png",
+    "status": 200,
+    "title": "Únete al Equipo | La inmobiliaria digital del Caribe Mexicano | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=suh5r",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/cookies?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/corredores?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=odqvp",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 36,
+      "hashOnly": 2,
+      "ctasTotal": 18,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": true,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 2,
+      "gridDetails": [
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 327
+        },
+        {
+          "sel": "[class*=\"items\" i]",
+          "children": 1,
+          "h": 96
+        }
+      ],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 7382,
+      "h1Text": "Tu carrera inmobiliaria sin límites",
+      "sectionsCount": 13
+    }
+  },
+  {
+    "url": "https://dev.propyte.com/es/built",
+    "slug": "es_built",
+    "screenshot": "screenshots/es_built.png",
+    "status": 200,
+    "title": "Propyte Built — Arquitectura y Construccion | Propyte",
+    "loadError": null,
+    "consoleErrors": [],
+    "pageErrors": [],
+    "failedRequests": [
+      {
+        "url": "https://dev.propyte.com/es/contacto?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/nosotros/quienes-somos?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrolladores?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/desarrollos?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/financiamiento?_rsc=fl08u",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/propiedades?city=Playa+del+Carmen&_rsc=fl08u",
+        "err": "net::ERR_ABORTED"
+      },
+      {
+        "url": "https://dev.propyte.com/es/promociones?_rsc=o0het",
+        "err": "net::ERR_ABORTED"
+      }
+    ],
+    "metrics": {
+      "hero": null,
+      "imgTotal": 3,
+      "imgBroken": 0,
+      "imgLazy": 1,
+      "imgNoSrc": 0,
+      "totalLinks": 37,
+      "hashOnly": 2,
+      "ctasTotal": 14,
+      "ctasHashOnly": 0,
+      "placeholders": {
+        "loremIpsum": false,
+        "enConstruccion": false,
+        "undefinedLiteral": false,
+        "nanLiteral": false,
+        "cannotRead": false
+      },
+      "suspiciousGrids": 0,
+      "gridDetails": [],
+      "skeletonsCount": 0,
+      "errorOnPage": false,
+      "overflowX": 0,
+      "textLen": 3325,
+      "h1Text": null,
+      "sectionsCount": 10
+    }
+  }
+]

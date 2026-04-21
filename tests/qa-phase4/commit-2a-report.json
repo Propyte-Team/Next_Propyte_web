@@ -1,0 +1,332 @@
+[
+  {
+    "name": "MOBILE sample-dev",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "MobileContactBar fixed bottom presente",
+        "v": "390x69px",
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me",
+        "v": "https://wa.me/529841234567?text=Hola%2C%20me%20interesa%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residences.%2",
+        "ok": true
+      },
+      {
+        "k": "Bar buttons min-h 44px (WCAG)",
+        "v": "WhatsApp:44 | Contactar:44",
+        "ok": true
+      },
+      {
+        "k": "Gallery hero 16:9 presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Photo count pill (X/M)",
+        "v": "1 / 6",
+        "ok": true
+      },
+      {
+        "k": "Thumbnails visibles",
+        "v": 6,
+        "ok": true
+      },
+      {
+        "k": "Tap targets small/total",
+        "v": "25/56",
+        "ok": false
+      },
+      {
+        "k": "Console errors",
+        "v": "Failed to load resource: the server responded with a status of 400 () | Failed to load resource: the server responded with a status of 400 ()",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE sample-dev-en",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "MobileContactBar fixed bottom presente",
+        "v": "390x69px",
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me",
+        "v": "https://wa.me/529841234567?text=Hi%2C%20I'm%20interested%20in%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residen",
+        "ok": true
+      },
+      {
+        "k": "Bar buttons min-h 44px (WCAG)",
+        "v": "WhatsApp:44 | Contact:44",
+        "ok": true
+      },
+      {
+        "k": "Gallery hero 16:9 presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Photo count pill (X/M)",
+        "v": "1 / 6",
+        "ok": true
+      },
+      {
+        "k": "Thumbnails visibles",
+        "v": 6,
+        "ok": true
+      },
+      {
+        "k": "Tap targets small/total",
+        "v": "25/56",
+        "ok": false
+      },
+      {
+        "k": "Console errors",
+        "v": "Failed to load resource: the server responded with a status of 400 () | Failed to load resource: the server responded with a status of 400 ()",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE sample-unit",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "MobileContactBar fixed bottom presente",
+        "v": "390x69px",
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me",
+        "v": "https://wa.me/529841234567?text=Hola%2C%20me%20interesa%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20",
+        "ok": true
+      },
+      {
+        "k": "Bar buttons min-h 44px (WCAG)",
+        "v": "WhatsApp:44 | Contactar:44",
+        "ok": true
+      },
+      {
+        "k": "Gallery hero 16:9 presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Photo count pill (X/M)",
+        "v": "1 / 3",
+        "ok": true
+      },
+      {
+        "k": "Thumbnails visibles",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Tap targets small/total",
+        "v": "25/48",
+        "ok": false
+      },
+      {
+        "k": "Console errors",
+        "v": "Failed to load resource: the server responded with a status of 400 () | Failed to load resource: the server responded with a status of 400 ()",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE atzaro",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "MobileContactBar fixed bottom presente",
+        "v": "390x69px",
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me",
+        "v": "https://wa.me/529841234567?text=Hola%2C%20me%20interesa%20Atzar%C3%B3%20Residences%20Playa%20del%20C",
+        "ok": true
+      },
+      {
+        "k": "Bar buttons min-h 44px (WCAG)",
+        "v": "WhatsApp:44 | Contactar:44",
+        "ok": true
+      },
+      {
+        "k": "Gallery hero 16:9 presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Photo count pill (X/M)",
+        "v": "1 / 15",
+        "ok": true
+      },
+      {
+        "k": "Thumbnails visibles",
+        "v": 8,
+        "ok": true
+      },
+      {
+        "k": "Tap targets small/total",
+        "v": "25/54",
+        "ok": false
+      },
+      {
+        "k": "Console errors",
+        "v": "Failed to load resource: the server responded with a status of 404 ()",
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "MOBILE akora-unit",
+    "checks": [
+      {
+        "k": "HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "MobileContactBar fixed bottom presente",
+        "v": "390x69px",
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me",
+        "v": "https://wa.me/529841234567?text=Hola%2C%20me%20interesa%20Akora%20Residencial%20%E2%80%94%20A-301.%2",
+        "ok": true
+      },
+      {
+        "k": "Bar buttons min-h 44px (WCAG)",
+        "v": "WhatsApp:44 | Contactar:44",
+        "ok": true
+      },
+      {
+        "k": "Gallery hero 16:9 presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Photo count pill (X/M)",
+        "v": "1 / 4",
+        "ok": true
+      },
+      {
+        "k": "Thumbnails visibles",
+        "v": 4,
+        "ok": true
+      },
+      {
+        "k": "Tap targets small/total",
+        "v": "26/48",
+        "ok": false
+      },
+      {
+        "k": "Console errors",
+        "v": "none",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "GALLERY MODAL sample-dev",
+    "checks": [
+      {
+        "k": "Click hero ejecutado",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Modal abierto (role/aria)",
+        "v": "{\"role\":\"dialog\",\"ariaModal\":\"true\",\"ariaLabel\":\"[SAMPLE] AZUL VIVO Residences — gallery\"}",
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "GALLERY MODAL sample-unit",
+    "checks": [
+      {
+        "k": "Click hero ejecutado",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Modal abierto (role/aria)",
+        "v": "{\"role\":\"dialog\",\"ariaModal\":\"true\",\"ariaLabel\":\"[SAMPLE] AZUL VIVO Residences — A101 — gallery\"}",
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "SCROLL CONTACT sample-dev",
+    "checks": [
+      {
+        "k": "id=\"contact-form\" presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "pb-24 (96px) presente (anti-overlap)",
+        "v": "class=true",
+        "ok": true
+      },
+      {
+        "k": "Click Contactar cambia scroll",
+        "v": "prev=0 -> after=4557",
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "SCROLL CONTACT sample-unit",
+    "checks": [
+      {
+        "k": "id=\"contact-form\" presente",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "pb-24 (96px) presente (anti-overlap)",
+        "v": "class=true",
+        "ok": true
+      },
+      {
+        "k": "Click Contactar cambia scroll",
+        "v": "prev=0 -> after=2361",
+        "ok": true
+      }
+    ]
+  }
+]

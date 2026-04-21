@@ -5,6 +5,7 @@ import { ArrowRight, MapPin, Bed, Bath, Maximize, Sparkles } from 'lucide-react'
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export const revalidate = 600;
 
@@ -56,6 +57,10 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'destacados' });
   const tStages = await getTranslations({ locale, namespace: 'stages' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   let items: FeaturedDev[] = [];
   try {
@@ -110,6 +115,13 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
+
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('featured') }]}
       />
 
       {/* Hero */}

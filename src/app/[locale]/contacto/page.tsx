@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ContactPageContent from './ContactPageContent';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -41,12 +42,22 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const { setRequestLocale } = await import('next-intl/server');
+  const { setRequestLocale, getTranslations } = await import('next-intl/server');
   setRequestLocale(locale);
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   return (
     <>
       <SchemaMarkup type="localBusiness" />
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('contact') }]}
+      />
       <ContactPageContent />
     </>
   );

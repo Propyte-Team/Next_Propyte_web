@@ -2324,16 +2324,18 @@ export default {
 - [ ] Reclutamiento (job listings) — **EXCEPCIÓN DE DISEÑO:** Esta es la única página que conserva el diseño de HERO-SITE-ZILLOW en lugar del canónico WP. Decisión (2026-04-18, Luis): La versión de HERO-SITE es superior (hero con fondo dark, grid de beneficios, CTA de aplicación). Todas las demás páginas siguen WP canónico.
 - [ ] Privacidad / Términos
 
-### Fase 6: Built Portfolio (1 semana)
+### Fase 6: Built Portfolio — ~~(1 semana)~~ **SKIPPED — decisión Luis 2026-04-20**
 
-- [ ] Built Hero (3 animated words: Diseña. Construye. Habita.)
-- [ ] Philosophy blockquote
-- [ ] Services grid (3×2)
-- [ ] Portfolio showcase (filter tabs + 3-col grid + hover overlay)
-- [ ] Process timeline (5 steps, horizontal desktop / vertical mobile)
-- [ ] Team expertise (3 cards)
-- [ ] Consultation form (Built-specific fields)
-- [ ] Final CTA dark
+> **Estado:** Fase retirada del alcance de la migración actual. No se implementa el módulo Built Portfolio (Diseña/Construye/Habita, services grid, portfolio showcase, process timeline, consultation form). El sitio público Propyte no requiere esta sección en el scope de lanzamiento. Si se reincorpora más adelante, volver a abrir esta fase con su backlog original preservado en git history.
+
+~~- [ ] Built Hero (3 animated words: Diseña. Construye. Habita.)~~
+~~- [ ] Philosophy blockquote~~
+~~- [ ] Services grid (3×2)~~
+~~- [ ] Portfolio showcase (filter tabs + 3-col grid + hover overlay)~~
+~~- [ ] Process timeline (5 steps, horizontal desktop / vertical mobile)~~
+~~- [ ] Team expertise (3 cards)~~
+~~- [ ] Consultation form (Built-specific fields)~~
+~~- [ ] Final CTA dark~~
 
 ### Fase 7: Blog Completo (1 semana)
 
@@ -3565,6 +3567,65 @@ import { MapPin, Bed, Bath } from 'lucide-react';
   env:
     BASE_URL: ${{ github.ref == 'refs/heads/main' && 'https://propyte.com' || 'https://staging.propyte.com' }}
 ```
+
+---
+
+## 32. PULIDO UX/A11Y POST-MIGRACIÓN (backlog Fase 5.5 — intercalada entre Fase 5 y Fase 7 Blog, dado que Fase 6 Built Portfolio fue skipped 2026-04-20)
+
+> **Origen:** Auditoría UX/UI Pro 2026-04-20 (Luis). Se incorporan solo los hallazgos que **NO contradicen** la identidad canónica del Speckit (paleta Teal `#5CE0D2` / Navy `#1A2F3F` / Aztec `#0F1923`, tipografía Space Grotesk, tabs Comprar/Preventa §18). Rechazados: propuestas de rediseño de paleta a `#000000/#00A8B5`, pairing tipográfico con Playfair Display, y reemplazo de tabs Comprar/Preventa por dropdown — esos requieren aprobación explícita del Manual de Identidad Propyte (Notion).
+
+### 32.1 — Credibilidad (bloqueantes si migración cierra con esto visible)
+
+| # | Item | Acción |
+|---|------|--------|
+| 1 | Prefijo `[SAMPLE]` en cards de grid y single | Strip en query (`REPLACE(nombre, '[SAMPLE] ', '')`) o re-sembrar fila AZUL VIVO sin prefijo en Supabase |
+| 2 | KPIs con dash huérfano "—" cuando `zone_scores`/`airdna_metrics` vacío | Ocultar card completa (no mostrar dash) + badge "Actualizando" si `null`. Mostrar `last_updated: hace X días` en pie de card |
+| 3 | `wa.me/529841234567` placeholder | Luis setea `NEXT_PUBLIC_WHATSAPP_PHONE` real en Vercel. Todos los WhatsApp links consumen env var (audit commit ya validó uso correcto) |
+| 4 | Footer redes sociales sin `href` | Vincular reales o remover íconos — no dejar placeholder |
+| 5 | Disclaimer footer con tono amateur | Rewrite profesional: *"Propyte opera como plataforma de análisis inmobiliario; las transacciones son gestionadas por socios certificados ante AMPI/CANADEVI."* |
+| 6 | Precio sin formato consistente | `Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 })` — verificar uso en todos los cards + detail |
+
+### 32.2 — Cards de propiedad (oportunidad de diferencial)
+
+- Agregar `$/m²` calculado + delta `+X.X% plusvalía vs zona` debajo del precio (tipografía `tabular-nums`)
+- ROI/Cap badges ya existen en `MarketplaceCard` — verificar que rendericen cuando haya datos
+- Skeleton loading con shimmer Tailwind para evitar CLS
+
+### 32.3 — Datos de mercado (hero de diferencial)
+
+- Hide-empty-KPI pattern (no dashes)
+- `CurrencyContext` (MXN/USD) ya existe — exponer toggle prominente en sección KPIs
+- Sparkline 12m por KPI (Recharts ya está en stack)
+- Badge `Actualizado hace X días` por card — credibilidad > pretensión
+
+### 32.4 — Accesibilidad WCAG 2.2 AA
+
+- `focus-visible` ring Teal 2px + offset 2px en todos los interactivos (Tailwind `focus-visible:ring-2 focus-visible:ring-[#5CE0D2]`)
+- Skip-to-content link antes del `<header>`
+- `aria-current="page"` en nav item activo
+- `aria-expanded` en dropdowns ("Más", SearchTypeToggle, filtros)
+- `aria-label` en icon-only buttons (lupa, WhatsApp, favorito, LangSwitcher)
+- `<label for>` real en formularios (no placeholder-as-label)
+- Navegación por teclado en carruseles (flechas `←→` + `role="region"`)
+- Correr **axe-core** en CI + Playwright — target **0 errores AA**
+
+### 32.5 — SEO / Schema.org extensión
+
+- `RealEstateListing` schema en cada card del grid + detail (hoy hay SchemaMarkup genérico)
+- `AggregateRating` en bloque testimonios (cuando exista)
+- `BreadcrumbList` visible + JSON-LD en archives + detail
+- OG images dinámicas con foto real + precio + zona (no logo genérico)
+
+### 32.6 — Mobile específico
+
+- `env(safe-area-inset-bottom)` en footer + WhatsApp flotante (iOS notch)
+- Tap targets mínimo **44×44px** en chips quick-filter + iconos footer
+- WhatsApp float: `margin-bottom: 80px` al grid cuando `@media (max-width: 768px)` para no tapar última card
+- Carruseles con scroll-snap obligatorio (evitar drag libre)
+
+### 32.7 — Ejecución
+
+Ejecutar este bloque como **Fase 5.5** DESPUÉS de cerrar Fase 5 Content Pages (15/15). Originalmente se pensó intercalada antes de Fase 6 Built Portfolio, pero Fase 6 quedó skipped (decisión Luis 2026-04-20) — por lo tanto Fase 5.5 antecede directamente a Fase 7 Blog Completo. Se mantiene separada de Fase 8 SEO & Performance (optimización de Core Web Vitals global) porque son alcances distintos: 5.5 es pulido visual/a11y del sitio migrado; 8 es perf global + schema extension cross-sitio. Audit por batch, igual que Fase 5.
 
 ---
 

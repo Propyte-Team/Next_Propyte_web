@@ -1,0 +1,95 @@
+{
+  "runAt": "2026-04-18T21:42:31.808Z",
+  "routes": {
+    "desarrollos": {
+      "url": "https://dev.propyte.com/es/desarrollos",
+      "desktop": {
+        "title": "Nuevos Desarrollos y Preventas | Riviera Maya, Cancun, Tulum, Merida | Propyte",
+        "cardCount": 37,
+        "cardInfo": {
+          "hasPrice": true,
+          "hasBadge": false,
+          "hasHeart": false,
+          "hasArrows": 0,
+          "hasDots": 5
+        },
+        "filterBar": {
+          "pills": 5,
+          "hasSearchInput": true,
+          "hasMoreFilters": true,
+          "hasSort": true
+        },
+        "mapPresent": false,
+        "chips": 0,
+        "emptyState": false,
+        "h1Text": "Nuevos Desarrollos y Preventas"
+      },
+      "mobile": {
+        "title": "Nuevos Desarrollos y Preventas | Riviera Maya, Cancun, Tulum, Merida | Propyte",
+        "cardCount": 37,
+        "cardInfo": {
+          "hasPrice": true,
+          "hasBadge": false,
+          "hasHeart": false,
+          "hasArrows": 0,
+          "hasDots": 5
+        },
+        "filterBar": {
+          "pills": 5,
+          "hasSearchInput": true,
+          "hasMoreFilters": true,
+          "hasSort": true
+        },
+        "mapPresent": false,
+        "chips": 0,
+        "emptyState": false,
+        "h1Text": "Nuevos Desarrollos y Preventas"
+      }
+    },
+    "propiedades": {
+      "url": "https://dev.propyte.com/es/propiedades",
+      "desktop": {
+        "title": "Propiedades en Riviera Maya | Propyte",
+        "cardCount": 37,
+        "cardInfo": {
+          "hasPrice": true,
+          "hasBadge": false,
+          "hasHeart": false,
+          "hasArrows": 0,
+          "hasDots": 5
+        },
+        "filterBar": {
+          "pills": 5,
+          "hasSearchInput": true,
+          "hasMoreFilters": true,
+          "hasSort": true
+        },
+        "mapPresent": false,
+        "chips": 0,
+        "emptyState": false,
+        "h1Text": "Propiedades en Riviera Maya"
+      },
+      "mobile": {
+        "title": "Propiedades en Riviera Maya | Propyte",
+        "cardCount": 37,
+        "cardInfo": {
+          "hasPrice": true,
+          "hasBadge": false,
+          "hasHeart": false,
+          "hasArrows": 0,
+          "hasDots": 5
+        },
+        "filterBar": {
+          "pills": 5,
+          "hasSearchInput": true,
+          "hasMoreFilters": true,
+          "hasSort": true
+        },
+        "mapPresent": false,
+        "chips": 0,
+        "emptyState": false,
+        "h1Text": "Propiedades en Riviera Maya"
+      }
+    }
+  }
+}

@@ -1,0 +1,182 @@
+[
+  {
+    "name": "1. City listing (/es/desarrollos/cancun)",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Property cards detected",
+        "v": 0,
+        "ok": false
+      },
+      {
+        "k": "Has Tab role elements (should be 0)",
+        "v": 0,
+        "ok": true
+      }
+    ]
+  },
+  {
+    "name": "Detail ES (/es/desarrollos/akora-residencial-b73b319b)",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tab count (expect 3)",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Tab labels",
+        "v": "Descripción | Análisis Geográfico | Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Labels match es scheme",
+        "v": false,
+        "ok": false
+      },
+      {
+        "k": "ArrowRight -> tab 2",
+        "v": "Análisis Geográfico",
+        "ok": true
+      },
+      {
+        "k": "ArrowRight -> tab 3",
+        "v": "Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Home -> tab 1",
+        "v": "Descripción",
+        "ok": true
+      },
+      {
+        "k": "End -> last tab",
+        "v": "Rentabilidad",
+        "ok": true
+      },
+      {
+        "k": "Tab 1 \"Descripción\" panel length",
+        "v": 800,
+        "ok": true
+      },
+      {
+        "k": "Tab 2 \"Análisis Geográfico\" panel length",
+        "v": 90,
+        "ok": true
+      },
+      {
+        "k": "Tab 2 has iframe or map container",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 \"Rentabilidad\" panel length",
+        "v": 505,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 shows RentalEstimate",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 InvestmentSummary (should be absent, data gap)",
+        "v": true,
+        "ok": false
+      },
+      {
+        "k": "ContactForm literal keys (should be false)",
+        "v": true,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "Detail EN (/en/desarrollos/akora-residencial-b73b319b)",
+    "checks": [
+      {
+        "k": "HTTP status",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Tab count (expect 3)",
+        "v": 3,
+        "ok": true
+      },
+      {
+        "k": "Tab labels",
+        "v": "Overview | Location | Returns",
+        "ok": true
+      },
+      {
+        "k": "Labels match en scheme",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "ArrowRight -> tab 2",
+        "v": "Location",
+        "ok": true
+      },
+      {
+        "k": "ArrowRight -> tab 3",
+        "v": "Returns",
+        "ok": true
+      },
+      {
+        "k": "Home -> tab 1",
+        "v": "Overview",
+        "ok": true
+      },
+      {
+        "k": "End -> last tab",
+        "v": "Returns",
+        "ok": true
+      },
+      {
+        "k": "Tab 1 \"Overview\" panel length",
+        "v": 767,
+        "ok": true
+      },
+      {
+        "k": "Tab 2 \"Location\" panel length",
+        "v": 86,
+        "ok": true
+      },
+      {
+        "k": "Tab 2 has iframe or map container",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 \"Returns\" panel length",
+        "v": 463,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 shows RentalEstimate",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Tab 3 InvestmentSummary (should be absent, data gap)",
+        "v": true,
+        "ok": false
+      },
+      {
+        "k": "ContactForm literal keys (should be false)",
+        "v": true,
+        "ok": false
+      }
+    ]
+  }
+]

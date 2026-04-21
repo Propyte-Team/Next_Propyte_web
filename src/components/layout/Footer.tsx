@@ -43,11 +43,23 @@ export default function Footer() {
             </Link>
             <p className="text-sm text-white/50 leading-relaxed mb-4">{t('description')}</p>
             <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors" aria-label="Instagram">
-                <Instagram size={16} />
+              <a
+                href="https://www.instagram.com/propyte.mx/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram size={18} />
               </a>
-              <a href="#" className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors" aria-label="Facebook">
-                <Facebook size={16} />
+              <a
+                href="https://www.facebook.com/propyte"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+                aria-label="Facebook"
+              >
+                <Facebook size={18} />
               </a>
             </div>
           </div>

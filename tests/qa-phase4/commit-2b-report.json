@@ -1,0 +1,317 @@
+[
+  {
+    "name": "API /api/generate-pdf",
+    "checks": [
+      {
+        "k": "[dev ES] HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "[dev ES] %PDF magic bytes",
+        "v": "%PDF · 86072B",
+        "ok": true
+      },
+      {
+        "k": "[dev ES] Content-Type pdf + Content-Disposition attachment",
+        "v": "ct=true cd=true",
+        "ok": true
+      },
+      {
+        "k": "[unit EN] HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "[unit EN] %PDF magic bytes",
+        "v": "%PDF · 236446B",
+        "ok": true
+      },
+      {
+        "k": "[unit EN] Content-Type pdf + Content-Disposition attachment",
+        "v": "ct=true cd=true",
+        "ok": true
+      },
+      {
+        "k": "[invalid slug] HTTP 404",
+        "v": 404,
+        "ok": true
+      },
+      {
+        "k": "[missing slug] HTTP 400",
+        "v": 400,
+        "ok": true
+      },
+      {
+        "k": "[invalid kind] HTTP 400",
+        "v": 200,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SHARE sample-dev-es",
+    "checks": [
+      {
+        "k": "ShareButton aria-label",
+        "v": "Compartir o descargar",
+        "ok": true
+      },
+      {
+        "k": "ShareButton visible",
+        "v": "124x44",
+        "ok": true
+      },
+      {
+        "k": "Modal abierto role=dialog",
+        "v": "dialog",
+        "ok": true
+      },
+      {
+        "k": "4 acciones PDF/Email/WA/Copy presentes",
+        "v": "Descargar PDFFicha de 1 página con QR | Compartir por emailAbre tu app de correo | WhatsAppComparte con un contacto | Copiar enlacehttps://propyte.com/es/desarrollos/sample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "ES strings (Descargar/Copiar/Compartir)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me presente",
+        "v": "https://wa.me/?text=%C2%A1Hola!%20Mira%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20en%20Propyte%3A%20https%3A%2F%2Fpropyte.com%2Fes%2Fdesarrollos%2Fsample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "mailto: link presente",
+        "v": "mailto:?subject=%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20en%20Propyte&body=Mira%20esta%20propiedad%20en%20Propyte%3A%0A%0A%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%0Ahttps%3A%2F%2Fpropyte.com%2Fes%2Fde",
+        "ok": true
+      },
+      {
+        "k": "PDF click -> /api/generate-pdf fetched",
+        "v": "https://dev.propyte.com/api/generate-pdf?slug=sample-azul-vivo-5a4e4a4e&kind=development&locale=es",
+        "ok": true
+      },
+      {
+        "k": "PDF endpoint status 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Copy link toast (Copiado/Copied)",
+        "v": false,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SHARE sample-dev-en",
+    "checks": [
+      {
+        "k": "ShareButton aria-label",
+        "v": "Share or download",
+        "ok": true
+      },
+      {
+        "k": "ShareButton visible",
+        "v": "95x44",
+        "ok": true
+      },
+      {
+        "k": "Modal abierto role=dialog",
+        "v": "dialog",
+        "ok": true
+      },
+      {
+        "k": "4 acciones PDF/Email/WA/Copy presentes",
+        "v": "Download PDFOne-page summary with QR | Share by emailOpens your mail app | WhatsAppShare with a contact | Copy linkhttps://propyte.com/en/desarrollos/sample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "EN strings (Download/Copy/Share)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me presente",
+        "v": "https://wa.me/?text=Hi!%20Check%20out%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20on%20Propyte%3A%20https%3A%2F%2Fpropyte.com%2Fen%2Fdesarrollos%2Fsample-azul-vivo-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "mailto: link presente",
+        "v": "mailto:?subject=%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20on%20Propyte&body=Take%20a%20look%20at%20this%20property%20on%20Propyte%3A%0A%0A%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%0Ahttps%3A%2F%2Fpropyt",
+        "ok": true
+      },
+      {
+        "k": "PDF click -> /api/generate-pdf fetched",
+        "v": "https://dev.propyte.com/api/generate-pdf?slug=sample-azul-vivo-5a4e4a4e&kind=development&locale=en",
+        "ok": true
+      },
+      {
+        "k": "PDF endpoint status 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Copy link toast (Copiado/Copied)",
+        "v": false,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SHARE sample-unit-es",
+    "checks": [
+      {
+        "k": "ShareButton aria-label",
+        "v": "Compartir o descargar",
+        "ok": true
+      },
+      {
+        "k": "ShareButton visible",
+        "v": "124x44",
+        "ok": true
+      },
+      {
+        "k": "Modal abierto role=dialog",
+        "v": "dialog",
+        "ok": true
+      },
+      {
+        "k": "4 acciones PDF/Email/WA/Copy presentes",
+        "v": "Descargar PDFFicha de 1 página con QR | Compartir por emailAbre tu app de correo | WhatsAppComparte con un contacto | Copiar enlacehttps://propyte.com/es/propiedades/sample-azul-vivo-a101-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "ES strings (Descargar/Copiar/Compartir)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me presente",
+        "v": "https://wa.me/?text=%C2%A1Hola!%20Mira%20%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20%E2%80%94%20A101%20en%20Propyte%3A%20https%3A%2F%2Fpropyte.com%2Fes%2Fpropiedades%2Fsample-azul-vivo-a101-5a4e4a4e",
+        "ok": true
+      },
+      {
+        "k": "mailto: link presente",
+        "v": "mailto:?subject=%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20%E2%80%94%20A101%20en%20Propyte&body=Mira%20esta%20propiedad%20en%20Propyte%3A%0A%0A%5BSAMPLE%5D%20AZUL%20VIVO%20Residences%20%E2%80%94%20A101",
+        "ok": true
+      },
+      {
+        "k": "PDF click -> /api/generate-pdf fetched",
+        "v": "https://dev.propyte.com/api/generate-pdf?slug=sample-azul-vivo-a101-5a4e4a4e&kind=unit&locale=es",
+        "ok": true
+      },
+      {
+        "k": "PDF endpoint status 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Copy link toast (Copiado/Copied)",
+        "v": false,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "SHARE akora-unit-en",
+    "checks": [
+      {
+        "k": "ShareButton aria-label",
+        "v": "Share or download",
+        "ok": true
+      },
+      {
+        "k": "ShareButton visible",
+        "v": "95x44",
+        "ok": true
+      },
+      {
+        "k": "Modal abierto role=dialog",
+        "v": "dialog",
+        "ok": true
+      },
+      {
+        "k": "4 acciones PDF/Email/WA/Copy presentes",
+        "v": "Download PDFOne-page summary with QR | Share by emailOpens your mail app | WhatsAppShare with a contact | Copy linkhttps://propyte.com/en/propiedades/akora-a301-cancun",
+        "ok": true
+      },
+      {
+        "k": "EN strings (Download/Copy/Share)",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "Esc cierra modal",
+        "v": true,
+        "ok": true
+      },
+      {
+        "k": "WhatsApp link wa.me presente",
+        "v": "https://wa.me/?text=Hi!%20Check%20out%20Akora%20Residencial%20%E2%80%94%20A-301%20on%20Propyte%3A%20https%3A%2F%2Fpropyte.com%2Fen%2Fpropiedades%2Fakora-a301-cancun",
+        "ok": true
+      },
+      {
+        "k": "mailto: link presente",
+        "v": "mailto:?subject=Akora%20Residencial%20%E2%80%94%20A-301%20on%20Propyte&body=Take%20a%20look%20at%20this%20property%20on%20Propyte%3A%0A%0AAkora%20Residencial%20%E2%80%94%20A-301%0Ahttps%3A%2F%2Fpropyt",
+        "ok": true
+      },
+      {
+        "k": "PDF click -> /api/generate-pdf fetched",
+        "v": "https://dev.propyte.com/api/generate-pdf?slug=akora-a301-cancun&kind=unit&locale=en",
+        "ok": true
+      },
+      {
+        "k": "PDF endpoint status 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "Copy link toast (Copiado/Copied)",
+        "v": false,
+        "ok": false
+      }
+    ]
+  },
+  {
+    "name": "REGRESSION",
+    "checks": [
+      {
+        "k": "sample-dev-es HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "sample-dev-en HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "sample-unit-es HTTP 200",
+        "v": 200,
+        "ok": true
+      },
+      {
+        "k": "akora-unit-en HTTP 200",
+        "v": 200,
+        "ok": true
+      }
+    ]
+  }
+]

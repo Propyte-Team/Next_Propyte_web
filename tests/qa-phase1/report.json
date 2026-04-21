@@ -1,0 +1,77 @@
+{
+  "runAt": "2026-04-18T18:10:14.478Z",
+  "staging": {
+    "url": "https://dev.propyte.com/es",
+    "desktop": {
+      "title": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya | Propyte",
+      "bodyFont": "\"Space Grotesk\", \"Space Grotesk Fallback\"",
+      "bodyColor": "#2C2C2C",
+      "bodyBg": "#FFFFFF",
+      "h1Text": "Invierte con datos. Decide con confianza.",
+      "h1Size": "56px",
+      "h1Weight": "700",
+      "h1Color": "#FFFFFF",
+      "h1Count": 1,
+      "h2Count": 8,
+      "imagesCount": 5,
+      "hasHeroSearchBubble": true,
+      "hasSidebar": true,
+      "hasWhatsAppFloat": false,
+      "sectionCount": 9
+    },
+    "mobile": {
+      "title": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya | Propyte",
+      "bodyFont": "\"Space Grotesk\", \"Space Grotesk Fallback\"",
+      "bodyColor": "#2C2C2C",
+      "bodyBg": "#FFFFFF",
+      "h1Text": "Invierte con datos. Decide con confianza.",
+      "h1Size": "30px",
+      "h1Weight": "700",
+      "h1Color": "#FFFFFF",
+      "h1Count": 1,
+      "h2Count": 8,
+      "imagesCount": 5,
+      "hasHeroSearchBubble": true,
+      "hasSidebar": true,
+      "hasWhatsAppFloat": false,
+      "sectionCount": 9
+    }
+  },
+  "prod": {
+    "url": "https://propyte.com/",
+    "desktop": {
+      "title": "Próximamente – Propyte",
+      "bodyFont": "Inter, Arial, sans-serif",
+      "bodyColor": "#FFFFFF",
+      "bodyBg": "#1E3A5F",
+      "h1Text": "La herramienta querevolucionará lacomercialización inmobiliaria",
+      "h1Size": "40px",
+      "h1Weight": "800",
+      "h1Color": "#FFFFFF",
+      "h1Count": 1,
+      "h2Count": 0,
+      "imagesCount": 1,
+      "hasHeroSearchBubble": false,
+      "hasSidebar": false,
+      "hasWhatsAppFloat": false,
+      "sectionCount": 0
+    },
+    "mobile": {
+      "title": "Próximamente – Propyte",
+      "bodyFont": "Inter, Arial, sans-serif",
+      "bodyColor": "#FFFFFF",
+      "bodyBg": "#1E3A5F",
+      "h1Text": "La herramienta querevolucionará lacomercialización inmobiliaria",
+      "h1Size": "26px",
+      "h1Weight": "800",
+      "h1Color": "#FFFFFF",
+      "h1Count": 1,
+      "h2Count": 0,
+      "imagesCount": 1,
+      "hasHeroSearchBubble": false,
+      "hasSidebar": false,
+      "hasWhatsAppFloat": false,
+      "sectionCount": 0
+    }
+  }
+}

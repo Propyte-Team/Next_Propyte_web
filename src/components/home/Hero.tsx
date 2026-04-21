@@ -172,7 +172,7 @@ export default function Hero({ stats }: HeroProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-5 py-2.5 text-sm font-medium text-white bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200"
             >
               <MapPin size={14} strokeWidth={1.75} />
               {link.label}
