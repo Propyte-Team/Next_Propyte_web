@@ -13,6 +13,7 @@ import MapView from '@/components/marketplace/MapView';
 import FilterChip from '@/components/ui/FilterChip';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface MarketplaceContentProps {
   properties: Property[];
@@ -27,6 +28,7 @@ export default function MarketplaceContent({
 }: MarketplaceContentProps) {
   const t = useTranslations('marketplace');
   const isMobile = useIsMobile();
+  const { currency, toggleCurrency } = useCurrency();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('list');
   const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy } = useFilters(properties);
@@ -60,8 +62,19 @@ export default function MarketplaceContent({
     <div className="flex flex-col h-[calc(100dvh-64px)]">
       {/* SEO heading — visible al top */}
       <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t(titleKey)}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t(subtitleKey)}</p>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t(titleKey)}</h1>
+            <p className="text-sm text-gray-500 mt-1">{t(subtitleKey)}</p>
+          </div>
+          <button
+            onClick={toggleCurrency}
+            className="flex-shrink-0 mt-1 h-8 px-3 text-xs font-bold border border-gray-200 rounded-lg hover:border-[#5CE0D2] hover:text-[#0D9488] transition-colors tabular-nums"
+            aria-label={t('toggleCurrencyAriaLabel')}
+          >
+            {currency === 'MXN' ? 'MXN → USD' : 'USD → MXN'}
+          </button>
+        </div>
       </div>
 
       <FilterBar

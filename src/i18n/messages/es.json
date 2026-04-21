@@ -239,7 +239,10 @@
     "mapError": "Error cargando el mapa",
     "mapErrorHint": "Verifica tu API Key de Google Maps",
     "mapNoCoords": "Las ubicaciones aún no están disponibles",
-    "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas"
+    "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas",
+    "cardM2Short": "m²",
+    "cardAppreciation": "aprec./año",
+    "toggleCurrencyAriaLabel": "Cambiar moneda"
   },
   "property": {
     "bedrooms": "Recámaras",
@@ -538,7 +541,16 @@
     "ctaTitle": "¿Listo para invertir en la Riviera Maya?",
     "ctaSubtitle": "Habla con un asesor certificado y recibe un análisis personalizado",
     "ctaButton": "Contactar asesor",
-    "disclaimer": "Propyte no es un agente inmobiliario regulado. Las proyecciones mostradas son estimaciones."
+    "disclaimer": "Propyte es una comercializadora inmobiliaria. Información referencial, no constituye asesoría legal ni financiera. Precios sujetos a cambio sin previo aviso. Los desarrollos comercializados son de terceros. Estimaciones de ROI basadas en datos históricos de mercado.",
+    "howToBuy": "Cómo Comprar",
+    "howToInvest": "Cómo Invertir",
+    "financing": "Financiamiento",
+    "resources": "Recursos",
+    "glossary": "Glosario",
+    "promotions": "Promociones",
+    "market": "Mercado",
+    "cookiesLink": "Cookies",
+    "developedBy": "Desarrollado por"
   },
   "providers": {
     "title": "Programa de Proveedores",

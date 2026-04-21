@@ -4,8 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Heart, ChevronLeft, ChevronRight, MapPin, Bed, Bath, Maximize } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp } from 'lucide-react';
 import type { Property, PropertyBadge } from '@/types/property';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -16,16 +17,13 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const locale = useLocale();
   const tStages = useTranslations('stages');
   const tMkt = useTranslations('marketplace');
+  const { format, currency } = useCurrency();
   const [currentImg, setCurrentImg] = useState(0);
   const [saved, setSaved] = useState(false);
 
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
-  const formattedPrice = new Intl.NumberFormat(intlLocale, {
-    style: 'currency',
-    currency: 'MXN',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(property.price.mxn);
+  const formattedPrice = format(property.price.mxn);
+  const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
   const badgeColors: Record<Exclude<PropertyBadge, null>, string> = {
     preventa: 'bg-[#F5A623]',
@@ -148,8 +146,15 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
         {/* Info */}
         <div className="p-3">
-          {/* Price */}
-          <div className="text-lg font-bold text-[#2C2C2C]">{formattedPrice}</div>
+          {/* Price + $/m² */}
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
+            {pricePerM2 !== null && (
+              <span className="text-xs text-gray-400 tabular-nums font-medium">
+                {format(pricePerM2, { decimals: 0 })}/{tMkt('cardM2Short')}
+              </span>
+            )}
+          </div>
 
           {/* Specs: solo cuando haya algún valor real (units tienen, developments aggregate no) */}
           {(property.specs.bedrooms > 0 || property.specs.bathrooms > 0 || property.specs.area > 0) && (
@@ -219,17 +224,23 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           {/* Investment metrics row */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {property.roi.projected > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/8 text-[#4BCEC0] text-[10px] font-bold rounded-full">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0D9488] text-[10px] font-bold rounded-full tabular-nums">
                 ROI {property.roi.projected}%
               </span>
             )}
+            {property.roi.appreciation > 0 && (
+              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full tabular-nums">
+                <TrendingUp size={10} />
+                +{property.roi.appreciation}% {tMkt('cardAppreciation')}
+              </span>
+            )}
             {property.capRate != null && property.capRate > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-[10px] font-bold rounded-full">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-[10px] font-bold rounded-full tabular-nums">
                 Cap {property.capRate.toFixed(1)}%
               </span>
             )}
             {property.annualRevenue != null && property.annualRevenue > 0 && (
-              <span className="text-[10px] text-gray-400 font-medium">
+              <span className="text-[10px] text-gray-400 font-medium tabular-nums">
                 ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
               </span>
             )}

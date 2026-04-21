@@ -32,13 +32,20 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex items-baseline justify-between gap-3 mb-1">
+        <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="text-base font-bold text-gray-900">
             {isEn ? 'Vacation rental market' : 'Mercado de renta vacacional'}
           </h3>
-          <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">
-            AirDNA · {market}
-          </span>
+          <div className="flex flex-col items-end gap-1">
+            <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">
+              AirDNA · {market}
+            </span>
+            {data.latest_date && (
+              <span className="text-[10px] text-gray-400 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
+                {isEn ? 'Updated' : 'Actualizado'} {formatDaysAgo(data.latest_date, locale)}
+              </span>
+            )}
+          </div>
         </div>
         <p className="text-xs text-gray-500">
           {isEn
@@ -194,6 +201,20 @@ function formatMonthShort(dateStr: string, locale: string): string {
     return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
       month: 'short',
     }).replace('.', '');
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatDaysAgo(dateStr: string, locale: string): string {
+  try {
+    const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
+    if (days === 0) return locale === 'en' ? 'today' : 'hoy';
+    if (days === 1) return locale === 'en' ? '1 day ago' : 'hace 1 día';
+    if (days < 30) return locale === 'en' ? `${days} days ago` : `hace ${days} días`;
+    const months = Math.floor(days / 30);
+    if (months === 1) return locale === 'en' ? '1 month ago' : 'hace 1 mes';
+    return locale === 'en' ? `${months} months ago` : `hace ${months} meses`;
   } catch {
     return dateStr;
   }

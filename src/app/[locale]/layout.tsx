@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
 import { SearchProvider } from '@/context/SearchContext';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 
 export default async function LocaleLayout({
   children,
@@ -31,6 +32,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <CurrencyProvider>
       <SearchProvider>
         <a href="#main-content" className="skip-to-content">
           {tA11y('skipToContent')}
@@ -49,6 +51,7 @@ export default async function LocaleLayout({
         <WhatsAppButton />
         <Analytics />
       </SearchProvider>
+      </CurrencyProvider>
     </NextIntlClientProvider>
   );
 }
