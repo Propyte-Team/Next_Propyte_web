@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       alternateLocale: isEn ? 'es_MX' : 'en_US',
     },
     alternates: {
+      canonical: `/${locale}/desarrollos`,
       languages: {
         es: '/es/desarrollos',
         en: '/en/desarrollos',
