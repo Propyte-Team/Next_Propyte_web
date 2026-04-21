@@ -20,6 +20,7 @@ import {
   Mail,
   MessageCircle,
 } from 'lucide-react';
+import { isNavActive } from '@/lib/nav/isActive';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -33,13 +34,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const router = useRouter();
 
   function isActive(id: string, href: string): boolean {
-    const bare = pathname.replace(/^\/(es|en)/, '') || '/';
-    if (id === 'home') return bare === '/' || bare === '';
-    if (id === 'developments') return bare.startsWith('/desarrollos');
-    if (id === 'properties') return bare.startsWith('/propiedades');
-    if (id === 'nosotros') return bare.startsWith('/nosotros');
-    if (id === 'mercado') return bare.startsWith('/mercado') || bare.startsWith('/zonas');
-    return bare.startsWith(href.replace(`/${locale}`, ''));
+    return isNavActive(pathname, id, href, locale);
   }
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
 

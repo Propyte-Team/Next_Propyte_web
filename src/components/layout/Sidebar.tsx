@@ -18,6 +18,7 @@ import {
   Zap,
   Layout as LayoutIcon,
 } from 'lucide-react';
+import { isNavActive } from '@/lib/nav/isActive';
 
 type NavItem = {
   id: string;
@@ -60,13 +61,7 @@ export default function Sidebar() {
   ];
 
   function isActive(id: string, href: string): boolean {
-    const bare = pathname.replace(/^\/(es|en)/, '') || '/';
-    if (id === 'home') return bare === '/' || bare === '';
-    if (id === 'developments') return bare.startsWith('/desarrollos');
-    if (id === 'properties') return bare.startsWith('/propiedades');
-    if (id === 'nosotros') return bare.startsWith('/nosotros');
-    if (id === 'mercado') return bare.startsWith('/mercado') || bare.startsWith('/zonas');
-    return bare.startsWith(href.replace(`/${locale}`, ''));
+    return isNavActive(pathname, id, href, locale);
   }
 
   return (

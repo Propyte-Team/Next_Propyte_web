@@ -26,7 +26,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-xl w-full max-w-md mx-4 p-6 shadow-xl" role="dialog" aria-modal="true">
+      <div id="advanced-filters-dialog" className="relative bg-white rounded-xl w-full max-w-md mx-4 p-6 shadow-xl" role="dialog" aria-modal="true">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold">{t('moreFilters')}</h3>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Close">

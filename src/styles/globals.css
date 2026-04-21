@@ -116,7 +116,7 @@ html {
   background: rgba(0, 0, 0, 0.12);
 }
 
-.search-type-option[data-active="true"] {
+.search-type-option[aria-selected="true"] {
   color: #0D9488;
   font-weight: 600;
   background: #f0fdfa;

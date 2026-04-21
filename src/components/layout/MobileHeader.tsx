@@ -114,7 +114,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
           <button
             type="button"
             onClick={onOpenMenu}
-            aria-label={t('openMenu')}
+            aria-label={isMenuOpen ? t('closeMenu') : t('openMenu')}
             aria-expanded={isMenuOpen}
             aria-haspopup="dialog"
             aria-controls="mobile-menu-drawer"
