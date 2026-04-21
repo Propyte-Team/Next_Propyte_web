@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+      images: [`/${locale}/opengraph-image`],
     },
     twitter: { card: 'summary_large_image', title, description },
     alternates: {
