@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Menu, ChevronDown } from 'lucide-react';
 import SearchBubble from './SearchBubble';
+import CurrencyToggle from '@/components/ui/CurrencyToggle';
 
 interface MobileHeaderProps {
   mode: 'home' | 'dark' | 'default';
@@ -72,6 +73,8 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
         </Link>
 
         <div className="flex items-center gap-1.5">
+          <CurrencyToggle />
+
           <div ref={langRef} className="relative">
             <button
               type="button"
