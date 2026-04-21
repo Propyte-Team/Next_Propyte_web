@@ -1599,7 +1599,8 @@
     "breadcrumbLabel": "Migas de pan",
     "carouselLabel": "Galería de fotos",
     "carouselNextSlide": "Siguiente foto",
-    "carouselPrevSlide": "Foto anterior"
+    "carouselPrevSlide": "Foto anterior",
+    "currencySelector": "Selector de moneda"
   },
   "breadcrumbs": {
     "home": "Inicio",

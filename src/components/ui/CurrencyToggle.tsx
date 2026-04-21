@@ -1,18 +1,24 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useCurrency } from '@/context/CurrencyContext';
 
 export default function CurrencyToggle() {
+  const t = useTranslations('a11y');
   const { currency, toggleCurrency } = useCurrency();
 
   return (
-    <div className="inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-gray-200 flex-shrink-0">
+    <div
+      role="group"
+      aria-label={t('currencySelector')}
+      className="inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-gray-200 flex-shrink-0"
+    >
       <button
         type="button"
-        onClick={currency === 'USD' ? toggleCurrency : undefined}
+        onClick={toggleCurrency}
         aria-pressed={currency === 'MXN'}
-        aria-label="MXN"
-        className={`px-2 py-1 transition-colors tabular-nums ${
+        disabled={currency === 'MXN'}
+        className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
           currency === 'MXN' ? 'bg-[#1A2F3F] text-white' : 'text-gray-500 hover:text-[#1A2F3F]'
         }`}
       >
@@ -20,10 +26,10 @@ export default function CurrencyToggle() {
       </button>
       <button
         type="button"
-        onClick={currency === 'MXN' ? toggleCurrency : undefined}
+        onClick={toggleCurrency}
         aria-pressed={currency === 'USD'}
-        aria-label="USD"
-        className={`px-2 py-1 transition-colors tabular-nums ${
+        disabled={currency === 'USD'}
+        className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
           currency === 'USD' ? 'bg-[#1A2F3F] text-white' : 'text-gray-500 hover:text-[#1A2F3F]'
         }`}
       >

@@ -1598,7 +1598,8 @@
     "breadcrumbLabel": "Breadcrumb",
     "carouselLabel": "Photo gallery",
     "carouselNextSlide": "Next photo",
-    "carouselPrevSlide": "Previous photo"
+    "carouselPrevSlide": "Previous photo",
+    "currencySelector": "Currency selector"
   },
   "breadcrumbs": {
     "home": "Home",
