@@ -85,6 +85,7 @@ export default function Header() {
         mode={mode}
         onOpenMenu={() => setMobileOpen(true)}
         isScrolled={scrolled}
+        isMenuOpen={mobileOpen}
       />
 
       {/* Mobile menu drawer */}

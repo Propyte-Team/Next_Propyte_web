@@ -31,6 +31,16 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const t = useTranslations('nav');
   const pathname = usePathname();
   const router = useRouter();
+
+  function isActive(id: string, href: string): boolean {
+    const bare = pathname.replace(/^\/(es|en)/, '') || '/';
+    if (id === 'home') return bare === '/' || bare === '';
+    if (id === 'developments') return bare.startsWith('/desarrollos');
+    if (id === 'properties') return bare.startsWith('/propiedades');
+    if (id === 'nosotros') return bare.startsWith('/nosotros');
+    if (id === 'mercado') return bare.startsWith('/mercado') || bare.startsWith('/zonas');
+    return bare.startsWith(href.replace(`/${locale}`, ''));
+  }
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
 
   useEffect(() => {
@@ -86,6 +96,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+            id="mobile-menu-drawer"
             className="absolute left-0 top-0 h-full w-[280px] bg-[#0F1923] shadow-xl flex flex-col"
           >
             {/* Header */}
@@ -111,12 +122,18 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             >
               {allItems.map((item) => {
                 const Icon = item.icon;
+                const active = isActive(item.id, item.href);
                 return (
                   <Link
                     key={item.id}
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center gap-3 py-3 px-3 text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex items-center gap-3 py-3 px-3 text-sm font-medium rounded-lg transition-colors ${
+                      active
+                        ? 'text-[#5CE0D2] bg-white/10 font-semibold'
+                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                    }`}
                   >
                     <Icon size={18} strokeWidth={1.75} className="shrink-0" />
                     {t(item.labelKey)}

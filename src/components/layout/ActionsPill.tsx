@@ -54,6 +54,8 @@ export default function ActionsPill() {
           type="button"
           onClick={() => setLangOpen((v) => !v)}
           aria-expanded={langOpen}
+          aria-haspopup="menu"
+          aria-controls="ap-lang-panel"
           aria-label={t('language')}
           className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#2C2C2C] hover:text-[#5CE0D2] rounded-lg transition-colors"
         >
@@ -61,9 +63,10 @@ export default function ActionsPill() {
           <ChevronDown size={11} strokeWidth={2} />
         </button>
         {langOpen && (
-          <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+          <div id="ap-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
             <button
               type="button"
+              role="menuitem"
               onClick={() => switchLocale('es')}
               className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                 locale === 'es' ? 'text-[#0D9488] font-semibold' : 'text-[#2C2C2C]'
@@ -73,6 +76,7 @@ export default function ActionsPill() {
             </button>
             <button
               type="button"
+              role="menuitem"
               onClick={() => switchLocale('en')}
               className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                 locale === 'en' ? 'text-[#0D9488] font-semibold' : 'text-[#2C2C2C]'

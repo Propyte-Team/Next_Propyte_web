@@ -68,6 +68,7 @@ export default function MarketplaceContent({
         filters={filters}
         onFilterChange={updateFilter}
         onOpenAdvanced={() => setShowAdvanced(true)}
+        advancedOpen={showAdvanced}
         resultCount={filtered.length}
       />
 

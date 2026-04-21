@@ -11,6 +11,7 @@ interface FilterBarProps {
   filters: Filters;
   onFilterChange: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
   onOpenAdvanced: () => void;
+  advancedOpen: boolean;
   resultCount: number;
 }
 
@@ -27,6 +28,7 @@ function PillDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const panelId = `fp-${label.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -42,6 +44,9 @@ function PillDropdown({
         type="button"
         data-filter-pill={label}
         aria-label={label}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls={panelId}
         onClick={() => setOpen(!open)}
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive
@@ -53,7 +58,7 @@ function PillDropdown({
         <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="absolute top-12 left-0 z-50 bg-white rounded-xl shadow-xl border border-gray-200 p-4 min-w-[260px]">
+        <div id={panelId} role="listbox" className="absolute top-12 left-0 z-50 bg-white rounded-xl shadow-xl border border-gray-200 p-4 min-w-[260px]">
           {children}
         </div>
       )}
@@ -61,7 +66,7 @@ function PillDropdown({
   );
 }
 
-export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, resultCount }: FilterBarProps) {
+export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, advancedOpen, resultCount }: FilterBarProps) {
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
 
@@ -211,6 +216,8 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, res
         {/* More Filters */}
         <button
           onClick={onOpenAdvanced}
+          aria-expanded={advancedOpen}
+          aria-haspopup="dialog"
           className="h-10 px-4 flex items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0"
         >
           <SlidersHorizontal size={14} />

@@ -13,9 +13,10 @@ interface MobileHeaderProps {
   onOpenMenu: () => void;
   isScrolled: boolean;
   showBubble?: boolean;
+  isMenuOpen?: boolean;
 }
 
-export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble = true }: MobileHeaderProps) {
+export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble = true, isMenuOpen = false }: MobileHeaderProps) {
   const locale = useLocale();
   const t = useTranslations('nav');
   const pathname = usePathname();
@@ -76,6 +77,8 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               type="button"
               onClick={() => setLangOpen((v) => !v)}
               aria-expanded={langOpen}
+              aria-haspopup="menu"
+              aria-controls="mh-lang-panel"
               aria-label={t('language')}
               className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/60 text-[#2C2C2C] transition-colors"
             >
@@ -83,9 +86,10 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               <ChevronDown size={10} strokeWidth={2} />
             </button>
             {langOpen && (
-              <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+              <div id="mh-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
                 <button
                   type="button"
+                  role="menuitem"
                   onClick={() => switchLocale('es')}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                     locale === 'es' ? 'text-[#0D9488] font-semibold' : 'text-[#2C2C2C]'
@@ -95,6 +99,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
                 </button>
                 <button
                   type="button"
+                  role="menuitem"
                   onClick={() => switchLocale('en')}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                     locale === 'en' ? 'text-[#0D9488] font-semibold' : 'text-[#2C2C2C]'
@@ -110,6 +115,9 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
             type="button"
             onClick={onOpenMenu}
             aria-label={t('openMenu')}
+            aria-expanded={isMenuOpen}
+            aria-haspopup="dialog"
+            aria-controls="mobile-menu-drawer"
             className={`p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-gray-100/50 transition-colors ${darkTopRow ? 'text-white/90' : 'text-[#2C2C2C]'}`}
           >
             <Menu size={22} strokeWidth={1.75} />

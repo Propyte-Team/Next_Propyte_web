@@ -66,6 +66,7 @@ export default function SearchBubble({
           onClick={() => setTypeOpen((v) => !v)}
           aria-expanded={typeOpen}
           aria-haspopup="listbox"
+          aria-controls={`sb-type-panel-${variant}`}
           className={`search-type-toggle flex items-center gap-1.5 ${toggleHeightCls} ${isMobile ? 'pl-3 pr-2' : 'pl-4 pr-3'} rounded-full ${textSizeCls} font-semibold whitespace-nowrap transition-colors`}
         >
           <span>{typeLabel}</span>
@@ -76,14 +77,19 @@ export default function SearchBubble({
         </button>
 
         {typeOpen && (
-          <div className={`absolute left-0 top-full mt-2 ${isMobile ? 'w-44' : 'w-48'} bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50`}>
+          <div
+            id={`sb-type-panel-${variant}`}
+            role="listbox"
+            className={`absolute left-0 top-full mt-2 ${isMobile ? 'w-44' : 'w-48'} bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50`}
+          >
             <button
               type="button"
+              role="option"
+              aria-selected={type === 'desarrollos'}
               onClick={() => {
                 setType('desarrollos');
                 setTypeOpen(false);
               }}
-              data-active={type === 'desarrollos'}
               className="search-type-option flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-left text-[#2C2C2C] hover:bg-gray-50 transition-colors"
             >
               <Building2 size={16} strokeWidth={1.75} className="shrink-0" />
@@ -91,11 +97,12 @@ export default function SearchBubble({
             </button>
             <button
               type="button"
+              role="option"
+              aria-selected={type === 'propiedades'}
               onClick={() => {
                 setType('propiedades');
                 setTypeOpen(false);
               }}
-              data-active={type === 'propiedades'}
               className="search-type-option flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-left text-[#2C2C2C] hover:bg-gray-50 transition-colors"
             >
               <Key size={16} strokeWidth={1.75} className="shrink-0" />

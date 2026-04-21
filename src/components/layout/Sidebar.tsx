@@ -124,7 +124,8 @@ export default function Sidebar() {
         <button
           onClick={() => setMoreOpen((v) => !v)}
           aria-expanded={moreOpen}
-          aria-haspopup="true"
+          aria-haspopup="menu"
+          aria-controls="sidebar-more-panel"
           className="flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl text-white/40 hover:text-white hover:bg-white/5 transition-colors"
         >
           <MenuIcon size={18} strokeWidth={1.75} />
@@ -132,15 +133,24 @@ export default function Sidebar() {
         </button>
 
         {moreOpen && (
-          <div className="absolute left-[72px] bottom-0 w-56 bg-[#0F1923] border border-white/10 rounded-xl shadow-2xl py-2 z-50">
+          <div
+            id="sidebar-more-panel"
+            role="menu"
+            className="absolute left-[72px] bottom-0 w-56 bg-[#0F1923] border border-white/10 rounded-xl shadow-2xl py-2 z-50"
+          >
             {moreItems.map((item) => {
+              const active = isActive(item.id, item.href);
               const Icon = item.icon;
               return (
                 <Link
                   key={item.id}
                   href={item.href}
+                  role="menuitem"
                   onClick={() => setMoreOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                    active ? 'text-[#5CE0D2] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
                 >
                   <Icon size={16} strokeWidth={1.75} className="shrink-0" />
                   {t(item.labelKey)}
