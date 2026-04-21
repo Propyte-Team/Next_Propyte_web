@@ -372,6 +372,18 @@
     "marketAnalysis": "Analysis based on market comparables. Closing costs: {rate}% ({state})."
   },
   "developers": {
+    "archiveTitle": "Developers on Propyte",
+    "archiveSubtitle": "Developer companies with active projects in the Riviera Maya and Yucatán",
+    "archiveCount": "{count, plural, one {# company} other {# companies}}",
+    "searchPlaceholder": "Search company...",
+    "filterCity": "City",
+    "filterAll": "All",
+    "noResults": "No developers found matching those criteria",
+    "verified": "Verified",
+    "viewProjects": "View projects",
+    "joinBannerTitle": "Are you a developer?",
+    "joinBannerDesc": "Market your projects with our dedicated sales team and data-driven technology.",
+    "joinBannerCta": "Register my company",
     "heroTitle": "Sell your development faster",
     "heroSubtitle": "Dedicated sales team, technology and data-driven strategy to maximize your real estate project's sales velocity.",
     "heroDescriptive": "Dedicated sales team, technology and data-driven strategy to maximize your real estate project's sales velocity.",

@@ -373,6 +373,18 @@
     "marketAnalysis": "Análisis basado en comparables de mercado. Escrituración: {rate}% ({state})."
   },
   "developers": {
+    "archiveTitle": "Desarrolladores en Propyte",
+    "archiveSubtitle": "Empresas desarrolladoras con proyectos activos en la Riviera Maya y Yucatán",
+    "archiveCount": "{count, plural, one {# empresa} other {# empresas}}",
+    "searchPlaceholder": "Buscar empresa...",
+    "filterCity": "Ciudad",
+    "filterAll": "Todas",
+    "noResults": "No se encontraron desarrolladores con esos criterios",
+    "verified": "Verificado",
+    "viewProjects": "Ver proyectos",
+    "joinBannerTitle": "¿Eres desarrollador?",
+    "joinBannerDesc": "Comercializa tus proyectos con nuestro equipo comercial dedicado y tecnología de datos.",
+    "joinBannerCta": "Registrar mi empresa",
     "heroTitle": "Vende tu desarrollo más rápido",
     "heroSubtitle": "Equipo comercial dedicado, tecnología y estrategia de datos para maximizar la velocidad de venta de tu proyecto inmobiliario.",
     "heroDescriptive": "Equipo comercial dedicado, tecnología y estrategia de datos para maximizar la velocidad de venta de tu proyecto inmobiliario.",

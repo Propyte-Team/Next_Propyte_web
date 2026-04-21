@@ -1,51 +1,197 @@
 'use client';
 
-import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useMemo } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   Building2, Users, Target, BarChart3, TrendingUp, Palette, GraduationCap,
   ChevronDown, ChevronUp, CheckCircle, ArrowRight,
-  MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield
+  MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield,
+  Search, MapPin, BadgeCheck,
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
+import type { DeveloperRow } from '@/lib/supabase/types';
 
 // ─────────────────────────────────────────────────────
-// 1. DEVELOPER HERO
+// DEVELOPER DIRECTORY (archive section)
 // ─────────────────────────────────────────────────────
-function DeveloperHero() {
+function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
   const t = useTranslations('developers');
+  const locale = useLocale();
+  const [search, setSearch] = useState('');
+  const [city, setCity] = useState('');
+
+  const cities = useMemo(
+    () => [...new Set(developers.map((d) => d.city).filter(Boolean) as string[])].sort(),
+    [developers],
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return developers.filter((d) => {
+      const matchSearch = !q || d.name.toLowerCase().includes(q);
+      const matchCity = !city || d.city === city;
+      return matchSearch && matchCity;
+    });
+  }, [developers, search, city]);
+
   return (
-    <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]">
-      <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1A2F3F]/40 rounded-full blur-3xl" />
+    <section className="py-10 md:py-14 bg-[#F4F6F8]">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('archiveTitle')}</h1>
+          <p className="mt-2 text-gray-500 text-lg">{t('archiveSubtitle')}</p>
+        </div>
 
-      <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28">
-        <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Building2 size={16} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">Developers Program</span>
+        {/* FilterBar */}
+        <div className="flex flex-wrap items-center gap-3 mb-6 bg-white rounded-2xl border border-gray-200 px-4 py-3 shadow-sm">
+          {/* Search */}
+          <div className="relative flex-shrink-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <label htmlFor="dev-search" className="sr-only">{t('searchPlaceholder')}</label>
+            <input
+              id="dev-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="h-10 w-52 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-[#5CE0D2] focus:outline-none"
+            />
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            {t('heroTitle')}
-          </h1>
-          <p className="mt-6 text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl">
-            {t('heroSubtitle')}
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row gap-4">
-            <a href="#registro" className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-[#5CE0D2]/20 flex items-center justify-center gap-2">
-              {t('heroCta')} <ArrowRight size={18} />
-            </a>
-            <a href="https://wa.me/5219843235354?text=Hola%2C%20me%20interesa%20comercializar%20mi%20desarrollo" target="_blank" rel="noopener noreferrer" className="h-14 px-8 bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold text-base rounded-xl transition-all flex items-center justify-center gap-2">
-              <MessageCircle size={18} /> {t('heroWhatsapp')}
-            </a>
+          {/* City filter */}
+          <div className="relative flex-shrink-0">
+            <label htmlFor="dev-city" className="sr-only">{t('filterCity')}</label>
+            <select
+              id="dev-city"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="h-10 pl-4 pr-8 rounded-full border border-gray-300 text-sm bg-white focus:border-[#5CE0D2] focus:outline-none appearance-none cursor-pointer"
+            >
+              <option value="">{t('filterCity')}: {t('filterAll')}</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
 
-          <p className="mt-8 text-base text-white/60 max-w-xl">
-            {t('heroDescriptive')}
-          </p>
+          <div className="flex-1" />
+          <span className="text-sm text-gray-500 whitespace-nowrap">
+            {t('archiveCount', { count: filtered.length })}
+          </span>
+        </div>
+
+        {/* Cards grid */}
+        {filtered.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filtered.map((dev) => (
+              <DeveloperCard key={dev.id} dev={dev} locale={locale} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 text-gray-400">
+            <Building2 size={48} className="mx-auto mb-4 opacity-30" />
+            <p className="text-lg font-medium">{t('noResults')}</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
+  const t = useTranslations('developers');
+  const initials = dev.name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all p-5 flex flex-col gap-3">
+      {/* Logo or initials */}
+      <div className="flex items-center gap-3">
+        {dev.logo_url ? (
+          <div className="w-12 h-12 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
+            <Image
+              src={dev.logo_url}
+              alt={dev.name}
+              width={48}
+              height={48}
+              className="object-contain w-full h-full"
+            />
+          </div>
+        ) : (
+          <div className="w-12 h-12 rounded-xl bg-[#1A2F3F] flex items-center justify-center flex-shrink-0">
+            <span className="text-white text-sm font-bold">{initials}</span>
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="font-bold text-[#1A2F3F] text-sm leading-tight truncate">{dev.name}</p>
+          {dev.verified && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0D9488] mt-0.5">
+              <BadgeCheck size={11} />
+              {t('verified')}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* City */}
+      {dev.city && (
+        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <MapPin size={12} />
+          <span>{dev.city}</span>
+        </div>
+      )}
+
+      {/* CTA */}
+      <Link
+        href={`/${locale}/desarrollos?search=${encodeURIComponent(dev.name)}`}
+        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-[#5CE0D2]/10 text-[#0D9488] rounded-xl hover:bg-[#5CE0D2]/20 transition-colors gap-1.5"
+      >
+        {t('viewProjects')} <ArrowRight size={12} />
+      </Link>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// JOIN BANNER (condensed B2B pitch)
+// ─────────────────────────────────────────────────────
+function JoinBanner() {
+  const t = useTranslations('developers');
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
+  return (
+    <section className="py-12 md:py-16 bg-[#0F1923]">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('joinBannerTitle')}</h2>
+            <p className="text-white/60 max-w-xl">{t('joinBannerDesc')}</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+            <a
+              href="#registro"
+              className="h-12 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              {t('joinBannerCta')} <ArrowRight size={16} />
+            </a>
+            {phone && (
+              <a
+                href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 px-6 bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={16} /> WhatsApp
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -53,7 +199,7 @@ function DeveloperHero() {
 }
 
 // ─────────────────────────────────────────────────────
-// 2. VALUE PROPOSITION
+// VALUE PROPOSITION
 // ─────────────────────────────────────────────────────
 function ValueProposition() {
   const t = useTranslations('developers');
@@ -90,25 +236,7 @@ function ValueProposition() {
 }
 
 // ─────────────────────────────────────────────────────
-// 3. CUSTOM PROPOSAL
-// ─────────────────────────────────────────────────────
-function CustomProposal() {
-  const t = useTranslations('developers');
-  return (
-    <section className="py-16 md:py-20 bg-[#0F1923]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('customProposalTitle')}</h2>
-        <p className="text-white/60 text-lg max-w-2xl mx-auto mb-8">{t('customProposalDesc')}</p>
-        <a href="#registro" className="inline-flex items-center justify-center h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-[#5CE0D2]/20 gap-2">
-          {t('customProposalCta')} <ArrowRight size={18} />
-        </a>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────
-// 5. HOW IT WORKS
+// HOW IT WORKS
 // ─────────────────────────────────────────────────────
 function HowItWorks() {
   const t = useTranslations('developers');
@@ -144,65 +272,7 @@ function HowItWorks() {
 }
 
 // ─────────────────────────────────────────────────────
-// 5. PLATFORM PREVIEW
-// ─────────────────────────────────────────────────────
-function PlatformPreview() {
-  const t = useTranslations('developers');
-  const features = [t('platformFeature1'), t('platformFeature2'), t('platformFeature3'), t('platformFeature4')];
-  const mockValues = ['--', '--', '--', '--'];
-
-  return (
-    <section className="py-16 md:py-20 bg-[#F4F6F8]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('platformTitle')}</h2>
-          <p className="mt-3 text-gray-500 text-lg">{t('platformSubtitle')}</p>
-        </div>
-        <div className="max-w-4xl mx-auto bg-[#1A2F3F] rounded-2xl overflow-hidden shadow-2xl">
-          <div className="flex items-center gap-2 px-4 py-3 bg-[#132535]">
-            <div className="w-3 h-3 rounded-full bg-red-400/70" />
-            <div className="w-3 h-3 rounded-full bg-yellow-400/70" />
-            <div className="w-3 h-3 rounded-full bg-green-400/70" />
-            <div className="ml-4 flex-1 h-7 bg-white/10 rounded-md flex items-center px-3">
-              <span className="text-white/40 text-xs">app.propyte.com/developers/dashboard</span>
-            </div>
-          </div>
-          <div className="p-6 md:p-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              {features.map((feat, i) => (
-                <div key={feat} className="bg-white/10 rounded-xl p-4">
-                  <div className="text-[#5CE0D2] text-2xl font-bold mb-1">{mockValues[i]}</div>
-                  <div className="text-white/60 text-xs">{feat}</div>
-                </div>
-              ))}
-            </div>
-            <div className="space-y-3">
-              {[85, 62, 40].map((pct, i) => (
-                <div key={i} className="flex items-center gap-4 bg-white/5 rounded-xl p-4">
-                  <div className="w-10 h-10 bg-[#5CE0D2]/20 rounded-lg flex-shrink-0 flex items-center justify-center">
-                    <Building2 size={16} className="text-[#5CE0D2]" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="h-3 bg-white/20 rounded w-1/3" />
-                      <span className="text-white/60 text-xs">{pct}%</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-[#5CE0D2] rounded-full" style={{ width: `${pct}%` }} />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────
-// 8. FAQ
+// FAQ
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('developers');
@@ -216,11 +286,21 @@ function FAQ() {
         <div className="space-y-3">
           {faqs.map(({ q, a }, i) => (
             <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-              <button onClick={() => setOpen(open === i ? null : i)} className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors">
+              <button
+                onClick={() => setOpen(open === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
+                aria-expanded={open === i}
+              >
                 <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
-                {open === i ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" /> : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />}
+                {open === i
+                  ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
+                  : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />}
               </button>
-              {open === i && <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">{a}</div>}
+              {open === i && (
+                <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">
+                  {a}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -230,7 +310,7 @@ function FAQ() {
 }
 
 // ─────────────────────────────────────────────────────
-// 9. DEVELOPER FORM
+// DEVELOPER FORM
 // ─────────────────────────────────────────────────────
 function DeveloperForm() {
   const t = useTranslations('developers');
@@ -297,32 +377,32 @@ function DeveloperForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>{t('formName')} *</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="dev-form-name" className={labelClass}>{t('formName')} *</label>
+                    <input id="dev-form-name" type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} />
                   </div>
                   <div>
-                    <label className={labelClass}>{t('formCompany')} *</label>
-                    <input type="text" name="company" value={formData.company} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="dev-form-company" className={labelClass}>{t('formCompany')} *</label>
+                    <input id="dev-form-company" type="text" name="company" value={formData.company} onChange={handleChange} required className={inputClass} />
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>{t('formEmail')} *</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="dev-form-email" className={labelClass}>{t('formEmail')} *</label>
+                    <input id="dev-form-email" type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} />
                   </div>
                   <div>
-                    <label className={labelClass}>{t('formPhone')} *</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="dev-form-phone" className={labelClass}>{t('formPhone')} *</label>
+                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} />
                   </div>
                 </div>
                 <div>
-                  <label className={labelClass}>{t('formLocation')} *</label>
-                  <input type="text" name="location" value={formData.location} onChange={handleChange} required className={inputClass} />
+                  <label htmlFor="dev-form-location" className={labelClass}>{t('formLocation')} *</label>
+                  <input id="dev-form-location" type="text" name="location" value={formData.location} onChange={handleChange} required className={inputClass} />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>{t('formProjectType')}</label>
-                    <select name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass}>
+                    <label htmlFor="dev-form-project-type" className={labelClass}>{t('formProjectType')}</label>
+                    <select id="dev-form-project-type" name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass}>
                       <option value="">--</option>
                       <option value="vertical">{t('formProjectTypeOptions.vertical')}</option>
                       <option value="horizontal">{t('formProjectTypeOptions.horizontal')}</option>
@@ -331,8 +411,8 @@ function DeveloperForm() {
                     </select>
                   </div>
                   <div>
-                    <label className={labelClass}>{t('formUnitCount')}</label>
-                    <select name="unitCount" value={formData.unitCount} onChange={handleChange} className={selectClass}>
+                    <label htmlFor="dev-form-unit-count" className={labelClass}>{t('formUnitCount')}</label>
+                    <select id="dev-form-unit-count" name="unitCount" value={formData.unitCount} onChange={handleChange} className={selectClass}>
                       <option value="">--</option>
                       <option value="small">{t('formUnitCountOptions.small')}</option>
                       <option value="medium">{t('formUnitCountOptions.medium')}</option>
@@ -341,10 +421,14 @@ function DeveloperForm() {
                   </div>
                 </div>
                 <div>
-                  <label className={labelClass}>{t('formMessage')}</label>
-                  <textarea name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} />
+                  <label htmlFor="dev-form-message" className={labelClass}>{t('formMessage')}</label>
+                  <textarea id="dev-form-message" name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} />
                 </div>
-                <button type="submit" disabled={status === 'sending'} className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                >
                   {status === 'sending' ? t('formSending') : t('formSubmit')}
                   {status === 'idle' && <ArrowRight size={18} />}
                 </button>
@@ -359,42 +443,17 @@ function DeveloperForm() {
 }
 
 // ─────────────────────────────────────────────────────
-// 10. FINAL CTA
-// ─────────────────────────────────────────────────────
-function FinalCTA() {
-  const t = useTranslations('developers');
-  return (
-    <section className="bg-[#5CE0D2]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{t('finalCtaTitle')}</h2>
-        <p className="text-white/80 text-lg mb-8">{t('finalCtaSubtitle')}</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="#registro" className="h-14 px-8 bg-white text-[#5CE0D2] font-bold text-base rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
-            {t('finalCtaButton')} <ArrowRight size={18} />
-          </a>
-          <a href="https://wa.me/5219843235354?text=Hola%2C%20me%20interesa%20comercializar%20mi%20desarrollo" target="_blank" rel="noopener noreferrer" className="h-14 px-8 bg-[#25D366] text-white font-bold text-base rounded-xl hover:bg-[#1EBE57] transition-all flex items-center justify-center gap-2">
-            <MessageCircle size={18} /> WhatsApp
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
-export default function DevelopersPageContent() {
+export default function DevelopersPageContent({ developers }: { developers: DeveloperRow[] }) {
   return (
     <div>
-      <DeveloperHero />
+      <DeveloperDirectory developers={developers} />
+      <JoinBanner />
       <ValueProposition />
-      <CustomProposal />
       <HowItWorks />
-      <PlatformPreview />
       <FAQ />
       <DeveloperForm />
-      <FinalCTA />
     </div>
   );
 }
