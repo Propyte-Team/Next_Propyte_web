@@ -232,8 +232,10 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* MXN/USD toggle */}
-        <CurrencyToggle />
+        {/* MXN/USD toggle — desktop only; mobile has it in MobileHeader Row 1 */}
+        <div className="hidden lg:inline-flex">
+          <CurrencyToggle />
+        </div>
 
         {/* Result count */}
         <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
