@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ChevronRight, MapPin, Building2, Calendar, FileText, TrendingUp,
-  Package, DollarSign, Bed, Bath, Square, Download,
+  ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
+  Users, CheckCircle, Zap, DollarSign, Download,
 } from 'lucide-react';
+import ExpandableText from '@/components/ui/ExpandableText';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
@@ -33,7 +34,7 @@ import SimilarListings, { type SimilarListingItem } from '@/components/shared/Si
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
-import ShareButton from '@/components/property/ShareButton';
+import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -363,6 +364,28 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   const tProp = await getTranslations({ locale, namespace: 'property' });
 
+  // ── Share/Download modal data ──
+  const shareSpecs: ShareDownloadData['specs'] = [];
+  if (bedRange) shareSpecs.push({ label: isEn ? 'Bedrooms' : 'Recámaras', value: bedRange.min === bedRange.max ? String(bedRange.min) : `${bedRange.min}–${bedRange.max}` });
+  if (bathRange) shareSpecs.push({ label: isEn ? 'Bathrooms' : 'Baños', value: bathRange.min === bathRange.max ? String(bathRange.min) : `${bathRange.min}–${bathRange.max}` });
+  if (areaRange) shareSpecs.push({ label: 'Área', value: areaRange.min === areaRange.max ? `${areaRange.min} m²` : `${areaRange.min}–${areaRange.max} m²` });
+  if (totalUnits) shareSpecs.push({ label: isEn ? 'Units' : 'Unidades', value: String(totalUnits) });
+  const shareData: ShareDownloadData = {
+    title: property.name,
+    price: propertyPrice > 0 ? formatPrice(propertyPrice) : '—',
+    location: [property.zone && property.zone !== property.city ? property.zone : null, property.city, propertyState].filter(Boolean).join(', '),
+    img: property.images?.[0] || '',
+    url: `https://propyte.com/${locale}/desarrollos/${slug}`,
+    etapa: stageLabel,
+    specs: shareSpecs,
+    desc: description || undefined,
+    amenidades: property.amenities || undefined,
+    dev_name: developerDisplay.name || undefined,
+    delivery: deliveryDisplay || undefined,
+    roi: roiDisplay ? `${roiDisplay}% anual` : undefined,
+    prop_type: typeLabel,
+  };
+
   return (
     <>
       <SchemaMarkup
@@ -454,13 +477,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                     </div>
                   </div>
                 ) : <div />}
-                <ShareButton
-                  propertyName={property.name}
-                  propertyUrl={`https://propyte.com/${locale}/desarrollos/${slug}`}
-                  slug={slug}
-                  kind="development"
-                  locale={locale}
-                />
+                <ShareDownloadModal data={shareData} locale={locale} />
               </div>
             </div>
 
@@ -473,84 +490,83 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   label: tProp('tabDescripcion'),
                   panel: (
                     <div className="space-y-8">
-                      {/* Unit range chips */}
-                      {(bedRange || bathRange || areaRange || priceRange) && (
-                        <div className="flex flex-wrap gap-2">
-                          {bedRange && (
-                            <RangeChip
-                              icon={<Bed size={16} />}
-                              label={isEn
-                                ? formatRange(bedRange, bedRange.max === 1 ? 'bed' : 'beds')
-                                : formatRange(bedRange, 'rec')}
-                            />
-                          )}
-                          {bathRange && (
-                            <RangeChip
-                              icon={<Bath size={16} />}
-                              label={isEn
-                                ? formatRange(bathRange, bathRange.max === 1 ? 'bath' : 'baths')
-                                : formatRange(bathRange, 'baños')}
-                            />
-                          )}
-                          {areaRange && (
-                            <RangeChip
-                              icon={<Square size={16} />}
-                              label={formatRange(areaRange, 'm²')}
-                            />
-                          )}
-                          <RangeChip
-                            icon={<Building2 size={16} />}
-                            label={typeLabel}
-                          />
-                        </div>
-                      )}
-
-                      {/* 4 metric cards */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <MetricCard
-                          icon={<DollarSign size={22} />}
-                          label={isEn ? 'Starting from' : 'Precio desde'}
-                          value={propertyPrice > 0 ? formatPrice(propertyPrice) : '—'}
-                          note={pricePerM2 ? `${formatPrice(pricePerM2)}/m²` : undefined}
-                        />
-                        <MetricCard
-                          icon={<Package size={22} />}
-                          label={isEn ? 'Availability' : 'Disponibilidad'}
-                          value={
-                            derivedAvailable != null && totalUnits
-                              ? `${derivedAvailable} / ${totalUnits}`
-                              : derivedAvailable != null
-                                ? String(derivedAvailable)
-                                : isEn ? 'Inquire' : 'Consultar'
-                          }
-                          note={
-                            derivedAvailable != null && totalUnits
-                              ? (isEn ? 'units available' : 'unidades disp.')
-                              : undefined
-                          }
-                        />
-                        <MetricCard
-                          icon={<Calendar size={22} />}
-                          label={isEn ? 'Delivery' : 'Entrega'}
-                          value={deliveryDisplay || stageLabel}
-                          note={property.construction_progress != null && property.construction_progress > 0
-                            ? `${property.construction_progress}%`
-                            : undefined}
-                        />
-                        <MetricCard
-                          icon={<TrendingUp size={22} />}
-                          label={isEn ? 'Projected ROI' : 'ROI proyectado'}
-                          value={roiDisplay != null ? `${roiDisplay.toFixed(1)}%` : '—'}
-                          note={isEn ? 'annual' : 'anual'}
-                        />
-                      </div>
-
+                      {/* ── Descripción (expandable, max 120px) ── */}
                       {description && (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
                             {isEn ? 'About this Development' : 'Sobre este Desarrollo'}
                           </h2>
-                          <p className="text-gray-600 leading-relaxed whitespace-pre-line">{description}</p>
+                          <ExpandableText
+                            maxHeight={120}
+                            moreLabel={isEn ? 'Read more' : 'Leer más'}
+                            lessLabel={isEn ? 'Read less' : 'Leer menos'}
+                            className="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line"
+                          >
+                            {description}
+                          </ExpandableText>
+                        </div>
+                      )}
+
+                      {/* ── Unit type chips (individual units) ── */}
+                      <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
+
+                      {/* ── 4 metric cards: tipo / etapa / zona / estado ── */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <MetricCard
+                          icon={<Building2 size={22} />}
+                          label={isEn ? 'Type' : 'Tipo'}
+                          value={typeLabel || '—'}
+                        />
+                        <MetricCard
+                          icon={<BarChart3 size={22} />}
+                          label={isEn ? 'Stage' : 'Etapa'}
+                          value={stageLabel}
+                        />
+                        <MetricCard
+                          icon={<MapPin size={22} />}
+                          label={isEn ? 'Zone' : 'Zona'}
+                          value={property.zone || property.city || '—'}
+                        />
+                        <MetricCard
+                          icon={<Globe size={22} />}
+                          label={isEn ? 'State' : 'Estado'}
+                          value={property.state || 'Quintana Roo'}
+                        />
+                      </div>
+
+                      {/* ── Metrics row: total / available / delivery / progress / commission ── */}
+                      {(totalUnits || derivedAvailable != null || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0) || ((property as any).commission_rate != null && (property as any).commission_rate > 0)) && (
+                        <div className="flex flex-wrap gap-3">
+                          {totalUnits && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
+                              <Users size={16} className="text-gray-400" />
+                              <span className="text-gray-600">{totalUnits} {isEn ? 'total properties' : 'propiedades totales'}</span>
+                            </div>
+                          )}
+                          {derivedAvailable != null && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-[#5CE0D2]/10 rounded-xl text-sm">
+                              <CheckCircle size={16} className="text-[#5CE0D2]" />
+                              <span className="text-[#4BCEC0] font-semibold">{derivedAvailable} {isEn ? 'available' : 'disponibles'}</span>
+                            </div>
+                          )}
+                          {deliveryDisplay && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
+                              <TrendingUp size={16} className="text-gray-400" />
+                              <span className="text-gray-600">{isEn ? 'Delivery:' : 'Entrega:'} {deliveryDisplay}</span>
+                            </div>
+                          )}
+                          {property.construction_progress != null && property.construction_progress > 0 && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
+                              <Zap size={16} className="text-gray-400" />
+                              <span className="text-gray-600">{isEn ? 'Progress' : 'Avance'} {property.construction_progress}%</span>
+                            </div>
+                          )}
+                          {(property as any).commission_rate != null && (property as any).commission_rate > 0 && (
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
+                              <DollarSign size={16} className="text-gray-400" />
+                              <span className="text-gray-600">{isEn ? 'Commission' : 'Comisión'} {(property as any).commission_rate}%</span>
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -574,8 +590,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                           </div>
                         </div>
                       )}
-
-                      <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
 
                       <AmenityList locale={locale} amenities={property.amenities || undefined} />
 
@@ -819,33 +833,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
 // ── helpers ──
 
-function formatRange(r: { min: number; max: number }, suffix: string): string {
-  const fmt = (n: number) => Number.isInteger(n) ? String(n) : n.toFixed(1);
-  return r.min === r.max
-    ? `${fmt(r.max)} ${suffix}`
-    : `${fmt(r.min)}–${fmt(r.max)} ${suffix}`;
-}
-
-function RangeChip({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
-      <span className="text-[#5CE0D2]">{icon}</span>
-      {label}
-    </div>
-  );
-}
-
 function MetricCard({
-  icon, label, value, note,
-}: { icon: React.ReactNode; label: string; value: string; note?: string }) {
+  icon, label, value,
+}: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-      <div className="flex items-start justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">{label}</span>
-        <span className="text-[#5CE0D2]">{icon}</span>
-      </div>
-      <div className="text-base md:text-lg font-bold text-gray-900 leading-tight truncate">{value}</div>
-      {note && <div className="text-[10px] text-gray-400 mt-0.5">{note}</div>}
+    <div className="bg-gray-50 rounded-xl p-4 text-center">
+      <span className="flex justify-center text-[#5CE0D2] mb-2">{icon}</span>
+      <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
+      <div className="text-xs text-gray-500 mt-0.5">{label}</div>
     </div>
   );
 }

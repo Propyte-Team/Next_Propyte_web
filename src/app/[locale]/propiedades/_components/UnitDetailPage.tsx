@@ -19,8 +19,9 @@ import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
-import ShareButton from '@/components/property/ShareButton';
+import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import Badge from '@/components/ui/Badge';
+import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
 import MarketIndicator from './MarketIndicator';
@@ -121,6 +122,28 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     : { departamento: 'Departamento', penthouse: 'Penthouse', casa: 'Casa', terreno: 'Terreno', macrolote: 'Macrolote' }[property.specs.type] || property.specs.type;
 
   const defaultOccupancy = airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100;
+
+  // ── Share/Download modal data ──
+  const shareSpecs: ShareDownloadData['specs'] = [];
+  if (property.specs.bedrooms > 0) shareSpecs.push({ label: isEn ? 'Bedrooms' : 'Recámaras', value: String(property.specs.bedrooms) });
+  if (property.specs.bathrooms > 0) shareSpecs.push({ label: isEn ? 'Bathrooms' : 'Baños', value: String(property.specs.bathrooms) });
+  if (property.specs.area > 0) shareSpecs.push({ label: 'Área', value: `${property.specs.area} m²` });
+  if (row.parking && row.parking > 0) shareSpecs.push({ label: isEn ? 'Parking' : 'Estac.', value: String(row.parking) });
+  if (row.floor != null) shareSpecs.push({ label: isEn ? 'Floor' : 'Piso', value: String(row.floor) });
+  const shareData: ShareDownloadData = {
+    title: property.name,
+    price: property.price.mxn > 0 ? formatPrice(property.price.mxn) : '—',
+    location: [property.location.zone, property.location.city, property.location.state].filter(Boolean).join(', '),
+    img: property.images?.[0] || '',
+    url: `https://propyte.com/${locale}/propiedades/${slug}`,
+    etapa: stageLabel,
+    specs: shareSpecs,
+    desc: description || undefined,
+    amenidades: property.amenities?.length ? property.amenities : undefined,
+    piso: row.floor != null ? String(row.floor) : undefined,
+    num_unidad: row.unit_number || undefined,
+    prop_type: typeLabel,
+  };
 
   return (
     <>
@@ -237,13 +260,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                     )}
                   </div>
                 )}
-                <ShareButton
-                  propertyName={property.name}
-                  propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
-                  slug={slug}
-                  kind="unit"
-                  locale={locale}
-                />
+                <ShareDownloadModal data={shareData} locale={locale} />
               </div>
 
               {/* Specs chips */}
@@ -277,7 +294,18 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                     <div className="space-y-6">
                       <div>
                         <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{isEn ? 'About this unit' : 'Sobre esta unidad'}</h2>
-                        <p className="text-gray-600 leading-relaxed">{description || (isEn ? 'Description coming soon.' : 'Descripción próximamente.')}</p>
+                        {description ? (
+                          <ExpandableText
+                            maxHeight={120}
+                            moreLabel={isEn ? 'Read more' : 'Leer más'}
+                            lessLabel={isEn ? 'Read less' : 'Leer menos'}
+                            className="text-gray-600 leading-relaxed text-sm md:text-base"
+                          >
+                            {description}
+                          </ExpandableText>
+                        ) : (
+                          <p className="text-gray-600 leading-relaxed">{isEn ? 'Description coming soon.' : 'Descripción próximamente.'}</p>
+                        )}
                       </div>
                       <AmenityList locale={locale} amenities={property.amenities} />
                     </div>

@@ -226,3 +226,9 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Print: show only ShareDownloadModal Letter template */
+@media print {
+  body > * { display: none !important; }
+  .print\:block { display: block !important; }
+}
