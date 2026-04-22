@@ -1,16 +1,16 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Suspense } from 'react';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts, getBlogCategories } from '@/lib/supabase/queries';
+import { getBlogPosts } from '@/lib/supabase/queries';
 import BlogCard from '@/components/blog/BlogCard';
-import FeaturedPostHero from '@/components/blog/FeaturedPostHero';
-import CategoryFilter from '@/components/blog/CategoryFilter';
+import BlogHero, { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/BlogHero';
 import BlogPagination from '@/components/blog/BlogPagination';
-import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { Suspense } from 'react';
 
-export const revalidate = 3600; // ISR 1h
+export const revalidate = 3600;
 
-const POSTS_PER_PAGE = 9;
+const POSTS_PER_PAGE = 6;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -48,96 +48,154 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: 'blog' });
-  const tb = await getTranslations({ locale, namespace: 'breadcrumbs' });
+  const activeCategory = categoria || null;
+  const currentPage = Math.max(1, Number(pagina) || 1);
 
   const supabase = createPublicSupabaseClient();
-  const currentPage = Math.max(1, Number(pagina) || 1);
-  const activeCategory = categoria || null;
 
-  const [{ posts, total }, categories] = await Promise.all([
-    getBlogPosts(supabase, { locale, category: activeCategory ?? undefined, limit: POSTS_PER_PAGE, page: currentPage }),
-    getBlogCategories(supabase, locale),
-  ]);
+  const heroT = {
+    heroHeadLine1: t('heroHeadLine1'),
+    heroHeadLine2: t('heroHeadLine2'),
+    heroDescription: t('heroDescription'),
+    ctaAsesores: t('ctaAsesores'),
+    ctaInversionistas: t('ctaInversionistas'),
+  };
 
-  const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+  // If a specific category is filtered, show paginated grid for that category
+  if (activeCategory) {
+    const { posts, total } = supabase
+      ? await getBlogPosts(supabase, { locale, category: activeCategory, limit: POSTS_PER_PAGE, page: currentPage })
+      : { posts: [], total: 0 };
+    const totalPages = Math.ceil(total / POSTS_PER_PAGE);
+    const cardT = { minRead: t('minRead') };
 
-  // Featured = first post on page 1 without category filter
-  const featuredPost = currentPage === 1 && !activeCategory && posts.length > 0 ? posts[0] : null;
-  const remainingPosts = featuredPost ? posts.slice(1) : posts;
+    return (
+      <>
+        <BlogHero t={heroT} activeCategory={activeCategory} />
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-10">
+          <div className="flex items-center gap-3 mb-8">
+            <Link href={`/${locale}/blog`} className="text-sm text-gray-400 hover:text-[#5CE0D2] transition-colors">
+              Blog
+            </Link>
+            <span className="text-gray-300">/</span>
+            <span className="text-sm font-medium text-[#1A2F3F]">{activeCategory}</span>
+          </div>
 
-  const breadcrumbs = [{ label: t('listingTitle') }];
+          {posts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map((post, i) => (
+                <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 3} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <p className="text-gray-500 text-lg">{t('emptyState')}</p>
+            </div>
+          )}
 
-  const tMinRead = t('minRead');
-  const cardT = { minRead: tMinRead };
-
-  return (
-    <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-8">
-      <Breadcrumbs
-        items={breadcrumbs}
-        locale={locale}
-        homeLabel={tb('home')}
-        ariaLabel={tb('ariaLabel')}
-        baseUrl={process.env.NEXT_PUBLIC_SITE_URL}
-      />
-
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('listingTitle')}</h1>
-        <p className="text-gray-500 mt-2">{t('listingDescription')}</p>
-      </div>
-
-      {/* Featured post */}
-      {featuredPost && (
-        <FeaturedPostHero
-          post={featuredPost}
-          locale={locale}
-          t={{ minRead: tMinRead, readMore: t('readMore'), featured: t('featuredLabel') }}
-        />
-      )}
-
-      {/* Category filter */}
-      {categories.length > 0 && (
-        <div className="mb-8">
           <Suspense>
-            <CategoryFilter
-              categories={categories}
-              active={activeCategory}
-              allLabel={t('allCategories')}
+            <BlogPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
               locale={locale}
+              prevLabel={t('paginationPrev')}
+              nextLabel={t('paginationNext')}
             />
           </Suspense>
         </div>
-      )}
+      </>
+    );
+  }
 
-      {/* Grid */}
-      {remainingPosts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {remainingPosts.map((post, i) => (
-            <BlogCard
-              key={post.id}
-              post={post}
-              locale={locale}
-              t={cardT}
-              priority={i < 3}
-            />
-          ))}
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500 text-lg">{t('emptyState')}</p>
-        </div>
-      ) : null}
+  // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
+  const [asesorResult, invResult] = supabase
+    ? await Promise.all([
+        getBlogPosts(supabase, { locale, category: CAT_ASESORES, limit: 4, page: 1 }),
+        getBlogPosts(supabase, { locale, category: CAT_INVERSIONISTAS, limit: 4, page: 1 }),
+      ])
+    : [{ posts: [], total: 0 }, { posts: [], total: 0 }];
 
-      {/* Pagination */}
-      <Suspense>
-        <BlogPagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          locale={locale}
-          prevLabel={t('paginationPrev')}
-          nextLabel={t('paginationNext')}
-        />
-      </Suspense>
-    </div>
+  const cardT = { minRead: t('minRead') };
+
+  return (
+    <>
+      <BlogHero t={heroT} activeCategory={null} />
+
+      <section className="bg-white py-12 md:py-16">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+
+            {/* Column: Para Asesores */}
+            <div>
+              <div className="flex items-end justify-between mb-1">
+                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colAsesores')}</h2>
+                <Link
+                  href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
+                  className="flex items-center gap-1 text-sm text-[#5CE0D2] font-medium hover:underline whitespace-nowrap"
+                >
+                  {t('viewAllCol')} <ArrowRight size={14} />
+                </Link>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">{t('colAseoresSubtitle')}</p>
+
+              {asesorResult.posts.length > 0 ? (
+                <div className="space-y-5">
+                  {/* Featured card first */}
+                  <BlogCard post={asesorResult.posts[0]} locale={locale} t={cardT} priority />
+                  {/* Compact list for remaining */}
+                  {asesorResult.posts.slice(1).map((post) => (
+                    <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs text-[#5CE0D2] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#5CE0D2] transition-colors">{post.title}</p>
+                        <span className="text-xs text-gray-400 mt-1 block">{post.read_time_min} {t('minRead')}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-gray-200 py-12 text-center text-gray-400 text-sm">
+                  {t('noPostsCol')}
+                </div>
+              )}
+            </div>
+
+            {/* Column: Para Inversionistas */}
+            <div>
+              <div className="flex items-end justify-between mb-1">
+                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colInversionistas')}</h2>
+                <Link
+                  href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
+                  className="flex items-center gap-1 text-sm text-[#5CE0D2] font-medium hover:underline whitespace-nowrap"
+                >
+                  {t('viewAllCol')} <ArrowRight size={14} />
+                </Link>
+              </div>
+              <p className="text-sm text-gray-500 mb-6">{t('colInversionistasSubtitle')}</p>
+
+              {invResult.posts.length > 0 ? (
+                <div className="space-y-5">
+                  <BlogCard post={invResult.posts[0]} locale={locale} t={cardT} priority />
+                  {invResult.posts.slice(1).map((post) => (
+                    <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs text-[#5CE0D2] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#5CE0D2] transition-colors">{post.title}</p>
+                        <span className="text-xs text-gray-400 mt-1 block">{post.read_time_min} {t('minRead')}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-gray-200 py-12 text-center text-gray-400 text-sm">
+                  {t('noPostsCol')}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

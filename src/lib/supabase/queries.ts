@@ -1163,7 +1163,9 @@ export async function getZoneScores(client: Client, city?: string) {
 
   // Get latest snapshot: deduplicate by zone
   const { data, error } = await query.limit(5000);
-  if (error || !data) return [];
+  if (error) { console.error('[getZoneScores] Supabase error:', error.code, error.message, error.details); return []; }
+  if (!data) { console.warn('[getZoneScores] No data returned (null)'); return []; }
+  console.log(`[getZoneScores] Raw rows: ${data.length}, city filter: ${city ?? 'none'}`);
 
   // Keep only latest per (city, zone)
   const seen = new Set<string>();

@@ -229,7 +229,18 @@
     "viewAll": "Ver todos los artículos",
     "share": "Compartir:",
     "copyLink": "Copiar enlace",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "heroHeadLine1": "Ideas que",
+    "heroHeadLine2": "mueven el mercado",
+    "heroDescription": "Análisis, estrategias y herramientas para asesores e inversionistas inmobiliarios.",
+    "ctaAsesores": "Para Asesores",
+    "ctaInversionistas": "Para Inversionistas",
+    "colAsesores": "Para Asesores",
+    "colAseoresSubtitle": "Técnicas, herramientas y estrategias",
+    "colInversionistas": "Para Inversionistas",
+    "colInversionistasSubtitle": "Análisis, ROI y oportunidades",
+    "viewAllCol": "Ver todo",
+    "noPostsCol": "Próximamente"
   },
   "marketplace": {
     "title": "Propiedades",

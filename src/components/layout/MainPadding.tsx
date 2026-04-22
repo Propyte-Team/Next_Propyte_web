@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 
 // Routes whose hero section uses a dark (#0F1923) background.
 // The padding div must match so the body's white background doesn't bleed through.
-const DARK_HERO_ROUTES = ['/unete', '/corredores', '/reclutamiento', '/built'];
+const DARK_HERO_ROUTES = ['/unete', '/corredores', '/reclutamiento', '/built', '/mercado', '/blog'];
 
 export default function MainPadding({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

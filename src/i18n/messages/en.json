@@ -229,7 +229,18 @@
     "viewAll": "View all articles",
     "share": "Share:",
     "copyLink": "Copy link",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "heroHeadLine1": "Ideas that",
+    "heroHeadLine2": "move the market",
+    "heroDescription": "Analysis, strategies and tools for real estate advisors and investors.",
+    "ctaAsesores": "For Advisors",
+    "ctaInversionistas": "For Investors",
+    "colAsesores": "For Advisors",
+    "colAseoresSubtitle": "Techniques, tools and strategies",
+    "colInversionistas": "For Investors",
+    "colInversionistasSubtitle": "Analysis, ROI and opportunities",
+    "viewAllCol": "View all",
+    "noPostsCol": "Coming soon"
   },
   "marketplace": {
     "title": "Properties",
