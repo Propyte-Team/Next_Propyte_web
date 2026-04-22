@@ -135,7 +135,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
   return (
     <div className="space-y-8">
       {/* Data freshness */}
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-gray-500 text-center">
         {isEn
           ? `Propyte analysis based on +2.5M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
           : `Análisis Propyte basado en +2.5 millones de registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
