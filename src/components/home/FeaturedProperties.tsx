@@ -29,6 +29,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
   const tStages = await getTranslations('stages');
   const locale = await getLocale();
   const items = developments.slice(0, 6);
+  if (items.length === 0) return null;
 
   return (
     <section className="py-12 md:py-16 bg-[#F4F6F8]">

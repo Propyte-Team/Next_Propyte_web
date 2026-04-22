@@ -86,12 +86,9 @@ export default function TrendingMarket() {
     { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
   ];
 
-  // Fallback zones while loading or if no data
-  const displayZones = zones.length > 0 ? zones : [
-    { zone: 'Zona Hotelera', city: 'Cancun', score: 0, slug: 'zona-hotelera', occupancy: '—', adr: '—' },
-    { zone: 'Puerto Cancún', city: 'Cancun', score: 0, slug: 'puerto-cancún', occupancy: '—', adr: '—' },
-    { zone: 'Centro', city: 'Cancun', score: 0, slug: 'centro', occupancy: '—', adr: '—' },
-  ];
+  // Hide entire section when loaded with no zone data — empty stats + fake zones
+  // create distrust, not neutrality (audit §CRÍTICO)
+  if (loaded && zones.length === 0) return null;
 
   return (
     <section className="py-12 md:py-16 bg-white">
@@ -120,7 +117,7 @@ export default function TrendingMarket() {
         <div className="bg-[#1A2F3F] rounded-2xl p-6 md:p-8">
           <h3 className="text-lg font-bold text-white mb-4">{t('zonesTitle')}</h3>
           <div className="space-y-3">
-            {displayZones.map((zone) => (
+            {zones.map((zone) => (
               <Link
                 key={zone.zone}
                 href={`/${locale}/zonas/${zone.slug}`}

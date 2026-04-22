@@ -20,7 +20,8 @@ export default function StatCounter({
   format = 'number',
 }: StatCounterProps) {
   const locale = useLocale();
-  const [value, setValue] = useState(0);
+  // Initialize with final value so SSR/initial render never shows "0+"
+  const [value, setValue] = useState(to);
   const elementRef = useRef<HTMLSpanElement>(null);
   const animatedRef = useRef(false);
   const reduce = useReducedMotion();
