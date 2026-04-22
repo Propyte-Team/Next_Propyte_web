@@ -131,12 +131,42 @@
     "prev": "Previous",
     "next": "Next",
     "items": [
-      { "name": "Carlos M.", "city": "Mexico City", "rating": 5, "text": "The financial simulator helped me compare investment options I hadn't considered. I bought pre-sale in Tulum and already have 25% appreciation." },
-      { "name": "Patricia R.", "city": "Monterrey", "rating": 5, "text": "As a foreigner, the process seemed complicated. The Propyte team explained everything about the fideicomiso and accompanied me every step. Excellent service." },
-      { "name": "Roberto L.", "city": "Guadalajara", "rating": 5, "text": "The market data is incredible. I could compare yields by zone before deciding. My apartment in Playa is already generating Airbnb income." },
-      { "name": "Ana G.", "city": "Miami, FL", "rating": 5, "text": "The platform is amazing. I found exactly what I was looking for with data I hadn't found on other portals." },
-      { "name": "Fernando T.", "city": "Querétaro", "rating": 5, "text": "I invested in two apartments thanks to the Cap Rate analysis the platform offers. AirDNA data gave me confidence to make the decision." },
-      { "name": "Laura S.", "city": "Cancún", "rating": 5, "text": "I already had experience buying properties, but Propyte opened my eyes with zone analysis. I found opportunities I didn't know existed." }
+      {
+        "name": "Carlos M.",
+        "city": "Mexico City",
+        "rating": 5,
+        "text": "The financial simulator helped me compare investment options I hadn't considered. I bought pre-sale in Tulum and already have 25% appreciation."
+      },
+      {
+        "name": "Patricia R.",
+        "city": "Monterrey",
+        "rating": 5,
+        "text": "As a foreigner, the process seemed complicated. The Propyte team explained everything about the fideicomiso and accompanied me every step. Excellent service."
+      },
+      {
+        "name": "Roberto L.",
+        "city": "Guadalajara",
+        "rating": 5,
+        "text": "The market data is incredible. I could compare yields by zone before deciding. My apartment in Playa is already generating Airbnb income."
+      },
+      {
+        "name": "Ana G.",
+        "city": "Miami, FL",
+        "rating": 5,
+        "text": "The platform is amazing. I found exactly what I was looking for with data I hadn't found on other portals."
+      },
+      {
+        "name": "Fernando T.",
+        "city": "Querétaro",
+        "rating": 5,
+        "text": "I invested in two apartments thanks to the Cap Rate analysis the platform offers. AirDNA data gave me confidence to make the decision."
+      },
+      {
+        "name": "Laura S.",
+        "city": "Cancún",
+        "rating": 5,
+        "text": "I already had experience buying properties, but Propyte opened my eyes with zone analysis. I found opportunities I didn't know existed."
+      }
     ]
   },
   "appBanner": {
@@ -184,14 +214,19 @@
     "cta": "Request Proposal"
   },
   "blog": {
+    "listingTitle": "Blog",
+    "listingDescription": "Articles, guides and real estate market analysis in the Riviera Maya and Yucatán.",
+    "allCategories": "All",
+    "featuredLabel": "Featured",
+    "readMore": "Read more",
+    "emptyState": "No articles published yet.",
+    "minRead": "min read",
+    "backToListing": "Back to blog",
+    "relatedTitle": "Related articles",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next",
     "title": "Recent articles",
-    "viewAll": "View all articles",
-    "article1Title": "5 reasons to invest in Tulum in 2026",
-    "article1Category": "Investment",
-    "article2Title": "Financing guide for foreigners in Mexico",
-    "article2Category": "Guides",
-    "article3Title": "Pre-sale vs immediate delivery: comparative analysis",
-    "article3Category": "Analysis"
+    "viewAll": "View all articles"
   },
   "marketplace": {
     "title": "Properties",

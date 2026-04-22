@@ -1442,3 +1442,112 @@ export const updateProperty = updateDevelopment;
 export const deleteProperty = deleteDevelopment;
 /** @deprecated Use bulkInsertDevelopments() */
 export const bulkInsertProperties = bulkInsertDevelopments;
+
+// ============================================================
+// BLOG QUERIES (public schema)
+// ============================================================
+
+export type BlogPost = {
+  id: string;
+  slug: string;
+  locale: string;
+  status: string;
+  title: string;
+  excerpt: string | null;
+  content: string | null;
+  category: string;
+  tags: string[];
+  featured_image: string | null;
+  author_name: string;
+  author_image: string | null;
+  read_time_min: number;
+  meta_title: string | null;
+  meta_description: string | null;
+  related_city: string | null;
+  published_at: string | null;
+  created_at: string;
+};
+
+const BLOG_SELECT = `
+  id, slug, locale, status, title, excerpt, content, category, tags,
+  featured_image, author_name, author_image, read_time_min,
+  meta_title, meta_description, related_city, published_at, created_at
+`.trim();
+
+export async function getBlogPosts(
+  c: Client,
+  opts: { locale?: string; category?: string; limit?: number; page?: number } = {}
+): Promise<{ posts: BlogPost[]; total: number }> {
+  const { locale = 'es', category, limit = 9, page = 1 } = opts;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let q = c
+    .from('blog_posts')
+    .select(BLOG_SELECT, { count: 'exact' })
+    .eq('status', 'published')
+    .eq('locale', locale)
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false })
+    .range(from, to);
+
+  if (category) q = q.eq('category', category);
+
+  const { data, count, error } = await q;
+  if (error) { console.error('[getBlogPosts]', error.message); return { posts: [], total: 0 }; }
+  return { posts: (data as unknown as BlogPost[]) ?? [], total: count ?? 0 };
+}
+
+export async function getBlogPost(c: Client, slug: string, locale: string): Promise<BlogPost | null> {
+  const { data, error } = await c
+    .from('blog_posts')
+    .select(BLOG_SELECT)
+    .eq('slug', slug)
+    .eq('locale', locale)
+    .eq('status', 'published')
+    .single();
+  if (error) { console.error('[getBlogPost]', error.message); return null; }
+  return data as unknown as BlogPost;
+}
+
+export async function getRelatedPosts(
+  c: Client,
+  opts: { category: string; excludeSlug: string; locale: string; limit?: number }
+): Promise<BlogPost[]> {
+  const { category, excludeSlug, locale, limit = 3 } = opts;
+  const { data, error } = await c
+    .from('blog_posts')
+    .select(BLOG_SELECT)
+    .eq('status', 'published')
+    .eq('locale', locale)
+    .eq('category', category)
+    .neq('slug', excludeSlug)
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false })
+    .limit(limit);
+  if (error) { console.error('[getRelatedPosts]', error.message); return []; }
+  return (data as unknown as BlogPost[]) ?? [];
+}
+
+export async function getBlogCategories(c: Client, locale: string): Promise<string[]> {
+  const { data, error } = await c
+    .from('blog_posts')
+    .select('category')
+    .eq('status', 'published')
+    .eq('locale', locale)
+    .lte('published_at', new Date().toISOString());
+  if (error) { console.error('[getBlogCategories]', error.message); return []; }
+  const seen = new Set<string>();
+  (data ?? []).forEach((r: { category: string }) => seen.add(r.category));
+  return Array.from(seen).sort();
+}
+
+export async function getBlogPostSlugs(c: Client): Promise<{ slug: string; locale: string }[]> {
+  const { data, error } = await c
+    .from('blog_posts')
+    .select('slug, locale')
+    .eq('status', 'published')
+    .lte('published_at', new Date().toISOString());
+  if (error) { console.error('[getBlogPostSlugs]', error.message); return []; }
+  return (data ?? []) as unknown as { slug: string; locale: string }[];
+}

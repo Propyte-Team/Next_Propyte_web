@@ -38,7 +38,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   // Fetch global stats, developers, and featured developments
   let stats = { developments: 170, units: 500, cities: 5, zones: 30, typeCounts: {} as Record<string, number> };
   let developers: Array<{ name: string; logo_url: string | null; slug: string }> = [];
@@ -96,8 +97,9 @@ export default async function HomePage() {
       <ScrollReveal delay={0.05}>
         <AppDownloadBanner />
       </ScrollReveal>
-      {/* TODO: Habilitar cuando haya articulos reales — fase de contenido */}
-      {/* <RecentBlog /> */}
+      <ScrollReveal delay={0.05}>
+        <RecentBlog locale={locale} />
+      </ScrollReveal>
     </>
   );
 }

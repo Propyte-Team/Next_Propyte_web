@@ -131,12 +131,42 @@
     "prev": "Anterior",
     "next": "Siguiente",
     "items": [
-      { "name": "Carlos M.", "city": "CDMX", "rating": 5, "text": "El simulador financiero me ayudó a comparar opciones de inversión que no había considerado. Compré en preventa en Tulum y ya tengo un 25% de plusvalía." },
-      { "name": "Patricia R.", "city": "Monterrey", "rating": 5, "text": "Como extranjera, el proceso parecía complicado. El equipo de Propyte me explicó todo sobre el fideicomiso y me acompañó en cada paso. Excelente servicio." },
-      { "name": "Roberto L.", "city": "Guadalajara", "rating": 5, "text": "Los datos de mercado son increíbles. Pude comparar rendimientos por zona antes de decidir. Mi departamento en Playa ya está generando ingresos en Airbnb." },
-      { "name": "Ana G.", "city": "Miami, FL", "rating": 5, "text": "La plataforma es increíble. Encontré exactamente lo que buscaba y con datos que no había encontrado en otros portales." },
-      { "name": "Fernando T.", "city": "Querétaro", "rating": 5, "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los datos de AirDNA me dieron confianza para tomar la decisión." },
-      { "name": "Laura S.", "city": "Cancún", "rating": 5, "text": "Ya tenía experiencia comprando propiedades, pero Propyte me abrió los ojos con el análisis de zonas. Encontré oportunidades que no conocía." }
+      {
+        "name": "Carlos M.",
+        "city": "CDMX",
+        "rating": 5,
+        "text": "El simulador financiero me ayudó a comparar opciones de inversión que no había considerado. Compré en preventa en Tulum y ya tengo un 25% de plusvalía."
+      },
+      {
+        "name": "Patricia R.",
+        "city": "Monterrey",
+        "rating": 5,
+        "text": "Como extranjera, el proceso parecía complicado. El equipo de Propyte me explicó todo sobre el fideicomiso y me acompañó en cada paso. Excelente servicio."
+      },
+      {
+        "name": "Roberto L.",
+        "city": "Guadalajara",
+        "rating": 5,
+        "text": "Los datos de mercado son increíbles. Pude comparar rendimientos por zona antes de decidir. Mi departamento en Playa ya está generando ingresos en Airbnb."
+      },
+      {
+        "name": "Ana G.",
+        "city": "Miami, FL",
+        "rating": 5,
+        "text": "La plataforma es increíble. Encontré exactamente lo que buscaba y con datos que no había encontrado en otros portales."
+      },
+      {
+        "name": "Fernando T.",
+        "city": "Querétaro",
+        "rating": 5,
+        "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los datos de AirDNA me dieron confianza para tomar la decisión."
+      },
+      {
+        "name": "Laura S.",
+        "city": "Cancún",
+        "rating": 5,
+        "text": "Ya tenía experiencia comprando propiedades, pero Propyte me abrió los ojos con el análisis de zonas. Encontré oportunidades que no conocía."
+      }
     ]
   },
   "appBanner": {
@@ -184,14 +214,19 @@
     "cta": "Solicitar Propuesta"
   },
   "blog": {
+    "listingTitle": "Blog",
+    "listingDescription": "Artículos, guías y análisis del mercado inmobiliario en la Riviera Maya y Yucatán.",
+    "allCategories": "Todos",
+    "featuredLabel": "Destacado",
+    "readMore": "Leer más",
+    "emptyState": "No hay artículos publicados aún.",
+    "minRead": "min de lectura",
+    "backToListing": "Volver al blog",
+    "relatedTitle": "Artículos relacionados",
+    "paginationPrev": "Anterior",
+    "paginationNext": "Siguiente",
     "title": "Artículos recientes",
-    "viewAll": "Ver todos los artículos",
-    "article1Title": "5 razones para invertir en Tulum en 2026",
-    "article1Category": "Inversión",
-    "article2Title": "Guía de financiamiento para extranjeros en México",
-    "article2Category": "Guías",
-    "article3Title": "Preventa vs entrega inmediata: análisis comparativo",
-    "article3Category": "Análisis"
+    "viewAll": "Ver todos los artículos"
   },
   "marketplace": {
     "title": "Propiedades",
@@ -351,7 +386,7 @@
     "investmentAnalysis": "Análisis de Inversión",
     "mlEstimated": "Estimación ML",
     "estimatedMonthlyRent": "Renta mensual estimada",
-    "vacacional": "Renta vacacional",
+    "vacacional": "Vacacional",
     "grossYield": "Yield bruto",
     "netYield": "Yield neto",
     "capRate": "Cap rate",
@@ -364,7 +399,6 @@
     "totalInvestment": "Inversión total",
     "metric": "Métrica",
     "residencial": "Residencial",
-    "vacacional": "Vacacional",
     "monthly": "mo",
     "monthlyLabel": "meses",
     "occupancy": "Ocupación",
