@@ -20,6 +20,7 @@ export function buildCityMetadata(citySlug: string, locale: string): Metadata {
       images: [`/${locale}/opengraph-image`],
     },
     alternates: {
+      canonical: `/${locale}/desarrollos/${citySlug}`,
       languages: {
         es: `/es/desarrollos/${citySlug}`,
         en: `/en/desarrollos/${citySlug}`,

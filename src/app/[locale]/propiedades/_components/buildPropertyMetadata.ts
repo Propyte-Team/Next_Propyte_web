@@ -32,7 +32,6 @@ export async function buildPropertyMetadata(slug: string, locale: string): Promi
     openGraph: {
       title,
       description: description.slice(0, 155),
-      images: row.images?.[0] ? [{ url: row.images[0], width: 1200, height: 630 }] : [],
       type: 'website',
       locale: locale === 'es' ? 'es_MX' : 'en_US',
       siteName: 'Propyte',
@@ -41,7 +40,6 @@ export async function buildPropertyMetadata(slug: string, locale: string): Promi
       card: 'summary_large_image',
       title,
       description: description.slice(0, 155),
-      images: row.images?.[0] ? [row.images[0]] : [],
     },
     alternates: {
       canonical: `https://propyte.com/${locale}/propiedades/${slug}`,

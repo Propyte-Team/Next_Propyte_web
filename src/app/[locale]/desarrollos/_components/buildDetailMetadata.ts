@@ -33,7 +33,6 @@ export async function buildDetailMetadata(slug: string, locale: string): Promise
       openGraph: {
         title: property.name,
         description,
-        images: property.images?.[0] ? [{ url: property.images[0], width: 800, height: 450 }] : [],
         type: 'website',
         locale: isEn ? 'en_US' : 'es_MX',
       },
