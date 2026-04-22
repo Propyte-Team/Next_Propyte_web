@@ -1477,6 +1477,10 @@ const BLOG_SELECT = `
   meta_title, meta_description, related_city, published_at, created_at, updated_at
 `.trim();
 
+// En dev.propyte.com (Vercel), poner BLOG_INCLUDE_STAGED=true para ver posts en staging.
+// En propyte.com (Hostinger) no definir la variable → solo muestra 'published'.
+const includeStaged = process.env.BLOG_INCLUDE_STAGED === 'true';
+
 export async function getBlogPosts(
   c: Client,
   opts: { locale?: string; category?: string; limit?: number; page?: number } = {}
@@ -1488,11 +1492,15 @@ export async function getBlogPosts(
   let q = c
     .from('blog_posts')
     .select(BLOG_SELECT, { count: 'exact' })
-    .eq('status', 'published')
     .eq('locale', locale)
-    .lte('published_at', new Date().toISOString())
     .order('published_at', { ascending: false })
     .range(from, to);
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
 
   if (category) q = q.eq('category', category);
 
@@ -1502,13 +1510,19 @@ export async function getBlogPosts(
 }
 
 export async function getBlogPost(c: Client, slug: string, locale: string): Promise<BlogPost | null> {
-  const { data, error } = await c
+  let q = c
     .from('blog_posts')
     .select(BLOG_SELECT)
     .eq('slug', slug)
-    .eq('locale', locale)
-    .eq('status', 'published')
-    .single();
+    .eq('locale', locale);
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published');
+  }
+
+  const { data, error } = await q.single();
   if (error) { console.error('[getBlogPost]', error.message); return null; }
   return data as unknown as BlogPost;
 }
@@ -1518,28 +1532,41 @@ export async function getRelatedPosts(
   opts: { category: string; excludeSlug: string; locale: string; limit?: number }
 ): Promise<BlogPost[]> {
   const { category, excludeSlug, locale, limit = 3 } = opts;
-  const { data, error } = await c
+
+  let q = c
     .from('blog_posts')
     .select(BLOG_SELECT)
-    .eq('status', 'published')
     .eq('locale', locale)
     .eq('category', category)
     .neq('slug', excludeSlug)
-    .lte('published_at', new Date().toISOString())
     .order('published_at', { ascending: false })
     .limit(limit);
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
+
+  const { data, error } = await q;
   if (error) { console.error('[getRelatedPosts]', error.message); return []; }
   return (data as unknown as BlogPost[]) ?? [];
 }
 
 export async function getBlogCategories(c: Client, locale: string): Promise<string[]> {
-  const { data, error } = await c
+  let q = c
     .from('blog_posts')
     .select('category')
-    .eq('status', 'published')
     .eq('locale', locale)
-    .lte('published_at', new Date().toISOString())
     .order('category');
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
+
+  const { data, error } = await q;
   if (error) { console.error('[getBlogCategories]', error.message); return []; }
   const seen = new Set<string>();
   (data ?? []).forEach((r: { category: string }) => seen.add(r.category));
@@ -1547,11 +1574,17 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
 }
 
 export async function getBlogPostSlugs(c: Client): Promise<{ slug: string; locale: string }[]> {
-  const { data, error } = await c
+  let q = c
     .from('blog_posts')
-    .select('slug, locale')
-    .eq('status', 'published')
-    .lte('published_at', new Date().toISOString());
+    .select('slug, locale');
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
+
+  const { data, error } = await q;
   if (error) { console.error('[getBlogPostSlugs]', error.message); return []; }
   return (data ?? []) as unknown as { slug: string; locale: string }[];
 }
