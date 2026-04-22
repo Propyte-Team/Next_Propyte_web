@@ -9,9 +9,10 @@ interface BlogShareBarProps {
   shareLabel: string;
   copyLabel: string;
   copiedLabel: string;
+  whatsappLabel: string;
 }
 
-export default function BlogShareBar({ title, url, shareLabel, copyLabel, copiedLabel }: BlogShareBarProps) {
+export default function BlogShareBar({ title, url, shareLabel, copyLabel, copiedLabel, whatsappLabel }: BlogShareBarProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -34,7 +35,7 @@ export default function BlogShareBar({ title, url, shareLabel, copyLabel, copied
         target="_blank"
         rel="noopener noreferrer"
         className="p-2 rounded-full bg-[#25D366] text-white hover:opacity-80 transition-opacity"
-        aria-label="Compartir en WhatsApp"
+        aria-label={whatsappLabel}
       >
         <MessageCircle size={16} />
       </a>

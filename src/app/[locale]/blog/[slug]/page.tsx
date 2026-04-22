@@ -242,6 +242,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             shareLabel={t('share')}
             copyLabel={t('copyLink')}
             copiedLabel={t('copied')}
+            whatsappLabel={t('shareWhatsapp')}
           />
         </div>
 
