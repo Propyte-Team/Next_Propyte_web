@@ -72,7 +72,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     return (
       <>
         <BlogHero t={heroT} activeCategory={activeCategory} />
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-10">
+        <section className="bg-white py-10">
+          <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="flex items-center gap-3 mb-8">
             <Link href={`/${locale}/blog`} className="text-sm text-gray-400 hover:text-[#5CE0D2] transition-colors">
               Blog
@@ -102,7 +103,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
               nextLabel={t('paginationNext')}
             />
           </Suspense>
-        </div>
+          </div>
+        </section>
       </>
     );
   }
@@ -136,7 +138,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="text-sm text-gray-500 mb-6">{t('colAseoresSubtitle')}</p>
+              <p className="text-sm text-gray-500 mb-6">{t('colAsesoresSubtitle')}</p>
 
               {asesorResult.posts.length > 0 ? (
                 <div className="space-y-5">

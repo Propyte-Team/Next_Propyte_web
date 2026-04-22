@@ -47,8 +47,8 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
             href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
             className={`px-6 py-3 rounded-full font-semibold text-sm transition-all ${
               activeCategory === CAT_ASESORES
-                ? 'bg-[#5CE0D2] text-[#0F1923] shadow-lg shadow-[#5CE0D2]/20'
-                : 'bg-[#5CE0D2] text-[#0F1923] hover:opacity-90'
+                ? 'bg-[#5CE0D2] text-[#0F1923] shadow-lg shadow-[#5CE0D2]/20 ring-2 ring-white/30'
+                : 'bg-[#5CE0D2]/80 text-[#0F1923] hover:bg-[#5CE0D2]'
             }`}
           >
             {t.ctaAsesores}
