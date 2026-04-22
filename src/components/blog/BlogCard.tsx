@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Clock, Calendar } from 'lucide-react';
 import type { BlogPost } from '@/lib/supabase/queries';
+import { formatDateShort } from '@/lib/helpers/format-date';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -14,18 +15,9 @@ interface BlogCardProps {
   priority?: boolean;
 }
 
-function formatDate(dateStr: string | null, locale: string): string {
-  if (!dateStr) return '';
-  return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  }).format(new Date(dateStr));
-}
-
 export default function BlogCard({ post, locale, t, priority = false }: BlogCardProps) {
   const href = `/${locale}/blog/${post.slug}`;
-  const date = formatDate(post.published_at, locale);
+  const date = formatDateShort(post.published_at, locale);
 
   return (
     <Link href={href} className="group block h-full">

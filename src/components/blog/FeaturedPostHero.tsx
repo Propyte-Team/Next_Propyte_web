@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Clock, Calendar, ArrowRight } from 'lucide-react';
 import type { BlogPost } from '@/lib/supabase/queries';
+import { formatDate } from '@/lib/helpers/format-date';
 
 interface FeaturedPostHeroProps {
   post: BlogPost;
@@ -11,15 +12,6 @@ interface FeaturedPostHeroProps {
     readMore: string;
     featured: string;
   };
-}
-
-function formatDate(dateStr: string | null, locale: string): string {
-  if (!dateStr) return '';
-  return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date(dateStr));
 }
 
 export default function FeaturedPostHero({ post, locale, t }: FeaturedPostHeroProps) {

@@ -226,7 +226,10 @@
     "paginationPrev": "Anterior",
     "paginationNext": "Siguiente",
     "title": "Artículos recientes",
-    "viewAll": "Ver todos los artículos"
+    "viewAll": "Ver todos los artículos",
+    "share": "Compartir:",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!"
   },
   "marketplace": {
     "title": "Propiedades",

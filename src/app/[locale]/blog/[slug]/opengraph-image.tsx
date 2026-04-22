@@ -15,9 +15,8 @@ export default async function Image({
 }) {
   const { locale, slug } = await params;
   const fonts = loadOGFonts();
-  const isEn = locale === 'en';
 
-  let title = isEn ? 'Blog | Propyte' : 'Blog | Propyte';
+  let title = 'Blog | Propyte';
   let location = '';
   let badge = '';
   let imageUrl = '';
@@ -29,7 +28,9 @@ export default async function Image({
       if (post) {
         title = post.title;
         location = post.category;
-        badge = isEn ? `${post.read_time_min} min read` : `${post.read_time_min} min de lectura`;
+        badge = locale === 'en'
+          ? `${post.read_time_min} min read`
+          : `${post.read_time_min} min de lectura`;
         imageUrl = post.featured_image ?? '';
       }
     }

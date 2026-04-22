@@ -5,7 +5,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPost, getRelatedPosts, getBlogPostSlugs } from '@/lib/supabase/queries';
 import RelatedPosts from '@/components/blog/RelatedPosts';
+import BlogShareBar from '@/components/blog/BlogShareBar';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { formatDate } from '@/lib/helpers/format-date';
 import { Calendar, Clock, Tag, ChevronLeft } from 'lucide-react';
 
 export const revalidate = 3600;
@@ -67,12 +69,12 @@ function buildJsonLd(post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>,
     description: post.excerpt ?? undefined,
     image: post.featured_image ?? undefined,
     datePublished: post.published_at ?? post.created_at,
-    dateModified: post.created_at,
+    dateModified: post.updated_at ?? post.created_at,
     author: { '@type': 'Person', name: post.author_name },
     publisher: {
       '@type': 'Organization',
       name: 'Propyte',
-      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.svg` },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/img/logos/propyte-horizontal-teal.png` },
     },
     url: `${siteUrl}/${locale}/blog/${post.slug}`,
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${siteUrl}/${locale}/blog/${post.slug}` },
@@ -81,13 +83,6 @@ function buildJsonLd(post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>,
     inLanguage: locale === 'es' ? 'es-MX' : 'en-US',
     timeRequired: `PT${post.read_time_min}M`,
   };
-}
-
-function formatDate(dateStr: string | null, locale: string): string {
-  if (!dateStr) return '';
-  return new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  }).format(new Date(dateStr));
 }
 
 interface BlogPostPageProps {
@@ -227,10 +222,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
         )}
 
-        {/* Tags footer */}
-        {post.tags.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <div className="flex flex-wrap gap-2">
+        {/* Tags + share footer */}
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          {post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
               {post.tags.map((tag) => (
                 <span
                   key={tag}
@@ -240,8 +235,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </span>
               ))}
             </div>
-          </div>
-        )}
+          )}
+          <BlogShareBar
+            title={post.title}
+            url={`${siteUrl}/${locale}/blog/${post.slug}`}
+            shareLabel={t('share')}
+            copyLabel={t('copyLink')}
+            copiedLabel={t('copied')}
+          />
+        </div>
 
         {/* Related posts */}
         <RelatedPosts

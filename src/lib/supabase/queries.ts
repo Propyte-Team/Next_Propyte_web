@@ -1466,12 +1466,13 @@ export type BlogPost = {
   related_city: string | null;
   published_at: string | null;
   created_at: string;
+  updated_at: string;
 };
 
 const BLOG_SELECT = `
   id, slug, locale, status, title, excerpt, content, category, tags,
   featured_image, author_name, author_image, read_time_min,
-  meta_title, meta_description, related_city, published_at, created_at
+  meta_title, meta_description, related_city, published_at, created_at, updated_at
 `.trim();
 
 export async function getBlogPosts(
@@ -1535,11 +1536,12 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
     .select('category')
     .eq('status', 'published')
     .eq('locale', locale)
-    .lte('published_at', new Date().toISOString());
+    .lte('published_at', new Date().toISOString())
+    .order('category');
   if (error) { console.error('[getBlogCategories]', error.message); return []; }
   const seen = new Set<string>();
   (data ?? []).forEach((r: { category: string }) => seen.add(r.category));
-  return Array.from(seen).sort();
+  return Array.from(seen);
 }
 
 export async function getBlogPostSlugs(c: Client): Promise<{ slug: string; locale: string }[]> {

@@ -13,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '', priority: 1.0, changeFrequency: 'weekly' as const },
     { path: '/propiedades', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/desarrollos', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/blog', priority: 0.8, changeFrequency: 'daily' as const },
     { path: '/desarrolladores', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/corredores', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/built', priority: 0.7, changeFrequency: 'monthly' as const },
@@ -90,6 +91,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     // Supabase not connected — skip dynamic entries
+  }
+
+  // ── Dynamic blog posts ────────────────────────
+  try {
+    const supabase2 = await createServiceRoleClient() || await createServerSupabaseClient();
+    const { data: blogPosts } = await supabase2
+      .from('blog_posts')
+      .select('slug, locale, updated_at')
+      .eq('status', 'published')
+      .lte('published_at', new Date().toISOString())
+      .limit(1000);
+
+    if (blogPosts) {
+      for (const post of blogPosts as { slug: string; locale: string; updated_at: string }[]) {
+        entries.push({
+          url: `${BASE_URL}/${post.locale}/blog/${post.slug}`,
+          lastModified: new Date(post.updated_at),
+          changeFrequency: 'monthly',
+          priority: 0.7,
+        });
+      }
+    }
+  } catch {
+    // blog_posts table may not exist yet — skip
   }
 
   return entries;

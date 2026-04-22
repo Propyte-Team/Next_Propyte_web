@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
   -- Content
   title           TEXT NOT NULL,
   excerpt         TEXT,
-  content         TEXT,                          -- Markdown / HTML
+  content         TEXT,                          -- HTML generado por hub.propyte.com Blog AI (no Markdown raw)
   category        TEXT NOT NULL DEFAULT 'General',
   tags            TEXT[] DEFAULT '{}',
   featured_image  TEXT,                          -- URL from Supabase Storage or external CDN
