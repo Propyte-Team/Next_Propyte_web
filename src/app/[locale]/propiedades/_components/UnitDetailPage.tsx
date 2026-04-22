@@ -136,6 +136,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     location: [property.location.zone, property.location.city, property.location.state].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/propiedades/${slug}`,
+    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219843235354',
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
@@ -143,6 +144,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     piso: row.floor != null ? String(row.floor) : undefined,
     num_unidad: row.unit_number || undefined,
     prop_type: typeLabel,
+    precio_usd: row.price_usd ? formatPrice(row.price_usd) : undefined,
   };
 
   return (

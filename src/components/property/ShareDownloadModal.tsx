@@ -158,6 +158,7 @@ function TemplateStories({ data }: { data: ShareDownloadData }) {
 function TemplateSquare({ data }: { data: ShareDownloadData }) {
   const specs3 = (data.specs || []).slice(0, 3);
   const amenities5 = (data.amenidades || []).slice(0, 5);
+  const descTrunc = data.desc ? data.desc.slice(0, 200) : '';
 
   return (
     <div style={{ width: 500, height: 500, fontFamily: 'system-ui, sans-serif', backgroundColor: '#fff', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
@@ -217,6 +218,13 @@ function TemplateSquare({ data }: { data: ShareDownloadData }) {
                 {a}
               </span>
             ))}
+          </div>
+        )}
+
+        {/* Description snippet */}
+        {descTrunc && (
+          <div style={{ fontSize: 11, color: '#6B7280', lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            {descTrunc}
           </div>
         )}
 
@@ -351,7 +359,7 @@ function TemplateLetter({ data }: { data: ShareDownloadData }) {
         {/* CTA */}
         <div style={{ marginTop: 'auto', backgroundColor: '#0F1923', borderRadius: 10, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>📱 WhatsApp: {data.wa || '+52 984 323 5354'}</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>📱 WhatsApp: +{data.wa || WA_NUMBER}</span>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>🌐 {data.url}</span>
           </div>
           <div style={{ textAlign: 'right' }}>
