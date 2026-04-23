@@ -359,7 +359,7 @@ function TemplateLetter({ data }: { data: ShareDownloadData }) {
         {/* CTA */}
         <div style={{ marginTop: 'auto', backgroundColor: '#0F1923', borderRadius: 10, padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>📱 WhatsApp: +{data.wa || WA_NUMBER}</span>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>📱 WhatsApp: +{(data.wa || WA_NUMBER).replace(/^\+/, '')}</span>
             <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>🌐 {data.url}</span>
           </div>
           <div style={{ textAlign: 'right' }}>

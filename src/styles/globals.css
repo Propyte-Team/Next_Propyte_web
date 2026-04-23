@@ -228,6 +228,7 @@ html {
 }
 
 /* Print: show only ShareDownloadModal Letter template */
+@page { margin: 0; }
 @media print {
   body * { visibility: hidden !important; }
   .print\:block,
