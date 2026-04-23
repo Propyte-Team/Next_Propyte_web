@@ -41,6 +41,7 @@ export default function Header() {
   }, []);
 
   const hideBubbleOnHome = mode === 'home' && !scrolled;
+  const hideBubble = hideBubbleOnHome || !!isArchive;
   const darkBubble = (mode === 'home' || mode === 'dark') && !scrolled;
 
   return (
@@ -64,9 +65,9 @@ export default function Header() {
           {/* Search bubble (centered), hidden before scroll on home */}
           <div
             className={`flex-1 max-w-[600px] mx-auto transition-all duration-300 ${
-              hideBubbleOnHome ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'
+              hideBubble ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'
             }`}
-            style={{ pointerEvents: hideBubbleOnHome ? 'none' : 'auto' }}
+            style={{ pointerEvents: hideBubble ? 'none' : 'auto' }}
           >
             <SearchBubble variant="desktop" dark={darkBubble} />
           </div>

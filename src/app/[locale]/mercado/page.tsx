@@ -107,7 +107,7 @@ export default async function MercadoPage({
         <TabBar activeTab={activeTab} locale={locale} />
       </Suspense>
 
-      <main className="bg-white">
+      <main>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'vacacional' && (
           <VacacionalTab scores={strScores} locale={locale} initialCity={city} />
