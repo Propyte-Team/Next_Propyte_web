@@ -15,7 +15,7 @@ export default function DeveloperLogos({ developers }: DeveloperLogosProps) {
   return (
     <section className="py-12 md:py-16 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-400 mb-8">
+        <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-600 mb-8">
           Nuestros Socios Desarrolladores
         </h2>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
@@ -32,7 +32,7 @@ export default function DeveloperLogos({ developers }: DeveloperLogosProps) {
                   className="h-10 md:h-12 w-auto max-w-[120px] object-contain"
                 />
               ) : (
-                <span className="text-sm font-bold text-gray-400">{dev.name}</span>
+                <span className="text-sm font-bold text-gray-600">{dev.name}</span>
               )}
             </div>
           ))}

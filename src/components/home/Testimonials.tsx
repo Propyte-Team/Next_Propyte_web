@@ -69,7 +69,7 @@ export default function Testimonials() {
               <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                 <div>
                   <div className="font-bold text-gray-900 text-sm">{item.name}</div>
-                  <div className="text-xs text-gray-400">{item.city}</div>
+                  <div className="text-xs text-gray-500">{item.city}</div>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-semibold text-[#22C55E]">
                   <ShieldCheck size={12} strokeWidth={2} />

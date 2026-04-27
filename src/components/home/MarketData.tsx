@@ -20,7 +20,7 @@ export default function MarketData() {
             <div key={i} className="p-6 bg-white border border-[#1A2F3F]/15 rounded-xl text-center">
               <div className="text-4xl font-bold text-[#1A2F3F] mb-2">{stat.value}</div>
               <p className="text-[#2C2C2C] font-medium mb-2">{stat.label}</p>
-              <p className="text-xs text-gray-400">{stat.source}</p>
+              <p className="text-xs text-gray-500">{stat.source}</p>
             </div>
           ))}
         </div>

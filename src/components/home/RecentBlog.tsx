@@ -57,13 +57,13 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-1">
                     {post.published_at && (
-                      <time className="text-xs text-gray-400">
+                      <time className="text-xs text-gray-500">
                         {new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
                           year: 'numeric', month: 'short', day: 'numeric',
                         }).format(new Date(post.published_at))}
                       </time>
                     )}
-                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
                       <Clock size={10} /> {post.read_time_min} {t('minRead')}
                     </span>
                   </div>

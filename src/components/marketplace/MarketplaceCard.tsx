@@ -150,7 +150,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           <div className="flex items-baseline gap-2 flex-wrap">
             <span data-testid="marketplace-card-price" className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
             {pricePerM2 !== null && (
-              <span className="text-xs text-gray-400 tabular-nums font-medium">
+              <span className="text-xs text-gray-500 tabular-nums font-medium">
                 {format(pricePerM2, { decimals: 0 })}/{tMkt('cardM2Short')}
               </span>
             )}

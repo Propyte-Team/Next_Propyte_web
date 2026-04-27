@@ -43,7 +43,7 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
         </div>
 
         <div className="p-4 flex flex-col flex-1">
-          <div className="flex items-center gap-3 text-xs text-gray-400 mb-2">
+          <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
             {date && (
               <span className="flex items-center gap-1">
                 <Calendar size={12} />

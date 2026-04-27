@@ -46,8 +46,12 @@ export default function ActionsPill() {
         {t('advertise')}
       </Link>
 
+      <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
+
       {/* MXN/USD toggle — segmented */}
       <CurrencyToggle />
+
+      <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
 
       <div ref={langRef} className="relative">
         <button
