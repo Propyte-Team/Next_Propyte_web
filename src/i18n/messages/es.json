@@ -28,8 +28,9 @@
     "changeCurrency": "Cambiar moneda"
   },
   "hero": {
-    "title": "Invierte con datos. Decide con confianza.",
-    "subtitle": "Departamentos, penthouses y terrenos en Playa del Carmen y Tulum con análisis real de mercado.",
+    "title": "Departamentos, casas y terrenos en Riviera Maya",
+    "subtitle": "Análisis de mercado verificado para que inviertas con seguridad.",
+    "tagline": "Invierte con datos. Decide con confianza.",
     "searchPlaceholder": "Busca por colonia, desarrollo o zona...",
     "searchButton": "Buscar",
     "tab_comprar": "Comprar",

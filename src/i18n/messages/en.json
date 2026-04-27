@@ -28,8 +28,9 @@
     "changeCurrency": "Change currency"
   },
   "hero": {
-    "title": "Invest with data. Decide with confidence.",
-    "subtitle": "Apartments, penthouses and land in Playa del Carmen and Tulum with real market analysis.",
+    "title": "Apartments, homes and land in Riviera Maya",
+    "subtitle": "Verified market analysis so you can invest with confidence.",
+    "tagline": "Invest with data. Decide with confidence.",
     "searchPlaceholder": "Search by neighborhood, development or zone...",
     "searchButton": "Search",
     "tab_comprar": "Buy",
