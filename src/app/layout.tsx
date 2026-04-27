@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk } from 'next/font/google';
+import Script from 'next/script';
 import '@/styles/globals.css';
+
+const GA_ID = process.env.NEXT_PUBLIC_GA4_ID || 'G-H4VD5TVEKM';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -34,7 +37,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={spaceGrotesk.className}>
-      <body className="min-h-screen flex flex-col">{children}</body>
+      <body className="min-h-screen flex flex-col">
+        {children}
+        {GA_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        ) : null}
+      </body>
     </html>
   );
 }
