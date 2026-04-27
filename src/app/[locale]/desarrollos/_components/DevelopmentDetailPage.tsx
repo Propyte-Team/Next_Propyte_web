@@ -29,6 +29,7 @@ import {
   calculateMonthlyPayment,
   calculateRemainingBalanceActuarial,
 } from '@/lib/calculator';
+import { pickLang } from '@/lib/i18n/pickLang';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -57,7 +58,6 @@ interface DevelopmentDetailPageProps {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default async function DevelopmentDetailPage({ locale, slug }: DevelopmentDetailPageProps) {
-  const isEn = locale === 'en';
   const supabase = createPublicSupabaseClient();
 
   // ── Fetch development + units ──
@@ -85,8 +85,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   if (!property) notFound();
 
+  const tProp = await getTranslations({ locale, namespace: 'property' });
+
   const citySlug = slugify(property.city);
-  const description = isEn ? property.description_en || '' : property.description_es || '';
+  const description = pickLang(locale, property.description_en, property.description_es) || '';
 
   // ── Similar developments (4-level fallback) ──
   let similar: SimilarListingItem[] = [];
@@ -184,7 +186,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     verified: developerRecord?.verified || false,
     yearsExperience: developerRecord?.yearsExperience ?? null,
     unitsDelivered: developerRecord?.unitsDelivered ?? null,
-    description: (isEn ? developerRecord?.descriptionEn : developerRecord?.descriptionEs)
+    description: pickLang(locale, developerRecord?.descriptionEn, developerRecord?.descriptionEs)
       || developerRecord?.descriptionEs
       || null,
   };
@@ -226,7 +228,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const deliveryDisplay = property.delivery_text
     || property.estimated_delivery
     || (property.construction_progress != null
-        ? isEn ? `${property.construction_progress}% complete` : `${property.construction_progress}% completo`
+        ? tProp('progressComplete', { n: property.construction_progress })
         : null);
 
   // ── Starting price $/m² ──
@@ -278,20 +280,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       ? 'bullish' : appreciationPct >= 5 ? 'neutral' : 'bearish';
     sentimentIndicators.push({
       id: 'appreciation',
-      label: isEn ? 'Annual appreciation' : 'Plusvalía anual',
+      label: tProp('sentimentAppreciation'),
       direction: dir,
       value: `${appreciationPct.toFixed(1)}%`,
-      rationale: isEn
-        ? dir === 'bullish'
-          ? 'Above market benchmark of 8% — strong capital growth outlook.'
-          : dir === 'neutral'
-            ? 'Aligned with market benchmark — stable but moderate growth.'
-            : 'Below market benchmark — weaker capital growth outlook.'
-        : dir === 'bullish'
-          ? 'Por encima del benchmark de 8% — fuerte crecimiento esperado.'
-          : dir === 'neutral'
-            ? 'Alineado con el benchmark — crecimiento estable y moderado.'
-            : 'Por debajo del benchmark — menor crecimiento esperado.',
+      rationale: tProp(
+        dir === 'bullish' ? 'sentimentApprBullish'
+          : dir === 'neutral' ? 'sentimentApprNeutral'
+            : 'sentimentApprBearish'
+      ),
     });
   }
   // (b) Occupancy demand (AirDNA trend last 3 vs first 3). Values come in percent scale (0-100).
@@ -303,20 +299,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     const dir: 'bullish' | 'neutral' | 'bearish' = delta > 3 ? 'bullish' : delta < -3 ? 'bearish' : 'neutral';
     sentimentIndicators.push({
       id: 'occupancy',
-      label: isEn ? 'Demand trend' : 'Tendencia de demanda',
+      label: tProp('sentimentDemand'),
       direction: dir,
       value: `${delta >= 0 ? '+' : ''}${delta.toFixed(1)} pp`,
-      rationale: isEn
-        ? dir === 'bullish'
-          ? 'Occupancy trending up — demand strengthening in this market.'
-          : dir === 'bearish'
-            ? 'Occupancy trending down — demand softening.'
-            : 'Occupancy stable — demand is steady.'
-        : dir === 'bullish'
-          ? 'Ocupación al alza — demanda creciendo en este mercado.'
-          : dir === 'bearish'
-            ? 'Ocupación a la baja — demanda moderándose.'
-            : 'Ocupación estable — demanda sin cambios.',
+      rationale: tProp(
+        dir === 'bullish' ? 'sentimentDemBullish'
+          : dir === 'bearish' ? 'sentimentDemBearish'
+            : 'sentimentDemNeutral'
+      ),
     });
   }
   // (c) Supply pressure from zone score
@@ -326,50 +316,36 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     const dir: 'bullish' | 'neutral' | 'bearish' = sp >= 70 ? 'bullish' : sp >= 40 ? 'neutral' : 'bearish';
     sentimentIndicators.push({
       id: 'supply',
-      label: isEn ? 'Supply pressure' : 'Presión de oferta',
+      label: tProp('sentimentSupply'),
       direction: dir,
       value: `${Math.round(sp)}/100`,
-      rationale: isEn
-        ? dir === 'bullish'
-          ? 'Supply constrained — favorable for pricing power.'
-          : dir === 'bearish'
-            ? 'High supply — competitive pressure on rates.'
-            : 'Balanced supply dynamics.'
-        : dir === 'bullish'
-          ? 'Oferta limitada — favorable para el precio.'
-          : dir === 'bearish'
-            ? 'Alta oferta — presión competitiva sobre tarifas.'
-            : 'Dinámica de oferta equilibrada.',
+      rationale: tProp(
+        dir === 'bullish' ? 'sentimentSupBullish'
+          : dir === 'bearish' ? 'sentimentSupBearish'
+            : 'sentimentSupNeutral'
+      ),
     });
   }
 
   const stageLabel =
-    property.stage === 'preventa'
-      ? isEn ? 'Pre-sale' : 'Preventa'
-      : property.stage === 'construccion'
-        ? isEn ? 'Under Construction' : 'En Construccion'
-        : isEn ? 'Ready to Move In' : 'Entrega Inmediata';
+    property.stage === 'preventa' ? tProp('stagePresale')
+      : property.stage === 'construccion' ? tProp('stageConstruction')
+        : tProp('stageReady');
 
   const mainType = property.property_types?.[0] || property.property_type || 'departamento';
   const typeLabel =
-    mainType === 'departamento'
-      ? isEn ? 'Apartments' : 'Departamentos'
-      : mainType === 'terreno'
-        ? isEn ? 'Land' : 'Terrenos'
-        : mainType === 'casa'
-          ? isEn ? 'Houses' : 'Casas'
-          : mainType === 'penthouse'
-            ? 'Penthouse'
+    mainType === 'departamento' ? tProp('typeApartments')
+      : mainType === 'terreno' ? tProp('typeLand')
+        : mainType === 'casa' ? tProp('typeHouses')
+          : mainType === 'penthouse' ? 'Penthouse'
             : mainType;
-
-  const tProp = await getTranslations({ locale, namespace: 'property' });
 
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];
-  if (bedRange) shareSpecs.push({ label: isEn ? 'Bedrooms' : 'Recámaras', value: bedRange.min === bedRange.max ? String(bedRange.min) : `${bedRange.min}–${bedRange.max}` });
-  if (bathRange) shareSpecs.push({ label: isEn ? 'Bathrooms' : 'Baños', value: bathRange.min === bathRange.max ? String(bathRange.min) : `${bathRange.min}–${bathRange.max}` });
+  if (bedRange) shareSpecs.push({ label: tProp('bedrooms'), value: bedRange.min === bedRange.max ? String(bedRange.min) : `${bedRange.min}–${bedRange.max}` });
+  if (bathRange) shareSpecs.push({ label: tProp('bathrooms'), value: bathRange.min === bathRange.max ? String(bathRange.min) : `${bathRange.min}–${bathRange.max}` });
   if (areaRange) shareSpecs.push({ label: 'Área', value: areaRange.min === areaRange.max ? `${areaRange.min} m²` : `${areaRange.min}–${areaRange.max} m²` });
-  if (totalUnits) shareSpecs.push({ label: isEn ? 'Units' : 'Unidades', value: String(totalUnits) });
+  if (totalUnits) shareSpecs.push({ label: tProp('units'), value: String(totalUnits) });
   const shareData: ShareDownloadData = {
     title: property.name,
     price: propertyPrice > 0 ? formatPrice(propertyPrice) : '—',
@@ -428,8 +404,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         type="breadcrumb"
         data={{
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: isEn ? 'Home' : 'Inicio', item: `https://propyte.com/${locale}` },
-            { '@type': 'ListItem', position: 2, name: isEn ? 'Developments' : 'Desarrollos', item: `https://propyte.com/${locale}/desarrollos` },
+            { '@type': 'ListItem', position: 1, name: tProp('breadcrumbHome'), item: `https://propyte.com/${locale}` },
+            { '@type': 'ListItem', position: 2, name: tProp('breadcrumbDevelopments'), item: `https://propyte.com/${locale}/desarrollos` },
             { '@type': 'ListItem', position: 3, name: property.city, item: `https://propyte.com/${locale}/desarrollos/${citySlug}` },
             { '@type': 'ListItem', position: 4, name: property.name },
           ],
@@ -437,10 +413,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
-        <nav aria-label={isEn ? 'Breadcrumb' : 'Migas de pan'} className="flex items-center gap-1 text-xs text-gray-500 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{isEn ? 'Home' : 'Inicio'}</Link>
+        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-500 mb-6">
+          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">{isEn ? 'Developments' : 'Desarrollos'}</Link>
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbDevelopments')}</Link>
           <ChevronRight size={12} />
           <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#5CE0D2]">{property.city}</Link>
           <ChevronRight size={12} />
@@ -472,7 +448,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
                 {(property.price_min_mxn || property.price_mxn) > 0 ? (
                   <div>
-                    <span className="text-sm text-gray-500">{isEn ? 'Starting from' : 'Desde'}</span>
+                    <span className="text-sm text-gray-500">{tProp('startingFrom')}</span>
                     <div className="text-3xl font-bold text-gray-900">
                       {formatPrice(property.price_min_mxn || property.price_mxn)}
                     </div>
@@ -495,12 +471,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       {description && (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
-                            {isEn ? 'About this Development' : 'Sobre este Desarrollo'}
+                            {tProp('aboutTitle')}
                           </h2>
                           <ExpandableText
                             maxHeight={120}
-                            moreLabel={isEn ? 'Read more' : 'Leer más'}
-                            lessLabel={isEn ? 'Read less' : 'Leer menos'}
+                            moreLabel={tProp('readMore')}
+                            lessLabel={tProp('readLess')}
                             className="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line"
                           >
                             {description}
@@ -515,22 +491,22 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <MetricCard
                           icon={<Building2 size={22} />}
-                          label={isEn ? 'Type' : 'Tipo'}
+                          label={tProp('type')}
                           value={typeLabel || '—'}
                         />
                         <MetricCard
                           icon={<BarChart3 size={22} />}
-                          label={isEn ? 'Stage' : 'Etapa'}
+                          label={tProp('stage')}
                           value={stageLabel}
                         />
                         <MetricCard
                           icon={<MapPin size={22} />}
-                          label={isEn ? 'Zone' : 'Zona'}
+                          label={tProp('zone')}
                           value={property.zone || property.city || '—'}
                         />
                         <MetricCard
                           icon={<Globe size={22} />}
-                          label={isEn ? 'State' : 'Estado'}
+                          label={tProp('stateLabel')}
                           value={property.state || 'Quintana Roo'}
                         />
                       </div>
@@ -541,31 +517,31 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                           {totalUnits && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
                               <Users size={16} className="text-gray-400" />
-                              <span className="text-gray-600">{totalUnits} {isEn ? 'total properties' : 'propiedades totales'}</span>
+                              <span className="text-gray-600">{totalUnits} {tProp('totalProperties')}</span>
                             </div>
                           )}
                           {derivedAvailable != null && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-[#5CE0D2]/10 rounded-xl text-sm">
                               <CheckCircle size={16} className="text-[#5CE0D2]" />
-                              <span className="text-[#4BCEC0] font-semibold">{derivedAvailable} {isEn ? 'available' : 'disponibles'}</span>
+                              <span className="text-[#4BCEC0] font-semibold">{derivedAvailable} {tProp('available')}</span>
                             </div>
                           )}
                           {deliveryDisplay && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
                               <TrendingUp size={16} className="text-gray-400" />
-                              <span className="text-gray-600">{isEn ? 'Delivery:' : 'Entrega:'} {deliveryDisplay}</span>
+                              <span className="text-gray-600">{tProp('delivery')} {deliveryDisplay}</span>
                             </div>
                           )}
                           {property.construction_progress != null && property.construction_progress > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
                               <Zap size={16} className="text-gray-400" />
-                              <span className="text-gray-600">{isEn ? 'Progress' : 'Avance'} {property.construction_progress}%</span>
+                              <span className="text-gray-600">{tProp('progress')} {property.construction_progress}%</span>
                             </div>
                           )}
                           {(property as any).commission_rate != null && (property as any).commission_rate > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
                               <DollarSign size={16} className="text-gray-400" />
-                              <span className="text-gray-600">{isEn ? 'Commission' : 'Comisión'} {(property as any).commission_rate}%</span>
+                              <span className="text-gray-600">{tProp('commission')} {(property as any).commission_rate}%</span>
                             </div>
                           )}
                         </div>
@@ -575,7 +551,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       {(property.virtual_tour_url || property.video_url) && (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-4">
-                            {isEn ? 'Explore the development' : 'Recorre el desarrollo'}
+                            {tProp('exploreTitle')}
                           </h2>
                           <div className={`grid gap-4 ${property.virtual_tour_url && property.video_url ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
                             {property.virtual_tour_url && (
@@ -597,7 +573,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       {property.brochure_url && (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
-                            {isEn ? 'Documents' : 'Documentos'}
+                            {tProp('documentsTitle')}
                           </h2>
                           <a
                             href={property.brochure_url}
@@ -610,7 +586,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-bold text-gray-900 truncate">
-                                {isEn ? 'Brochure' : 'Brochure'}
+                                {tProp('brochure')}
                               </div>
                               <div className="text-xs text-gray-500 truncate">
                                 {deriveFilenameFromUrl(property.brochure_url, 'brochure.pdf')}
@@ -618,7 +594,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             </div>
                             <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0D9488] group-hover:text-[#5CE0D2] shrink-0">
                               <Download size={16} />
-                              {isEn ? 'Download' : 'Descargar'}
+                              {tProp('download')}
                             </div>
                           </a>
                         </div>
@@ -627,7 +603,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       {developerDisplay.name && (
                         <div className="bg-gray-50 rounded-2xl p-6">
                           <h2 className="text-lg font-bold text-gray-900 mb-4">
-                            {isEn ? 'Developer' : 'Desarrolladora'}
+                            {tProp('developerTitle')}
                           </h2>
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
@@ -651,26 +627,22 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
                                   <span className="px-2 py-0.5 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
-                                    {isEn ? 'Verified' : 'Verificado'}
+                                    {tProp('verified')}
                                   </span>
                                 )}
                               </div>
                               <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
                                 {developerProjects > 0 && (
-                                  <span>
-                                    {isEn
-                                      ? `${developerProjects} ${developerProjects === 1 ? 'project' : 'projects'} on Propyte`
-                                      : `${developerProjects} ${developerProjects === 1 ? 'proyecto' : 'proyectos'} en Propyte`}
-                                  </span>
+                                  <span>{tProp('projectsCount', { count: developerProjects })}</span>
                                 )}
                                 {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
                                   <span>
-                                    · {developerDisplay.yearsExperience} {isEn ? 'yrs experience' : 'años de experiencia'}
+                                    · {developerDisplay.yearsExperience} {tProp('yearsExperience')}
                                   </span>
                                 )}
                                 {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
                                   <span>
-                                    · {developerDisplay.unitsDelivered.toLocaleString()} {isEn ? 'units delivered' : 'unidades entregadas'}
+                                    · {developerDisplay.unitsDelivered.toLocaleString()} {tProp('unitsDelivered')}
                                   </span>
                                 )}
                               </div>
@@ -680,7 +652,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
                                 className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
                               >
-                                {isEn ? 'View profile' : 'Ver perfil'}
+                                {tProp('viewProfile')}
                               </Link>
                             )}
                           </div>
@@ -785,27 +757,23 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   </div>
                   <div>
                     <div className="font-bold text-gray-900 text-sm">{property.contact_name}</div>
-                    <div className="text-xs text-gray-400">{isEn ? 'Verified Advisor' : 'Asesor Verificado'}</div>
+                    <div className="text-xs text-gray-400">{tProp('verifiedAdvisor')}</div>
                   </div>
                 </div>
               )}
 
               <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {isEn ? 'Interested in this development?' : 'Te interesa este desarrollo?'}
+                {tProp('interestedDevQuestion')}
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                {isEn
-                  ? 'Get pricing, floor plans, and availability directly from our advisors.'
-                  : 'Recibe precios, planos y disponibilidad directamente de nuestros asesores.'}
+                {tProp('getPricingDescription')}
               </p>
               <ContactForm propertyId={property.id} propertyName={property.name} />
 
               {property.contact_phone && (
                 <a
                   href={`https://wa.me/${property.contact_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    isEn
-                      ? `Hi, I'm interested in ${property.name}. I saw it on Propyte.`
-                      : `Hola, me interesa ${property.name}. Lo vi en Propyte.`
+                    tProp('whatsappInterestText', { name: property.name })
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
