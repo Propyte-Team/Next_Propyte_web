@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Share2, Download, X, Copy, Check, Loader2, Facebook, Twitter,
@@ -385,6 +385,18 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
   const letterRef = useRef<HTMLDivElement>(null);
 
   const safe = data.title.replace(/[^a-zA-Z0-9-_]+/g, '-').slice(0, 50);
+
+  useEffect(() => {
+    if (!shareOpen && !fichaOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShareOpen(false);
+        setFichaOpen(false);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [shareOpen, fichaOpen]);
 
   const handleCopy = useCallback(async () => {
     try {
