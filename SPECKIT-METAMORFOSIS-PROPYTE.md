@@ -2290,8 +2290,8 @@ export default {
 - [ ] Tab system (3 tabs: Descripción, Análisis Geográfico, Rentabilidad)
 - [ ] Contact Sidebar (sticky top-28, form React Hook Form + Zod)
 - [ ] Mobile floating bar (fixed bottom: price + WA + contact buttons)
-- [ ] Share/Download modal (PDF + email + WhatsApp + social — ver Sección 27)
-- [ ] **Single Desarrollo Tab Descripción** (8 subsecciones: description expandable, unit chips, 4 metric cards, metrics row, tour 360°, video, amenities, developer card, brochure)
+- [x] Share/Download modal (PDF + email + WhatsApp + social — ver Sección 27) ✅ commits 352d35a+6df8f40 (2026-04-22)
+- [x] **Single Desarrollo Tab Descripción — parcial** (description expandable ✅, unit chips ✅, 4 metric cards ✅, metrics row ✅ — commits 352d35a+6df8f40 | pendiente: tour 360°, video, developer card destacado, brochure)
 - [ ] **Single Desarrollo Tab Análisis Geográfico** (Google Maps embed + zone scores grid + AirDNA metrics)
 - [ ] **Single Desarrollo Tab Rentabilidad** (ROI analysis + sentiment + investment metrics 3-col + comparison vs CETES/bank)
 - [ ] **Single Unidad** (specs, availability badge, parent dev link, inherited location map)
@@ -2337,13 +2337,15 @@ export default {
 ~~- [ ] Consultation form (Built-specific fields)~~
 ~~- [ ] Final CTA dark~~
 
-### Fase 7: Blog Completo (1 semana)
+### Fase 7: Blog Completo (1 semana) ✅ CERRADA — commits 0826902+665aeb9+0612af5+d35d95c+67978c4 (2026-04-22)
 
-- [ ] Blog listing page (category filter chips, featured post hero, pagination)
-- [ ] Blog post detail (article schema, reading time calc, author byline, social share, related posts)
-- [ ] BlogCard component (thumbnail, title, excerpt, date, category badge)
-- [ ] CategoryFilter component
-- [ ] RelatedPosts component (same category, max 3)
+- [x] Blog listing page — rediseñado per WP reference: dark hero #0F1923 + split 2 columnas (Para Asesores / Para Inversionistas) + featured BlogCard + compact list por columna; con ?categoria=X muestra grid paginado bg-white
+- [x] Blog post detail (article schema, reading time calc, author byline, social share, related posts)
+- [x] BlogCard component (thumbnail, title, excerpt, date, category badge)
+- [x] BlogHero component (badge, H1 bicolor, descripción, 2 CTAs con active state diferenciado)
+- [x] RelatedPosts component (same category, max 3)
+
+> Extras entregados: BlogPagination, BlogShareBar (WhatsApp+copy), OG image co-located blog/[slug], RecentBlog en homepage, migración SQL public.blog_posts + RLS, 9 queries, i18n 22 keys ES+EN (14 original + 8 hero/cols), blog en sitemap, format-date helper. Auditoría Playwright: 20/21 checks OK (1 falso positivo regex). **Nit cerrado (commit 429847e, 2026-04-22):** BlogShareBar aria-label internacionalizado vía prop whatsappLabel + key blog.shareWhatsapp en es/en.json.
 
 ### Fase 8: SEO & Performance (1 semana)
 
@@ -2550,10 +2552,10 @@ PASO 5 — Post-mortem
 **Detail Pages — Desarrollos:**
 - [ ] Image gallery (hero + thumbnails scroll)
 - [ ] Tab system (3 tabs)
-- [ ] Description (expandable, max 120px)
-- [ ] Unit type chips
-- [ ] 4 metric cards
-- [ ] Metrics row (5 values)
+- [x] Description (expandable, max 120px) ✅ commit 352d35a
+- [x] Unit type chips ✅ pre-existente
+- [x] 4 metric cards ✅ commit 352d35a (Tipo/Etapa/Zona/Estado)
+- [x] Metrics row (5 values) ✅ commit 352d35a
 - [ ] Tour 360° toggle (iframe)
 - [ ] Video toggle (embed)
 - [ ] Additional videos grid
@@ -2570,7 +2572,7 @@ PASO 5 — Post-mortem
 - [ ] Similar listings (4-level fallback)
 - [ ] Contact sidebar (sticky)
 - [ ] Mobile floating bar (price + 2 buttons)
-- [ ] Share/Download modal (3 formatos: Stories/Square/Letter — Sección 27)
+- [x] Share/Download modal (3 formatos: Stories/Square/Letter — Sección 27) ✅ commits 352d35a+6df8f40
 - [ ] Price history (if available)
 
 **Detail Pages — Unidades:**
@@ -3626,6 +3628,22 @@ import { MapPin, Bed, Bath } from 'lucide-react';
 ### 32.7 — Ejecución
 
 Ejecutar este bloque como **Fase 5.5** DESPUÉS de cerrar Fase 5 Content Pages (15/15). Originalmente se pensó intercalada antes de Fase 6 Built Portfolio, pero Fase 6 quedó skipped (decisión Luis 2026-04-20) — por lo tanto Fase 5.5 antecede directamente a Fase 7 Blog Completo. Se mantiene separada de Fase 8 SEO & Performance (optimización de Core Web Vitals global) porque son alcances distintos: 5.5 es pulido visual/a11y del sitio migrado; 8 es perf global + schema extension cross-sitio. Audit por batch, igual que Fase 5.
+
+---
+
+---
+
+## 33. BUGS HEADER/LAYOUT — Auditoría 2026-04-22
+
+Bugs detectados por el auditor post-commits `c601a3d` + `cc1a3cc`. Pendientes de fix en un solo commit.
+
+| # | Bug | Archivo | Fix |
+|---|-----|---------|-----|
+| 1 | `/mercado` en `DARK_HERO_ROUTES` incorrecto — MercadoHero usa gradiente claro, no dark hero. Commit cc1a3cc parchó con `bg-white` en `<main>` pero no resolvió la causa raíz. Crea costura oscura/clara visible. | `MainPadding.tsx` | Quitar `/mercado` de `DARK_HERO_ROUTES`; revertir `bg-white` parche en `mercado/page.tsx` |
+| 2 | SearchBubble visible en `/propiedades` y `/desarrollos`. `isArchive` oculta ActionsPill pero NO el SearchBubble. `hideBubbleOnHome` solo aplica en home. | `Header.tsx:43-72` | `const hideBubble = hideBubbleOnHome \|\| !!isArchive;` y aplicarlo al div del SearchBubble |
+| 3 | `/nosotros` NO en `DARK_HERO_ROUTES` → franja blanca de `pt-76px` visible sobre dark hero. | `MainPadding.tsx` | Agregar `/nosotros` a `DARK_HERO_ROUTES` |
+
+**Estado:** ❌ Pendiente — otros chat debe resolver en un commit.
 
 ---
 

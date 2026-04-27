@@ -92,3 +92,11 @@ Desktop.ini
 ehthumbs.db
 
 .vercel
+.env.vercel-staging
+env.produccion
+env.*.local
+tests/qa-phase4/diag-*.mjs
+tests/qa-phase4/_tmp_*
+tests/qa-phase55/_tmp_*
+tests/qa-phase55/screenshots-header/
+tests/screenshots/
