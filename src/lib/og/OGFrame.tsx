@@ -126,6 +126,7 @@ export default function OGFrame({ title, location, price, badge, imageUrl }: OGF
               zIndex: 1,
             }}
           />
+          {/* eslint-disable-next-line @next/next/no-img-element -- Satori OG runtime can't use next/image, only DOM <img> */}
           <img
             src={imageUrl}
             alt=""

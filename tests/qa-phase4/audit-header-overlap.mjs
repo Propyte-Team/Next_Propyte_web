@@ -37,7 +37,8 @@ async function measureOverlap(page) {
     if (!header) return { error: 'no header' };
     const hRect = header.getBoundingClientRect();
     const main = document.querySelector('main');
-    const firstContent = main || document.querySelector('body > div:not([id=__next]) > *');
+    const _firstContent = main || document.querySelector('body > div:not([id=__next]) > *');
+    void _firstContent;
     // Buscar el primer elemento visible después del header
     let firstChild = null;
     if (main) {

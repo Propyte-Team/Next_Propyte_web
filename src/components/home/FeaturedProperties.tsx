@@ -4,7 +4,7 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { ArrowRight, MapPin, Bed, Bath, Maximize } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 
-interface FeaturedDevelopment {
+export interface FeaturedDevelopment {
   id: string;
   slug: string;
   name: string;

@@ -10,12 +10,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-interface DataPoint {
-  date: string;
-  occupancy: number;
-  adr: number;
-}
-
 interface RevPARChartProps {
   occupancyData: Array<{ date: string; value: number }>;
   adrData: Array<{ date: string; value: number }>;

@@ -5,8 +5,8 @@ import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
   Building2, Palette, HardHat, TreePine, Hammer, Leaf,
-  CheckCircle, ArrowRight, MessageCircle, Shield, Zap, Users,
-  ChevronDown, ChevronUp, Compass, Pencil, FileCheck, Wrench, KeyRound
+  CheckCircle, ArrowRight, MessageCircle, Shield, Users,
+  Compass, Pencil, FileCheck, Wrench, KeyRound
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
 

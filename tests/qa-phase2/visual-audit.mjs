@@ -17,7 +17,7 @@ const viewports = {
 
 async function auditSections(page) {
   return page.evaluate(() => {
-    const pick = (sel) => {
+    const _pick = (sel) => {
       const el = document.querySelector(sel);
       if (!el) return null;
       const r = el.getBoundingClientRect();

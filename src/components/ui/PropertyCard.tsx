@@ -13,7 +13,6 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   const locale = useLocale();
-  const t = useTranslations('property');
   const tStages = useTranslations('stages');
 
   const formattedPrice = new Intl.NumberFormat('es-MX', {

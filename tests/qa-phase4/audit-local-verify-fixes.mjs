@@ -84,12 +84,13 @@ const push = (k, ok, note='') => results.push({ k, ok, note });
   await p.goto(`${BASE}/es/desarrollos/akora-residencial-b73b319b`, { waitUntil: 'networkidle', timeout: 60000 });
   await p.waitForTimeout(3000);
   // Click tab Rentabilidad
-  const clicked = await p.evaluate(() => {
+  const _clicked = await p.evaluate(() => {
     const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
     const t = tabs.find(el => /rentabilidad|returns/i.test(el.textContent || ''));
     if (t) { t.click(); return true; }
     return false;
   });
+  void _clicked;
   await p.waitForTimeout(2500);
   const miInfo = await p.evaluate(() => {
     const body = document.body.innerText || '';

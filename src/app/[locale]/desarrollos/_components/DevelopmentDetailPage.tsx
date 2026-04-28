@@ -104,7 +104,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         },
         4,
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       similar = (data as any[]).map((d) => ({
         id: d.id,
         slug: d.slug,
@@ -219,7 +219,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const bedRange = rangeOf('bedrooms');
   const bathRange = rangeOf('bathrooms');
   const areaRange = rangeOf('area_m2');
-  const priceRange = rangeOf('price_mxn');
+  const _priceRange = rangeOf('price_mxn'); void _priceRange;
   const availableCount = unitList.filter((u) => u.availability_status === 'disponible').length;
   const totalUnits = property.total_units || unitList.length || null;
   const derivedAvailable = property.available_units ?? (availableCount > 0 ? availableCount : null);
@@ -231,10 +231,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         ? tProp('progressComplete', { n: property.construction_progress })
         : null);
 
-  // ── Starting price $/m² ──
-  const pricePerM2 = propertyPrice > 0 && representativeArea && representativeArea > 0
+  // ── Starting price $/m² (computed for potential future display) ──
+  const _pricePerM2 = propertyPrice > 0 && representativeArea && representativeArea > 0
     ? Math.round(propertyPrice / representativeArea)
     : null;
+  void _pricePerM2;
 
   // ── ROI projection from financials ──
   const roiDisplay = devFinancials?.roi_annual_pct ?? property.roi_projected ?? null;

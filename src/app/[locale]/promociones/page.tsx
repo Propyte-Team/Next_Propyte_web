@@ -71,7 +71,8 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
 
-  // Offers valid 90 days from now (referential — no real expiration in data yet)
+  // Offers valid 90 days from now (referential — no real expiration in data yet).
+  // eslint-disable-next-line react-hooks/purity -- server component; Date.now() is per-request, not per-render
   const validThrough = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const collectionSchema = {

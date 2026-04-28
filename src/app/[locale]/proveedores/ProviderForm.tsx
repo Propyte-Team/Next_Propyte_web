@@ -20,7 +20,7 @@ const CATEGORIES = [
   'Other',
 ] as const;
 
-type Category = (typeof CATEGORIES)[number];
+type _Category = (typeof CATEGORIES)[number];
 
 export default function ProviderForm({ locale }: { locale: string }) {
   const t = useTranslations('providers');

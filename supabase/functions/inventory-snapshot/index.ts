@@ -12,7 +12,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-Deno.serve(async (req) => {
+Deno.serve(async (_req) => {
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,

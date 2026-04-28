@@ -1,4 +1,4 @@
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale } from 'next-intl';
 import {
   Waves, PawPrint, Building2, TrendingUp, Sun, Shield,
   Dumbbell, Car, Trees, Coffee, Lock, Palmtree

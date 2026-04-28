@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getGlobalStats, getDevelopers, getFeaturedDevelopments } from '@/lib/supabase/queries';
 import Hero from '@/components/home/Hero';
 import ExploreCategories from '@/components/home/ExploreCategories';
-import FeaturedProperties from '@/components/home/FeaturedProperties';
+import FeaturedProperties, { type FeaturedDevelopment } from '@/components/home/FeaturedProperties';
 import TrendingMarket from '@/components/home/TrendingMarket';
 import WhyPropyte from '@/components/home/WhyPropyte';
 import DeveloperBanner from '@/components/home/DeveloperBanner';
@@ -43,7 +43,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // Fetch global stats, developers, and featured developments
   let stats = { developments: 170, units: 500, cities: 5, zones: 30, typeCounts: {} as Record<string, number> };
   let developers: Array<{ name: string; logo_url: string | null; slug: string }> = [];
-  let featured: any[] = [];
+  let featured: FeaturedDevelopment[] = [];
 
   try {
     const supabase = await createServerSupabaseClient();
@@ -53,10 +53,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       getFeaturedDevelopments(supabase, 6),
     ]);
     stats = statsData;
-    developers = (devsRes.data || [])
-      .filter((d: any) => d.logo_url && d.verified)
-      .map((d: any) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug }));
-    featured = featuredRes.data || [];
+    type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string };
+    developers = ((devsRes.data || []) as DeveloperRow[])
+      .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
+      .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug }));
+    featured = (featuredRes.data || []) as FeaturedDevelopment[];
   } catch (error) {
     console.error('[HomePage] Supabase fetch failed, using fallback stats:', error);
   }

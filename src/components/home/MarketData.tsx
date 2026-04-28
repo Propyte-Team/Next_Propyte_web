@@ -1,9 +1,8 @@
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 export default function MarketData() {
   const t = useTranslations('marketData');
-  const locale = useLocale();
 
   const stats = [
     { value: t('stat1Value'), label: t('stat1Label'), source: t('stat1Source') },

@@ -18,7 +18,6 @@ import {
   buildCashflows,
   calculateRemainingBalanceActuarial,
   calculateClosingCosts,
-  VAC,
   RES,
 } from '@/lib/calculator';
 import { PropertyPDFDocument, type PropertyPDFData, type PropertyPDFLabels } from '@/lib/pdf/PropertyPDFDocument';
@@ -128,7 +127,6 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
 
   // Rental estimate
   let estRent: number | null = null;
-  let airdnaOccupancy: number | null = null;
   try {
     const airdnaMarket = CITY_TO_AIRDNA[property.location.city] || '';
     const [res, airdna] = await Promise.all([
@@ -141,7 +139,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
         ? Math.round(perM2 * property.specs.area)
         : res.data.median_rent_mxn;
     }
-    if (airdna?.data) airdnaOccupancy = airdna.data.current_occupancy;
+    void airdna; // occupancy not used in PDF route
   } catch { /* tolerate */ }
 
   // IRR

@@ -9,7 +9,7 @@ import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2 } from 'l
 import { submitForm } from '@/lib/submitForm';
 
 export default function ContactPageContent() {
-  const locale = useLocale();
+  void useLocale();
   const t = useTranslations('contact');
   const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');

@@ -16,14 +16,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function NosotrosLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'about' });
-
   return (
     <>
       <SchemaMarkup type="organization" />

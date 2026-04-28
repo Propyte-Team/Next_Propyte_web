@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import {
-  Share2, Download, X, Copy, Check, Loader2, Facebook, Twitter,
-  MessageCircle, ChevronDown, MapPin, FileImage,
+  Share2, Download, Copy, Check, Loader2, Facebook, Twitter,
+  MessageCircle, ChevronDown, FileImage,
 } from 'lucide-react';
 
 export interface ShareDownloadData {
@@ -243,7 +242,6 @@ function TemplateSquare({ data }: { data: ShareDownloadData }) {
 function TemplateLetter({ data }: { data: ShareDownloadData }) {
   const amenitiesAll = data.amenidades || [];
   const descTrunc = data.desc ? data.desc.slice(0, 300) : '';
-  const waUrl = `https://wa.me/${data.wa || WA_NUMBER}`;
 
   return (
     <div style={{ width: 794, height: 1056, fontFamily: 'system-ui, sans-serif', backgroundColor: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>

@@ -293,7 +293,7 @@ async function migrateLanzamientos() {
   }
 
   // Build developments
-  const developments: any[] = [];
+  const developments: Record<string, unknown>[] = [];
   const slugSet = new Set<string>();
 
   for (const row of rows) {
@@ -354,7 +354,7 @@ async function migrateLanzamientos() {
 
   for (let i = 0; i < developments.length; i += 50) {
     const batch = developments.slice(i, i + 50);
-    const { error, data } = await supabase
+    const { error } = await supabase
       .from("developments")
       .upsert(batch, { onConflict: "slug" });
     if (error) {
@@ -374,7 +374,8 @@ async function migrateLanzamientos() {
     .not("detected_at", "is", null);
 
   if (allDevs && allDevs.length > 0) {
-    const signals = allDevs.map((d: any) => ({
+    type DevRow = { id: string; zone_id: string | null; detected_at: string | null; detection_source: string | null };
+    const signals = (allDevs as DevRow[]).map((d) => ({
       occurred_at: d.detected_at,
       week_start: d.detected_at
         ? new Date(
@@ -418,7 +419,8 @@ async function migrateRedSearch() {
     .from("developments")
     .select("id, slug, name, city");
 
-  const devBySlug = new Map<string, any>();
+  type DevLookup = { id: string; slug: string; name: string; city: string };
+  const devBySlug = new Map<string, DevLookup>();
   for (const d of existingDevs || []) {
     devBySlug.set(d.slug, d);
     // Also index by name-city slug for fuzzy matching
@@ -450,7 +452,7 @@ async function migrateRedSearch() {
       }
     }
 
-    const enrichment: any = {
+    const enrichment: Record<string, unknown> = {
       zone: zone || undefined,
       zone_id: guessZoneId(city, zone),
       drive_url: (row.url_drive || "").trim() || null,
@@ -536,7 +538,7 @@ async function migrateProyectos() {
 
     const slug = slugify(`${name}-${city}`);
 
-    const updates: any = {};
+    const updates: Record<string, unknown> = {};
     if (row.url_carpeta_drive) updates.drive_url = row.url_carpeta_drive.trim();
     if (row.total_unidades) updates.total_units = parseUnits(row.total_unidades);
     if (row.inicio_ventas)
@@ -575,7 +577,7 @@ async function migrateInventario() {
   console.log(`Parsed ${rows.length} rows`);
 
   // Group by project, find development IDs
-  const projectGroups = new Map<string, any[]>();
+  const projectGroups = new Map<string, Record<string, string>[]>();
   for (const row of rows) {
     const project = (row.proyecto || "").trim();
     if (!project) continue;
@@ -604,7 +606,7 @@ async function migrateInventario() {
 
     const devId = devs[0].id;
 
-    const units: any[] = [];
+    const units: Record<string, unknown>[] = [];
     for (const row of unitRows) {
       const unitNumber = (row.unidad || "").trim();
       if (!unitNumber) continue;

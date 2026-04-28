@@ -14,7 +14,6 @@ import {
   calculateIRR,
   getClosingCostRate,
   calculateClosingCosts,
-  calculateVacNetRent,
   calculateVacGrossYield,
   calculateVacNetYield,
   buildCashflows,

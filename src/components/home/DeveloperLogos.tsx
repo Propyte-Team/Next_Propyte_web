@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface DeveloperLogosProps {
   developers: Array<{
@@ -26,9 +25,12 @@ export default function DeveloperLogos({ developers }: DeveloperLogosProps) {
               title={dev.name}
             >
               {dev.logo_url ? (
-                <img
+                <Image
                   src={dev.logo_url}
                   alt={dev.name}
+                  width={120}
+                  height={48}
+                  unoptimized
                   className="h-10 md:h-12 w-auto max-w-[120px] object-contain"
                 />
               ) : (

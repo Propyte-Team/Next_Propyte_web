@@ -10,7 +10,7 @@ import {
   getSeasonalIndices,
   getDevelopments,
 } from '@/lib/supabase/queries';
-import { CITY_TO_AIRDNA, ZONE_TO_AIRDNA_SUBMARKETS, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { CITY_TO_AIRDNA, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
 
 // Generate zone slugs for static generation

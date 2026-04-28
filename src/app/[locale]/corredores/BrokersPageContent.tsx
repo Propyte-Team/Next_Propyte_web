@@ -167,7 +167,7 @@ function PlatformPreview() {
           </div>
           <div className="p-6 md:p-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              {features.map((feat, i) => (
+              {features.map((feat) => (
                 <div key={feat} className="bg-white/10 rounded-xl p-4">
                   <div className="text-[#5CE0D2] text-2xl font-bold mb-1">--</div>
                   <div className="text-white/60 text-xs">{feat}</div>

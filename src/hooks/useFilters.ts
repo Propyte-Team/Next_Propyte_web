@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
@@ -68,13 +68,17 @@ export function useFilters(properties: Property[]) {
     ...parseFiltersFromParams(searchParams),
   }));
 
-  // Re-apply URL params if they change (e.g. AI redirect)
-  useEffect(() => {
+  // Re-apply URL params if they change (e.g. AI redirect).
+  // React docs pattern "Adjusting state when a prop changes": setState during render,
+  // gated by tracking the previous searchParams reference so we only re-merge once per change.
+  const [prevSearchParams, setPrevSearchParams] = useState(searchParams);
+  if (searchParams !== prevSearchParams) {
+    setPrevSearchParams(searchParams);
     const fromUrl = parseFiltersFromParams(searchParams);
     if (Object.keys(fromUrl).length > 0) {
       setFilters(prev => ({ ...prev, ...fromUrl }));
     }
-  }, [searchParams]);
+  }
   const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date'>('relevance');
 
   const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
@@ -99,7 +103,7 @@ export function useFilters(properties: Property[]) {
   }, [filters]);
 
   const filtered = useMemo(() => {
-    let result = properties.filter(p => {
+    const result = properties.filter(p => {
       if (filters.search) {
         const q = filters.search.toLowerCase();
         const match =

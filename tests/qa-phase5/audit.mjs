@@ -96,10 +96,11 @@ async function auditPage(browser, url) {
 
     // Collect DOM heuristics
     const domMetrics = await page.evaluate(() => {
-      const pickText = (sel) => {
+      const _pickText = (sel) => {
         const el = document.querySelector(sel);
         return el ? (el.innerText || '').trim().slice(0, 500) : null;
       };
+      void _pickText;
 
       // Hero detection — common hero selectors
       const heroSel = [
@@ -164,7 +165,7 @@ async function auditPage(browser, url) {
 
       // Placeholder / lorem / construction detection
       const body = document.body.innerText || '';
-      const bodyLower = body.toLowerCase();
+      const _bodyLower = body.toLowerCase(); void _bodyLower;
       const placeholders = {
         loremIpsum: /lorem ipsum/i.test(body),
         enConstruccion:

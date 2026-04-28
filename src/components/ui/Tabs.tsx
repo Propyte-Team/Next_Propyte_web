@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode, type KeyboardEvent } from 'react';
+import { useState, useRef, type ReactNode, type KeyboardEvent } from 'react';
 
 export interface TabItem {
   id: string;
@@ -32,11 +32,15 @@ export default function Tabs({
   tablistLabel,
 }: TabsProps) {
   const [active, setActive] = useState(defaultTab || items[0]?.id);
+  const [prevDefaultTab, setPrevDefaultTab] = useState(defaultTab);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  useEffect(() => {
-    if (defaultTab && defaultTab !== active) setActive(defaultTab);
-  }, [defaultTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  // React docs pattern "Adjusting state when a prop changes" — runs setState during render,
+  // React unwinds the current render. Avoids set-state-in-effect lint + cascading renders.
+  if (defaultTab !== prevDefaultTab) {
+    setPrevDefaultTab(defaultTab);
+    if (defaultTab) setActive(defaultTab);
+  }
 
   const handleSelect = (id: string) => {
     setActive(id);

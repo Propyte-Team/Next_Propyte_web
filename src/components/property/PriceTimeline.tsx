@@ -1,5 +1,4 @@
 import { useLocale } from 'next-intl';
-import { TrendingUp, Calendar, Tag } from 'lucide-react';
 import { formatPrice } from '@/lib/formatters';
 import type { Property } from '@/types/property';
 

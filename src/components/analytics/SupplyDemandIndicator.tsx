@@ -33,10 +33,11 @@ export function SupplyDemandIndicator({
     normalizedPosition >= 40 ? 'text-amber-600' :
     'text-red-600';
 
-  const bgColor =
+  const _bgColor =
     normalizedPosition >= 70 ? 'bg-green-500' :
     normalizedPosition >= 40 ? 'bg-amber-500' :
     'bg-red-500';
+  void _bgColor;
 
   return (
     <div className="space-y-3">

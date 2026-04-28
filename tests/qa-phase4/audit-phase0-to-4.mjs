@@ -10,7 +10,7 @@ const BASE = 'https://dev.propyte.com';
 const OUT = 'tests/qa-phase4/screenshots-audit-p0-4';
 
 const DEV_SLUG = 'akora-residencial-b73b319b';
-const SAMPLE_SLUG = 'sample-azul-vivo-5a4e4a4e';
+const _SAMPLE_SLUG = 'sample-azul-vivo-5a4e4a4e'; void _SAMPLE_SLUG;
 
 const report = { phases: {}, summary: { ok: 0, fail: 0, warn: 0 } };
 

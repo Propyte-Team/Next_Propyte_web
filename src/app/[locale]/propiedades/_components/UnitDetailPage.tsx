@@ -55,7 +55,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
   const property = mapUnitToProperty(row);
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
-  const citySlug = slugify(property.location.city);
+  const _citySlug = slugify(property.location.city); void _citySlug;
 
   // ── Rental estimates + AirDNA ──
   let estRentRes: number | null = null;
@@ -128,7 +128,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   };
   const typeLabel = typeLabelMap[property.specs.type] || property.specs.type;
 
-  const defaultOccupancy = airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100;
+  const _defaultOccupancy = airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100;
+  void _defaultOccupancy;
 
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];

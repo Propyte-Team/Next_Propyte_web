@@ -17,7 +17,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const locale = useLocale();
   const tStages = useTranslations('stages');
   const tMkt = useTranslations('marketplace');
-  const { format, currency } = useCurrency();
+  const { format } = useCurrency();
   const [currentImg, setCurrentImg] = useState(0);
   const [saved, setSaved] = useState(false);
 

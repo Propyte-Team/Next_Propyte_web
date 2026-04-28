@@ -338,6 +338,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
         <View style={styles.heroBlock}>
           {data.heroImage ? (
             <>
+              {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image (PDF), not DOM img; alt has no effect */}
               <Image src={data.heroImage} style={styles.heroImage} />
               <Text style={styles.stageBadge}>{data.stageLabel.toUpperCase()}</Text>
             </>
@@ -445,6 +446,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
             </Text>
           </View>
           <View>
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image (PDF), not DOM img */}
             <Image src={data.qrCodeDataUrl} style={styles.qr} />
             <Text style={styles.qrLabel}>{labels.scan}</Text>
           </View>

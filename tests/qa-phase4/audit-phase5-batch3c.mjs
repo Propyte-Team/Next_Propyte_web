@@ -192,7 +192,7 @@ async function audit() {
           const body = document.body.innerText || '';
           // No debe mostrar error stack traces ni "Error" genérico
           const hasError = /error|exception|stack trace/i.test(body.slice(0, 2000));
-          const hasContent = body.length > 500;
+          const _hasContent = body.length > 500; void _hasContent;
           return { hasError, contentLength: body.length };
         });
         push(`${r.path} renderiza sin errores (data gap tolerance)`, !contentOK.hasError && contentOK.contentLength > 500, `len=${contentOK.contentLength} err=${contentOK.hasError}`);

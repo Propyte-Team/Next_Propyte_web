@@ -18,7 +18,7 @@ const URLS = [
   { path: '/es/propiedades/akora-a301-cancun', label: 'akora-unit', type: 'unit' },
 ];
 
-async function auditMobile(browser, url, label, type) {
+async function auditMobile(browser, url, label, _type) {
   const sec = { name: `MOBILE ${label}`, checks: [] };
   const ctx = await browser.newContext({ ...devices['iPhone 13 Pro'] });
   const page = await ctx.newPage();

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import {
   Building2, MapPin, BarChart3, ArrowUpRight,
   ChevronDown, Loader2, X, SlidersHorizontal,
-  Database, Clock, ChevronRight, Info,
+  Database, Clock,
 } from 'lucide-react';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 
@@ -266,6 +267,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
   // ── Normalize zones + price bounds safety net ──
   type ComparableWithZone = Comparable & { normalizedZone: string | null };
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- compiler skipped this file due to other rules; keep manual memo while we refactor
   const normalizedComparables = useMemo<ComparableWithZone[]>(() => {
     if (!data?.comparables) return [];
     return data.comparables
@@ -391,6 +393,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
   const clearFilters = () => setFilters({ city: '', zone: '', propertyType: '', bedrooms: '', rentalType: '', furnished: '', rentMin: 0, rentMax: 0, minSamples: 0 });
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization -- compiler skipped this file due to other rules; keep manual memo while we refactor
   const sortedDevelopments = useMemo(() => {
     if (!data?.developments) return [];
     return [...data.developments].sort((a, b) => {
@@ -433,6 +436,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
             </span>
           ))}
           {data.data_freshness && (() => {
+            // eslint-disable-next-line react-hooks/purity -- "days ago" display is intentionally live; staleness across re-renders is acceptable
             const daysAgo = Math.floor((Date.now() - new Date(data.data_freshness).getTime()) / 86400000);
             const dotColor = daysAgo <= 7 ? 'bg-[#22C55E]' : daysAgo <= 30 ? 'bg-yellow-400' : 'bg-[#EF4444]';
             return (
@@ -711,7 +715,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                       <td className="px-5 py-4 text-sm text-gray-400 font-mono">{i + 1}</td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          {dev.image && <img src={dev.image} alt={dev.name} className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />}
+                          {dev.image && <Image src={dev.image} alt={dev.name} width={40} height={40} unoptimized className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />}
                           <div className="min-w-0">
                             <div className="text-sm font-semibold text-[#1A2F3F] truncate max-w-[200px]">{dev.name}</div>
                             <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin size={10} />{dev.zone ? `${dev.zone}, ` : ''}{dev.city}</div>
