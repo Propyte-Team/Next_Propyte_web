@@ -21,8 +21,10 @@ import {
   VAC,
   RES,
 } from '@/lib/calculator';
-import { PropertyPDFDocument, type PropertyPDFData } from '@/lib/pdf/PropertyPDFDocument';
+import { PropertyPDFDocument, type PropertyPDFData, type PropertyPDFLabels } from '@/lib/pdf/PropertyPDFDocument';
 import { createElement, type ReactElement } from 'react';
+import { getTranslations } from 'next-intl/server';
+import { pickLang } from '@/lib/i18n/pickLang';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -86,6 +88,31 @@ export async function GET(req: Request) {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+async function buildPdfLabels(locale: 'es' | 'en', kind: 'development' | 'unit'): Promise<PropertyPDFLabels> {
+  const t = await getTranslations({ locale, namespace: 'pdf' });
+  return {
+    snapshot: kind === 'unit' ? t('snapshotProperty') : t('snapshotDevelopment'),
+    imageNotAvailable: t('imageNotAvailable'),
+    priceRange: t('priceRange'),
+    startingFrom: t('startingFrom'),
+    projectedRoi: t('projectedRoi'),
+    annual: t('annual'),
+    bedrooms: t('bedrooms'),
+    bathrooms: t('bathrooms'),
+    area: t('area'),
+    stage: t('stage'),
+    irr5y: t('irr5y'),
+    estRentMo: t('estRentMo'),
+    overview: t('overview'),
+    investmentMetrics: t('investmentMetrics'),
+    amenities: t('amenities'),
+    developer: t('developer'),
+    disclaimer: t('disclaimer'),
+    generatedOn: t('generatedOn'),
+    scan: t('scan'),
+  };
+}
+
 async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'): Promise<PropertyPDFData | null> {
   let row: UnitRow | null = null;
   try {
@@ -143,9 +170,15 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
   const propertyUrl = `https://propyte.com/${locale}/propiedades/${slug}`;
   const qr = await QRCode.toDataURL(propertyUrl, { margin: 1, width: 200 });
 
-  const stageLabel = locale === 'en'
-    ? property.stage === 'preventa' ? 'Pre-sale' : property.stage === 'construccion' ? 'Under Construction' : 'Ready'
-    : property.stage === 'preventa' ? 'Preventa' : property.stage === 'construccion' ? 'En Construcción' : 'Entrega Inmediata';
+  const tPdf = await getTranslations({ locale, namespace: 'pdf' });
+  const stageLabel = property.stage === 'preventa'
+    ? tPdf('stagePresale')
+    : property.stage === 'construccion'
+      ? tPdf('stageConstruction')
+      : tPdf('stageReadyUnit');
+
+  const labels = await buildPdfLabels(locale, 'unit');
+  const descText = pickLang(locale, description.en || description.es || '', description.es || '');
 
   return {
     name: property.name,
@@ -163,8 +196,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     bathroomsRange: property.specs.bathrooms > 0 ? { min: property.specs.bathrooms, max: property.specs.bathrooms } : null,
     developer: property.developer || null,
     stageLabel,
-    descriptionEs: description.es || '',
-    descriptionEn: description.en || '',
+    description: descText,
     roiProjected: property.roi.projected || null,
     capRate: property.capRate ?? null,
     irr5y,
@@ -176,6 +208,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     generatedAt: new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
       day: '2-digit', month: 'short', year: 'numeric',
     }),
+    labels,
   };
 }
 
@@ -220,9 +253,15 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
   const propertyUrl = `https://propyte.com/${locale}/desarrollos/${slug}`;
   const qr = await QRCode.toDataURL(propertyUrl, { margin: 1, width: 200 });
 
-  const stageLabel = locale === 'en'
-    ? property.stage === 'preventa' ? 'Pre-sale' : property.stage === 'construccion' ? 'Under Construction' : 'Ready to Move In'
-    : property.stage === 'preventa' ? 'Preventa' : property.stage === 'construccion' ? 'En Construcción' : 'Entrega Inmediata';
+  const tPdf = await getTranslations({ locale, namespace: 'pdf' });
+  const stageLabel = property.stage === 'preventa'
+    ? tPdf('stagePresale')
+    : property.stage === 'construccion'
+      ? tPdf('stageConstruction')
+      : tPdf('stageReadyDev');
+
+  const labels = await buildPdfLabels(locale, 'development');
+  const descText = pickLang(locale, property.description_en || '', property.description_es || '');
 
   return {
     name: property.name,
@@ -240,8 +279,7 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
     bathroomsRange: rangeOf('bathrooms'),
     developer: developerName,
     stageLabel,
-    descriptionEs: property.description_es || '',
-    descriptionEn: property.description_en || '',
+    description: descText,
     roiProjected: roiPct,
     capRate,
     irr5y: null,
@@ -253,5 +291,6 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
     generatedAt: new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
       day: '2-digit', month: 'short', year: 'numeric',
     }),
+    labels,
   };
 }

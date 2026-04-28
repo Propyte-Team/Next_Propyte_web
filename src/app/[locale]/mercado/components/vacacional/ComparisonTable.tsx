@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { ZoneScore } from '@/lib/supabase/queries';
@@ -13,10 +14,12 @@ interface ComparisonTableProps {
   locale: string;
 }
 
-function competitionLevel(listings: number, isEn: boolean): string {
-  if (listings > 200) return isEn ? 'High' : 'Alta';
-  if (listings > 50) return isEn ? 'Moderate' : 'Moderada';
-  return isEn ? 'Low' : 'Baja';
+type CompetitionT = ReturnType<typeof useTranslations<'comparisonTable'>>;
+
+function competitionLevel(listings: number, t: CompetitionT): string {
+  if (listings > 200) return t('competitionHigh');
+  if (listings > 50) return t('competitionModerate');
+  return t('competitionLow');
 }
 
 function competitionSortValue(listings: number): number {
@@ -25,8 +28,8 @@ function competitionSortValue(listings: number): number {
   return 1;
 }
 
-export function ComparisonTable({ scores, locale }: ComparisonTableProps) {
-  const isEn = locale === 'en';
+export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProps) {
+  const t = useTranslations('comparisonTable');
   const { format } = useCurrency();
   const [sortField, setSortField] = useState<TableSortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -90,13 +93,13 @@ export function ComparisonTable({ scores, locale }: ComparisonTableProps) {
   }, [scores, sortField, sortDir]);
 
   const columns: { key: TableSortField; label: string; align?: 'left' | 'right' }[] = [
-    { key: 'zone', label: isEn ? 'Zone' : 'Zona', align: 'left' },
-    { key: 'score', label: isEn ? 'Index' : 'Índice', align: 'right' },
-    { key: 'adr', label: isEn ? 'Rate/night' : 'Tarifa/noche', align: 'right' },
-    { key: 'occupancy', label: isEn ? 'Occupancy' : 'Ocupación', align: 'right' },
-    { key: 'monthly', label: isEn ? 'Est. monthly income' : 'Ingreso mensual est.', align: 'right' },
-    { key: 'listings', label: isEn ? 'Properties' : 'Propiedades', align: 'right' },
-    { key: 'competition', label: isEn ? 'Competition' : 'Competencia', align: 'right' },
+    { key: 'zone', label: t('colZone'), align: 'left' },
+    { key: 'score', label: t('colIndex'), align: 'right' },
+    { key: 'adr', label: t('colRate'), align: 'right' },
+    { key: 'occupancy', label: t('colOccupancy'), align: 'right' },
+    { key: 'monthly', label: t('colMonthlyIncome'), align: 'right' },
+    { key: 'listings', label: t('colProperties'), align: 'right' },
+    { key: 'competition', label: t('colCompetition'), align: 'right' },
   ];
 
   const SortIndicator = ({ field }: { field: TableSortField }) => {
@@ -110,9 +113,7 @@ export function ComparisonTable({ scores, locale }: ComparisonTableProps) {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-lg font-semibold text-gray-900">
-        {isEn ? 'Full comparison' : 'Comparativa completa'}
-      </h3>
+      <h3 className="text-lg font-semibold text-gray-900">{t('fullComparison')}</h3>
 
       <div className="overflow-x-auto border border-gray-200 rounded-xl">
         <table className="w-full text-sm">
@@ -188,7 +189,7 @@ export function ComparisonTable({ scores, locale }: ComparisonTableProps) {
                           : 'bg-emerald-50 text-emerald-700'
                       }`}
                     >
-                      {competitionLevel(listings, isEn)}
+                      {competitionLevel(listings, t)}
                     </span>
                   </td>
                 </tr>

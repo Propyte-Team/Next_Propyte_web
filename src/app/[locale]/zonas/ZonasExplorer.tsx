@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { MapPin, Search, BarChart3, SortAsc, SortDesc } from 'lucide-react';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import { MarketAlertBanner } from '@/components/analytics/MarketAlertBanner';
@@ -48,6 +49,7 @@ const CITY_REGIONS: Record<string, string[]> = {
 };
 
 export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
+  const t = useTranslations('zonas');
   const isEn = locale === 'en';
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -133,9 +135,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
     <div className="space-y-6">
       {/* Data source & freshness */}
       <p className="text-xs text-gray-400 text-center">
-        {isEn
-          ? `Propyte analysis based on +2.5M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
-          : `Análisis Propyte basado en +2.5 millones de registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
+        {t('dataSource')}{latestDate ? t('dataSourceUpdated', { date: latestDate }) : ''}
       </p>
 
       {/* Filters Bar */}
@@ -148,7 +148,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
             onChange={(e) => setSelectedCity(e.target.value)}
             className="text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
           >
-            <option value="all">{isEn ? 'All Cities' : 'Todas las Ciudades'}</option>
+            <option value="all">{t('allCities')}</option>
             {Object.entries(CITY_REGIONS).map(([region, regionCities]) => {
               const available = regionCities.filter((c) => cities.includes(c));
               if (available.length === 0) return null;
@@ -172,7 +172,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={isEn ? 'Search zone...' : 'Buscar zona...'}
+            placeholder={t('searchZone')}
             className="text-sm bg-transparent border-none outline-none w-full"
           />
         </div>
@@ -184,7 +184,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
             onChange={(e) => setClusterFilter(e.target.value)}
             className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer"
           >
-            <option value="all">{isEn ? 'All Profiles' : 'Todos los Perfiles'}</option>
+            <option value="all">{t('allProfiles')}</option>
             {clusters.map((c) => (
               <option key={c} value={c!}>{c}</option>
             ))}
@@ -195,12 +195,12 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       {/* Sort Pills */}
       <div className="flex flex-wrap gap-2">
         {([
-          ['score', isEn ? 'Propyte Index' : 'Índice Propyte'],
-          ['occupancy', isEn ? 'Occupancy' : 'Ocupación'],
-          ['adr', isEn ? 'Rate/night' : 'Tarifa/noche'],
-          ['revpar', isEn ? 'Revenue/night' : 'Ingreso/noche'],
-          ['listings', isEn ? 'Properties' : 'Propiedades'],
-          ['zone', isEn ? 'Name' : 'Nombre'],
+          ['score', t('sortPropyteIndex')],
+          ['occupancy', t('sortOccupancy')],
+          ['adr', t('sortRate')],
+          ['revpar', t('sortRevenue')],
+          ['listings', t('sortProperties')],
+          ['zone', t('sortName')],
         ] as [SortField, string][]).map(([field, label]) => (
           <button
             key={field}
@@ -222,19 +222,19 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.zones}</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Zones' : 'Zonas'}</div>
+            <div className="text-xs text-gray-500">{t('statZones')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-teal-700">{cityStats.avgScore}/100</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Avg Index' : 'Índice Promedio'}</div>
+            <div className="text-xs text-gray-500">{t('statAvgIndex')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.avgOcc}%</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Avg Occupancy' : 'Ocupación Prom.'}</div>
+            <div className="text-xs text-gray-500">{t('statAvgOccupancy')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.totalListings.toLocaleString()}</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Active Properties' : 'Propiedades Activas'}</div>
+            <div className="text-xs text-gray-500">{t('statActiveProperties')}</div>
           </div>
         </div>
       )}
@@ -257,19 +257,13 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       ) : (
         <div className="text-center py-16 text-gray-400">
           <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-lg">
-            {isEn
-              ? 'No zones found with the current filters.'
-              : 'No se encontraron zonas con los filtros actuales.'}
-          </p>
+          <p className="text-lg">{t('noZonesFound')}</p>
         </div>
       )}
 
       {/* Results count */}
       <p className="text-xs text-gray-400 text-center">
-        {isEn
-          ? `Showing ${filtered.length} of ${scores.length} zones`
-          : `Mostrando ${filtered.length} de ${scores.length} zonas`}
+        {t('showingOf', { visible: filtered.length, total: scores.length })}
       </p>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import {
   Share2, Download, X, Copy, Check, Loader2, Facebook, Twitter,
   MessageCircle, ChevronDown, MapPin, FileImage,
@@ -373,8 +374,8 @@ function TemplateLetter({ data }: { data: ShareDownloadData }) {
 }
 
 /* ─── Main Component ─── */
-export default function ShareDownloadModal({ data, locale, compact }: Props) {
-  const isEn = locale === 'en';
+export default function ShareDownloadModal({ data, locale: _locale, compact }: Props) {
+  const t = useTranslations('share');
   const [shareOpen, setShareOpen] = useState(false);
   const [fichaOpen, setFichaOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -437,9 +438,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
     }
   }, [safe]);
 
-  const waText = isEn
-    ? `Hi! Check out ${data.title} on Propyte: ${data.url}`
-    : `¡Hola! Mira ${data.title} en Propyte: ${data.url}`;
+  const waText = t('whatsappText', { name: data.title, url: data.url });
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(waText)}`;
   const facebookUrl = `https://facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`;
   const twitterUrl = `https://x.com/intent/tweet?url=${encodeURIComponent(data.url)}&text=${encodeURIComponent(data.title)}`;
@@ -481,7 +480,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
             <Share2 size={16} className="text-[#0D9488]" />
             {!compact && (
               <>
-                <span>{isEn ? 'Share' : 'Compartir'}</span>
+                <span>{t('share')}</span>
                 <ChevronDown size={14} className="opacity-50" />
               </>
             )}
@@ -495,7 +494,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 transition-colors"
               >
                 {copied ? <Check size={15} className="text-emerald-500 shrink-0" /> : <Copy size={15} className="text-gray-400 shrink-0" />}
-                {copied ? (isEn ? 'Copied!' : '¡Copiado!') : (isEn ? 'Copy link' : 'Copiar enlace')}
+                {copied ? t('copied') : t('copyLink')}
               </button>
               <a
                 href={whatsappUrl}
@@ -551,7 +550,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
             )}
             {!compact && (
               <>
-                <span>{loading ? (isEn ? 'Generating…' : 'Generando…') : (isEn ? 'Download' : 'Ficha')}</span>
+                <span>{loading ? t('generating') : t('downloadLabel')}</span>
                 {!loading && <ChevronDown size={14} className="opacity-50" />}
               </>
             )}
@@ -566,7 +565,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
               >
                 <FileImage size={15} className="text-[#0D9488] shrink-0" />
                 <div className="text-left">
-                  <div className="font-semibold">{isEn ? 'Stories (9:16)' : 'Stories (9:16)'}</div>
+                  <div className="font-semibold">{t('stories')}</div>
                   <div className="text-xs text-gray-400">360×640px PNG</div>
                 </div>
               </button>
@@ -577,7 +576,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
               >
                 <FileImage size={15} className="text-[#0D9488] shrink-0" />
                 <div className="text-left">
-                  <div className="font-semibold">{isEn ? 'Square (1:1)' : 'Cuadrado (1:1)'}</div>
+                  <div className="font-semibold">{t('square')}</div>
                   <div className="text-xs text-gray-400">500×500px PNG</div>
                 </div>
               </button>
@@ -589,7 +588,7 @@ export default function ShareDownloadModal({ data, locale, compact }: Props) {
               >
                 <Download size={15} className="text-[#0D9488] shrink-0" />
                 <div className="text-left">
-                  <div className="font-semibold">{isEn ? 'Letter (A4 Print)' : 'Carta (Imprimir)'}</div>
+                  <div className="font-semibold">{t('letter')}</div>
                   <div className="text-xs text-gray-400">794×1056px PDF</div>
                 </div>
               </button>

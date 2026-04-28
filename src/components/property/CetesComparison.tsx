@@ -1,4 +1,5 @@
 import { Landmark, Banknote, Sparkles } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 
 interface CetesComparisonProps {
@@ -19,7 +20,7 @@ interface CetesComparisonProps {
  * across three vehicles, with Propyte using the actual IRR derived from the
  * property financials.
  */
-export default function CetesComparison({
+export default async function CetesComparison({
   initialInvestment,
   irr5y,
   irr10y,
@@ -27,8 +28,8 @@ export default function CetesComparison({
   cetesRate = 11.0,
   bankRate = 5.0,
 }: CetesComparisonProps) {
-  const isEn = locale === 'en';
   if (initialInvestment <= 0) return null;
+  const t = await getTranslations({ locale, namespace: 'cetes' });
 
   const fv = (rate: number, years: number) => initialInvestment * Math.pow(1 + rate / 100, years);
   const pctGain = (fv5: number) => ((fv5 / initialInvestment - 1) * 100);
@@ -50,16 +51,20 @@ export default function CetesComparison({
     fv10: irr10y != null ? fv(irr10y, 10) : null,
   };
 
+  const labels = {
+    annual: t('annual'),
+    ourOffer: t('ourOffer'),
+    value5y: t('value5y'),
+    value10y: t('value10y'),
+    totalSuffix: t('totalSuffix'),
+  };
+
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5 md:p-6 shadow-sm">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-gray-900">
-          {isEn ? 'Compare investment vehicles' : 'Compara vehículos de inversión'}
-        </h3>
+        <h3 className="text-base font-bold text-gray-900">{t('compareTitle')}</h3>
         <p className="text-xs text-gray-500 mt-0.5">
-          {isEn
-            ? `Estimated growth of ${formatPrice(initialInvestment)} across instruments.`
-            : `Crecimiento estimado de ${formatPrice(initialInvestment)} en distintos instrumentos.`}
+          {t('compareSubtitle', { amount: formatPrice(initialInvestment) })}
         </p>
       </div>
 
@@ -67,29 +72,29 @@ export default function CetesComparison({
         <VehicleCard
           icon={<Landmark size={18} />}
           title="CETES"
-          subtitle={isEn ? 'Mexican treasury bonds' : 'Bonos del gobierno MX'}
-          rateLabel={`${cetes.rate.toFixed(1)}% ${isEn ? 'annual' : 'anual'}`}
+          subtitle={t('cetesSubtitle')}
+          rateLabel={`${cetes.rate.toFixed(1)}% ${labels.annual}`}
           fv5={cetes.fv5}
           fv10={cetes.fv10}
           gain5={pctGain(cetes.fv5)}
           gain10={((cetes.fv10 / initialInvestment - 1) * 100)}
-          locale={locale}
+          labels={labels}
         />
         <VehicleCard
           icon={<Banknote size={18} />}
-          title={isEn ? 'Bank deposit' : 'Depósito bancario'}
-          subtitle={isEn ? 'Fixed-term savings' : 'Plazo fijo'}
-          rateLabel={`${bank.rate.toFixed(1)}% ${isEn ? 'annual' : 'anual'}`}
+          title={t('bankDeposit')}
+          subtitle={t('fixedTerm')}
+          rateLabel={`${bank.rate.toFixed(1)}% ${labels.annual}`}
           fv5={bank.fv5}
           fv10={bank.fv10}
           gain5={pctGain(bank.fv5)}
           gain10={((bank.fv10 / initialInvestment - 1) * 100)}
-          locale={locale}
+          labels={labels}
         />
         <VehicleCard
           icon={<Sparkles size={18} />}
           title="Propyte"
-          subtitle={isEn ? 'Real estate investment' : 'Inversión inmobiliaria'}
+          subtitle={t('realEstate')}
           rateLabel={
             propyte.rate5 != null
               ? `IRR ${propyte.rate5.toFixed(1)}% / ${propyte.rate10?.toFixed(1) ?? '—'}%`
@@ -99,18 +104,22 @@ export default function CetesComparison({
           fv10={propyte.fv10}
           gain5={propyte.fv5 != null ? pctGain(propyte.fv5) : null}
           gain10={propyte.fv10 != null ? ((propyte.fv10 / initialInvestment - 1) * 100) : null}
-          locale={locale}
+          labels={labels}
           highlighted
         />
       </div>
 
-      <p className="text-[10px] text-gray-400 leading-snug mt-4">
-        {isEn
-          ? 'CETES and bank rates reflect 2026 BMX reference rates. Real estate figures are projections from current rent and appreciation assumptions — not guaranteed.'
-          : 'CETES y tasas bancarias reflejan referencias BMX 2026. Las cifras inmobiliarias son proyecciones basadas en renta y plusvalía estimadas — no garantizadas.'}
-      </p>
+      <p className="text-[10px] text-gray-400 leading-snug mt-4">{t('disclaimer')}</p>
     </div>
   );
+}
+
+interface VehicleLabels {
+  annual: string;
+  ourOffer: string;
+  value5y: string;
+  value10y: string;
+  totalSuffix: string;
 }
 
 interface VehicleCardProps {
@@ -122,14 +131,13 @@ interface VehicleCardProps {
   fv10: number | null;
   gain5: number | null;
   gain10: number | null;
-  locale: string;
+  labels: VehicleLabels;
   highlighted?: boolean;
 }
 
 function VehicleCard({
-  icon, title, subtitle, rateLabel, fv5, fv10, gain5, gain10, locale, highlighted,
+  icon, title, subtitle, rateLabel, fv5, fv10, gain5, gain10, labels, highlighted,
 }: VehicleCardProps) {
-  const isEn = locale === 'en';
   const baseClasses = highlighted
     ? 'bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] text-white border-transparent ring-2 ring-[#5CE0D2]/40'
     : 'bg-white text-gray-900 border border-gray-100';
@@ -143,7 +151,7 @@ function VehicleCard({
     <div className={`rounded-xl p-4 relative ${baseClasses}`}>
       {highlighted && (
         <span className="absolute -top-2 right-3 px-2 py-0.5 bg-[#5CE0D2] text-[#0F1923] text-[10px] font-extrabold rounded-full uppercase tracking-wider">
-          {isEn ? 'Our offer' : 'Nuestra oferta'}
+          {labels.ourOffer}
         </span>
       )}
       <div className="flex items-center gap-2 mb-1">
@@ -155,22 +163,22 @@ function VehicleCard({
 
       <div className={`space-y-2 pt-3 border-t ${dividerClasses}`}>
         <Row
-          label={isEn ? '5-year value' : 'Valor a 5 años'}
+          label={labels.value5y}
           value={fv5 != null ? formatPrice(fv5) : '—'}
           gain={gain5}
+          totalSuffix={labels.totalSuffix}
           labelClass={labelClasses}
           valueClass={valueClasses}
           gainClass={gainClasses}
-          locale={locale}
         />
         <Row
-          label={isEn ? '10-year value' : 'Valor a 10 años'}
+          label={labels.value10y}
           value={fv10 != null ? formatPrice(fv10) : '—'}
           gain={gain10}
+          totalSuffix={labels.totalSuffix}
           labelClass={labelClasses}
           valueClass={valueClasses}
           gainClass={gainClasses}
-          locale={locale}
         />
       </div>
     </div>
@@ -178,12 +186,11 @@ function VehicleCard({
 }
 
 function Row({
-  label, value, gain, labelClass, valueClass, gainClass, locale,
+  label, value, gain, totalSuffix, labelClass, valueClass, gainClass,
 }: {
-  label: string; value: string; gain: number | null;
-  labelClass: string; valueClass: string; gainClass: string; locale: string;
+  label: string; value: string; gain: number | null; totalSuffix: string;
+  labelClass: string; valueClass: string; gainClass: string;
 }) {
-  const isEn = locale === 'en';
   return (
     <div>
       <div className={`text-[10px] uppercase tracking-wider font-semibold ${labelClass}`}>{label}</div>
@@ -191,7 +198,7 @@ function Row({
         <div className={`text-base font-bold ${valueClass}`}>{value}</div>
         {gain != null && (
           <div className={`text-[11px] font-bold ${gainClass}`}>
-            +{gain.toFixed(1)}% {isEn ? 'total' : 'total'}
+            +{gain.toFixed(1)}% {totalSuffix}
           </div>
         )}
       </div>

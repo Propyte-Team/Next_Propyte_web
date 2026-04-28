@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { SortAsc, SortDesc, BarChart3, ChevronDown } from 'lucide-react';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import type { ZoneScore } from '@/lib/supabase/queries';
@@ -19,7 +20,7 @@ interface ZoneCardsProps {
 const INITIAL_VISIBLE = 12;
 
 export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCardsProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('zoneCards');
   const [showAll, setShowAll] = useState(false);
 
   const visible = showAll ? scores : scores.slice(0, INITIAL_VISIBLE);
@@ -28,22 +29,18 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCa
   const SortIcon = sortDir === 'asc' ? SortAsc : SortDesc;
 
   const sortPills: { field: SortField; label: string }[] = [
-    { field: 'score', label: isEn ? 'Index' : 'Índice' },
-    { field: 'occupancy', label: isEn ? 'Occupancy' : 'Ocupación' },
-    { field: 'adr', label: isEn ? 'Rate/night' : 'Tarifa/noche' },
-    { field: 'listings', label: isEn ? 'Properties' : 'Propiedades' },
-    { field: 'zone', label: isEn ? 'Name' : 'Nombre' },
+    { field: 'score', label: t('sortIndex') },
+    { field: 'occupancy', label: t('sortOccupancy') },
+    { field: 'adr', label: t('sortRate') },
+    { field: 'listings', label: t('sortProperties') },
+    { field: 'zone', label: t('sortName') },
   ];
 
   if (scores.length === 0) {
     return (
       <div className="text-center py-16 text-gray-400">
         <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-        <p className="text-lg">
-          {isEn
-            ? 'No zones found with the current filters.'
-            : 'No se encontraron zonas con los filtros actuales.'}
-        </p>
+        <p className="text-lg">{t('noZonesFound')}</p>
       </div>
     );
   }
@@ -90,9 +87,7 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCa
             onClick={() => setShowAll(true)}
             className="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-[#1A2F3F] bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            {isEn
-              ? `View all ${scores.length} zones`
-              : `Ver todas las ${scores.length} zonas`}
+            {t('viewAllZones', { count: scores.length })}
             <ChevronDown className="w-4 h-4" />
           </button>
         </div>
@@ -100,9 +95,7 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCa
 
       {/* Count */}
       <p className="text-xs text-gray-400 text-center">
-        {isEn
-          ? `Showing ${visible.length} of ${scores.length} zones`
-          : `Mostrando ${visible.length} de ${scores.length} zonas`}
+        {t('showingOf', { visible: visible.length, total: scores.length })}
       </p>
     </div>
   );

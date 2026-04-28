@@ -1,4 +1,5 @@
 import { TrendingUp } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { CITY_TO_AIRDNA, calculatePriceToRentRatio } from '@/lib/calculator';
 
 interface MarketIndicatorProps {
@@ -19,10 +20,10 @@ interface MarketIndicatorProps {
  *
  * Grade: 80+ excellent / 60-79 good / 40-59 fair / <40 poor
  */
-export default function MarketIndicator({
+export default async function MarketIndicator({
   city, price, monthlyRent, capRate, airdnaOccupancy, locale,
 }: MarketIndicatorProps) {
-  const isEn = locale === 'en';
+  const t = await getTranslations({ locale, namespace: 'marketIndicator' });
 
   // Factor 1: Occupancy
   const occ = airdnaOccupancy ?? null;
@@ -45,21 +46,19 @@ export default function MarketIndicator({
 
   const grade: { label: string; color: string; bg: string } =
     total >= 80
-      ? { label: isEn ? 'Excellent' : 'Excelente', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
+      ? { label: t('excellent'), color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
       : total >= 60
-        ? { label: isEn ? 'Strong' : 'Sólido', color: 'text-[#0D9488]', bg: 'bg-[#5CE0D2]/10 border-[#5CE0D2]/30' }
+        ? { label: t('strong'), color: 'text-[#0D9488]', bg: 'bg-[#5CE0D2]/10 border-[#5CE0D2]/30' }
         : total >= 40
-          ? { label: isEn ? 'Fair' : 'Regular', color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' }
-          : { label: isEn ? 'Weak' : 'Débil', color: 'text-red-600', bg: 'bg-red-50 border-red-200' };
+          ? { label: t('fair'), color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' }
+          : { label: t('weak'), color: 'text-red-600', bg: 'bg-red-50 border-red-200' };
 
   return (
     <div className={`rounded-2xl border p-4 ${grade.bg}`}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <TrendingUp size={18} className={grade.color} />
-          <span className={`text-sm font-bold ${grade.color}`}>
-            {isEn ? 'Market Score' : 'Índice de Mercado'}
-          </span>
+          <span className={`text-sm font-bold ${grade.color}`}>{t('marketScore')}</span>
         </div>
         <div className={`text-2xl font-extrabold ${grade.color}`}>
           {total}<span className="text-sm font-semibold">/100</span>
@@ -69,17 +68,13 @@ export default function MarketIndicator({
       <div className={`text-xs font-semibold ${grade.color} mb-3`}>{grade.label}</div>
 
       <div className="space-y-1.5 text-xs">
-        <FactorBar label={isEn ? 'Occupancy' : 'Ocupación'} value={occScore} max={25} />
-        <FactorBar label={isEn ? 'Price-to-Rent' : 'Precio/Renta'} value={ptrScore} max={25} />
-        <FactorBar label={isEn ? 'Cap Rate' : 'Cap Rate'} value={capScore} max={25} />
-        <FactorBar label={isEn ? 'Market Coverage' : 'Cobertura'} value={locScore} max={25} />
+        <FactorBar label={t('occupancy')} value={occScore} max={25} />
+        <FactorBar label={t('priceToRent')} value={ptrScore} max={25} />
+        <FactorBar label={t('capRate')} value={capScore} max={25} />
+        <FactorBar label={t('marketCoverage')} value={locScore} max={25} />
       </div>
 
-      <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">
-        {isEn
-          ? 'Composite score from AirDNA occupancy, price-to-rent ratio, cap rate, and market coverage.'
-          : 'Puntuación compuesta: ocupación AirDNA, relación precio/renta, cap rate y cobertura de mercado.'}
-      </p>
+      <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">{t('description')}</p>
     </div>
   );
 }

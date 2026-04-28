@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface MercadoHeroProps {
@@ -9,43 +10,33 @@ interface MercadoHeroProps {
   ltrStats?: { comparables: number; cities: number; sources: number; updatedAt: string };
 }
 
-export function MercadoHero({ activeTab, locale, strStats, ltrStats }: MercadoHeroProps) {
-  const isEn = locale === 'en';
+export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: MercadoHeroProps) {
+  const t = useTranslations('mercadoHero');
 
   const trustItems = activeTab === 'vacacional'
     ? [
-        { value: strStats ? strStats.listings.toLocaleString() : '—', label: isEn ? 'properties mapped' : 'propiedades mapeadas' },
-        { value: strStats ? strStats.cities.toString() : '—', label: isEn ? 'cities' : 'ciudades' },
-        { value: strStats ? strStats.zones.toString() : '—', label: isEn ? 'zones analyzed' : 'zonas analizadas' },
-        { value: isEn ? 'Monthly' : 'Mensual', label: isEn ? 'update' : 'actualización' },
+        { value: strStats ? strStats.listings.toLocaleString() : '—', label: t('strProperties') },
+        { value: strStats ? strStats.cities.toString() : '—', label: t('cities') },
+        { value: strStats ? strStats.zones.toString() : '—', label: t('strZones') },
+        { value: t('monthly'), label: t('update') },
       ]
     : [
-        { value: ltrStats ? ltrStats.comparables.toLocaleString() : '—', label: isEn ? 'comparables' : 'comparables' },
-        { value: ltrStats ? ltrStats.cities.toString() : '—', label: isEn ? 'cities' : 'ciudades' },
-        { value: ltrStats ? ltrStats.sources.toString() : '—', label: isEn ? 'data sources' : 'fuentes de datos' },
-        { value: isEn ? 'Daily' : 'Diaria', label: isEn ? 'update' : 'actualización' },
+        { value: ltrStats ? ltrStats.comparables.toLocaleString() : '—', label: t('ltrComparables') },
+        { value: ltrStats ? ltrStats.cities.toString() : '—', label: t('cities') },
+        { value: ltrStats ? ltrStats.sources.toString() : '—', label: t('ltrSources') },
+        { value: t('daily'), label: t('update') },
       ];
 
   return (
     <div className="bg-gradient-to-b from-[#F4F6F8] to-white pt-10 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span className="inline-block bg-[#5CE0D2]/10 text-[#0D7A72] text-xs font-semibold px-4 py-1 rounded-full mb-4">
-          {isEn
-            ? 'Market intelligence with +2M rental records'
-            : 'Inteligencia de mercado con +2M registros de renta'}
+          {t('badge')}
         </span>
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-[#1A2F3F] mb-3">
-          {isEn
-            ? 'Analyze the rental market in Mexico'
-            : 'Analiza el mercado de rentas en México'}
-        </h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-[#1A2F3F] mb-3">{t('title')}</h1>
 
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          {isEn
-            ? 'Real data on occupancy, nightly rates and rental prices by zone. Compare before investing.'
-            : 'Datos reales de ocupación, tarifas y precios de renta por zona. Compara antes de invertir.'}
-        </p>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">{t('subtitle')}</p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
           {trustItems.map((item, i) => (

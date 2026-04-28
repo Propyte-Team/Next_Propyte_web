@@ -1,6 +1,7 @@
 'use client';
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { TrendingUp, DollarSign, Home, BarChart3 } from 'lucide-react';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 
@@ -18,7 +19,7 @@ interface AirdnaInsightsProps {
  * - Rate tiers distribution
  */
 export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('airdna');
 
   const chartData = data.occupancy_trend.map((p) => ({
     date: p.date,
@@ -33,58 +34,52 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
     <div className="space-y-6">
       <div>
         <div className="flex items-start justify-between gap-3 mb-1">
-          <h3 className="text-base font-bold text-gray-900">
-            {isEn ? 'Vacation rental market' : 'Mercado de renta vacacional'}
-          </h3>
+          <h3 className="text-base font-bold text-gray-900">{t('marketTitle')}</h3>
           <div className="flex flex-col items-end gap-1">
             <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">
               AirDNA · {market}
             </span>
             {data.latest_date && (
               <span className="text-[10px] text-gray-400 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
-                {isEn ? 'Updated' : 'Actualizado'} {formatDaysAgo(data.latest_date, locale)}
+                {t('updated')} {formatDaysAgo(data.latest_date, locale, t)}
               </span>
             )}
           </div>
         </div>
-        <p className="text-xs text-gray-500">
-          {isEn
-            ? 'Short-term rental performance from AirDNA market data.'
-            : 'Desempeño de renta corta según datos AirDNA.'}
-        </p>
+        <p className="text-xs text-gray-500">{t('marketSubtitle')}</p>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <KpiCard
           icon={<TrendingUp size={18} />}
-          label={isEn ? 'Current occupancy' : 'Ocupación actual'}
+          label={t('currentOccupancy')}
           value={data.current_occupancy != null ? `${Math.round(data.current_occupancy)}%` : '—'}
           subtitle={data.avg_occupancy_12m != null
-            ? `${isEn ? 'Avg 12m' : 'Prom. 12m'}: ${Math.round(data.avg_occupancy_12m)}%`
+            ? `${t('avg12m')}: ${Math.round(data.avg_occupancy_12m)}%`
             : undefined}
         />
         <KpiCard
           icon={<DollarSign size={18} />}
-          label={isEn ? 'Current ADR' : 'ADR actual'}
+          label={t('currentAdr')}
           value={data.current_adr != null ? `$${data.current_adr.toLocaleString()}` : '—'}
-          subtitle={isEn ? 'per night (MXN)' : 'por noche (MXN)'}
+          subtitle={t('perNight')}
         />
         <KpiCard
           icon={<Home size={18} />}
-          label={isEn ? 'Active listings' : 'Anuncios activos'}
+          label={t('activeListings')}
           value={data.active_listings != null ? data.active_listings.toLocaleString() : '—'}
-          subtitle={isEn ? 'in the market' : 'en el mercado'}
+          subtitle={t('inMarket')}
         />
         <KpiCard
           icon={<BarChart3 size={18} />}
-          label={isEn ? 'Projected revenue' : 'Ingreso proyectado'}
+          label={t('projectedRevenue')}
           value={
             data.current_occupancy != null && data.current_adr != null
               ? `$${Math.round((data.current_occupancy / 100) * data.current_adr * 30).toLocaleString()}`
               : '—'
           }
-          subtitle={isEn ? 'per month (est.)' : 'mensual (est.)'}
+          subtitle={t('perMonthEst')}
         />
       </div>
 
@@ -92,9 +87,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
       {chartData.length > 1 && (
         <div className="bg-white border border-gray-100 rounded-xl p-4 md:p-5">
           <div className="flex items-baseline justify-between mb-3">
-            <div className="text-sm font-bold text-gray-900">
-              {isEn ? 'Occupancy trend · last 12 months' : 'Tendencia de ocupación · últimos 12 meses'}
-            </div>
+            <div className="text-sm font-bold text-gray-900">{t('occupancyTrend')}</div>
             <span className="text-xs text-gray-400">%</span>
           </div>
           <div className="h-[200px] md:h-[240px]">
@@ -122,7 +115,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
                   tickFormatter={(v) => `${v}%`}
                 />
                 <Tooltip
-                  formatter={(v) => [`${v}%`, isEn ? 'Occupancy' : 'Ocupación']}
+                  formatter={(v) => [`${v}%`, t('occupancy')]}
                   labelStyle={{ color: '#1A2F3F', fontWeight: 600, fontSize: 12 }}
                   contentStyle={{
                     borderRadius: 8, border: '1px solid #E5E7EB', fontSize: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -146,13 +139,11 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {adrByBedsEntries.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
-              <div className="text-sm font-bold text-gray-900 mb-3">
-                {isEn ? 'Average rate by bedrooms' : 'Tarifa promedio por recámara'}
-              </div>
+              <div className="text-sm font-bold text-gray-900 mb-3">{t('avgRateByBeds')}</div>
               <div className="space-y-2">
                 {adrByBedsEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
-                    <span className="text-gray-600 capitalize">{formatBedsLabel(name, locale)}</span>
+                    <span className="text-gray-600 capitalize">{formatBedsLabel(name, t)}</span>
                     <span className="font-bold text-gray-900">${value.toLocaleString()}</span>
                   </div>
                 ))}
@@ -161,9 +152,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
           )}
           {rateTierEntries.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
-              <div className="text-sm font-bold text-gray-900 mb-3">
-                {isEn ? 'Rate tiers' : 'Segmentos tarifarios'}
-              </div>
+              <div className="text-sm font-bold text-gray-900 mb-3">{t('rateTiers')}</div>
               <div className="space-y-2">
                 {rateTierEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
@@ -206,27 +195,28 @@ function formatMonthShort(dateStr: string, locale: string): string {
   }
 }
 
-function formatDaysAgo(dateStr: string, locale: string): string {
+type AirdnaT = ReturnType<typeof useTranslations<'airdna'>>;
+
+function formatDaysAgo(dateStr: string, locale: string, t: AirdnaT): string {
   try {
     const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
-    if (days === 0) return locale === 'en' ? 'today' : 'hoy';
-    if (days === 1) return locale === 'en' ? '1 day ago' : 'hace 1 día';
-    if (days < 30) return locale === 'en' ? `${days} days ago` : `hace ${days} días`;
+    if (days === 0) return t('today');
+    if (days === 1) return t('dayAgo');
+    if (days < 30) return t('daysAgo', { days });
     const months = Math.floor(days / 30);
-    if (months === 1) return locale === 'en' ? '1 month ago' : 'hace 1 mes';
-    return locale === 'en' ? `${months} months ago` : `hace ${months} meses`;
+    if (months === 1) return t('monthAgo');
+    return t('monthsAgo', { months });
   } catch {
     return dateStr;
   }
 }
 
-function formatBedsLabel(name: string, locale: string): string {
-  const isEn = locale === 'en';
+function formatBedsLabel(name: string, t: AirdnaT): string {
   const m = name.match(/^studio$|^(\d+)[-_]?(?:br|bed|bedroom|rec)/i);
   if (m) {
-    if (m[0] === 'studio' || m[0].toLowerCase() === 'studio') return isEn ? 'Studio' : 'Estudio';
+    if (m[0] === 'studio' || m[0].toLowerCase() === 'studio') return t('studio');
     const n = parseInt(m[1], 10);
-    return isEn ? `${n} bed${n !== 1 ? 's' : ''}` : `${n} rec.`;
+    return n === 1 ? t('bedsSingular', { n }) : t('bedsPlural', { n });
   }
   return name.replace(/_/g, ' ');
 }

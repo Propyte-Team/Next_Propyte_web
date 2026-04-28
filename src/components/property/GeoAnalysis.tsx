@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { MapPin, TrendingUp, Activity, Building2, Gauge } from 'lucide-react';
 import type { ZoneScore } from '@/lib/supabase/queries';
@@ -24,9 +25,9 @@ const DEFAULT_CENTERS: Record<string, { lat: number; lng: number }> = {
 };
 
 export default function GeoAnalysis({
-  lat, lng, address, city, zone, state, zoneScore, locale,
+  lat, lng, address, city, zone, state, zoneScore, locale: _locale,
 }: GeoAnalysisProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('geoAnalysis');
   const [mapError, setMapError] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const hasCoords = lat != null && lng != null;
@@ -52,7 +53,7 @@ export default function GeoAnalysis({
                 <AdvancedMarker position={center}>
                   <div className="flex flex-col items-center">
                     <div className="bg-[#0D9488] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
-                      {isEn ? 'Location' : 'Ubicación'}
+                      {t('location')}
                     </div>
                     <div
                       className="w-3 h-3 bg-[#0D9488] rotate-45 -mt-1.5"
@@ -67,9 +68,7 @@ export default function GeoAnalysis({
           <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
             <MapPin size={40} strokeWidth={1.5} className="mb-3" />
             <p className="text-sm font-medium">
-              {mapError
-                ? (isEn ? 'Map unavailable' : 'Mapa no disponible')
-                : (isEn ? 'Interactive map coming soon' : 'Mapa interactivo próximamente')}
+              {mapError ? t('mapUnavailable') : t('mapComingSoon')}
             </p>
           </div>
         )}
@@ -78,13 +77,13 @@ export default function GeoAnalysis({
       {/* Address + Zone info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-xs text-gray-500 mb-1">{isEn ? 'Address' : 'Dirección'}</div>
+          <div className="text-xs text-gray-500 mb-1">{t('address')}</div>
           <div className="text-sm font-semibold text-gray-900">
             {address || `${zone || ''}, ${city}`.replace(/^,\s*/, '')}
           </div>
         </div>
         <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-xs text-gray-500 mb-1">{isEn ? 'Zone' : 'Zona'}</div>
+          <div className="text-xs text-gray-500 mb-1">{t('zone')}</div>
           <div className="text-sm font-semibold text-gray-900">
             {zone || city}{state ? `, ${state}` : ''}
           </div>
@@ -94,13 +93,9 @@ export default function GeoAnalysis({
       {/* Zone scores grid */}
       {zoneScore && (
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-1">
-            {isEn ? 'Zone performance' : 'Desempeño de la zona'}
-          </h3>
+          <h3 className="text-base font-bold text-gray-900 mb-1">{t('zonePerformance')}</h3>
           <p className="text-xs text-gray-500 mb-4">
-            {isEn
-              ? `Based on investment analytics for ${zone || city}`
-              : `Basado en análisis de inversión de ${zone || city}`}
+            {t('basedOn', { zone: zone || city })}
           </p>
 
           {zoneScore.score != null && (
@@ -108,7 +103,7 @@ export default function GeoAnalysis({
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-[11px] uppercase tracking-wider font-semibold text-[#5CE0D2]/80">
-                    {isEn ? 'Composite zone score' : 'Puntaje compuesto de zona'}
+                    {t('compositeScore')}
                   </div>
                   <div className="text-3xl font-extrabold mt-1">
                     {Math.round(zoneScore.score)}
@@ -128,28 +123,28 @@ export default function GeoAnalysis({
             {zoneScore.yield_component != null && (
               <ScoreCard
                 icon={<TrendingUp size={18} />}
-                label={isEn ? 'Yield' : 'Rendimiento'}
+                label={t('yield')}
                 value={zoneScore.yield_component}
               />
             )}
             {zoneScore.occupancy_component != null && (
               <ScoreCard
                 icon={<Gauge size={18} />}
-                label={isEn ? 'Occupancy' : 'Ocupación'}
+                label={t('occupancy')}
                 value={zoneScore.occupancy_component}
               />
             )}
             {zoneScore.adr_growth_component != null && (
               <ScoreCard
                 icon={<Activity size={18} />}
-                label={isEn ? 'ADR growth' : 'Crec. ADR'}
+                label={t('adrGrowth')}
                 value={zoneScore.adr_growth_component}
               />
             )}
             {zoneScore.supply_pressure_component != null && (
               <ScoreCard
                 icon={<Building2 size={18} />}
-                label={isEn ? 'Supply pressure' : 'Presión oferta'}
+                label={t('supplyPressure')}
                 value={zoneScore.supply_pressure_component}
               />
             )}
@@ -159,19 +154,19 @@ export default function GeoAnalysis({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
             {zoneScore.median_occupancy != null && (
               <RawMetric
-                label={isEn ? 'Median occupancy' : 'Ocupación media'}
+                label={t('medianOccupancy')}
                 value={`${Math.round(zoneScore.median_occupancy)}%`}
               />
             )}
             {zoneScore.median_adr != null && (
               <RawMetric
-                label={isEn ? 'Median ADR' : 'ADR mediano'}
+                label={t('medianAdr')}
                 value={`$${Math.round(zoneScore.median_adr).toLocaleString()}`}
               />
             )}
             {zoneScore.active_listings != null && (
               <RawMetric
-                label={isEn ? 'Active listings' : 'Anuncios activos'}
+                label={t('activeListings')}
                 value={zoneScore.active_listings.toLocaleString()}
               />
             )}

@@ -2,6 +2,28 @@ import {
   Document, Page, Text, View, StyleSheet, Image, Link,
 } from '@react-pdf/renderer';
 
+export interface PropertyPDFLabels {
+  snapshot: string;
+  imageNotAvailable: string;
+  priceRange: string;
+  startingFrom: string;
+  projectedRoi: string;
+  annual: string;
+  bedrooms: string;
+  bathrooms: string;
+  area: string;
+  stage: string;
+  irr5y: string;
+  estRentMo: string;
+  overview: string;
+  investmentMetrics: string;
+  amenities: string;
+  developer: string;
+  disclaimer: string;
+  generatedOn: string;
+  scan: string;
+}
+
 export interface PropertyPDFData {
   name: string;
   kind: 'development' | 'unit';
@@ -18,8 +40,7 @@ export interface PropertyPDFData {
   bathroomsRange?: { min: number; max: number } | null;
   developer: string | null;
   stageLabel: string;
-  descriptionEs: string;
-  descriptionEn: string;
+  description: string;
   roiProjected: number | null;
   capRate: number | null;
   irr5y: number | null;
@@ -29,6 +50,7 @@ export interface PropertyPDFData {
   qrCodeDataUrl: string;
   locale: 'es' | 'en';
   generatedAt: string;
+  labels: PropertyPDFLabels;
 }
 
 // NOTE: @react-pdf/renderer does NOT support CSS `gap`. Use marginRight / marginBottom.
@@ -270,23 +292,23 @@ const fmtRange = (r: { min: number; max: number }, suffix: string) =>
   r.min === r.max ? `${r.max} ${suffix}` : `${r.min}–${r.max} ${suffix}`;
 
 export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
-  const isEn = data.locale === 'en';
-  const description = (isEn ? data.descriptionEn : data.descriptionEs) || data.descriptionEs;
+  const { labels } = data;
+  const description = data.description;
 
   const specs: Array<{ label: string; value: string }> = [];
   if (data.bedroomsRange) specs.push({
-    label: isEn ? 'Bedrooms' : 'Recámaras',
+    label: labels.bedrooms,
     value: fmtRange(data.bedroomsRange, ''),
   });
   if (data.bathroomsRange) specs.push({
-    label: isEn ? 'Bathrooms' : 'Baños',
+    label: labels.bathrooms,
     value: fmtRange(data.bathroomsRange, ''),
   });
   if (data.areaRange) specs.push({
-    label: isEn ? 'Area' : 'Superficie',
+    label: labels.area,
     value: fmtRange(data.areaRange, 'm²'),
   });
-  specs.push({ label: isEn ? 'Stage' : 'Etapa', value: data.stageLabel });
+  specs.push({ label: labels.stage, value: data.stageLabel });
 
   const metrics: Array<{ label: string; value: string }> = [];
   if (data.roiProjected != null)
@@ -294,10 +316,10 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
   if (data.capRate != null)
     metrics.push({ label: 'Cap Rate', value: `${data.capRate.toFixed(1)}%` });
   if (data.irr5y != null)
-    metrics.push({ label: isEn ? 'IRR 5y' : 'TIR 5a', value: `${data.irr5y.toFixed(1)}%` });
+    metrics.push({ label: labels.irr5y, value: `${data.irr5y.toFixed(1)}%` });
   if (data.estimatedRent != null)
     metrics.push({
-      label: isEn ? 'Est. Rent/mo' : 'Renta est./mes',
+      label: labels.estRentMo,
       value: fmtPrice(data.estimatedRent),
     });
 
@@ -309,11 +331,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
           <Text style={styles.logo}>
             PROPYTE<Text style={styles.logoAccent}>.</Text>
           </Text>
-          <Text style={styles.docType}>
-            {isEn
-              ? `Investment snapshot — ${data.kind === 'unit' ? 'Property' : 'Development'}`
-              : `Ficha de inversión — ${data.kind === 'unit' ? 'Propiedad' : 'Desarrollo'}`}
-          </Text>
+          <Text style={styles.docType}>{labels.snapshot}</Text>
         </View>
 
         {/* Hero */}
@@ -325,9 +343,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
             </>
           ) : (
             <View style={styles.heroPlaceholder}>
-              <Text style={{ color: '#9CA3AF', fontSize: 11 }}>
-                {isEn ? 'Image not available' : 'Imagen no disponible'}
-              </Text>
+              <Text style={{ color: '#9CA3AF', fontSize: 11 }}>{labels.imageNotAvailable}</Text>
             </View>
           )}
         </View>
@@ -343,8 +359,8 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
           <View style={styles.priceBlockLeft}>
             <Text style={styles.priceLabel}>
               {data.priceMax && data.priceMax > data.price
-                ? (isEn ? 'Price range' : 'Rango de precio')
-                : (isEn ? 'Starting from' : 'Precio desde')}
+                ? labels.priceRange
+                : labels.startingFrom}
             </Text>
             <Text style={styles.priceValue}>
               {data.priceMax && data.priceMax > data.price
@@ -354,11 +370,9 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
           </View>
           {data.roiProjected != null && (
             <View style={styles.priceBlockRight}>
-              <Text style={styles.priceLabel}>
-                {isEn ? 'Projected ROI' : 'ROI proyectado'}
-              </Text>
+              <Text style={styles.priceLabel}>{labels.projectedRoi}</Text>
               <Text style={styles.roiPill}>
-                {data.roiProjected.toFixed(1)}% {isEn ? 'annual' : 'anual'}
+                {data.roiProjected.toFixed(1)}% {labels.annual}
               </Text>
             </View>
           )}
@@ -379,9 +393,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
         {/* Description */}
         {description && (
           <>
-            <Text style={styles.sectionTitle}>
-              {isEn ? 'Overview' : 'Descripción'}
-            </Text>
+            <Text style={styles.sectionTitle}>{labels.overview}</Text>
             <Text style={styles.descBody}>{description.slice(0, 680)}</Text>
           </>
         )}
@@ -389,9 +401,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
         {/* Investment metrics */}
         {metrics.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>
-              {isEn ? 'Investment Metrics' : 'Métricas de Inversión'}
-            </Text>
+            <Text style={styles.sectionTitle}>{labels.investmentMetrics}</Text>
             <View style={styles.metricsRow}>
               {metrics.slice(0, 4).map((m, i) => (
                 <View key={i} style={i === Math.min(metrics.length, 4) - 1 ? styles.metricCardLast : styles.metricCard}>
@@ -406,9 +416,7 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
         {/* Amenities */}
         {data.amenities.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>
-              {isEn ? 'Amenities' : 'Amenidades'}
-            </Text>
+            <Text style={styles.sectionTitle}>{labels.amenities}</Text>
             <View style={styles.amenityList}>
               {data.amenities.slice(0, 16).map((a, i) => (
                 <Text key={i} style={styles.amenityChip}>{a}</Text>
@@ -420,18 +428,12 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
         {/* Developer */}
         {data.developer && (
           <>
-            <Text style={styles.sectionTitle}>
-              {isEn ? 'Developer' : 'Desarrolladora'}
-            </Text>
+            <Text style={styles.sectionTitle}>{labels.developer}</Text>
             <Text style={styles.descBody}>{data.developer}</Text>
           </>
         )}
 
-        <Text style={styles.disclaimer}>
-          {isEn
-            ? 'Figures are estimates based on market analysis. Not guaranteed returns. Contact a Propyte advisor for personalized analysis.'
-            : 'Cifras son estimaciones basadas en análisis de mercado. No son rendimientos garantizados. Contacta a un asesor Propyte para análisis personalizado.'}
-        </Text>
+        <Text style={styles.disclaimer}>{labels.disclaimer}</Text>
 
         {/* Footer */}
         <View style={styles.footer} fixed>
@@ -439,14 +441,12 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
             <Text style={styles.footerTagline}>Propyte · Real estate en modo inteligente</Text>
             <Link src={data.url}><Text style={styles.footerUrl}>{data.url}</Text></Link>
             <Text style={styles.footerUrl}>
-              {isEn
-                ? `Generated ${data.generatedAt}`
-                : `Generado ${data.generatedAt}`}
+              {labels.generatedOn} {data.generatedAt}
             </Text>
           </View>
           <View>
             <Image src={data.qrCodeDataUrl} style={styles.qr} />
-            <Text style={styles.qrLabel}>{isEn ? 'Scan' : 'Escanea'}</Text>
+            <Text style={styles.qrLabel}>{labels.scan}</Text>
           </View>
         </View>
       </Page>

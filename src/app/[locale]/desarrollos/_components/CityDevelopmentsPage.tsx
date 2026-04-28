@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronRight, MapPin, Building2 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { APPROVED_STATUSES } from '@/lib/supabase/queries';
+import { pickLang } from '@/lib/i18n/pickLang';
 import { formatPrice } from '@/lib/formatters';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import { CITY_MAP } from './cityConfig';
@@ -16,7 +18,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
   const cityInfo = CITY_MAP[citySlug];
   if (!cityInfo) notFound();
 
-  const isEn = locale === 'en';
+  const t = await getTranslations({ locale, namespace: 'cityDevelopments' });
   const supabase = createPublicSupabaseClient();
 
   let properties: Array<{
@@ -74,11 +76,11 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         type="breadcrumb"
         data={{
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: isEn ? 'Home' : 'Inicio', item: `https://propyte.com/${locale}` },
+            { '@type': 'ListItem', position: 1, name: t('breadcrumbHome'), item: `https://propyte.com/${locale}` },
             {
               '@type': 'ListItem',
               position: 2,
-              name: isEn ? 'Developments' : 'Desarrollos',
+              name: t('breadcrumbDevelopments'),
               item: `https://propyte.com/${locale}/desarrollos`,
             },
             { '@type': 'ListItem', position: 3, name: cityInfo.name },
@@ -88,11 +90,11 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4">
         <nav className="flex items-center gap-1 text-xs text-gray-500 mb-6">
           <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">
-            {isEn ? 'Home' : 'Inicio'}
+            {t('breadcrumbHome')}
           </Link>
           <ChevronRight size={12} />
           <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">
-            {isEn ? 'Developments' : 'Desarrollos'}
+            {t('breadcrumbDevelopments')}
           </Link>
           <ChevronRight size={12} />
           <span className="text-gray-700 font-medium">{cityInfo.name}</span>
@@ -100,24 +102,24 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
 
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-            {isEn ? `New Developments in ${cityInfo.name}` : `Nuevos Desarrollos en ${cityInfo.name}`}
+            {t('h1', { city: cityInfo.name })}
           </h1>
-          <p className="mt-2 text-lg text-gray-600">{isEn ? cityInfo.descEn : cityInfo.descEs}</p>
+          <p className="mt-2 text-lg text-gray-600">{pickLang(locale, cityInfo.descEn, cityInfo.descEs)}</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-[#5CE0D2]">{count || 0}</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Developments' : 'Desarrollos'}</div>
+            <div className="text-xs text-gray-500">{t('stat_developments')}</div>
           </div>
           <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-[#5CE0D2]">{zones.length}</div>
-            <div className="text-xs text-gray-500">{isEn ? 'Zones' : 'Zonas'}</div>
+            <div className="text-xs text-gray-500">{t('stat_zones')}</div>
           </div>
           {minPrice > 0 && (
             <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center col-span-2">
               <div className="text-lg font-bold text-[#5CE0D2]">{formatPrice(minPrice)}</div>
-              <div className="text-xs text-gray-500">{isEn ? 'Starting from' : 'Desde'}</div>
+              <div className="text-xs text-gray-500">{t('stat_startingFrom')}</div>
             </div>
           )}
         </div>
@@ -125,7 +127,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         {zones.length > 1 && (
           <div className="mb-8">
             <h2 className="text-lg font-bold text-gray-900 mb-3">
-              {isEn ? `Zones in ${cityInfo.name}` : `Zonas en ${cityInfo.name}`}
+              {t('zonesIn', { city: cityInfo.name })}
             </h2>
             <div className="flex flex-wrap gap-2">
               {zones.map(([zone, zoneCount]) => (
@@ -155,9 +157,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
                 )}
                 <div className="absolute top-3 left-3">
                   <span className="px-2.5 py-1 bg-[#5CE0D2] text-white text-xs font-bold rounded-full uppercase">
-                    {dev.stage === 'preventa'
-                      ? isEn ? 'Pre-sale' : 'Preventa'
-                      : isEn ? 'Construction' : 'Construccion'}
+                    {dev.stage === 'preventa' ? t('stagePresale') : t('stageConstruction')}
                   </span>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
                 </div>
                 {(dev.price_min_mxn || dev.price_mxn || 0) > 0 && (
                   <div className="mt-2 font-bold text-gray-900">
-                    {isEn ? 'From ' : 'Desde '}
+                    {t('from')}
                     {formatPrice(dev.price_min_mxn || dev.price_mxn || 0)}
                   </div>
                 )}
@@ -184,11 +184,14 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         </div>
 
         <div className="mt-16 prose prose-gray max-w-none">
-          <h2>{isEn ? `Investing in ${cityInfo.name}` : `Invertir en ${cityInfo.name}`}</h2>
+          <h2>{t('investingIn', { city: cityInfo.name })}</h2>
           <p>
-            {isEn
-              ? `${cityInfo.name}, ${cityInfo.state} is one of Mexico's fastest-growing real estate markets with ${count || 0} active developments across ${zones.length} zones.`
-              : `${cityInfo.name}, ${cityInfo.state} es uno de los mercados inmobiliarios de mayor crecimiento en Mexico con ${count || 0} desarrollos activos en ${zones.length} zonas.`}
+            {t('investingDescription', {
+              city: cityInfo.name,
+              state: cityInfo.state,
+              count: count || 0,
+              zones: zones.length,
+            })}
           </p>
         </div>
       </div>

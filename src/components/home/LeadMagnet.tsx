@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
 
 export default function LeadMagnet() {
-  const locale = useLocale();
-  const isEn = locale === 'en';
+  const t = useTranslations('leadMagnet');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -28,18 +27,10 @@ export default function LeadMagnet() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#5CE0D2]/20 text-[#5CE0D2] rounded-full text-xs font-bold mb-4">
               <FileDown size={14} />
-              {isEn ? 'FREE REPORT' : 'REPORTE GRATUITO'}
+              {t('freeReport')}
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
-              {isEn
-                ? 'Top 10 Developments with Highest ROI 2026'
-                : 'Top 10 Desarrollos con Mayor ROI 2026'}
-            </h2>
-            <p className="text-white/60 leading-relaxed">
-              {isEn
-                ? 'Get our exclusive analysis of the highest-performing real estate investments in Mexico\'s Riviera Maya. Based on real AirDNA data, rental comparables, and market projections.'
-                : 'Obtén nuestro análisis exclusivo de las inversiones inmobiliarias de mayor rendimiento en la Riviera Maya. Basado en datos reales de AirDNA, comparables de renta y proyecciones de mercado.'}
-            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{t('title')}</h2>
+            <p className="text-white/60 leading-relaxed">{t('description')}</p>
           </div>
 
           {/* Right: Form */}
@@ -47,28 +38,20 @@ export default function LeadMagnet() {
             {status === 'success' ? (
               <div className="text-center py-6">
                 <CheckCircle size={48} className="mx-auto text-[#22C55E] mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">
-                  {isEn ? 'Check your email!' : '¡Revisa tu correo!'}
-                </h3>
-                <p className="text-white/60 text-sm">
-                  {isEn
-                    ? 'We\'ve sent the report to your inbox.'
-                    : 'Te hemos enviado el reporte a tu bandeja de entrada.'}
-                </p>
+                <h3 className="text-xl font-bold text-white mb-2">{t('checkEmail')}</h3>
+                <p className="text-white/60 text-sm">{t('checkEmailDesc')}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-white/50 mb-1">
-                    {isEn ? 'Name' : 'Nombre'}
-                  </label>
+                  <label className="block text-xs font-medium text-white/50 mb-1">{t('name')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                     className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/30 focus:border-[#5CE0D2] focus:outline-none"
-                    placeholder={isEn ? 'Your name' : 'Tu nombre'}
+                    placeholder={t('namePlaceholder')}
                   />
                 </div>
                 <div>
@@ -79,7 +62,7 @@ export default function LeadMagnet() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/30 focus:border-[#5CE0D2] focus:outline-none"
-                    placeholder={isEn ? 'your@email.com' : 'tu@correo.com'}
+                    placeholder={t('emailPlaceholder')}
                   />
                 </div>
                 <button
@@ -88,15 +71,9 @@ export default function LeadMagnet() {
                   className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <FileDown size={18} />
-                  {status === 'sending'
-                    ? (isEn ? 'Sending...' : 'Enviando...')
-                    : (isEn ? 'Download Free Report' : 'Descargar Reporte Gratis')}
+                  {status === 'sending' ? t('sending') : t('downloadCta')}
                 </button>
-                <p className="text-[10px] text-white/30 text-center">
-                  {isEn
-                    ? 'By downloading, you agree to receive occasional market updates. Unsubscribe anytime.'
-                    : 'Al descargar, aceptas recibir actualizaciones de mercado ocasionales. Cancela cuando quieras.'}
-                </p>
+                <p className="text-[10px] text-white/30 text-center">{t('consent')}</p>
               </form>
             )}
           </div>

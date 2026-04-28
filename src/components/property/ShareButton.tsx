@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Share2, X, FileDown, Mail, MessageCircle, Link2, Check, Loader2,
 } from 'lucide-react';
@@ -26,7 +27,7 @@ interface ShareButtonProps {
 export default function ShareButton({
   propertyName, propertyUrl, slug, kind, locale, compact,
 }: ShareButtonProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('share');
   const [open, setOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -43,17 +44,11 @@ export default function ShareButton({
     };
   }, [open]);
 
-  const subject = isEn
-    ? `${propertyName} on Propyte`
-    : `${propertyName} en Propyte`;
-  const bodyText = isEn
-    ? `Take a look at this property on Propyte:\n\n${propertyName}\n${propertyUrl}`
-    : `Mira esta propiedad en Propyte:\n\n${propertyName}\n${propertyUrl}`;
+  const subject = t('subject', { name: propertyName });
+  const bodyText = t('bodyText', { name: propertyName, url: propertyUrl });
 
   const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
-  const whatsappText = isEn
-    ? `Hi! Check out ${propertyName} on Propyte: ${propertyUrl}`
-    : `¡Hola! Mira ${propertyName} en Propyte: ${propertyUrl}`;
+  const whatsappText = t('whatsappText', { name: propertyName, url: propertyUrl });
   const whatsapp = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
 
   const handlePDF = useCallback(async () => {
@@ -73,12 +68,12 @@ export default function ShareButton({
       a.remove();
       URL.revokeObjectURL(url);
     } catch (e) {
-      setError(isEn ? 'Could not generate PDF. Try again.' : 'No se pudo generar el PDF. Intenta de nuevo.');
+      setError(t('pdfError'));
       console.error('pdf download failed:', e);
     } finally {
       setDownloading(false);
     }
-  }, [slug, kind, locale, propertyName, isEn]);
+  }, [slug, kind, locale, propertyName, t]);
 
   const handleCopy = useCallback(async () => {
     try {
@@ -86,16 +81,16 @@ export default function ShareButton({
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      setError(isEn ? 'Copy failed.' : 'No se pudo copiar.');
+      setError(t('copyFailed'));
     }
-  }, [propertyUrl, isEn]);
+  }, [propertyUrl, t]);
 
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={isEn ? 'Share or download' : 'Compartir o descargar'}
+        aria-label={t('shareOrDownload')}
         className={
           compact
             ? 'inline-flex items-center justify-center w-11 h-11 rounded-full bg-white border border-gray-200 hover:border-[#5CE0D2] text-gray-700 shadow-sm transition-colors'
@@ -103,7 +98,7 @@ export default function ShareButton({
         }
       >
         <Share2 size={16} className="text-[#0D9488]" />
-        {!compact && <span>{isEn ? 'Share' : 'Compartir'}</span>}
+        {!compact && <span>{t('share')}</span>}
       </button>
 
       {open && (
@@ -112,7 +107,7 @@ export default function ShareButton({
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
-          aria-label={isEn ? 'Share or download' : 'Compartir o descargar'}
+          aria-label={t('shareOrDownload')}
         >
           <div
             className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
@@ -121,15 +116,13 @@ export default function ShareButton({
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <div>
-                <h3 className="text-base font-bold text-[#2C2C2C]">
-                  {isEn ? 'Share or download' : 'Compartir o descargar'}
-                </h3>
+                <h3 className="text-base font-bold text-[#2C2C2C]">{t('shareOrDownload')}</h3>
                 <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[280px]">{propertyName}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                aria-label={isEn ? 'Close' : 'Cerrar'}
+                aria-label={t('close')}
                 className="w-11 h-11 rounded-full hover:bg-gray-100 flex items-center justify-center"
               >
                 <X size={20} />
@@ -150,13 +143,9 @@ export default function ShareButton({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-[#2C2C2C]">
-                    {downloading
-                      ? (isEn ? 'Generating…' : 'Generando…')
-                      : (isEn ? 'Download PDF' : 'Descargar PDF')}
+                    {downloading ? t('generating') : t('downloadPdf')}
                   </div>
-                  <div className="text-xs text-gray-500">
-                    {isEn ? 'One-page summary with QR' : 'Ficha de 1 página con QR'}
-                  </div>
+                  <div className="text-xs text-gray-500">{t('pdfSummary')}</div>
                 </div>
               </button>
 
@@ -170,12 +159,8 @@ export default function ShareButton({
                   <Mail size={18} className="text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm text-[#2C2C2C]">
-                    {isEn ? 'Share by email' : 'Compartir por email'}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {isEn ? 'Opens your mail app' : 'Abre tu app de correo'}
-                  </div>
+                  <div className="font-semibold text-sm text-[#2C2C2C]">{t('shareByEmail')}</div>
+                  <div className="text-xs text-gray-500">{t('opensMailApp')}</div>
                 </div>
               </a>
 
@@ -192,9 +177,7 @@ export default function ShareButton({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-[#2C2C2C]">WhatsApp</div>
-                  <div className="text-xs text-gray-500">
-                    {isEn ? 'Share with a contact' : 'Comparte con un contacto'}
-                  </div>
+                  <div className="text-xs text-gray-500">{t('shareWithContact')}</div>
                 </div>
               </a>
 
@@ -209,9 +192,7 @@ export default function ShareButton({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-[#2C2C2C]">
-                    {copied
-                      ? (isEn ? 'Copied!' : '¡Copiado!')
-                      : (isEn ? 'Copy link' : 'Copiar enlace')}
+                    {copied ? t('copied') : t('copyLink')}
                   </div>
                   <div className="text-xs text-gray-500 truncate">{propertyUrl}</div>
                 </div>
