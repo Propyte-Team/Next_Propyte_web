@@ -187,7 +187,7 @@ function InvestmentBreakdown({
         </div>
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
           <div className="text-xs text-gray-400">{strings.netFlow}</div>
-          <div className={`text-sm font-bold ${monthlyNet >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+          <div className={`text-sm font-bold ${monthlyNet >= 0 ? 'text-[#15803D]' : 'text-[#B91C1C]'}`}>
             {formatPrice(Math.round(monthlyNet))}
           </div>
         </div>

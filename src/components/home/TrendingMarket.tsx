@@ -80,7 +80,7 @@ export default function TrendingMarket() {
   }, []);
 
   const statCards = [
-    { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#22C55E]' },
+    { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
     { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#5CE0D2]' },
     { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#F5A623]' },
     { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
@@ -132,9 +132,9 @@ export default function TrendingMarket() {
                     {t('occupancy')}: {zone.occupancy} · {t('adr')}: {zone.adr}
                   </span>
                   {zone.score > 0 && (
-                    <span className="text-[#22C55E] font-bold text-sm">{zone.score}/100</span>
+                    <span className="text-[#4ADE80] font-bold text-sm">{zone.score}/100</span>
                   )}
-                  <ArrowUpRight size={16} className="text-[#22C55E] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight size={16} className="text-[#4ADE80] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </Link>
             ))}

@@ -462,7 +462,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
             )}
           </button>
           {activeFilterCount > 0 && (
-            <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-400 hover:text-[#EF4444] transition-colors">
+            <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#B91C1C] transition-colors">
               <X size={12} />
               {t('clearFilters')}
             </button>
@@ -725,7 +725,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                       <td className="px-5 py-4 text-right text-sm font-semibold text-gray-700 hidden md:table-cell">{dev.rent_yield_gross != null ? formatPercentage(dev.rent_yield_gross) : '—'}</td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700 hidden md:table-cell">{dev.cap_rate != null ? formatPercentage(dev.cap_rate) : '—'}</td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700 hidden lg:table-cell">{dev.irr_5yr != null ? formatPercentage(dev.irr_5yr) : '—'}</td>
-                      <td className={`px-5 py-4 text-right text-sm font-medium hidden lg:table-cell ${(dev.monthly_net_flow ?? 0) >= 0 ? 'text-[#22C55E]' : 'text-[#EF4444]'}`}>
+                      <td className={`px-5 py-4 text-right text-sm font-medium hidden lg:table-cell ${(dev.monthly_net_flow ?? 0) >= 0 ? 'text-[#15803D]' : 'text-[#B91C1C]'}`}>
                         {dev.monthly_net_flow != null ? formatPrice(dev.monthly_net_flow) : '—'}
                       </td>
                       <td className="px-3 py-4">

@@ -69,7 +69,7 @@ export default function PriceTimeline({ property }: PriceTimelineProps) {
                   <span className="text-xs text-gray-400 font-medium">{item.date}</span>
                   {item.change && (
                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-                      item.change.startsWith('+') ? 'bg-[#22C55E]/10 text-[#22C55E]' : 'bg-red-50 text-red-500'
+                      item.change.startsWith('+') ? 'bg-[#15803D]/10 text-[#15803D]' : 'bg-red-50 text-[#B91C1C]'
                     }`}>
                       {item.change}
                     </span>
