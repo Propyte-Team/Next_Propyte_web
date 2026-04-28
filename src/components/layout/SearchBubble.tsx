@@ -128,7 +128,7 @@ export default function SearchBubble({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
-          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/50' : 'text-gray-700 placeholder:text-gray-400'} focus:outline-none min-w-0`}
+          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/70' : 'text-gray-700 placeholder:text-gray-500'} focus:outline-none min-w-0`}
         />
       </div>
 

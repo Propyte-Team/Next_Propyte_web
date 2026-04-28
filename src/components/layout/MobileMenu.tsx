@@ -138,7 +138,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
               {/* Language */}
               <div className="mt-4 pt-4 border-t border-white/10">
-                <p className="px-3 text-xs text-white/30 uppercase tracking-wider mb-2">
+                <p className="px-3 text-xs text-white/65 uppercase tracking-wider mb-2">
                   {t('language')}
                 </p>
                 <button

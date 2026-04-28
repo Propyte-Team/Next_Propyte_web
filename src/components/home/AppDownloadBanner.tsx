@@ -72,7 +72,7 @@ export default function AppDownloadBanner() {
                   );
                 })}
               </div>
-              <p className="text-white/30 text-xs text-center mt-3">{t('footnote')}</p>
+              <p className="text-white/65 text-xs text-center mt-3">{t('footnote')}</p>
             </div>
           </div>
         </div>

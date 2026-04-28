@@ -58,7 +58,7 @@ function EditorialHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="mt-8 text-lg md:text-xl text-white/40 max-w-xl mx-auto"
+          className="mt-8 text-lg md:text-xl text-white/65 max-w-xl mx-auto"
         >
           {t('heroSubtitle')}
         </motion.p>
@@ -94,7 +94,7 @@ function PhilosophyStatement() {
             &ldquo;{t('philosophyQuote')}&rdquo;
           </p>
           <div className="w-16 h-px bg-[#5CE0D2] mx-auto mt-8" />
-          <p className="text-sm text-white/30 uppercase tracking-[0.2em] mt-4">Propyte Built</p>
+          <p className="text-sm text-white/60 uppercase tracking-[0.2em] mt-4">Propyte Built</p>
         </FadeIn>
       </div>
     </section>
@@ -128,9 +128,9 @@ function ServicesGrid() {
           {services.map(({ icon: Icon, title, desc }, i) => (
             <FadeIn key={title} delay={i * 0.1}>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-[#5CE0D2]/30 hover:bg-white/[0.07] transition-all duration-300 group h-full">
-                <Icon size={28} className="text-white/30 group-hover:text-[#5CE0D2] transition-colors duration-300" />
+                <Icon size={28} className="text-white/60 group-hover:text-[#5CE0D2] transition-colors duration-300" />
                 <h3 className="text-xl font-semibold text-white mt-4">{title}</h3>
-                <p className="text-white/50 text-sm mt-2 leading-relaxed">{desc}</p>
+                <p className="text-white/75 text-sm mt-2 leading-relaxed">{desc}</p>
               </div>
             </FadeIn>
           ))}
@@ -160,7 +160,7 @@ function ImpactStats() {
             <FadeIn key={label} delay={i * 0.1}>
               <div className="text-center">
                 <div className="text-4xl md:text-5xl font-bold text-white">{value}</div>
-                <div className="text-sm text-white/40 mt-2 uppercase tracking-wider">{label}</div>
+                <div className="text-sm text-white/65 mt-2 uppercase tracking-wider">{label}</div>
               </div>
             </FadeIn>
           ))}
@@ -208,7 +208,7 @@ function PortfolioShowcase() {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     filter === key
                       ? 'bg-[#5CE0D2] text-white'
-                      : 'bg-white/5 text-white/50 hover:text-white hover:bg-white/10'
+                      : 'bg-white/5 text-white/75 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   {label}
@@ -237,7 +237,7 @@ function PortfolioShowcase() {
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
                   <h3 className="text-xl md:text-2xl font-bold text-white">{project.title}</h3>
-                  <p className="text-sm text-white/50 mt-1">{project.location}</p>
+                  <p className="text-sm text-white/75 mt-1">{project.location}</p>
                 </div>
                 {/* Scale on hover */}
                 <div className="absolute inset-0 group-hover:scale-[1.03] transition-transform duration-700" />
@@ -282,7 +282,7 @@ function ProcessTimeline() {
                 <Icon size={20} className="text-[#5CE0D2]" />
               </div>
               <h3 className="text-lg font-semibold text-white mt-4">{title}</h3>
-              <p className="text-sm text-white/40 mt-2 leading-relaxed">{desc}</p>
+              <p className="text-sm text-white/65 mt-2 leading-relaxed">{desc}</p>
             </FadeIn>
           ))}
         </div>
@@ -300,7 +300,7 @@ function ProcessTimeline() {
                 </div>
                 <div className="pb-6">
                   <h3 className="text-lg font-semibold text-white">{title}</h3>
-                  <p className="text-sm text-white/40 mt-1 leading-relaxed">{desc}</p>
+                  <p className="text-sm text-white/65 mt-1 leading-relaxed">{desc}</p>
                 </div>
               </div>
             </FadeIn>
@@ -337,7 +337,7 @@ function TeamExpertise() {
                 </div>
                 <h3 className="text-xl font-bold text-white">{title}</h3>
                 <p className="text-sm text-[#5CE0D2] font-medium mt-1 uppercase tracking-wider">{role}</p>
-                <p className="text-white/50 text-sm mt-3 leading-relaxed">{desc}</p>
+                <p className="text-white/75 text-sm mt-3 leading-relaxed">{desc}</p>
               </div>
             </FadeIn>
           ))}
@@ -386,7 +386,7 @@ function ConsultationForm() {
           <FadeIn>
             <div className="text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('formTitle')}</h2>
-              <p className="text-white/50 text-lg mb-8">{t('formSubtitle')}</p>
+              <p className="text-white/75 text-lg mb-8">{t('formSubtitle')}</p>
               <div className="space-y-4">
                 {[
                   { icon: Shield, text: t('formBenefit1') },
@@ -407,7 +407,7 @@ function ConsultationForm() {
                 href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=Hola%2C%20me%20interesa%20Propyte%20Built`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-8 text-sm text-white/40 hover:text-[#25D366] transition-colors"
+                className="inline-flex items-center gap-2 mt-8 text-sm text-white/65 hover:text-[#25D366] transition-colors"
               >
                 <MessageCircle size={16} /> {t('formWhatsapp')}
               </a>

@@ -162,7 +162,7 @@ function PlatformPreview() {
             <div className="w-3 h-3 rounded-full bg-yellow-400/70" />
             <div className="w-3 h-3 rounded-full bg-green-400/70" />
             <div className="ml-4 flex-1 h-7 bg-white/10 rounded-md flex items-center px-3">
-              <span className="text-white/40 text-xs">app.propyte.com/dashboard</span>
+              <span className="text-white/65 text-xs">app.propyte.com/dashboard</span>
             </div>
           </div>
           <div className="p-6 md:p-8">

@@ -94,7 +94,7 @@ function HeroSection() {
               {stats.map((stat) => (
                 <div key={stat.label}>
                   <div className="text-2xl md:text-3xl font-bold text-[#5CE0D2]">{stat.value}</div>
-                  <div className="text-sm text-white/50">{stat.label}</div>
+                  <div className="text-sm text-white/75">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -279,7 +279,7 @@ function CommissionModel() {
                     </div>
                     <div className="flex justify-between mt-2 text-xs">
                       <span className="text-[#5CE0D2]">{t('youLabel')}: {tier.you}</span>
-                      <span className="text-white/40">{t('propyteLabel')}: {tier.propyte}</span>
+                      <span className="text-white/65">{t('propyteLabel')}: {tier.propyte}</span>
                     </div>
                   </div>
                 ))}
@@ -289,7 +289,7 @@ function CommissionModel() {
                 <Award size={20} className="text-[#F5A623] flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-bold text-white">{t('capAnnualLabel')}</p>
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-xs text-white/75 mt-1">
                     {t('capAnnualDesc')}
                   </p>
                 </div>
@@ -473,14 +473,14 @@ function TechPlatform() {
               </div>
               <div className="flex-1 mx-4">
                 <div className="bg-white/10 rounded-lg h-7 flex items-center px-3 max-w-md mx-auto">
-                  <span className="text-xs text-white/40">app.propyte.com/dashboard</span>
+                  <span className="text-xs text-white/65">app.propyte.com/dashboard</span>
                 </div>
               </div>
             </div>
             <div className="p-6 grid grid-cols-4 gap-4">
               {dashStats.map((s) => (
                 <div key={s.label} className="bg-white/5 rounded-lg p-4">
-                  <div className="text-xs text-white/40">{s.label}</div>
+                  <div className="text-xs text-white/65">{s.label}</div>
                   <div className="text-xl font-bold text-white mt-1">{s.value}</div>
                   {s.change && <div className="text-xs text-green-400 mt-1">{s.change}</div>}
                 </div>
@@ -545,7 +545,7 @@ function Testimonials() {
                 </div>
                 <div>
                   <div className="text-white font-semibold text-sm">{tt.name}</div>
-                  <div className="text-white/40 text-xs">{tt.role}</div>
+                  <div className="text-white/65 text-xs">{tt.role}</div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-white/10">

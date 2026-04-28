@@ -30,7 +30,7 @@ export default function LeadMagnet() {
               {t('freeReport')}
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{t('title')}</h2>
-            <p className="text-white/60 leading-relaxed">{t('description')}</p>
+            <p className="text-white/75 leading-relaxed">{t('description')}</p>
           </div>
 
           {/* Right: Form */}
@@ -39,29 +39,29 @@ export default function LeadMagnet() {
               <div className="text-center py-6">
                 <CheckCircle size={48} className="mx-auto text-[#22C55E] mb-4" />
                 <h3 className="text-xl font-bold text-white mb-2">{t('checkEmail')}</h3>
-                <p className="text-white/60 text-sm">{t('checkEmailDesc')}</p>
+                <p className="text-white/75 text-sm">{t('checkEmailDesc')}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-white/50 mb-1">{t('name')}</label>
+                  <label className="block text-xs font-medium text-white/75 mb-1">{t('name')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/30 focus:border-[#5CE0D2] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#5CE0D2] focus:outline-none"
                     placeholder={t('namePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-white/50 mb-1">Email</label>
+                  <label className="block text-xs font-medium text-white/75 mb-1">Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/30 focus:border-[#5CE0D2] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#5CE0D2] focus:outline-none"
                     placeholder={t('emailPlaceholder')}
                   />
                 </div>
@@ -73,7 +73,7 @@ export default function LeadMagnet() {
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : t('downloadCta')}
                 </button>
-                <p className="text-[10px] text-white/30 text-center">{t('consent')}</p>
+                <p className="text-[10px] text-white/65 text-center">{t('consent')}</p>
               </form>
             )}
           </div>

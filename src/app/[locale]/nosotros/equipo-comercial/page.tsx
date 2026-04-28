@@ -249,7 +249,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
               <MessageCircle size={18} /> {t('recruitWhatsapp')}
             </a>
           </div>
-          <p className="text-white/40 text-sm flex items-center justify-center gap-2">
+          <p className="text-white/65 text-sm flex items-center justify-center gap-2">
             <MapPin size={14} /> {t('recruitLocation')}
           </p>
         </div>
