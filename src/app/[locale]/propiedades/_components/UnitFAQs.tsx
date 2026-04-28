@@ -45,7 +45,7 @@ export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin
       />
       <h2 className="text-xl font-bold text-[#2C2C2C] mb-4 flex items-center gap-2">
         <HelpCircle size={22} className="text-[#5CE0D2]" />
-        {isEn ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'}
+        {locale === 'en' ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'}
       </h2>
       <div className="space-y-3">
         {faqs.map((f, i) => (

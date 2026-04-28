@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Plane, Building2 } from 'lucide-react';
+import { pickLang } from '@/lib/i18n/pickLang';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface TabBarProps {
@@ -17,7 +18,6 @@ const TABS: { id: TabId; labelEs: string; labelEn: string; icon: typeof Plane }[
 export function TabBar({ activeTab, locale }: TabBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isEn = locale === 'en';
 
   const handleTabChange = (tab: TabId) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -40,7 +40,7 @@ export function TabBar({ activeTab, locale }: TabBarProps) {
               }`}
             >
               <Icon className="w-4 h-4" />
-              {isEn ? labelEn : labelEs}
+              {pickLang(locale, labelEn, labelEs)}
             </button>
           ))}
         </div>

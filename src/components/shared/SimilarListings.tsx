@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Building2, MapPin } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 
 export interface SimilarListingItem {
@@ -30,13 +31,11 @@ interface SimilarListingsProps {
  * `kind` discriminator. Card layout adapts: units show bed/bath/area chips
  * and a "development — unit#" heading; developments show "from {price}".
  */
-export default function SimilarListings({ items, kind, locale, title }: SimilarListingsProps) {
-  const isEn = locale === 'en';
+export default async function SimilarListings({ items, kind, locale, title }: SimilarListingsProps) {
   if (!items || items.length === 0) return null;
+  const t = await getTranslations({ locale, namespace: 'property' });
 
-  const defaultTitle = kind === 'unit'
-    ? (isEn ? 'Similar units' : 'Propiedades similares')
-    : (isEn ? 'More developments' : 'Más desarrollos');
+  const defaultTitle = kind === 'unit' ? t('similarUnits') : t('moreDevelopments');
   const resolvedTitle = title ?? defaultTitle;
   const basePath = kind === 'unit' ? 'propiedades' : 'desarrollos';
 
@@ -76,8 +75,8 @@ export default function SimilarListings({ items, kind, locale, title }: SimilarL
 
               {kind === 'unit' && (item.bedrooms || item.bathrooms || item.area) && (
                 <div className="flex items-center gap-2 mt-2 text-[11px] text-gray-500">
-                  {item.bedrooms ? <span>{item.bedrooms} {isEn ? 'bd' : 'rec'}</span> : null}
-                  {item.bathrooms ? <span>· {item.bathrooms} {isEn ? 'ba' : 'ba'}</span> : null}
+                  {item.bedrooms ? <span>{item.bedrooms} {t('bedShort', { count: item.bedrooms })}</span> : null}
+                  {item.bathrooms ? <span>· {item.bathrooms} {t('bathAbbrev')}</span> : null}
                   {item.area ? <span>· {item.area} m²</span> : null}
                 </div>
               )}
@@ -85,7 +84,7 @@ export default function SimilarListings({ items, kind, locale, title }: SimilarL
               {item.price != null && item.price > 0 && (
                 <div className="mt-2 font-bold text-[#2C2C2C] text-sm">
                   {kind === 'development'
-                    ? `${isEn ? 'From ' : 'Desde '}${formatPrice(item.price)}`
+                    ? t('fromPrice', { price: formatPrice(item.price) })
                     : formatPrice(item.price)}
                 </div>
               )}

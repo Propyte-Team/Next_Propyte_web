@@ -1,6 +1,7 @@
 'use client';
 
 import { BarChart3, TrendingUp, Home, MapPin } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface VacacionalKPIsProps {
   zones: number;
@@ -10,54 +11,21 @@ interface VacacionalKPIsProps {
   locale: string;
 }
 
-export function VacacionalKPIs({ zones, avgIndex, avgOccupancy, totalListings, locale }: VacacionalKPIsProps) {
-  const isEn = locale === 'en';
+export function VacacionalKPIs({ zones, avgIndex, avgOccupancy, totalListings }: VacacionalKPIsProps) {
+  const t = useTranslations('mercado');
 
-  // Hide-empty pattern (Speckit §32.3): omitir cards con valores 0/null en vez
-  // de mostrar dashes o ceros sin datos reales. Los KPIs vacíos confunden más
-  // que ayudan — mejor pedir al usuario que filtre por una ciudad con data.
   const kpis = [
-    {
-      icon: MapPin,
-      value: zones.toString(),
-      show: zones > 0,
-      label: isEn ? 'Zones' : 'Zonas',
-      color: 'text-gray-900',
-    },
-    {
-      icon: BarChart3,
-      value: `${avgIndex}/100`,
-      show: avgIndex > 0,
-      label: isEn ? 'Avg Index' : 'Índice Promedio',
-      color: 'text-teal-700',
-    },
-    {
-      icon: TrendingUp,
-      value: `${avgOccupancy}%`,
-      show: avgOccupancy > 0,
-      label: isEn ? 'Avg Occupancy' : 'Ocupación Prom.',
-      color: 'text-gray-900',
-    },
-    {
-      icon: Home,
-      value: totalListings.toLocaleString(),
-      show: totalListings > 0,
-      label: isEn ? 'Active Properties' : 'Propiedades Activas',
-      color: 'text-gray-900',
-    },
+    { icon: MapPin, value: zones.toString(), show: zones > 0, label: t('kpiZones'), color: 'text-gray-900' },
+    { icon: BarChart3, value: `${avgIndex}/100`, show: avgIndex > 0, label: t('kpiAvgIndex'), color: 'text-teal-700' },
+    { icon: TrendingUp, value: `${avgOccupancy}%`, show: avgOccupancy > 0, label: t('kpiAvgOccupancy'), color: 'text-gray-900' },
+    { icon: Home, value: totalListings.toLocaleString(), show: totalListings > 0, label: t('kpiActiveProperties'), color: 'text-gray-900' },
   ].filter((kpi) => kpi.show);
 
   if (kpis.length === 0) {
     return (
       <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-        <p className="text-sm font-semibold text-amber-900">
-          {isEn ? 'Updating market data…' : 'Actualizando datos de mercado…'}
-        </p>
-        <p className="text-xs text-amber-700 mt-1">
-          {isEn
-            ? 'Selecciona una ciudad específica para ver métricas disponibles.'
-            : 'Selecciona una ciudad específica para ver métricas disponibles.'}
-        </p>
+        <p className="text-sm font-semibold text-amber-900">{t('kpiUpdating')}</p>
+        <p className="text-xs text-amber-700 mt-1">{t('kpiSelectCity')}</p>
       </div>
     );
   }

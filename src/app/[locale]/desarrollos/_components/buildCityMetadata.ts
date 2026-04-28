@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { pickLang } from '@/lib/i18n/pickLang';
 import { CITY_MAP } from './cityConfig';
 
 /**
@@ -13,7 +14,7 @@ export function buildCityMetadata(citySlug: string, locale: string): Metadata {
     title: isEn
       ? `New Developments in ${city.name}, ${city.state} | Pre-Sales & Prices`
       : `Nuevos Desarrollos en ${city.name}, ${city.state} | Preventas y Precios`,
-    description: isEn ? city.descEn : city.descEs,
+    description: pickLang(locale, city.descEn, city.descEs),
     openGraph: {
       locale: isEn ? 'en_US' : 'es_MX',
       alternateLocale: isEn ? 'es_MX' : 'en_US',

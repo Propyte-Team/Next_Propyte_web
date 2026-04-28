@@ -392,7 +392,16 @@
     "floorLabel": "Floor {n}",
     "unitDetailsTitle": "Unit details",
     "descriptionComingSoon": "Description coming soon.",
-    "responseUnder5min": "Get availability, plans and pricing from our advisors — under 5 minutes."
+    "responseUnder5min": "Get availability, plans and pricing from our advisors — under 5 minutes.",
+    "moreDevelopments": "More developments",
+    "similarUnits": "Similar units",
+    "bathAbbrev": "ba",
+    "fromPrice": "From {price}",
+    "marketSentiment": "Market sentiment",
+    "marketSentimentSubtitle": "Directional signals from market fundamentals.",
+    "bullish": "Bullish",
+    "bearish": "Bearish",
+    "neutral": "Neutral"
   },
   "stages": {
     "preventa": "Pre-sale",
@@ -1299,7 +1308,17 @@
     "advisorDesc": "Our advisors in Playa del Carmen and Tulum know every zone.",
     "advisorCta": "Talk to a certified advisor",
     "currencyMxn": "MXN",
-    "currencyUsd": "USD"
+    "currencyUsd": "USD",
+    "kpiZones": "Zones",
+    "kpiAvgIndex": "Avg Index",
+    "kpiAvgOccupancy": "Avg Occupancy",
+    "kpiActiveProperties": "Active Properties",
+    "kpiUpdating": "Updating market data…",
+    "kpiSelectCity": "Select a specific city to see available metrics.",
+    "allCitiesOption": "All Cities",
+    "searchZonePlaceholder": "Search zone...",
+    "openFreeCalculator": "Open free calculator",
+    "talkToAdvisor": "Talk to a certified advisor"
   },
   "zoneAnalytics": {
     "scoreUnavailable": "Score not available yet",
@@ -2064,6 +2083,16 @@
     "sortName": "Name",
     "noZonesFound": "No zones found with the current filters.",
     "viewAllZones": "View all {count} zones",
-    "showingOf": "Showing {visible} of {total} zones"
+    "showingOf": "Showing {visible} of {total} zones",
+    "vacationMarketIntelligence": "Vacation Rental Market Intelligence"
+  },
+  "zoneScoreCard": {
+    "occupancy": "Occupancy",
+    "avgRateNight": "Avg. rate / night",
+    "competition": "Competition",
+    "competitionHigh": "High",
+    "competitionModerate": "Moderate",
+    "competitionLow": "Low",
+    "properties": "properties"
   }
 }

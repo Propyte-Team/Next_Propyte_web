@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { MessageCircle, ArrowDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 
 interface MobileContactBarProps {
@@ -20,14 +21,13 @@ interface MobileContactBarProps {
  * Parent must add pb-20 md:pb-0 to avoid overlap.
  */
 export default function MobileContactBar({
-  price, propertyName, propertyUrl, contactTargetId = 'contact-form', locale, roiPct,
+  price, propertyName, propertyUrl, contactTargetId = 'contact-form', roiPct,
 }: MobileContactBarProps) {
-  const isEn = locale === 'en';
+  const tProp = useTranslations('property');
+  const tNav = useTranslations('nav');
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
 
-  const msg = isEn
-    ? `Hi, I'm interested in ${propertyName}. I saw it on Propyte: ${propertyUrl}`
-    : `Hola, me interesa ${propertyName}. Lo vi en Propyte: ${propertyUrl}`;
+  const msg = `${tProp('whatsappInterestText', { name: propertyName })} ${propertyUrl}`;
   const whatsappUrl = phone
     ? `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`
     : `https://wa.me/?text=${encodeURIComponent(msg)}`;
@@ -48,7 +48,7 @@ export default function MobileContactBar({
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="flex-none min-w-0">
           <div className="text-[10px] text-gray-500 uppercase tracking-wider">
-            {isEn ? 'From' : 'Desde'}
+            {tProp('startingFrom')}
           </div>
           <div className="flex items-center gap-2">
             <span className="text-base font-extrabold text-[#2C2C2C] leading-none">
@@ -68,7 +68,7 @@ export default function MobileContactBar({
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold rounded-xl transition-colors text-sm"
-            aria-label={isEn ? 'Contact via WhatsApp' : 'Contactar por WhatsApp'}
+            aria-label={tProp('whatsappContact')}
           >
             <MessageCircle size={16} />
             WhatsApp
@@ -79,7 +79,7 @@ export default function MobileContactBar({
             className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#0D9488] hover:bg-[#0B7F75] text-white font-bold rounded-xl transition-colors text-sm"
           >
             <ArrowDown size={16} />
-            {isEn ? 'Contact' : 'Contactar'}
+            {tNav('contact')}
           </button>
         </div>
       </div>

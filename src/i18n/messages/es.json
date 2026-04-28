@@ -392,7 +392,16 @@
     "floorLabel": "Piso {n}",
     "unitDetailsTitle": "Detalles de la unidad",
     "descriptionComingSoon": "Descripción próximamente.",
-    "responseUnder5min": "Disponibilidad, planos y precios de nuestros asesores — menos de 5 minutos."
+    "responseUnder5min": "Disponibilidad, planos y precios de nuestros asesores — menos de 5 minutos.",
+    "moreDevelopments": "Más desarrollos",
+    "similarUnits": "Propiedades similares",
+    "bathAbbrev": "ba",
+    "fromPrice": "Desde {price}",
+    "marketSentiment": "Sentimiento de mercado",
+    "marketSentimentSubtitle": "Señales direccionales de fundamentales.",
+    "bullish": "Alcista",
+    "bearish": "Bajista",
+    "neutral": "Neutral"
   },
   "stages": {
     "preventa": "Preventa",
@@ -1299,7 +1308,17 @@
     "advisorDesc": "Nuestros asesores en Playa del Carmen y Tulum conocen cada zona.",
     "advisorCta": "Hablar con un asesor certificado",
     "currencyMxn": "MXN",
-    "currencyUsd": "USD"
+    "currencyUsd": "USD",
+    "kpiZones": "Zonas",
+    "kpiAvgIndex": "Índice Promedio",
+    "kpiAvgOccupancy": "Ocupación Prom.",
+    "kpiActiveProperties": "Propiedades Activas",
+    "kpiUpdating": "Actualizando datos de mercado…",
+    "kpiSelectCity": "Selecciona una ciudad específica para ver métricas disponibles.",
+    "allCitiesOption": "Todas las Ciudades",
+    "searchZonePlaceholder": "Buscar zona...",
+    "openFreeCalculator": "Abrir calculadora gratuita",
+    "talkToAdvisor": "Hablar con un asesor certificado"
   },
   "zoneAnalytics": {
     "scoreUnavailable": "Score no disponible aún",
@@ -2064,6 +2083,16 @@
     "sortName": "Nombre",
     "noZonesFound": "No se encontraron zonas con los filtros actuales.",
     "viewAllZones": "Ver todas las {count} zonas",
-    "showingOf": "Mostrando {visible} de {total} zonas"
+    "showingOf": "Mostrando {visible} de {total} zonas",
+    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"
+  },
+  "zoneScoreCard": {
+    "occupancy": "Ocupación",
+    "avgRateNight": "Tarifa prom. / noche",
+    "competition": "Competencia",
+    "competitionHigh": "Alta",
+    "competitionModerate": "Moderada",
+    "competitionLow": "Baja",
+    "properties": "propiedades"
   }
 }

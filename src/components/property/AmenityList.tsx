@@ -4,6 +4,7 @@ import {
   ParkingCircle, UtensilsCrossed, Flame, PawPrint, CheckCircle2,
   type LucideIcon,
 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 interface AmenityListProps {
   locale: string;
@@ -49,20 +50,21 @@ const AMENITIES: AmenityDef[] = [
  * - Without a list: falls back to showing all 20 canonical amenities as
  *   a typical-amenities hint.
  */
-export default function AmenityList({ locale, amenities, title }: AmenityListProps) {
-  const isEn = locale === 'en';
+export default async function AmenityList({ locale, amenities, title }: AmenityListProps) {
+  const t = await getTranslations({ locale, namespace: 'property' });
+  const pickAmenityLabel = (c: AmenityDef) => locale === 'en' ? c.en : c.es;
 
   const items: Array<{ key: string; label: string; icon: LucideIcon }> =
     amenities && amenities.length > 0
       ? amenities.map((raw, idx) => {
           const canonical = AMENITIES.find((c) => c.match.test(raw));
           return canonical
-            ? { key: `${canonical.key}-${idx}`, label: isEn ? canonical.en : canonical.es, icon: canonical.icon }
+            ? { key: `${canonical.key}-${idx}`, label: pickAmenityLabel(canonical), icon: canonical.icon }
             : { key: `raw-${idx}`, label: raw, icon: CheckCircle2 };
         })
-      : AMENITIES.map((c) => ({ key: c.key, label: isEn ? c.en : c.es, icon: c.icon }));
+      : AMENITIES.map((c) => ({ key: c.key, label: pickAmenityLabel(c), icon: c.icon }));
 
-  const resolvedTitle = title ?? (isEn ? 'Amenities' : 'Amenidades');
+  const resolvedTitle = title ?? t('amenities');
 
   return (
     <div>

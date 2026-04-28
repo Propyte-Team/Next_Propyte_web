@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import {
   getZoneDetail,
@@ -126,7 +127,8 @@ export default async function ZonePage({
     geo: { '@type': 'GeoCoordinates', latitude: 21.1619, longitude: -86.8515 },
   };
 
-  const isEn = locale === 'en';
+  const tProp = await getTranslations({ locale, namespace: 'property' });
+  const tZonas = await getTranslations({ locale, namespace: 'zonas' });
 
   return (
     <>
@@ -138,11 +140,11 @@ export default async function ZonePage({
         {/* Breadcrumbs */}
         <nav className="text-sm text-gray-500 mb-6">
           <a href={`/${locale}`} className="hover:text-gray-700">
-            {isEn ? 'Home' : 'Inicio'}
+            {tProp('breadcrumbHome')}
           </a>
           {' / '}
           <a href={`/${locale}/zonas`} className="hover:text-gray-700">
-            {isEn ? 'Zones' : 'Zonas'}
+            {tZonas('breadcrumbZones')}
           </a>
           {' / '}
           <span className="text-gray-900 font-medium">{zone}</span>
@@ -154,7 +156,7 @@ export default async function ZonePage({
             {zone}
           </h1>
           <p className="text-lg text-gray-500 mt-1">
-            {city} &middot; {isEn ? 'Vacation Rental Market Intelligence' : 'Inteligencia de Mercado de Renta Vacacional'}
+            {city} &middot; {tZonas('vacationMarketIntelligence')}
           </p>
         </div>
 

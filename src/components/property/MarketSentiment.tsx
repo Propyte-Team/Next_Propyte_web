@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 
 export type SentimentDirection = 'bullish' | 'neutral' | 'bearish';
 
@@ -24,39 +25,35 @@ interface MarketSentimentProps {
  *  - occupancy trend (demand)
  *  - delivery pipeline (supply pressure)
  */
-export default function MarketSentiment({ indicators, locale }: MarketSentimentProps) {
-  const isEn = locale === 'en';
+export default async function MarketSentiment({ indicators, locale }: MarketSentimentProps) {
   if (indicators.length === 0) return null;
-
+  const t = await getTranslations({ locale, namespace: 'property' });
   const overall = computeOverall(indicators);
+  const labels = { bullish: t('bullish'), bearish: t('bearish'), neutral: t('neutral') };
 
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-5 md:p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-bold text-gray-900">
-            {isEn ? 'Market sentiment' : 'Sentimiento de mercado'}
-          </h3>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {isEn
-              ? 'Directional signals from market fundamentals.'
-              : 'Señales direccionales de fundamentales.'}
-          </p>
+          <h3 className="text-base font-bold text-gray-900">{t('marketSentiment')}</h3>
+          <p className="text-xs text-gray-500 mt-0.5">{t('marketSentimentSubtitle')}</p>
         </div>
-        <OverallBadge direction={overall} locale={locale} />
+        <OverallBadge direction={overall} labels={labels} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {indicators.map((ind) => (
-          <SentimentCard key={ind.id} indicator={ind} locale={locale} />
+          <SentimentCard key={ind.id} indicator={ind} labels={labels} />
         ))}
       </div>
     </div>
   );
 }
 
-function SentimentCard({ indicator, locale }: { indicator: SentimentIndicator; locale: string }) {
-  const { Icon, bg, text, border, label } = directionStyle(indicator.direction, locale);
+interface DirLabels { bullish: string; bearish: string; neutral: string }
+
+function SentimentCard({ indicator, labels }: { indicator: SentimentIndicator; labels: DirLabels }) {
+  const { Icon, bg, text, border, label } = directionStyle(indicator.direction, labels);
   return (
     <div className={`rounded-xl p-4 border ${bg} ${border}`}>
       <div className="flex items-center justify-between mb-2">
@@ -72,8 +69,8 @@ function SentimentCard({ indicator, locale }: { indicator: SentimentIndicator; l
   );
 }
 
-function OverallBadge({ direction, locale }: { direction: SentimentDirection; locale: string }) {
-  const { Icon, bg, text, border, label } = directionStyle(direction, locale);
+function OverallBadge({ direction, labels }: { direction: SentimentDirection; labels: DirLabels }) {
+  const { Icon, bg, text, border, label } = directionStyle(direction, labels);
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${bg} ${text} ${border}`}>
       <Icon size={14} />
@@ -84,34 +81,15 @@ function OverallBadge({ direction, locale }: { direction: SentimentDirection; lo
 
 function directionStyle(
   direction: SentimentDirection,
-  locale: string,
+  labels: DirLabels,
 ): { Icon: LucideIcon; bg: string; text: string; border: string; label: string } {
-  const isEn = locale === 'en';
   switch (direction) {
     case 'bullish':
-      return {
-        Icon: TrendingUp,
-        bg: 'bg-emerald-50',
-        text: 'text-emerald-700',
-        border: 'border-emerald-100',
-        label: isEn ? 'Bullish' : 'Alcista',
-      };
+      return { Icon: TrendingUp, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100', label: labels.bullish };
     case 'bearish':
-      return {
-        Icon: TrendingDown,
-        bg: 'bg-red-50',
-        text: 'text-red-700',
-        border: 'border-red-100',
-        label: isEn ? 'Bearish' : 'Bajista',
-      };
+      return { Icon: TrendingDown, bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100', label: labels.bearish };
     default:
-      return {
-        Icon: Minus,
-        bg: 'bg-gray-50',
-        text: 'text-gray-700',
-        border: 'border-gray-100',
-        label: isEn ? 'Neutral' : 'Neutral',
-      };
+      return { Icon: Minus, bg: 'bg-gray-50', text: 'text-gray-700', border: 'border-gray-100', label: labels.neutral };
   }
 }
 

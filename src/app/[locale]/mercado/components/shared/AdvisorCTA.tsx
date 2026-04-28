@@ -1,6 +1,7 @@
 'use client';
 
 import { MessageCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface AdvisorCTAProps {
@@ -12,6 +13,7 @@ const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219843235354';
 
 export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
   const isEn = locale === 'en';
+  const tMer = useTranslations('mercado');
 
   const waMessage = activeTab === 'vacacional'
     ? isEn
@@ -50,7 +52,7 @@ export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
           className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#22BF5B] text-white font-semibold rounded-xl transition-colors shadow-lg shadow-[#25D366]/20 whitespace-nowrap"
         >
           <MessageCircle size={18} />
-          {isEn ? 'Talk to a certified advisor' : 'Hablar con un asesor certificado'}
+          {tMer('talkToAdvisor')}
         </a>
       </div>
     </section>

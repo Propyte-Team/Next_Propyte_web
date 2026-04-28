@@ -1,6 +1,7 @@
 'use client';
 
 import { Calculator } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ROICalculatorCTAProps {
   locale: string;
@@ -8,6 +9,7 @@ interface ROICalculatorCTAProps {
 
 export function ROICalculatorCTA({ locale }: ROICalculatorCTAProps) {
   const isEn = locale === 'en';
+  const tMer = useTranslations('mercado');
 
   return (
     <div className="bg-[#1A2F3F] rounded-2xl px-6 py-10 sm:px-10 sm:py-12 text-center">
@@ -30,7 +32,7 @@ export function ROICalculatorCTA({ locale }: ROICalculatorCTAProps) {
         className="inline-flex items-center gap-2 px-6 py-3 bg-[#5CE0D2] text-[#1A2F3F] font-semibold rounded-lg hover:bg-[#4BCEC0] transition-colors text-sm sm:text-base"
       >
         <Calculator className="w-4 h-4" />
-        {isEn ? 'Open free calculator' : 'Abrir calculadora gratuita'}
+        {tMer('openFreeCalculator')}
       </a>
     </div>
   );

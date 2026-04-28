@@ -1,6 +1,7 @@
 'use client';
 
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 
 interface ZoneScoreCardProps {
@@ -55,25 +56,22 @@ function MetricRow({ label, value, context, trend }: {
   );
 }
 
-export function ZoneScoreCard({ score, compact = false, locale = 'es' }: ZoneScoreCardProps) {
-  const isEn = locale === 'en';
+export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
+  const t = useTranslations('zoneScoreCard');
 
-  // Determine ADR trend
   const adrGrowth = score.adr_growth_component;
   const adrTrend: 'up' | 'down' | 'flat' =
     adrGrowth != null && adrGrowth > 60 ? 'up' :
     adrGrowth != null && adrGrowth < 40 ? 'down' :
     'flat';
 
-  // Competition level label
   const listings = score.active_listings ?? 0;
-  const competitionLabel = isEn
-    ? (listings > 200 ? 'High' : listings > 50 ? 'Moderate' : 'Low')
-    : (listings > 200 ? 'Alta' : listings > 50 ? 'Moderada' : 'Baja');
+  const competitionLabel = listings > 200 ? t('competitionHigh')
+    : listings > 50 ? t('competitionModerate')
+    : t('competitionLow');
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all">
-      {/* Header: zone name + index */}
       <div className="flex items-start justify-between mb-3">
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 truncate">{score.zone}</h3>
@@ -85,18 +83,18 @@ export function ZoneScoreCard({ score, compact = false, locale = 'es' }: ZoneSco
       {!compact && (
         <div className="border-t border-gray-100 pt-3 space-y-0.5">
           <MetricRow
-            label={isEn ? 'Occupancy' : 'Ocupación'}
+            label={t('occupancy')}
             value={score.median_occupancy ? `${Math.round(score.median_occupancy)}%` : '—'}
             trend={score.median_occupancy != null && score.median_occupancy > 58 ? 'up' : score.median_occupancy != null && score.median_occupancy < 40 ? 'down' : 'flat'}
           />
           <MetricRow
-            label={isEn ? 'Avg. rate / night' : 'Tarifa prom. / noche'}
+            label={t('avgRateNight')}
             value={score.median_adr ? `$${Math.round(score.median_adr).toLocaleString()} MXN` : '—'}
             trend={adrTrend}
           />
           <MetricRow
-            label={isEn ? 'Competition' : 'Competencia'}
-            value={`${competitionLabel} · ${listings} ${isEn ? 'properties' : 'propiedades'}`}
+            label={t('competition')}
+            value={`${competitionLabel} · ${listings} ${t('properties')}`}
           />
         </div>
       )}

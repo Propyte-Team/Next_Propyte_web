@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { MapPin, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { VacacionalKPIs } from './VacacionalKPIs';
 import { ZoneCards } from './ZoneCards';
@@ -50,6 +51,7 @@ const CITY_REGIONS: Record<string, string[]> = {
 
 export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProps) {
   const isEn = locale === 'en';
+  const tMer = useTranslations('mercado');
   const [selectedCity, setSelectedCity] = useState<string>(initialCity || 'all');
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState<SortField>('score');
@@ -151,7 +153,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
             onChange={(e) => setSelectedCity(e.target.value)}
             className="text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
           >
-            <option value="all">{isEn ? 'All Cities' : 'Todas las Ciudades'}</option>
+            <option value="all">{tMer('allCitiesOption')}</option>
             {Object.entries(CITY_REGIONS).map(([region, regionCities]) => {
               const available = regionCities.filter((c) => cities.includes(c));
               if (available.length === 0) return null;
@@ -175,7 +177,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={isEn ? 'Search zone...' : 'Buscar zona...'}
+            placeholder={tMer('searchZonePlaceholder')}
             className="text-sm bg-transparent border-none outline-none w-full"
           />
         </div>
