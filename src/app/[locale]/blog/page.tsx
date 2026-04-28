@@ -111,12 +111,14 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   }
 
   // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
-  const [asesorResult, invResult] = supabase
-    ? await Promise.all([
-        getBlogPosts(supabase, { locale, category: CAT_ASESORES, limit: 4, page: 1 }),
-        getBlogPosts(supabase, { locale, category: CAT_INVERSIONISTAS, limit: 4, page: 1 }),
-      ])
-    : [{ posts: [], total: 0 }, { posts: [], total: 0 }];
+  // Sequential fetches (Promise.all triggered Next.js 16 RSC fetch dedup bug
+  // returning empty results in production builds — verified 2026-04-28).
+  let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
+  let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
+  if (supabase) {
+    asesorResult = await getBlogPosts(supabase, { locale, category: CAT_ASESORES, limit: 4, page: 1 });
+    invResult = await getBlogPosts(supabase, { locale, category: CAT_INVERSIONISTAS, limit: 4, page: 1 });
+  }
 
   const cardT = { minRead: t('minRead') };
 
