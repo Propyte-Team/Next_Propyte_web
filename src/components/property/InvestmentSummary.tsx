@@ -125,8 +125,11 @@ export default async function InvestmentSummary({
 }: InvestmentSummaryProps) {
   const t = await getTranslations({ locale, namespace: 'simulator' });
 
-  const rentRes = estimatedRent || financials.estimated_rent_residencial;
-  const rentVac = estimatedRentVac || financials.estimated_rent_vacacional;
+  // Single-source-of-truth: precomputed (trigger SQL) tiene prioridad sobre
+  // ML comparables del frontend. El backend ya cruzó airdna_metrics + rental_estimates
+  // y guardó el resultado en development_financials al aprobar el desarrollo.
+  const rentRes = financials.estimated_rent_residencial || estimatedRent;
+  const rentVac = financials.estimated_rent_vacacional || estimatedRentVac;
   const hasPrice = price && price > 0;
   const hasState = !!state;
   const canCompute = hasPrice && hasState && rentRes && rentRes > 0;
@@ -147,19 +150,22 @@ export default async function InvestmentSummary({
 
   const showDual = res && vac;
 
-  // Fallback to ML pre-computed if we can't compute
-  const displayMetrics = res || {
-    rent: financials.estimated_rent_residencial || 0,
-    occupancy: 0.95,
-    expenseRatio: 0.20,
-    netMonthly: financials.monthly_net_flow || 0,
-    grossYield: financials.rent_yield_gross || 0,
-    netYield: financials.rent_yield_net || 0,
-    capRate: financials.cap_rate || 0,
-    cashOnCash: financials.cash_on_cash_pct || 0,
-    breakeven: financials.breakeven_months || 0,
-    irr5yr: financials.irr_5yr,
-    irr10yr: financials.irr_10yr,
+  // Single-source-of-truth: precomputed (trigger SQL) tiene prioridad.
+  // Solo usamos `res` (computed local) cuando el campo precomputed no existe
+  // o es 0 (caso edge: aprobación reciente sin recompute aún).
+  const fin = financials;
+  const displayMetrics = {
+    rent: fin.estimated_rent_residencial || res?.rent || 0,
+    occupancy: fin.occupancy_rate_res || res?.occupancy || 0.95,
+    expenseRatio: res?.expenseRatio ?? 0.20,
+    netMonthly: fin.monthly_net_flow || res?.netMonthly || 0,
+    grossYield: fin.rent_yield_gross || res?.grossYield || 0,
+    netYield: fin.rent_yield_net || res?.netYield || 0,
+    capRate: fin.cap_rate || res?.capRate || 0,
+    cashOnCash: fin.cash_on_cash_pct || res?.cashOnCash || 0,
+    breakeven: fin.breakeven_months || res?.breakeven || 0,
+    irr5yr: fin.irr_5yr ?? res?.irr5yr ?? null,
+    irr10yr: fin.irr_10yr ?? res?.irr10yr ?? null,
   };
 
   const monthLabel = t('monthlyLabel');
@@ -228,7 +234,9 @@ export default async function InvestmentSummary({
   return (
     <div className="bg-[#F4F6F8] rounded-xl p-6 md:p-8">
       <div className="flex items-center gap-3 mb-6">
-        <h2 className="text-xl font-semibold text-[#2C2C2C]">{t('investmentAnalysis')}</h2>
+        <h2 className="text-xl font-semibold text-[#2C2C2C]">
+          {showDual ? t('residentialVsVacation') : t('investmentAnalysis')}
+        </h2>
         <span className="px-2 py-0.5 bg-[#5CE0D2]/15 text-[#5CE0D2] text-xs font-medium rounded-full">
           {res ? t('comparablesBased') : t('mlEstimated')}
         </span>

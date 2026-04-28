@@ -507,6 +507,7 @@
     "years5": "5 años",
     "disclaimer": "Las proyecciones son estimaciones basadas en datos históricos y supuestos del usuario. No constituyen garantía de rendimiento. Consulta a un asesor Propyte para un análisis personalizado.",
     "investmentAnalysis": "Análisis de Inversión",
+    "residentialVsVacation": "Comparativa Residencial vs Vacacional",
     "mlEstimated": "Estimación ML",
     "estimatedMonthlyRent": "Renta mensual estimada",
     "vacacional": "Vacacional",
@@ -2073,7 +2074,11 @@
     "priceToRent": "Precio/Renta",
     "capRate": "Cap Rate",
     "marketCoverage": "Cobertura",
-    "description": "Puntuación compuesta: ocupación AirDNA, relación precio/renta, cap rate y cobertura de mercado."
+    "occupancyFactor": "Ocupación (factor)",
+    "priceToRentFactor": "Precio/Renta (factor)",
+    "capRateFactor": "Cap rate (factor)",
+    "marketCoverageFactor": "Cobertura (factor)",
+    "description": "Puntuación compuesta: ocupación AirDNA, relación precio/renta, cap rate y cobertura de mercado. Cada factor pondera 0-25 puntos."
   },
   "zoneCards": {
     "sortIndex": "Índice",

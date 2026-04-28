@@ -352,7 +352,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     location: [property.zone && property.zone !== property.city ? property.zone : null, property.city, propertyState].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/desarrollos/${slug}`,
-    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219843235354',
+    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354',
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,

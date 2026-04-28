@@ -68,10 +68,10 @@ export default async function MarketIndicator({
       <div className={`text-xs font-semibold ${grade.color} mb-3`}>{grade.label}</div>
 
       <div className="space-y-1.5 text-xs">
-        <FactorBar label={t('occupancy')} value={occScore} max={25} />
-        <FactorBar label={t('priceToRent')} value={ptrScore} max={25} />
-        <FactorBar label={t('capRate')} value={capScore} max={25} />
-        <FactorBar label={t('marketCoverage')} value={locScore} max={25} />
+        <FactorBar label={t('occupancyFactor')} value={occScore} max={25} />
+        <FactorBar label={t('priceToRentFactor')} value={ptrScore} max={25} />
+        <FactorBar label={t('capRateFactor')} value={capScore} max={25} />
+        <FactorBar label={t('marketCoverageFactor')} value={locScore} max={25} />
       </div>
 
       <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">{t('description')}</p>
