@@ -8,7 +8,8 @@ import BlogHero, { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/Bl
 import BlogPagination from '@/components/blog/BlogPagination';
 import { Suspense } from 'react';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const POSTS_PER_PAGE = 6;
 
