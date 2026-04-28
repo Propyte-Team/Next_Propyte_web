@@ -111,13 +111,16 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   }
 
   // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
-  // Sequential fetches (Promise.all triggered Next.js 16 RSC fetch dedup bug
-  // returning empty results in production builds — verified 2026-04-28).
+  // Single query both categories — Promise.all + sequential ambos retornaban
+  // empty en RSC production aunque cada call individual funcionaba.
   let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   if (supabase) {
-    asesorResult = await getBlogPosts(supabase, { locale, category: CAT_ASESORES, limit: 4, page: 1 });
-    invResult = await getBlogPosts(supabase, { locale, category: CAT_INVERSIONISTAS, limit: 4, page: 1 });
+    const both = await getBlogPosts(supabase, { locale, categories: [CAT_ASESORES, CAT_INVERSIONISTAS], limit: 8, page: 1 });
+    const ases = both.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
+    const inv = both.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
+    asesorResult = { posts: ases, total: ases.length };
+    invResult = { posts: inv, total: inv.length };
   }
 
   const cardT = { minRead: t('minRead') };

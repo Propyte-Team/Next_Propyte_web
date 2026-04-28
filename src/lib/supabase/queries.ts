@@ -599,7 +599,7 @@ export async function trackWebEvent(
   client: Client,
   developmentId: string,
   eventType: string,
-  locale = 'es',
+  _locale = 'es',
 ) {
   // Aggregate into fact_web_events (daily)
   const today = new Date().toISOString().slice(0, 10);
@@ -1483,9 +1483,9 @@ const includeStaged = process.env.BLOG_INCLUDE_STAGED === 'true';
 
 export async function getBlogPosts(
   c: Client,
-  opts: { locale?: string; category?: string; limit?: number; page?: number } = {}
+  opts: { locale?: string; category?: string; categories?: string[]; limit?: number; page?: number } = {}
 ): Promise<{ posts: BlogPost[]; total: number }> {
-  const { locale = 'es', category, limit = 9, page = 1 } = opts;
+  const { locale = 'es', category, categories, limit = 9, page = 1 } = opts;
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
@@ -1503,6 +1503,7 @@ export async function getBlogPosts(
   }
 
   if (category) q = q.eq('category', category);
+  else if (categories && categories.length) q = q.in('category', categories);
 
   const { data, count, error } = await q;
   if (error) { console.error('[getBlogPosts]', error.message); return { posts: [], total: 0 }; }
