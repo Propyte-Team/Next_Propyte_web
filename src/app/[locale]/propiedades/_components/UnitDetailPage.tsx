@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   ChevronRight, MapPin, Bed, Bath, Square, Car, Building2, ArrowLeft,
 } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getUnitBySlug,
@@ -35,8 +36,8 @@ interface UnitDetailPageProps {
 }
 
 export default async function UnitDetailPage({ locale, slug }: UnitDetailPageProps) {
-  const isEn = locale === 'en';
   const supabase = createPublicSupabaseClient();
+  const tProp = await getTranslations({ locale, namespace: 'property' });
 
   // ── Fetch unit row — Supabase first, mock fallback ──
   let row: UnitRow | null = null;
@@ -113,23 +114,29 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     }));
   }
 
-  const stageLabel = isEn
-    ? property.stage === 'preventa' ? 'Pre-sale' : property.stage === 'construccion' ? 'Under Construction' : 'Ready'
-    : property.stage === 'preventa' ? 'Preventa' : property.stage === 'construccion' ? 'En Construcción' : 'Entrega Inmediata';
+  const stageLabel =
+    property.stage === 'preventa' ? tProp('stagePresale')
+      : property.stage === 'construccion' ? tProp('stageConstruction')
+        : tProp('stageReady');
 
-  const typeLabel = isEn
-    ? { departamento: 'Apartment', penthouse: 'Penthouse', casa: 'House', terreno: 'Land', macrolote: 'Macro-lot' }[property.specs.type] || property.specs.type
-    : { departamento: 'Departamento', penthouse: 'Penthouse', casa: 'Casa', terreno: 'Terreno', macrolote: 'Macrolote' }[property.specs.type] || property.specs.type;
+  const typeLabelMap: Record<string, string> = {
+    departamento: tProp('typeApartmentSingular'),
+    penthouse: 'Penthouse',
+    casa: tProp('typeHouseSingular'),
+    terreno: tProp('typeLandSingular'),
+    macrolote: tProp('typeMacrolote'),
+  };
+  const typeLabel = typeLabelMap[property.specs.type] || property.specs.type;
 
   const defaultOccupancy = airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100;
 
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];
-  if (property.specs.bedrooms > 0) shareSpecs.push({ label: isEn ? 'Bedrooms' : 'Recámaras', value: String(property.specs.bedrooms) });
-  if (property.specs.bathrooms > 0) shareSpecs.push({ label: isEn ? 'Bathrooms' : 'Baños', value: String(property.specs.bathrooms) });
+  if (property.specs.bedrooms > 0) shareSpecs.push({ label: tProp('bedrooms'), value: String(property.specs.bedrooms) });
+  if (property.specs.bathrooms > 0) shareSpecs.push({ label: tProp('bathrooms'), value: String(property.specs.bathrooms) });
   if (property.specs.area > 0) shareSpecs.push({ label: 'Área', value: `${property.specs.area} m²` });
-  if (row.parking && row.parking > 0) shareSpecs.push({ label: isEn ? 'Parking' : 'Estac.', value: String(row.parking) });
-  if (row.floor != null) shareSpecs.push({ label: isEn ? 'Floor' : 'Piso', value: String(row.floor) });
+  if (row.parking && row.parking > 0) shareSpecs.push({ label: tProp('parkingShort'), value: String(row.parking) });
+  if (row.floor != null) shareSpecs.push({ label: tProp('floorLabel', { n: '' }).trim(), value: String(row.floor) });
   const shareData: ShareDownloadData = {
     title: property.name,
     price: property.price.mxn > 0 ? formatPrice(property.price.mxn) : '—',
@@ -189,8 +196,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         type="breadcrumb"
         data={{
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: isEn ? 'Home' : 'Inicio', item: `https://propyte.com/${locale}` },
-            { '@type': 'ListItem', position: 2, name: isEn ? 'Properties' : 'Propiedades', item: `https://propyte.com/${locale}/propiedades` },
+            { '@type': 'ListItem', position: 1, name: tProp('breadcrumbHome'), item: `https://propyte.com/${locale}` },
+            { '@type': 'ListItem', position: 2, name: tProp('breadcrumbProperties'), item: `https://propyte.com/${locale}/propiedades` },
             { '@type': 'ListItem', position: 3, name: property.location.city, item: `https://propyte.com/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}` },
             { '@type': 'ListItem', position: 4, name: property.name },
           ],
@@ -199,10 +206,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
         {/* Breadcrumbs */}
-        <nav aria-label={isEn ? 'Breadcrumb' : 'Migas de pan'} className="flex items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{isEn ? 'Home' : 'Inicio'}</Link>
+        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-500 mb-4">
+          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/propiedades`} className="hover:text-[#5CE0D2]">{isEn ? 'Properties' : 'Propiedades'}</Link>
+          <Link href={`/${locale}/propiedades`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbProperties')}</Link>
           <ChevronRight size={12} />
           <Link href={`/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}`} className="hover:text-[#5CE0D2]">{property.location.city}</Link>
           <ChevronRight size={12} />
@@ -236,7 +243,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       className="inline-flex items-center gap-1 hover:text-[#5CE0D2] underline underline-offset-2"
                     >
                       <ArrowLeft size={12} />
-                      {isEn ? 'View development' : 'Ver desarrollo'}
+                      {tProp('viewDevelopment')}
                       {property.parentDevelopmentName && `: ${property.parentDevelopmentName}`}
                     </Link>
                   </>
@@ -268,45 +275,45 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               {/* Specs chips */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {property.specs.bedrooms > 0 && (
-                  <SpecChip icon={<Bed size={16} />} label={`${property.specs.bedrooms} ${isEn ? (property.specs.bedrooms === 1 ? 'bed' : 'beds') : 'rec'}`} />
+                  <SpecChip icon={<Bed size={16} />} label={`${property.specs.bedrooms} ${tProp('bedShort', { count: property.specs.bedrooms })}`} />
                 )}
                 {property.specs.bathrooms > 0 && (
-                  <SpecChip icon={<Bath size={16} />} label={`${property.specs.bathrooms} ${isEn ? (property.specs.bathrooms === 1 ? 'bath' : 'baths') : 'baños'}`} />
+                  <SpecChip icon={<Bath size={16} />} label={`${property.specs.bathrooms} ${tProp('bathShort', { count: property.specs.bathrooms })}`} />
                 )}
                 {property.specs.area > 0 && (
                   <SpecChip icon={<Square size={16} />} label={`${property.specs.area} m²`} />
                 )}
                 {row.parking && row.parking > 0 && (
-                  <SpecChip icon={<Car size={16} />} label={`${row.parking} ${isEn ? 'parking' : 'estac.'}`} />
+                  <SpecChip icon={<Car size={16} />} label={`${row.parking} ${tProp('parkingShort')}`} />
                 )}
                 {row.floor != null && (
-                  <SpecChip icon={<Building2 size={16} />} label={isEn ? `Floor ${row.floor}` : `Piso ${row.floor}`} />
+                  <SpecChip icon={<Building2 size={16} />} label={tProp('floorLabel', { n: row.floor })} />
                 )}
               </div>
             </div>
 
             {/* Tabs */}
             <Tabs
-              tablistLabel={isEn ? 'Unit details' : 'Detalles de la unidad'}
+              tablistLabel={tProp('unitDetailsTitle')}
               items={[
                 {
                   id: 'descripcion',
-                  label: isEn ? 'Overview' : 'Descripción',
+                  label: tProp('tabDescripcion'),
                   panel: (
                     <div className="space-y-6">
                       <div>
-                        <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{isEn ? 'About this unit' : 'Sobre esta unidad'}</h2>
+                        <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{tProp('aboutUnitTitle')}</h2>
                         {description ? (
                           <ExpandableText
                             maxHeight={120}
-                            moreLabel={isEn ? 'Read more' : 'Leer más'}
-                            lessLabel={isEn ? 'Read less' : 'Leer menos'}
+                            moreLabel={tProp('readMore')}
+                            lessLabel={tProp('readLess')}
                             className="text-gray-600 leading-relaxed text-sm md:text-base"
                           >
                             {description}
                           </ExpandableText>
                         ) : (
-                          <p className="text-gray-600 leading-relaxed">{isEn ? 'Description coming soon.' : 'Descripción próximamente.'}</p>
+                          <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
                         )}
                       </div>
                       <AmenityList locale={locale} amenities={property.amenities} />
@@ -315,12 +322,12 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 },
                 {
                   id: 'geo',
-                  label: isEn ? 'Location' : 'Ubicación',
+                  label: tProp('tabGeo'),
                   panel: (
                     <div className="space-y-4">
                       <div className="aspect-[16/9] bg-[#F4F6F8] rounded-xl flex flex-col items-center justify-center text-gray-400">
                         <MapPin size={40} strokeWidth={1.5} className="mb-3" />
-                        <p className="text-sm font-medium">{isEn ? 'Interactive map coming soon' : 'Mapa interactivo próximamente'}</p>
+                        <p className="text-sm font-medium">{tProp('geoMapComingSoon')}</p>
                         {property.location.lat != null && property.location.lng != null && (
                           <p className="text-[10px] text-gray-400 mt-1">
                             {property.location.lat.toFixed(4)}, {property.location.lng.toFixed(4)}
@@ -329,13 +336,13 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{isEn ? 'Address' : 'Dirección'}</div>
+                          <div className="text-xs text-gray-500 mb-1">{tProp('geoAddress')}</div>
                           <div className="text-sm font-semibold text-[#2C2C2C]">
                             {property.location.address || `${property.location.zone}, ${property.location.city}`}
                           </div>
                         </div>
                         <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{isEn ? 'Zone' : 'Zona'}</div>
+                          <div className="text-xs text-gray-500 mb-1">{tProp('geoZone')}</div>
                           <div className="text-sm font-semibold text-[#2C2C2C]">
                             {property.location.zone || property.location.city}, {property.location.state}
                           </div>
@@ -346,7 +353,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 },
                 {
                   id: 'rentabilidad',
-                  label: isEn ? 'Returns' : 'Rentabilidad',
+                  label: tProp('tabRentabilidad'),
                   panel: (
                     <UnitInvestmentCalculator
                       price={property.price.mxn}
@@ -389,12 +396,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
               <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 scroll-mt-24">
                 <h3 className="text-base font-bold text-[#2C2C2C] mb-1">
-                  {isEn ? 'Interested in this unit?' : '¿Te interesa esta unidad?'}
+                  {tProp('interestedUnitQuestion')}
                 </h3>
                 <p className="text-xs text-gray-500 mb-4">
-                  {isEn
-                    ? 'Get availability, plans and pricing from our advisors — under 5 minutes.'
-                    : 'Disponibilidad, planos y precios de nuestros asesores — menos de 5 minutos.'}
+                  {tProp('responseUnder5min')}
                 </p>
                 <ContactForm propertyId={property.id} propertyName={property.name} />
               </div>

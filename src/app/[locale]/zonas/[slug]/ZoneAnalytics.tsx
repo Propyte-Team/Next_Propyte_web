@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import { OccupancyTrend } from '@/components/analytics/OccupancyTrend';
 import { ADRTrend } from '@/components/analytics/ADRTrend';
@@ -70,7 +71,7 @@ export function ZoneAnalytics({
   developments,
   locale,
 }: ZoneAnalyticsProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('zoneAnalytics');
 
   return (
     <div className="space-y-8">
@@ -85,7 +86,7 @@ export function ZoneAnalytics({
             <ZoneScoreCard score={score} />
           ) : (
             <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400">
-              {isEn ? 'Score not available yet' : 'Score no disponible aún'}
+              {t('scoreUnavailable')}
             </div>
           )}
         </div>
@@ -93,7 +94,7 @@ export function ZoneAnalytics({
         {/* KPI Grid */}
         <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
           <KPICard
-            label={isEn ? 'Occupancy' : 'Ocupación'}
+            label={t('occupancy')}
             value={score?.median_occupancy ? Math.round(score.median_occupancy) : null}
             suffix="%"
             icon={BarChart3}
@@ -109,7 +110,7 @@ export function ZoneAnalytics({
             icon={TrendingUp}
           />
           <KPICard
-            label={isEn ? 'Active Listings' : 'Listings Activos'}
+            label={t('activeListings')}
             value={score?.active_listings ?? null}
             icon={Building2}
           />
@@ -122,14 +123,14 @@ export function ZoneAnalytics({
           <OccupancyTrend
             historical={occupancyTrend}
             forecasts={occupancyForecasts}
-            title={isEn ? 'Occupancy Trend' : 'Tendencia de Ocupación'}
+            title={t('occupancyTrend')}
           />
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <ADRTrend
             historical={adrTrend}
             forecasts={adrForecasts}
-            title={isEn ? 'Average Daily Rate (ADR)' : 'Tarifa Promedio Diaria (ADR)'}
+            title={t('adrTrend')}
           />
         </div>
       </div>
@@ -140,7 +141,7 @@ export function ZoneAnalytics({
           <RevPARChart
             occupancyData={occupancyTrend}
             adrData={adrTrend}
-            title={isEn ? 'RevPAR (Revenue per Available Night)' : 'RevPAR (Ingreso por Noche Disponible)'}
+            title={t('revparTitle')}
           />
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -158,8 +159,8 @@ export function ZoneAnalytics({
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <SeasonalPattern
               indices={occupancySeasonal}
-              title={isEn ? 'Occupancy Seasonal Pattern' : 'Estacionalidad de Ocupación'}
-              metricLabel={isEn ? 'Occupancy Factor' : 'Factor Ocupación'}
+              title={t('occupancySeasonal')}
+              metricLabel={t('occupancyFactor')}
             />
           </div>
         )}
@@ -167,8 +168,8 @@ export function ZoneAnalytics({
           <div className="bg-white rounded-xl border border-gray-200 p-4">
             <SeasonalPattern
               indices={adrSeasonal}
-              title={isEn ? 'ADR Seasonal Pattern' : 'Estacionalidad de ADR'}
-              metricLabel={isEn ? 'ADR Factor' : 'Factor ADR'}
+              title={t('adrSeasonal')}
+              metricLabel={t('adrFactor')}
             />
           </div>
         )}
@@ -178,26 +179,26 @@ export function ZoneAnalytics({
       {developments.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-4">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            {isEn ? 'Top Developments in' : 'Mejores Desarrollos en'} {zone}
+            {t('topDevelopments')} {zone}
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="text-left py-2 px-3 text-gray-500 font-medium">
-                    {isEn ? 'Development' : 'Desarrollo'}
+                    {t('development')}
                   </th>
                   <th className="text-left py-2 px-3 text-gray-500 font-medium">
-                    {isEn ? 'Developer' : 'Desarrollador'}
+                    {t('developer')}
                   </th>
                   <th className="text-right py-2 px-3 text-gray-500 font-medium">
-                    {isEn ? 'From' : 'Desde'}
+                    {t('from')}
                   </th>
                   <th className="text-right py-2 px-3 text-gray-500 font-medium">
-                    {isEn ? 'ROI' : 'ROI'}
+                    ROI
                   </th>
                   <th className="text-center py-2 px-3 text-gray-500 font-medium">
-                    {isEn ? 'Stage' : 'Etapa'}
+                    {t('stage')}
                   </th>
                 </tr>
               </thead>
@@ -223,9 +224,9 @@ export function ZoneAnalytics({
                     </td>
                     <td className="py-3 px-3 text-center">
                       <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700">
-                        {dev.stage === 'preventa' ? (isEn ? 'Presale' : 'Preventa') :
-                         dev.stage === 'construccion' ? (isEn ? 'Under Construction' : 'Construcción') :
-                         isEn ? 'Ready' : 'Entrega'}
+                        {dev.stage === 'preventa' ? t('stagePresale') :
+                         dev.stage === 'construccion' ? t('stageConstruction') :
+                         t('stageReady')}
                       </span>
                     </td>
                   </tr>

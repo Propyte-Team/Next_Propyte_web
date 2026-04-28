@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Home, Plane, Calculator, TrendingUp } from 'lucide-react';
 import {
   calculateMonthlyPayment,
@@ -42,7 +43,7 @@ export default function UnitInvestmentCalculator({
   price, state, monthlyRentRes, monthlyRentVac, airdnaOccupancy,
   downPaymentMinPct, financingMonths, interestRateDefault, appreciationDefault, locale,
 }: UnitInvestmentCalculatorProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('simulator');
 
   const [downPaymentPct, setDownPaymentPct] = useState(Math.max(downPaymentMinPct || 20, 10));
   const [months, setMonths] = useState(financingMonths[1] || financingMonths[0] || 120);
@@ -139,31 +140,29 @@ export default function UnitInvestmentCalculator({
     <div>
       <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
         <h2 className="text-xl font-bold text-[#2C2C2C]">
-          {isEn ? 'Investment Calculator' : 'Calculadora de Inversión'}
+          {t('calculatorTitle')}
         </h2>
         <div className="text-xs text-gray-500">
-          {isEn ? 'Price' : 'Precio'}{' '}
+          {t('priceLabel')}{' '}
           <span className="font-bold text-[#2C2C2C]">{formatPrice(price)}</span>
           {' · '}
-          {isEn ? 'Total investment' : 'Inversión total'}{' '}
+          {t('totalInvestmentLabel')}{' '}
           <span className="font-bold text-[#2C2C2C]">{formatPrice(totalPropertyCost)}</span>
         </div>
       </div>
 
       <Tabs
         variant="pill"
-        tablistLabel={isEn ? 'Investment scenarios' : 'Escenarios de inversión'}
+        tablistLabel={t('scenarios')}
         items={[
           {
             id: 'residencial',
-            label: isEn ? 'Residential' : 'Residencial',
+            label: t('residentialTab'),
             icon: <Home size={16} />,
             panel: (
               <MetricsPanel
-                title={isEn ? 'Long-term residential rental' : 'Renta residencial a largo plazo'}
-                subtitle={isEn
-                  ? `${Math.round(RES.OCCUPANCY * 100)}% occupancy · ${Math.round(RES.EXPENSE_RATIO * 100)}% expenses`
-                  : `Ocupación ${Math.round(RES.OCCUPANCY * 100)}% · Gastos ${Math.round(RES.EXPENSE_RATIO * 100)}%`}
+                title={t('residentialHeading')}
+                subtitle={t('residentialSubtitle')}
                 grossRent={monthlyRentRes}
                 effectiveRent={res.effectiveMonthly}
                 netRent={res.netMonthly}
@@ -180,14 +179,14 @@ export default function UnitInvestmentCalculator({
           },
           {
             id: 'vacacional',
-            label: isEn ? 'Vacation (Airbnb)' : 'Vacacional (Airbnb)',
+            label: t('vacationTab'),
             icon: <Plane size={16} />,
             panel: (
               <div className="space-y-4">
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-sm font-medium text-gray-700">
-                      {isEn ? 'Occupancy' : 'Ocupación'}
+                      {t('occupancy')}
                       {airdnaOccupancy != null && (
                         <span className="ml-2 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 px-2 py-0.5 rounded-full">AirDNA</span>
                       )}
@@ -202,10 +201,8 @@ export default function UnitInvestmentCalculator({
                   />
                 </div>
                 <MetricsPanel
-                  title={isEn ? 'Short-term vacation rental' : 'Renta vacacional corta'}
-                  subtitle={isEn
-                    ? `${occupancyVac.toFixed(0)}% occupancy · ${Math.round((VAC.EXPENSE_RATIO + VAC.PLATFORM_FEE + VAC.MGMT_FEE) * 100)}% expenses (ops + platform + mgmt)`
-                    : `Ocupación ${occupancyVac.toFixed(0)}% · Gastos ${Math.round((VAC.EXPENSE_RATIO + VAC.PLATFORM_FEE + VAC.MGMT_FEE) * 100)}% (ops + plataforma + admin)`}
+                  title={t('vacationHeading')}
+                  subtitle={t('vacationSubtitle')}
                   grossRent={monthlyRentVac}
                   effectiveRent={vac.effectiveMonthly}
                   netRent={vac.netMonthly}
@@ -223,12 +220,12 @@ export default function UnitInvestmentCalculator({
           },
           {
             id: 'financiamiento',
-            label: isEn ? 'Financing' : 'Financiamiento',
+            label: t('financingTab'),
             icon: <Calculator size={16} />,
             panel: (
               <div className="space-y-5">
                 <Slider
-                  label={isEn ? 'Down payment' : 'Enganche'}
+                  label={t('downPayment')}
                   value={downPaymentPct}
                   display={`${downPaymentPct}% (${formatPrice(downPayment)})`}
                   min={10} max={100} step={1}
@@ -237,7 +234,7 @@ export default function UnitInvestmentCalculator({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {isEn ? 'Term' : 'Plazo'}
+                    {t('term')}
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {financingMonths.map((m) => (
@@ -250,14 +247,14 @@ export default function UnitInvestmentCalculator({
                             : 'border-gray-200 hover:border-[#5CE0D2] text-gray-700'
                         }`}
                       >
-                        {m} {isEn ? 'months' : 'meses'}
+                        {t('termMonthsValue', { m })}
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <Slider
-                  label={isEn ? 'Interest rate' : 'Tasa de interés'}
+                  label={t('interestRate')}
                   value={interestRate}
                   display={`${interestRate.toFixed(1)}%`}
                   min={0} max={15} step={0.5}
@@ -266,34 +263,32 @@ export default function UnitInvestmentCalculator({
 
                 <div className="bg-[#0F1923] rounded-2xl p-6 text-white">
                   <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">
-                    {isEn ? 'Estimated monthly payment' : 'Mensualidad estimada'}
+                    {t('estMonthlyPayment')}
                   </div>
                   <div className="text-3xl font-extrabold">
                     {monthlyPayment > 0 ? formatPrice(monthlyPayment) : '—'}
                   </div>
                   <div className="grid grid-cols-3 gap-3 mt-5 text-sm">
-                    <FinKV label={isEn ? 'Down' : 'Enganche'} value={formatPrice(downPayment)} />
-                    <FinKV label={isEn ? 'Closing' : 'Escrituración'} value={formatPrice(closingCosts)} note={`${Math.round(closingCostRate * 100)}%`} />
-                    <FinKV label={isEn ? 'Loan principal' : 'Monto a financiar'} value={formatPrice(price - downPayment)} />
+                    <FinKV label={t('downShort')} value={formatPrice(downPayment)} />
+                    <FinKV label={t('closing')} value={formatPrice(closingCosts)} note={`${Math.round(closingCostRate * 100)}%`} />
+                    <FinKV label={t('loanPrincipal')} value={formatPrice(price - downPayment)} />
                   </div>
                 </div>
 
                 <p className="text-[11px] text-gray-500 leading-relaxed">
-                  {isEn
-                    ? `Total out-of-pocket at closing: ${formatPrice(totalInvested)}. Assumes actuarial amortization.`
-                    : `Desembolso total al cierre: ${formatPrice(totalInvested)}. Cálculo con amortización actuarial.`}
+                  {t('financingDisclaimer')}
                 </p>
               </div>
             ),
           },
           {
             id: 'proyeccion',
-            label: isEn ? 'ROI Projection' : 'Proyección ROI',
+            label: t('roiProjectionTab'),
             icon: <TrendingUp size={16} />,
             panel: (
               <div className="space-y-5">
                 <Slider
-                  label={isEn ? 'Annual appreciation' : 'Apreciación anual'}
+                  label={t('annualAppreciation')}
                   value={appreciation}
                   display={`${appreciation.toFixed(1)}%`}
                   min={0} max={20} step={0.5}
@@ -302,34 +297,34 @@ export default function UnitInvestmentCalculator({
 
                 <div className="grid grid-cols-2 gap-4">
                   <ProjTile
-                    label={isEn ? 'IRR 5 years' : 'TIR 5 años'}
+                    label={t('irr5')}
                     value={projection.irr5 != null ? formatPercentage(projection.irr5) : '—'}
                     highlight
                   />
                   <ProjTile
-                    label={isEn ? 'IRR 10 years' : 'TIR 10 años'}
+                    label={t('irr10')}
                     value={projection.irr10 != null ? formatPercentage(projection.irr10) : '—'}
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <ProjTile
-                    label={isEn ? 'ROI 1 yr' : 'ROI 1 año'}
+                    label={t('roi1yr')}
                     value={`${projection.roi1.toFixed(1)}%`}
                   />
                   <ProjTile
-                    label={isEn ? 'ROI 5 yr' : 'ROI 5 años'}
+                    label={t('roi5yr')}
                     value={`${projection.roi5.toFixed(1)}%`}
                   />
                   <ProjTile
-                    label={isEn ? 'ROI 10 yr' : 'ROI 10 años'}
+                    label={t('roi10yr')}
                     value={`${projection.roi10.toFixed(1)}%`}
                   />
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="text-xs text-gray-400 mb-1">
-                    {isEn ? 'Projected value (10 yr)' : 'Valor proyectado (10 años)'}
+                    {t('projected10yr')}
                   </div>
                   <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projection.projectedValue10)}</div>
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
@@ -351,9 +346,7 @@ export default function UnitInvestmentCalculator({
                 />
 
                 <p className="text-[11px] text-gray-400 leading-relaxed">
-                  {isEn
-                    ? 'IRR computed using Newton-Raphson with actuarial mortgage amortization. Projections are estimates, not guarantees.'
-                    : 'TIR calculada con Newton-Raphson y amortización actuarial. Las proyecciones son estimaciones, no garantías.'}
+                  {t('roiDisclaimerCalc', { n: appreciation.toFixed(1) })}
                 </p>
               </div>
             ),
@@ -384,9 +377,9 @@ interface MetricsPanelProps {
 
 function MetricsPanel({
   title, subtitle, grossRent, effectiveRent, netRent, monthlyPayment,
-  grossYield, netYield, capRate, cashOnCash, monthlyNet, breakeven, locale,
+  grossYield, netYield, capRate, cashOnCash, monthlyNet, breakeven,
 }: MetricsPanelProps) {
-  const isEn = locale === 'en';
+  const t = useTranslations('simulator');
 
   return (
     <div className="space-y-4">
@@ -398,39 +391,39 @@ function MetricsPanel({
       <div className="bg-[#0F1923] rounded-2xl p-5 text-white">
         <div className="flex items-baseline justify-between mb-3">
           <span className="text-xs text-gray-400 uppercase tracking-wider">
-            {isEn ? 'Gross rent' : 'Renta bruta'}
+            {t('grossRent')}
           </span>
           <span className="text-2xl font-bold">{formatPrice(Math.round(grossRent))}<span className="text-xs font-normal text-gray-400">/mo</span></span>
         </div>
         <div className="flex items-baseline justify-between text-sm pt-2 border-t border-white/10">
-          <span className="text-gray-400">{isEn ? 'Effective (after occupancy)' : 'Efectiva (tras ocupación)'}</span>
+          <span className="text-gray-400">{t('effectiveAfterOcc')}</span>
           <span className="font-semibold">{formatPrice(effectiveRent)}/mo</span>
         </div>
         <div className="flex items-baseline justify-between text-sm pt-2">
-          <span className="text-[#5CE0D2] font-medium">{isEn ? 'Net (after expenses)' : 'Neta (tras gastos)'}</span>
+          <span className="text-[#5CE0D2] font-medium">{t('netAfterExpenses')}</span>
           <span className="font-bold text-[#5CE0D2]">{formatPrice(netRent)}/mo</span>
         </div>
         {monthlyPayment > 0 && (
           <div className="flex items-baseline justify-between text-sm pt-2 border-t border-white/10 mt-2">
-            <span className="text-gray-400">{isEn ? '− Monthly loan payment' : '− Mensualidad préstamo'}</span>
+            <span className="text-gray-400">{t('minusMonthlyLoan')}</span>
             <span className="font-medium">−{formatPrice(monthlyPayment)}</span>
           </div>
         )}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <MetricTile label={isEn ? 'Gross yield' : 'Yield bruto'} value={formatPercentage(grossYield)} />
-        <MetricTile label={isEn ? 'Net yield' : 'Yield neto'} value={formatPercentage(netYield)} />
+        <MetricTile label={t('grossYield')} value={formatPercentage(grossYield)} />
+        <MetricTile label={t('netYield')} value={formatPercentage(netYield)} />
         <MetricTile label="Cap rate" value={formatPercentage(capRate)} />
         <MetricTile label="Cash-on-cash" value={formatPercentage(cashOnCash)} color={cashOnCash >= 0 ? '#22C55E' : '#EF4444'} />
         <MetricTile
-          label={isEn ? 'Monthly net flow' : 'Flujo mensual neto'}
+          label={t('monthlyNetFlow')}
           value={formatPrice(Math.round(monthlyNet))}
           color={monthlyNet >= 0 ? '#22C55E' : '#EF4444'}
         />
         <MetricTile
-          label={isEn ? 'Break-even' : 'Punto de equilibrio'}
-          value={breakeven === Infinity ? '—' : `${breakeven} ${isEn ? 'mo' : 'meses'}`}
+          label={t('breakeven')}
+          value={breakeven === Infinity ? '—' : `${breakeven} ${t('monthsShort')}`}
         />
       </div>
     </div>
@@ -487,17 +480,17 @@ function ProjTile({ label, value, highlight }: { label: string; value: string; h
 }
 
 function CashflowTable({
-  cashflows, locale, totalInvested,
+  cashflows, totalInvested,
 }: { cashflows: number[]; locale: string; totalInvested: number }) {
-  const isEn = locale === 'en';
+  const t = useTranslations('simulator');
   return (
     <div className="overflow-hidden rounded-xl border border-gray-100">
       <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
         <div className="text-sm font-bold text-[#2C2C2C]">
-          {isEn ? 'Annual cashflow (10 yr horizon)' : 'Flujo anual (horizonte 10 años)'}
+          {t('annualCashflow')}
         </div>
         <div className="text-[10px] text-gray-500">
-          {isEn ? 'Year 0 = capital outflow · Year 10 = sale + remaining balance' : 'Año 0 = capital invertido · Año 10 = venta + saldo pendiente'}
+          {t('cashflowExplanation')}
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -505,13 +498,13 @@ function CashflowTable({
           <thead>
             <tr className="bg-white">
               <th className="px-3 py-2 text-left text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
-                {isEn ? 'Year' : 'Año'}
+                {t('yearLabel')}
               </th>
               <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
-                {isEn ? 'Cashflow' : 'Flujo'}
+                {t('cashflowLabel')}
               </th>
               <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
-                {isEn ? 'Cumulative' : 'Acumulado'}
+                {t('cumulative')}
               </th>
             </tr>
           </thead>
@@ -535,7 +528,7 @@ function CashflowTable({
           <tfoot>
             <tr className="bg-[#0F1923] text-white">
               <td className="px-3 py-2 text-xs uppercase tracking-wider">
-                {isEn ? 'Invested' : 'Invertido'}
+                {t('investedLabel')}
               </td>
               <td colSpan={2} className="px-3 py-2 text-right font-bold">
                 {formatPrice(totalInvested)}
