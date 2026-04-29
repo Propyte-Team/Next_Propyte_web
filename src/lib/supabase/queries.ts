@@ -592,6 +592,50 @@ export async function getDeveloperBySlug(client: Client, slug: string) {
 }
 
 // ============================================================
+// TEAM MEMBERS (real_estate_hub.v_team_members)
+// ============================================================
+
+export interface TeamMemberRow {
+  id: string;
+  name: string;
+  role: string;
+  city: string | null;
+  email: string | null;
+  phone: string | null;
+  whatsapp: string | null;
+  photo_url: string | null;
+  bio_short: string | null;
+  sort_order: number;
+}
+
+/**
+ * Lista miembros activos del equipo, ordenados por sort_order asc.
+ * Lee de la vista `real_estate_hub.v_team_members` (filtra active=TRUE
+ * + GRANT anon explícito). Source of truth: hub.propyte.com/equipo.
+ *
+ * Devuelve [] si la tabla aún no existe o falla la query (no rompe la
+ * página — el caller renderiza fallback empty state).
+ */
+export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
+  if (!client) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_team_members')
+      .select('*')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.warn('[getTeamMembers] error:', error.message);
+      return [];
+    }
+    return (data ?? []) as TeamMemberRow[];
+  } catch (e) {
+    console.warn('[getTeamMembers] exception:', e);
+    return [];
+  }
+}
+
+// ============================================================
 // ANALYTICS: WEB EVENTS
 // ============================================================
 

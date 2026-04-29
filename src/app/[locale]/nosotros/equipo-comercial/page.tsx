@@ -6,6 +6,10 @@ import {
 } from 'lucide-react';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { getTeamMembers, type TeamMemberRow } from '@/lib/supabase/queries';
+
+export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -38,12 +42,54 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-function Avatar({ initials, name, color = '#1A2F3F' }: { initials: string; name: string; color?: string }) {
+function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
+const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0D9488', '#3AAFA9', '#5CE0D2'];
+
+function pickColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) & 0xffffffff;
+  return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length];
+}
+
+function Avatar({ photoUrl, name, color }: { photoUrl: string | null; name: string; color?: string }) {
+  if (photoUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={photoUrl}
+        alt={name}
+        className="w-24 h-24 rounded-full object-cover mx-auto mb-3"
+        loading="lazy"
+      />
+    );
+  }
   return (
-    <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: color }}>
-      <span className="text-white text-2xl font-bold" aria-label={name}>{initials}</span>
+    <div
+      className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-3"
+      style={{ backgroundColor: color ?? pickColor(name) }}
+    >
+      <span className="text-white text-2xl font-bold" aria-label={name}>
+        {getInitials(name)}
+      </span>
     </div>
   );
+}
+
+function buildWhatsappLink(member: TeamMemberRow): string | null {
+  const phone = member.whatsapp || member.phone;
+  if (!phone) return null;
+  const clean = phone.replace(/[^0-9]/g, '');
+  if (clean.length < 10) return null;
+  return `https://wa.me/${clean}`;
 }
 
 export default async function EquipoComercialPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -58,12 +104,8 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
   const waPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(t('recruitWhatsappMessage'))}`;
 
-  const leaders = [
-    { initials: 'JBP', name: 'José Benjamín Paredes', role: 'CEO — Director General', color: '#1A2F3F' },
-    { initials: 'FL', name: 'Felipe Luksic', role: 'CSO — Director Comercial', color: '#1A2F3F' },
-    { initials: 'LF', name: 'Luis Flores', role: 'Coordinador de Marketing', color: '#5CE0D2' },
-    { initials: '?', name: t('comingSoonPerson'), role: t('openRole'), color: '#9CA3AF', hiring: true },
-  ];
+  const supabase = createPublicSupabaseClient();
+  const teamMembers = supabase ? await getTeamMembers(supabase) : [];
 
   const levels = Array.from({ length: 5 }, (_, i) => ({
     title: t(`level${i + 1}Title`),
@@ -124,18 +166,48 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {leaders.map(l => (
-              <div key={l.name} className="bg-white p-6 rounded-xl border border-gray-100 text-center hover:shadow-lg transition-shadow">
-                <Avatar initials={l.initials} name={l.name} color={l.color} />
-                <h3 className="font-bold text-[#1A2F3F]">{l.name}</h3>
-                <p className="text-sm text-gray-500 mt-1">{l.role}</p>
-                {l.hiring && (
-                  <span className="inline-block mt-2 px-3 py-1 bg-[#F5A623]/10 text-[#F5A623] text-xs font-bold rounded-full">{t('hiring')}</span>
-                )}
-              </div>
-            ))}
-          </div>
+          {teamMembers.length === 0 ? (
+            <div className="text-center py-12 bg-[#F4F6F8] rounded-2xl max-w-2xl mx-auto">
+              <Sparkles size={28} className="text-[#5CE0D2] mx-auto mb-3" />
+              <p className="text-gray-500">
+                Equipo en formación, pronto compartimos detalles.
+              </p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {teamMembers.map((m) => {
+                const waLink = buildWhatsappLink(m);
+                return (
+                  <div
+                    key={m.id}
+                    className="bg-white p-6 rounded-xl border border-gray-100 text-center hover:shadow-lg transition-shadow"
+                  >
+                    <Avatar photoUrl={m.photo_url} name={m.name} />
+                    <h3 className="font-bold text-[#1A2F3F]">{m.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{m.role}</p>
+                    {m.city && (
+                      <p className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
+                        <MapPin size={11} /> {m.city}
+                      </p>
+                    )}
+                    {m.bio_short && (
+                      <p className="text-xs text-gray-500 mt-3 leading-relaxed">{m.bio_short}</p>
+                    )}
+                    {waLink && (
+                      <a
+                        href={waLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 bg-[#25D366]/10 text-[#075E54] text-xs font-semibold rounded-full hover:bg-[#25D366]/20 transition-colors"
+                      >
+                        <MessageCircle size={12} /> WhatsApp
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <p className="text-center text-gray-500 mb-4">{t('teamMore')}</p>
           <div className="text-center">
