@@ -1515,6 +1515,24 @@
     "ctaSimulator": "Explore with simulator",
     "ctaRentals": "Rental analytics"
   },
+  "comparison": {
+    "eyebrow": "Investment comparator",
+    "title": "Real estate vs CETES vs Stocks vs Fibras vs Bank",
+    "subtitle": "Projected final capital at the selected horizon, assuming referential annual returns and full reinvestment.",
+    "inputCapital": "Initial capital",
+    "inputYears": "Horizon",
+    "yearsSuffix": "years",
+    "winnerLabel": "Best performer",
+    "ctaAdvisor": "I want to invest with Propyte",
+    "disclaimer": "Referential 2026 rates ({currency}): Real Estate Propyte 12% IRR (pre-sale Riviera Maya), Fibras 8.5%, Stocks S&P/IPC 10%, CETES 10.5% nominal, Bank deposit 5%. Past performance does not guarantee future results. Not financial advice.",
+    "labels": {
+      "propyte": "Real Estate Propyte",
+      "fibras": "Fibras (FIBRAUNO/FUNO)",
+      "bolsa": "Stocks (S&P 500 / IPC)",
+      "cetes": "CETES",
+      "banco": "Bank deposit"
+    }
+  },
   "financiamiento": {
     "heroEyebrow": "Financing",
     "heroTitle": "Financing options in Mexico",

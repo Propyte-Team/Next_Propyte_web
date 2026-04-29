@@ -1515,6 +1515,24 @@
     "ctaSimulator": "Explorar con simulador",
     "ctaRentals": "Análisis de rentas"
   },
+  "comparison": {
+    "eyebrow": "Comparador de inversión",
+    "title": "Real estate vs CETES vs Bolsa vs Fibras vs Banco",
+    "subtitle": "Capital final proyectado al plazo seleccionado, asumiendo rendimientos anuales referenciales y reinversión total.",
+    "inputCapital": "Capital inicial",
+    "inputYears": "Plazo",
+    "yearsSuffix": "años",
+    "winnerLabel": "Mejor rendimiento",
+    "ctaAdvisor": "Quiero invertir con Propyte",
+    "disclaimer": "Tasas referenciales 2026 ({currency}): Real Estate Propyte 12% IRR (preventa Riviera Maya), Fibras 8.5%, Bolsa S&P/IPC 10%, CETES 10.5% nominal, Banco depósito 5%. Rendimientos pasados no garantizan resultados futuros. No constituye recomendación financiera.",
+    "labels": {
+      "propyte": "Real Estate Propyte",
+      "fibras": "Fibras (FIBRAUNO/FUNO)",
+      "bolsa": "Bolsa (S&P 500 / IPC)",
+      "cetes": "CETES",
+      "banco": "Depósito bancario"
+    }
+  },
   "financiamiento": {
     "heroEyebrow": "Financiamiento",
     "heroTitle": "Opciones de financiamiento en México",

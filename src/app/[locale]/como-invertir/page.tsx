@@ -5,6 +5,7 @@ import {
   ShieldCheck, Clock, DollarSign, Sparkles,
 } from 'lucide-react';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import InvestmentComparison from '@/components/como-invertir/InvestmentComparison';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -188,6 +189,9 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
           </div>
         </div>
       </section>
+
+      {/* Comparison: Real Estate vs CETES vs Bolsa vs Fibras vs Banco */}
+      <InvestmentComparison />
 
       {/* Key Metrics */}
       <section className="py-16 md:py-20">
