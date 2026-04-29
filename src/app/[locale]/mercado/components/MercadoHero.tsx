@@ -13,8 +13,12 @@ interface MercadoHeroProps {
 export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: MercadoHeroProps) {
   const t = useTranslations('mercadoHero');
 
-  // Hide-empty-KPI: solo mostrar items con valor real. Em-dashes destruían
-  // credibilidad cuando la tabla de stats estaba vacía en Supabase.
+  // Hide-empty-KPI — patrón "onboarding empty" (data NO existe en Supabase).
+  // Cuando stats undefined: oculta grid + muestra "Actualizando datos…"
+  // amber pulse, comunica que el data pipeline está poblándose.
+  // Diferenciar de "filter empty" (data sí existe pero el filtro del usuario
+  // no encontró match) — ese caso usa "Sin datos para esta selección" gris
+  // neutral en VacacionalKPIs (commit 9861258 Sprint A item 11).
   const stats = activeTab === 'vacacional' ? strStats : ltrStats;
   const trustItems: { value: string; label: string }[] = [];
   if (activeTab === 'vacacional' && strStats) {
