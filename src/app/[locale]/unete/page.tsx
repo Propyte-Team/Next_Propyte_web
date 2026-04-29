@@ -62,11 +62,28 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
     },
   };
 
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: Array.from({ length: 8 }, (_, i) => ({
+      '@type': 'Question',
+      name: t(`faq${i + 1}Q`),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: t(`faq${i + 1}A`),
+      },
+    })),
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <Breadcrumbs
         locale={locale}

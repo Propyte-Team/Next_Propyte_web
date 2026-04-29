@@ -36,10 +36,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BrokersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, tBrokers] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getTranslations({ locale, namespace: 'brokers' }),
   ]);
+
+  const faqEntities = Array.from({ length: 8 }, (_, i) => ({
+    '@type': 'Question',
+    name: tBrokers(`faq${i + 1}Q`),
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: tBrokers(`faq${i + 1}A`),
+    },
+  }));
 
   return (
     <>
@@ -55,6 +65,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
           },
         }}
       />
+      <SchemaMarkup type="faq" data={{ mainEntity: faqEntities }} />
       <Breadcrumbs
         locale={locale}
         homeLabel={tBC('home')}

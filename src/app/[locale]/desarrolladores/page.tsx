@@ -41,10 +41,20 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, tDevs] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getTranslations({ locale, namespace: 'developers' }),
   ]);
+
+  const faqEntities = Array.from({ length: 8 }, (_, i) => ({
+    '@type': 'Question',
+    name: tDevs(`faq${i + 1}Q`),
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: tDevs(`faq${i + 1}A`),
+    },
+  }));
 
   let developers: DeveloperRow[] = [];
   try {
@@ -71,6 +81,7 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
           },
         }}
       />
+      <SchemaMarkup type="faq" data={{ mainEntity: faqEntities }} />
       <Breadcrumbs
         locale={locale}
         homeLabel={tBC('home')}
