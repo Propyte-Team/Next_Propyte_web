@@ -75,55 +75,64 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   // eslint-disable-next-line react-hooks/purity -- server component; Date.now() is per-request, not per-render
   const validThrough = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-  const collectionSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'CollectionPage',
-    name: t('heroTitle'),
-    description: t('metaDescription'),
-    url: `${baseUrl}/${locale}/promociones`,
-    mainEntity: {
-      '@type': 'ItemList',
-      numberOfItems: items.length,
-      itemListElement: items.map((dev, i) => {
-        const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
-        return {
-          '@type': 'ListItem',
-          position: i + 1,
-          item: {
-            '@type': 'Offer',
-            name: dev.name,
-            url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
-            availability: 'https://schema.org/InStock',
-            validThrough,
-            priceSpecification: {
-              '@type': 'PriceSpecification',
-              price: price > 0 ? price : undefined,
-              priceCurrency: 'MXN',
-            },
-            itemOffered: {
-              '@type': 'RealEstateListing',
-              name: dev.name,
-              url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
-              address: {
-                '@type': 'PostalAddress',
-                addressLocality: dev.city || undefined,
-                addressRegion: dev.zone || undefined,
-                addressCountry: 'MX',
+  // Solo emitir CollectionPage + Offers cuando hay 2+ promos reales — el
+  // mismo threshold que la UI (items.length < 2 → empty state). Si la UI
+  // oculta AZUL VIVO, el JSON-LD tampoco debe declararlo: Google Rich
+  // Results podría mostrar la oferta y el usuario llegaría al empty state.
+  const hasShowableItems = items.length >= 2;
+  const collectionSchema = hasShowableItems
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: t('heroTitle'),
+        description: t('metaDescription'),
+        url: `${baseUrl}/${locale}/promociones`,
+        mainEntity: {
+          '@type': 'ItemList',
+          numberOfItems: items.length,
+          itemListElement: items.map((dev, i) => {
+            const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
+            return {
+              '@type': 'ListItem',
+              position: i + 1,
+              item: {
+                '@type': 'Offer',
+                name: dev.name,
+                url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+                availability: 'https://schema.org/InStock',
+                validThrough,
+                priceSpecification: {
+                  '@type': 'PriceSpecification',
+                  price: price > 0 ? price : undefined,
+                  priceCurrency: 'MXN',
+                },
+                itemOffered: {
+                  '@type': 'RealEstateListing',
+                  name: dev.name,
+                  url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+                  address: {
+                    '@type': 'PostalAddress',
+                    addressLocality: dev.city || undefined,
+                    addressRegion: dev.zone || undefined,
+                    addressCountry: 'MX',
+                  },
+                  ...(dev.images?.[0] ? { image: dev.images[0] } : {}),
+                },
               },
-              ...(dev.images?.[0] ? { image: dev.images[0] } : {}),
-            },
-          },
-        };
-      }),
-    },
-  };
+            };
+          }),
+        },
+      }
+    : null;
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
-      />
+      {collectionSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        />
+      )}
 
       <Breadcrumbs
         locale={locale}
