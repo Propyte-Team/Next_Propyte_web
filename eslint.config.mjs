@@ -25,6 +25,9 @@ const eslintConfig = defineConfig([
           destructuredArrayIgnorePattern: "^_",
         },
       ],
+      // a11y: enforce alt text on <img>, <area>, <input type="image">, <object>.
+      // Empty string alt="" is intentional (decorative) and passes.
+      "jsx-a11y/alt-text": "warn",
     },
   },
 ]);
