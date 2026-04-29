@@ -63,7 +63,7 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         type="professionalService"
         data={{
           name: 'Propyte MasterBroker',
-          description: 'Comercializacion profesional para desarrollos inmobiliarios en la Riviera Maya y Yucatan.',
+          description: 'Comercialización profesional para desarrollos inmobiliarios en la Riviera Maya y Yucatán.',
           areaServed: {
             '@type': 'GeoCircle',
             geoMidpoint: { '@type': 'GeoCoordinates', latitude: 20.63, longitude: -87.08 },

@@ -47,7 +47,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         type="professionalService"
         data={{
           name: 'Propyte Broker Network',
-          description: 'Red de corredores inmobiliarios con acceso a +700 desarrollos en preventa en la Riviera Maya y Yucatan.',
+          description: 'Red de corredores inmobiliarios con acceso a +700 desarrollos en preventa en la Riviera Maya y Yucatán.',
           areaServed: {
             '@type': 'GeoCircle',
             geoMidpoint: { '@type': 'GeoCoordinates', latitude: 20.63, longitude: -87.08 },

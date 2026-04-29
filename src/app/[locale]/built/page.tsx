@@ -34,7 +34,7 @@ export default async function BuiltPage({ params }: { params: Promise<{ locale: 
         type="professionalService"
         data={{
           name: 'Propyte Built',
-          description: 'Servicios de arquitectura, diseno interior, construccion y paisajismo para desarrollos inmobiliarios en la Riviera Maya y Yucatan.',
+          description: 'Servicios de arquitectura, diseño interior, construcción y paisajismo para desarrollos inmobiliarios en la Riviera Maya y Yucatán.',
           areaServed: {
             '@type': 'GeoCircle',
             geoMidpoint: { '@type': 'GeoCoordinates', latitude: 20.63, longitude: -87.08 },
