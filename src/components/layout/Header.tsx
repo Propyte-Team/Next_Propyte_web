@@ -29,7 +29,15 @@ export default function Header() {
   const isArchive =
     pathname.match(/\/(es|en)\/propiedades(\/|$|\?)/) ||
     pathname.match(/\/(es|en)\/desarrollos(\/|$|\?)/);
-  const showPill = !isArchive;
+
+  // Content-only pages: hide ActionsPill + SearchBubble on desktop. SearchBubble
+  // y ActionsPill no aportan en hojas de texto (glosario, faq, legal, nosotros,
+  // como-comprar, etc.) y compiten visualmente con el contenido.
+  const isContentOnly = pathname.match(
+    /\/(es|en)\/(glosario|faq|privacidad|terminos|cookies|nosotros|como-comprar|como-invertir|financiamiento|blog|promociones)(\/|$)/
+  );
+
+  const showPill = !isArchive && !isContentOnly;
 
   useEffect(() => {
     function handleScroll() {
@@ -41,7 +49,7 @@ export default function Header() {
   }, []);
 
   const hideBubbleOnHome = mode === 'home' && !scrolled;
-  const hideBubble = hideBubbleOnHome || !!isArchive;
+  const hideBubble = hideBubbleOnHome || !!isArchive || !!isContentOnly;
   const darkBubble = (mode === 'home' || mode === 'dark') && !scrolled;
 
   return (
