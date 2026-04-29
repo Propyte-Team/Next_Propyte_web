@@ -2,12 +2,28 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { MapPin, Mail, Instagram, Facebook } from 'lucide-react';
+
+// Pre-footer CTA copy varies per route to avoid generic repetition
+const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
+  built: { title: 'ctaTitleBuilt', subtitle: 'ctaSubtitleBuilt' },
+  unete: { title: 'ctaTitleUnete', subtitle: 'ctaSubtitleUnete' },
+  desarrolladores: { title: 'ctaTitleDesarrolladores', subtitle: 'ctaSubtitleDesarrolladores' },
+  corredores: { title: 'ctaTitleCorredores', subtitle: 'ctaSubtitleCorredores' },
+  financiamiento: { title: 'ctaTitleFinanciamiento', subtitle: 'ctaSubtitleFinanciamiento' },
+};
 
 export default function Footer() {
   const t = useTranslations('footer');
   const locale = useLocale();
+  const pathname = usePathname();
+
+  const route = pathname?.replace(/^\/(es|en)/, '').split('/').filter(Boolean)[0] || 'home';
+  const override = ROUTE_CTA_KEY[route];
+  const titleKey = override?.title ?? 'ctaTitle';
+  const subtitleKey = override?.subtitle ?? 'ctaSubtitle';
 
   return (
     <footer className="bg-[#0F1923] text-white">
@@ -15,8 +31,8 @@ export default function Footer() {
       <div className="bg-[#1A2F3F]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-bold">{t('ctaTitle')}</h3>
-            <p className="text-white/75 text-sm">{t('ctaSubtitle')}</p>
+            <h3 className="text-lg font-bold">{t(titleKey)}</h3>
+            <p className="text-white/75 text-sm">{t(subtitleKey)}</p>
           </div>
           <Link
             href={`/${locale}/contacto`}
