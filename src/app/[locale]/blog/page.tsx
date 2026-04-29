@@ -117,9 +117,11 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   let debugMarker = `supabase=${supabase ? 'ok' : 'null'}`;
   if (supabase) {
     const all = await getBlogPosts(supabase, { locale, limit: 16, page: 1 });
-    debugMarker += `|allTotal=${all.total}|allPosts=${all.posts.length}|locale=${locale}`;
+    const cats = all.posts.map((p) => p.category).join(',');
+    debugMarker += `|allTotal=${all.total}|allPosts=${all.posts.length}|locale=${locale}|cats=[${cats}]|targetA=[${CAT_ASESORES}]|targetI=[${CAT_INVERSIONISTAS}]`;
     const ases = all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
     const inv = all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
+    debugMarker += `|asesLen=${ases.length}|invLen=${inv.length}`;
     asesorResult = { posts: ases, total: ases.length };
     invResult = { posts: inv, total: inv.length };
   }
