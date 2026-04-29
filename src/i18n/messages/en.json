@@ -1324,7 +1324,7 @@
     "kpiAvgIndex": "Avg Index",
     "kpiAvgOccupancy": "Avg Occupancy",
     "kpiActiveProperties": "Active Properties",
-    "kpiUpdating": "Updating market data…",
+    "kpiNoData": "No data for this selection",
     "kpiSelectCity": "Select a specific city to see available metrics.",
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",

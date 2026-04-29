@@ -1324,7 +1324,7 @@
     "kpiAvgIndex": "Índice Promedio",
     "kpiAvgOccupancy": "Ocupación Prom.",
     "kpiActiveProperties": "Propiedades Activas",
-    "kpiUpdating": "Actualizando datos de mercado…",
+    "kpiNoData": "Sin datos para esta selección",
     "kpiSelectCity": "Selecciona una ciudad específica para ver métricas disponibles.",
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
