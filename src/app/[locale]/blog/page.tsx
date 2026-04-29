@@ -111,18 +111,17 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     );
   }
 
-  // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
-  // Fetch sin filtro de categoría y dividir en JS.
+  // Default view: 2-column layout con "Para Asesores" + "Para Inversionistas".
+  // Fetch sin filtro de categoría y divide en JS — el doble .in() (status+
+  // category) puede tener edge cases con BLOG_INCLUDE_STAGED y un solo query
+  // ahorra ida y vuelta. CAT_* deben venir de categories.ts (módulo neutro)
+  // porque imports desde 'use client' se convierten en proxy functions en RSC.
   let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
-  let debugMarker = `supabase=${supabase ? 'ok' : 'null'}`;
   if (supabase) {
     const all = await getBlogPosts(supabase, { locale, limit: 16, page: 1 });
-    const cats = all.posts.map((p) => p.category).join(',');
-    debugMarker += `|allTotal=${all.total}|allPosts=${all.posts.length}|locale=${locale}|cats=[${cats}]|targetA=[${CAT_ASESORES}]|targetI=[${CAT_INVERSIONISTAS}]`;
     const ases = all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
     const inv = all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
-    debugMarker += `|asesLen=${ases.length}|invLen=${inv.length}`;
     asesorResult = { posts: ases, total: ases.length };
     invResult = { posts: inv, total: inv.length };
   }
@@ -132,9 +131,6 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   return (
     <>
       <BlogHero t={heroT} activeCategory={null} />
-
-      {/* DEBUG-MARKER: {debugMarker} */}
-      <div data-debug-blog={debugMarker} style={{ display: 'none' }} />
 
       <section className="bg-white py-12 md:py-16">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
