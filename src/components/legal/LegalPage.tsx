@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FileText, AlertCircle, Mail } from 'lucide-react';
+import { PRIVACY_EMAIL } from '@/lib/legal/contacts';
 
 interface LegalPageProps {
   locale: string;
@@ -55,11 +56,11 @@ export default async function LegalPage({
             <p className="text-sm text-[#2C2C2C]/75 mb-5 leading-relaxed">{t('contactBlockBody')}</p>
             <div className="flex flex-wrap gap-3">
               <a
-                href="mailto:privacidad@propyte.com"
+                href={`mailto:${PRIVACY_EMAIL}`}
                 className="inline-flex items-center gap-2 h-10 px-5 bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-sm font-semibold rounded-lg transition-colors"
               >
                 <Mail size={14} strokeWidth={2} />
-                privacidad@propyte.com
+                {PRIVACY_EMAIL}
               </a>
               <Link
                 href={`/${locale}/contacto`}

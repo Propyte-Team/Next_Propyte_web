@@ -1,4 +1,5 @@
 import { pickLang } from '@/lib/i18n/pickLang';
+import { LEGAL_EMAIL } from '@/lib/legal/contacts';
 
 /**
  * Términos y Condiciones — borrador genérico para marketplace inmobiliario.
@@ -70,7 +71,7 @@ export default function TerminosContent({ locale }: { locale: string }) {
       <h2>{pickLang(locale, '10. Contact', '10. Contacto')}</h2>
       <p>
         {pickLang(locale, 'For questions about these Terms write to ', 'Para dudas sobre estos Términos escríbenos a ')}
-        <a href="mailto:legal@propyte.com">legal@propyte.com</a>
+        <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a>
         {pickLang(locale, ' or use the form on ', ' o usa el formulario en ')}
         <a href={`/${locale}/contacto`}>/contacto</a>.
       </p>

@@ -1,4 +1,5 @@
 import { pickLang } from '@/lib/i18n/pickLang';
+import { PRIVACY_EMAIL } from '@/lib/legal/contacts';
 
 /**
  * Aviso de Privacidad — borrador genérico LFPDPPP.
@@ -23,7 +24,7 @@ export default function PrivacidadContent({ locale }: { locale: string }) {
           'The data controller is Propyte (commercial name), with offices on 5ta Avenida, Playa del Carmen, Quintana Roo, Mexico, and contact email ',
           'El responsable del tratamiento es Propyte (nombre comercial), con domicilio en 5ta Avenida, Playa del Carmen, Quintana Roo, México, y correo de contacto ',
         )}
-        <a href="mailto:privacidad@propyte.com">privacidad@propyte.com</a>.
+        <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
       </p>
 
       <h2>{pickLang(locale, '2. Personal data we collect', '2. Datos personales que recabamos')}</h2>
@@ -61,7 +62,7 @@ export default function PrivacidadContent({ locale }: { locale: string }) {
           'You may refuse these secondary purposes at any time by writing to ',
           'Puedes negarte a estas finalidades secundarias en cualquier momento escribiendo a ',
         )}
-        <a href="mailto:privacidad@propyte.com">privacidad@propyte.com</a>
+        <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>
         {pickLang(locale, '. Refusal will not affect the primary services you request.', '. La negativa no afectará los servicios primarios que solicites.')}
       </p>
 
@@ -79,7 +80,7 @@ export default function PrivacidadContent({ locale }: { locale: string }) {
       <p>{pickLang(locale, 'You have the right to Access, Rectify, Cancel, or Object to (ARCO) the processing of your personal data, and to revoke any consent granted.', 'Tienes derecho a Acceder, Rectificar, Cancelar u Oponerte (ARCO) al tratamiento de tus datos personales, así como a revocar el consentimiento que hayas otorgado.')}</p>
       <p><strong>{pickLang(locale, 'How to exercise them:', 'Cómo ejercerlos:')}</strong></p>
       <ol>
-        <li>{pickLang(locale, 'Send an email to ', 'Envía un correo a ')}<a href="mailto:privacidad@propyte.com">privacidad@propyte.com</a></li>
+        <li>{pickLang(locale, 'Send an email to ', 'Envía un correo a ')}<a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a></li>
         <li>{pickLang(locale, 'Include: full name, official ID copy (INE, passport), description of the right you are exercising, and your request', 'Incluye: nombre completo, copia de identificación oficial (INE, pasaporte), descripción del derecho que ejerces y tu petición')}</li>
         <li>{pickLang(locale, 'Response time: 20 business days from receipt', 'Plazo de respuesta: 20 días hábiles desde la recepción')}</li>
       </ol>
