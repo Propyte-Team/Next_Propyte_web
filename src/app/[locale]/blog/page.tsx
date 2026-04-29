@@ -111,14 +111,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   }
 
   // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
-  // Single query both categories — Promise.all + sequential ambos retornaban
-  // empty en RSC production aunque cada call individual funcionaba.
+  // Fetch sin filtro de categoría y dividir en JS. El doble .in() (status+category)
+  // se rompía en Vercel cuando BLOG_INCLUDE_STAGED=true (PostgREST devolvía vacío
+  // pese a que el filtered URL con .eq() sí funcionaba).
   let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   if (supabase) {
-    const both = await getBlogPosts(supabase, { locale, categories: [CAT_ASESORES, CAT_INVERSIONISTAS], limit: 8, page: 1 });
-    const ases = both.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
-    const inv = both.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
+    const all = await getBlogPosts(supabase, { locale, limit: 16, page: 1 });
+    const ases = all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
+    const inv = all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
     asesorResult = { posts: ases, total: ases.length };
     invResult = { posts: inv, total: inv.length };
   }
