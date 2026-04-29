@@ -1,5 +1,8 @@
 import { getTranslations } from 'next-intl/server';
-import LegalPlaceholder from '@/components/legal/LegalPlaceholder';
+import LegalPage from '@/components/legal/LegalPage';
+import TerminosContent from '@/components/legal/TerminosContent';
+
+const LAST_UPDATED = '2026-04-29';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -21,10 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   return (
-    <LegalPlaceholder
+    <LegalPage
       locale={locale}
       titleKey="termsTitle"
       descriptionKey="termsDescription"
-    />
+      lastUpdated={LAST_UPDATED}
+    >
+      <TerminosContent locale={locale} />
+    </LegalPage>
   );
 }

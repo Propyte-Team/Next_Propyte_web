@@ -782,15 +782,16 @@
   },
   "legal": {
     "privacyTitle": "Aviso de Privacidad",
-    "privacyDescription": "Cómo Propyte recopila, usa y protege tu información personal.",
+    "privacyDescription": "Cómo Propyte recaba, usa, comparte y protege tus datos personales conforme a la LFPDPPP.",
     "termsTitle": "Términos y Condiciones",
-    "termsDescription": "Términos de uso del sitio y servicios de Propyte.",
+    "termsDescription": "Reglas de uso del sitio propyte.com y de los servicios de Propyte.",
     "cookiesTitle": "Política de Cookies",
-    "cookiesDescription": "Uso de cookies y tecnologías similares en propyte.com.",
-    "inReview": "En revisión legal",
-    "reviewBody1": "Este documento está siendo redactado y revisado por nuestro equipo legal para cumplir con la normativa mexicana vigente y las mejores prácticas internacionales de protección de datos.",
-    "reviewBody2": "Mientras tanto, si tienes dudas sobre el tratamiento de tu información o los términos bajo los cuales usas este sitio, contáctanos directamente y te responderemos a la brevedad.",
-    "contactLegal": "Contactar al equipo"
+    "cookiesDescription": "Qué cookies y tecnologías similares usamos en propyte.com y cómo manejarlas.",
+    "draftBadge": "Borrador en revisión legal",
+    "lastUpdatedLabel": "Última actualización",
+    "contactBlockTitle": "¿Dudas o solicitudes ARCO?",
+    "contactBlockBody": "Para ejercer derechos ARCO (Acceso, Rectificación, Cancelación, Oposición), revocar consentimientos o consultar cualquier punto del documento, escríbenos al correo dedicado o usa el formulario de contacto.",
+    "contactGeneric": "Formulario de contacto"
   },
   "seo": {
     "homeTitle": "Inmuebles en Playa del Carmen y Tulum | Riviera Maya",

@@ -227,6 +227,70 @@ html {
   scrollbar-width: none;
 }
 
+/* Legal pages — long-form prose styling for /privacidad, /terminos, /cookies */
+.legal-prose {
+  color: rgba(44, 44, 44, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+.legal-prose .lead {
+  font-size: 1.05rem;
+  color: rgba(44, 44, 44, 0.75);
+  margin-bottom: 1.75rem;
+}
+.legal-prose h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1A2F3F;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+.legal-prose h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1A2F3F;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.legal-prose p {
+  margin-bottom: 1rem;
+}
+.legal-prose ul,
+.legal-prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.legal-prose li {
+  margin-bottom: 0.4rem;
+}
+.legal-prose ul li {
+  list-style-type: disc;
+}
+.legal-prose ol li {
+  list-style-type: decimal;
+}
+.legal-prose a {
+  color: #0D9488;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.legal-prose a:hover {
+  color: #1A2F3F;
+}
+.legal-prose code {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.85em;
+  background: #F4F6F8;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  color: #1A2F3F;
+}
+.legal-prose strong {
+  color: #1A2F3F;
+  font-weight: 600;
+}
+
 /* Print: show only ShareDownloadModal Letter template */
 @page { margin: 0; }
 @media print {

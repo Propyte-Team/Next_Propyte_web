@@ -1,5 +1,8 @@
 import { getTranslations } from 'next-intl/server';
-import LegalPlaceholder from '@/components/legal/LegalPlaceholder';
+import LegalPage from '@/components/legal/LegalPage';
+import CookiesContent from '@/components/legal/CookiesContent';
+
+const LAST_UPDATED = '2026-04-29';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -26,10 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function CookiesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   return (
-    <LegalPlaceholder
+    <LegalPage
       locale={locale}
       titleKey="cookiesTitle"
       descriptionKey="cookiesDescription"
-    />
+      lastUpdated={LAST_UPDATED}
+    >
+      <CookiesContent locale={locale} />
+    </LegalPage>
   );
 }

@@ -781,16 +781,17 @@
     "formInvalidUrl": "Invalid URL (include https://)"
   },
   "legal": {
-    "privacyTitle": "Privacy Policy",
-    "privacyDescription": "How Propyte collects, uses and protects your personal information.",
+    "privacyTitle": "Privacy Notice",
+    "privacyDescription": "How Propyte collects, uses, shares and protects your personal data under Mexico's LFPDPPP.",
     "termsTitle": "Terms and Conditions",
-    "termsDescription": "Terms of use for the Propyte site and services.",
-    "cookiesTitle": "Cookie Policy",
-    "cookiesDescription": "Use of cookies and similar technologies on propyte.com.",
-    "inReview": "Under legal review",
-    "reviewBody1": "This document is being drafted and reviewed by our legal team to comply with current Mexican regulations and international best practices for data protection.",
-    "reviewBody2": "In the meantime, if you have questions about how we handle your information or the terms under which you use this site, contact us directly and we'll reply promptly.",
-    "contactLegal": "Contact the team"
+    "termsDescription": "Rules for using propyte.com and the services provided by Propyte.",
+    "cookiesTitle": "Cookies Policy",
+    "cookiesDescription": "Which cookies and similar technologies we use on propyte.com and how to manage them.",
+    "draftBadge": "Draft — under legal review",
+    "lastUpdatedLabel": "Last updated",
+    "contactBlockTitle": "Questions or ARCO requests?",
+    "contactBlockBody": "To exercise ARCO rights (Access, Rectification, Cancellation, Objection), revoke consents, or ask about any section of this document, write to our dedicated email or use the contact form.",
+    "contactGeneric": "Contact form"
   },
   "seo": {
     "homeTitle": "Real Estate in Playa del Carmen & Tulum | Riviera Maya",
