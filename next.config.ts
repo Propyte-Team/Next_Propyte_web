@@ -17,16 +17,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: '/:locale/zonas',
-        destination: '/:locale/mercado?tab=vacacional',
-        permanent: true,
-      },
-      {
-        source: '/:locale/zonas/:slug',
-        destination: '/:locale/mercado?tab=vacacional',
-        permanent: true,
-      },
-      {
         source: '/:locale/rentas',
         destination: '/:locale/mercado?tab=tradicional',
         permanent: true,
