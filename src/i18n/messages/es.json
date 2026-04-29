@@ -1566,7 +1566,29 @@
     "ctaTitle": "¿Necesitas asesoría personalizada?",
     "ctaDesc": "Nuestros asesores pueden ayudarte a encontrar la mejor opción de financiamiento para tu situación específica.",
     "ctaButton": "Contactar un asesor",
-    "disclaimer": "Las tasas y condiciones son referenciales y pueden variar según la institución financiera, tu perfil crediticio y las políticas vigentes al momento de la solicitud."
+    "disclaimer": "Las tasas y condiciones son referenciales y pueden variar según la institución financiera, tu perfil crediticio y las políticas vigentes al momento de la solicitud.",
+    "banksTitle": "Bancos aliados",
+    "banksDisclaimer": "Tasas y plazos referenciales actualizados al {date}. Verifica con la institución antes de solicitar."
+  },
+  "mortgageCalc": {
+    "eyebrow": "Calculadora hipotecaria",
+    "title": "Calcula tu mensualidad",
+    "subtitle": "Ajusta los parámetros y ve el pago mensual, intereses totales y desglose principal vs interés.",
+    "amount": "Valor de la propiedad",
+    "downPayment": "Enganche",
+    "termYears": "Plazo",
+    "annualRate": "Tasa anual",
+    "yearsSuffix": "años",
+    "monthlyPayment": "Pago mensual estimado",
+    "monthShort": "mes",
+    "principal": "Principal financiado",
+    "totalInterest": "Intereses totales",
+    "totalPaid": "Total pagado al final",
+    "downPaymentValue": "Enganche aportado",
+    "chartPrincipal": "Principal",
+    "chartInterest": "Interés",
+    "ctaAdvisor": "Hablar con asesor especializado",
+    "disclaimer": "Cálculo referencial sin seguros, comisión por apertura, ITP, escrituración ni gastos notariales. Solicita un análisis personalizado con un asesor."
   },
   "glosario": {
     "heroEyebrow": "Glosario",

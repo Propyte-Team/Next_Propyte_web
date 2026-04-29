@@ -5,6 +5,8 @@ import {
   CheckCircle, Sparkles,
 } from 'lucide-react';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import MortgageCalculator from '@/components/financiamiento/MortgageCalculator';
+import BankLogos from '@/components/financiamiento/BankLogos';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -120,6 +122,12 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
           </p>
         </div>
       </section>
+
+      {/* Bank Logos Trustbar */}
+      <BankLogos locale={locale} />
+
+      {/* Mortgage Calculator */}
+      <MortgageCalculator />
 
       {/* 4 Methods */}
       <section className="py-16 md:py-20">
