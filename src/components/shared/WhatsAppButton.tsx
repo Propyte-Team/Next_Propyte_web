@@ -13,7 +13,7 @@ interface WhatsAppButtonProps {
 export default function WhatsAppButton({ propertyName, propertyId, phone: propPhone }: WhatsAppButtonProps) {
   const locale = useLocale();
   const [visible, setVisible] = useState(false);
-  const phone = propPhone || process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '521XXXXXXXXXX';
+  const phone = propPhone || process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
 
   useEffect(() => {
     function handleScroll() {
