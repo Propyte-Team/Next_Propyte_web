@@ -4,7 +4,8 @@ import { ArrowRight } from 'lucide-react';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts } from '@/lib/supabase/queries';
 import BlogCard from '@/components/blog/BlogCard';
-import BlogHero, { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/BlogHero';
+import BlogHero from '@/components/blog/BlogHero';
+import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/categories';
 import BlogPagination from '@/components/blog/BlogPagination';
 import { Suspense } from 'react';
 

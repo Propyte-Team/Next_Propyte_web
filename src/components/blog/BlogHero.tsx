@@ -15,8 +15,7 @@ interface BlogHeroProps {
   activeCategory?: string | null;
 }
 
-export const CAT_ASESORES = 'Para Asesores';
-export const CAT_INVERSIONISTAS = 'Para Inversionistas';
+import { CAT_ASESORES, CAT_INVERSIONISTAS } from './categories';
 
 export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
   const locale = useLocale();

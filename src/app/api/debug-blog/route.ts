@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts } from '@/lib/supabase/queries';
-import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/BlogHero';
+import { CAT_INVERSIONISTAS } from '@/components/blog/categories';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
