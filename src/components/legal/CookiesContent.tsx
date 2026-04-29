@@ -1,4 +1,5 @@
 import { pickLang } from '@/lib/i18n/pickLang';
+import { PRIVACY_EMAIL } from '@/lib/legal/contacts';
 
 /**
  * Política de Cookies — borrador genérico.
@@ -27,8 +28,10 @@ export default function CookiesContent({ locale }: { locale: string }) {
       <ul>
         <li><code>NEXT_LOCALE</code> — {pickLang(locale, 'language preference (es/en)', 'preferencia de idioma (es/en)')} · 1 {pickLang(locale, 'year', 'año')}</li>
         <li><code>currency_pref</code> — {pickLang(locale, 'currency preference (MXN/USD)', 'preferencia de moneda (MXN/USD)')} · 6 {pickLang(locale, 'months', 'meses')}</li>
-        <li><code>cookieyes-consent</code> / <code>cookiebot-*</code> — {pickLang(locale, 'consent record', 'registro de consentimiento')} · 12 {pickLang(locale, 'months', 'meses')}</li>
       </ul>
+      <p className="text-xs text-[#2C2C2C]/60 italic">
+        {pickLang(locale, 'When the consent platform is deployed, an additional consent record cookie will be added here (e.g. cookieyes-consent or cookiebot-*).', 'Cuando se despliegue la plataforma de consentimiento, se añadirá aquí una cookie adicional de registro de consentimiento (p. ej. cookieyes-consent o cookiebot-*).')}
+      </p>
 
       <h3>{pickLang(locale, '2.2 Analytics', '2.2 Analítica')}</h3>
       <p>{pickLang(locale, 'They allow us to understand which pages are most visited, how users navigate, and improve the experience. Aggregated, non-identifying data.', 'Nos permiten entender qué páginas se visitan más, cómo navegan los usuarios y mejorar la experiencia. Datos agregados, no identificativos.')}</p>
@@ -50,14 +53,22 @@ export default function CookiesContent({ locale }: { locale: string }) {
         {pickLang(locale, 'The list above is provisional. Once we deploy our cookie consent platform, the inventory will auto-update with the actual cookies set on each visit.', 'La lista anterior es provisional. Una vez desplegada nuestra plataforma de consentimiento de cookies, el inventario se actualizará automáticamente con las cookies reales que se establecen en cada visita.')}
       </p>
 
-      <h2>{pickLang(locale, '3. Your consent', '3. Tu consentimiento')}</h2>
-      <p>{pickLang(locale, 'When you visit propyte.com for the first time we display a banner where you can:', 'Cuando visitas propyte.com por primera vez te mostramos un banner donde puedes:')}</p>
+      <h2>{pickLang(locale, '3. Your consent (forthcoming)', '3. Tu consentimiento (próximamente)')}</h2>
+      <p>
+        <strong>{pickLang(locale, 'Status: ', 'Estado: ')}</strong>
+        {pickLang(locale, 'a granular consent platform is being deployed. While it is implemented, only strictly necessary cookies (§2.1) are loaded automatically; analytics and marketing cookies are not activated until the consent banner is live.', 'se está desplegando una plataforma de consentimiento granular. Mientras se implementa, solo se cargan automáticamente las cookies estrictamente necesarias (§2.1); las cookies de analítica y marketing no se activan hasta que el banner de consentimiento esté disponible.')}
+      </p>
+      <p>{pickLang(locale, 'When the banner is live, you will be able to:', 'Cuando el banner esté disponible podrás:')}</p>
       <ul>
         <li>{pickLang(locale, 'Accept all categories', 'Aceptar todas las categorías')}</li>
         <li>{pickLang(locale, 'Reject all (except strictly necessary)', 'Rechazar todas (excepto estrictamente necesarias)')}</li>
         <li>{pickLang(locale, 'Configure granularly which categories to allow', 'Configurar granularmente qué categorías permitir')}</li>
       </ul>
-      <p>{pickLang(locale, 'Your choice is recorded for 12 months. You can change it at any time using the "Cookie preferences" link in the footer.', 'Tu elección se registra durante 12 meses. Puedes cambiarla en cualquier momento mediante el enlace "Preferencias de cookies" en el pie de página.')}</p>
+      <p>{pickLang(locale, 'Your choice will be recorded for 12 months and can be changed at any time using the "Cookie preferences" link in the footer.', 'Tu elección quedará registrada durante 12 meses y podrás cambiarla en cualquier momento mediante el enlace "Preferencias de cookies" en el pie de página.')}</p>
+      <p>
+        {pickLang(locale, 'In the meantime, if you wish to opt out of analytics or marketing cookies, you can do so by configuring your browser (see §4) or by writing to ', 'Mientras tanto, si deseas excluirte de las cookies de analítica o marketing, puedes hacerlo configurando tu navegador (ver §4) o escribiendo a ')}
+        <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
+      </p>
 
       <h2>{pickLang(locale, '4. Disable cookies in your browser', '4. Desactivar cookies en el navegador')}</h2>
       <p>{pickLang(locale, 'Independently of our consent banner, you can configure your browser to block cookies:', 'Independientemente de nuestro banner de consentimiento, puedes configurar tu navegador para bloquear cookies:')}</p>
