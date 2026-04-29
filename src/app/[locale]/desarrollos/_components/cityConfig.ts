@@ -8,42 +8,52 @@
 export interface CityInfo {
   name: string;
   state: string;
+  /**
+   * Substring sin acento usado en `.ilike('city', '%matchTerm%')` contra Supabase.
+   * La columna `city` tiene ambas variantes (Cancun/Cancún) — usar prefijo común
+   * sin acento captura ambas (ILIKE es case-insensitive pero accent-sensitive).
+   */
+  matchTerm: string;
   descEs: string;
   descEn: string;
 }
 
 export const CITY_MAP: Record<string, CityInfo> = {
   cancun: {
-    name: 'Cancun',
+    name: 'Cancún',
     state: 'Quintana Roo',
+    matchTerm: 'Cancun',
     descEs:
-      'Explora los nuevos desarrollos inmobiliarios en Cancun, Quintana Roo. Preventas de departamentos, casas y terrenos con los mejores precios.',
+      'Explora los nuevos desarrollos inmobiliarios en Cancún, Quintana Roo. Preventas de departamentos, casas y terrenos con los mejores precios.',
     descEn:
-      'Explore new real estate developments in Cancun, Quintana Roo. Pre-sale apartments, houses, and land at the best prices.',
+      'Explore new real estate developments in Cancún, Quintana Roo. Pre-sale apartments, houses, and land at the best prices.',
   },
   'playa-del-carmen': {
     name: 'Playa del Carmen',
     state: 'Quintana Roo',
+    matchTerm: 'Playa del Carmen',
     descEs:
-      'Descubre los nuevos desarrollos en Playa del Carmen. Condos de inversion, preventas y oportunidades en la Riviera Maya.',
+      'Descubre los nuevos desarrollos en Playa del Carmen. Condos de inversión, preventas y oportunidades en la Riviera Maya.',
     descEn:
       'Discover new developments in Playa del Carmen. Investment condos, pre-sales, and opportunities in the Riviera Maya.',
   },
   tulum: {
     name: 'Tulum',
     state: 'Quintana Roo',
+    matchTerm: 'Tulum',
     descEs:
-      'Nuevos lanzamientos inmobiliarios en Tulum. Departamentos, villas y terrenos en preventa con alto potencial de inversion.',
+      'Nuevos lanzamientos inmobiliarios en Tulum. Departamentos, villas y terrenos en preventa con alto potencial de inversión.',
     descEn:
       'New real estate launches in Tulum. Apartments, villas, and land in pre-sale with high investment potential.',
   },
   merida: {
-    name: 'Merida',
-    state: 'Yucatan',
+    name: 'Mérida',
+    state: 'Yucatán',
+    matchTerm: 'Merida',
     descEs:
-      'Desarrollos inmobiliarios en Merida, Yucatan. Terrenos, casas y departamentos en preventa en las mejores zonas.',
+      'Desarrollos inmobiliarios en Mérida, Yucatán. Terrenos, casas y departamentos en preventa en las mejores zonas.',
     descEn:
-      'Real estate developments in Merida, Yucatan. Land, houses, and apartments in pre-sale in the best zones.',
+      'Real estate developments in Mérida, Yucatán. Land, houses, and apartments in pre-sale in the best zones.',
   },
 };
 

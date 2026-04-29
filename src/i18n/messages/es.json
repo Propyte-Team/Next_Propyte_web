@@ -2034,7 +2034,12 @@
     "stageConstruction": "Construcción",
     "from": "Desde ",
     "investingIn": "Invertir en {city}",
-    "investingDescription": "{city}, {state} es uno de los mercados inmobiliarios de mayor crecimiento en México con {count} desarrollos activos en {zones} zonas."
+    "investingDescription": "{city}, {state} es uno de los mercados inmobiliarios de mayor crecimiento en México con {count} desarrollos activos en {zones} zonas.",
+    "investingDescriptionEmpty": "{city}, {state} es uno de los mercados inmobiliarios de mayor crecimiento en México. Estamos cargando nuevos desarrollos en esta ciudad.",
+    "emptyTitle": "Próximos lanzamientos en {city}",
+    "emptyBody": "Aún no hay desarrollos publicados en esta ciudad. Suscríbete y serás el primero en enterarte cuando lancemos nuevas oportunidades.",
+    "emptyCta": "Avísame de nuevos desarrollos",
+    "exploreOther": "Explora otras ciudades"
   },
   "comparisonTable": {
     "competitionHigh": "Alta",

@@ -2034,7 +2034,12 @@
     "stageConstruction": "Construction",
     "from": "From ",
     "investingIn": "Investing in {city}",
-    "investingDescription": "{city}, {state} is one of Mexico's fastest-growing real estate markets with {count} active developments across {zones} zones."
+    "investingDescription": "{city}, {state} is one of Mexico's fastest-growing real estate markets with {count} active developments across {zones} zones.",
+    "investingDescriptionEmpty": "{city}, {state} is one of Mexico's fastest-growing real estate markets. We're onboarding new developments in this city.",
+    "emptyTitle": "Upcoming launches in {city}",
+    "emptyBody": "There are no published developments in this city yet. Subscribe and be the first to know when we launch new opportunities.",
+    "emptyCta": "Notify me of new developments",
+    "exploreOther": "Explore other cities"
   },
   "comparisonTable": {
     "competitionHigh": "High",

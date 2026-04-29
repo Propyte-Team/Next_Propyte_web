@@ -49,7 +49,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       )
       .not('approved_at', 'is', null)
       .in('zoho_pipeline_status', APPROVED_STATUSES)
-      .ilike('city', `%${cityInfo.name}%`)
+      .ilike('city', `%${cityInfo.matchTerm}%`)
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);
 
@@ -107,22 +107,54 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
           <p className="mt-2 text-lg text-gray-600">{pickLang(locale, cityInfo.descEn, cityInfo.descEs)}</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-[#5CE0D2]">{count || 0}</div>
-            <div className="text-xs text-gray-500">{t('stat_developments')}</div>
-          </div>
-          <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
-            <div className="text-2xl font-bold text-[#5CE0D2]">{zones.length}</div>
-            <div className="text-xs text-gray-500">{t('stat_zones')}</div>
-          </div>
-          {minPrice > 0 && (
-            <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center col-span-2">
-              <div className="text-lg font-bold text-[#5CE0D2]">{formatPrice(minPrice)}</div>
-              <div className="text-xs text-gray-500">{t('stat_startingFrom')}</div>
+        {count > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-[#5CE0D2]">{count}</div>
+              <div className="text-xs text-gray-500">{t('stat_developments')}</div>
             </div>
-          )}
-        </div>
+            <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-[#5CE0D2]">{zones.length}</div>
+              <div className="text-xs text-gray-500">{t('stat_zones')}</div>
+            </div>
+            {minPrice > 0 && (
+              <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center col-span-2">
+                <div className="text-lg font-bold text-[#5CE0D2]">{formatPrice(minPrice)}</div>
+                <div className="text-xs text-gray-500">{t('stat_startingFrom')}</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {count === 0 && (
+          <div className="rounded-2xl border border-dashed border-[#5CE0D2]/40 bg-[#5CE0D2]/5 p-8 md:p-10 mb-10">
+            <div className="flex items-start gap-4">
+              <div className="hidden md:flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#5CE0D2]/15 text-[#0D9488]">
+                <Building2 size={24} />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">
+                  {t('emptyTitle', { city: cityInfo.name })}
+                </h2>
+                <p className="mt-2 text-gray-600">{t('emptyBody')}</p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link
+                    href={`/${locale}/contacto?asunto=lanzamientos-${citySlug}`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#5CE0D2] px-5 py-2.5 text-sm font-semibold text-[#0F1923] hover:bg-[#4BCEC0] transition-colors"
+                  >
+                    {t('emptyCta')}
+                  </Link>
+                  <Link
+                    href={`/${locale}/desarrollos`}
+                    className="inline-flex items-center gap-2 rounded-lg border border-[#1A2F3F]/15 px-5 py-2.5 text-sm font-semibold text-[#1A2F3F] hover:bg-gray-50 transition-colors"
+                  >
+                    {t('exploreOther')}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {zones.length > 1 && (
           <div className="mb-8">
@@ -186,12 +218,17 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         <div className="mt-16 prose prose-gray max-w-none">
           <h2>{t('investingIn', { city: cityInfo.name })}</h2>
           <p>
-            {t('investingDescription', {
-              city: cityInfo.name,
-              state: cityInfo.state,
-              count: count || 0,
-              zones: zones.length,
-            })}
+            {count > 0
+              ? t('investingDescription', {
+                  city: cityInfo.name,
+                  state: cityInfo.state,
+                  count,
+                  zones: zones.length,
+                })
+              : t('investingDescriptionEmpty', {
+                  city: cityInfo.name,
+                  state: cityInfo.state,
+                })}
           </p>
         </div>
       </div>
