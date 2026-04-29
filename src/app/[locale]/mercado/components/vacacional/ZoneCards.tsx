@@ -15,11 +15,12 @@ interface ZoneCardsProps {
   sortField: SortField;
   sortDir: SortDir;
   onSort: (field: SortField) => void;
+  isFallback?: boolean;
 }
 
 const INITIAL_VISIBLE = 12;
 
-export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCardsProps) {
+export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallback = false }: ZoneCardsProps) {
   const t = useTranslations('zoneCards');
   const [showAll, setShowAll] = useState(false);
 
@@ -47,6 +48,13 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort }: ZoneCa
 
   return (
     <div className="space-y-4">
+      {/* Fallback banner */}
+      {isFallback && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-900">
+          {t('noResultsFallback')}
+        </div>
+      )}
+
       {/* Sort pills */}
       <div className="flex flex-wrap gap-2">
         {sortPills.map(({ field, label }) => (

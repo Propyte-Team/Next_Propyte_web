@@ -2097,6 +2097,7 @@
     "sortProperties": "Propiedades",
     "sortName": "Nombre",
     "noZonesFound": "No se encontraron zonas con los filtros actuales.",
+    "noResultsFallback": "Sin coincidencias para tu filtro. Mostrando Top 10 nacional.",
     "viewAllZones": "Ver todas las {count} zonas",
     "showingOf": "Mostrando {visible} de {total} zonas",
     "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"

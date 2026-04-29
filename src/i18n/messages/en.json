@@ -2097,6 +2097,7 @@
     "sortProperties": "Properties",
     "sortName": "Name",
     "noZonesFound": "No zones found with the current filters.",
+    "noResultsFallback": "No matches for your filter. Showing top 10 nationwide.",
     "viewAllZones": "View all {count} zones",
     "showingOf": "Showing {visible} of {total} zones",
     "vacationMarketIntelligence": "Vacation Rental Market Intelligence"

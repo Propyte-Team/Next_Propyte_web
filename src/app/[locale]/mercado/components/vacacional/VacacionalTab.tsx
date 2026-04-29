@@ -96,6 +96,11 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
     return result;
   }, [scores, selectedCity, search, sortField, sortDir]);
 
+  // Top-10 fallback when filter returns 0 zones (avoid empty state on first paint).
+  const isFiltered = selectedCity !== 'all' || search.length > 0;
+  const isFilteredEmpty = isFiltered && filtered.length === 0 && scores.length > 0;
+  const displayScores = isFilteredEmpty ? [...scores].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 10) : filtered;
+
   // KPI stats
   const kpiStats = useMemo(() => {
     const target = filtered.length > 0 ? filtered : scores;
@@ -194,15 +199,16 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
 
       {/* Zone cards grid with sort pills */}
       <ZoneCards
-        scores={filtered}
+        scores={displayScores}
         locale={locale}
         sortField={sortField}
         sortDir={sortDir}
         onSort={handleSort}
+        isFallback={isFilteredEmpty}
       />
 
       {/* Comparison table */}
-      <ComparisonTable scores={filtered} locale={locale} />
+      <ComparisonTable scores={displayScores} locale={locale} />
 
       {/* ROI Calculator CTA */}
       <ROICalculatorCTA locale={locale} />
