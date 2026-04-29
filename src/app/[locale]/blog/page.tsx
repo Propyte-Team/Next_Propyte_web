@@ -111,13 +111,13 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   }
 
   // Default view: 2-column layout with "Para Asesores" + "Para Inversionistas"
-  // Fetch sin filtro de categoría y dividir en JS. El doble .in() (status+category)
-  // se rompía en Vercel cuando BLOG_INCLUDE_STAGED=true (PostgREST devolvía vacío
-  // pese a que el filtered URL con .eq() sí funcionaba).
+  // Fetch sin filtro de categoría y dividir en JS.
   let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
+  let debugMarker = `supabase=${supabase ? 'ok' : 'null'}`;
   if (supabase) {
     const all = await getBlogPosts(supabase, { locale, limit: 16, page: 1 });
+    debugMarker += `|allTotal=${all.total}|allPosts=${all.posts.length}|locale=${locale}`;
     const ases = all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
     const inv = all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
     asesorResult = { posts: ases, total: ases.length };
@@ -129,6 +129,9 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   return (
     <>
       <BlogHero t={heroT} activeCategory={null} />
+
+      {/* DEBUG-MARKER: {debugMarker} */}
+      <div data-debug-blog={debugMarker} style={{ display: 'none' }} />
 
       <section className="bg-white py-12 md:py-16">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
