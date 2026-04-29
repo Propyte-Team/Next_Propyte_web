@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 export type Currency = 'MXN' | 'USD';
 
 const EXCHANGE_RATE = 17.24; // MXN per USD — update monthly
+const EXCHANGE_RATE_UPDATED_AT = '2026-04-01'; // ISO date — sync con EXCHANGE_RATE arriba
 
 interface CurrencyContextValue {
   currency: Currency;
@@ -12,6 +13,7 @@ interface CurrencyContextValue {
   convert: (mxn: number) => number;
   format: (amount: number, opts?: { decimals?: number }) => string;
   rate: number;
+  rateUpdatedAt: string;
 }
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
@@ -41,7 +43,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <CurrencyContext.Provider value={{ currency, toggleCurrency, convert, format, rate: EXCHANGE_RATE }}>
+    <CurrencyContext.Provider value={{ currency, toggleCurrency, convert, format, rate: EXCHANGE_RATE, rateUpdatedAt: EXCHANGE_RATE_UPDATED_AT }}>
       {children}
     </CurrencyContext.Provider>
   );
