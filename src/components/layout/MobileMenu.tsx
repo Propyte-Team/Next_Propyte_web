@@ -19,6 +19,7 @@ import {
   Layout as LayoutIcon,
   Mail,
   MessageCircle,
+  Megaphone,
 } from 'lucide-react';
 import { isNavActive } from '@/lib/nav/isActive';
 
@@ -67,7 +68,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     { id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck },
     { id: 'recruitment', labelKey: 'recruitment', href: `/${locale}/unete`, icon: Zap },
     { id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon },
-    { id: 'advertise', labelKey: 'advertise', href: `/${locale}/desarrolladores`, icon: Building2 },
+    { id: 'advertise', labelKey: 'advertise', href: `/${locale}/desarrolladores`, icon: Megaphone },
     { id: 'contact', labelKey: 'contact', href: `/${locale}/contacto`, icon: Mail },
   ];
 
