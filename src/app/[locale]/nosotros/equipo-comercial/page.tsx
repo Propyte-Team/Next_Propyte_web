@@ -167,11 +167,10 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
 
           {teamMembers.length === 0 ? (
-            <div className="text-center py-12 bg-[#F4F6F8] rounded-2xl max-w-2xl mx-auto">
+            <div className="text-center py-12 bg-[#F4F6F8] rounded-2xl max-w-2xl mx-auto px-6">
               <Sparkles size={28} className="text-[#5CE0D2] mx-auto mb-3" />
-              <p className="text-gray-500">
-                Equipo en formación, pronto compartimos detalles.
-              </p>
+              <h3 className="text-lg font-bold text-[#1A2F3F] mb-1">{t('teamEmptyTitle')}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{t('teamEmptyBody')}</p>
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
