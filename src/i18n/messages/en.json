@@ -2079,7 +2079,8 @@
     "daily": "Daily",
     "badge": "Market intelligence with +2M rental records",
     "title": "Analyze the rental market in Mexico",
-    "subtitle": "Real data on occupancy, nightly rates and rental prices by zone. Compare before investing."
+    "subtitle": "Real data on occupancy, nightly rates and rental prices by zone. Compare before investing.",
+    "updating": "Updating market data…"
   },
   "marketIndicator": {
     "excellent": "Excellent",

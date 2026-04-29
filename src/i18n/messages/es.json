@@ -2079,7 +2079,8 @@
     "daily": "Diaria",
     "badge": "Inteligencia de mercado con +2M registros de renta",
     "title": "Analiza el mercado de rentas en México",
-    "subtitle": "Datos reales de ocupación, tarifas y precios de renta por zona. Compara antes de invertir."
+    "subtitle": "Datos reales de ocupación, tarifas y precios de renta por zona. Compara antes de invertir.",
+    "updating": "Actualizando datos de mercado…"
   },
   "marketIndicator": {
     "excellent": "Excelente",
