@@ -87,9 +87,39 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
     { value: 'macrolote', label: tTypes('macrolote') },
   ];
 
+  const activeCount =
+    (filters.city ? 1 : 0) +
+    (priceActive ? 1 : 0) +
+    (filters.type ? 1 : 0) +
+    (filters.roiMin ? 1 : 0) +
+    (filters.search ? 1 : 0);
+
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-3">
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+      {/* Mobile: single button → opens MobileFilters drawer */}
+      <div className="md:hidden flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={onOpenAdvanced}
+          aria-haspopup="dialog"
+          aria-expanded={advancedOpen}
+          className="h-10 px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors flex-shrink-0"
+        >
+          <SlidersHorizontal size={14} />
+          {t('mobileFiltersButton')}
+          {activeCount > 0 && (
+            <span className="bg-[#5CE0D2] text-[#0F1923] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+              {activeCount}
+            </span>
+          )}
+        </button>
+        <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
+          {t('results', { count: resultCount })}
+        </span>
+      </div>
+
+      {/* Desktop: full pills row */}
+      <div className="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar">
         {/* Search input */}
         <div className="relative flex-shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />

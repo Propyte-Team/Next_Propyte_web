@@ -255,6 +255,7 @@
     "noResultsSuggestion": "Try broadening your search or adjusting the filters",
     "clearAll": "Clear all",
     "moreFilters": "More filters",
+    "mobileFiltersButton": "Filters",
     "sortBy": "Sort by",
     "sortRelevance": "Relevance",
     "sortPriceAsc": "Price: low to high",

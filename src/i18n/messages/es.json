@@ -255,6 +255,7 @@
     "noResultsSuggestion": "Intenta ampliar tu búsqueda o modificar los filtros",
     "clearAll": "Limpiar todo",
     "moreFilters": "Más filtros",
+    "mobileFiltersButton": "Filtros",
     "sortBy": "Ordenar por",
     "sortRelevance": "Relevancia",
     "sortPriceAsc": "Precio: menor a mayor",
