@@ -55,7 +55,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
-  const waPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219840000000';
+  const waPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
   const waUrl = `https://wa.me/${waPhone}?text=${encodeURIComponent(t('recruitWhatsappMessage'))}`;
 
   const leaders = [

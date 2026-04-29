@@ -38,7 +38,7 @@ export default function ContactPageContent() {
     }
   }
 
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219840000000';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(t('whatsappMessage'))}`;
   const telHref = `tel:${t('info.phone').replace(/[^+\d]/g, '')}`;
   const mailHref = `mailto:${t('info.email')}`;
