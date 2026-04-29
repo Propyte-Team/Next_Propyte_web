@@ -200,7 +200,14 @@ function PlatformPreview() {
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('brokers');
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = useState<Set<number>>(new Set([0, 1, 2]));
+  const toggle = (i: number) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
 
   const faqs = Array.from({ length: 8 }, (_, i) => ({
     q: t(`faq${i + 1}Q`),
@@ -214,25 +221,29 @@ function FAQ() {
           {t('faqTitle')}
         </h2>
         <div className="space-y-3">
-          {faqs.map(({ q, a }, i) => (
-            <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
-                {open === i
-                  ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
-                  : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />
-                }
-              </button>
-              {open === i && (
-                <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">
-                  {a}
-                </div>
-              )}
-            </div>
-          ))}
+          {faqs.map(({ q, a }, i) => {
+            const isOpen = open.has(i);
+            return (
+              <div key={i} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                <button
+                  onClick={() => toggle(i)}
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
+                  aria-expanded={isOpen}
+                >
+                  <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
+                  {isOpen
+                    ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
+                    : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />
+                  }
+                </button>
+                {isOpen && (
+                  <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">
+                    {a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

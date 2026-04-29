@@ -16,11 +16,19 @@ export default function FAQContent({
 }) {
   const t = useTranslations('faq');
   const [activeCategory, setActiveCategory] = useState(categories[0]);
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [open, setOpen] = useState<Set<number>>(new Set([0, 1, 2]));
 
   const filtered = activeCategory === categories[0]
     ? faqs
     : faqs.filter((f) => f.cat === activeCategory);
+
+  const toggle = (i: number) =>
+    setOpen((s) => {
+      const next = new Set(s);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
 
   return (
     <section className="py-12 md:py-16">
@@ -30,7 +38,7 @@ export default function FAQContent({
             <button
               key={cat}
               type="button"
-              onClick={() => { setActiveCategory(cat); setOpenIndex(null); }}
+              onClick={() => { setActiveCategory(cat); setOpen(new Set([0, 1, 2])); }}
               aria-pressed={activeCategory === cat}
               className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
                 activeCategory === cat
@@ -45,12 +53,12 @@ export default function FAQContent({
 
         <div className="max-w-3xl mx-auto space-y-3">
           {filtered.map((faq, i) => {
-            const isOpen = openIndex === i;
+            const isOpen = open.has(i);
             return (
               <div key={faq.q} className="bg-white rounded-xl border border-gray-100 overflow-hidden">
                 <button
                   type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : i)}
+                  onClick={() => toggle(i)}
                   aria-expanded={isOpen}
                   className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors"
                 >
