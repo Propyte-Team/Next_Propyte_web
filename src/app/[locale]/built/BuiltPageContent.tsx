@@ -39,7 +39,8 @@ function EditorialHero() {
       <div className="absolute bottom-1/3 left-1/3 w-[400px] h-[400px] bg-[#1A2F3F]/30 rounded-full blur-[100px]" />
 
       <div className="relative text-center px-4 md:px-6">
-        <div className="space-y-2 md:space-y-4">
+        <h1 className="sr-only">{words.join(' ')}</h1>
+        <div className="space-y-2 md:space-y-4" aria-hidden="true">
           {words.map((word, i) => (
             <motion.div
               key={word}
