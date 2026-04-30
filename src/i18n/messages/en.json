@@ -1647,6 +1647,8 @@
     "searchAriaLabel": "Search the glossary",
     "noResults": "No terms matched your search.",
     "resultsCount": "{count, plural, =0 {No results} =1 {1 term} other {# terms}}",
+    "downloadPdf": "Download glossary as PDF",
+    "downloadPdfShort": "Download PDF",
     "term1Name": "ADR (Average Daily Rate)",
     "term1Def": "Average vacation rental rate per night. Calculated by dividing total income by occupied nights.",
     "term2Name": "Amenities",

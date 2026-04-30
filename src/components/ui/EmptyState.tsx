@@ -75,7 +75,7 @@ export default function EmptyState({
             if (action.external) {
               return (
                 <a
-                  key={action.label}
+                  key={action.href}
                   href={action.href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -86,7 +86,7 @@ export default function EmptyState({
               );
             }
             return (
-              <Link key={action.label} href={action.href} className={cls}>
+              <Link key={action.href} href={action.href} className={cls}>
                 {action.label}
               </Link>
             );

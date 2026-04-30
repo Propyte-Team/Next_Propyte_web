@@ -115,6 +115,8 @@ export default async function GlosarioPage({ params }: { params: Promise<{ local
           searchPlaceholder: t('searchPlaceholder'),
           searchAriaLabel: t('searchAriaLabel'),
           noResults: t('noResults'),
+          downloadPdf: t('downloadPdf'),
+          downloadPdfShort: t('downloadPdfShort'),
         }}
       />
     </>

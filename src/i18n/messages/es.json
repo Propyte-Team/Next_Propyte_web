@@ -1647,6 +1647,8 @@
     "searchAriaLabel": "Buscar en el glosario",
     "noResults": "No se encontraron términos para tu búsqueda.",
     "resultsCount": "{count, plural, =0 {Sin resultados} =1 {1 término} other {# términos}}",
+    "downloadPdf": "Descargar glosario en PDF",
+    "downloadPdfShort": "Descargar PDF",
     "term1Name": "ADR (Tarifa promedio diaria)",
     "term1Def": "Tarifa promedio diaria de renta vacacional. Se calcula dividiendo el ingreso total entre las noches ocupadas.",
     "term2Name": "Amenidades",

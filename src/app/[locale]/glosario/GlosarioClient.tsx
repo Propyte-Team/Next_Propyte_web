@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface Term {
@@ -19,6 +19,8 @@ interface GlosarioClientProps {
     searchPlaceholder: string;
     searchAriaLabel: string;
     noResults: string;
+    downloadPdf: string;
+    downloadPdfShort: string;
   };
 }
 
@@ -60,21 +62,33 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
       {/* Sticky search + letter nav (combined) */}
       <div className="sticky top-16 z-10 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 space-y-3">
-          {/* Search bar */}
-          <div className="max-w-2xl mx-auto relative">
-            <Search
-              size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-              aria-hidden="true"
-            />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={labels.searchPlaceholder}
-              aria-label={labels.searchAriaLabel}
-              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
-            />
+          {/* Search bar + Download PDF */}
+          <div className="max-w-2xl mx-auto flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={labels.searchPlaceholder}
+                aria-label={labels.searchAriaLabel}
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
+              />
+            </div>
+            <a
+              href={`/api/glossary/pdf?locale=${locale}`}
+              download
+              className="inline-flex items-center gap-1.5 h-[42px] px-3 sm:px-4 rounded-xl bg-[#1A2F3F] text-white text-xs sm:text-sm font-bold hover:bg-[#0F1923] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors flex-shrink-0"
+              aria-label={labels.downloadPdf}
+              title={labels.downloadPdf}
+            >
+              <Download size={14} strokeWidth={2.25} />
+              <span className="hidden sm:inline">{labels.downloadPdfShort}</span>
+            </a>
           </div>
 
           {/* Counter (only while searching) */}

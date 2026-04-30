@@ -20,8 +20,9 @@ export default function ContactPageContent() {
     email: z.string().email(tCommon('invalidEmail')),
     subject: z.string().min(1, tCommon('required')),
     message: z.string().min(10, tCommon('required')),
-    // Honeypot — humans don't see/fill this; bots do.
-    website: z.string().max(0).optional(),
+    // Honeypot — humans don't see/fill this; bots do. Allow any value to
+    // pass schema so onSubmit can drop silently with fake-success UX.
+    website: z.string().optional(),
   });
 
   type FormData = z.infer<typeof schema>;
