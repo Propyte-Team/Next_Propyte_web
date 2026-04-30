@@ -20,7 +20,14 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const locale = useLocale();
   const tStages = useTranslations('stages');
   const tMkt = useTranslations('marketplace');
+  const tTypes = useTranslations('types');
   const { format } = useCurrency();
+  const safeStage = (s: string) => {
+    try { return tStages(s as 'preventa'); } catch { return s; }
+  };
+  const safeType = (t: string) => {
+    try { return tTypes(t as 'departamento'); } catch { return t; }
+  };
   const [currentImg, setCurrentImg] = useState(0);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
   const saved = isFavorite(property.id);
@@ -170,14 +177,23 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             </button>
           </div>
 
-          {/* Badge */}
-          {property.badge && (
-            <div className="absolute top-2 left-2">
-              <span className={`px-2 py-0.5 text-[10px] font-bold uppercase text-white rounded ${badgeColors[property.badge] || 'bg-gray-600'}`}>
-                {tStages(property.badge)}
+          {/* Badges: stage (priority property.badge → fallback to stage) + type (units only) */}
+          <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
+            {(property.badge || property.stage) && (
+              <span
+                className={`px-2 py-0.5 text-[10px] font-bold uppercase text-white rounded ${
+                  badgeColors[(property.badge ?? property.stage) as Exclude<PropertyBadge, null>] || 'bg-gray-600'
+                }`}
+              >
+                {safeStage(property.badge ?? property.stage)}
               </span>
-            </div>
-          )}
+            )}
+            {property.kind === 'unit' && property.specs.type && (
+              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
+                {safeType(property.specs.type)}
+              </span>
+            )}
+          </div>
 
           {/* Photo indicator dots */}
           {property.images.length > 1 && (
