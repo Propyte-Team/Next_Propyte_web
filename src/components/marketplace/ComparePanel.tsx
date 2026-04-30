@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
@@ -20,6 +20,9 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   const { format } = useCurrency();
   const { ids, remove, clear } = useCompare();
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const safeStage = (s: string) => {
     try { return tStages(s as 'preventa'); } catch { return s; }
@@ -34,18 +37,49 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   // setState-in-effect lint when items drop to 0 from the sticky bar.
   const modalOpen = open && selected.length > 0;
 
-  // Body scroll lock + ESC to close when modal open
+  // Body scroll lock + ESC to close + focus trap when modal open
   useEffect(() => {
     if (!modalOpen) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
+    // Save the element that had focus before opening so we can restore it.
+    lastFocusedRef.current = document.activeElement as HTMLElement | null;
+    // Focus the close button after mount so SR/keyboard users land inside.
+    queueMicrotask(() => closeBtnRef.current?.focus());
+
+    const focusableSelector =
+      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const root = dialogRef.current;
+      if (!root) return;
+      const focusables = Array.from(
+        root.querySelectorAll<HTMLElement>(focusableSelector),
+      ).filter((el) => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', onKey);
+      // Restore focus to the trigger that opened the modal (CTA in the bar).
+      lastFocusedRef.current?.focus?.();
     };
   }, [modalOpen]);
 
@@ -119,12 +153,14 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
           onClick={() => setOpen(false)}
         >
           <div
+            ref={dialogRef}
             className="bg-white w-full sm:max-w-5xl sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-hidden flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
               <h2 className="text-lg font-bold text-[#1A2F3F]">{tMkt('compareModalTitle')}</h2>
               <button
+                ref={closeBtnRef}
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={tMkt('closeModal')}
