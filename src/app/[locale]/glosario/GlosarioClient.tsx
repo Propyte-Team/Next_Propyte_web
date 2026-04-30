@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Term {
   name: string;
@@ -25,6 +26,7 @@ const stripDiacritics = (s: string) =>
   s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
 export default function GlosarioClient({ terms, locale, labels }: GlosarioClientProps) {
+  const tG = useTranslations('glosario');
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -50,12 +52,15 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
 
   const letters = Object.keys(grouped).sort();
   const hasResults = letters.length > 0;
+  const isSearching = query.trim().length > 0;
+  const counterLabel = tG('resultsCount', { count: filtered.length });
 
   return (
     <>
-      {/* Search bar */}
-      <div className="py-6 bg-white border-b">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+      {/* Sticky search + letter nav (combined) */}
+      <div className="sticky top-16 z-10 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 space-y-3">
+          {/* Search bar */}
           <div className="max-w-2xl mx-auto relative">
             <Search
               size={18}
@@ -68,40 +73,46 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
               onChange={(e) => setQuery(e.target.value)}
               placeholder={labels.searchPlaceholder}
               aria-label={labels.searchAriaLabel}
-              className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
+              className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
             />
           </div>
+
+          {/* Counter (only while searching) */}
+          {isSearching && (
+            <p
+              className="text-center text-xs font-semibold text-gray-500 tabular-nums"
+              role="status"
+              aria-live="polite"
+            >
+              {counterLabel}
+            </p>
+          )}
+
+          {/* Letter navigation with counts */}
+          <nav aria-label="Glossary letters">
+            <div className="flex flex-wrap gap-2 justify-center">
+              {hasResults ? (
+                letters.map((letter) => (
+                  <a
+                    key={letter}
+                    href={`#letter-${letter}`}
+                    className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-[#5CE0D2] hover:text-[#0F1923] rounded-lg transition-colors"
+                  >
+                    <span>{letter}</span>
+                    <span className="text-[11px] font-semibold opacity-60 tabular-nums">
+                      {grouped[letter].length}
+                    </span>
+                  </a>
+                ))
+              ) : (
+                <span className="text-sm text-gray-500" role="status">
+                  {labels.noResults}
+                </span>
+              )}
+            </div>
+          </nav>
         </div>
       </div>
-
-      {/* Letter navigation with counts */}
-      <nav
-        className="py-4 border-b bg-white sticky top-16 z-10"
-        aria-label="Glossary letters"
-      >
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {hasResults ? (
-              letters.map((letter) => (
-                <a
-                  key={letter}
-                  href={`#letter-${letter}`}
-                  className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-[#5CE0D2] hover:text-[#0F1923] rounded-lg transition-colors"
-                >
-                  <span>{letter}</span>
-                  <span className="text-[11px] font-semibold opacity-60 tabular-nums">
-                    {grouped[letter].length}
-                  </span>
-                </a>
-              ))
-            ) : (
-              <span className="text-sm text-gray-500" role="status">
-                {labels.noResults}
-              </span>
-            )}
-          </div>
-        </div>
-      </nav>
 
       {/* Terms */}
       <section className="py-12 md:py-16">
