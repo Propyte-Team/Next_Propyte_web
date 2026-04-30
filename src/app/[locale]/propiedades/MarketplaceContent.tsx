@@ -11,6 +11,7 @@ import AdvancedFilters from '@/components/marketplace/AdvancedFilters';
 import PropertyList from '@/components/marketplace/PropertyList';
 import MapView from '@/components/marketplace/MapView';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
+import ComparePanel from '@/components/marketplace/ComparePanel';
 
 interface MarketplaceContentProps {
   properties: Property[];
@@ -96,6 +97,8 @@ export default function MarketplaceContent({
         onFilterChange={updateFilter}
         onClear={clearFilters}
       />
+
+      <ComparePanel properties={properties} />
     </div>
   );
 }

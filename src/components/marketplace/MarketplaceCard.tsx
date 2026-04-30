@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp, Download } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp, Download, GitCompare } from 'lucide-react';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useCompare } from '@/hooks/useCompare';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -22,6 +23,8 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const [currentImg, setCurrentImg] = useState(0);
   const { isFavorite, toggle: toggleFavorite } = useFavorites();
   const saved = isFavorite(property.id);
+  const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
+  const comparing = isComparing(property.id);
 
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
   const formattedPrice = format(property.price.mxn);
@@ -140,6 +143,25 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 <Download size={14} strokeWidth={2.25} className="text-[#1A2F3F]" />
               </a>
             )}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleCompare(property.id);
+              }}
+              disabled={!comparing && compareFull}
+              className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
+                comparing
+                  ? 'bg-[#5CE0D2] text-[#0F1923]'
+                  : 'bg-white/85 hover:bg-white text-[#1A2F3F] disabled:opacity-40 disabled:cursor-not-allowed'
+              }`}
+              aria-label={tMkt('cardCompare')}
+              aria-pressed={comparing}
+              title={!comparing && compareFull ? tMkt('cardCompareFull') : tMkt('cardCompare')}
+            >
+              <GitCompare size={14} strokeWidth={2.25} />
+            </button>
           </div>
 
           {/* Badge */}
