@@ -3,7 +3,11 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useCurrency } from '@/context/CurrencyContext';
 
-export default function CurrencyToggle() {
+interface CurrencyToggleProps {
+  tone?: 'light' | 'dark';
+}
+
+export default function CurrencyToggle({ tone = 'light' }: CurrencyToggleProps = {}) {
   const t = useTranslations('a11y');
   const locale = useLocale();
   const { currency, toggleCurrency, rate, rateUpdatedAt } = useCurrency();
@@ -14,12 +18,23 @@ export default function CurrencyToggle() {
   );
   const tooltip = `TC: ${rate.toFixed(2)} MXN/USD · ${formattedDate}`;
 
+  const isDark = tone === 'dark';
+  const containerCls = isDark
+    ? 'inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-white/15 flex-shrink-0'
+    : 'inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-gray-200 flex-shrink-0';
+  const activeCls = isDark
+    ? 'bg-[#5CE0D2] text-[#0F1923]'
+    : 'bg-[#1A2F3F] text-white';
+  const inactiveCls = isDark
+    ? 'text-white/60 hover:text-white'
+    : 'text-gray-500 hover:text-[#1A2F3F]';
+
   return (
     <div
       role="group"
       aria-label={t('currencySelector')}
       title={tooltip}
-      className="inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-gray-200 flex-shrink-0"
+      className={containerCls}
     >
       <button
         type="button"
@@ -27,7 +42,7 @@ export default function CurrencyToggle() {
         aria-pressed={currency === 'MXN'}
         disabled={currency === 'MXN'}
         className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
-          currency === 'MXN' ? 'bg-[#1A2F3F] text-white' : 'text-gray-500 hover:text-[#1A2F3F]'
+          currency === 'MXN' ? activeCls : inactiveCls
         }`}
       >
         MXN
@@ -38,7 +53,7 @@ export default function CurrencyToggle() {
         aria-pressed={currency === 'USD'}
         disabled={currency === 'USD'}
         className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
-          currency === 'USD' ? 'bg-[#1A2F3F] text-white' : 'text-gray-500 hover:text-[#1A2F3F]'
+          currency === 'USD' ? activeCls : inactiveCls
         }`}
       >
         USD

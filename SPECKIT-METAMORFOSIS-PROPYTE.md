@@ -3647,6 +3647,381 @@ Bugs detectados por el auditor post-commits `c601a3d` + `cc1a3cc`. Pendientes de
 
 ---
 
+## 34. AUDITORÍA VISUAL FULLPAGE — dev.propyte.com 2026-04-28
+
+Auditoría visual completa con Playwright (1440×900 desktop + 390×844 mobile, 25 hojas, 50 screenshots fullPage con scroll progresivo) cruzada con MCP `ui-ux-pro` (patrón Real Estate Tech: Glassmorphism + Trust Blue + Hero-centric + Sales Intelligence dashboard).
+
+**Workspace:** `~/Projects/Propyte/_audit-dev-2026-04-28/` (capture.py, results.json, screenshots/, AUDITORIA-CHAT-CONSTRUCTOR.md).
+
+### 34.1 — CRÍTICOS GLOBALES (bloqueantes)
+
+| # | Bug | Hoja(s) | Fix |
+|---|-----|---------|-----|
+| 1 | Privacidad / Términos / Cookies son **literalmente la misma página vacía** con badge "En revisión legal" — riesgo LFPDPPP en MX captando leads sin Aviso vigente | `/es/privacidad`, `/es/terminos`, `/es/cookies` | Redactar y publicar 3 documentos con estructura mínima legal. Banner cookie con preferencias granulares. Fecha de última actualización en cada documento |
+| 2 | `/es/zonas` y `/es/mercado` renderizan exactamente la misma URL (mismo height 2401px) — bug de routing | `/es/zonas` | Definir: `/zonas` = listado de zonas (cards con foto + ROI + occupancy + índice 0-100); `/mercado` = dashboard de KPIs. Crear ruta dinámica `/es/zonas/[slug]` con detalle por zona |
+| 3 | `/es/desarrollos/tulum` muestra "0 Desarrollos · 0 Zonas" + texto auto-generado "uno de los mercados de mayor crecimiento en Mexico con 0 desarrollos activos en 0 zonas" | `/es/desarrollos/tulum`, `/es/desarrollos/cancun`, `/es/desarrollos/playa-del-carmen`, `/es/desarrollos/merida` | Hardcodear fallback de copy cuando count=0. Cargar data real o mostrar "Próximos lanzamientos en Q2 2026" |
+| 4 | Built sin `<h1>` (h1_count=0); además acentos perdidos en copy ("Disenar", "Anos") | `/es/built` | Convertir "Diseñar. Construir. Entregar." en `<h1>`. Auditar normalización Unicode en strings dark mode |
+| 5 | 52 de 65 `<img>` sin `alt` en /desarrollos (resto de hojas tienen 0/3 — vacías) | `/es/desarrollos` | Auditar `<Image alt>` global con regla ESLint `jsx-a11y/alt-text`. Generar alts descriptivos por carousel slide |
+| 6 | Teléfono placeholder `+52 984 000 0000` visible en producción | `/es/contacto` | Reemplazar por número real Propyte. Verificar también `tel:` href |
+| 7 | Banner "¿Listo para invertir en la Riviera Maya? · Contactar asesor" idéntico antes del footer en TODAS las hojas | global | Variar copy según contexto: en `/built` "¿Listo para construir tu proyecto?", en `/unete` "¿Listo para crecer con nosotros?", etc. |
+| 8 | Sidebar lateral fijo + header pill superior + topbar Anuncia/MXN-USD/ES/Contacto = **triple navegación** que compite y se duplica en mobile | global | Decisión arquitectónica: eliminar sidebar y dejar solo top header sticky. Mover sidebar links a menú hamburguesa secundario. Unificar componente (hoy varía entre `/desarrollos/tulum` vs `/desarrollos`) |
+
+### 34.2 — Catálogo y data (severidad ALTA)
+
+- Solo **1 desarrollo publicado** ("AZUL VIVO") y 5 propiedades. La hoja /desarrollos dice "1 resultados". Antes de QA visual final: cargar mín. 12-20 desarrollos y 30+ propiedades reales o samples aprobados (extender script `tests/qa-data/approve-sample-units.mjs`).
+- Métricas de mercado en `—` (em-dashes) en home, /mercado, /zonas. Aplicar pattern **hide-empty-KPI** (ya documentado en 32.3) globalmente — no mostrar dash, ocultar card o badge "Actualizando" + `last_updated`.
+- /es/blog **vacío** con cards "Próximamente". Bloquear ruta del header hasta tener ≥6 posts publicados; mientras tanto, hero + newsletter signup como placeholder atractivo.
+- /es/promociones con **1 sola promo** (AZUL VIVO) sin % descuento, vigencia, condiciones, countdown. Si no hay 2+ promos reales, mostrar mensaje "Suscríbete para enterarte de nuevas promos".
+- /es/equipo-comercial y /es/nosotros/estructura con **avatares de iniciales** (JBP/FL/LL/MQ). Pedir fotos profesionales en fondo neutro a JBP, FL, LF y los +5 asesores antes de publicar. Verificar también ortografía de "Lordy Lopez" y "Mario Quetzal".
+- FAQs colapsadas sin preview de respuesta en `/faq`, `/desarrolladores`, `/corredores`, `/unete`. Expandir top 3 por defecto y mostrar primeras 1-2 líneas en el resto. Schema.org `FAQPage` JSON-LD obligatorio.
+
+### 34.3 — Mejoras UX por hoja
+
+#### Home `/es`
+- "Propiedades destacadas" muestra 1 card → grid 2×2 o carousel con 6-8.
+- Testimonios sin foto/rol/ciudad/métrica → reescribir con foto, nombre, ciudad y resultado (ROI logrado).
+- Hero tabs (Departamentos/Casas/Terrenos) + chips (Por ROI/Por precio) amontonados → reorganizar.
+- Subir el simulador "Calcula tu ROI en segundos" más arriba (después del hero).
+- Faltan: logos de aliados/medios, mapa de cobertura, video institucional 30-60s, trustbar (notario, escrow).
+- Mobile: search hero apila vertical demasiado alto; comprimir.
+
+#### `/es/desarrollos`
+- Vista Lista/Grid/Mapa toggle (hoy solo split mapa+1card).
+- Chips de filtros activos visibles ("Tulum · ×").
+- Card sin botones Guardar (corazón), Comparar (checkbox), Brochure download.
+- Toggle MXN/USD sin tooltip de fecha del tipo de cambio.
+- Hero plano: agregar 3 mini-stats sticky (X desarrollos · Y zonas · ROI promedio Z%).
+
+#### `/es/propiedades`
+- Mapa con texto **"Las ubicaciones aún no están disponibles"** — placeholder explícito en producción. Cargar coordenadas o quitar el bloque.
+- Cards sin badge de tipo (departamento/casa/terreno) ni estado (preventa/inmediata/usada).
+- Filtros idénticos a /desarrollos — diferenciar (propiedades necesita Recámaras, Baños, m², Amueblado).
+- Falta toggle Vista grid 2/3/lista + densidad compacta/cómoda.
+- Mensaje "X resultados" inconsistente.
+
+#### `/es/rentas` y `/es/mercado`
+- Empty state "No hay datos de análisis disponibles" / "Actualizando datos de mercado..." ocupando >60% de hoja. Si feature flag, no exponer hasta tener datos.
+- Sin filtros aplicados, mostrar Top 10 zonas por defecto en lugar de "No se encontraron zonas".
+- Falta gráfico interactivo de tarifas mes/zona, ranking Top 10, comparador "tu propiedad vs mercado".
+- Sección "Metodología" con texto largo → bullets o mover a /faq.
+
+#### `/es/built`
+- Cards de proyectos (Residencia Ceiba, Hotel Zenith, Villa Kana, Parque Central PdC, Loft Atelier, Casa Selva) **sin imagen** sobre fondo dark — cargar renders/fotos.
+- Métricas "45+ · 120,000+ · 18 · 8" sin labels visibles → etiquetar (Proyectos · m² · Años · Premios).
+- Form "Hablemos de tu proyecto" sin dropdown "Tipo de proyecto".
+- Footer del Built sin link de regreso explícito a Propyte.
+
+#### `/es/desarrolladores` y `/es/corredores`
+- Logos de developers actuales/casos de éxito (incluso con 2-3) para social proof.
+- Timeline visual horizontal en "Cómo trabajamos · 4 pasos" con duración por etapa.
+- Forms sin validación visual, honeypot, mensaje de éxito tras envío.
+- Corredores: publicar **tabla de comisiones** concreta (hoy promete transparencia y nunca la muestra).
+- Corredores: agregar selector ciudad multi-select y upload cédula AMPI.
+
+#### `/es/nosotros/quienes-somos`, `/estructura`, `/equipo-comercial`
+- Quiénes somos: agregar timeline de fundación, foto oficina, foto grupal, logos aliados/awards.
+- Estructura: organigrama simple → interactivo con tooltips/hover (LinkedIn, contacto). "2 Plazas activas" → link a /unete con vacantes.
+- Equipo comercial: filtro por ciudad/especialidad, búsqueda, link WhatsApp directo + Calendly por asesor. Sección "Qué buscamos" con bullets red/green sin labels → cambiar a "Sí buscamos / No buscamos".
+
+#### `/es/contacto`
+- Mapa Google Maps embebido de oficina Playa del Carmen.
+- Form con validación visual (email, teléfono MX), honeypot, reCAPTCHA, mensaje de éxito.
+- Bloque social proof junto al form ("+N familias atendidas · X% recomienda Propyte").
+- Link a Calendly para agendar videollamada 30 min.
+- Horario de respuesta en CTA WhatsApp ("Respondemos en <2h hábiles").
+
+#### `/es/como-comprar`
+- 6 pasos numerados → timeline horizontal con progreso o tabs verticales que expanden detalle.
+- Por paso: duración estimada, costo aproximado %, documentos, qué puede salir mal.
+- Documentos: tabs separadas Residente / Extranjero.
+- Trust bar: "Notarios certificados · Abogados aliados · Fideicomiso para extranjeros".
+- Video explicativo 2-3 min con asesor.
+- Simulador de costos totales (ITP, notario, escrituración, comisión).
+
+#### `/es/como-invertir`
+- 3 estrategias (Plusvalía / Renta residencial / Renta vacacional) → gráfico comparativo (barras horizontales).
+- ROI por etapa → barra de progreso visual "Preventa 20-40% → Inmediata 0-5%".
+- 4 métricas (ROI/Cap Rate/IRR/Cash-on-Cash) → fórmula + ejemplo numérico real ("Propiedad de $3M, renta $25K/mes...").
+- Case study real ("María invirtió $X, vendió en Y meses con Z% ganancia").
+- Comparador "Real estate vs CETES vs Bolsa vs Fibras" — diferenciador potente.
+
+#### `/es/financiamiento`
+- **Calculadora hipotecaria interactiva** (monto, plazo, enganche → mensualidad) — crítica para la categoría.
+- Logos bancos aliados (BBVA, Banorte, Santander) en trustbar.
+- Link a precalificación online (form con análisis en 24h).
+- Tabla "Comparativa rápida" con columna **"Mejor para"** + link "Hablar con asesor especializado".
+- Fecha de actualización de tasas ("Actualizado al 28-abr-2026").
+
+#### `/es/faq`
+- Search bar con highlight del match.
+- Conteo por categoría en tabs ("Compra (4) · Inversión (5)...").
+- Expandir top 5 preguntas más visitadas con badge "Más leída".
+- Schema.org `FAQPage` JSON-LD.
+
+#### `/es/glosario`
+- **Quitar filtros del catálogo** (Ubicación/Precio/Tipo/ROI) que aparecen sin sentido en esta hoja.
+- Search por keyword (no solo A-Z).
+- Conteo por letra activa.
+- Verificar que todos los `[Saber más →]` funcionen (no 404).
+- Export PDF "Glosario inmobiliario Propyte" como lead magnet.
+
+#### `/es/promociones`
+- Si solo hay 1 promo, mostrar "Estamos negociando descuentos exclusivos · suscríbete" en lugar de la página vacía.
+- Card debe incluir: % descuento, vigencia, condiciones, countdown timer, unidades restantes.
+- Filtro por descuento %, ciudad, vigencia.
+- Suscripción "Avísame de nuevas promos".
+
+#### `/es/unete` (carreras)
+- Calculadora de ingresos: "Si vendes X propiedades de $Y al mes, ganas $Z".
+- Link a temario/syllabus de "200 horas Academia Propyte".
+- Diagrama visual del network income MLM (5 niveles).
+- Form con upload CV opcional + textarea "¿Por qué Propyte?".
+- Fotos del equipo trabajando (no stock) + video testimonial de un asesor exitoso.
+
+### 34.4 — Transversales (severidad MEDIA)
+
+- Skeleton loaders en cards/mapas en lugar de "—" o "Actualizando datos…" (extiende 32.2 y 32.3).
+- Empty states ilustrados (no solo texto) con CTA contextual.
+- Toaster global para confirmaciones de form y errores.
+- Microinteracciones: hover de cards (translateY -4px + shadow), favoritos (corazón fill), filtros (chip animado).
+- Schema.org: `RealEstateListing` por desarrollo/propiedad, `BreadcrumbList` visible + JSON-LD, `FAQPage`, `Organization` con sameAs Instagram/Facebook.
+- OG image dedicada por hoja (la home AZUL VIVO foto, /built render, /equipo grupo) — hoy probablemente comparten una sola.
+- Footer disclaimer "Propyte es una comercializadora inmobiliaria. Información referencial..." repetido en cada hoja → mover a footer legal único o reescribir en tono confianza ("Datos verificados con 7 fuentes; precios actualizados al [fecha]").
+- Topbar "Anuncia tu Desarrollo · MXN/USD · MX ES · Contacto" se pierde en mobile → replicar en menú hamburguesa.
+- Tipografía: H1 weight 700, H2 600 con tracking -0.01em (hoy H2 muy similar en peso a párrafo en /mercado, /rentas).
+- CTA verde-aqua sin borde/sombra en hover sobre fondo blanco — agregar microvariación.
+- Iconografía Lucide genérica → reemplazar al menos los 10 más visibles por set custom de marca.
+- Sesión fotográfica profesional de los 4 destinos (Cancún/Playa/Tulum/Mérida) para hero de /desarrollos/[ciudad] y home.
+
+### 34.5 — Ejecución
+
+Bloque **post-Fase 7** (sesiones 31+). Recomendado dividir en sub-fases:
+
+- **34-A** (1 sesión): Críticos legales + bugs de routing (items 1, 2, 3, 6 de 34.1) — bloqueantes producción.
+- **34-B** (1 sesión): Catálogo + data real (34.2) + alts/H1/disclaimer (34.1 items 4, 5, 7) — habilita QA visual real.
+- **34-C** (2-3 sesiones): UX por hoja (34.3) — pulido página por página, audit por batch.
+- **34-D** (1 sesión): Transversales (34.4) — schema, OG, skeletons, microinteracciones.
+
+Workspace y artefactos en `~/Projects/Propyte/_audit-dev-2026-04-28/` para referencia visual durante la ejecución.
+
+### 34.6 — Sprint A: Código puro — 12/12 ✅ CERRADO (2026-04-28)
+
+> 11 commits atómicos `50cdc06 → e845111` + deploy `next-propyte-ki7cf75om-propyte`. Auditor verificó código (`tsc --noEmit` exit 0, `eslint src` 0 violations) + 12 curl live en `dev.propyte.com`. Constructor extendió scope correctamente en items 2 (sweep i18n más allá de namespace built), 7 (regex +/blog/promociones por dark hero propio) y 12 (ComparisonTable también recibe displayScores).
+
+**Hallazgos no-bloqueantes (deuda nueva para sprint próximo):**
+1. ⚠️ **Sweep de acentos parcial** — solo cubrió `i18n/messages/es.json`. 4 archivos con metadata hardcoded sin acentos (afecta SEO + JSON-LD):
+   - `src/app/[locale]/built/page.tsx:37` — "diseno interior, construccion ... Yucatan"
+   - `src/app/[locale]/corredores/page.tsx:50` — "Comercializacion ... Yucatan"
+   - `src/app/[locale]/desarrolladores/page.tsx:66` — "Yucatan"
+   - `src/app/[locale]/desarrollos/_components/cityConfig.ts:42-46` — "Yucatan", "Merida, Yucatan"
+2. ⚠️ **MobileMenu icono duplicado** — `developments` y `advertise` ambos usan `Building2`. Cambiar `advertise` a `Megaphone` o `Briefcase` para diferenciar visualmente
+3. ⚠️ **`/rentas` redirect remanente** — `next.config.ts` mantiene `/:locale/rentas → /:locale/mercado?tab=tradicional`. "Sin uso pero documentado" según commit message; candidato a remover si no se va a publicar `/rentas` independiente
+
+**Decisiones del usuario antes del arranque:**
+- **A**: Item 7 — ocultar floating header en hojas de contenido (mismo patrón que `isArchive` en `Header.tsx:29-32`).
+- **B**: Item 3 — eliminar redirect `/zonas` en `next.config.ts`. `ZonasExplorer` queda como está; rediseño de cards va en Sprint posterior.
+
+**Items + commit cierre:**
+
+| # | Item | Commit | Status |
+|---|------|--------|--------|
+| 1 | H1 en /built | `516bd4d` | ✅ Live: `<h1 class="sr-only">Diseñar. Construir. Entregar.</h1>` |
+| 2 | Acentos rotos | `50cdc06` | ✅ 22 strings en es.json (built/city/property + global). Sweep limpio: 0 matches. Constructor extendió scope correctamente. ⚠️ 4 archivos `.tsx` con metadata hardcoded sin acentos quedan para sprint próximo |
+| 3 | /zonas vs /mercado | `7f474cd` | ✅ Live: ambas rutas 200 OK con contenido distinto |
+| 4 | imgs sin alt | `e845111` | ✅ Regla ESLint `jsx-a11y/alt-text` como `warn`. 0 violations en src/. Las 52/65 eran Google Maps SDK runtime |
+| 5 | FAQs top-3 abiertos | `2777107` | ✅ Live: 3 `aria-expanded="true"` en /faq, /desarrolladores, /corredores, /unete. Multi-open + reset categoría OK |
+| 6 | Anuncia mobile | `2574f72` | ✅ Live: "Anuncia tu Desarrollo" en MobileMenu bundle. ⚠️ Icono `Building2` duplicado con `developments` |
+| 7 | Floating header en content | `dad3c09` | ✅ Live: 0 ActionsPill en /es/glosario, presente en /es/built y /es. Constructor extendió regex con `/blog` y `/promociones` (correcto, ambas tienen dark hero propio) |
+| 8 | Banner pre-footer contextual | `aeb323c` | ✅ Live: home="invertir", built="construir tu proyecto", unete="crecer con nosotros", faq=default. Map ROUTE_CTA_KEY con 5 overrides ES+EN |
+| 9 | Mobile FilterBar single button | `4b32a0e` | ✅ Live: `md:hidden flex` button "Filtros (N)" + `md:flex` desktop pills. activeCount: city/price/type/roi/search |
+| 10 | Tooltip TC MXN/USD | `d008df9` | ✅ Live: `title="TC: 17.24 MXN/USD · 1 abr 2026"`. `EXCHANGE_RATE_UPDATED_AT='2026-04-01'` en CurrencyContext |
+| 11 | "Actualizando" → "Sin datos" | `9861258` | ✅ Live: "Sin datos para esta selección" en /es/mercado. amber→gray |
+| 12 | Top 10 fallback /mercado | `8d9fe01` | ✅ Live: "Sin coincidencias para tu filtro. Mostrando Top 10 nacional." en /es/mercado?city=Cozumel. Constructor extendió: `ComparisonTable` también recibe `displayScores` |
+
+**Orden recomendado (más barato → más caro):** 2 → 1 → 3 → 8 → 11 → 5 → 6 → 10 → 12 → 7 → 9 → 4
+
+**Reglas de auditoría:**
+- Auditor NO edita código — sólo verifica commits y tacha en Pendientes_Tracker + SPECKIT.
+- Cada commit del chat constructor se manda al auditor; auditor confirma fix con código + Playwright si aplica.
+- Items que cierran un CRITICO/ALTA/MEDIA de Fase 34: marcar también en sección raíz al cerrar.
+
+**Items Fase 34 que NO toca Sprint A** (van a sprints posteriores):
+- 34-A.1 (privacidad/términos/cookies legales) — requiere redacción legal MX
+- 34-A.3 (tulum 0/0 desarrollos) — ~~requiere data + plantilla copy~~ ✅ CERRADO Batch 1 commit `9bf7b04`
+- 34-A.6 (tel placeholder) — ~~requiere número real Propyte~~ ✅ CERRADO Batch 1 commit `860590c`
+- 34-A.8 (eliminar sidebar fully) — decisión arquitectónica mayor (resolución sesión 32: mantener sidebar)
+
+### 34.7 — Batch 1 post-Sprint A — 5/5 ✅ CERRADO (2026-04-29)
+
+> 5 commits atómicos `8924e1d → a12a145`. Cierra 2 CRITICOS restantes (34-A.3 + 34-A.6) y 2 deudas no-bloqueantes de Sprint A (#1 acentos `.tsx` + #2 MobileMenu Megaphone). Build local limpio: `tsc --noEmit` 0 errors, ESLint 0 warnings. Auditor verificó código + curl live en `dev.propyte.com` (4 ciudades empty state + tel real).
+
+| # | Item | Commit | Status |
+|---|------|--------|--------|
+| 1 | Blog default 2-col fetch sin filtro categoría | `8924e1d` | ⚠️ Workaround técnico al doble `.in()` (status+category) que rompía PostgREST cuando `BLOG_INCLUDE_STAGED=true`. Trae 16 sin filtro y divide en JS. Síntoma visible "Próximamente x8" persiste (root cause es data/env upstream, no código). Degrada cuando >12 posts de una categoría en últimos 16 |
+| 2 | Tel real `+52 984 323 5354` | `860590c` | ✅ Live: i18n `info.phone` ES+EN + fallbacks WhatsApp en `ContactPageContent.tsx` y `equipo-comercial/page.tsx` → `529843235354`. Cierra CRITICO 34-A.6. ⚠️ Deuda menor: `formPhonePlaceholder` en form proveedores sigue placeholder; 3 fallbacks `521XXXXXXXXXX` en `WhatsAppButton.tsx` / `ContactSidebar.tsx` / `StickyBar.tsx` no homogeneizados (no rompe en práctica) |
+| 3 | Empty state honesto `/desarrollos/[city]` | `9bf7b04` | ✅ Live verificado en /es/desarrollos/{cancun,tulum,playa-del-carmen,merida}: `count > 0` guards en stats, empty state CTA "Próximos lanzamientos en {city}" + "Avísame" + "Explora otras ciudades", `investingDescriptionEmpty` alterno, `name` acentuado SEO + `matchTerm` sin acento para `.ilike()` (DB tiene ambas variantes). Cierra CRITICO 34-A.3 |
+| 4 | Acentos JSON-LD metadata | `0c74074` | ✅ 3 ProfessionalService schemas en built/corredores/desarrolladores: "diseno"/"construccion"/"Yucatan"/"Comercializacion" → acentos correctos. + Combinado con commit `9bf7b04` que arregla `cityConfig.ts` (Cancún/Mérida/Yucatán). Cierra deuda Sprint A #1 |
+| 5 | MobileMenu icono `Megaphone` | `a12a145` | ✅ "Anuncia tu Desarrollo" diferenciado de "Desarrollos" (Building2). Cierra deuda Sprint A #2 |
+
+**Hallazgos del auditor (no bloquean cierre):**
+- ⚠️ **`formPhonePlaceholder`** en `i18n/messages/es.json:771` y `en.json:771` sigue `+52 984 000 0000` (placeholder de input en form proveedores). UX legítimo, pero el audit fullPage detectaba la cadena. Sugerencia: cambiar a un número genérico no-Propyte (ej. `+52 998 123 4567`)
+- ⚠️ **3 fallbacks `521XXXXXXXXXX`** sin homogeneizar a `529843235354`:
+  - `src/components/shared/WhatsAppButton.tsx:16`
+  - `src/components/property/ContactSidebar.tsx:18`
+  - `src/components/property/StickyBar.tsx:16`
+  No rompe en producción (NEXT_PUBLIC_WHATSAPP_PHONE seteado en Vercel) pero es inconsistencia con el resto del repo
+- ⚠️ **Blog 2-col fix técnico no resuelve síntoma visible**. La página `/es/blog` live sigue mostrando 8 cards "Próximamente". Causa probable: `BLOG_INCLUDE_STAGED` no está en `true` en Vercel Production env, o RLS bloquea anon, o `eq('locale','es')` no matchea filas con locale `es-MX`. Investigar antes de Sprint próximo → ✅ **RESUELTO en 34.8 commit `b210bf2`** (root cause definitivo: Next 16 RSC + 'use client' module proxy)
+- ✅ Constructor extendió scope correctamente en commit `9bf7b04` cubriendo además `cityConfig.ts` (4to archivo de la deuda Sprint A #1)
+
+**Críticos Fase 34-A restantes** (post-Batch 1):
+- 34-A.1 (legal pages) — bloqueado por decisión Luis: redactar drafts genéricos vs proveer documentos legales propios + decisión banner cookies (vanilla vs CookieYes)
+- 34-A.8 (eliminar sidebar) — decisión arquitectónica resuelta sesión 32: **mantener sidebar** (no es bug)
+
+### 34.8 — Sesión 33: Fix definitivo blog default 2-col (2026-04-29)
+
+> 5 commits adicionales `58cfcb8 → b1c3b07` (3 debug temporales + 1 fix real + 1 cleanup). Root cause definitivo del blog empty visible identificado mediante endpoint de diagnóstico temporal `/api/debug-blog`. 4 deploys Vercel a `dev.propyte.com` durante el ciclo de diagnóstico. Auditor verificó cleanup limpio (0 referencias a `debugMarker` / `debug-blog` / `DEBUG-MARKER` en `src/`).
+
+**Diagnóstico técnico (ahora documentado en repo):**
+
+Next.js 16 RSC trata los re-exports de constantes desde un módulo con directiva `'use client'` como **proxy functions** cuando se importan a un Server Component. La consecuencia: en `page.tsx` (Server Component) la línea
+
+```ts
+import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/BlogHero';  // 'use client'
+```
+
+importaba *funciones stub* en vez de las strings `'Para Asesores'` / `'Para Inversionistas'`. El filtro `posts.filter(p => p.category === CAT_INVERSIONISTAS)` siempre devolvía `[]` porque comparaba `string === function`.
+
+El URL filtered (`/blog?categoria=Para%20Inversionistas`) sí funcionaba porque pasaba el string literal por `searchParams`, no por la const importada.
+
+**Fix `b210bf2`:**
+- Crear `src/components/blog/categories.ts` (módulo neutro, sin `'use client'`)
+- Mover `CAT_ASESORES` + `CAT_INVERSIONISTAS` ahí
+- `BlogHero.tsx`, `page.tsx` y `debug-blog/route.ts` importan desde el módulo neutro
+- Docstring en `categories.ts` documenta el porqué para futuro
+
+**Verificación live (2026-04-29):**
+- `/es/blog` ya renderiza 3 cards reales `Para Inversionistas` (slugs `invertir-en-tulum-2026`, `invertir-preventa-tulum-guia-principiantes`, `invertir-tulum-2026-guia-principiantes`)
+- Columna `Para Asesores` sigue empty pero por **gap de data** (WK Blog AI debe generar posts con `category='Para Asesores'`), no por código
+
+**Cleanup `b1c3b07`:**
+- `/api/debug-blog/route.ts` removido (50 líneas)
+- `debugMarker` + `data-debug-blog` div removidos de `page.tsx`
+- Comentario actualizado documenta el motivo del módulo neutro
+
+**Hallazgo Vercel env (no-bloqueante):**
+- `BLOG_INCLUDE_STAGED="Save"` (typo literal en valor) → `=== 'true'` da `false` → comportamiento prod-like en staging. Si se quiere ver staged posts en `dev.propyte.com`, fix manual en Vercel dashboard a `"true"`
+
+**Memoria persistida:** `~/.claude/projects/c--Users-Luis/memory/feedback_nextjs_rsc_use_client_const.md`
+
+| # | Commit | Status |
+|---|--------|--------|
+| 1 | `58cfcb8` `chore(debug): tmp endpoint /api/debug-blog` | ✅ Removido en `b1c3b07` (50 líneas) |
+| 2 | `ed6de5d` `chore(debug): marker temporal en /blog` | ✅ Removido en `b1c3b07` |
+| 3 | `ad1c969` `chore(debug): expand marker para ver categorías` | ✅ Removido en `b1c3b07` |
+| 4 | `b210bf2` `fix(blog): mover CAT_* constants a módulo neutro` | ✅ Live: 3 cards Para Inversionistas en /es/blog. Cierra ALTA Fase 34-B blog empty (parte código) |
+| 5 | `b1c3b07` `chore(debug): cleanup` | ✅ 0 referencias debug en src/ |
+
+**Pendientes de data (lado Felipe / sync, NO código):**
+- Catálogo casi vacío en prod (1 desarrollo + 5 propiedades) — script `tests/qa-data/approve-sample-units.mjs` listo
+- WK Blog AI debe generar posts con `category='Para Asesores'` (columna izquierda /es/blog sigue empty)
+- `v_units` sin `roi`/`appreciation`/`capRate`
+- `airdna_market_summary.latest_date` null
+- `zone_scores` vacía en zonas de desarrollos aprobados
+
+### 34.9 — Batch 3: 34-B code-side + cleanup deudas auditor (2026-04-29)
+
+> 5 commits adicionales `e43f7eb → 31b69e9` + 1 deploy Vercel a `dev.propyte.com`. Cierra 3 ALTA Fase 34-B (`/promociones` empty state + hide-empty-KPI MercadoHero + FAQPage JSON-LD) + 2 deudas no-bloqueantes que el auditor reportó en batches 1-2 (3 fallbacks WhatsApp + formPhonePlaceholder genérico). Auditor verificó código + curl live para FAQPage + grid hero oculto + empty state /promociones.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `e43f7eb` | Homogeneizar 3 fallbacks WhatsApp `521XXXXXXXXXX` → `529843235354` | ✅ Cierra deuda auditor sesión 33 batch 1. 3 archivos: `WhatsAppButton.tsx:16`, `ContactSidebar.tsx:18`, `StickyBar.tsx:16`. Override por env var sigue prioritario |
+| 2 | `117cca0` | `formPhonePlaceholder` genérico `+52 998 123 4567` (área Cancún ficticia) | ✅ Cierra deuda auditor batch 1. Evita re-flag del audit fullPage que detectaba `+52 984 000 0000` (área Propyte real) |
+| 3 | `6a3162e` | `/es/promociones` threshold `< 2` empty state honesto | ✅ Live: "Estamos negociando descuentos exclusivos" + dual CTA "Avísame de nuevas promos" + "Ver catálogo completo". 3 occurrencias en HTML cada una. AZUL VIVO oculto del grid (sigue accesible /destacados, /desarrollos). ⚠️ JSON-LD Offer/RealEstateListing aún declara AZUL VIVO — inconsistencia schema vs UI (Google Rich Results podría mostrar "tenemos esta oferta" pero usuario ve empty state). Cierra ALTA Fase 34-B promociones |
+| 4 | `0d766c3` | hide-empty-KPI en `MercadoHero` | ✅ Live: grid de 4 KPIs oculto cuando `strStats`/`ltrStats` undefined. Badge amber con dot pulse "Actualizando datos de mercado…". ⚠️ Inconsistencia con Sprint A item 11: `VacacionalKPIs` usa "Sin datos para esta selección" gris (filter context); `MercadoHero` reintroduce "Actualizando" amber (header global onboarding). Razón defendible pero rompe consistencia visual del patrón hide-empty-KPI a nivel sitio. Cierra parcialmente ALTA Fase 34-B em-dashes — table cells (TradicionalTab/ComparisonTable) y detail cards mantienen `—` deliberadamente |
+| 5 | `31b69e9` | FAQPage JSON-LD en `/desarrolladores`, `/corredores`, `/unete` | ✅ Live verificado: `"@type":"FAQPage"` + 8 `"@type":"Question"` entities en cada hoja. Reusa `SchemaMarkup type='faq'` en desarrolladores/corredores; `/unete` usa `<script type="application/ld+json">` inline porque ya tenía WebPage schema inline (consistencia con archivo, no entre archivos). i18n keys verificadas: `developers.faq{1..8}{Q,A}`, `brokers.faq{1..8}{Q,A}`, `unete.faq{1..8}{Q,A}` existen ES+EN. Cierra parcial Sprint A item 5 que quedaba pendiente (FAQ schema.org) |
+
+**Hallazgos del auditor (no bloquean cierre):**
+- ⚠️ **Schema.org vs UI desalineado en `/promociones`**: el threshold `< 2` oculta AZUL VIVO de la UI visible pero el JSON-LD `Offer` + `RealEstateListing` siguen declarándolo como oferta. Riesgo SEO menor: Google Rich Result podría mostrar "AZUL VIVO Residences" como promoción y al click el usuario ve empty state. Sugerencia: condicionar también el JSON-LD al threshold (`{items.length >= 2 && <SchemaMarkup ... />}`)
+- ⚠️ **Inconsistencia copy hide-empty entre componentes**: Sprint A item 11 cambió `VacacionalKPIs` de amber "Actualizando" a gray "Sin datos" (decisión: ser honesto cuando no hay garantía de update inminente). Este batch reintroduce amber "Actualizando" en MercadoHero. Argumentable como diff filter-context vs onboarding-context, pero genera dos patrones visuales para "no data" en el mismo dashboard (`/mercado`)
+- ✅ **Cleanup proactivo de deudas auditor**: constructor cerró ambos hallazgos no-bloqueantes (WhatsApp 521XXX + formPhonePlaceholder) antes de avanzar al batch siguiente. Buena higiene de deuda
+- ✅ Código limpio: i18n keys validadas, SchemaMarkup type reusado correctamente, threshold lógico (`< 2` vs `=== 0`) más defensivo
+
+**Pendientes lado Luis (no código):**
+- Vercel `BLOG_INCLUDE_STAGED="Save"` → `"true"` (1 click dashboard)
+- WK Blog AI: 3-4 posts con `category='Para Asesores'`
+- ~~Decisión 34-A.1 legal: drafts genéricos vs documentos legales~~ ✅ Cerrado en 34.10 (drafts genéricos publicados)
+- Fotos profesionales `/equipo-comercial` + `/nosotros/estructura`
+
+### 34.10 — Batch 4: drafts legales + cleanup deudas batch 3 (2026-04-29)
+
+> 3 commits adicionales `2970d14 → ca0f54f` + 1 deploy Vercel a `dev.propyte.com`. Cierra el último CRÍTICO Fase 34-A pendiente (34-A.1 legal pages) + 2 deudas no-bloqueantes que el auditor reportó en Batch 3 (JSON-LD condicional `/promociones` + comment in-line MercadoHero documentando los 2 patrones empty-state).
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `2970d14` | JSON-LD condicional `/promociones` al threshold UI (`items.length < 2 → null`) | ✅ Live: 0 ocurrencias de `AZUL VIVO`, `CollectionPage`, `Offer`, `RealEstateListing` cuando empty state activo. Schema vs UI consistentes. Cierra deuda auditor batch 3 #1 |
+| 2 | `f82a366` | Comment in-line en `MercadoHero.tsx` documentando 2 patrones empty-state | ✅ 5 líneas de comment explicando "onboarding empty" (data NO existe → amber "Actualizando") vs "filter empty" (data existe pero filter sin match → gris "Sin datos") con referencia explícita a commit `9861258` Sprint A item 11. Future-self protected. Cierra deuda auditor batch 3 #2 |
+| 3 | `ca0f54f` | Drafts legales `/privacidad` + `/terminos` + `/cookies` (es/en) | ✅ Live verificado 6 URLs (200 OK). `/es/privacidad`: 11 H2 + 13× LFPDPPP + 10× ARCO + INAI + jurisdicción Playa del Carmen. `/es/terminos`: 11 H2 + disclaimer inversión + IP + limitación responsabilidad. `/es/cookies`: 7 H2 + tabla 3 categorías (necesarias/analytics/marketing) + enlaces desactivar 4 navegadores. Footer Footer.tsx:124-126 ya enlazaba. EN versions con `pickLang` inline (11× "Privacy Notice", 0 leakage de strings ES). Componentes nuevos: `LegalPage.tsx` wrapper (76 líneas), `PrivacidadContent.tsx` (105), `TerminosContent.tsx` (79), `CookiesContent.tsx` (79). CSS `.legal-prose` (64 líneas en globals.css). `LegalPlaceholder.tsx` eliminado (-66 líneas). `robots: noindex` mantenido hasta revisión abogado. Cierra CRÍTICO Fase 34-A.1 (riesgo LFPDPPP en MX captando leads sin Aviso vigente) |
+
+**Hallazgos del auditor (no bloquean cierre):**
+- ⚠️ **Banner cookies granular pendiente** — los 3 documentos asumen un CMP que aún no existe (`cookies.tsx` referencia `cookieyes-consent` / `cookiebot-*` cookies que no se setean hoy). El "banner de consentimiento" descrito en /cookies sección 3 no está implementado en código todavía. Requiere decisión Luis (Cookiebot/CookieYes vs vanilla impl) antes de remover `noindex`
+- ⚠️ **`pickLang` inline duplica strings** — los 3 contenidos legales tienen ~80 strings ES + EN inline en JSX (uno al lado del otro). Aceptable en este caso porque (a) el contenido es long-form y la traducción cambia frase-por-frase, (b) un i18n namespace separado se vuelve un wall de keys plana sin estructura. Trade-off válido para legal pages, no para resto del sitio
+- ⚠️ **Email legal hardcodeado** — `privacidad@propyte.com` aparece 16× en /privacidad, 4× en /terminos, 4× en /cookies. Si cambia el email, hay 24 puntos de modificación (vs. 1 en i18n). Sugerencia menor: extraer a const exportada desde `LegalPage.tsx` o env var `NEXT_PUBLIC_LEGAL_EMAIL`. No bloqueante
+- ✅ **`robots: { index: false, follow: true }`** — correcto durante draft. Permite que Google siga links salientes pero no indexa el contenido todavía. Cuando abogado revise, cambiar a `{ index: true, follow: true }` y remover badge `draftBadge`
+- ✅ **Estructura legal técnicamente válida**: secciones LFPDPPP (responsable, finalidades 1as/2as, ARCO 20 días, INAI escalation), T&C marketplace standard (disclaimers inversión + jurisdicción + IP + limitación responsabilidad), cookies con inventario provisional + browser-level disable links
+
+**Estado Fase 34-A post-Batch 4:** **7/8 cerrados** (resta solo 34-A.8 sidebar = decisión arquitectónica resuelta "mantener")
+**Pendientes lado Luis** (no código):
+- Vercel `BLOG_INCLUDE_STAGED="Save"` → `"true"`
+- WK Blog AI: 3-4 posts `category='Para Asesores'`
+- Revisión abogado de los 3 drafts legales antes de remover `noindex`
+- Decisión banner cookies (Cookiebot/CookieYes vs vanilla)
+- Fotos profesionales `/equipo-comercial` + `/nosotros/estructura`
+
+### 34.11 — Batch 5: cleanup deudas legal Batch 4 + equipo-comercial→Supabase (paralelo) (2026-04-29)
+
+> 3 commits en develop `c8a8455 → 6eead5b` + 1 deploy Vercel. **Constructor reportó 2 commits** que cierran las 2 deudas no-bloqueantes del Batch 4 auditor; el commit `6eead5b` (equipo-comercial → Supabase) entró en paralelo desde otra sesión (Hub admin /equipo) — el constructor explícitamente dijo "no toco ese archivo" pero la otra sesión sí lo committeó al mismo desarrollo branch. Auditor revisa los 3 ya que están en develop.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `c8a8455` | `src/lib/legal/contacts.ts` con `PRIVACY_EMAIL` + `LEGAL_EMAIL` (override env) | ✅ 0 emails hardcoded fuera de `contacts.ts` (verificado `grep -r 'privacidad@\|legal@' src/`). LegalPage + PrivacidadContent + TerminosContent refactorizados a `{PRIVACY_EMAIL}` / `{LEGAL_EMAIL}`. Cambio futuro = 1 archivo en lugar de 6. Cierra deuda auditor batch 4 #2 |
+| 2 | `f7077db` | Cookies §3 future-tense + §2.1 mover cookieyes-consent a nota italics | ✅ Live: 5× "próximamente", 2× "Cuando el banner esté", 2× "Mientras tanto", 2× "Estado:". §3 título cambiado a "Tu consentimiento (próximamente)". Cuerpo: "Estado: se está desplegando ... mientras se implementa, solo se cargan automáticamente las cookies estrictamente necesarias (§2.1); las cookies de analítica y marketing no se activan hasta que el banner de consentimiento esté disponible". Opt-out alternativo: navegador (§4) o email a PRIVACY_EMAIL. §2.1 quita `cookieyes-consent`/`cookiebot-*` del listado y los mueve a italics. Cierra deuda auditor batch 4 #1 |
+| 3 | `6eead5b` (paralelo otra sesión) | `/equipo-comercial` lee de `real_estate_hub.v_team_members` en lugar de hardcoded | ⚠️ ISR 600s + on-demand revalidate desde Hub. Avatar con foto si existe + fallback initials con color hash determinístico. WhatsApp link condicional (`phone.length >= 10`). Empty state cuando `teamMembers.length === 0`. **Cierra parcialmente** ALTA Fase 34-B equipo-comercial (cuando Luis cargue seed SQL en Supabase, las fotos profesionales pendientes se renderizan vía Hub CRUD) |
+
+**Hallazgos del auditor (Batch 5):**
+- ⚠️ **Bug i18n en commit `6eead5b`** — `equipo-comercial/page.tsx:173` empty state hardcoded en ES: `"Equipo en formación, pronto compartimos detalles."` se muestra idéntico en `/en/nosotros/equipo-comercial` (verificado live: 2 ocurrencias del string ES en HTML del locale EN). Mover a namespace `team` con keys `emptyTitle` / `emptyBody`
+- ⚠️ **Regresión de visibilidad** en commit `6eead5b` — hardcode previo de 4 leaders (JBP/FL/LF + 1 placeholder) eliminado del código → página vacía hasta que la otra sesión cargue seed en `v_team_members`. Trade-off arquitectónico defendible (single source of truth = Hub) pero usuarios pierden info de contacto del equipo mientras tanto. **Recomendación**: priorizar `scripts/sql/team-members.sql` + seed en Supabase Editor antes del próximo cache flush de Vercel/ISR. Decisión Luis si reintroducir hardcode temporal hasta que Hub publique
+- ⚠️ **`<img>` con eslint-disable** — `Avatar` usa `<img>` plano con disable comment en lugar de `<Image>` next/image. Aceptable para fotos remotas con dimensiones desconocidas, pero pierde optimización LCP/lazy/srcset. Para 4-12 fotos profesionales, considerar `<Image fill>` con sizes específicos
+- ✅ **`c8a8455` con override por env** — soporte `NEXT_PUBLIC_PRIVACY_EMAIL` / `NEXT_PUBLIC_LEGAL_EMAIL` permite distinguir staging/prod. Bonus point — el auditor solo pidió "extraer a const", el constructor extendió scope con env override (consistente con el patrón de `NEXT_PUBLIC_WHATSAPP_PHONE` ya usado en el repo)
+- ✅ **`f7077db` mantiene §4 intacto** — el "Independientemente de nuestro banner de consentimiento, puedes configurar tu navegador" en §4 técnicamente menciona el banner pero está acotado por §3 como "próximamente". Aceptable; cuando el CMP se deploye, este texto sigue siendo válido. No requiere fix paralelo
+- ✅ **Constructor explícito sobre el out-of-scope** — el mensaje del Batch 5 declaró "hay edits en curso desde otra sesión... No toco ese archivo". Aunque el commit `6eead5b` está en develop con el mismo author email, la transparencia evita confusión sobre quién hizo qué
+
+**Estado post-Batch 5:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio — resta sólo 34-A.8 sidebar mantener)
+- **Fase 34-B código: 7/9 + 1 parcial** (`/equipo-comercial` parcial via 6eead5b, espera seed data)
+- **Deudas auditor**: 0 abiertas tras Batch 5 + 3 nuevas del 6eead5b (1 i18n, 1 visibilidad, 1 `<img>` opt-in)
+- Listo para Fase 34-C (UX por hoja) cuando Luis indique
+
+### 34.12 — Batch 6: cleanup deuda i18n batch 5 (2026-04-29)
+
+> 1 commit `d1a6e1a` + 1 deploy Vercel a `dev.propyte.com`. Cierra la deuda #1 del commit paralelo `6eead5b` (bug i18n empty state hardcoded en ES). Las deudas #2 (regresión visibilidad) y #3 (`<img>` vs `<Image>`) quedan en backlog explícito a decisión Luis.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `d1a6e1a` | Empty state `/equipo-comercial` respeta locale | ✅ Live verificado: `/es` muestra "Equipo en formación" + "Pronto compartiremos los perfiles del equipo. Mientras tanto, contáctanos para conectarte con un asesor." · `/en` muestra "Team coming together" + "We'll be sharing team profiles soon. In the meantime, contact us to connect with an advisor." 0 leakage del string ES en EN. 2 keys nuevas en namespace `about`: `teamEmptyTitle` + `teamEmptyBody`. Estructura `h3 + p` consistente con city pages + /promociones empty states. Padding mobile `px-6` agregado. Cierra deuda auditor batch 5 #1 |
+
+**Hallazgos del auditor (Batch 6):**
+- ✅ **Cleanup quirúrgico** — 1 commit, 3 archivos (page.tsx + es.json + en.json), 0 efectos colaterales
+- ✅ **Estructura consistente con resto del repo** — `h3 + p` ya es el patrón de empty states en city pages (Cancún/Mérida/etc), `/promociones`, `/blog`. Constructor reconoció el patrón y lo aplicó
+- ✅ **Constructor explícito sobre deudas remanentes** — declaró que #2 (regresión visibilidad) requiere OK Luis antes de agregar fallback, y #3 (`<img>`) queda en backlog para 20+ fotos. No actuó por su cuenta sobre lo que requiere decisión humana
+
+**Estado post-Batch 6:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio en items raíz)
+- **Deudas auditor activas:** 2 abiertas del commit paralelo `6eead5b` (regresión visibilidad temporal + `<img>` opt-in), ambas con decisión humana explícitamente bloqueada
+- Listo para Fase 34-C (UX por hoja) cuando Luis indique
+
+---
+
 > **FIN DEL SPECKIT METAMORFOSIS PROPYTE v2.0**
 >
 > **Cambios v1.0 → v2.0:**

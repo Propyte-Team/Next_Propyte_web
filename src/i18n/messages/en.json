@@ -25,6 +25,7 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "language": "Language",
+    "currency": "Currency",
     "changeCurrency": "Change currency"
   },
   "hero": {
