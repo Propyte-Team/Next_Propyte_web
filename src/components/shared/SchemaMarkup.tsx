@@ -15,6 +15,7 @@ export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
         url: 'https://propyte.com',
         logo: 'https://propyte.com/logo.png',
         description: 'Marketplace inmobiliario en la Riviera Maya con herramientas de análisis para inversionistas.',
+        telephone: '+529843235354',
         address: {
           '@type': 'PostalAddress',
           streetAddress: '5ta Avenida',
@@ -22,6 +23,10 @@ export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
           addressRegion: 'Quintana Roo',
           addressCountry: 'MX',
         },
+        sameAs: [
+          'https://www.instagram.com/propyte.mx/',
+          'https://www.facebook.com/propyte',
+        ],
         ...data,
       };
       break;
@@ -44,8 +49,12 @@ export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
           addressRegion: 'Quintana Roo',
           addressCountry: 'MX',
         },
-        telephone: '+52XXXXXXXXXX',
+        telephone: '+529843235354',
         email: 'info@propyte.com',
+        sameAs: [
+          'https://www.instagram.com/propyte.mx/',
+          'https://www.facebook.com/propyte',
+        ],
         ...data,
       };
       break;
