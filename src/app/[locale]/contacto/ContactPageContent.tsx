@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
-import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, Calendar, ShieldCheck } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 
@@ -51,6 +51,7 @@ export default function ContactPageContent() {
   }
 
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
+  const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_URL || '';
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(t('whatsappMessage'))}`;
   const telHref = `tel:${t('info.phone').replace(/[^+\d]/g, '')}`;
   const mailHref = `mailto:${t('info.email')}`;
@@ -197,6 +198,31 @@ export default function ContactPageContent() {
                   {tCommon('error')}
                 </p>
               )}
+
+              {/* Social proof — coverage, certified team, response SLA */}
+              <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-3 gap-3">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                    <MapPin size={18} className="text-[#0D9488]" strokeWidth={2} />
+                  </div>
+                  <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.coverageTitle')}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                    <Users size={18} className="text-[#0D9488]" strokeWidth={2} />
+                  </div>
+                  <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.teamTitle')}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                    <ShieldCheck size={18} className="text-[#0D9488]" strokeWidth={2} />
+                  </div>
+                  <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.slaTitle')}</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
+                </div>
+              </div>
             </form>
 
             {/* Info + map — 2 cols */}
@@ -263,6 +289,29 @@ export default function ContactPageContent() {
               <p className="text-center text-xs text-gray-500 -mt-2">
                 {t('whatsappResponseTime')}
               </p>
+
+              {/* Calendly: agendar videollamada 30 min */}
+              {calendlyUrl ? (
+                <a
+                  href={calendlyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full h-12 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors"
+                >
+                  <Calendar size={18} strokeWidth={2} />
+                  {t('calendlyCta')}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  title={t('calendlySoon')}
+                  className="flex items-center justify-center gap-2 w-full h-12 bg-gray-100 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
+                >
+                  <Calendar size={18} strokeWidth={2} />
+                  {t('calendlyCta')}
+                </button>
+              )}
 
               {/* Google Maps embed */}
               <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">

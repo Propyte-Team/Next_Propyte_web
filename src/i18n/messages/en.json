@@ -676,6 +676,16 @@
     "formSuccessToast": "Message sent. We'll reach out within 2 business hours.",
     "formErrorToast": "Could not send your message. Try again or email us at hola@propyte.com.",
     "whatsappResponseTime": "We reply within 2 business hours",
+    "calendlyCta": "Schedule a 30-min video call",
+    "calendlySoon": "Coming soon — message us on WhatsApp",
+    "socialProof": {
+      "coverageTitle": "Riviera Maya",
+      "coverageDesc": "& Yucatán",
+      "teamTitle": "Certified team",
+      "teamDesc": "Bilingual advisors",
+      "slaTitle": "<2h response",
+      "slaDesc": "During business hours"
+    },
     "subjectOptions": {
       "general": "General inquiry",
       "property": "Property information",
