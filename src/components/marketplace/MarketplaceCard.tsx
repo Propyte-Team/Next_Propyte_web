@@ -156,9 +156,16 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                const result = toggleCompare(property.id);
+                const kind = property.kind ?? 'development';
+                const result = toggleCompare(property.id, kind);
                 if (!result.ok && result.reason === 'full') {
                   toast.warning(tMkt('cardCompareFull'));
+                } else if (result.ok && result.switched) {
+                  toast.info(
+                    tMkt('compareReset', {
+                      kind: tMkt(kind === 'unit' ? 'compareKind_unit' : 'compareKind_development'),
+                    }),
+                  );
                 }
               }}
               aria-disabled={!comparing && compareFull}
