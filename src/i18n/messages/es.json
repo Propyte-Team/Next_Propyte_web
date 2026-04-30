@@ -255,6 +255,8 @@
     "noResults": "No se encontraron propiedades con estos filtros",
     "noResultsSuggestion": "Intenta ampliar tu búsqueda o modificar los filtros",
     "clearAll": "Limpiar todo",
+    "activeFilters": "Filtros activos",
+    "removeFilter": "Quitar filtro",
     "moreFilters": "Más filtros",
     "mobileFiltersButton": "Filtros",
     "sortBy": "Ordenar por",

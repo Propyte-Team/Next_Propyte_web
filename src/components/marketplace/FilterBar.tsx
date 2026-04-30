@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { SlidersHorizontal, ChevronDown, Search } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import CurrencyToggle from '@/components/ui/CurrencyToggle';
@@ -93,6 +93,57 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
     (filters.type ? 1 : 0) +
     (filters.roiMin ? 1 : 0) +
     (filters.search ? 1 : 0);
+
+  const activeChips: { key: string; label: string; clear: () => void }[] = [];
+  if (filters.search) {
+    activeChips.push({
+      key: 'search',
+      label: `"${filters.search}"`,
+      clear: () => onFilterChange('search', ''),
+    });
+  }
+  if (filters.city) {
+    activeChips.push({
+      key: 'city',
+      label: filters.city,
+      clear: () => onFilterChange('city', ''),
+    });
+  }
+  if (priceActive && priceLabel) {
+    activeChips.push({
+      key: 'price',
+      label: priceLabel,
+      clear: () => {
+        onFilterChange('priceMin', 0);
+        onFilterChange('priceMax', MAX_PRICE);
+      },
+    });
+  }
+  if (filters.type) {
+    activeChips.push({
+      key: 'type',
+      label: tTypes(filters.type as 'departamento'),
+      clear: () => onFilterChange('type', ''),
+    });
+  }
+  if (filters.roiMin) {
+    activeChips.push({
+      key: 'roi',
+      label: `ROI ${filters.roiMin}%+`,
+      clear: () => onFilterChange('roiMin', 0),
+    });
+  }
+
+  const handleClearAll = () => {
+    if (filters.search) onFilterChange('search', '');
+    if (filters.city) onFilterChange('city', '');
+    if (priceActive) {
+      onFilterChange('priceMin', 0);
+      onFilterChange('priceMax', MAX_PRICE);
+    }
+    if (filters.type) onFilterChange('type', '');
+    if (filters.roiMin) onFilterChange('roiMin', 0);
+  };
 
   return (
     <div className="bg-white border-b border-gray-200 px-4 py-3">
@@ -272,6 +323,36 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
           {t('results', { count: resultCount })}
         </span>
       </div>
+
+      {/* Active filter chips (mobile + desktop) */}
+      {activeChips.length > 0 && (
+        <div
+          className="mt-2 flex flex-wrap gap-1.5 items-center"
+          aria-label={t('activeFilters')}
+        >
+          {activeChips.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              onClick={chip.clear}
+              aria-label={`${t('removeFilter')}: ${chip.label}`}
+              className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0D9488] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+            >
+              <span className="truncate max-w-[180px]">{chip.label}</span>
+              <X size={12} strokeWidth={2.5} aria-hidden="true" />
+            </button>
+          ))}
+          {activeChips.length > 1 && (
+            <button
+              type="button"
+              onClick={handleClearAll}
+              className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-500 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+            >
+              {t('clearAll')}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
