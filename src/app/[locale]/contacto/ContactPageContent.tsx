@@ -20,6 +20,8 @@ export default function ContactPageContent() {
     email: z.string().email(tCommon('invalidEmail')),
     subject: z.string().min(1, tCommon('required')),
     message: z.string().min(10, tCommon('required')),
+    // Honeypot — humans don't see/fill this; bots do.
+    website: z.string().max(0).optional(),
   });
 
   type FormData = z.infer<typeof schema>;
@@ -29,6 +31,12 @@ export default function ContactPageContent() {
   });
 
   async function onSubmit(data: FormData) {
+    // Honeypot: silently drop bot submissions.
+    if (data.website && data.website.length > 0) {
+      setStatus('sent');
+      reset();
+      return;
+    }
     setStatus('sending');
     const result = await submitForm(data, 'contact');
     if (result.success) {
@@ -147,6 +155,18 @@ export default function ContactPageContent() {
                   />
                   {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
                 </div>
+
+                {/* Honeypot anti-spam: hidden from humans, visible to bots. */}
+                <div aria-hidden="true" className="hidden">
+                  <label htmlFor="website">Website</label>
+                  <input
+                    id="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...register('website')}
+                  />
+                </div>
               </div>
 
               {status === 'sent' ? (
@@ -239,6 +259,9 @@ export default function ContactPageContent() {
                 <MessageCircle size={20} strokeWidth={2} />
                 {t('whatsappCta')}
               </a>
+              <p className="text-center text-xs text-gray-500 -mt-2">
+                {t('whatsappResponseTime')}
+              </p>
 
               {/* Google Maps embed */}
               <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">

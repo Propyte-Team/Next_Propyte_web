@@ -675,6 +675,7 @@
     "formSubjectPlaceholder": "Selecciona una opción",
     "formSuccessToast": "Mensaje enviado. Te contactamos en menos de 2 horas hábiles.",
     "formErrorToast": "No se pudo enviar tu mensaje. Intenta de nuevo o escríbenos a hola@propyte.com.",
+    "whatsappResponseTime": "Respondemos en menos de 2 horas hábiles",
     "subjectOptions": {
       "general": "Consulta general",
       "property": "Información de propiedad",

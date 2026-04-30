@@ -675,6 +675,7 @@
     "formSubjectPlaceholder": "Select an option",
     "formSuccessToast": "Message sent. We'll reach out within 2 business hours.",
     "formErrorToast": "Could not send your message. Try again or email us at hola@propyte.com.",
+    "whatsappResponseTime": "We reply within 2 business hours",
     "subjectOptions": {
       "general": "General inquiry",
       "property": "Property information",
