@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import GlosarioClient from './GlosarioClient';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -58,15 +58,6 @@ export default async function GlosarioPage({ params }: { params: Promise<{ local
     };
   });
 
-  // Group by first letter
-  const grouped: Record<string, typeof terms> = {};
-  for (const term of terms) {
-    const letter = term.name[0].toUpperCase();
-    if (!grouped[letter]) grouped[letter] = [];
-    grouped[letter].push(term);
-  }
-  const letters = Object.keys(grouped).sort();
-
   // DefinedTermSet JSON-LD
   const termSetSchema = {
     '@context': 'https://schema.org',
@@ -116,53 +107,16 @@ export default async function GlosarioPage({ params }: { params: Promise<{ local
         </div>
       </section>
 
-      {/* Letter navigation */}
-      <nav className="py-4 border-b bg-white sticky top-16 z-10" aria-label="Glossary letters">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {letters.map((letter) => (
-              <a
-                key={letter}
-                href={`#letter-${letter}`}
-                className="w-9 h-9 flex items-center justify-center text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-[#5CE0D2] hover:text-[#0F1923] rounded-lg transition-colors"
-              >
-                {letter}
-              </a>
-            ))}
-          </div>
-        </div>
-      </nav>
-
-      {/* Terms */}
-      <section className="py-12 md:py-16">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="max-w-3xl mx-auto space-y-10">
-            {letters.map((letter) => (
-              <div key={letter} id={`letter-${letter}`}>
-                <h2 className="text-3xl font-bold text-[#0D9488] mb-4 border-b border-gray-100 pb-2">{letter}</h2>
-                <dl className="space-y-4">
-                  {grouped[letter].map((term) => (
-                    <div key={term.name} className="bg-white p-4 rounded-xl border border-gray-100">
-                      <dt className="font-bold text-[#1A2F3F] mb-1">{term.name}</dt>
-                      <dd className="text-sm text-gray-600 leading-relaxed">
-                        {term.def}
-                        {term.link && (
-                          <Link
-                            href={`/${locale}${term.link}`}
-                            className="ml-2 text-[#0D9488] hover:underline text-xs font-semibold"
-                          >
-                            {t('learnMore')}
-                          </Link>
-                        )}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <GlosarioClient
+        terms={terms}
+        locale={locale}
+        labels={{
+          learnMore: t('learnMore'),
+          searchPlaceholder: t('searchPlaceholder'),
+          searchAriaLabel: t('searchAriaLabel'),
+          noResults: t('noResults'),
+        }}
+      />
     </>
   );
 }
