@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp, Download, GitCompare } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -120,23 +121,33 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Top-right action stack: Save heart + Brochure download */}
           <div className="absolute top-2 right-2 flex flex-col gap-1.5">
-            <button
+            <motion.button
               type="button"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleFavorite(property.id);
               }}
+              whileTap={{ scale: 0.85 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 17 }}
               className="w-8 h-8 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
               aria-label={tMkt('cardSave')}
               aria-pressed={saved}
             >
-              <Heart
-                size={20}
-                className={`drop-shadow-md transition-colors ${saved ? 'fill-red-500 text-red-500' : 'fill-transparent text-white hover:text-red-300'}`}
-                strokeWidth={2}
-              />
-            </button>
+              <motion.span
+                key={String(saved)}
+                initial={{ scale: saved ? 0.6 : 1 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 12 }}
+                className="inline-flex"
+              >
+                <Heart
+                  size={20}
+                  className={`drop-shadow-md transition-colors ${saved ? 'fill-red-500 text-red-500' : 'fill-transparent text-white hover:text-red-300'}`}
+                  strokeWidth={2}
+                />
+              </motion.span>
+            </motion.button>
             {property.assets?.brochure && (
               <a
                 href={property.assets?.brochure}

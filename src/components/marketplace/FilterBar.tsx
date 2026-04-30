@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import CurrencyToggle from '@/components/ui/CurrencyToggle';
@@ -358,27 +359,38 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
           className="mt-2 flex flex-wrap gap-1.5 items-center"
           aria-label={t('activeFilters')}
         >
-          {activeChips.map((chip) => (
-            <button
-              key={chip.key}
-              type="button"
-              onClick={chip.clear}
-              aria-label={`${t('removeFilter')}: ${chip.label}`}
-              className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0D9488] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
-            >
-              <span className="truncate max-w-[180px]">{chip.label}</span>
-              <X size={12} strokeWidth={2.5} aria-hidden="true" />
-            </button>
-          ))}
-          {activeChips.length > 1 && (
-            <button
-              type="button"
-              onClick={handleClearAll}
-              className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-500 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
-            >
-              {t('clearAll')}
-            </button>
-          )}
+          <AnimatePresence initial={false}>
+            {activeChips.map((chip) => (
+              <motion.button
+                key={chip.key}
+                type="button"
+                onClick={chip.clear}
+                aria-label={`${t('removeFilter')}: ${chip.label}`}
+                initial={{ opacity: 0, scale: 0.85, y: -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.85, y: -4 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.5 }}
+                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0D9488] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+              >
+                <span className="truncate max-w-[180px]">{chip.label}</span>
+                <X size={12} strokeWidth={2.5} aria-hidden="true" />
+              </motion.button>
+            ))}
+            {activeChips.length > 1 && (
+              <motion.button
+                key="clear-all"
+                type="button"
+                onClick={handleClearAll}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-500 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+              >
+                {t('clearAll')}
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </div>
