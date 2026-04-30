@@ -9,6 +9,7 @@ import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useCompare } from '@/hooks/useCompare';
+import { toast } from 'sonner';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -148,13 +149,18 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleCompare(property.id);
+                const result = toggleCompare(property.id);
+                if (!result.ok && result.reason === 'full') {
+                  toast.warning(tMkt('cardCompareFull'));
+                }
               }}
-              disabled={!comparing && compareFull}
+              aria-disabled={!comparing && compareFull}
               className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
                 comparing
                   ? 'bg-[#5CE0D2] text-[#0F1923]'
-                  : 'bg-white/85 hover:bg-white text-[#1A2F3F] disabled:opacity-40 disabled:cursor-not-allowed'
+                  : compareFull
+                    ? 'bg-white/60 text-[#1A2F3F] opacity-60 hover:bg-white/80'
+                    : 'bg-white/85 hover:bg-white text-[#1A2F3F]'
               }`}
               aria-label={tMkt('cardCompare')}
               aria-pressed={comparing}

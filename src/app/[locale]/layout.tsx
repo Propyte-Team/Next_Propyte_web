@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import MainPadding from '@/components/layout/MainPadding';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
+import { Toaster } from 'sonner';
 import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 
@@ -51,6 +52,16 @@ export default async function LocaleLayout({
         </div>
         <WhatsAppButton />
         <Analytics />
+        <Toaster
+          position="bottom-center"
+          richColors
+          closeButton
+          toastOptions={{
+            classNames: {
+              toast: 'font-sans',
+            },
+          }}
+        />
       </SearchProvider>
       </CurrencyProvider>
     </NextIntlClientProvider>

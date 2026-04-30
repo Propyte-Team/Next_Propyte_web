@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
+import { toast } from 'sonner';
 
 export default function ContactPageContent() {
   void useLocale();
@@ -33,8 +34,10 @@ export default function ContactPageContent() {
     if (result.success) {
       setStatus('sent');
       reset();
+      toast.success(t('formSuccessToast'));
     } else {
       setStatus('error');
+      toast.error(t('formErrorToast'));
     }
   }
 
