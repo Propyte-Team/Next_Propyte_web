@@ -10,9 +10,7 @@ import FilterBar from '@/components/marketplace/FilterBar';
 import AdvancedFilters from '@/components/marketplace/AdvancedFilters';
 import PropertyList from '@/components/marketplace/PropertyList';
 import MapView from '@/components/marketplace/MapView';
-import FilterChip from '@/components/ui/FilterChip';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
-import { MAX_PRICE } from '@/shared/constants/marketplace';
 
 interface MarketplaceContentProps {
   properties: Property[];
@@ -31,31 +29,6 @@ export default function MarketplaceContent({
   const [mobileView, setMobileView] = useState<'map' | 'list'>('list');
   const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy } = useFilters(properties);
 
-  const priceFmt = (n: number) =>
-    n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(1)}M` : `$${(n / 1_000).toFixed(0)}K`;
-
-  const activeChips: { label: string; onRemove: () => void }[] = [];
-  if (filters.search) {
-    activeChips.push({ label: `"${filters.search}"`, onRemove: () => updateFilter('search', '') });
-  }
-  if (filters.city) activeChips.push({ label: filters.city, onRemove: () => updateFilter('city', '') });
-  if (filters.type) activeChips.push({ label: filters.type, onRemove: () => updateFilter('type', '') });
-  if (filters.stage) activeChips.push({ label: filters.stage, onRemove: () => updateFilter('stage', '') });
-  if (filters.usage) activeChips.push({ label: filters.usage, onRemove: () => updateFilter('usage', '') });
-  if (filters.roiMin) activeChips.push({ label: `ROI ${filters.roiMin}%+`, onRemove: () => updateFilter('roiMin', 0) });
-  if (filters.priceMin > 0) {
-    activeChips.push({
-      label: `≥ ${priceFmt(filters.priceMin)}`,
-      onRemove: () => updateFilter('priceMin', 0),
-    });
-  }
-  if (filters.priceMax < MAX_PRICE) {
-    activeChips.push({
-      label: `≤ ${priceFmt(filters.priceMax)}`,
-      onRemove: () => updateFilter('priceMax', MAX_PRICE),
-    });
-  }
-
   return (
     <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
       {/* SEO heading — visible al top */}
@@ -71,17 +44,6 @@ export default function MarketplaceContent({
         advancedOpen={showAdvanced}
         resultCount={filtered.length}
       />
-
-      {activeChips.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2 bg-white border-b">
-          {activeChips.map((chip, i) => (
-            <FilterChip key={i} label={chip.label} onRemove={chip.onRemove} />
-          ))}
-          <button onClick={clearFilters} className="text-sm text-gray-400 hover:text-gray-600 ml-2">
-            {t('clearAll')}
-          </button>
-        </div>
-      )}
 
       {/* Mobile toggle */}
       {isMobile && (

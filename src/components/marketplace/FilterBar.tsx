@@ -73,9 +73,17 @@ function PillDropdown({
 export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, advancedOpen, resultCount }: FilterBarProps) {
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
+  const tStages = useTranslations('stages');
+  const tUsages = useTranslations('usages');
 
   const safeType = (type: string) => {
     try { return tTypes(type as 'departamento'); } catch { return type; }
+  };
+  const safeStage = (stage: string) => {
+    try { return tStages(stage as 'preventa'); } catch { return stage; }
+  };
+  const safeUsage = (u: string) => {
+    try { return tUsages(u as 'residencial'); } catch { return u; }
   };
 
   const priceActive = filters.priceMin > 0 || filters.priceMax < MAX_PRICE;
@@ -137,6 +145,20 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
       clear: () => onFilterChange('roiMin', 0),
     });
   }
+  if (filters.stage) {
+    activeChips.push({
+      key: 'stage',
+      label: safeStage(filters.stage),
+      clear: () => onFilterChange('stage', ''),
+    });
+  }
+  if (filters.usage) {
+    activeChips.push({
+      key: 'usage',
+      label: safeUsage(filters.usage),
+      clear: () => onFilterChange('usage', ''),
+    });
+  }
 
   const handleClearAll = () => {
     if (filters.search) onFilterChange('search', '');
@@ -147,6 +169,8 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
     }
     if (filters.type) onFilterChange('type', '');
     if (filters.roiMin) onFilterChange('roiMin', 0);
+    if (filters.stage) onFilterChange('stage', '');
+    if (filters.usage) onFilterChange('usage', '');
   };
 
   return (
