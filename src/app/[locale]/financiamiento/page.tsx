@@ -199,6 +199,8 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                   <th className="px-4 py-3 text-center">{t('labelRate')}</th>
                   <th className="px-4 py-3 text-center">{t('labelTerm')}</th>
                   <th className="px-4 py-3 text-center">{t('labelSpeed')}</th>
+                  <th className="px-4 py-3">{t('labelBestFor')}</th>
+                  <th className="px-4 py-3 text-right">{t('labelAdvisor')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -211,10 +213,35 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     <td className="px-4 py-3 text-center">
                       {m.rate === '0%' ? '⚡⚡' : i === 1 ? '⚡⚡⚡' : '🕐'}
                     </td>
+                    <td className="px-4 py-3 text-xs text-gray-600 leading-snug max-w-[220px]">
+                      {m.ideal}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link
+                        href={`/${locale}/contacto?asunto=financiamiento-m${i + 1}`}
+                        className="inline-flex items-center text-xs font-semibold text-[#0D9488] hover:underline whitespace-nowrap"
+                      >
+                        {t('rowAdvisorCta')} →
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pre-qualify CTA */}
+          <div className="mt-8 max-w-2xl mx-auto bg-white border border-[#5CE0D2]/40 rounded-2xl p-6 md:p-8 text-center shadow-sm">
+            <h3 className="text-xl md:text-2xl font-bold text-[#1A2F3F] mb-2">
+              {t('preQualifyTitle')}
+            </h3>
+            <p className="text-sm text-gray-600 mb-5 leading-relaxed">{t('preQualifyDesc')}</p>
+            <Link
+              href={`/${locale}/contacto?asunto=precalificacion`}
+              className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm transition-colors"
+            >
+              {t('preQualifyCta')} →
+            </Link>
           </div>
         </div>
       </section>
