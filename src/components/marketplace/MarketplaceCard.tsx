@@ -136,7 +136,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             >
               <motion.span
                 key={String(saved)}
-                initial={{ scale: saved ? 0.6 : 1 }}
+                initial={{ scale: 0.6 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 12 }}
                 className="inline-flex"

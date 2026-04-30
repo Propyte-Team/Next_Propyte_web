@@ -66,6 +66,13 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
       const active = document.activeElement as HTMLElement | null;
+      // Edge case: focus drifted outside the dialog (overlay click, click-out
+      // on something stepped on tab event ordering). Pull it back to first.
+      if (!root.contains(active)) {
+        e.preventDefault();
+        first.focus();
+        return;
+      }
       if (e.shiftKey && active === first) {
         e.preventDefault();
         last.focus();

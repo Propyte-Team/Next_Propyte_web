@@ -8,6 +8,7 @@ import MainPadding from '@/components/layout/MainPadding';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
 import { Toaster } from 'sonner';
+import { MotionConfig } from 'framer-motion';
 import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 
@@ -36,6 +37,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages}>
       <CurrencyProvider>
       <SearchProvider>
+      <MotionConfig reducedMotion="user">
         <a href="#main-content" className="skip-to-content">
           {tA11y('skipToContent')}
         </a>
@@ -62,6 +64,7 @@ export default async function LocaleLayout({
             },
           }}
         />
+      </MotionConfig>
       </SearchProvider>
       </CurrencyProvider>
     </NextIntlClientProvider>
