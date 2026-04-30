@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp } from 'lucide-react';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
+import { useFavorites } from '@/hooks/useFavorites';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -19,7 +20,8 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const tMkt = useTranslations('marketplace');
   const { format } = useCurrency();
   const [currentImg, setCurrentImg] = useState(0);
-  const [saved, setSaved] = useState(false);
+  const { isFavorite, toggle: toggleFavorite } = useFavorites();
+  const saved = isFavorite(property.id);
 
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
   const formattedPrice = format(property.price.mxn);
@@ -107,13 +109,15 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Save heart */}
           <button
+            type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setSaved(!saved);
+              toggleFavorite(property.id);
             }}
-            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center"
+            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
             aria-label={tMkt('cardSave')}
+            aria-pressed={saved}
           >
             <Heart
               size={20}
