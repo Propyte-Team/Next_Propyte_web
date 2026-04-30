@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp, Download } from 'lucide-react';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -107,24 +107,40 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             </div>
           )}
 
-          {/* Save heart */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleFavorite(property.id);
-            }}
-            className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
-            aria-label={tMkt('cardSave')}
-            aria-pressed={saved}
-          >
-            <Heart
-              size={20}
-              className={`drop-shadow-md transition-colors ${saved ? 'fill-red-500 text-red-500' : 'fill-transparent text-white hover:text-red-300'}`}
-              strokeWidth={2}
-            />
-          </button>
+          {/* Top-right action stack: Save heart + Brochure download */}
+          <div className="absolute top-2 right-2 flex flex-col gap-1.5">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleFavorite(property.id);
+              }}
+              className="w-8 h-8 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
+              aria-label={tMkt('cardSave')}
+              aria-pressed={saved}
+            >
+              <Heart
+                size={20}
+                className={`drop-shadow-md transition-colors ${saved ? 'fill-red-500 text-red-500' : 'fill-transparent text-white hover:text-red-300'}`}
+                strokeWidth={2}
+              />
+            </button>
+            {property.assets?.brochure && (
+              <a
+                href={property.assets?.brochure}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                onClick={(e) => e.stopPropagation()}
+                className="w-8 h-8 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                aria-label={tMkt('cardBrochure')}
+                title={tMkt('cardBrochure')}
+              >
+                <Download size={14} strokeWidth={2.25} className="text-[#1A2F3F]" />
+              </a>
+            )}
+          </div>
 
           {/* Badge */}
           {property.badge && (

@@ -285,6 +285,8 @@
     "cardPrevImage": "Previous image",
     "cardNextImage": "Next image",
     "cardSave": "Save",
+    "cardBrochure": "Download brochure",
+    "cardCompare": "Compare",
     "cardYearSuffix": "yr",
     "cardAvailableOfTotal": "{available} of {total} available",
     "cardAvailableOnly": "{available} available",
