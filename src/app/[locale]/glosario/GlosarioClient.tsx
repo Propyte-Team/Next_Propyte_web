@@ -82,7 +82,6 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
             <p
               className="text-center text-xs font-semibold text-gray-500 tabular-nums"
               role="status"
-              aria-live="polite"
             >
               {counterLabel}
             </p>

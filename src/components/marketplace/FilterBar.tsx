@@ -74,6 +74,10 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
 
+  const safeType = (type: string) => {
+    try { return tTypes(type as 'departamento'); } catch { return type; }
+  };
+
   const priceActive = filters.priceMin > 0 || filters.priceMax < MAX_PRICE;
   const priceLabel = priceActive
     ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= MAX_PRICE ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
@@ -122,7 +126,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
   if (filters.type) {
     activeChips.push({
       key: 'type',
-      label: tTypes(filters.type as 'departamento'),
+      label: safeType(filters.type),
       clear: () => onFilterChange('type', ''),
     });
   }
@@ -251,7 +255,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
         {/* Type pill */}
         <PillDropdown
           label={t('filterType')}
-          activeLabel={filters.type ? tTypes(filters.type as 'departamento') : undefined}
+          activeLabel={filters.type ? safeType(filters.type) : undefined}
           isActive={!!filters.type}
         >
           <div className="space-y-1">
