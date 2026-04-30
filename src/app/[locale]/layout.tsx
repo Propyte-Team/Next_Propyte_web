@@ -53,7 +53,7 @@ export default async function LocaleLayout({
         <WhatsAppButton />
         <Analytics />
         <Toaster
-          position="bottom-center"
+          position="top-center"
           richColors
           closeButton
           toastOptions={{
