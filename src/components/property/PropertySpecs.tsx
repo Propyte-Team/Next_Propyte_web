@@ -11,12 +11,19 @@ export default function PropertySpecs({ property }: PropertySpecsProps) {
   const tTypes = useTranslations('types');
   const tStages = useTranslations('stages');
 
+  const safeType = (type: string) => {
+    try { return tTypes(type as 'departamento'); } catch { return type; }
+  };
+  const safeStage = (stage: string) => {
+    try { return tStages(stage as 'preventa'); } catch { return stage; }
+  };
+
   const specs = [
     property.specs.bedrooms > 0 && { icon: Bed, label: t('bedrooms'), value: property.specs.bedrooms },
     property.specs.bathrooms > 0 && { icon: Bath, label: t('bathrooms'), value: property.specs.bathrooms },
     { icon: Maximize, label: t('area'), value: `${property.specs.area.toLocaleString('es-MX')} m²` },
-    { icon: Home, label: t('type'), value: tTypes(property.specs.type) },
-    { icon: Calendar, label: t('stage'), value: tStages(property.stage) },
+    { icon: Home, label: t('type'), value: safeType(property.specs.type) },
+    { icon: Calendar, label: t('stage'), value: safeStage(property.stage) },
   ].filter(Boolean) as { icon: typeof Bed; label: string; value: string | number }[];
 
   return (
