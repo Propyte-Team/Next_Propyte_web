@@ -34,13 +34,18 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   // setState-in-effect lint when items drop to 0 from the sticky bar.
   const modalOpen = open && selected.length > 0;
 
-  // Body scroll lock when modal open
+  // Body scroll lock + ESC to close when modal open
   useEffect(() => {
     if (!modalOpen) return;
-    const prev = document.body.style.overflow;
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKey);
     };
   }, [modalOpen]);
 
