@@ -12,6 +12,7 @@ import {
   Search, MapPin, BadgeCheck,
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
+import { toast } from 'sonner';
 import type { DeveloperRow } from '@/lib/supabase/types';
 
 // ─────────────────────────────────────────────────────
@@ -337,25 +338,65 @@ function FAQ() {
 // ─────────────────────────────────────────────────────
 function DeveloperForm() {
   const t = useTranslations('developers');
+  const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     name: '', company: '', email: '', phone: '', location: '',
-    projectType: '', unitCount: '', message: '',
+    projectType: '', unitCount: '', message: '', website: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[e.target.name];
+        return next;
+      });
+    }
+  };
+
+  // MX phone: optional +52, 10 digits with optional spaces/dashes/parens.
+  const isValidMxPhone = (v: string) => /^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3,4}[\s-]?\d{4}$/.test(v.trim());
+
+  const validate = (): Record<string, string> => {
+    const next: Record<string, string> = {};
+    if (!formData.name.trim()) next.name = tCommon('required');
+    if (!formData.company.trim()) next.company = tCommon('required');
+    if (!formData.email.trim()) next.email = tCommon('required');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
+    if (!formData.phone.trim()) next.phone = tCommon('required');
+    else if (!isValidMxPhone(formData.phone)) next.phone = tCommon('invalidPhone');
+    if (!formData.location.trim()) next.location = tCommon('required');
+    return next;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.company || !formData.email || !formData.phone || !formData.location) return;
+    // Honeypot: silently drop bot submissions with fake-success UX.
+    if (formData.website && formData.website.length > 0) {
+      setStatus('success');
+      return;
+    }
+    const v = validate();
+    if (Object.keys(v).length > 0) {
+      setErrors(v);
+      return;
+    }
     setStatus('sending');
     try {
       const result = await submitForm(formData, 'developer_request');
-      setStatus(result.success ? 'success' : 'error');
+      if (result.success) {
+        setStatus('success');
+        toast.success(t('formSuccess'));
+      } else {
+        setStatus('error');
+        toast.error(t('formError'));
+      }
     } catch {
       setStatus('error');
+      toast.error(t('formError'));
     }
   };
 
@@ -401,26 +442,37 @@ function DeveloperForm() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="dev-form-name" className={labelClass}>{t('formName')} *</label>
-                    <input id="dev-form-name" type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} />
+                    <input id="dev-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} className={inputClass} />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="dev-form-company" className={labelClass}>{t('formCompany')} *</label>
-                    <input id="dev-form-company" type="text" name="company" value={formData.company} onChange={handleChange} required className={inputClass} />
+                    <input id="dev-form-company" type="text" name="company" value={formData.company} onChange={handleChange} aria-invalid={!!errors.company} className={inputClass} />
+                    {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="dev-form-email" className={labelClass}>{t('formEmail')} *</label>
-                    <input id="dev-form-email" type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} />
+                    <input id="dev-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} className={inputClass} />
+                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                   <div>
                     <label htmlFor="dev-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} />
+                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} />
+                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                 </div>
                 <div>
                   <label htmlFor="dev-form-location" className={labelClass}>{t('formLocation')} *</label>
-                  <input id="dev-form-location" type="text" name="location" value={formData.location} onChange={handleChange} required className={inputClass} />
+                  <input id="dev-form-location" type="text" name="location" value={formData.location} onChange={handleChange} aria-invalid={!!errors.location} className={inputClass} />
+                  {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location}</p>}
+                </div>
+
+                {/* Honeypot anti-spam */}
+                <div aria-hidden="true" className="hidden">
+                  <label htmlFor="dev-form-website">Website</label>
+                  <input id="dev-form-website" type="text" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>

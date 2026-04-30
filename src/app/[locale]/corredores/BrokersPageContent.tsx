@@ -9,6 +9,7 @@ import {
   ClipboardCheck, Rocket, Handshake, Shield
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
+import { toast } from 'sonner';
 
 // ─────────────────────────────────────────────────────
 // 1. HERO
@@ -255,25 +256,61 @@ function FAQ() {
 // ─────────────────────────────────────────────────────
 function BrokerForm() {
   const t = useTranslations('brokers');
+  const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', company: '',
-    brokerType: '', experience: '', focusArea: '', message: '',
+    brokerType: '', experience: '', focusArea: '', message: '', website: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[e.target.name];
+        return next;
+      });
+    }
+  };
+
+  const isValidMxPhone = (v: string) => /^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3,4}[\s-]?\d{4}$/.test(v.trim());
+
+  const validate = (): Record<string, string> => {
+    const next: Record<string, string> = {};
+    if (!formData.name.trim()) next.name = tCommon('required');
+    if (!formData.email.trim()) next.email = tCommon('required');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
+    if (!formData.phone.trim()) next.phone = tCommon('required');
+    else if (!isValidMxPhone(formData.phone)) next.phone = tCommon('invalidPhone');
+    return next;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.phone) return;
+    if (formData.website && formData.website.length > 0) {
+      setStatus('success');
+      return;
+    }
+    const v = validate();
+    if (Object.keys(v).length > 0) {
+      setErrors(v);
+      return;
+    }
     setStatus('sending');
     try {
       const result = await submitForm(formData, 'broker_registration');
-      setStatus(result.success ? 'success' : 'error');
+      if (result.success) {
+        setStatus('success');
+        toast.success(t('formSuccess'));
+      } else {
+        setStatus('error');
+        toast.error(t('formError'));
+      }
     } catch {
       setStatus('error');
+      toast.error(t('formError'));
     }
   };
 
@@ -321,24 +358,33 @@ function BrokerForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>{t('formName')} *</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="brk-form-name" className={labelClass}>{t('formName')} *</label>
+                    <input id="brk-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} className={inputClass} />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className={labelClass}>{t('formEmail')} *</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="brk-form-email" className={labelClass}>{t('formEmail')} *</label>
+                    <input id="brk-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} className={inputClass} />
+                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label className={labelClass}>{t('formPhone')} *</label>
-                    <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} />
+                    <label htmlFor="brk-form-phone" className={labelClass}>{t('formPhone')} *</label>
+                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} />
+                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                   <div>
-                    <label className={labelClass}>{t('formCompany')}</label>
-                    <input type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} />
+                    <label htmlFor="brk-form-company" className={labelClass}>{t('formCompany')}</label>
+                    <input id="brk-form-company" type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} />
                   </div>
+                </div>
+
+                {/* Honeypot anti-spam */}
+                <div aria-hidden="true" className="hidden">
+                  <label htmlFor="brk-form-website">Website</label>
+                  <input id="brk-form-website" type="text" name="website" tabIndex={-1} autoComplete="off" value={formData.website} onChange={handleChange} />
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">

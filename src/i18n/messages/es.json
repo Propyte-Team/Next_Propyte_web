@@ -711,6 +711,7 @@
     "error": "Error al enviar. Intenta de nuevo.",
     "required": "Este campo es requerido",
     "invalidEmail": "Email inválido",
+    "invalidPhone": "Teléfono inválido. Usa formato +52 984 123 4567",
     "close": "Cerrar",
     "back": "Volver",
     "next": "Siguiente",
