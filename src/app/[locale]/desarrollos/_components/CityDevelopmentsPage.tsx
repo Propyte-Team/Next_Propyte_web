@@ -7,6 +7,7 @@ import { APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { pickLang } from '@/lib/i18n/pickLang';
 import { formatPrice } from '@/lib/formatters';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import EmptyState from '@/components/ui/EmptyState';
 import { CITY_MAP } from './cityConfig';
 
 interface CityDevelopmentsPageProps {
@@ -127,32 +128,16 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         )}
 
         {count === 0 && (
-          <div className="rounded-2xl border border-dashed border-[#5CE0D2]/40 bg-[#5CE0D2]/5 p-8 md:p-10 mb-10">
-            <div className="flex items-start gap-4">
-              <div className="hidden md:flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#5CE0D2]/15 text-[#0D9488]">
-                <Building2 size={24} />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">
-                  {t('emptyTitle', { city: cityInfo.name })}
-                </h2>
-                <p className="mt-2 text-gray-600">{t('emptyBody')}</p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <Link
-                    href={`/${locale}/contacto?asunto=lanzamientos-${citySlug}`}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#5CE0D2] px-5 py-2.5 text-sm font-semibold text-[#0F1923] hover:bg-[#4BCEC0] transition-colors"
-                  >
-                    {t('emptyCta')}
-                  </Link>
-                  <Link
-                    href={`/${locale}/desarrollos`}
-                    className="inline-flex items-center gap-2 rounded-lg border border-[#1A2F3F]/15 px-5 py-2.5 text-sm font-semibold text-[#1A2F3F] hover:bg-gray-50 transition-colors"
-                  >
-                    {t('exploreOther')}
-                  </Link>
-                </div>
-              </div>
-            </div>
+          <div className="rounded-2xl border border-dashed border-[#5CE0D2]/40 bg-[#5CE0D2]/5 mb-10">
+            <EmptyState
+              icon={Building2}
+              title={t('emptyTitle', { city: cityInfo.name })}
+              description={t('emptyBody')}
+              actions={[
+                { label: t('emptyCta'), href: `/${locale}/contacto?asunto=lanzamientos-${citySlug}` },
+                { label: t('exploreOther'), href: `/${locale}/desarrollos`, variant: 'secondary' },
+              ]}
+            />
           </div>
         )}
 

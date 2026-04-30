@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getTeamMembers, type TeamMemberRow } from '@/lib/supabase/queries';
 
@@ -167,10 +168,16 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
 
           {teamMembers.length === 0 ? (
-            <div className="text-center py-12 bg-[#F4F6F8] rounded-2xl max-w-2xl mx-auto px-6">
-              <Sparkles size={28} className="text-[#5CE0D2] mx-auto mb-3" />
-              <h3 className="text-lg font-bold text-[#1A2F3F] mb-1">{t('teamEmptyTitle')}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{t('teamEmptyBody')}</p>
+            <div className="max-w-2xl mx-auto bg-[#F4F6F8] rounded-2xl">
+              <EmptyState
+                icon={Users}
+                title={t('teamEmptyTitle')}
+                description={t('teamEmptyBody')}
+                actions={[
+                  { label: t('teamEmptyCtaContact'), href: `/${locale}/contacto?asunto=equipo` },
+                  { label: t('teamEmptyCtaJoin'), href: `/${locale}/unete`, variant: 'secondary' },
+                ]}
+              />
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -4,8 +4,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { MapPin, Building2, Tag, ArrowRight, Sparkles } from 'lucide-react';
+import { MapPin, Building2, Tag, ArrowRight } from 'lucide-react';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import EmptyState from '@/components/ui/EmptyState';
 
 export const revalidate = 600;
 
@@ -171,25 +172,16 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
       <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           {items.length < 2 ? (
-            <div className="max-w-xl mx-auto text-center bg-white p-8 md:p-10 rounded-2xl border border-gray-100 shadow-sm">
-              <Sparkles size={40} className="mx-auto text-[#F5A623] mb-4" />
-              <h2 className="text-2xl font-bold text-[#1A2F3F] mb-3">{t('emptyTitle')}</h2>
-              <p className="text-sm md:text-base text-gray-600 mb-6 leading-relaxed">{t('emptyDesc')}</p>
-              <div className="flex flex-wrap justify-center gap-3">
-                <Link
-                  href={`/${locale}/contacto?asunto=promos`}
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
-                >
-                  {t('emptyCtaSecondary')}
-                </Link>
-                <Link
-                  href={`/${locale}/desarrollos`}
-                  className="inline-flex items-center gap-2 px-6 py-3 border border-[#1A2F3F]/15 text-[#1A2F3F] hover:bg-gray-50 font-bold rounded-xl transition-colors"
-                >
-                  {t('emptyCta')}
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
+            <div className="max-w-xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <EmptyState
+                icon={Tag}
+                title={t('emptyTitle')}
+                description={t('emptyDesc')}
+                actions={[
+                  { label: t('emptyCtaSecondary'), href: `/${locale}/contacto?asunto=promos` },
+                  { label: t('emptyCta'), href: `/${locale}/desarrollos`, variant: 'secondary' },
+                ]}
+              />
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

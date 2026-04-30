@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BookOpen } from 'lucide-react';
+import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts } from '@/lib/supabase/queries';
 import BlogCard from '@/components/blog/BlogCard';
@@ -91,9 +92,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
               ))}
             </div>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-gray-500 text-lg">{t('emptyState')}</p>
-            </div>
+            <EmptyState
+              icon={BookOpen}
+              title={t('emptyState')}
+              description={t('emptyStateBody')}
+              actions={[
+                { label: t('emptyStateCtaContact'), href: `/${locale}/contacto?asunto=blog` },
+                { label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' },
+              ]}
+            />
           )}
 
           <Suspense>
