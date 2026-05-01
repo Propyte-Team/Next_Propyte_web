@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -27,9 +28,35 @@ export default function ContactPageContent() {
 
   type FormData = z.infer<typeof schema>;
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  // Preselect subject from ?asunto= param. Maps external slugs (used by other
+  // pages: /financiamiento ?asunto=financiamiento-m1, /promociones ?asunto=
+  // promos, blog/equipo CTAs, etc.) to the 5 internal subjectOptions values.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const asunto = searchParams.get('asunto') ?? '';
+    if (!asunto) return;
+    const direct: Record<string, string> = {
+      general: 'general',
+      property: 'property',
+      investment: 'investment',
+      developer: 'developer',
+      career: 'career',
+      precalificacion: 'investment',
+      promos: 'property',
+      equipo: 'career',
+      blog: 'general',
+    };
+    const target = asunto.startsWith('financiamiento-')
+      ? 'investment'
+      : asunto.startsWith('lanzamientos-')
+        ? 'property'
+        : direct[asunto];
+    if (target) setValue('subject', target);
+  }, [searchParams, setValue]);
 
   async function onSubmit(data: FormData) {
     // Honeypot: silently drop bot submissions.
@@ -200,7 +227,7 @@ export default function ContactPageContent() {
               )}
 
               {/* Social proof — coverage, certified team, response SLA */}
-              <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-3 gap-3">
+              <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
                     <MapPin size={18} className="text-[#0D9488]" strokeWidth={2} />
@@ -309,7 +336,7 @@ export default function ContactPageContent() {
                   className="flex items-center justify-center gap-2 w-full h-12 bg-gray-100 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
                 >
                   <Calendar size={18} strokeWidth={2} />
-                  {t('calendlyCta')}
+                  {t('calendlySoon')}
                 </button>
               )}
 
