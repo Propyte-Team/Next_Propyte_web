@@ -746,6 +746,7 @@
     "privacy": "Aviso de Privacidad",
     "terms": "Términos de Uso",
     "contact": "Contacto",
+    "cookieSettings": "Configurar cookies",
     "rights": "Todos los derechos reservados.",
     "ctaTitle": "¿Listo para invertir en la Riviera Maya?",
     "ctaSubtitle": "Habla con un asesor certificado y recibe un análisis personalizado",
@@ -2213,5 +2214,24 @@
     "competitionModerate": "Moderada",
     "competitionLow": "Baja",
     "properties": "propiedades"
+  },
+  "cookieBanner": {
+    "ariaLabel": "Configuración de cookies",
+    "closeAria": "Cerrar y rechazar opcionales",
+    "title": "Tu privacidad",
+    "description": "Usamos cookies necesarias para que el sitio funcione y, con tu permiso, cookies de analítica para entender cómo navegas y mejorar Propyte. Puedes elegir qué aceptar.",
+    "customize": "Personalizar",
+    "necessaryTitle": "Necesarias",
+    "alwaysOn": "Siempre activas",
+    "necessaryDesc": "Permiten que el sitio funcione: idioma, sesión, preferencias mínimas. No pueden desactivarse.",
+    "analyticsTitle": "Analítica",
+    "analyticsDesc": "Google Analytics 4 (anonimizada) para entender qué páginas visitas y mejorar la experiencia. Sin datos identificables.",
+    "analyticsToggleAria": "Activar cookies de analítica",
+    "marketingTitle": "Marketing",
+    "marketingDesc": "Permiten medir campañas de Meta y Google Ads. Hoy no usamos personalización publicitaria; reservado por si activamos remarketing.",
+    "marketingToggleAria": "Activar cookies de marketing",
+    "acceptAllCta": "Aceptar todo",
+    "rejectCta": "Rechazar opcionales",
+    "saveCta": "Guardar elección"
   }
 }

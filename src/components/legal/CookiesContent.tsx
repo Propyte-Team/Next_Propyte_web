@@ -53,20 +53,19 @@ export default function CookiesContent({ locale }: { locale: string }) {
         {pickLang(locale, 'The list above is provisional. Once we deploy our cookie consent platform, the inventory will auto-update with the actual cookies set on each visit.', 'La lista anterior es provisional. Una vez desplegada nuestra plataforma de consentimiento de cookies, el inventario se actualizará automáticamente con las cookies reales que se establecen en cada visita.')}
       </p>
 
-      <h2>{pickLang(locale, '3. Your consent (forthcoming)', '3. Tu consentimiento (próximamente)')}</h2>
+      <h2>{pickLang(locale, '3. Your consent', '3. Tu consentimiento')}</h2>
       <p>
-        <strong>{pickLang(locale, 'Status: ', 'Estado: ')}</strong>
-        {pickLang(locale, 'a granular consent platform is being deployed. While it is implemented, only strictly necessary cookies (§2.1) are loaded automatically; analytics and marketing cookies are not activated until the consent banner is live.', 'se está desplegando una plataforma de consentimiento granular. Mientras se implementa, solo se cargan automáticamente las cookies estrictamente necesarias (§2.1); las cookies de analítica y marketing no se activan hasta que el banner de consentimiento esté disponible.')}
+        {pickLang(locale, 'When you visit the Site for the first time, a granular consent banner appears. You can:', 'Cuando visitas el Sitio por primera vez aparece un banner de consentimiento granular. Puedes:')}
       </p>
-      <p>{pickLang(locale, 'When the banner is live, you will be able to:', 'Cuando el banner esté disponible podrás:')}</p>
       <ul>
         <li>{pickLang(locale, 'Accept all categories', 'Aceptar todas las categorías')}</li>
-        <li>{pickLang(locale, 'Reject all (except strictly necessary)', 'Rechazar todas (excepto estrictamente necesarias)')}</li>
-        <li>{pickLang(locale, 'Configure granularly which categories to allow', 'Configurar granularmente qué categorías permitir')}</li>
+        <li>{pickLang(locale, 'Reject all optional (only strictly necessary cookies remain active)', 'Rechazar todas las opcionales (solo permanecen activas las estrictamente necesarias)')}</li>
+        <li>{pickLang(locale, 'Customize: enable analytics and/or marketing independently', 'Personalizar: activar analítica y/o marketing por separado')}</li>
       </ul>
-      <p>{pickLang(locale, 'Your choice will be recorded for 12 months and can be changed at any time using the "Cookie preferences" link in the footer.', 'Tu elección quedará registrada durante 12 meses y podrás cambiarla en cualquier momento mediante el enlace "Preferencias de cookies" en el pie de página.')}</p>
+      <p>{pickLang(locale, 'Until you make a choice, only strictly necessary cookies (§2.1) are loaded; analytics and marketing remain disabled by default (Google Consent Mode v2).', 'Hasta que elijas, solo se cargan las cookies estrictamente necesarias (§2.1); analítica y marketing permanecen desactivadas por defecto (Google Consent Mode v2).')}</p>
+      <p>{pickLang(locale, 'Your choice is stored locally and can be changed at any time using the "Cookie settings" link in the footer.', 'Tu elección se guarda localmente y puedes cambiarla cuando quieras desde el enlace "Configurar cookies" en el pie de página.')}</p>
       <p>
-        {pickLang(locale, 'In the meantime, if you wish to opt out of analytics or marketing cookies, you can do so by configuring your browser (see §4) or by writing to ', 'Mientras tanto, si deseas excluirte de las cookies de analítica o marketing, puedes hacerlo configurando tu navegador (ver §4) o escribiendo a ')}
+        {pickLang(locale, 'For broader requests (data deletion, ARCO rights), contact ', 'Para solicitudes más amplias (eliminación de datos, derechos ARCO), escríbenos a ')}
         <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
       </p>
 

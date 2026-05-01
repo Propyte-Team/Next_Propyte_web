@@ -8,6 +8,25 @@ export default function Analytics() {
     <>
       {gaId && (
         <>
+          {/* Consent Mode v2 default: deny analytics+ads until user opts in.
+              functionality + security stay granted (essential). The cookie
+              banner dispatches gtag('consent', 'update', {...}) on accept. */}
+          <Script id="ga4-consent-default" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = window.gtag || gtag;
+              gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                functionality_storage: 'granted',
+                security_storage: 'granted',
+                wait_for_update: 500
+              });
+            `}
+          </Script>
           <Script
             src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
             strategy="lazyOnload"

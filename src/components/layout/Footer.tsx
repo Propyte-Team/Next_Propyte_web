@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { MapPin, Mail, Instagram, Facebook } from 'lucide-react';
+import { reopenBanner } from '@/lib/cookies/consent';
 
 // Pre-footer CTA copy varies per route to avoid generic repetition
 const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
@@ -149,12 +150,21 @@ export default function Footer() {
             <p className="text-sm text-white/60">
               © {new Date().getFullYear()} Propyte. {t('rights')}
             </p>
-            <p className="text-sm text-white/60">
-              {t('developedBy')}{' '}
-              <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="text-[#5CE0D2] hover:text-white transition-colors">
-                Web Koi Studio
-              </a>
-            </p>
+            <div className="flex items-center gap-4 text-sm">
+              <button
+                type="button"
+                onClick={reopenBanner}
+                className="text-white/60 hover:text-[#5CE0D2] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+              >
+                {t('cookieSettings')}
+              </button>
+              <p className="text-white/60">
+                {t('developedBy')}{' '}
+                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="text-[#5CE0D2] hover:text-white transition-colors">
+                  Web Koi Studio
+                </a>
+              </p>
+            </div>
           </div>
           <div className="mt-4 pt-4 border-t border-white/5">
             <p className="text-xs text-white/55 text-center">

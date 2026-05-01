@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import MainPadding from '@/components/layout/MainPadding';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
+import CookieBanner from '@/components/shared/CookieBanner';
 import { Toaster } from 'sonner';
 import { MotionConfig } from 'framer-motion';
 import { SearchProvider } from '@/context/SearchContext';
@@ -54,6 +55,7 @@ export default async function LocaleLayout({
         </div>
         <WhatsAppButton />
         <Analytics />
+        <CookieBanner />
         <Toaster
           position="top-center"
           richColors
