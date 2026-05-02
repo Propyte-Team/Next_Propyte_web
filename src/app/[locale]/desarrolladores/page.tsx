@@ -3,8 +3,9 @@ import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import DevelopersPageContent from './DevelopersPageContent';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getDevelopers } from '@/lib/supabase/queries';
+import { getDevelopers, getPartners, type PartnerRow } from '@/lib/supabase/queries';
 import type { DeveloperRow } from '@/lib/supabase/types';
+import PartnersLogos from '@/components/shared/PartnersLogos';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -57,14 +58,19 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
   }));
 
   let developers: DeveloperRow[] = [];
+  let partners: PartnerRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
     if (supabase) {
-      const { data } = await getDevelopers(supabase);
+      const [{ data }, partnerRows] = await Promise.all([
+        getDevelopers(supabase),
+        getPartners(supabase),
+      ]);
       if (data) developers = data as DeveloperRow[];
+      partners = partnerRows;
     }
   } catch (error) {
-    console.error('[DevelopersPage] getDevelopers failed:', error);
+    console.error('[DevelopersPage] getDevelopers/getPartners failed:', error);
   }
 
   return (
@@ -89,6 +95,11 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         items={[{ label: locale === 'es' ? 'Desarrolladores' : 'Developers' }]}
       />
       <DevelopersPageContent developers={developers} />
+      <PartnersLogos
+        partners={partners}
+        title={locale === 'es' ? 'Trabajamos con desarrolladoras líderes' : 'We work with leading developers'}
+        subtitle={locale === 'es' ? 'Aliados estratégicos en Riviera Maya y Yucatán' : 'Strategic partners across Riviera Maya and Yucatán'}
+      />
     </>
   );
 }

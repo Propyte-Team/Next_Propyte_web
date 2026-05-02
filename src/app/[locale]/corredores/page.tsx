@@ -2,6 +2,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BrokersPageContent from './BrokersPageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import PartnersLogos from '@/components/shared/PartnersLogos';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { getPartners, type PartnerRow } from '@/lib/supabase/queries';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -51,6 +54,14 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
     },
   }));
 
+  let partners: PartnerRow[] = [];
+  try {
+    const supabase = createPublicSupabaseClient();
+    if (supabase) partners = await getPartners(supabase);
+  } catch (error) {
+    console.error('[BrokersPage] getPartners failed:', error);
+  }
+
   return (
     <>
       <SchemaMarkup
@@ -73,6 +84,11 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         items={[{ label: tBC('brokers') }]}
       />
       <BrokersPageContent />
+      <PartnersLogos
+        partners={partners}
+        title={locale === 'es' ? 'Inventario de aliados estratégicos' : 'Strategic partner inventory'}
+        subtitle={locale === 'es' ? 'Desarrolladoras, bancos y servicios trans­accionales con los que trabajamos' : 'Developers, banks and transactional services we work with'}
+      />
     </>
   );
 }

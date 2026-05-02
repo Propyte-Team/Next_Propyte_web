@@ -636,6 +636,53 @@ export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
 }
 
 // ============================================================
+// PARTNERS (real_estate_hub.v_partners)
+// ============================================================
+
+export type PartnerCategory = 'developer' | 'bank' | 'notary' | 'insurance' | 'other';
+
+export interface PartnerRow {
+  id: string;
+  name: string;
+  logo_url: string | null;
+  website_url: string | null;
+  category: PartnerCategory;
+  sort_order: number;
+}
+
+/**
+ * Lista logos de aliados (desarrolladoras/bancos/notarías/aseguradoras),
+ * ordenados por sort_order asc. Lee de la vista `real_estate_hub.v_partners`
+ * (filtra active=TRUE AND logo_url IS NOT NULL + GRANT anon explícito).
+ * Source of truth: hub.propyte.com/aliados.
+ *
+ * Hide-when-empty: devuelve [] si la tabla no existe / no hay aliados activos
+ * — el caller renderiza nada cuando length === 0.
+ */
+export async function getPartners(
+  client: Client,
+  category?: PartnerCategory,
+): Promise<PartnerRow[]> {
+  if (!client) return [];
+  try {
+    let query = hub(client)
+      .from('v_partners')
+      .select('id, name, logo_url, website_url, category, sort_order')
+      .order('sort_order', { ascending: true });
+    if (category) query = query.eq('category', category);
+    const { data, error } = await query;
+    if (error) {
+      console.warn('[getPartners] error:', error.message);
+      return [];
+    }
+    return (data ?? []) as PartnerRow[];
+  } catch (e) {
+    console.warn('[getPartners] exception:', e);
+    return [];
+  }
+}
+
+// ============================================================
 // ANALYTICS: WEB EVENTS
 // ============================================================
 
