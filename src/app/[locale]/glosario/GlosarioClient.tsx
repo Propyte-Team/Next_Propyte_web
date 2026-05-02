@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Search, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import GlossaryLeadGateModal from '@/components/glosario/GlossaryLeadGateModal';
 
 interface Term {
   name: string;
@@ -30,6 +31,7 @@ const stripDiacritics = (s: string) =>
 export default function GlosarioClient({ terms, locale, labels }: GlosarioClientProps) {
   const tG = useTranslations('glosario');
   const [query, setQuery] = useState('');
+  const [gateOpen, setGateOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const q = query.trim();
@@ -79,16 +81,16 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                 className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
               />
             </div>
-            <a
-              href={`/api/glossary/pdf?locale=${locale}`}
-              download
+            <button
+              type="button"
+              onClick={() => setGateOpen(true)}
               className="inline-flex items-center gap-1.5 h-[42px] px-3 sm:px-4 rounded-xl bg-[#1A2F3F] text-white text-xs sm:text-sm font-bold hover:bg-[#0F1923] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors flex-shrink-0"
               aria-label={labels.downloadPdf}
               title={labels.downloadPdf}
             >
               <Download size={14} strokeWidth={2.25} />
               <span className="hidden sm:inline">{labels.downloadPdfShort}</span>
-            </a>
+            </button>
           </div>
 
           {/* Counter (only while searching) */}
@@ -126,6 +128,8 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
           </nav>
         </div>
       </div>
+
+      <GlossaryLeadGateModal open={gateOpen} onClose={() => setGateOpen(false)} />
 
       {/* Terms */}
       <section className="py-12 md:py-16">
