@@ -683,6 +683,96 @@ export async function getPartners(
 }
 
 // ============================================================
+// CASE STUDIES (real_estate_hub.v_case_studies)
+// ============================================================
+
+export type CaseStudyAudience = 'developer' | 'broker' | 'investor';
+
+export interface CaseStudyRow {
+  id: string;
+  slug: string | null;
+  client_name: string;
+  audience: CaseStudyAudience;
+  image_url: string | null;
+  title_es: string;
+  title_en: string | null;
+  summary_es: string | null;
+  summary_en: string | null;
+  metric1_label_es: string | null;
+  metric1_label_en: string | null;
+  metric1_value: string | null;
+  metric2_label_es: string | null;
+  metric2_label_en: string | null;
+  metric2_value: string | null;
+  metric3_label_es: string | null;
+  metric3_label_en: string | null;
+  metric3_value: string | null;
+  sort_order: number;
+}
+
+/**
+ * Lista casos de éxito activos, ordenados por sort_order asc.
+ * Lee de `real_estate_hub.v_case_studies`. Hide-when-empty pattern.
+ */
+export async function getCaseStudies(
+  client: Client,
+  audience?: CaseStudyAudience,
+): Promise<CaseStudyRow[]> {
+  if (!client) return [];
+  try {
+    let query = hub(client)
+      .from('v_case_studies')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    if (audience) query = query.eq('audience', audience);
+    const { data, error } = await query;
+    if (error) {
+      console.warn('[getCaseStudies] error:', error.message);
+      return [];
+    }
+    return (data ?? []) as CaseStudyRow[];
+  } catch (e) {
+    console.warn('[getCaseStudies] exception:', e);
+    return [];
+  }
+}
+
+// ============================================================
+// BROKER COMMISSIONS (real_estate_hub.v_broker_commissions)
+// ============================================================
+
+export type CommissionPropertyType = 'residencial' | 'comercial' | 'terreno';
+export type CommissionStage = 'preventa' | 'inmediata' | 'usada';
+
+export interface BrokerCommissionRow {
+  id: string;
+  property_type: CommissionPropertyType;
+  stage: CommissionStage;
+  commission_pct: number;
+  notes_es: string | null;
+  notes_en: string | null;
+  sort_order: number;
+}
+
+export async function getBrokerCommissions(client: Client): Promise<BrokerCommissionRow[]> {
+  if (!client) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_broker_commissions')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    if (error) {
+      console.warn('[getBrokerCommissions] error:', error.message);
+      return [];
+    }
+    return (data ?? []) as BrokerCommissionRow[];
+  } catch (e) {
+    console.warn('[getBrokerCommissions] exception:', e);
+    return [];
+  }
+}
+
+// ============================================================
 // ANALYTICS: WEB EVENTS
 // ============================================================
 

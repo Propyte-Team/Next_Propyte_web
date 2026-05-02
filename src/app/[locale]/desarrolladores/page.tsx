@@ -3,9 +3,16 @@ import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import DevelopersPageContent from './DevelopersPageContent';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getDevelopers, getPartners, type PartnerRow } from '@/lib/supabase/queries';
+import {
+  getDevelopers,
+  getPartners,
+  getCaseStudies,
+  type PartnerRow,
+  type CaseStudyRow,
+} from '@/lib/supabase/queries';
 import type { DeveloperRow } from '@/lib/supabase/types';
 import PartnersLogos from '@/components/shared/PartnersLogos';
+import CaseStudies from '@/components/shared/CaseStudies';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -59,18 +66,21 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
 
   let developers: DeveloperRow[] = [];
   let partners: PartnerRow[] = [];
+  let caseStudies: CaseStudyRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
     if (supabase) {
-      const [{ data }, partnerRows] = await Promise.all([
+      const [{ data }, partnerRows, caseRows] = await Promise.all([
         getDevelopers(supabase),
         getPartners(supabase),
+        getCaseStudies(supabase, 'developer'),
       ]);
       if (data) developers = data as DeveloperRow[];
       partners = partnerRows;
+      caseStudies = caseRows;
     }
   } catch (error) {
-    console.error('[DevelopersPage] getDevelopers/getPartners failed:', error);
+    console.error('[DevelopersPage] queries failed:', error);
   }
 
   return (
@@ -95,6 +105,12 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         items={[{ label: locale === 'es' ? 'Desarrolladores' : 'Developers' }]}
       />
       <DevelopersPageContent developers={developers} />
+      <CaseStudies
+        studies={caseStudies}
+        locale={locale}
+        title={locale === 'es' ? 'Casos de éxito' : 'Success stories'}
+        subtitle={locale === 'es' ? 'Resultados reales con desarrolladoras de la Riviera Maya' : 'Real results with Riviera Maya developers'}
+      />
       <PartnersLogos
         partners={partners}
         title={locale === 'es' ? 'Trabajamos con desarrolladoras líderes' : 'We work with leading developers'}

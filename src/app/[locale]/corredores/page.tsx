@@ -3,8 +3,17 @@ import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BrokersPageContent from './BrokersPageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import PartnersLogos from '@/components/shared/PartnersLogos';
+import CaseStudies from '@/components/shared/CaseStudies';
+import BrokerCommissionsTable from '@/components/shared/BrokerCommissionsTable';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getPartners, type PartnerRow } from '@/lib/supabase/queries';
+import {
+  getPartners,
+  getCaseStudies,
+  getBrokerCommissions,
+  type PartnerRow,
+  type CaseStudyRow,
+  type BrokerCommissionRow,
+} from '@/lib/supabase/queries';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -55,11 +64,22 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
   }));
 
   let partners: PartnerRow[] = [];
+  let caseStudies: CaseStudyRow[] = [];
+  let commissions: BrokerCommissionRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
-    if (supabase) partners = await getPartners(supabase);
+    if (supabase) {
+      const [partnerRows, caseRows, commissionRows] = await Promise.all([
+        getPartners(supabase),
+        getCaseStudies(supabase, 'broker'),
+        getBrokerCommissions(supabase),
+      ]);
+      partners = partnerRows;
+      caseStudies = caseRows;
+      commissions = commissionRows;
+    }
   } catch (error) {
-    console.error('[BrokersPage] getPartners failed:', error);
+    console.error('[BrokersPage] queries failed:', error);
   }
 
   return (
@@ -84,6 +104,18 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         items={[{ label: tBC('brokers') }]}
       />
       <BrokersPageContent />
+      <BrokerCommissionsTable
+        commissions={commissions}
+        locale={locale}
+        title={locale === 'es' ? 'Tabla de comisiones' : 'Commission schedule'}
+        subtitle={locale === 'es' ? 'Transparencia comercial: lo que ganas por cada operación cerrada con Propyte' : 'Commercial transparency: what you earn per closed deal with Propyte'}
+      />
+      <CaseStudies
+        studies={caseStudies}
+        locale={locale}
+        title={locale === 'es' ? 'Corredores con resultados reales' : 'Brokers with real results'}
+        subtitle={locale === 'es' ? 'Casos de éxito de aliados de nuestra red' : 'Success stories from our broker network'}
+      />
       <PartnersLogos
         partners={partners}
         title={locale === 'es' ? 'Inventario de aliados estratégicos' : 'Strategic partner inventory'}
