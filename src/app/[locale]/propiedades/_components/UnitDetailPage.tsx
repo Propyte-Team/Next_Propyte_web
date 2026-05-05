@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Bed, Bath, Square, Car, Building2, ArrowLeft,
 } from 'lucide-react';
@@ -10,11 +11,17 @@ import {
   getRentalEstimate,
   getAirdnaMarketSummary,
   getSimilarUnits,
+  getDeveloperById,
+  getDeveloperProjectCount,
+  type DeveloperRecord,
 } from '@/lib/supabase/queries';
+import VirtualTour from '@/components/property/VirtualTour';
+import VideoPlayer from '@/components/property/VideoPlayer';
+import GeoAnalysis from '@/components/property/GeoAnalysis';
 import { getMockUnit, getSimilarMockUnits } from '@/lib/mocks/unit-fixtures';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { formatPrice } from '@/lib/formatters';
-import { CITY_TO_AIRDNA, VAC } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, VAC } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -27,6 +34,7 @@ import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
 import MarketIndicator from './MarketIndicator';
 import AmenityList from '@/components/property/AmenityList';
+import FloatingKeyData from '@/components/property/FloatingKeyData';
 import UnitFAQs from './UnitFAQs';
 import { slugify } from '@/lib/utils';
 
@@ -37,7 +45,10 @@ interface UnitDetailPageProps {
 
 export default async function UnitDetailPage({ locale, slug }: UnitDetailPageProps) {
   const supabase = createPublicSupabaseClient();
-  const tProp = await getTranslations({ locale, namespace: 'property' });
+  const [tProp, visibility] = await Promise.all([
+    getTranslations({ locale, namespace: 'property' }),
+    getVisibility(),
+  ]);
 
   // ── Fetch unit row — Supabase first, mock fallback ──
   let row: UnitRow | null = null;
@@ -57,14 +68,42 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
   const _citySlug = slugify(property.location.city); void _citySlug;
 
-  // ── Rental estimates + AirDNA ──
+  // ── Parent development data (amenities + developer) ──
+  let devAmenities: string[] = [];
+  let developerDisplay: DeveloperRecord | null = null;
+  let developerProjects = 0;
+  try {
+    if (supabase && row.development_id) {
+      const { data: devData } = await supabase
+        .schema('real_estate_hub' as 'public')
+        .from('v_developments')
+        .select('amenities, developer_id')
+        .eq('id', row.development_id)
+        .single();
+      const d = devData as { amenities?: string[] | null; developer_id?: string | null } | null;
+      devAmenities = d?.amenities || [];
+      const developerId = d?.developer_id;
+      if (developerId) {
+        const [devRecord, projCount] = await Promise.all([
+          getDeveloperById(supabase, developerId),
+          getDeveloperProjectCount(supabase, developerId),
+        ]);
+        developerDisplay = devRecord;
+        developerProjects = projCount;
+      }
+    }
+  } catch (err) {
+    console.error('Dev data fetch failed:', err);
+  }
+
+  // ── Rental estimates + market data ──
   let estRentRes: number | null = null;
   let estRentVac: number | null = null;
   let airdnaOccupancy: number | null = null;
 
   try {
     if (supabase) {
-      const airdnaMarket = CITY_TO_AIRDNA[property.location.city] || '';
+      const airdnaMarket = CITY_TO_MARKET_CODE[property.location.city] || '';
       const [resResult, vacResult, airdnaResult] = await Promise.all([
         getRentalEstimate(supabase, property.location.city, property.specs.type, property.specs.bedrooms, property.location.zone, 'residencial'),
         getRentalEstimate(supabase, property.location.city, property.specs.type, property.specs.bedrooms, property.location.zone, 'vacacional'),
@@ -148,7 +187,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
-    amenidades: property.amenities?.length ? property.amenities : undefined,
+    amenidades: devAmenities.length ? devAmenities : (property.amenities?.length ? property.amenities : undefined),
     piso: row.floor != null ? String(row.floor) : undefined,
     num_unidad: row.unit_number || undefined,
     prop_type: typeLabel,
@@ -207,12 +246,12 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
         {/* Breadcrumbs */}
-        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-500 mb-4">
-          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbHome')}</Link>
+        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-600 mb-4">
+          <Link href={`/${locale}`} className="hover:text-[#0F766E]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/propiedades`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbProperties')}</Link>
+          <Link href={`/${locale}/propiedades`} className="hover:text-[#0F766E]">{tProp('breadcrumbProperties')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}`} className="hover:text-[#5CE0D2]">{property.location.city}</Link>
+          <Link href={`/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}`} className="hover:text-[#0F766E]">{property.location.city}</Link>
           <ChevronRight size={12} />
           <span className="text-gray-700 font-medium truncate max-w-[240px]">{property.name}</span>
         </nav>
@@ -223,7 +262,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           alt={property.name}
           badgeTopLeft={
             <>
-              <span className="px-3 py-1.5 bg-[#5CE0D2] text-white text-xs font-bold rounded-full">{stageLabel}</span>
+              <span className="px-3 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-full">{stageLabel}</span>
               {property.badge && <Badge type={property.badge} label={stageLabel} />}
             </>
           }
@@ -234,14 +273,14 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           <div className="lg:col-span-2 space-y-8">
             {/* Title + Specs */}
             <div>
-              <div className="flex items-center gap-2 text-xs text-[#0D9488] font-semibold uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-xs text-[#0F766E] font-semibold uppercase tracking-wider mb-1">
                 <span>{typeLabel}</span>
                 {property.parentDevelopmentSlug && (
                   <>
                     <span>·</span>
                     <Link
                       href={`/${locale}/desarrollos/${property.parentDevelopmentSlug}`}
-                      className="inline-flex items-center gap-1 hover:text-[#5CE0D2] underline underline-offset-2"
+                      className="inline-flex items-center gap-1 hover:text-[#0F766E] underline underline-offset-2"
                     >
                       <ArrowLeft size={12} />
                       {tProp('viewDevelopment')}
@@ -251,7 +290,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 )}
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-[#2C2C2C]">{property.name}</h1>
-              <div className="flex items-center gap-2 mt-2 text-gray-500">
+              <div className="flex items-center gap-2 mt-2 text-gray-600">
                 <MapPin size={18} />
                 <span className="text-base">
                   {property.location.address || `${property.location.zone}, ${property.location.city}, ${property.location.state}`}
@@ -264,7 +303,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   <div className="flex items-baseline gap-4">
                     <div className="text-4xl font-extrabold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</div>
                     {property.specs.area > 0 && (
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-600">
                         {formatPrice(Math.round(property.price.mxn / property.specs.area))}/m²
                       </div>
                     )}
@@ -317,42 +356,48 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                           <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
                         )}
                       </div>
-                      <AmenityList locale={locale} amenities={property.amenities} />
+                      <AmenityList locale={locale} amenities={devAmenities.length > 0 ? devAmenities : property.amenities} />
                     </div>
                   ),
                 },
-                {
+                ...((property.media?.virtualTour || property.media?.video) && isVisible(visibility, VISIBILITY_KEYS.PROPIEDADES_DETAIL_TOUR) ? [{
+                  id: 'tour',
+                  label: tProp('tabTour'),
+                  panel: (
+                    <div className="space-y-6">
+                      <h2 className="text-xl font-bold text-[#2C2C2C]">{tProp('tabTour')}</h2>
+                      <div className={`grid gap-4 ${property.media?.virtualTour && property.media?.video ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                        {property.media?.virtualTour && (
+                          <VirtualTour url={property.media.virtualTour} propertyName={property.name} />
+                        )}
+                        {property.media?.video && (
+                          <VideoPlayer
+                            url={property.media.video}
+                            propertyName={property.name}
+                            thumbnail={property.images?.[0]}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ),
+                }] as TabItem[] : []),
+                ...(isVisible(visibility, VISIBILITY_KEYS.PROPIEDADES_DETAIL_GEO) ? [{
                   id: 'geo',
                   label: tProp('tabGeo'),
                   panel: (
-                    <div className="space-y-4">
-                      <div className="aspect-[16/9] bg-[#F4F6F8] rounded-xl flex flex-col items-center justify-center text-gray-400">
-                        <MapPin size={40} strokeWidth={1.5} className="mb-3" />
-                        <p className="text-sm font-medium">{tProp('geoMapComingSoon')}</p>
-                        {property.location.lat != null && property.location.lng != null && (
-                          <p className="text-[10px] text-gray-400 mt-1">
-                            {property.location.lat.toFixed(4)}, {property.location.lng.toFixed(4)}
-                          </p>
-                        )}
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{tProp('geoAddress')}</div>
-                          <div className="text-sm font-semibold text-[#2C2C2C]">
-                            {property.location.address || `${property.location.zone}, ${property.location.city}`}
-                          </div>
-                        </div>
-                        <div className="bg-gray-50 rounded-xl p-4">
-                          <div className="text-xs text-gray-500 mb-1">{tProp('geoZone')}</div>
-                          <div className="text-sm font-semibold text-[#2C2C2C]">
-                            {property.location.zone || property.location.city}, {property.location.state}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <GeoAnalysis
+                      lat={property.location.lat ?? null}
+                      lng={property.location.lng ?? null}
+                      address={property.location.address || null}
+                      city={property.location.city}
+                      zone={property.location.zone || null}
+                      state={property.location.state || null}
+                      zoneScore={null}
+                      locale={locale}
+                    />
                   ),
-                },
-                {
+                }] as TabItem[] : []),
+                ...(isVisible(visibility, VISIBILITY_KEYS.PROPIEDADES_DETAIL_RENTABILIDAD) ? [{
                   id: 'rentabilidad',
                   label: tProp('tabRentabilidad'),
                   panel: (
@@ -369,7 +414,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       locale={locale}
                     />
                   ),
-                },
+                }] as TabItem[] : []),
               ] satisfies TabItem[]}
             />
 
@@ -395,15 +440,77 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 locale={locale}
               />
 
-              <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 scroll-mt-24">
-                <h3 className="text-base font-bold text-[#2C2C2C] mb-1">
+              <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 scroll-mt-24">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
                   {tProp('interestedUnitQuestion')}
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-sm text-gray-600 mb-4">
                   {tProp('responseUnder5min')}
                 </p>
                 <ContactForm propertyId={property.id} propertyName={property.name} />
+                <a
+                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=${encodeURIComponent(
+                    tProp('whatsappInterestText', { name: property.name })
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full h-12 mt-3 bg-[#25D366] hover:bg-[#1EBE57] text-white font-semibold rounded-lg transition-colors"
+                >
+                  WhatsApp
+                </a>
               </div>
+
+              {developerDisplay?.name && (
+                <div className="bg-gray-50 rounded-2xl p-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">
+                    {tProp('developerTitle')}
+                  </h2>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                      {developerDisplay.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
+                      ) : (
+                        <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
+                          {developerDisplay.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
+                        {developerDisplay.verified && (
+                          <span className="px-2 py-0.5 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                            {tProp('verified')}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-0.5 flex items-center gap-2 flex-wrap">
+                        {developerProjects > 0 && <span>{tProp('projectsCount', { count: developerProjects })}</span>}
+                        {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
+                          <span>· {developerDisplay.yearsExperience} {tProp('yearsExperience')}</span>
+                        )}
+                        {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
+                          <span>· {developerDisplay.unitsDelivered.toLocaleString()} {tProp('unitsDelivered')}</span>
+                        )}
+                      </div>
+                    </div>
+                    {developerDisplay.slug && (
+                      <Link
+                        href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
+                        className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
+                      >
+                        {tProp('viewProfile')}
+                      </Link>
+                    )}
+                  </div>
+                  {(locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs) && (
+                    <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
+                      {locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -435,6 +542,20 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         locale={locale}
         roiPct={property.roi.projected}
       />
+
+      <FloatingKeyData
+        price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
+        area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
+        bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
+        bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
+        labels={{
+          title: locale === 'es' ? 'Datos clave' : 'Key data',
+          price: locale === 'es' ? 'Precio' : 'Price',
+          area: 'Área',
+          bedrooms: tProp('bedrooms'),
+          bathrooms: tProp('bathrooms'),
+        }}
+      />
     </>
   );
 }
@@ -442,7 +563,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 function SpecChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
-      <span className="text-[#5CE0D2]">{icon}</span>
+      <span className="text-[#0F766E]">{icon}</span>
       {label}
     </div>
   );

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
   Users, CheckCircle, Zap, DollarSign, Download,
@@ -21,7 +22,7 @@ import {
 } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import {
-  CITY_TO_AIRDNA,
+  CITY_TO_MARKET_CODE,
   RES,
   buildCashflows,
   calculateClosingCosts,
@@ -43,11 +44,12 @@ import AmenityList from '@/components/property/AmenityList';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
-import AirdnaInsights from '@/components/property/AirdnaInsights';
+import DataInsights from '@/components/property/DataInsights';
 import MarketSentiment, { type SentimentIndicator } from '@/components/property/MarketSentiment';
 import CetesComparison from '@/components/property/CetesComparison';
 import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndicator';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
+import FloatingKeyData from '@/components/property/FloatingKeyData';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
 interface DevelopmentDetailPageProps {
@@ -85,7 +87,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   if (!property) notFound();
 
-  const tProp = await getTranslations({ locale, namespace: 'property' });
+  const [tProp, visibility] = await Promise.all([
+    getTranslations({ locale, namespace: 'property' }),
+    getVisibility(),
+  ]);
 
   const citySlug = slugify(property.city);
   const description = pickLang(locale, property.description_en, property.description_es) || '';
@@ -128,7 +133,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   let airdnaOccupancy: number | null = null;
   let airdnaSummary: Awaited<ReturnType<typeof getAirdnaMarketSummary>> = null;
   let zoneScore: Awaited<ReturnType<typeof getZoneDetail>>['score'] = null;
-  const airdnaMarket = CITY_TO_AIRDNA[property.city] || '';
+  const marketCode = CITY_TO_MARKET_CODE[property.city] || '';
   try {
     if (supabase) {
       const propType = property.property_types?.[0] || property.property_type || 'departamento';
@@ -137,7 +142,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         getRentalEstimate(supabase, property.city, propType, null, property.zone, 'vacacional'),
         getDevelopmentFinancials(supabase, property.id),
         getMlRentalEstimates(supabase, property.id),
-        airdnaMarket ? getAirdnaMarketSummary(supabase, airdnaMarket) : Promise.resolve(null),
+        marketCode ? getAirdnaMarketSummary(supabase, marketCode) : Promise.resolve(null),
         property.zone ? getZoneDetail(supabase, property.city, property.zone) : Promise.resolve({ score: null, submarkets: [] }),
       ]);
       if (rentalResult.data) {
@@ -291,7 +296,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       ),
     });
   }
-  // (b) Occupancy demand (AirDNA trend last 3 vs first 3). Values come in percent scale (0-100).
+  // (b) Occupancy demand (market data trend last 3 vs first 3). Values come in percent scale (0-100).
   if (airdnaSummary?.occupancy_trend && airdnaSummary.occupancy_trend.length >= 6) {
     const trend = airdnaSummary.occupancy_trend;
     const early = trend.slice(0, 3).reduce((s, p) => s + p.value, 0) / 3;
@@ -414,12 +419,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
-        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-500 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbHome')}</Link>
+        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-600 mb-6">
+          <Link href={`/${locale}`} className="hover:text-[#0F766E]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">{tProp('breadcrumbDevelopments')}</Link>
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0F766E]">{tProp('breadcrumbDevelopments')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#5CE0D2]">{property.city}</Link>
+          <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#0F766E]">{property.city}</Link>
           <ChevronRight size={12} />
           <span className="text-gray-700 font-medium truncate max-w-[200px]">{property.name}</span>
         </nav>
@@ -432,14 +437,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               images={(property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0)}
               alt={property.name}
               badgeTopLeft={
-                <span className="px-3 py-1.5 bg-[#5CE0D2] text-white text-sm font-bold rounded-full">{stageLabel}</span>
+                <span className="px-3 py-1.5 bg-[#5CE0D2] text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
               }
             />
 
             {/* Title & Location */}
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{property.name}</h1>
-              <div className="flex items-center gap-2 mt-2 text-gray-500">
+              <div className="flex items-center gap-2 mt-2 text-gray-600">
                 <MapPin size={18} />
                 <span className="text-lg">
                   {property.zone !== property.city ? `${property.zone}, ` : ''}
@@ -449,7 +454,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
                 {(property.price_min_mxn || property.price_mxn) > 0 ? (
                   <div>
-                    <span className="text-sm text-gray-500">{tProp('startingFrom')}</span>
+                    <span className="text-sm text-gray-600">{tProp('startingFrom')}</span>
                     <div className="text-3xl font-bold text-gray-900">
                       {formatPrice(property.price_min_mxn || property.price_mxn)}
                     </div>
@@ -517,31 +522,31 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         <div className="flex flex-wrap gap-3">
                           {totalUnits && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <Users size={16} className="text-gray-400" />
+                              <Users size={16} className="text-gray-600" />
                               <span className="text-gray-600">{totalUnits} {tProp('totalProperties')}</span>
                             </div>
                           )}
                           {derivedAvailable != null && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-[#5CE0D2]/10 rounded-xl text-sm">
-                              <CheckCircle size={16} className="text-[#5CE0D2]" />
+                              <CheckCircle size={16} className="text-[#0F766E]" />
                               <span className="text-[#4BCEC0] font-semibold">{derivedAvailable} {tProp('available')}</span>
                             </div>
                           )}
                           {deliveryDisplay && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <TrendingUp size={16} className="text-gray-400" />
+                              <TrendingUp size={16} className="text-gray-600" />
                               <span className="text-gray-600">{tProp('delivery')} {deliveryDisplay}</span>
                             </div>
                           )}
                           {property.construction_progress != null && property.construction_progress > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <Zap size={16} className="text-gray-400" />
+                              <Zap size={16} className="text-gray-600" />
                               <span className="text-gray-600">{tProp('progress')} {property.construction_progress}%</span>
                             </div>
                           )}
                           {(property as any).commission_rate != null && (property as any).commission_rate > 0 && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <DollarSign size={16} className="text-gray-400" />
+                              <DollarSign size={16} className="text-gray-600" />
                               <span className="text-gray-600">{tProp('commission')} {(property as any).commission_rate}%</span>
                             </div>
                           )}
@@ -583,17 +588,17 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
                           >
                             <div className="w-12 h-12 rounded-lg bg-[#1A2F3F] flex items-center justify-center shrink-0">
-                              <FileText size={22} className="text-[#5CE0D2]" />
+                              <FileText size={22} className="text-[#0F766E]" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-bold text-gray-900 truncate">
                                 {tProp('brochure')}
                               </div>
-                              <div className="text-xs text-gray-500 truncate">
+                              <div className="text-xs text-gray-600 truncate">
                                 {deriveFilenameFromUrl(property.brochure_url, 'brochure.pdf')}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0D9488] group-hover:text-[#5CE0D2] shrink-0">
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0F766E] group-hover:text-[#0F766E] shrink-0">
                               <Download size={16} />
                               {tProp('download')}
                             </div>
@@ -616,7 +621,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                   className="w-full h-full object-contain"
                                 />
                               ) : developerInitials ? (
-                                <span className="text-xl font-extrabold text-[#0D9488] tracking-tight">
+                                <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
                                   {developerInitials}
                                 </span>
                               ) : (
@@ -627,12 +632,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}
                               </div>
-                              <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2 flex-wrap">
+                              <div className="text-xs text-gray-600 mt-0.5 flex items-center gap-2 flex-wrap">
                                 {developerProjects > 0 && (
                                   <span>{tProp('projectsCount', { count: developerProjects })}</span>
                                 )}
@@ -667,7 +672,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                     </div>
                   ),
                 },
-                {
+                ...(isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_GEO) ? [{
                   id: 'geo',
                   label: tProp('tabGeo'),
                   panel: (
@@ -682,17 +687,17 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         zoneScore={zoneScore}
                         locale={locale}
                       />
-                      {airdnaSummary && airdnaMarket && (
-                        <AirdnaInsights
+                      {airdnaSummary && marketCode && (
+                        <DataInsights
                           data={airdnaSummary}
                           locale={locale}
-                          market={airdnaMarket}
+                          market={marketCode}
                         />
                       )}
                     </div>
                   ),
-                },
-                {
+                }] as TabItem[] : []),
+                ...(isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_RENTABILIDAD) ? [{
                   id: 'rentabilidad',
                   label: tProp('tabRentabilidad'),
                   panel: (
@@ -743,7 +748,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       )}
                     </div>
                   ),
-                },
+                }] as TabItem[] : []),
               ] satisfies TabItem[]}
             />
           </div>
@@ -758,7 +763,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   </div>
                   <div>
                     <div className="font-bold text-gray-900 text-sm">{property.contact_name}</div>
-                    <div className="text-xs text-gray-400">{tProp('verifiedAdvisor')}</div>
+                    <div className="text-xs text-gray-600">{tProp('verifiedAdvisor')}</div>
                   </div>
                 </div>
               )}
@@ -766,7 +771,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <h3 className="text-lg font-bold text-gray-900 mb-4">
                 {tProp('interestedDevQuestion')}
               </h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-600 mb-4">
                 {tProp('getPricingDescription')}
               </p>
               <ContactForm propertyId={property.id} propertyName={property.name} />
@@ -797,6 +802,40 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         locale={locale}
         roiPct={roiDisplay ?? undefined}
       />
+
+      <FloatingKeyData
+        price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
+        area={
+          areaRange
+            ? areaRange.min === areaRange.max
+              ? `${areaRange.min} m²`
+              : `${areaRange.min}–${areaRange.max} m²`
+            : representativeArea
+              ? `${representativeArea} m²`
+              : null
+        }
+        bedrooms={
+          bedRange
+            ? bedRange.min === bedRange.max
+              ? String(bedRange.min)
+              : `${bedRange.min}–${bedRange.max}`
+            : null
+        }
+        bathrooms={
+          bathRange
+            ? bathRange.min === bathRange.max
+              ? String(bathRange.min)
+              : `${bathRange.min}–${bathRange.max}`
+            : null
+        }
+        labels={{
+          title: locale === 'es' ? 'Datos clave' : 'Key data',
+          price: locale === 'es' ? 'Precio desde' : 'Price from',
+          area: 'Área',
+          bedrooms: tProp('bedrooms'),
+          bathrooms: tProp('bathrooms'),
+        }}
+      />
     </>
   );
 }
@@ -808,9 +847,9 @@ function MetricCard({
 }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="bg-gray-50 rounded-xl p-4 text-center">
-      <span className="flex justify-center text-[#5CE0D2] mb-2">{icon}</span>
+      <span className="flex justify-center text-[#0F766E] mb-2">{icon}</span>
       <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
-      <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+      <div className="text-xs text-gray-600 mt-0.5">{label}</div>
     </div>
   );
 }
