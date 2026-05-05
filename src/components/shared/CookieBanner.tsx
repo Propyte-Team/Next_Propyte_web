@@ -69,7 +69,7 @@ export default function CookieBanner() {
           <div className="p-5 md:p-6">
             <div className="flex items-start gap-3">
               <div className="hidden sm:flex w-10 h-10 rounded-full bg-[#5CE0D2]/15 items-center justify-center shrink-0">
-                <Cookie size={18} className="text-[#0D9488]" strokeWidth={2} />
+                <Cookie size={18} className="text-[#0F766E]" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-base md:text-lg font-bold text-[#1A2F3F]">{t('title')}</h2>
@@ -81,7 +81,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectOptional}
                 aria-label={t('closeAria')}
-                className="w-8 h-8 -mt-1 -mr-1 flex items-center justify-center rounded-full text-gray-400 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-8 h-8 -mt-1 -mr-1 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
               >
                 <X size={16} />
               </button>
@@ -124,7 +124,7 @@ export default function CookieBanner() {
                             {t('alwaysOn')}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
                           {t('necessaryDesc')}
                         </p>
                       </div>
@@ -141,7 +141,7 @@ export default function CookieBanner() {
                             ariaLabel={t('analyticsToggleAria')}
                           />
                         </label>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
                           {t('analyticsDesc')}
                         </p>
                       </div>
@@ -158,7 +158,7 @@ export default function CookieBanner() {
                             ariaLabel={t('marketingToggleAria')}
                           />
                         </label>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
                           {t('marketingDesc')}
                         </p>
                       </div>

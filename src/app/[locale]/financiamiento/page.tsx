@@ -142,7 +142,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                 <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Icon size={24} className="text-[#0D9488]" />
+                      <Icon size={24} className="text-[#0F766E]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-[#1A2F3F]">{m.title}</h3>
@@ -152,15 +152,15 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
 
                   <div className="grid grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg mb-4">
                     <div>
-                      <div className="text-[10px] text-gray-400 uppercase">{t('labelDownPayment')}</div>
+                      <div className="text-[10px] text-gray-600 uppercase">{t('labelDownPayment')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.downPayment}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-400 uppercase">{t('labelRate')}</div>
+                      <div className="text-[10px] text-gray-600 uppercase">{t('labelRate')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.rate}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-400 uppercase">{t('labelTerm')}</div>
+                      <div className="text-[10px] text-gray-600 uppercase">{t('labelTerm')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.term}</div>
                     </div>
                   </div>
@@ -174,7 +174,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     ))}
                   </ul>
 
-                  <div className="text-xs text-gray-500 pt-3 border-t border-gray-100">
+                  <div className="text-xs text-gray-600 pt-3 border-t border-gray-100">
                     <span className="font-semibold">{t('labelIdealFor')}</span> {m.ideal}
                   </div>
                 </div>
@@ -191,9 +191,9 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
             {t('tableTitle')}
           </h2>
           <div className="overflow-x-auto rounded-xl border border-gray-100">
-            <table className="w-full text-sm bg-white">
+            <table className="w-full min-w-[640px] text-sm bg-white">
               <thead>
-                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <th className="px-4 py-3">{t('labelMethod')}</th>
                   <th className="px-4 py-3 text-center">{t('labelDownPayment')}</th>
                   <th className="px-4 py-3 text-center">{t('labelRate')}</th>
@@ -208,7 +208,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                   <tr key={i} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{m.title}</td>
                     <td className="px-4 py-3 text-center text-gray-700">{m.downPayment}</td>
-                    <td className="px-4 py-3 text-center font-bold text-[#0D9488]">{m.rate}</td>
+                    <td className="px-4 py-3 text-center font-bold text-[#0F766E]">{m.rate}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{m.term}</td>
                     <td className="px-4 py-3 text-center">
                       {m.rate === '0%' ? '⚡⚡' : i === 1 ? '⚡⚡⚡' : '🕐'}
@@ -219,7 +219,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/${locale}/contacto?asunto=financiamiento-m${i + 1}`}
-                        className="inline-flex items-center text-xs font-semibold text-[#0D9488] hover:underline whitespace-nowrap"
+                        className="inline-flex items-center text-xs font-semibold text-[#0F766E] hover:underline whitespace-nowrap"
                       >
                         {t('rowAdvisorCta')} →
                       </Link>
@@ -266,7 +266,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
       {/* Legal disclaimer */}
       <div className="py-6 bg-gray-50">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <p className="text-xs text-gray-400 text-center">{t('disclaimer')}</p>
+          <p className="text-xs text-gray-600 text-center">{t('disclaimer')}</p>
         </div>
       </div>
     </>

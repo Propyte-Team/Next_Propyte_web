@@ -97,7 +97,7 @@ export default function ShareButton({
             : 'inline-flex items-center gap-1.5 min-h-[44px] px-4 bg-white border border-gray-200 hover:border-[#5CE0D2] text-gray-700 text-sm font-semibold rounded-lg transition-colors'
         }
       >
-        <Share2 size={16} className="text-[#0D9488]" />
+        <Share2 size={16} className="text-[#0F766E]" />
         {!compact && <span>{t('share')}</span>}
       </button>
 
@@ -117,7 +117,7 @@ export default function ShareButton({
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <div>
                 <h3 className="text-base font-bold text-[#2C2C2C]">{t('shareOrDownload')}</h3>
-                <p className="text-xs text-gray-500 mt-0.5 truncate max-w-[280px]">{propertyName}</p>
+                <p className="text-xs text-gray-600 mt-0.5 truncate max-w-[280px]">{propertyName}</p>
               </div>
               <button
                 type="button"
@@ -145,7 +145,7 @@ export default function ShareButton({
                   <div className="font-semibold text-sm text-[#2C2C2C]">
                     {downloading ? t('generating') : t('downloadPdf')}
                   </div>
-                  <div className="text-xs text-gray-500">{t('pdfSummary')}</div>
+                  <div className="text-xs text-gray-600">{t('pdfSummary')}</div>
                 </div>
               </button>
 
@@ -160,7 +160,7 @@ export default function ShareButton({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-[#2C2C2C]">{t('shareByEmail')}</div>
-                  <div className="text-xs text-gray-500">{t('opensMailApp')}</div>
+                  <div className="text-xs text-gray-600">{t('opensMailApp')}</div>
                 </div>
               </a>
 
@@ -177,7 +177,7 @@ export default function ShareButton({
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm text-[#2C2C2C]">WhatsApp</div>
-                  <div className="text-xs text-gray-500">{t('shareWithContact')}</div>
+                  <div className="text-xs text-gray-600">{t('shareWithContact')}</div>
                 </div>
               </a>
 
@@ -194,7 +194,7 @@ export default function ShareButton({
                   <div className="font-semibold text-sm text-[#2C2C2C]">
                     {copied ? t('copied') : t('copyLink')}
                   </div>
-                  <div className="text-xs text-gray-500 truncate">{propertyUrl}</div>
+                  <div className="text-xs text-gray-600 truncate">{propertyUrl}</div>
                 </div>
               </button>
             </div>
@@ -205,7 +205,7 @@ export default function ShareButton({
               </div>
             )}
 
-            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-400 text-center">
+            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-600 text-center">
               Propyte · propyte.com
             </div>
           </div>

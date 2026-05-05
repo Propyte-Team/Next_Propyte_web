@@ -37,11 +37,11 @@ export default function RelatedPosts({ posts, locale, title, minRead }: RelatedP
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-medium text-[#0D9488]">{post.category}</span>
-              <h3 className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#5CE0D2] transition-colors">
+              <span className="text-xs font-medium text-[#0F766E]">{post.category}</span>
+              <h3 className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0F766E] transition-colors">
                 {post.title}
               </h3>
-              <span className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+              <span className="text-xs text-gray-600 flex items-center gap-1 mt-1">
                 <Clock size={10} />
                 {post.read_time_min} {minRead}
               </span>

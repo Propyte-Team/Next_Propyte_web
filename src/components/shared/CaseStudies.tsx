@@ -80,7 +80,7 @@ export default function CaseStudies({
                   </div>
                 )}
                 <div className="p-6">
-                  <p className="text-xs font-semibold text-[#0D9488] uppercase tracking-wide mb-1">
+                  <p className="text-xs font-semibold text-[#0F766E] uppercase tracking-wide mb-1">
                     {s.client_name}
                   </p>
                   <h3 className="text-lg font-bold text-[#1A2F3F] mb-2 leading-snug">
@@ -95,10 +95,10 @@ export default function CaseStudies({
                     <dl className="grid grid-cols-3 gap-2 pt-4 border-t border-gray-100">
                       {metrics.map((m, i) => (
                         <div key={i} className="text-center">
-                          <dt className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide leading-tight">
+                          <dt className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide leading-tight">
                             {m.label}
                           </dt>
-                          <dd className="text-lg font-bold text-[#0D9488] tabular-nums mt-1">
+                          <dd className="text-lg font-bold text-[#0F766E] tabular-nums mt-1">
                             {m.value}
                           </dd>
                         </div>

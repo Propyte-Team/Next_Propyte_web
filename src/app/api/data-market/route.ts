@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getAirdnaMarketSummary } from '@/lib/supabase/queries';
-import { CITY_TO_AIRDNA } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const city = searchParams.get('city');
     const marketParam = searchParams.get('market');
 
-    const market = marketParam || (city ? CITY_TO_AIRDNA[city] : null);
+    const market = marketParam || (city ? CITY_TO_MARKET_CODE[city] : null);
     if (!market) {
       return NextResponse.json({ error: 'city or market parameter required' }, { status: 400 });
     }
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the city name from the market slug
-    const cityName = city || Object.entries(CITY_TO_AIRDNA).find(([, v]) => v === market)?.[0] || market;
+    const cityName = city || Object.entries(CITY_TO_MARKET_CODE).find(([, v]) => v === market)?.[0] || market;
 
     return NextResponse.json({
       market,
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
       headers: { 'Cache-Control': 'public, s-maxage=21600, stale-while-revalidate=43200' },
     });
   } catch (error) {
-    console.error('AirDNA market API error:', error);
+    console.error('Market data API error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

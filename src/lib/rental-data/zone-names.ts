@@ -1,5 +1,5 @@
 /**
- * Maps raw zone/submarket names from AirDNA to human-readable display names.
+ * Maps raw zone/submarket names from market data sources to human-readable display names.
  * Used by the vacacional tab to show clean zone names to investors.
  */
 

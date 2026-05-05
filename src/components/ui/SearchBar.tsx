@@ -23,7 +23,7 @@ export default function SearchBar() {
   return (
     <form onSubmit={handleSubmit} className="flex w-full max-w-2xl mx-auto">
       <div className="relative flex-1">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" size={20} />
         <input
           type="text"
           value={query}
@@ -34,7 +34,7 @@ export default function SearchBar() {
       </div>
       <button
         type="submit"
-        className="h-12 md:h-14 px-6 md:px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-semibold rounded-r-lg transition-colors whitespace-nowrap"
+        className="h-12 md:h-14 px-6 md:px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-semibold rounded-r-lg transition-colors whitespace-nowrap"
       >
         {t('searchButton')}
       </button>

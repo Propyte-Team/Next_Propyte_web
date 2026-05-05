@@ -208,7 +208,7 @@ function PortfolioShowcase() {
                   onClick={() => setFilter(key)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     filter === key
-                      ? 'bg-[#5CE0D2] text-white'
+                      ? 'bg-[#5CE0D2] text-[#0F1923]'
                       : 'bg-white/5 text-white/75 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -424,7 +424,7 @@ function ConsultationForm() {
                     <CheckCircle size={32} className="text-green-500" />
                   </div>
                   <h3 className="text-xl font-bold text-[#1A2F3F] mb-2">{t('formSuccess')}</h3>
-                  <p className="text-gray-500">{t('formSuccessDesc')}</p>
+                  <p className="text-gray-600">{t('formSuccessDesc')}</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

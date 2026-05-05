@@ -142,7 +142,7 @@ export default function UnitInvestmentCalculator({
         <h2 className="text-xl font-bold text-[#2C2C2C]">
           {t('calculatorTitle')}
         </h2>
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-gray-600">
           {t('priceLabel')}{' '}
           <span className="font-bold text-[#2C2C2C]">{formatPrice(price)}</span>
           {' · '}
@@ -188,7 +188,7 @@ export default function UnitInvestmentCalculator({
                     <label className="text-sm font-medium text-gray-700">
                       {t('occupancy')}
                       {airdnaOccupancy != null && (
-                        <span className="ml-2 text-[10px] font-bold text-[#0D9488] bg-[#5CE0D2]/15 px-2 py-0.5 rounded-full">AirDNA</span>
+                        <span className="ml-2 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-2 py-0.5 rounded-full">Data</span>
                       )}
                     </label>
                     <span className="text-sm font-bold text-[#2C2C2C]">{occupancyVac.toFixed(0)}%</span>
@@ -243,7 +243,7 @@ export default function UnitInvestmentCalculator({
                         onClick={() => setMonths(m)}
                         className={`px-4 py-2 rounded-lg text-sm border transition-colors ${
                           months === m
-                            ? 'bg-[#5CE0D2] text-white border-[#5CE0D2]'
+                            ? 'bg-[#5CE0D2] text-[#0F1923] border-[#5CE0D2]'
                             : 'border-gray-200 hover:border-[#5CE0D2] text-gray-700'
                         }`}
                       >
@@ -262,7 +262,7 @@ export default function UnitInvestmentCalculator({
                 />
 
                 <div className="bg-[#0F1923] rounded-2xl p-6 text-white">
-                  <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+                  <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">
                     {t('estMonthlyPayment')}
                   </div>
                   <div className="text-3xl font-extrabold">
@@ -275,7 +275,7 @@ export default function UnitInvestmentCalculator({
                   </div>
                 </div>
 
-                <p className="text-[11px] text-gray-500 leading-relaxed">
+                <p className="text-[11px] text-gray-600 leading-relaxed">
                   {t('financingDisclaimer')}
                 </p>
               </div>
@@ -323,7 +323,7 @@ export default function UnitInvestmentCalculator({
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="text-xs text-gray-400 mb-1">
+                  <div className="text-xs text-gray-600 mb-1">
                     {t('projected10yr')}
                   </div>
                   <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projection.projectedValue10)}</div>
@@ -333,7 +333,7 @@ export default function UnitInvestmentCalculator({
                       style={{ width: `${Math.min((projection.projectedValue10 / price) * 33, 100)}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                  <div className="flex justify-between text-[10px] text-gray-600 mt-1">
                     <span>{formatPrice(price)}</span>
                     <span>{formatPrice(projection.projectedValue10)}</span>
                   </div>
@@ -345,7 +345,7 @@ export default function UnitInvestmentCalculator({
                   totalInvested={totalInvested}
                 />
 
-                <p className="text-[11px] text-gray-400 leading-relaxed">
+                <p className="text-[11px] text-gray-600 leading-relaxed">
                   {t('roiDisclaimerCalc', { n: appreciation.toFixed(1) })}
                 </p>
               </div>
@@ -385,7 +385,7 @@ function MetricsPanel({
     <div className="space-y-4">
       <div>
         <div className="text-sm font-semibold text-[#2C2C2C]">{title}</div>
-        <div className="text-xs text-gray-500">{subtitle}</div>
+        <div className="text-xs text-gray-600">{subtitle}</div>
       </div>
 
       <div className="bg-[#0F1923] rounded-2xl p-5 text-white">
@@ -433,7 +433,7 @@ function MetricsPanel({
 function MetricTile({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="bg-gray-50 rounded-xl p-3">
-      <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{label}</div>
+      <div className="text-[10px] text-gray-600 uppercase tracking-wider mb-1">{label}</div>
       <div className="text-base font-bold" style={{ color: color || '#1A2F3F' }}>{value}</div>
     </div>
   );
@@ -463,9 +463,9 @@ function Slider({
 function FinKV({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
     <div>
-      <div className="text-[10px] text-gray-400 uppercase tracking-wider">{label}</div>
+      <div className="text-[10px] text-gray-600 uppercase tracking-wider">{label}</div>
       <div className="font-bold">{value}</div>
-      {note && <div className="text-[10px] text-gray-500">{note}</div>}
+      {note && <div className="text-[10px] text-gray-600">{note}</div>}
     </div>
   );
 }
@@ -474,7 +474,7 @@ function ProjTile({ label, value, highlight }: { label: string; value: string; h
   return (
     <div className={`rounded-xl p-4 text-center ${highlight ? 'bg-[#0F1923] text-white' : 'bg-gray-50'}`}>
       <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#1A2F3F]'}`}>{value}</div>
-      <div className={`text-xs mt-1 ${highlight ? 'text-gray-400' : 'text-gray-500'}`}>{label}</div>
+      <div className={`text-xs mt-1 ${highlight ? 'text-gray-600' : 'text-gray-600'}`}>{label}</div>
     </div>
   );
 }
@@ -489,7 +489,7 @@ function CashflowTable({
         <div className="text-sm font-bold text-[#2C2C2C]">
           {t('annualCashflow')}
         </div>
-        <div className="text-[10px] text-gray-500">
+        <div className="text-[10px] text-gray-600">
           {t('cashflowExplanation')}
         </div>
       </div>
@@ -497,13 +497,13 @@ function CashflowTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-white">
-              <th className="px-3 py-2 text-left text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+              <th className="px-3 py-2 text-left text-[10px] uppercase tracking-wider text-gray-600 font-semibold">
                 {t('yearLabel')}
               </th>
-              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-600 font-semibold">
                 {t('cashflowLabel')}
               </th>
-              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-500 font-semibold">
+              <th className="px-3 py-2 text-right text-[10px] uppercase tracking-wider text-gray-600 font-semibold">
                 {t('cumulative')}
               </th>
             </tr>

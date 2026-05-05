@@ -24,7 +24,7 @@ export const VAC = {
   EXPENSE_RATIO: 0.35,      // limpieza, amenidades, consumibles
   PLATFORM_FEE: 0.03,       // comisión Airbnb host
   MGMT_FEE: 0.15,           // administrador de propiedad
-  DEFAULT_OCCUPANCY: 0.70,   // fallback sin datos AirDNA
+  DEFAULT_OCCUPANCY: 0.70,   // fallback sin datos de mercado
   get TOTAL_COST_RATIO() { return this.EXPENSE_RATIO + this.PLATFORM_FEE + this.MGMT_FEE; }, // 0.53
 } as const;
 
@@ -33,8 +33,8 @@ export const RES = {
   OCCUPANCY: 0.95,           // ~11.4 meses/año ocupado
 } as const;
 
-// ── AirDNA market mapping ──
-export const CITY_TO_AIRDNA: Record<string, string> = {
+// ── Market data mapping ──
+export const CITY_TO_MARKET_CODE: Record<string, string> = {
   'Cancun': 'cancun',
   'Playa del Carmen': 'playa_del_carmen',
   'Tulum': 'tulum',
@@ -60,8 +60,8 @@ export const CITY_TO_AIRDNA: Record<string, string> = {
   'Jose Maria Morelos': 'jose_maria_morelos',
 };
 
-// AirDNA submarket → canonical zone mapping
-export const AIRDNA_SUBMARKET_TO_ZONE: Record<string, string> = {
+// Market submarket → canonical zone mapping
+export const MARKET_SUBMARKET_TO_ZONE: Record<string, string> = {
   // Cancún
   'smz_4': 'Zona Hotelera',
   'sm_2a': 'Puerto Cancún',
@@ -117,10 +117,10 @@ export const AIRDNA_SUBMARKET_TO_ZONE: Record<string, string> = {
 };
 
 // Reverse: canonical zone → submarket codes
-export const ZONE_TO_AIRDNA_SUBMARKETS: Record<string, string[]> = {};
-for (const [sub, zone] of Object.entries(AIRDNA_SUBMARKET_TO_ZONE)) {
-  if (!ZONE_TO_AIRDNA_SUBMARKETS[zone]) ZONE_TO_AIRDNA_SUBMARKETS[zone] = [];
-  ZONE_TO_AIRDNA_SUBMARKETS[zone].push(sub);
+export const ZONE_TO_MARKET_SUBMARKETS: Record<string, string[]> = {};
+for (const [sub, zone] of Object.entries(MARKET_SUBMARKET_TO_ZONE)) {
+  if (!ZONE_TO_MARKET_SUBMARKETS[zone]) ZONE_TO_MARKET_SUBMARKETS[zone] = [];
+  ZONE_TO_MARKET_SUBMARKETS[zone].push(sub);
 }
 
 // ── RevPAR & Seasonal Returns ──

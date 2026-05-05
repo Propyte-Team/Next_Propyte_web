@@ -11,7 +11,7 @@ export default function JoinTeamBanner() {
         <h2 className="text-2xl md:text-3xl font-semibold text-[#1A2F3F] mb-6">{t('title')}</h2>
         <Link
           href={`/${locale}/unete`}
-          className="inline-flex items-center h-12 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-semibold rounded-[8px] transition-colors"
+          className="inline-flex items-center h-12 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-semibold rounded-[8px] transition-colors"
         >
           {t('cta')}
         </Link>

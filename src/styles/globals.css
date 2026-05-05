@@ -27,9 +27,73 @@
   /* Shadows — calca WP (2-layer) */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-card-hover: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  /* ─── Design Playground tokens (consumidos por Tailwind + components) ─── */
+
+  /* Roles semánticos */
+  --color-background: #FFFFFF;
+  --color-foreground: #2C2C2C;
+  --color-muted: #F4F6F8;
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  /* Tipografía */
+  --font-heading: "Space Grotesk", Inter, Arial, sans-serif;
+  --font-body: "Space Grotesk", Inter, Arial, sans-serif;
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-base: 16px;
+  --fs-lg: 18px;
+  --fs-xl: 22px;
+  --fs-2xl: 28px;
+  --fs-3xl: 36px;
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --lh-tight: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.75;
+  --ls-tight: -0.02em;
+  --ls-normal: 0em;
+  --ls-wide: 0.05em;
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-px: 24px;
+  --grid-gap: 24px;
+
+  /* Radii semánticos */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows semánticos */
+  --shadow-sm: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0px 10px 25px 0px rgba(0, 0, 0, 0.1), 0px 4px 10px 0px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0px 20px 40px 0px rgba(0, 0, 0, 0.15);
+
+  /* Section margins */
+  --section-hero-pt: 80px;
+  --section-hero-pb: 80px;
+  --section-content-pt: 64px;
+  --section-content-pb: 64px;
+  --section-footer-pt: 48px;
+  --section-footer-pb: 48px;
+
+  /* Media */
+  --media-aspect-card: 4/3;
+  --media-aspect-hero: 16/9;
+  --media-aspect-square: 1/1;
+  --media-aspect-portrait: 3/4;
+  --media-object-fit: cover;
+  --media-image-radius: 12px;
+  --media-card-image-height: 220px;
 }
 
-@theme inline {
+@theme {
   --color-teal: #5CE0D2;
   --color-teal-dark: #4BCEC0;
   --color-teal-a11y: #0D9488;

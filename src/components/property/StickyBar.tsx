@@ -34,7 +34,7 @@ export default function StickyBar({ property }: StickyBarProps) {
         {/* Left: price + specs */}
         <div className="flex items-center gap-6">
           <span className="text-lg font-bold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</span>
-          <div className="flex items-center gap-3 text-sm text-gray-500">
+          <div className="flex items-center gap-3 text-sm text-gray-600">
             {property.specs.bedrooms > 0 && (
               <span className="flex items-center gap-1">
                 <Bed size={14} /> {property.specs.bedrooms}
@@ -49,7 +49,7 @@ export default function StickyBar({ property }: StickyBarProps) {
               <Maximize size={14} /> {property.specs.area} m²
             </span>
           </div>
-          <span className="text-sm text-gray-400 truncate max-w-[300px]">
+          <span className="text-sm text-gray-600 truncate max-w-[300px]">
             {property.location.zone}, {property.location.city}
           </span>
         </div>
@@ -65,7 +65,7 @@ export default function StickyBar({ property }: StickyBarProps) {
             <MessageCircle size={14} />
             WhatsApp
           </a>
-          <button className="flex items-center gap-1.5 h-9 px-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white text-sm font-bold rounded-lg transition-colors">
+          <button className="flex items-center gap-1.5 h-9 px-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold rounded-lg transition-colors">
             <Calendar size={14} />
             {t('scheduleVisit')}
           </button>

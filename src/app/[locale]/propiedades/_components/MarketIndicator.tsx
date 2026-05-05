@@ -1,6 +1,6 @@
 import { TrendingUp } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { CITY_TO_AIRDNA, calculatePriceToRentRatio } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, calculatePriceToRentRatio } from '@/lib/calculator';
 
 interface MarketIndicatorProps {
   city: string;
@@ -13,10 +13,10 @@ interface MarketIndicatorProps {
 
 /**
  * 4-factor market score (0-100):
- *   1. Occupancy (AirDNA)       — 25 pts max
+ *   1. Occupancy (market data)   — 25 pts max
  *   2. Price-to-Rent ratio      — 25 pts max (lower = better, <15 = full)
  *   3. Cap rate                 — 25 pts max (higher = better, >=7% = full)
- *   4. Location coverage        — 25 pts (in AirDNA market = full, else 10)
+ *   4. Location coverage        — 25 pts (in market data = full, else 10)
  *
  * Grade: 80+ excellent / 60-79 good / 40-59 fair / <40 poor
  */
@@ -40,7 +40,7 @@ export default async function MarketIndicator({
   const capScore = cap == null ? 10 : cap >= 7 ? 25 : cap >= 5 ? 18 : cap >= 3 ? 12 : 6;
 
   // Factor 4: Location coverage
-  const locScore = CITY_TO_AIRDNA[city] ? 25 : 10;
+  const locScore = CITY_TO_MARKET_CODE[city] ? 25 : 10;
 
   const total = occScore + ptrScore + capScore + locScore;
 
@@ -48,7 +48,7 @@ export default async function MarketIndicator({
     total >= 80
       ? { label: t('excellent'), color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
       : total >= 60
-        ? { label: t('strong'), color: 'text-[#0D9488]', bg: 'bg-[#5CE0D2]/10 border-[#5CE0D2]/30' }
+        ? { label: t('strong'), color: 'text-[#0F766E]', bg: 'bg-[#5CE0D2]/10 border-[#5CE0D2]/30' }
         : total >= 40
           ? { label: t('fair'), color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' }
           : { label: t('weak'), color: 'text-red-600', bg: 'bg-red-50 border-red-200' };
@@ -74,7 +74,7 @@ export default async function MarketIndicator({
         <FactorBar label={t('marketCoverageFactor')} value={locScore} max={25} />
       </div>
 
-      <p className="text-[10px] text-gray-500 mt-3 leading-relaxed">{t('description')}</p>
+      <p className="text-[10px] text-gray-600 mt-3 leading-relaxed">{t('description')}</p>
     </div>
   );
 }

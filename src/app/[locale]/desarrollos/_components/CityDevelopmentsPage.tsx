@@ -89,12 +89,12 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         }}
       />
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4">
-        <nav className="flex items-center gap-1 text-xs text-gray-500 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#5CE0D2]">
+        <nav className="flex items-center gap-1 text-xs text-gray-600 mb-6">
+          <Link href={`/${locale}`} className="hover:text-[#0F766E]">
             {t('breadcrumbHome')}
           </Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#5CE0D2]">
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0F766E]">
             {t('breadcrumbDevelopments')}
           </Link>
           <ChevronRight size={12} />
@@ -111,17 +111,17 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         {count > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-[#5CE0D2]">{count}</div>
-              <div className="text-xs text-gray-500">{t('stat_developments')}</div>
+              <div className="text-2xl font-bold text-[#0F766E]">{count}</div>
+              <div className="text-xs text-gray-600">{t('stat_developments')}</div>
             </div>
             <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-[#5CE0D2]">{zones.length}</div>
-              <div className="text-xs text-gray-500">{t('stat_zones')}</div>
+              <div className="text-2xl font-bold text-[#0F766E]">{zones.length}</div>
+              <div className="text-xs text-gray-600">{t('stat_zones')}</div>
             </div>
             {minPrice > 0 && (
               <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center col-span-2">
-                <div className="text-lg font-bold text-[#5CE0D2]">{formatPrice(minPrice)}</div>
-                <div className="text-xs text-gray-500">{t('stat_startingFrom')}</div>
+                <div className="text-lg font-bold text-[#0F766E]">{formatPrice(minPrice)}</div>
+                <div className="text-xs text-gray-600">{t('stat_startingFrom')}</div>
               </div>
             )}
           </div>
@@ -173,16 +173,16 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
                   </div>
                 )}
                 <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 bg-[#5CE0D2] text-white text-xs font-bold rounded-full uppercase">
+                  <span className="px-2.5 py-1 bg-[#5CE0D2] text-[#0F1923] text-xs font-bold rounded-full uppercase">
                     {dev.stage === 'preventa' ? t('stagePresale') : t('stageConstruction')}
                   </span>
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-gray-900 group-hover:text-[#5CE0D2] transition-colors line-clamp-1">
+                <h3 className="font-bold text-gray-900 group-hover:text-[#0F766E] transition-colors line-clamp-1">
                   {dev.name}
                 </h3>
-                <div className="flex items-center gap-1 mt-1 text-sm text-gray-500">
+                <div className="flex items-center gap-1 mt-1 text-sm text-gray-600">
                   <MapPin size={14} />
                   <span>
                     {dev.zone !== dev.city ? `${dev.zone}, ` : ''}

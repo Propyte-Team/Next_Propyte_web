@@ -13,7 +13,7 @@ export function SupplyDemandIndicator({
 }: SupplyDemandIndicatorProps) {
   if (supplyDemandRatio == null) {
     return (
-      <div className="text-sm text-gray-400 text-center py-4">
+      <div className="text-sm text-gray-600 text-center py-4">
         Datos insuficientes
       </div>
     );
@@ -42,7 +42,7 @@ export function SupplyDemandIndicator({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-500">Oferta vs Demanda</h3>
+        <h3 className="text-sm font-medium text-gray-600">Oferta vs Demanda</h3>
         <span className={`text-sm font-semibold ${color}`}>{label}</span>
       </div>
 
@@ -58,7 +58,7 @@ export function SupplyDemandIndicator({
           }}
         />
       </div>
-      <div className="flex justify-between text-xs text-gray-400">
+      <div className="flex justify-between text-xs text-gray-600">
         <span>Exceso oferta</span>
         <span>Alta demanda</span>
       </div>
@@ -68,18 +68,18 @@ export function SupplyDemandIndicator({
         {activeListings != null && (
           <div className="flex-1 bg-gray-50 rounded-lg p-2">
             <div className="text-lg font-semibold text-gray-900">{activeListings.toLocaleString()}</div>
-            <div className="text-xs text-gray-500">Listings activos</div>
+            <div className="text-xs text-gray-600">Listings activos</div>
           </div>
         )}
         {occupancy != null && (
           <div className="flex-1 bg-gray-50 rounded-lg p-2">
             <div className="text-lg font-semibold text-gray-900">{Math.round(occupancy)}%</div>
-            <div className="text-xs text-gray-500">Ocupación</div>
+            <div className="text-xs text-gray-600">Ocupación</div>
           </div>
         )}
         <div className="flex-1 bg-gray-50 rounded-lg p-2">
           <div className="text-lg font-semibold text-gray-900">{supplyDemandRatio.toFixed(1)}</div>
-          <div className="text-xs text-gray-500">Ratio S/D</div>
+          <div className="text-xs text-gray-600">Ratio S/D</div>
         </div>
       </div>
     </div>

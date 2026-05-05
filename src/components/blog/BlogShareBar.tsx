@@ -29,7 +29,7 @@ export default function BlogShareBar({ title, url, shareLabel, copyLabel, copied
 
   return (
     <div className="mt-6 flex items-center gap-3">
-      <span className="text-sm text-gray-500">{shareLabel}</span>
+      <span className="text-sm text-gray-600">{shareLabel}</span>
       <a
         href={whatsappUrl}
         target="_blank"

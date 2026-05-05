@@ -16,9 +16,11 @@
  *   --container-px        → px
  *   --grid-gap            → px
  *   --section-*           → px
+ *   --media-*             → aspect-ratio, border-radius, heights
  */
 
 import type { ShadowLayer, ThemeTokens } from '@/types/design-tokens';
+
 
 function shadowLayersToString(layers: ShadowLayer[]): string {
   return layers
@@ -30,7 +32,7 @@ function shadowLayersToString(layers: ShadowLayer[]): string {
 }
 
 export function themeToCssVars(theme: ThemeTokens): Record<string, string> {
-  const { colors, typography, spacing, layout, radii, shadows, sectionMargins } = theme;
+  const { colors, typography, spacing, layout, radii, shadows, sectionMargins, media } = theme;
 
   return {
     // Colors canónicos
@@ -112,6 +114,15 @@ export function themeToCssVars(theme: ThemeTokens): Record<string, string> {
     '--section-content-pb': `${sectionMargins.contentPaddingBottom}px`,
     '--section-footer-pt': `${sectionMargins.footerPaddingTop}px`,
     '--section-footer-pb': `${sectionMargins.footerPaddingBottom}px`,
+
+    // Media
+    '--media-aspect-card': media.aspectRatioCard,
+    '--media-aspect-hero': media.aspectRatioHero,
+    '--media-aspect-square': media.aspectRatioSquare,
+    '--media-aspect-portrait': media.aspectRatioPortrait,
+    '--media-object-fit': media.imageObjectFit,
+    '--media-image-radius': `${media.imageBorderRadius}px`,
+    '--media-card-image-height': `${media.cardImageHeight}px`,
   };
 }
 

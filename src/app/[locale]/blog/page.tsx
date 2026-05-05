@@ -78,10 +78,10 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
         <section className="bg-white py-10">
           <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="flex items-center gap-3 mb-8">
-            <Link href={`/${locale}/blog`} className="text-sm text-gray-400 hover:text-[#5CE0D2] transition-colors">
+            <Link href={`/${locale}/blog`} className="text-sm text-gray-600 hover:text-[#0F766E] transition-colors">
               Blog
             </Link>
-            <span className="text-gray-300">/</span>
+            <span className="text-gray-600">/</span>
             <span className="text-sm font-medium text-[#1A2F3F]">{activeCategory}</span>
           </div>
 
@@ -149,12 +149,12 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colAsesores')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
-                  className="flex items-center gap-1 text-sm text-[#5CE0D2] font-medium hover:underline whitespace-nowrap"
+                  className="flex items-center gap-1 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="text-sm text-gray-500 mb-6">{t('colAsesoresSubtitle')}</p>
+              <p className="text-sm text-gray-600 mb-6">{t('colAsesoresSubtitle')}</p>
 
               {asesorResult.posts.length > 0 ? (
                 <div className="space-y-5">
@@ -164,18 +164,14 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   {asesorResult.posts.slice(1).map((post) => (
                     <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#5CE0D2] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#5CE0D2] transition-colors">{post.title}</p>
-                        <span className="text-xs text-gray-400 mt-1 block">{post.read_time_min} {t('minRead')}</span>
+                        <span className="text-xs text-[#0F766E] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0F766E] transition-colors">{post.title}</p>
+                        <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
                       </div>
                     </Link>
                   ))}
                 </div>
-              ) : (
-                <div className="rounded-xl border border-dashed border-gray-200 py-12 text-center text-gray-400 text-sm">
-                  {t('noPostsCol')}
-                </div>
-              )}
+              ) : null}
             </div>
 
             {/* Column: Para Inversionistas */}
@@ -184,12 +180,12 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colInversionistas')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
-                  className="flex items-center gap-1 text-sm text-[#5CE0D2] font-medium hover:underline whitespace-nowrap"
+                  className="flex items-center gap-1 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="text-sm text-gray-500 mb-6">{t('colInversionistasSubtitle')}</p>
+              <p className="text-sm text-gray-600 mb-6">{t('colInversionistasSubtitle')}</p>
 
               {invResult.posts.length > 0 ? (
                 <div className="space-y-5">
@@ -197,18 +193,14 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   {invResult.posts.slice(1).map((post) => (
                     <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#5CE0D2] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#5CE0D2] transition-colors">{post.title}</p>
-                        <span className="text-xs text-gray-400 mt-1 block">{post.read_time_min} {t('minRead')}</span>
+                        <span className="text-xs text-[#0F766E] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0F766E] transition-colors">{post.title}</p>
+                        <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
                       </div>
                     </Link>
                   ))}
                 </div>
-              ) : (
-                <div className="rounded-xl border border-dashed border-gray-200 py-12 text-center text-gray-400 text-sm">
-                  {t('noPostsCol')}
-                </div>
-              )}
+              ) : null}
             </div>
 
           </div>

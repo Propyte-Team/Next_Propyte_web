@@ -62,14 +62,14 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
   return (
     <>
       {/* Sticky search + letter nav (combined) */}
-      <div className="sticky top-[76px] lg:top-20 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <div className="sticky top-[108px] lg:top-20 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 space-y-3">
           {/* Search bar + Download PDF */}
           <div className="max-w-2xl mx-auto flex items-center gap-2">
             <div className="relative flex-1">
               <Search
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none"
                 aria-hidden="true"
               />
               <input
@@ -78,7 +78,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={labels.searchPlaceholder}
                 aria-label={labels.searchAriaLabel}
-                className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-400 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-600 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
               />
             </div>
             <button
@@ -96,7 +96,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
           {/* Counter (only while searching) */}
           {isSearching && (
             <p
-              className="text-center text-xs font-semibold text-gray-500 tabular-nums"
+              className="text-center text-xs font-semibold text-gray-600 tabular-nums"
               role="status"
             >
               {counterLabel}
@@ -120,7 +120,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                   </a>
                 ))
               ) : (
-                <span className="text-sm text-gray-500" role="status">
+                <span className="text-sm text-gray-600" role="status">
                   {labels.noResults}
                 </span>
               )}
@@ -137,7 +137,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
           <div className="max-w-3xl mx-auto space-y-10">
             {letters.map((letter) => (
               <div key={letter} id={`letter-${letter}`}>
-                <h2 className="text-3xl font-bold text-[#0D9488] mb-4 border-b border-gray-100 pb-2">
+                <h2 className="text-3xl font-bold text-[#0F766E] mb-4 border-b border-gray-100 pb-2">
                   {letter}
                 </h2>
                 <dl className="space-y-4">
@@ -152,7 +152,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                         {term.link && (
                           <Link
                             href={`/${locale}${term.link}`}
-                            className="ml-2 text-[#0D9488] hover:underline text-xs font-semibold"
+                            className="ml-2 text-[#0F766E] hover:underline text-xs font-semibold"
                           >
                             {labels.learnMore}
                           </Link>

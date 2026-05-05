@@ -133,7 +133,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
   return (
     <div className="space-y-6">
       {/* Data source & freshness */}
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-gray-600 text-center">
         {t('dataSource')}{latestDate ? t('dataSourceUpdated', { date: latestDate }) : ''}
       </p>
 
@@ -141,7 +141,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       <div className="flex flex-wrap gap-3 items-center">
         {/* City selector */}
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
-          <MapPin className="w-4 h-4 text-gray-400" />
+          <MapPin className="w-4 h-4 text-gray-600" />
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
@@ -166,7 +166,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
 
         {/* Search */}
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-gray-400" />
+          <Search className="w-4 h-4 text-gray-600" />
           <input
             type="text"
             value={search}
@@ -221,19 +221,19 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.zones}</div>
-            <div className="text-xs text-gray-500">{t('statZones')}</div>
+            <div className="text-xs text-gray-600">{t('statZones')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-teal-700">{cityStats.avgScore}/100</div>
-            <div className="text-xs text-gray-500">{t('statAvgIndex')}</div>
+            <div className="text-xs text-gray-600">{t('statAvgIndex')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.avgOcc}%</div>
-            <div className="text-xs text-gray-500">{t('statAvgOccupancy')}</div>
+            <div className="text-xs text-gray-600">{t('statAvgOccupancy')}</div>
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
             <div className="text-2xl font-bold text-gray-900">{cityStats.totalListings.toLocaleString()}</div>
-            <div className="text-xs text-gray-500">{t('statActiveProperties')}</div>
+            <div className="text-xs text-gray-600">{t('statActiveProperties')}</div>
           </div>
         </div>
       )}
@@ -254,14 +254,14 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
           })}
         </div>
       ) : (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-gray-600">
           <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
           <p className="text-lg">{t('noZonesFound')}</p>
         </div>
       )}
 
       {/* Results count */}
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-gray-600 text-center">
         {t('showingOf', { visible: filtered.length, total: scores.length })}
       </p>
     </div>

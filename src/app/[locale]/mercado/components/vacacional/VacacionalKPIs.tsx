@@ -25,7 +25,7 @@ export function VacacionalKPIs({ zones, avgIndex, avgOccupancy, totalListings }:
     return (
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
         <p className="text-sm font-semibold text-gray-700">{t('kpiNoData')}</p>
-        <p className="text-xs text-gray-500 mt-1">{t('kpiSelectCity')}</p>
+        <p className="text-xs text-gray-600 mt-1">{t('kpiSelectCity')}</p>
       </div>
     );
   }
@@ -37,9 +37,9 @@ export function VacacionalKPIs({ zones, avgIndex, avgOccupancy, totalListings }:
           key={label}
           className="bg-white border border-gray-200 rounded-lg p-4 text-center"
         >
-          <Icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+          <Icon className="w-4 h-4 text-gray-600 mx-auto mb-1" />
           <div className={`text-2xl font-mono font-bold ${color}`}>{value}</div>
-          <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+          <div className="text-xs text-gray-600 mt-0.5">{label}</div>
         </div>
       ))}
     </div>

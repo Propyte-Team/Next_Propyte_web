@@ -46,7 +46,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div className="p-4">
           <h3 className="font-semibold text-[#2C2C2C] text-base mb-1 line-clamp-1">{property.name}</h3>
 
-          <div className="flex items-center gap-1 text-sm text-gray-500 mb-3">
+          <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
             <MapPin size={14} />
             <span>{property.location.zone}, {property.location.city}</span>
           </div>
@@ -81,7 +81,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {property.roi.projected > 0 && (
-              <span className="text-sm font-medium text-[#0D9488]">
+              <span className="text-sm font-medium text-[#0F766E]">
                 ROI {property.roi.projected}%
               </span>
             )}
@@ -91,7 +91,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               </span>
             )}
             {property.annualRevenue != null && property.annualRevenue > 0 && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-600">
                 ${(property.annualRevenue / 1000).toFixed(0)}K/{locale === 'es' ? 'año' : 'yr'}
               </span>
             )}

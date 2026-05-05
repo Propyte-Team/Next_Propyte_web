@@ -18,7 +18,7 @@ export default function B2BValueProp() {
           {values.map((val, i) => (
             <div key={i} className="p-6 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 mb-4 bg-[#5CE0D2]/10 rounded-lg flex items-center justify-center">
-                <val.icon size={24} className="text-[#5CE0D2]" />
+                <val.icon size={24} className="text-[#0F766E]" />
               </div>
               <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{val.title}</h3>
               <p className="text-sm text-gray-600 leading-relaxed">{val.desc}</p>

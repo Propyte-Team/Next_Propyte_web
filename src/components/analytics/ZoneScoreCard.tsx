@@ -18,15 +18,15 @@ function IndexBadge({ value }: { value: number }) {
   const colors =
     value >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
     value >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' :
-    'bg-gray-50 text-gray-500 border-gray-200';
+    'bg-gray-50 text-gray-600 border-gray-200';
 
   return (
     <div className="flex items-center gap-2">
-      <span className={`text-3xl font-bold ${value >= 70 ? 'text-emerald-600' : value >= 50 ? 'text-amber-600' : 'text-gray-400'}`}>
+      <span className={`text-3xl font-bold ${value >= 70 ? 'text-emerald-600' : value >= 50 ? 'text-amber-600' : 'text-gray-600'}`}>
         {Math.round(value)}
       </span>
       <div className="flex flex-col">
-        <span className="text-[10px] text-gray-400 uppercase tracking-wide leading-tight">Índice Propyte</span>
+        <span className="text-[10px] text-gray-600 uppercase tracking-wide leading-tight">Índice Propyte</span>
         <span className={`text-xs font-medium px-1.5 py-0.5 rounded border ${colors}`}>
           {label}
         </span>
@@ -46,11 +46,11 @@ function MetricRow({ label, value, context, trend }: {
 
   return (
     <div className="flex items-center justify-between py-1.5">
-      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs text-gray-600">{label}</span>
       <div className="flex items-center gap-1.5">
         <span className="text-sm font-semibold text-gray-900">{value}</span>
         {trend && <TrendIcon className={`w-3.5 h-3.5 ${trendColor}`} />}
-        {context && <span className="text-[10px] text-gray-400">{context}</span>}
+        {context && <span className="text-[10px] text-gray-600">{context}</span>}
       </div>
     </div>
   );
@@ -75,7 +75,7 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 truncate">{score.zone}</h3>
-          <p className="text-xs text-gray-400">{score.city}</p>
+          <p className="text-xs text-gray-600">{score.city}</p>
         </div>
         <IndexBadge value={score.score ?? 0} />
       </div>

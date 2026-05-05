@@ -47,7 +47,7 @@ export default async function ZonasPage({ params }: { params: Promise<{ locale: 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <nav className="text-sm text-gray-500 mb-6">
+        <nav className="text-sm text-gray-600 mb-6">
           <a href={`/${locale}`} className="hover:text-gray-700">
             {t('breadcrumbHome')}
           </a>
@@ -57,7 +57,7 @@ export default async function ZonasPage({ params }: { params: Promise<{ locale: 
 
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{t('h1')}</h1>
-          <p className="text-lg text-gray-500 mt-1">{t('subtitle')}</p>
+          <p className="text-lg text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
 
         <ZonasExplorer

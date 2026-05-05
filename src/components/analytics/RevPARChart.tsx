@@ -42,7 +42,7 @@ export function RevPARChart({
 
   if (data.length === 0) {
     return (
-      <div className="text-sm text-gray-400 text-center py-8">
+      <div className="text-sm text-gray-600 text-center py-8">
         No hay datos suficientes para calcular RevPAR
       </div>
     );
@@ -51,7 +51,7 @@ export function RevPARChart({
   return (
     <div>
       {title && (
-        <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
+        <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
       )}
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>

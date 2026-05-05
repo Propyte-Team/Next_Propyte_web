@@ -171,7 +171,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={tMkt('closeModal')}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-[#1A2F3F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 hover:text-[#1A2F3F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
               >
                 <X size={18} />
               </button>
@@ -181,14 +181,14 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
               <table className="w-full text-sm">
                 <thead className="sticky top-0 bg-gray-50 z-10">
                   <tr>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3 w-32">
+                    <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-4 py-3 w-32">
                       {tMkt('compareSpec')}
                     </th>
                     {selected.map((p) => (
                       <th key={p.id} className="text-left px-4 py-3 min-w-[180px]">
                         <Link
                           href={`/${locale}/${detailBase(p)}/${p.slug}`}
-                          className="block hover:text-[#0D9488]"
+                          className="block hover:text-[#0F766E]"
                         >
                           {p.images[0] && (
                             <div className="relative aspect-[16/10] w-full mb-2 rounded-lg overflow-hidden bg-gray-100">
@@ -196,7 +196,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                             </div>
                           )}
                           <div className="font-bold text-[#1A2F3F] line-clamp-2">{p.name}</div>
-                          <div className="text-xs text-gray-500 mt-0.5">{p.location.city}</div>
+                          <div className="text-xs text-gray-600 mt-0.5">{p.location.city}</div>
                         </Link>
                       </th>
                     ))}
@@ -204,7 +204,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('comparePrice')}
                     </td>
                     {selected.map((p) => (
@@ -214,7 +214,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('compareArea')}
                     </td>
                     {selected.map((p) => (
@@ -224,7 +224,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('compareRoi')}
                     </td>
                     {selected.map((p) => (
@@ -234,7 +234,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('compareCapRate')}
                     </td>
                     {selected.map((p) => (
@@ -244,7 +244,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('compareStage')}
                     </td>
                     {selected.map((p) => (
@@ -254,7 +254,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                   <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-500 text-xs uppercase">
+                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
                       {tMkt('compareDeveloper')}
                     </td>
                     {selected.map((p) => (

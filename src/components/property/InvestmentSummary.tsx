@@ -231,7 +231,7 @@ export default async function InvestmentSummary({
         <h2 className="text-xl font-semibold text-[#2C2C2C]">
           {showDual ? t('residentialVsVacation') : t('investmentAnalysis')}
         </h2>
-        <span className="px-2 py-0.5 bg-[#5CE0D2]/15 text-[#5CE0D2] text-xs font-medium rounded-full">
+        <span className="px-2 py-0.5 bg-[#0F766E]/15 text-[#0F766E] text-xs font-medium rounded-full">
           {res ? t('comparablesBased') : t('mlEstimated')}
         </span>
       </div>
@@ -240,11 +240,11 @@ export default async function InvestmentSummary({
       {canCompute && (
         <div className="mb-6 p-4 bg-white rounded-xl border border-gray-100 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{t('propertyPrice')}</span>
+            <span className="text-gray-600">{t('propertyPrice')}</span>
             <span className="font-medium">{formatPrice(price)}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-500">{t('closingCosts')} ({Math.round(closingRate * 100)}%)</span>
+            <span className="text-gray-600">{t('closingCosts')} ({Math.round(closingRate * 100)}%)</span>
             <span className="font-medium">{formatPrice(closingCosts)}</span>
           </div>
           <div className="flex justify-between text-sm border-t border-gray-100 pt-2">
@@ -270,7 +270,7 @@ export default async function InvestmentSummary({
                   <span className="inline-flex items-center gap-1.5">
                     {t('vacacional')}
                     {airdnaOccupancy != null && (
-                      <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] rounded">AirDNA</span>
+                      <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] rounded">Data</span>
                     )}
                   </span>
                 </th>
@@ -280,12 +280,12 @@ export default async function InvestmentSummary({
           <tbody>
             {rows.map((row, i) => (
               <tr key={row.label} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                <td className="px-4 py-2.5 text-gray-500">{row.label}</td>
-                <td className="px-4 py-2.5 text-right font-bold" style={row.resColor ? { color: row.resColor } : { color: '#5CE0D2' }}>
+                <td className="px-4 py-2.5 text-gray-600">{row.label}</td>
+                <td className="px-4 py-2.5 text-right font-bold" style={row.resColor ? { color: row.resColor } : { color: '#0F766E' }}>
                   {row.resValue}
                 </td>
                 {showDual && (
-                  <td className="px-4 py-2.5 text-right font-bold" style={row.vacColor ? { color: row.vacColor } : { color: '#5CE0D2' }}>
+                  <td className="px-4 py-2.5 text-right font-bold" style={row.vacColor ? { color: row.vacColor } : { color: '#0F766E' }}>
                     {row.vacValue || '—'}
                   </td>
                 )}
@@ -297,20 +297,20 @@ export default async function InvestmentSummary({
 
       {/* Vacation expense note */}
       {showDual && (
-        <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-gray-400">
+        <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-gray-600">
           <span>Residencial: gastos {Math.round(RES.EXPENSE_RATIO * 100)}%</span>
           <span>|</span>
           <span>Vacacional: gastos {Math.round(VAC.EXPENSE_RATIO * 100)}% + Airbnb {Math.round(VAC.PLATFORM_FEE * 100)}% + mgmt {Math.round(VAC.MGMT_FEE * 100)}%</span>
           {airdnaOccupancy != null && (
             <>
               <span>|</span>
-              <span className="text-[#5CE0D2]">Ocupación {Math.round(airdnaOccupancy)}% (AirDNA)</span>
+              <span className="text-[#0F766E]">Ocupación {Math.round(airdnaOccupancy)}% (mercado)</span>
             </>
           )}
         </div>
       )}
 
-      <p className="mt-4 text-xs text-gray-400">
+      <p className="mt-4 text-xs text-gray-600">
         {res
           ? t('marketAnalysis', { rate: Math.round(closingRate * 100), state: state || '' })
           : t('mlDisclaimer')

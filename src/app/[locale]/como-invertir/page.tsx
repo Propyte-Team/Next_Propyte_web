@@ -132,21 +132,21 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
               return (
                 <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                    <Icon size={24} className="text-[#0D9488]" />
+                    <Icon size={24} className="text-[#0F766E]" />
                   </div>
                   <h3 className="text-lg font-bold text-[#1A2F3F] mb-3">{s.title}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed mb-4">{s.desc}</p>
                   <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-100">
                     <div>
-                      <div className="text-xs text-gray-400 uppercase">{t('roiLabel')}</div>
-                      <div className="text-sm font-bold text-[#0D9488]">{s.roi}</div>
+                      <div className="text-xs text-gray-600 uppercase">{t('roiLabel')}</div>
+                      <div className="text-sm font-bold text-[#0F766E]">{s.roi}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-400 uppercase">{t('horizonLabel')}</div>
+                      <div className="text-xs text-gray-600 uppercase">{t('horizonLabel')}</div>
                       <div className="text-sm font-bold text-gray-700">{s.horizon}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-gray-400 uppercase">{t('riskLabel')}</div>
+                      <div className="text-xs text-gray-600 uppercase">{t('riskLabel')}</div>
                       <div className="text-sm font-bold text-gray-700">{s.risk}</div>
                     </div>
                   </div>
@@ -166,7 +166,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
           <div className="overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full text-sm bg-white">
               <thead>
-                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <th className="px-4 py-3">{t('stageColStage')}</th>
                   <th className="px-4 py-3 text-center">{t('stageColDiscount')}</th>
                   <th className="px-4 py-3 text-center">{t('stageColRisk')}</th>
@@ -178,7 +178,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
                 {stages.map((row) => (
                   <tr key={row.stage} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{row.stage}</td>
-                    <td className="px-4 py-3 text-center font-bold text-[#0D9488]">{row.discount}</td>
+                    <td className="px-4 py-3 text-center font-bold text-[#0F766E]">{row.discount}</td>
                     <td className="px-4 py-3 text-center">{row.risk}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{row.delivery}</td>
                     <td className="px-4 py-3 text-gray-600">{row.ideal}</td>
@@ -205,10 +205,10 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
               return (
                 <div key={m.title} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="w-10 h-10 bg-[#5CE0D2]/10 rounded-lg flex items-center justify-center mb-3">
-                    <Icon size={20} className="text-[#0D9488]" />
+                    <Icon size={20} className="text-[#0F766E]" />
                   </div>
                   <h3 className="font-bold text-[#1A2F3F] mb-2">{m.title}</h3>
-                  <p className="text-xs text-gray-500 leading-relaxed">{m.desc}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed">{m.desc}</p>
                 </div>
               );
             })}

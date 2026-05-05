@@ -36,7 +36,7 @@ export default async function MarketSentiment({ indicators, locale }: MarketSent
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-base font-bold text-gray-900">{t('marketSentiment')}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">{t('marketSentimentSubtitle')}</p>
+          <p className="text-xs text-gray-600 mt-0.5">{t('marketSentimentSubtitle')}</p>
         </div>
         <OverallBadge direction={overall} labels={labels} />
       </div>
@@ -62,9 +62,9 @@ function SentimentCard({ indicator, labels }: { indicator: SentimentIndicator; l
           {label}
         </span>
       </div>
-      <div className="text-xs font-semibold text-gray-500 mb-1">{indicator.label}</div>
+      <div className="text-xs font-semibold text-gray-600 mb-1">{indicator.label}</div>
       <div className="text-lg font-bold text-gray-900">{indicator.value}</div>
-      <p className="text-[11px] text-gray-500 leading-snug mt-2">{indicator.rationale}</p>
+      <p className="text-[11px] text-gray-600 leading-snug mt-2">{indicator.rationale}</p>
     </div>
   );
 }

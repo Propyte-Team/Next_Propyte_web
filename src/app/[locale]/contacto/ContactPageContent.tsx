@@ -126,7 +126,7 @@ export default function ContactPageContent() {
               <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-2">
                 {t('formHeading')}
               </h2>
-              <p className="text-gray-500 mb-6">{t('formIntro')}</p>
+              <p className="text-gray-600 mb-6">{t('formIntro')}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -199,7 +199,7 @@ export default function ContactPageContent() {
               </div>
 
               {status === 'sent' ? (
-                <div className="mt-6 flex items-center gap-3 bg-[#5CE0D2]/10 border border-[#5CE0D2]/30 text-[#0D9488] rounded-lg px-4 py-3">
+                <div className="mt-6 flex items-center gap-3 bg-[#5CE0D2]/10 border border-[#5CE0D2]/30 text-[#0F766E] rounded-lg px-4 py-3">
                   <CheckCircle2 size={20} strokeWidth={2} />
                   <span className="text-sm font-medium">{tCommon('sent')}</span>
                 </div>
@@ -230,24 +230,24 @@ export default function ContactPageContent() {
               <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
-                    <MapPin size={18} className="text-[#0D9488]" strokeWidth={2} />
+                    <MapPin size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.coverageTitle')}</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
+                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
-                    <Users size={18} className="text-[#0D9488]" strokeWidth={2} />
+                    <Users size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.teamTitle')}</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
+                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
-                    <ShieldCheck size={18} className="text-[#0D9488]" strokeWidth={2} />
+                    <ShieldCheck size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.slaTitle')}</p>
-                  <p className="text-[10px] text-gray-500 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
+                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
                 </div>
               </div>
             </form>
@@ -259,7 +259,7 @@ export default function ContactPageContent() {
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0">
-                    <MapPin size={18} strokeWidth={2} className="text-[#0D9488]" />
+                    <MapPin size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.address')}</p>
@@ -272,7 +272,7 @@ export default function ContactPageContent() {
                   className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-[#5CE0D2]/10 rounded-xl transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0 group-hover:bg-[#5CE0D2]/25 transition-colors">
-                    <Phone size={18} strokeWidth={2} className="text-[#0D9488]" />
+                    <Phone size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.phone')}</p>
@@ -285,7 +285,7 @@ export default function ContactPageContent() {
                   className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-[#5CE0D2]/10 rounded-xl transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0 group-hover:bg-[#5CE0D2]/25 transition-colors">
-                    <Mail size={18} strokeWidth={2} className="text-[#0D9488]" />
+                    <Mail size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.email')}</p>
@@ -295,7 +295,7 @@ export default function ContactPageContent() {
 
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0">
-                    <Clock size={18} strokeWidth={2} className="text-[#0D9488]" />
+                    <Clock size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.hours')}</p>
@@ -313,7 +313,7 @@ export default function ContactPageContent() {
                 <MessageCircle size={20} strokeWidth={2} />
                 {t('whatsappCta')}
               </a>
-              <p className="text-center text-xs text-gray-500 -mt-2">
+              <p className="text-center text-xs text-gray-600 -mt-2">
                 {t('whatsappResponseTime')}
               </p>
 
@@ -328,17 +328,7 @@ export default function ContactPageContent() {
                   <Calendar size={18} strokeWidth={2} />
                   {t('calendlyCta')}
                 </a>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  title={t('calendlySoon')}
-                  className="flex items-center justify-center gap-2 w-full h-12 bg-gray-100 text-gray-400 font-semibold rounded-lg cursor-not-allowed"
-                >
-                  <Calendar size={18} strokeWidth={2} />
-                  {t('calendlySoon')}
-                </button>
-              )}
+              ) : null}
 
               {/* Google Maps embed */}
               <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">

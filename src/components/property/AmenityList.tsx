@@ -77,7 +77,7 @@ export default async function AmenityList({ locale, amenities, title }: AmenityL
               key={a.key}
               className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100"
             >
-              <Icon size={18} className="text-[#5CE0D2] shrink-0" />
+              <Icon size={18} className="text-[#0F766E] shrink-0" />
               <span className="text-sm text-gray-700 font-medium truncate">{a.label}</span>
             </div>
           );

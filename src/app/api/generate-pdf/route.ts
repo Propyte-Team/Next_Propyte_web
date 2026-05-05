@@ -13,7 +13,7 @@ import {
 import { getMockUnit } from '@/lib/mocks/unit-fixtures';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import {
-  CITY_TO_AIRDNA,
+  CITY_TO_MARKET_CODE,
   calculateIRR,
   buildCashflows,
   calculateRemainingBalanceActuarial,
@@ -128,7 +128,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
   // Rental estimate
   let estRent: number | null = null;
   try {
-    const airdnaMarket = CITY_TO_AIRDNA[property.location.city] || '';
+    const airdnaMarket = CITY_TO_MARKET_CODE[property.location.city] || '';
     const [res, airdna] = await Promise.all([
       getRentalEstimate(supabase, property.location.city, property.specs.type, property.specs.bedrooms, property.location.zone, 'residencial'),
       airdnaMarket ? supabase.schema('investment_analytics' as 'public').from('airdna_metrics').select('current_occupancy').eq('market', airdnaMarket).maybeSingle() : Promise.resolve({ data: null }),

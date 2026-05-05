@@ -36,7 +36,7 @@ export function TabBar({ activeTab, locale }: TabBarProps) {
               className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === id
                   ? 'text-[#1A2F3F] border-[#5CE0D2]'
-                  : 'text-gray-400 border-transparent hover:text-gray-600'
+                  : 'text-gray-600 border-transparent hover:text-[#1A2F3F]'
               }`}
             >
               <Icon className="w-4 h-4" />

@@ -40,7 +40,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
   return (
     <div className="bg-gradient-to-b from-[#F4F6F8] to-white pt-10 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <span className="inline-block bg-[#5CE0D2]/10 text-[#0D7A72] text-xs font-semibold px-4 py-1 rounded-full mb-4">
+        <span className="inline-block bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-semibold px-4 py-1 rounded-full mb-4">
           {t('badge')}
         </span>
 
@@ -53,7 +53,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
             {trustItems.map((item, i) => (
               <div key={i} className="text-center">
                 <div className="text-2xl font-bold text-[#1A2F3F] font-mono">{item.value}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-wider">{item.label}</div>
+                <div className="text-xs text-gray-600 uppercase tracking-wider">{item.label}</div>
               </div>
             ))}
           </div>

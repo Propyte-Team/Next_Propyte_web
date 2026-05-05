@@ -36,7 +36,7 @@ export default function AppDownloadBanner() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link
                   href={`/${locale}/propiedades#simulador`}
-                  className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-[8px] transition-colors text-sm"
+                  className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-[8px] transition-colors text-sm"
                 >
                   <Calculator size={18} strokeWidth={1.75} />
                   {t('ctaPrimary')}

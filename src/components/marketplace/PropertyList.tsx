@@ -20,7 +20,7 @@ export default function PropertyList({ properties, sortBy, onSortChange }: Prope
           {t('results', { count: properties.length })}
         </span>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">{t('sortBy')}:</span>
+          <span className="text-xs text-gray-600">{t('sortBy')}:</span>
           <select
             value={sortBy}
             onChange={e => onSortChange(e.target.value as 'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date')}
@@ -39,8 +39,8 @@ export default function PropertyList({ properties, sortBy, onSortChange }: Prope
       <div className="flex-1 overflow-y-auto">
         {properties.length === 0 ? (
           <div className="text-center py-16">
-            <p className="text-gray-500 font-semibold text-lg">{t('noResults')}</p>
-            <p className="text-sm text-gray-400 mt-2">{t('noResultsSuggestion')}</p>
+            <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>
+            <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">

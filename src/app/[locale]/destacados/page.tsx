@@ -231,7 +231,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       <h3 className="font-semibold text-[#1A2F3F] text-sm mb-1 line-clamp-1">
                         {dev.name}
                       </h3>
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <div className="flex items-center gap-1 text-xs text-gray-600">
                         <MapPin size={12} />
                         <span>
                           {dev.zone ? `${dev.zone}, ` : ''}
@@ -240,13 +240,13 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       </div>
 
                       {dev.roi_estimated != null && dev.roi_estimated > 0 && (
-                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#0D9488] text-xs font-bold rounded-full self-start">
+                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-bold rounded-full self-start">
                           {t('roiBadge')} {dev.roi_estimated}%
                         </div>
                       )}
 
                       <div className="mt-auto pt-4">
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0D9488] group-hover:underline">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0F766E] group-hover:underline">
                           {t('viewProperty')} <ArrowRight size={12} />
                         </span>
                       </div>

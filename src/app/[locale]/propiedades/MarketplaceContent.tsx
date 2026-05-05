@@ -35,7 +35,7 @@ export default function MarketplaceContent({
       {/* SEO heading — visible al top */}
       <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
         <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t(titleKey)}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t(subtitleKey)}</p>
+        <p className="text-sm text-gray-600 mt-1">{t(subtitleKey)}</p>
       </div>
 
       <FilterBar
@@ -51,13 +51,13 @@ export default function MarketplaceContent({
         <div className="flex border-b bg-white">
           <button
             onClick={() => setMobileView('map')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#5CE0D2] border-b-2 border-[#5CE0D2]' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
           >
             <Map size={16} /> {t('mapView')}
           </button>
           <button
             onClick={() => setMobileView('list')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#5CE0D2] border-b-2 border-[#5CE0D2]' : 'text-gray-500'}`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
           >
             <List size={16} /> {t('listView')}
           </button>

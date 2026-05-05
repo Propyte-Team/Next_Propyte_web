@@ -14,7 +14,7 @@ export default async function BankLogos({ locale }: { locale: string }) {
     <section className="py-12 bg-white border-y border-gray-100">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-8">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+          <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest">
             {t('banksTitle')}
           </p>
         </div>
@@ -25,7 +25,7 @@ export default async function BankLogos({ locale }: { locale: string }) {
           <HSBCLogo />
           <BanamexLogo />
         </div>
-        <p className="text-xs text-gray-400 text-center mt-8">
+        <p className="text-xs text-gray-600 text-center mt-8">
           {t('banksDisclaimer', { date: TASA_UPDATED_AT })}
         </p>
       </div>

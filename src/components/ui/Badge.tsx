@@ -8,7 +8,7 @@ interface BadgeProps {
 
 const badgeStyles: Record<Exclude<PropertyBadge, null>, string> = {
   preventa: 'bg-[#F5A623] text-white',
-  nuevo: 'bg-[#5CE0D2] text-white',
+  nuevo: 'bg-[#5CE0D2] text-[#0F1923]',
   entrega_inmediata: 'bg-[#22C55E] text-white',
   construccion: 'bg-[#1A2F3F] text-white',
   proximamente: 'bg-[#6366F1] text-white',

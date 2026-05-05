@@ -39,14 +39,14 @@ export default function BlogPostCard({
           </div>
         )}
         <div className="p-5">
-          <span className="inline-block px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-[#0D9488]/10 text-[#0D9488] mb-3">
+          <span className="inline-block px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-[#0D9488]/10 text-[#0F766E] mb-3">
             {category}
           </span>
-          <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 line-clamp-2 group-hover:text-[#5CE0D2] transition-colors">
+          <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 line-clamp-2 group-hover:text-[#0F766E] transition-colors">
             {title}
           </h3>
-          <p className="text-sm text-gray-500 mb-3 line-clamp-2">{excerpt}</p>
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+          <div className="flex items-center gap-3 text-xs text-gray-600">
             <span>{date}</span>
             <span className="flex items-center gap-1">
               <Clock size={12} />

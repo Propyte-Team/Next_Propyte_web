@@ -14,6 +14,7 @@ import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
 import { getVisibility } from '@/lib/visibility';
+import TokenSyncListener from '@/components/shared/TokenSyncListener';
 
 export default async function LocaleLayout({
   children,
@@ -57,6 +58,7 @@ export default async function LocaleLayout({
           </main>
           <Footer />
         </div>
+        <TokenSyncListener />
         <WhatsAppButton />
         <Analytics />
         <CookieBanner />

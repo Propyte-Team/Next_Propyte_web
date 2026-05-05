@@ -81,7 +81,7 @@ export default function TrendingMarket() {
 
   const statCards = [
     { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
-    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#5CE0D2]' },
+    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0F766E]' },
     { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#F5A623]' },
     { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
   ];
@@ -96,7 +96,7 @@ export default function TrendingMarket() {
         <div className="flex items-end justify-between mb-10">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
-            <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
         </div>
 
@@ -140,7 +140,7 @@ export default function TrendingMarket() {
             ))}
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-6 text-center">
+        <p className="text-xs text-gray-600 mt-6 text-center">
           {loaded && zones.length > 0 ? t('footnoteWithData') : t('footnoteNoData')}
         </p>
       </div>

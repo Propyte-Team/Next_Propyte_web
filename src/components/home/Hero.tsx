@@ -127,7 +127,7 @@ export default function Hero({ stats }: HeroProps) {
             className="propyte-search-bubble flex items-center w-full h-14 md:h-[60px] rounded-full pl-5 pr-1.5 md:pr-2 gap-2 mx-auto max-w-xl"
             role="search"
           >
-            <Search size={20} strokeWidth={2} className="text-gray-400 shrink-0" />
+            <Search size={20} strokeWidth={2} className="text-gray-600 shrink-0" />
             <label htmlFor="hero-search-input" className="sr-only">
               {tNav('search')}
             </label>
@@ -138,12 +138,12 @@ export default function Hero({ stats }: HeroProps) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={tNav('searchPlaceholderDev')}
               autoComplete="off"
-              className="flex-1 h-full text-base md:text-lg text-gray-800 placeholder:text-gray-400 focus:outline-none bg-transparent min-w-0"
+              className="flex-1 h-full text-base md:text-lg text-gray-800 placeholder:text-gray-600 focus:outline-none bg-transparent min-w-0"
             />
             <button
               type="submit"
               aria-label={tNav('search')}
-              className="search-bubble-btn flex items-center justify-center w-10 h-10 md:w-11 md:h-11 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white rounded-full shrink-0 transition-all hover:scale-105"
+              className="search-bubble-btn flex items-center justify-center w-10 h-10 md:w-11 md:h-11 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] rounded-full shrink-0 transition-all hover:scale-105"
             >
               <Search size={18} strokeWidth={2} />
             </button>

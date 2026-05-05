@@ -26,7 +26,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
           <h2 className="text-2xl md:text-3xl font-semibold text-[#2C2C2C]">{t('title')}</h2>
           <Link
             href={`/${locale}/blog`}
-            className="hidden md:flex items-center gap-1 text-[#5CE0D2] font-medium hover:underline"
+            className="hidden md:flex items-center gap-1 text-[#0F766E] font-medium hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
@@ -49,7 +49,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
                     <div className="w-full h-full bg-gradient-to-br from-[#1A2F3F] to-[#5CE0D2]" />
                   )}
                   <div className="absolute top-3 left-3">
-                    <span className="px-2 py-1 text-xs font-semibold bg-[#5CE0D2] text-white rounded">
+                    <span className="px-2 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded">
                       {post.category}
                     </span>
                   </div>
@@ -57,13 +57,13 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-1">
                     {post.published_at && (
-                      <time className="text-xs text-gray-500">
+                      <time className="text-xs text-gray-600">
                         {new Intl.DateTimeFormat(locale === 'es' ? 'es-MX' : 'en-US', {
                           year: 'numeric', month: 'short', day: 'numeric',
                         }).format(new Date(post.published_at))}
                       </time>
                     )}
-                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <span className="text-xs text-gray-600 flex items-center gap-1">
                       <Clock size={10} /> {post.read_time_min} {t('minRead')}
                     </span>
                   </div>
@@ -74,7 +74,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
           ))}
         </div>
         <div className="mt-6 flex justify-center md:hidden">
-          <Link href={`/${locale}/blog`} className="flex items-center gap-1 text-[#5CE0D2] font-medium">
+          <Link href={`/${locale}/blog`} className="flex items-center gap-1 text-[#0F766E] font-medium">
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
         </div>

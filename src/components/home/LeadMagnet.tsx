@@ -68,7 +68,7 @@ export default function LeadMagnet() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : t('downloadCta')}

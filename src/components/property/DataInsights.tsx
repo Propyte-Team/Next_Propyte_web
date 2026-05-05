@@ -5,21 +5,21 @@ import { useTranslations } from 'next-intl';
 import { TrendingUp, DollarSign, Home, BarChart3 } from 'lucide-react';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 
-interface AirdnaInsightsProps {
+interface DataInsightsProps {
   data: AirdnaMarketSummary;
   locale: string;
   market: string;
 }
 
 /**
- * AirDNA vacation rental market insights:
+ * Vacation rental market insights:
  * - Occupancy trend area chart (12 months)
  * - Current ADR + ADR by bedrooms
  * - Active listings count
  * - Rate tiers distribution
  */
-export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsProps) {
-  const t = useTranslations('airdna');
+export default function DataInsights({ data, locale, market }: DataInsightsProps) {
+  const t = useTranslations('dataManagement');
 
   const chartData = data.occupancy_trend.map((p) => ({
     date: p.date,
@@ -36,17 +36,17 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="text-base font-bold text-gray-900">{t('marketTitle')}</h3>
           <div className="flex flex-col items-end gap-1">
-            <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">
-              AirDNA · {market}
+            <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600">
+              Datos de Mercado · {market}
             </span>
             {data.latest_date && (
-              <span className="text-[10px] text-gray-400 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
+              <span className="text-[10px] text-gray-600 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
                 {t('updated')} {formatDaysAgo(data.latest_date, locale, t)}
               </span>
             )}
           </div>
         </div>
-        <p className="text-xs text-gray-500">{t('marketSubtitle')}</p>
+        <p className="text-xs text-gray-600">{t('marketSubtitle')}</p>
       </div>
 
       {/* KPIs */}
@@ -88,13 +88,13 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
         <div className="bg-white border border-gray-100 rounded-xl p-4 md:p-5">
           <div className="flex items-baseline justify-between mb-3">
             <div className="text-sm font-bold text-gray-900">{t('occupancyTrend')}</div>
-            <span className="text-xs text-gray-400">%</span>
+            <span className="text-xs text-gray-600">%</span>
           </div>
           <div className="h-[200px] md:h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 5, right: 8, left: -18, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="airdnaOcc" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="marketOcc" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#5CE0D2" stopOpacity={0.4} />
                     <stop offset="100%" stopColor="#5CE0D2" stopOpacity={0.02} />
                   </linearGradient>
@@ -126,7 +126,7 @@ export default function AirdnaInsights({ data, locale, market }: AirdnaInsightsP
                   dataKey="occupancy"
                   stroke="#0D9488"
                   strokeWidth={2.5}
-                  fill="url(#airdnaOcc)"
+                  fill="url(#marketOcc)"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -175,11 +175,11 @@ function KpiCard({
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-3 md:p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 truncate">{label}</span>
-        <span className="text-[#0D9488]">{icon}</span>
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
+        <span className="text-[#0F766E]">{icon}</span>
       </div>
       <div className="text-lg md:text-xl font-bold text-gray-900 truncate">{value}</div>
-      {subtitle && <div className="text-[10px] text-gray-400 mt-0.5 truncate">{subtitle}</div>}
+      {subtitle && <div className="text-[10px] text-gray-600 mt-0.5 truncate">{subtitle}</div>}
     </div>
   );
 }
@@ -195,9 +195,9 @@ function formatMonthShort(dateStr: string, locale: string): string {
   }
 }
 
-type AirdnaT = ReturnType<typeof useTranslations<'airdna'>>;
+type DataManagementT = ReturnType<typeof useTranslations<'dataManagement'>>;
 
-function formatDaysAgo(dateStr: string, locale: string, t: AirdnaT): string {
+function formatDaysAgo(dateStr: string, locale: string, t: DataManagementT): string {
   try {
     const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86_400_000);
     if (days === 0) return t('today');
@@ -211,7 +211,7 @@ function formatDaysAgo(dateStr: string, locale: string, t: AirdnaT): string {
   }
 }
 
-function formatBedsLabel(name: string, t: AirdnaT): string {
+function formatBedsLabel(name: string, t: DataManagementT): string {
   const m = name.match(/^studio$|^(\d+)[-_]?(?:br|bed|bedroom|rec)/i);
   if (m) {
     if (m[0] === 'studio' || m[0].toLowerCase() === 'studio') return t('studio');

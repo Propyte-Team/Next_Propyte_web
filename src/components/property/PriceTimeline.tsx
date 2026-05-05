@@ -65,7 +65,7 @@ export default function PriceTimeline({ property }: PriceTimelineProps) {
               {/* Content */}
               <div className={`pb-5 ${isFuture ? 'opacity-70' : ''}`}>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 font-medium">{item.date}</span>
+                  <span className="text-xs text-gray-600 font-medium">{item.date}</span>
                   {item.change && (
                     <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
                       item.change.startsWith('+') ? 'bg-[#15803D]/10 text-[#15803D]' : 'bg-red-50 text-[#B91C1C]'

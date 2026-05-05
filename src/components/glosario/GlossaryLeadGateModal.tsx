@@ -139,7 +139,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
           type="button"
           onClick={onClose}
           aria-label={t('gateClose')}
-          className="absolute top-3 right-3 p-2 rounded-lg hover:bg-gray-100 text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+          className="absolute top-3 right-3 p-2 rounded-lg hover:bg-gray-100 text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
         >
           <X size={20} strokeWidth={1.75} />
         </button>
@@ -221,7 +221,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             <input
               type="checkbox"
               {...register('consent')}
-              className="mt-0.5 rounded border-gray-300 text-[#0D9488] focus:ring-[#5CE0D2]"
+              className="mt-0.5 rounded border-gray-300 text-[#0F766E] focus:ring-[#5CE0D2]"
             />
             <span>{t('gateConsent')}</span>
           </label>
@@ -242,7 +242,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             {submitting ? t('gateSubmitting') : t('gateSubmit')}
           </button>
 
-          <p className="text-[11px] text-center text-gray-400">
+          <p className="text-[11px] text-center text-gray-600">
             <Link
               href={`/${locale}/privacidad`}
               className="hover:text-gray-600 underline"

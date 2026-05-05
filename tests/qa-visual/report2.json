@@ -1,0 +1,8 @@
+{
+  "issues": [
+    {
+      "page": "nosotros",
+      "issue": "Tab bar at top=64px — expected ~76px"
+    }
+  ]
+}

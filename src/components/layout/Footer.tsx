@@ -37,7 +37,7 @@ export default function Footer() {
           </div>
           <Link
             href={`/${locale}/contacto`}
-            className="h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-sm rounded-lg transition-colors flex items-center"
+            className="h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-lg transition-colors flex items-center"
           >
             {t('ctaButton')}
           </Link>

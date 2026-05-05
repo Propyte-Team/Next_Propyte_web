@@ -52,7 +52,7 @@ export default function WhyPropyte() {
                 <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
                 <Link
                   href={aud.href}
-                  className="inline-flex items-center gap-1.5 text-[#0D9488] font-medium hover:underline"
+                  className="inline-flex items-center gap-1.5 text-[#0F766E] font-medium hover:underline"
                 >
                   {t(aud.ctaKey)}
                   <ArrowRight size={14} strokeWidth={2} />
@@ -65,7 +65,7 @@ export default function WhyPropyte() {
         {/* Feature cards heading */}
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
-          <p className="text-gray-500 mt-2 max-w-xl mx-auto">{t('subtitle')}</p>
+          <p className="text-gray-600 mt-2 max-w-xl mx-auto">{t('subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -77,7 +77,7 @@ export default function WhyPropyte() {
                 className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow border border-gray-100"
               >
                 <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} strokeWidth={1.75} className="text-[#5CE0D2]" />
+                  <Icon size={24} strokeWidth={1.75} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>

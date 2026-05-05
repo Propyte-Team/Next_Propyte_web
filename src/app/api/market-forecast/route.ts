@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getForecasts, getOccupancyTrend, getADRTrend } from '@/lib/supabase/queries';
-import { CITY_TO_AIRDNA } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const marketParam = searchParams.get('market');
     const metric = searchParams.get('metric') || undefined;
 
-    const market = marketParam || (city ? CITY_TO_AIRDNA[city] : null);
+    const market = marketParam || (city ? CITY_TO_MARKET_CODE[city] : null);
     if (!market) {
       return NextResponse.json({ error: 'city or market parameter required' }, { status: 400 });
     }

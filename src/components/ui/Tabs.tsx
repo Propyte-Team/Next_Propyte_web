@@ -76,12 +76,12 @@ export default function Tabs({
           const isActive = item.id === active;
           const btnCls = isPill
             ? `px-4 py-1.5 rounded-full text-sm font-semibold transition-colors whitespace-nowrap ${
-                isActive ? 'bg-white text-[#1A2F3F] shadow-sm' : 'text-gray-500 hover:text-[#1A2F3F]'
+                isActive ? 'bg-white text-[#1A2F3F] shadow-sm' : 'text-gray-600 hover:text-[#1A2F3F]'
               }`
             : `relative px-4 py-3 text-sm font-semibold transition-colors whitespace-nowrap flex items-center gap-2 ${
                 isActive
                   ? 'text-[#1A2F3F] after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-[#5CE0D2]'
-                  : 'text-gray-500 hover:text-[#1A2F3F]'
+                  : 'text-gray-600 hover:text-[#1A2F3F]'
               }`;
           return (
             <button
@@ -99,7 +99,7 @@ export default function Tabs({
               {item.icon}
               {item.label}
               {item.badge != null && (
-                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-[#5CE0D2]/15 text-[#0D9488] rounded-full">
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-bold bg-[#5CE0D2]/15 text-[#0F766E] rounded-full">
                   {item.badge}
                 </span>
               )}

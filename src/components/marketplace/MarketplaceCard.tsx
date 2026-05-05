@@ -232,7 +232,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           <div className="flex items-baseline gap-2 flex-wrap">
             <span data-testid="marketplace-card-price" className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
             {pricePerM2 !== null && (
-              <span className="text-xs text-gray-500 tabular-nums font-medium">
+              <span className="text-xs text-gray-600 tabular-nums font-medium">
                 {format(pricePerM2, { decimals: 0 })}/{tMkt('cardM2Short')}
               </span>
             )}
@@ -244,7 +244,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               {property.specs.bedrooms > 0 && (
                 <>
                   <span className="font-semibold">{property.specs.bedrooms}</span>
-                  <span className="text-gray-400">{tMkt('cardBedShort')}</span>
+                  <span className="text-gray-600">{tMkt('cardBedShort')}</span>
                   {(property.specs.bathrooms > 0 || property.specs.area > 0) && (
                     <span className="text-gray-300 mx-0.5">|</span>
                   )}
@@ -253,14 +253,14 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               {property.specs.bathrooms > 0 && (
                 <>
                   <span className="font-semibold">{property.specs.bathrooms}</span>
-                  <span className="text-gray-400">{tMkt('cardBathShort')}</span>
+                  <span className="text-gray-600">{tMkt('cardBathShort')}</span>
                   {property.specs.area > 0 && <span className="text-gray-300 mx-0.5">|</span>}
                 </>
               )}
               {property.specs.area > 0 && (
                 <>
                   <span className="font-semibold">{property.specs.area.toLocaleString(intlLocale)}</span>
-                  <span className="text-gray-400">m²</span>
+                  <span className="text-gray-600">m²</span>
                 </>
               )}
             </div>
@@ -268,7 +268,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Development-only: inventory + delivery */}
           {property.kind === 'development' && (property.inventory || property.delivery) && (
-            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+            <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
               {property.inventory && property.inventory.available !== undefined && (
                 <span>
                   {property.inventory.total
@@ -293,20 +293,20 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           )}
 
           {/* Address */}
-          <div className="flex items-center gap-1 text-xs text-gray-500 mt-1 line-clamp-1">
+          <div className="flex items-center gap-1 text-xs text-gray-600 mt-1 line-clamp-1">
             <MapPin size={10} className="flex-shrink-0" />
             {property.location.zone}, {property.location.city}
           </div>
 
           {/* Developer attribution */}
           {property.developer && (
-            <div className="text-[10px] text-gray-400 mt-1.5">{property.developer}</div>
+            <div className="text-[10px] text-gray-600 mt-1.5">{property.developer}</div>
           )}
 
           {/* Investment metrics row */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {property.roi.projected > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0D9488] text-[10px] font-bold rounded-full tabular-nums">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] text-[10px] font-bold rounded-full tabular-nums">
                 ROI {property.roi.projected}%
               </span>
             )}
@@ -322,7 +322,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               </span>
             )}
             {property.annualRevenue != null && property.annualRevenue > 0 && (
-              <span className="text-[10px] text-gray-400 font-medium tabular-nums">
+              <span className="text-[10px] text-gray-600 font-medium tabular-nums">
                 ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
               </span>
             )}

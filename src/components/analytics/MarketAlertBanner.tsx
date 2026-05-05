@@ -62,14 +62,14 @@ export function MarketAlertBanner({ city, maxAlerts = 3 }: MarketAlertBannerProp
             <div className="flex-1 min-w-0">
               <p className={`text-sm ${style.text}`}>{alert.message}</p>
               {alert.zone && (
-                <p className="text-xs text-gray-500 mt-0.5">{alert.zone} &middot; {alert.city}</p>
+                <p className="text-xs text-gray-600 mt-0.5">{alert.zone} &middot; {alert.city}</p>
               )}
             </div>
             <button
               onClick={() => setDismissed((prev) => new Set(prev).add(alert.id))}
               className="p-0.5 hover:bg-white/50 rounded"
             >
-              <X className="w-3.5 h-3.5 text-gray-400" />
+              <X className="w-3.5 h-3.5 text-gray-600" />
             </button>
           </div>
         );

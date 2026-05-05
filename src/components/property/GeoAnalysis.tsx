@@ -65,7 +65,7 @@ export default function GeoAnalysis({
             </Map>
           </APIProvider>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+          <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
             <MapPin size={40} strokeWidth={1.5} className="mb-3" />
             <p className="text-sm font-medium">
               {mapError ? t('mapUnavailable') : t('mapComingSoon')}
@@ -77,13 +77,13 @@ export default function GeoAnalysis({
       {/* Address + Zone info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-xs text-gray-500 mb-1">{t('address')}</div>
+          <div className="text-xs text-gray-600 mb-1">{t('address')}</div>
           <div className="text-sm font-semibold text-gray-900">
             {address || `${zone || ''}, ${city}`.replace(/^,\s*/, '')}
           </div>
         </div>
         <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-xs text-gray-500 mb-1">{t('zone')}</div>
+          <div className="text-xs text-gray-600 mb-1">{t('zone')}</div>
           <div className="text-sm font-semibold text-gray-900">
             {zone || city}{state ? `, ${state}` : ''}
           </div>
@@ -94,7 +94,7 @@ export default function GeoAnalysis({
       {zoneScore && (
         <div>
           <h3 className="text-base font-bold text-gray-900 mb-1">{t('zonePerformance')}</h3>
-          <p className="text-xs text-gray-500 mb-4">
+          <p className="text-xs text-gray-600 mb-4">
             {t('basedOn', { zone: zone || city })}
           </p>
 
@@ -189,12 +189,12 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 truncate">{label}</span>
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
         <span style={{ color }}>{icon}</span>
       </div>
       <div className="flex items-baseline gap-1">
         <span className="text-2xl font-bold text-gray-900">{rounded}</span>
-        <span className="text-xs text-gray-400">/100</span>
+        <span className="text-xs text-gray-600">/100</span>
       </div>
       <div className="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
         <div
@@ -209,7 +209,7 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
 function RawMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-gray-50 rounded-xl p-3">
-      <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-500 truncate">{label}</div>
+      <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</div>
       <div className="text-sm font-bold text-gray-900 mt-0.5 truncate">{value}</div>
     </div>
   );

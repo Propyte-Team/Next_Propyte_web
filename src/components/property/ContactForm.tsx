@@ -71,7 +71,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
       </div>
 
       {!showPhone ? (
-        <button type="button" onClick={() => setShowPhone(true)} className="text-sm text-[#5CE0D2] hover:underline">
+        <button type="button" onClick={() => setShowPhone(true)} className="text-sm text-[#0F766E] hover:underline">
           + {tContact('formPhone') || 'Phone'}
         </button>
       ) : (
@@ -89,7 +89,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
       {/* Budget & Investment Type */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label htmlFor="contact-budget" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="contact-budget" className="block text-xs font-medium text-gray-600 mb-1">
             {tContact('formBudget') || 'Presupuesto'}
           </label>
           <select
@@ -106,7 +106,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
           </select>
         </div>
         <div>
-          <label htmlFor="contact-investmentType" className="block text-xs font-medium text-gray-500 mb-1">
+          <label htmlFor="contact-investmentType" className="block text-xs font-medium text-gray-600 mb-1">
             {tContact('formInvestmentType') || 'Tipo'}
           </label>
           <select
@@ -136,7 +136,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+        className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
       >
         {status === 'sending' ? t('sending') : status === 'sent' ? t('sent') : t('send')}
       </button>

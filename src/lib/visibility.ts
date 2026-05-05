@@ -36,10 +36,13 @@ export async function getVisibility(): Promise<VisibilityMap> {
   const hubUrl = process.env.PROPYTE_HUB_URL;
   if (!hubUrl) return {};
 
+  const env = process.env.VISIBILITY_ENV === "dev" ? "dev" : "prod";
+
   try {
-    const res = await fetch(`${hubUrl}/api/site-config/visibility`, {
-      next: { revalidate: 30 },
-    });
+    const res = await fetch(
+      `${hubUrl}/api/site-config/visibility?env=${env}`,
+      { next: { revalidate: 30 } },
+    );
     if (!res.ok) return {};
     return (await res.json()) as VisibilityMap;
   } catch {

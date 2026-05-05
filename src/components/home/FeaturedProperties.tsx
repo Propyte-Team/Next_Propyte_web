@@ -37,18 +37,18 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         <div className="flex items-end justify-between mb-8">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
-            <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           <Link
             href={`/${locale}/desarrollos`}
-            className="hidden md:flex items-center gap-1.5 text-[#0D9488] font-semibold hover:underline"
+            className="hidden md:flex items-center gap-1.5 text-[#0F766E] font-semibold hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>
         </div>
 
         {items.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">{t('loading')}</div>
+          <div className="text-center py-12 text-gray-600">{t('loading')}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {items.map((dev) => (
@@ -77,7 +77,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                             ? 'bg-[#F5A623] text-white'
                             : dev.stage === 'construccion'
                             ? 'bg-[#22C55E] text-white'
-                            : 'bg-[#5CE0D2] text-white'
+                            : 'bg-[#0F766E] text-white'
                         }`}>
                           {tStages(dev.stage)}
                         </span>
@@ -118,13 +118,13 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                     <h3 className="font-semibold text-[#2C2C2C] text-sm mb-1 line-clamp-1">
                       {dev.name}
                     </h3>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <div className="flex items-center gap-1 text-xs text-gray-600">
                       <MapPin size={12} />
                       <span>{dev.zone ? `${dev.zone}, ` : ''}{dev.city}</span>
                     </div>
 
                     {dev.roi_estimated && dev.roi_estimated > 0 && (
-                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#4BCEC0] text-xs font-bold rounded-full">
+                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-bold rounded-full">
                         {t('roiAnnual', { value: dev.roi_estimated })}
                       </div>
                     )}
@@ -138,7 +138,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         <div className="mt-8 text-center md:hidden">
           <Link
             href={`/${locale}/desarrollos`}
-            className="inline-flex items-center gap-1 text-[#0D9488] font-semibold"
+            className="inline-flex items-center gap-1 text-[#0F766E] font-semibold"
           >
             {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>

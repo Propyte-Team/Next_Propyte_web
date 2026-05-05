@@ -39,7 +39,7 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallba
 
   if (scores.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-400">
+      <div className="text-center py-16 text-gray-600">
         <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
         <p className="text-lg">{t('noZonesFound')}</p>
       </div>
@@ -102,7 +102,7 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallba
       )}
 
       {/* Count */}
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-gray-600 text-center">
         {t('showingOf', { visible: visible.length, total: scores.length })}
       </p>
     </div>

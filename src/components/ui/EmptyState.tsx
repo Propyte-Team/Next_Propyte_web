@@ -41,7 +41,7 @@ export default function EmptyState({
         <Icon
           size={32}
           strokeWidth={1.75}
-          className={isDark ? 'text-[#5CE0D2]' : 'text-[#0D9488]'}
+          className={isDark ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}
         />
       </div>
       <h3
@@ -52,7 +52,7 @@ export default function EmptyState({
       {description && (
         <p
           className={`max-w-md text-sm md:text-base leading-relaxed ${
-            isDark ? 'text-white/70' : 'text-gray-500'
+            isDark ? 'text-white/70' : 'text-gray-600'
           }`}
         >
           {description}

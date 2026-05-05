@@ -128,7 +128,7 @@ export default function SearchBubble({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
-          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/70' : 'text-gray-700 placeholder:text-gray-500'} focus:outline-none min-w-0`}
+          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/70' : 'text-gray-700 placeholder:text-gray-600'} focus:outline-none min-w-0`}
         />
       </div>
 
@@ -136,7 +136,7 @@ export default function SearchBubble({
       <button
         type="submit"
         aria-label={t('search')}
-        className={`search-bubble-btn flex items-center justify-center ${btnSizeCls} rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white shrink-0 transition-all hover:scale-105`}
+        className={`search-bubble-btn flex items-center justify-center ${btnSizeCls} rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] shrink-0 transition-all hover:scale-105`}
       >
         <Search size={isMobile ? 16 : 18} strokeWidth={2} />
       </button>

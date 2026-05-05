@@ -41,7 +41,7 @@ const statusStyles: Record<string, string> = {
   reservado: 'bg-yellow-100 text-yellow-700',
   vendida: 'bg-red-100 text-red-700',
   vendido: 'bg-red-100 text-red-700',
-  no_disponible: 'bg-gray-100 text-gray-500',
+  no_disponible: 'bg-gray-100 text-gray-600',
 };
 
 function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null {
@@ -84,7 +84,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
     <div>
       <h2 className="text-xl font-bold text-gray-900 mb-4">
         {t('title')}
-        <span className="ml-2 text-sm font-normal text-gray-400">
+        <span className="ml-2 text-sm font-normal text-gray-600">
           ({units.length} {t('unitsSuffix')})
         </span>
       </h2>
@@ -93,7 +93,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
       <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-100">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
               <th className="px-4 py-3">{t('model')}</th>
               <th className="px-4 py-3">{t('type')}</th>
               <th className="px-4 py-3 text-center">{t('beds')}</th>
@@ -139,7 +139,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                       <Link
                         href={href}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-[#0D9488] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
+                        className="text-[#0F766E] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
                       >
                         {unit.typology || unit.unit_number || '—'}
                       </Link>
@@ -158,7 +158,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                     {rentEst ? formatPrice(rentEst) : '—'}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-500'}`}>
+                    <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                       {statusLabel(status)}
                     </span>
                   </td>
@@ -182,24 +182,24 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                 <span className="font-bold text-gray-900">
                   {unit.typology || unit.unit_number || '—'}
                 </span>
-                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-500'}`}>
+                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                   {statusLabel(status)}
                 </span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="text-gray-500">{t('type')}</div>
+                <div className="text-gray-600">{t('type')}</div>
                 <div className="text-right text-gray-700">{typeLabel(unit.unit_type)}</div>
-                <div className="text-gray-500">{t('bedsBaths')}</div>
+                <div className="text-gray-600">{t('bedsBaths')}</div>
                 <div className="text-right text-gray-700">{unit.bedrooms} / {unit.bathrooms}</div>
-                <div className="text-gray-500">m²</div>
+                <div className="text-gray-600">m²</div>
                 <div className="text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</div>
-                <div className="text-gray-500">{t('price')}</div>
+                <div className="text-gray-600">{t('price')}</div>
                 <div className="text-right font-bold text-gray-900">
                   {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
                 </div>
                 {rentEst && (
                   <>
-                    <div className="text-gray-500">{t('estRentShort')}</div>
+                    <div className="text-gray-600">{t('estRentShort')}</div>
                     <div className="text-right font-semibold text-[#4BCEC0]">{formatPrice(rentEst)}/mes</div>
                   </>
                 )}

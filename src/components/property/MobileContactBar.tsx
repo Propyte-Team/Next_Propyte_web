@@ -47,7 +47,7 @@ export default function MobileContactBar({
     <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] md:hidden">
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="flex-none min-w-0">
-          <div className="text-[10px] text-gray-500 uppercase tracking-wider">
+          <div className="text-[10px] text-gray-600 uppercase tracking-wider">
             {tProp('startingFrom')}
           </div>
           <div className="flex items-center gap-2">
@@ -55,7 +55,7 @@ export default function MobileContactBar({
               {price > 0 ? formatPrice(price) : '—'}
             </span>
             {roiPct != null && roiPct > 0 && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0D9488] rounded-full whitespace-nowrap">
+              <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] rounded-full whitespace-nowrap">
                 ROI {roiPct}%
               </span>
             )}

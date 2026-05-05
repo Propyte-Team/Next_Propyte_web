@@ -29,7 +29,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
         {/* Price reminder */}
         <div className="text-2xl font-bold text-[#2C2C2C] mb-1">{formatPrice(property.price.mxn)}</div>
         {rentDisplay > 0 && (
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-600 mb-4">
             {t('estRent')}: {formatPrice(rentDisplay)}/mes
           </p>
         )}
@@ -41,7 +41,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
           </div>
           <div>
             <p className="font-bold text-[#2C2C2C]">{t('contactAdvisor')}</p>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+            <div className="flex items-center gap-1 text-xs text-gray-600">
               <Shield size={10} className="text-[#22C55E]" />
               <span>{t('verifiedAdvisor')}</span>
             </div>
@@ -63,7 +63,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
         <button
           onClick={() => setFormOpen((v) => !v)}
           aria-expanded={formOpen}
-          className="flex items-center justify-center gap-2 w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold rounded-lg transition-colors mb-3 shadow-sm"
+          className="flex items-center justify-center gap-2 w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-lg transition-colors mb-3 shadow-sm"
         >
           <Calendar size={20} />
           {t('scheduleVisit')}
@@ -85,7 +85,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
           {t('callNow')}
         </a>
 
-        <div className="flex items-center justify-center gap-1 text-xs text-gray-400 mt-4">
+        <div className="flex items-center justify-center gap-1 text-xs text-gray-600 mt-4">
           <Clock size={12} />
           {t('responseTime')}
         </div>
@@ -96,17 +96,17 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
         <h4 className="font-bold text-sm text-[#2C2C2C] mb-3">{t('financing')}</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-500">{t('downPaymentFrom')}</span>
+            <span className="text-gray-600">{t('downPaymentFrom')}</span>
             <span className="font-semibold">{property.financing.downPaymentMin}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">{t('termUpTo')}</span>
+            <span className="text-gray-600">{t('termUpTo')}</span>
             <span className="font-semibold">
               {Math.max(...property.financing.months)} {t('monthsSuffix')}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">{t('interestRate')}</span>
+            <span className="text-gray-600">{t('interestRate')}</span>
             <span className="font-semibold">{property.financing.interestRate}%</span>
           </div>
         </div>

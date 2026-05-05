@@ -36,14 +36,14 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
             <div className="w-full h-full bg-gradient-to-br from-[#1A2F3F] to-[#5CE0D2]" />
           )}
           <div className="absolute top-3 left-3">
-            <span className="px-2 py-1 text-xs font-semibold bg-[#5CE0D2] text-white rounded">
+            <span className="px-2 py-1 text-xs font-semibold bg-[#5CE0D2] text-[#0F1923] rounded">
               {post.category}
             </span>
           </div>
         </div>
 
         <div className="p-4 flex flex-col flex-1">
-          <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
+          <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
             {date && (
               <span className="flex items-center gap-1">
                 <Calendar size={12} />
@@ -56,12 +56,12 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
             </span>
           </div>
 
-          <h3 className="font-semibold text-[#1A2F3F] line-clamp-2 leading-snug group-hover:text-[#5CE0D2] transition-colors">
+          <h3 className="font-semibold text-[#1A2F3F] line-clamp-2 leading-snug group-hover:text-[#0F766E] transition-colors">
             {post.title}
           </h3>
 
           {post.excerpt && (
-            <p className="text-sm text-gray-500 mt-2 line-clamp-2 flex-1">{post.excerpt}</p>
+            <p className="text-sm text-gray-600 mt-2 line-clamp-2 flex-1">{post.excerpt}</p>
           )}
 
           <div className="mt-3 flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
                 {post.author_name.charAt(0).toUpperCase()}
               </div>
             )}
-            <span className="text-xs text-gray-500">{post.author_name}</span>
+            <span className="text-xs text-gray-600">{post.author_name}</span>
           </div>
         </div>
       </article>

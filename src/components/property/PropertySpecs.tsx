@@ -34,7 +34,7 @@ export default function PropertySpecs({ property }: PropertySpecsProps) {
           <div key={i} className="flex items-center gap-3 p-3 bg-[#F4F6F8] rounded-lg">
             <spec.icon size={20} className="text-[#1A2F3F] shrink-0" />
             <div>
-              <div className="text-xs text-gray-500">{spec.label}</div>
+              <div className="text-xs text-gray-600">{spec.label}</div>
               <div className="font-medium text-[#2C2C2C]">{spec.value}</div>
             </div>
           </div>

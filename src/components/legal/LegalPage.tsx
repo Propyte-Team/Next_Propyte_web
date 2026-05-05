@@ -27,7 +27,7 @@ export default async function LegalPage({
       <header className="border-b border-gray-100 bg-[#F4F6F8]">
         <div className="max-w-[840px] mx-auto px-4 md:px-6 py-12 md:py-16">
           <div className="w-12 h-12 rounded-full bg-[#5CE0D2]/10 flex items-center justify-center mb-5">
-            <FileText size={20} strokeWidth={1.75} className="text-[#0D9488]" />
+            <FileText size={20} strokeWidth={1.75} className="text-[#0F766E]" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] mb-3">{t(titleKey)}</h1>
           <p className="text-base md:text-lg text-[#2C2C2C]/70 leading-relaxed mb-5 max-w-2xl">

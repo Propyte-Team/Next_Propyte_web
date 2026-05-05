@@ -1,0 +1,33 @@
+{
+  "total": 5,
+  "errors": 3,
+  "contrast": 0,
+  "warnings": 2,
+  "issues": [
+    {
+      "route": "home",
+      "severity": "ERROR",
+      "msg": "Header overlap: content starts at 0px, header ends at 76px"
+    },
+    {
+      "route": "home",
+      "severity": "ERROR",
+      "msg": "Header overlap: content starts at 0px, header ends at 60px"
+    },
+    {
+      "route": "glosario",
+      "severity": "WARN",
+      "msg": "Gap of 123px between sections"
+    },
+    {
+      "route": "glosario",
+      "severity": "WARN",
+      "msg": "Gap of 167px between sections"
+    },
+    {
+      "route": "blog",
+      "severity": "ERROR",
+      "msg": "Header overlap: content starts at 76px, header ends at 108px"
+    }
+  ]
+}

@@ -190,14 +190,14 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                   >
                     <Avatar photoUrl={m.photo_url} name={m.name} />
                     <h3 className="font-bold text-[#1A2F3F]">{m.name}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{m.role}</p>
+                    <p className="text-sm text-gray-600 mt-1">{m.role}</p>
                     {m.city && (
-                      <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                      <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
                         <MapPin size={11} /> {m.city}
                       </p>
                     )}
                     {m.bio_short && (
-                      <p className="text-xs text-gray-500 mt-3 leading-relaxed">{m.bio_short}</p>
+                      <p className="text-xs text-gray-600 mt-3 leading-relaxed">{m.bio_short}</p>
                     )}
                     {waLink && (
                       <a
@@ -257,7 +257,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
               {[1, 2, 3].map(i => (
                 <div key={i}>
                   <h4 className="font-semibold text-sm text-[#1A2F3F]">{t(`dim${i}Title`)}</h4>
-                  <p className="text-xs text-gray-500 mt-1">{t(`dim${i}Desc`)}</p>
+                  <p className="text-xs text-gray-600 mt-1">{t(`dim${i}Desc`)}</p>
                 </div>
               ))}
             </div>
@@ -273,7 +273,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
             {benefits.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} className="text-[#5CE0D2]" />
+                  <Icon size={24} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>

@@ -3,7 +3,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getRentalEstimates, getAirdnaMarketSummary } from '@/lib/supabase/queries';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { getClosingCostRate, calculateClosingCosts, calculateTotalInvestment, CITY_TO_AIRDNA } from '@/lib/calculator';
+import { getClosingCostRate, calculateClosingCosts, calculateTotalInvestment, CITY_TO_MARKET_CODE } from '@/lib/calculator';
 import type { RentalEstimate as RentalEstimateType } from '@/lib/supabase/queries';
 
 interface RentalEstimateProps {
@@ -35,12 +35,12 @@ function ConfidenceBar({ sampleSize }: { sampleSize: number }) {
           <div
             key={i}
             className={`h-1.5 w-3 rounded-full ${
-              i <= level ? 'bg-[#5CE0D2]' : 'bg-gray-200'
+              i <= level ? 'bg-[#0F766E]' : 'bg-gray-200'
             }`}
           />
         ))}
       </div>
-      <span className="text-xs text-gray-400">{sampleSize} listings</span>
+      <span className="text-xs text-gray-600">{sampleSize} listings</span>
     </div>
   );
 }
@@ -71,21 +71,21 @@ function EstimateCard({
 
   return (
     <div className="space-y-3">
-      <div className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+      <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">
         {label}
       </div>
 
       {/* Smart estimate by m² */}
       {smartRent && (
         <div className="bg-[#5CE0D2]/5 border border-[#5CE0D2]/20 rounded-lg p-3">
-          <div className="text-xs text-gray-500 mb-1">
+          <div className="text-xs text-gray-600 mb-1">
             {strings.estimatedByArea}
           </div>
           <div className="text-2xl font-bold text-gray-900">
             {formatPrice(smartRent)}
-            <span className="text-sm font-normal text-gray-400">{strings.monthSuffix}</span>
+            <span className="text-sm font-normal text-gray-600">{strings.monthSuffix}</span>
           </div>
-          <div className="text-xs text-gray-400 mt-1">
+          <div className="text-xs text-gray-600 mt-1">
             ${Math.round(estimate.avg_rent_per_m2!)}/m² × {Math.round(areaM2!)} m²
           </div>
         </div>
@@ -94,11 +94,11 @@ function EstimateCard({
       {/* Range */}
       <div className={`${smartRent ? 'text-lg' : 'text-2xl'} font-bold text-gray-900`}>
         {formatPrice(estimate.p25_rent_mxn)} – {formatPrice(estimate.p75_rent_mxn)}
-        <span className="text-sm font-normal text-gray-400">
+        <span className="text-sm font-normal text-gray-600">
           {strings.monthSuffix}
         </span>
       </div>
-      <div className="text-sm text-gray-500">
+      <div className="text-sm text-gray-600">
         {strings.median}: <span className="font-semibold text-gray-700">{formatPrice(estimate.median_rent_mxn)}</span>
       </div>
       <div className="flex items-center justify-between">
@@ -110,11 +110,11 @@ function EstimateCard({
         )}
       </div>
       {!smartRent && estimate.avg_rent_per_m2 && estimate.avg_rent_per_m2 > 0 && (
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-gray-600">
           {strings.rentPerM2}: ${Math.round(estimate.avg_rent_per_m2)} MXN
         </div>
       )}
-      <div className="text-xs text-gray-300">
+      <div className="text-xs text-gray-600">
         {strings.updated}: {lastUpdated}
       </div>
     </div>
@@ -160,11 +160,11 @@ function InvestmentBreakdown({
       {/* Total investment breakdown */}
       <div className="bg-gray-50 rounded-lg p-3 mb-3 space-y-1.5 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-500">{strings.propertyPrice}</span>
+          <span className="text-gray-600">{strings.propertyPrice}</span>
           <span className="font-medium">{formatPrice(priceMin)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-500">
+          <span className="text-gray-600">
             {strings.closingCosts} ({Math.round(closingRate * 100)}%)
           </span>
           <span className="font-medium">{formatPrice(closingCosts)}</span>
@@ -178,15 +178,15 @@ function InvestmentBreakdown({
       {/* Key metrics */}
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
-          <div className="text-xs text-gray-400">{strings.grossYield}</div>
-          <div className="text-sm font-bold text-[#5CE0D2]">{grossYield.toFixed(1)}%</div>
+          <div className="text-xs text-gray-600">{strings.grossYield}</div>
+          <div className="text-sm font-bold text-[#0F766E]">{grossYield.toFixed(1)}%</div>
         </div>
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
-          <div className="text-xs text-gray-400">Cap Rate</div>
-          <div className="text-sm font-bold text-[#5CE0D2]">{capRate.toFixed(1)}%</div>
+          <div className="text-xs text-gray-600">Cap Rate</div>
+          <div className="text-sm font-bold text-[#0F766E]">{capRate.toFixed(1)}%</div>
         </div>
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
-          <div className="text-xs text-gray-400">{strings.netFlow}</div>
+          <div className="text-xs text-gray-600">{strings.netFlow}</div>
           <div className={`text-sm font-bold ${monthlyNet >= 0 ? 'text-[#15803D]' : 'text-[#B91C1C]'}`}>
             {formatPrice(Math.round(monthlyNet))}
           </div>
@@ -218,7 +218,7 @@ export default async function RentalEstimate({
     const supabase = createPublicSupabaseClient();
     if (!supabase) return null;
 
-    const airdnaMarket = CITY_TO_AIRDNA[city] || '';
+    const airdnaMarket = CITY_TO_MARKET_CODE[city] || '';
     const [est, airdna] = await Promise.all([
       getRentalEstimates(supabase, city, propertyType || 'departamento', bedrooms, zone),
       airdnaMarket ? getAirdnaMarketSummary(supabase, airdnaMarket) : Promise.resolve(null),
@@ -291,7 +291,7 @@ export default async function RentalEstimate({
         )}
       </div>
 
-      {/* AirDNA Market Insight */}
+      {/* Market Data Insight */}
       {airdnaSummary && (
         <AirdnaInsight
           summary={airdnaSummary}
@@ -313,7 +313,7 @@ export default async function RentalEstimate({
       )}
 
       <div className="mt-4 pt-3 border-t border-gray-100">
-        <p className="text-xs text-gray-400 leading-relaxed">
+        <p className="text-xs text-gray-600 leading-relaxed">
           {t('shortDisclaimer')}
         </p>
       </div>
@@ -336,26 +336,26 @@ function AirdnaInsight({ summary, city, zone, occupancyLabel, nightLabel }: {
   return (
     <div className="mt-4 p-3 bg-[#0F1923] rounded-xl">
       <div className="flex items-center gap-2 mb-2">
-        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] font-bold rounded uppercase tracking-wider">AirDNA</span>
-        <span className="text-[11px] text-gray-400">{displayLabel}</span>
+        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] font-bold rounded uppercase tracking-wider">Data</span>
+        <span className="text-[11px] text-gray-600">{displayLabel}</span>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center">
         {displayOcc != null && (
           <div>
             <div className="text-lg font-bold text-white">{Math.round(displayOcc)}%</div>
-            <div className="text-[10px] text-gray-500">{occupancyLabel}</div>
+            <div className="text-[10px] text-gray-600">{occupancyLabel}</div>
           </div>
         )}
         {displayAdr != null && (
           <div>
             <div className="text-lg font-bold text-white">${displayAdr.toLocaleString()}</div>
-            <div className="text-[10px] text-gray-500">ADR/{nightLabel}</div>
+            <div className="text-[10px] text-gray-600">ADR/{nightLabel}</div>
           </div>
         )}
         {summary.active_listings != null && (
           <div>
             <div className="text-lg font-bold text-white">{summary.active_listings.toLocaleString()}</div>
-            <div className="text-[10px] text-gray-500">Listings</div>
+            <div className="text-[10px] text-gray-600">Listings</div>
           </div>
         )}
       </div>

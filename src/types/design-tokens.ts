@@ -108,6 +108,16 @@ export interface SectionMarginsTokens {
   footerPaddingBottom: number;
 }
 
+export interface MediaTokens {
+  aspectRatioCard: string;       // e.g. "4/3"
+  aspectRatioHero: string;       // e.g. "16/9"
+  aspectRatioSquare: string;     // "1/1"
+  aspectRatioPortrait: string;   // "3/4"
+  imageObjectFit: 'cover' | 'contain' | 'fill';
+  imageBorderRadius: number;     // px — applied to <img> in cards
+  cardImageHeight: number;       // px — fixed height in listing cards
+}
+
 /** Bloque completo de tokens — se duplica por tema (light/dark). */
 export interface ThemeTokens {
   colors: ColorTokens;
@@ -117,6 +127,7 @@ export interface ThemeTokens {
   radii: RadiiTokens;
   shadows: ShadowsTokens;
   sectionMargins: SectionMarginsTokens;
+  media: MediaTokens;
 }
 
 /** Payload completo persistido en localStorage / JSON export. */

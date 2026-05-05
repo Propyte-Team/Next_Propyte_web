@@ -7,7 +7,7 @@ import {
   getForecasts,
   getSeasonalIndices,
 } from '@/lib/supabase/queries';
-import { CITY_TO_AIRDNA, ZONE_TO_AIRDNA_SUBMARKETS } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, ZONE_TO_MARKET_SUBMARKETS } from '@/lib/calculator';
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,8 +24,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
     }
 
-    const market = CITY_TO_AIRDNA[city] || city.toLowerCase();
-    const submarketCodes = ZONE_TO_AIRDNA_SUBMARKETS[zone] || [];
+    const market = CITY_TO_MARKET_CODE[city] || city.toLowerCase();
+    const submarketCodes = ZONE_TO_MARKET_SUBMARKETS[zone] || [];
     const submarket = submarketCodes[0] || null;
 
     // Fetch all data in parallel

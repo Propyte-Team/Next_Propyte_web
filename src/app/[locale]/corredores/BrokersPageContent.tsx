@@ -42,7 +42,7 @@ function BrokerHero() {
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <a
               href="#registro"
-              className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-[#5CE0D2]/20 flex items-center justify-center gap-2"
+              className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-[#5CE0D2]/20 flex items-center justify-center gap-2"
             >
               {t('heroCta')} <ArrowRight size={18} />
             </a>
@@ -83,17 +83,17 @@ function ValueProposition() {
     <section className="py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
-          <span className="text-[#0D9488] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
+          <span className="text-[#0F766E] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('valueSubtitle')}</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/20 hover:shadow-lg transition-all group">
               <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#5CE0D2]/20 transition-colors">
-                <Icon size={24} className="text-[#0D9488]" />
+                <Icon size={24} className="text-[#0F766E]" />
               </div>
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -119,7 +119,7 @@ function HowItWorks() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('processTitle')}</h2>
-          <p className="mt-3 text-gray-500 text-lg">{t('processSubtitle')}</p>
+          <p className="mt-3 text-gray-600 text-lg">{t('processSubtitle')}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map(({ num, icon: Icon, title, desc }) => (
@@ -127,9 +127,9 @@ function HowItWorks() {
               <div className="w-10 h-10 mx-auto mb-4 bg-[#1A2F3F] rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">{num}</span>
               </div>
-              <Icon size={32} className="mx-auto mb-3 text-[#5CE0D2]" />
+              <Icon size={32} className="mx-auto mb-3 text-[#0F766E]" />
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -153,7 +153,7 @@ function PlatformPreview() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('platformTitle')}</h2>
-          <p className="mt-3 text-gray-500 text-lg">{t('platformSubtitle')}</p>
+          <p className="mt-3 text-gray-600 text-lg">{t('platformSubtitle')}</p>
         </div>
 
         {/* Browser chrome mockup */}
@@ -233,12 +233,12 @@ function FAQ() {
                 >
                   <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
                   {isOpen
-                    ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
-                    : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />
+                    ? <ChevronUp size={20} className="text-[#0F766E] flex-shrink-0" />
+                    : <ChevronDown size={20} className="text-gray-600 flex-shrink-0" />
                   }
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">
+                  <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed border-t border-gray-50 pt-4">
                     {a}
                   </div>
                 )}
@@ -352,7 +352,7 @@ function BrokerForm() {
                   <CheckCircle size={32} className="text-green-500" />
                 </div>
                 <h3 className="text-xl font-bold text-[#1A2F3F] mb-2">{t('formSuccess')}</h3>
-                <p className="text-gray-500">{t('formSuccessDesc')}</p>
+                <p className="text-gray-600">{t('formSuccessDesc')}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -429,7 +429,7 @@ function BrokerForm() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {status === 'sending' ? t('formSending') : t('formSubmit')}
                   {status === 'idle' && <ArrowRight size={18} />}
@@ -459,7 +459,7 @@ function FinalCTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#registro"
-            className="h-14 px-8 bg-white text-[#0D9488] font-bold text-base rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+            className="h-14 px-8 bg-white text-[#0F766E] font-bold text-base rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
           >
             {t('finalCtaButton')} <ArrowRight size={18} />
           </a>

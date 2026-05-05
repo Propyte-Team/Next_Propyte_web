@@ -148,7 +148,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                 >
                   <td className="px-4 py-3 text-left">
                     <div className="font-medium text-gray-900">{score.zone}</div>
-                    <div className="text-xs text-gray-400">{score.city}</div>
+                    <div className="text-xs text-gray-600">{score.city}</div>
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
@@ -157,7 +157,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                           ? 'text-emerald-600'
                           : (score.score ?? 0) >= 50
                           ? 'text-amber-600'
-                          : 'text-gray-400'
+                          : 'text-gray-600'
                       }`}
                     >
                       {score.score != null ? Math.round(score.score) : '—'}

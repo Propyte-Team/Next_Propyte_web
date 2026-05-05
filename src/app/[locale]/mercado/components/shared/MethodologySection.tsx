@@ -33,7 +33,7 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
         {/* Expandable detail */}
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 text-sm font-medium text-[#5CE0D2] hover:text-[#0D9488] transition-colors ml-7"
+          className="flex items-center gap-1.5 text-sm font-medium text-[#0F766E] hover:text-[#134E4A] transition-colors ml-7"
         >
           {t('seeFull')}
           <ChevronRight size={14} className={`transition-transform ${open ? 'rotate-90' : ''}`} />
@@ -63,7 +63,7 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
                     <strong>{t('strFactorCompetition')}</strong> — {t('strFactorCompetitionDesc')}
                   </li>
                 </ul>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-600">
                   {t('strFooter')}
                 </p>
               </>
@@ -92,7 +92,7 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
                   <li>{t('ltrStep5')}</li>
                   <li>{t('ltrStep6')}</li>
                 </ol>
-                <p className="text-xs text-gray-400 mt-3">
+                <p className="text-xs text-gray-600 mt-3">
                   {t('ltrFooter')}
                 </p>
               </>

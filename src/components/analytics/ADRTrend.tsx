@@ -58,7 +58,7 @@ export function ADRTrend({
   return (
     <div>
       {title && (
-        <h3 className="text-sm font-medium text-gray-500 mb-2">{title}</h3>
+        <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
       )}
       <ResponsiveContainer width="100%" height={height}>
         <ComposedChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>

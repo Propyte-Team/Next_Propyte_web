@@ -63,7 +63,7 @@ export default async function CetesComparison({
     <div className="bg-white border border-gray-100 rounded-2xl p-5 md:p-6 shadow-sm">
       <div className="mb-4">
         <h3 className="text-base font-bold text-gray-900">{t('compareTitle')}</h3>
-        <p className="text-xs text-gray-500 mt-0.5">
+        <p className="text-xs text-gray-600 mt-0.5">
           {t('compareSubtitle', { amount: formatPrice(initialInvestment) })}
         </p>
       </div>
@@ -109,7 +109,7 @@ export default async function CetesComparison({
         />
       </div>
 
-      <p className="text-[10px] text-gray-400 leading-snug mt-4">{t('disclaimer')}</p>
+      <p className="text-[10px] text-gray-600 leading-snug mt-4">{t('disclaimer')}</p>
     </div>
   );
 }
@@ -141,9 +141,9 @@ function VehicleCard({
   const baseClasses = highlighted
     ? 'bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] text-white border-transparent ring-2 ring-[#5CE0D2]/40'
     : 'bg-white text-gray-900 border border-gray-100';
-  const labelClasses = highlighted ? 'text-[#5CE0D2]/80' : 'text-gray-500';
+  const labelClasses = highlighted ? 'text-[#5CE0D2]/80' : 'text-gray-600';
   const valueClasses = highlighted ? 'text-white' : 'text-gray-900';
-  const subtitleClasses = highlighted ? 'text-white/60' : 'text-gray-500';
+  const subtitleClasses = highlighted ? 'text-white/60' : 'text-gray-600';
   const gainClasses = highlighted ? 'text-[#5CE0D2]' : 'text-emerald-600';
   const dividerClasses = highlighted ? 'border-white/10' : 'border-gray-100';
 
@@ -155,11 +155,11 @@ function VehicleCard({
         </span>
       )}
       <div className="flex items-center gap-2 mb-1">
-        <span className={highlighted ? 'text-[#5CE0D2]' : 'text-[#0D9488]'}>{icon}</span>
+        <span className={highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}>{icon}</span>
         <span className={`font-bold ${valueClasses}`}>{title}</span>
       </div>
       <div className={`text-[10px] mb-3 ${subtitleClasses}`}>{subtitle}</div>
-      <div className={`text-xs font-bold ${highlighted ? 'text-[#5CE0D2]' : 'text-[#0D9488]'} mb-4`}>{rateLabel}</div>
+      <div className={`text-xs font-bold ${highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'} mb-4`}>{rateLabel}</div>
 
       <div className={`space-y-2 pt-3 border-t ${dividerClasses}`}>
         <Row

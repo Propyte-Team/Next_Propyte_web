@@ -26,7 +26,7 @@ export default function Testimonials() {
         <div className="flex items-center justify-between mb-10">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t('title')}</h2>
-            <p className="text-gray-500 mt-1">{t('subtitle')}</p>
+            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
             <button
@@ -69,7 +69,7 @@ export default function Testimonials() {
               <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                 <div>
                   <div className="font-bold text-gray-900 text-sm">{item.name}</div>
-                  <div className="text-xs text-gray-500">{item.city}</div>
+                  <div className="text-xs text-gray-600">{item.city}</div>
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-semibold text-[#15803D]">
                   <ShieldCheck size={12} strokeWidth={2} />

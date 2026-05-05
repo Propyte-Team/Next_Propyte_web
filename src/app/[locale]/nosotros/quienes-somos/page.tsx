@@ -152,7 +152,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
             {missionCards.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} className="text-[#5CE0D2]" />
+                  <Icon size={24} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
@@ -187,7 +187,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
             {valueCards.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} className="text-[#5CE0D2]" />
+                  <Icon size={24} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>

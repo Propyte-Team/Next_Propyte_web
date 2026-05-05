@@ -16,7 +16,7 @@ export default function TrustBanner({ logos, title }: TrustBannerProps) {
     return (
       <section className="py-10 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <p className="text-sm text-gray-400">{t('comingSoon')}</p>
+          <p className="text-sm text-gray-600">{t('comingSoon')}</p>
         </div>
       </section>
     );
@@ -25,7 +25,7 @@ export default function TrustBanner({ logos, title }: TrustBannerProps) {
   return (
     <section className="py-10 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <p className="text-center text-sm text-gray-500 mb-6 font-medium uppercase tracking-wider">
+        <p className="text-center text-sm text-gray-600 mb-6 font-medium uppercase tracking-wider">
           {displayTitle}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">

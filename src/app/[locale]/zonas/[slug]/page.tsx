@@ -10,11 +10,11 @@ import {
   getSeasonalIndices,
   getDevelopments,
 } from '@/lib/supabase/queries';
-import { CITY_TO_AIRDNA, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
 
 // Generate zone slugs for static generation
-const ZONE_CONFIGS = Object.entries(AIRDNA_SUBMARKET_TO_ZONE).map(([sub, zone]) => ({
+const ZONE_CONFIGS = Object.entries(MARKET_SUBMARKET_TO_ZONE).map(([sub, zone]) => ({
   slug: zone.toLowerCase().replace(/\s+/g, '-').replace(/[\/]/g, '-'),
   zone,
   city: 'Cancun', // Default to Cancun for now
@@ -77,7 +77,7 @@ export default async function ZonePage({
   if (!zoneConfig) notFound();
 
   const { zone, city, submarket } = zoneConfig;
-  const market = CITY_TO_AIRDNA[city] || 'cancun';
+  const market = CITY_TO_MARKET_CODE[city] || 'cancun';
 
   const supabase = await createServerSupabaseClient();
 
@@ -138,7 +138,7 @@ export default async function ZonePage({
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumbs */}
-        <nav className="text-sm text-gray-500 mb-6">
+        <nav className="text-sm text-gray-600 mb-6">
           <a href={`/${locale}`} className="hover:text-gray-700">
             {tProp('breadcrumbHome')}
           </a>
@@ -155,7 +155,7 @@ export default async function ZonePage({
           <h1 className="text-3xl font-bold text-gray-900">
             {zone}
           </h1>
-          <p className="text-lg text-gray-500 mt-1">
+          <p className="text-lg text-gray-600 mt-1">
             {city} &middot; {tZonas('vacationMarketIntelligence')}
           </p>
         </div>

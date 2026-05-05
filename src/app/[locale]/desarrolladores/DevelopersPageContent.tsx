@@ -55,14 +55,14 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('archiveTitle')}</h1>
-          <p className="mt-2 text-gray-500 text-lg">{t('archiveSubtitle')}</p>
+          <p className="mt-2 text-gray-600 text-lg">{t('archiveSubtitle')}</p>
         </div>
 
         {/* FilterBar */}
         <div className="flex flex-wrap items-center gap-3 mb-6 bg-white rounded-2xl border border-gray-200 px-4 py-3 shadow-sm">
           {/* Search */}
           <div className="relative flex-shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
             <label htmlFor="dev-search" className="sr-only">{t('searchPlaceholder')}</label>
             <input
               id="dev-search"
@@ -88,11 +88,11 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
           </div>
 
           <div className="flex-1" />
-          <span className="text-sm text-gray-500 whitespace-nowrap">
+          <span className="text-sm text-gray-600 whitespace-nowrap">
             {t('archiveCount', { count: filtered.length })}
           </span>
         </div>
@@ -105,7 +105,7 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-600">
             <Building2 size={48} className="mx-auto mb-4 opacity-30" />
             <p className="text-lg font-medium">{t('noResults')}</p>
           </div>
@@ -146,7 +146,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
         <div className="min-w-0">
           <p className="font-bold text-[#1A2F3F] text-sm leading-tight truncate">{dev.name}</p>
           {dev.verified && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0D9488] mt-0.5">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0F766E] mt-0.5">
               <BadgeCheck size={11} />
               {t('verified')}
             </span>
@@ -156,7 +156,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
 
       {/* City */}
       {dev.city && (
-        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+        <div className="flex items-center gap-1.5 text-xs text-gray-600">
           <MapPin size={12} />
           <span>{dev.city}</span>
         </div>
@@ -165,7 +165,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
       {/* CTA */}
       <Link
         href={`/${locale}/desarrollos?search=${encodeURIComponent(dev.name)}`}
-        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-[#5CE0D2]/10 text-[#0D9488] rounded-xl hover:bg-[#5CE0D2]/20 transition-colors gap-1.5"
+        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-[#5CE0D2]/10 text-[#0F766E] rounded-xl hover:bg-[#5CE0D2]/20 transition-colors gap-1.5"
       >
         {t('viewProjects')} <ArrowRight size={12} />
       </Link>
@@ -190,7 +190,7 @@ function JoinBanner() {
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
             <a
               href="#registro"
-              className="h-12 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+              className="h-12 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
             >
               {t('joinBannerCta')} <ArrowRight size={16} />
             </a>
@@ -229,17 +229,17 @@ function ValueProposition() {
     <section className="py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
-          <span className="text-[#0D9488] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
+          <span className="text-[#0F766E] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('valueSubtitle')}</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/20 hover:shadow-lg transition-all group">
               <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#5CE0D2]/20 transition-colors">
-                <Icon size={24} className="text-[#0D9488]" />
+                <Icon size={24} className="text-[#0F766E]" />
               </div>
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -265,7 +265,7 @@ function HowItWorks() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('processTitle')}</h2>
-          <p className="mt-3 text-gray-500 text-lg">{t('processSubtitle')}</p>
+          <p className="mt-3 text-gray-600 text-lg">{t('processSubtitle')}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map(({ num, icon: Icon, title, desc }) => (
@@ -273,9 +273,9 @@ function HowItWorks() {
               <div className="w-10 h-10 mx-auto mb-4 bg-[#1A2F3F] rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">{num}</span>
               </div>
-              <Icon size={32} className="mx-auto mb-3 text-[#5CE0D2]" />
+              <Icon size={32} className="mx-auto mb-3 text-[#0F766E]" />
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -316,11 +316,11 @@ function FAQ() {
                 >
                   <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
                   {isOpen
-                    ? <ChevronUp size={20} className="text-[#5CE0D2] flex-shrink-0" />
-                    : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />}
+                    ? <ChevronUp size={20} className="text-[#0F766E] flex-shrink-0" />
+                    : <ChevronDown size={20} className="text-gray-600 flex-shrink-0" />}
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-50 pt-4">
+                  <div className="px-5 pb-5 text-gray-600 text-sm leading-relaxed border-t border-gray-50 pt-4">
                     {a}
                   </div>
                 )}
@@ -435,7 +435,7 @@ function DeveloperForm() {
                   <CheckCircle size={32} className="text-green-500" />
                 </div>
                 <h3 className="text-xl font-bold text-[#1A2F3F] mb-2">{t('formSuccess')}</h3>
-                <p className="text-gray-500">{t('formSuccessDesc')}</p>
+                <p className="text-gray-600">{t('formSuccessDesc')}</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -502,7 +502,7 @@ function DeveloperForm() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {status === 'sending' ? t('formSending') : t('formSubmit')}
                   {status === 'idle' && <ArrowRight size={18} />}

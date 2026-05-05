@@ -18,7 +18,7 @@ export default function HowItWorks() {
           {steps.map((step, i) => (
             <div key={i} className="text-center">
               <div className="w-16 h-16 mx-auto mb-4 bg-[#5CE0D2]/10 rounded-full flex items-center justify-center">
-                <step.icon size={28} className="text-[#5CE0D2]" />
+                <step.icon size={28} className="text-[#0F766E]" />
               </div>
               <h3 className="text-xl font-semibold text-[#2C2C2C] mb-2">{step.title}</h3>
               <p className="text-gray-600 leading-relaxed">{step.desc}</p>

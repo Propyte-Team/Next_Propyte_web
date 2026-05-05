@@ -50,13 +50,13 @@ export default function MortgageCalculator() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#5CE0D2]/10 rounded-full mb-3">
-            <Calculator size={14} className="text-[#0D9488]" />
-            <span className="text-[#0D9488] text-xs font-semibold uppercase tracking-wide">
+            <Calculator size={14} className="text-[#0F766E]" />
+            <span className="text-[#0F766E] text-xs font-semibold uppercase tracking-wide">
               {t('eyebrow')}
             </span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-2">{t('title')}</h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">{t('subtitle')}</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -159,7 +159,7 @@ export default function MortgageCalculator() {
           </div>
         </div>
 
-        <p className="text-xs text-gray-400 text-center mt-8 max-w-2xl mx-auto">
+        <p className="text-xs text-gray-600 text-center mt-8 max-w-2xl mx-auto">
           {t('disclaimer')}
         </p>
       </div>
@@ -188,7 +188,7 @@ function Slider({
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-semibold text-[#1A2F3F]">{label}</label>
-        <span className="text-sm font-bold text-[#0D9488] tabular-nums">{format(value)}</span>
+        <span className="text-sm font-bold text-[#0F766E] tabular-nums">{format(value)}</span>
       </div>
       <input
         type="range"

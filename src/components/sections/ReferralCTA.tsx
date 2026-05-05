@@ -14,11 +14,11 @@ export default function ReferralCTA() {
             <h3 className="text-lg font-bold text-[#2C2C2C] mb-1">
               {t('title')}
             </h3>
-            <p className="text-sm text-gray-500">{t('subtitle')}</p>
+            <p className="text-sm text-gray-600">{t('subtitle')}</p>
           </div>
           <Link
             href={`/${locale}/corredores`}
-            className="inline-flex items-center gap-2 h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-white font-bold text-sm rounded-lg transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-lg transition-colors whitespace-nowrap"
           >
             {t('cta')} <ArrowRight size={16} />
           </Link>

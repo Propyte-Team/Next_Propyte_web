@@ -193,7 +193,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
             </span>
           )}
         </button>
-        <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
+        <span className="text-sm text-gray-600 whitespace-nowrap flex-shrink-0">
           {t('results', { count: resultCount })}
         </span>
       </div>
@@ -202,7 +202,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
       <div className="hidden md:flex items-center gap-2 overflow-x-auto no-scrollbar">
         {/* Search input */}
         <div className="relative flex-shrink-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
           <label htmlFor="marketplace-search" className="sr-only">
             {t('searchPlaceholder')}
           </label>
@@ -240,7 +240,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
         {/* Price pill */}
         <PillDropdown label={t('filterPrice')} activeLabel={priceLabel} isActive={priceActive}>
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('filterPriceRange')}</p>
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">{t('filterPriceRange')}</p>
             <div className="flex items-center gap-2">
               <input
                 type="number"
@@ -249,7 +249,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 placeholder="Min"
                 className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
               />
-              <span className="text-gray-400 text-sm">—</span>
+              <span className="text-gray-600 text-sm">—</span>
               <input
                 type="number"
                 value={filters.priceMax < MAX_PRICE ? filters.priceMax : ''}
@@ -268,7 +268,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 <button
                   key={p.label}
                   onClick={() => { onFilterChange('priceMin', p.min); onFilterChange('priceMax', p.max); }}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-[#5CE0D2] hover:text-[#5CE0D2] transition-colors"
+                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-[#0F766E] hover:text-[#0F766E] transition-colors"
                 >
                   {p.label}
                 </button>
@@ -348,7 +348,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
         </div>
 
         {/* Result count */}
-        <span className="text-sm text-gray-500 whitespace-nowrap flex-shrink-0">
+        <span className="text-sm text-gray-600 whitespace-nowrap flex-shrink-0">
           {t('results', { count: resultCount })}
         </span>
       </div>
@@ -370,7 +370,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.85, y: -4 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.5 }}
-                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0D9488] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0F766E] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
               >
                 <span className="truncate max-w-[180px]">{chip.label}</span>
                 <X size={12} strokeWidth={2.5} aria-hidden="true" />
@@ -385,7 +385,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-500 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
               >
                 {t('clearAll')}
               </motion.button>

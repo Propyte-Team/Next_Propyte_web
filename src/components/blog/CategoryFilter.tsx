@@ -47,7 +47,7 @@ export default function CategoryFilter({ categories, active, allLabel, locale }:
           onClick={() => setCategory(cat)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
             active === cat
-              ? 'bg-[#5CE0D2] text-white'
+              ? 'bg-[#5CE0D2] text-[#0F1923]'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
           aria-pressed={active === cat}

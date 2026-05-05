@@ -48,11 +48,11 @@ function KPICard({ label, value, suffix = '', icon: Icon }: {
     <div className="bg-white rounded-xl border border-gray-200 p-4">
       <div className="flex items-center gap-2 mb-1">
         <Icon className="w-4 h-4 text-teal-600" />
-        <span className="text-xs text-gray-500">{label}</span>
+        <span className="text-xs text-gray-600">{label}</span>
       </div>
       <div className="text-2xl font-bold text-gray-900">
         {value != null ? (typeof value === 'number' ? value.toLocaleString() : value) : '—'}
-        {suffix && <span className="text-sm font-normal text-gray-500 ml-0.5">{suffix}</span>}
+        {suffix && <span className="text-sm font-normal text-gray-600 ml-0.5">{suffix}</span>}
       </div>
     </div>
   );
@@ -85,7 +85,7 @@ export function ZoneAnalytics({
           {score ? (
             <ZoneScoreCard score={score} />
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-400">
+            <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-600">
               {t('scoreUnavailable')}
             </div>
           )}
@@ -185,19 +185,19 @@ export function ZoneAnalytics({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-3 text-gray-500 font-medium">
+                  <th className="text-left py-2 px-3 text-gray-600 font-medium">
                     {t('development')}
                   </th>
-                  <th className="text-left py-2 px-3 text-gray-500 font-medium">
+                  <th className="text-left py-2 px-3 text-gray-600 font-medium">
                     {t('developer')}
                   </th>
-                  <th className="text-right py-2 px-3 text-gray-500 font-medium">
+                  <th className="text-right py-2 px-3 text-gray-600 font-medium">
                     {t('from')}
                   </th>
-                  <th className="text-right py-2 px-3 text-gray-500 font-medium">
+                  <th className="text-right py-2 px-3 text-gray-600 font-medium">
                     ROI
                   </th>
-                  <th className="text-center py-2 px-3 text-gray-500 font-medium">
+                  <th className="text-center py-2 px-3 text-gray-600 font-medium">
                     {t('stage')}
                   </th>
                 </tr>

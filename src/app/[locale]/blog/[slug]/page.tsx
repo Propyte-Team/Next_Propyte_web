@@ -137,7 +137,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Back link */}
         <Link
           href={`/${locale}/blog`}
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#5CE0D2] mb-6 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-[#0F766E] mb-6 transition-colors"
         >
           <ChevronLeft size={16} /> {t('backToListing')}
         </Link>
@@ -145,11 +145,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Article header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="px-3 py-1 text-xs font-semibold bg-[#5CE0D2] text-white rounded-full">
+            <span className="px-3 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded-full">
               {post.category}
             </span>
             {post.tags.slice(0, 3).map((tag) => (
-              <span key={tag} className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 text-gray-500 rounded-full">
+              <span key={tag} className="flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">
                 <Tag size={10} /> {tag}
               </span>
             ))}
@@ -163,7 +163,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <p className="text-lg text-gray-600 leading-relaxed mb-6">{post.excerpt}</p>
           )}
 
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 pb-6 border-b border-gray-100">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 pb-6 border-b border-gray-100">
             {/* Author */}
             <div className="flex items-center gap-2">
               {post.author_image ? (
@@ -213,7 +213,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div
             className="prose prose-lg prose-slate max-w-none
               prose-headings:text-[#1A2F3F] prose-headings:font-bold
-              prose-a:text-[#5CE0D2] prose-a:no-underline hover:prose-a:underline
+              prose-a:text-[#0F766E] prose-a:no-underline hover:prose-a:underline
               prose-strong:text-[#1A2F3F]
               prose-img:rounded-xl prose-img:shadow-card
               prose-blockquote:border-[#5CE0D2] prose-blockquote:text-gray-600

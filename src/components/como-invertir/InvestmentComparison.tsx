@@ -59,13 +59,13 @@ export default function InvestmentComparison() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#5CE0D2]/10 rounded-full mb-3">
-            <TrendingUp size={14} className="text-[#0D9488]" />
-            <span className="text-[#0D9488] text-xs font-semibold uppercase tracking-wide">
+            <TrendingUp size={14} className="text-[#0F766E]" />
+            <span className="text-[#0F766E] text-xs font-semibold uppercase tracking-wide">
               {t('eyebrow')}
             </span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-2">{t('title')}</h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">{t('subtitle')}</p>
+          <p className="text-gray-600 max-w-2xl mx-auto">{t('subtitle')}</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -90,10 +90,10 @@ export default function InvestmentComparison() {
               onChange={setYears}
             />
             <div className="pt-4 border-t border-gray-200">
-              <div className="text-xs uppercase tracking-wider text-gray-500 mb-2">
+              <div className="text-xs uppercase tracking-wider text-gray-600 mb-2">
                 {t('winnerLabel')}
               </div>
-              <div className="text-2xl font-bold text-[#0D9488]">{winnerLabel}</div>
+              <div className="text-2xl font-bold text-[#0F766E]">{winnerLabel}</div>
               <div className="text-sm text-gray-700 mt-1 tabular-nums">
                 +{format(winnerProfit)}
               </div>
@@ -142,7 +142,7 @@ export default function InvestmentComparison() {
                     d.highlight ? 'bg-[#5CE0D2]/10 ring-1 ring-[#5CE0D2]/30' : 'bg-gray-50'
                   }`}
                 >
-                  <div className="text-[10px] text-gray-500 uppercase tracking-wide">{d.name}</div>
+                  <div className="text-[10px] text-gray-600 uppercase tracking-wide">{d.name}</div>
                   <div className="text-sm font-bold text-[#1A2F3F] tabular-nums">
                     {(d.rate * 100).toFixed(1)}%
                   </div>
@@ -162,7 +162,7 @@ export default function InvestmentComparison() {
           </Link>
         </div>
 
-        <p className="text-xs text-gray-400 text-center mt-6 max-w-3xl mx-auto">
+        <p className="text-xs text-gray-600 text-center mt-6 max-w-3xl mx-auto">
           {t('disclaimer', { currency })}
         </p>
       </div>
@@ -191,7 +191,7 @@ function Slider({
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-semibold text-[#1A2F3F]">{label}</label>
-        <span className="text-sm font-bold text-[#0D9488] tabular-nums">{format(value)}</span>
+        <span className="text-sm font-bold text-[#0F766E] tabular-nums">{format(value)}</span>
       </div>
       <input
         type="range"

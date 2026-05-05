@@ -53,7 +53,7 @@ export default function Breadcrumbs({
       />
       <nav aria-label={ariaLabel} className="bg-white border-b border-gray-100">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-3">
-          <ol className="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-gray-500">
+          <ol className="flex flex-wrap items-center gap-1.5 text-xs md:text-sm text-gray-600">
             {fullTrail.map((item, i) => {
               const isLast = i === fullTrail.length - 1;
               const isFirst = i === 0;
@@ -72,7 +72,7 @@ export default function Breadcrumbs({
                   ) : (
                     <Link
                       href={item.href}
-                      className="hover:text-[#0D9488] transition-colors truncate max-w-[140px] md:max-w-[220px]"
+                      className="hover:text-[#0F766E] transition-colors truncate max-w-[140px] md:max-w-[220px]"
                     >
                       {isFirst ? (
                         <Home size={14} strokeWidth={2} className="inline-block -mt-0.5" aria-hidden="true" />

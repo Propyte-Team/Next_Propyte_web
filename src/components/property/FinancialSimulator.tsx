@@ -185,7 +185,7 @@ export default function FinancialSimulator({
             <div className="mt-3 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">
-                  Ocupación {hasAirdna ? '(AirDNA)' : '(estimada)'}
+                  Ocupación {hasAirdna ? '(datos)' : '(estimada)'}
                 </span>
                 <span className="font-medium text-white">{occupancy.toFixed(0)}%</span>
               </div>
@@ -198,7 +198,7 @@ export default function FinancialSimulator({
 
           <p className="text-[11px] text-gray-400 mt-3 leading-relaxed">
             {mode === 'vacacional'
-              ? `Estimación basada en ${hasAirdna ? 'datos AirDNA del mercado' : 'comparables vacacionales'}. ${hasAirdna ? `Ocupación real del mercado: ${airdnaOccupancy?.toFixed(1)}%.` : ''}`
+              ? `Estimación basada en ${hasAirdna ? 'datos de mercado' : 'comparables vacacionales'}. ${hasAirdna ? `Ocupación real del mercado: ${airdnaOccupancy?.toFixed(1)}%.` : ''}`
               : `Valor promedio analizado en nuestra base de datos con más de ${(totalComparables || 10000).toLocaleString()} registros, actualizada al ${freshnessDate}.`
             }
           </p>
@@ -207,7 +207,7 @@ export default function FinancialSimulator({
         {/* Expense breakdown (vacation only) */}
         {mode === 'vacacional' && (
           <div className="bg-white/5 rounded-xl p-3 mb-6 space-y-1.5 text-sm">
-            <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Desglose de gastos</div>
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">Desglose de gastos</div>
             <div className="flex justify-between">
               <span className="text-gray-400">Gastos operativos</span>
               <span className="text-gray-300">{Math.round(VAC.EXPENSE_RATIO * 100)}%</span>
@@ -248,7 +248,7 @@ export default function FinancialSimulator({
 
       {/* ── ROI Projection Card ── */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Retorno proyectado</h3>
+        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4">Retorno proyectado</h3>
         <div className="grid grid-cols-3 gap-4 mb-6">
           <ProjectionBlock label="1 año" value={`${results.roi1.toFixed(1)}%`} />
           <ProjectionBlock label="3 años" value={`${results.roi3.toFixed(1)}%`} />
@@ -256,21 +256,21 @@ export default function FinancialSimulator({
         </div>
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-gray-50 rounded-xl p-4 text-center">
-            <div className="text-xs text-gray-400 mb-1">TIR 5 años</div>
-            <div className="text-xl font-bold text-[#5CE0D2]">{results.irr5 != null ? formatPercentage(results.irr5) : '—'}</div>
+            <div className="text-xs text-gray-600 mb-1">TIR 5 años</div>
+            <div className="text-xl font-bold text-[#0F766E]">{results.irr5 != null ? formatPercentage(results.irr5) : '—'}</div>
           </div>
           <div className="bg-gray-50 rounded-xl p-4 text-center">
-            <div className="text-xs text-gray-400 mb-1">TIR 10 años</div>
-            <div className="text-xl font-bold text-[#5CE0D2]">{results.irr10 != null ? formatPercentage(results.irr10) : '—'}</div>
+            <div className="text-xs text-gray-600 mb-1">TIR 10 años</div>
+            <div className="text-xl font-bold text-[#0F766E]">{results.irr10 != null ? formatPercentage(results.irr10) : '—'}</div>
           </div>
         </div>
         <div className="bg-gray-50 rounded-xl p-4">
-          <div className="text-xs text-gray-400 mb-2">Valor proyectado (5 años)</div>
+          <div className="text-xs text-gray-600 mb-2">Valor proyectado (5 años)</div>
           <div className="text-xl font-bold text-[#2C2C2C] mb-2">{formatPrice(results.projectedValue)}</div>
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#22C55E] rounded-full transition-all" style={{ width: `${Math.min((results.projectedValue / price) * 50, 100)}%` }} />
           </div>
-          <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+          <div className="flex justify-between text-[10px] text-gray-600 mt-1">
             <span>{formatPrice(price)}</span>
             <span>{formatPrice(results.projectedValue)}</span>
           </div>
@@ -279,7 +279,7 @@ export default function FinancialSimulator({
 
       {/* ── Financing Simulator ── */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-5">{t('title')}</h3>
+        <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-5">{t('title')}</h3>
         <div className="space-y-5">
           <div>
             <div className="flex justify-between text-sm mb-1">
@@ -292,7 +292,7 @@ export default function FinancialSimulator({
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('term')}</label>
             <div className="flex gap-2 flex-wrap">
               {property.financing.months.map(m => (
-                <button key={m} onClick={() => setMonths(m)} className={`px-4 py-2 rounded-lg text-sm border transition-colors ${months === m ? 'bg-[#5CE0D2] text-white border-[#5CE0D2]' : 'border-gray-200 hover:border-[#5CE0D2]'}`}>
+                <button key={m} onClick={() => setMonths(m)} className={`px-4 py-2 rounded-lg text-sm border transition-colors ${months === m ? 'bg-[#5CE0D2] text-[#0F1923] border-[#5CE0D2]' : 'border-gray-200 hover:border-[#5CE0D2]'}`}>
                   {m} {t('months')}
                 </button>
               ))}
@@ -302,7 +302,7 @@ export default function FinancialSimulator({
             <label className="block text-sm font-medium text-gray-700 mb-1">{t('interestRate')}</label>
             <div className="flex items-center gap-2">
               <input type="number" min={0} max={15} step={0.5} value={interestRate} onChange={e => setInterestRate(Number(e.target.value))} className="w-24 h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none" />
-              <span className="text-sm text-gray-500">%</span>
+              <span className="text-sm text-gray-600">%</span>
             </div>
           </div>
 
@@ -311,7 +311,7 @@ export default function FinancialSimulator({
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <label className="font-medium text-gray-700">
-                  Tasa de ocupación {hasAirdna && <span className="text-[10px] text-[#5CE0D2] ml-1">AirDNA</span>}
+                  Tasa de ocupación {hasAirdna && <span className="text-[10px] text-[#0F766E] ml-1">mercado</span>}
                 </label>
                 <span className="font-semibold">{occupancy.toFixed(0)}%</span>
               </div>
@@ -336,7 +336,7 @@ export default function FinancialSimulator({
         </div>
       </div>
 
-      <p className="text-[11px] text-gray-400 leading-relaxed px-2">{t('disclaimer')}</p>
+      <p className="text-[11px] text-gray-600 leading-relaxed px-2">{t('disclaimer')}</p>
     </div>
   );
 }
@@ -364,8 +364,8 @@ function MetricRow({ label, value, accent, color }: { label: string; value: stri
 function ProjectionBlock({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 text-center ${highlight ? 'bg-[#0F1923] text-white' : 'bg-gray-50'}`}>
-      <div className="text-xl font-bold text-[#5CE0D2]">{value}</div>
-      <div className="text-xs mt-1 text-gray-400">{label}</div>
+      <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}`}>{value}</div>
+      <div className={`text-xs mt-1 ${highlight ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
   Database, Clock, ChevronRight, Info,
 } from 'lucide-react';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
-import { CITY_TO_AIRDNA } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
 
 // ── Types ────────────────────────────────────────────
 interface Comparable {
@@ -285,17 +285,17 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
     fetchData();
   }, []);
 
-  // Fetch AirDNA data when city filter changes.
+  // Fetch market data when city filter changes.
   // Standard async data-load pattern (clear stale data + loading indicator on dep change).
   useEffect(() => {
     const city = filters.city;
-    if (!city || !CITY_TO_AIRDNA[city]) {
+    if (!city || !CITY_TO_MARKET_CODE[city]) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clear stale state on filter change; refactor to useTransition pending
       setAirdnaData(null);
       return;
     }
     setAirdnaLoading(true);
-    fetch(`/api/airdna-market?city=${encodeURIComponent(city)}`)
+    fetch(`/api/data-market?city=${encodeURIComponent(city)}`)
       .then(r => r.ok ? r.json() : null)
       .then(d => setAirdnaData(d?.summary || null))
       .catch(() => setAirdnaData(null))
@@ -445,7 +445,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#5CE0D2]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#0F766E]" />
       </div>
     );
   }
@@ -454,8 +454,8 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
         <BarChart3 size={48} className="text-gray-300" />
-        <p className="text-gray-500 text-center">{t('noData')}</p>
-        <p className="text-sm text-gray-400 text-center">{t('noDataHint')}</p>
+        <p className="text-gray-600 text-center">{t('noData')}</p>
+        <p className="text-sm text-gray-600 text-center">{t('noDataHint')}</p>
       </div>
     );
   }
@@ -509,11 +509,11 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
       {data.source_stats && data.source_stats.length > 0 && (
         <section className="max-w-[1280px] mx-auto px-4 md:px-6 -mt-3 mb-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Database size={14} className="text-gray-400" />
+            <Database size={14} className="text-gray-600" />
             {data.source_stats.map(s => (
               <span key={s.source} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5CE0D2]" />
-                {s.source} <span className="text-gray-400">({s.count.toLocaleString()})</span>
+                {s.source} <span className="text-gray-600">({s.count.toLocaleString()})</span>
               </span>
             ))}
             {data.data_freshness && (() => {
@@ -521,7 +521,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
               const daysAgo = Math.floor((Date.now() - new Date(data.data_freshness).getTime()) / 86400000);
               const dotColor = daysAgo <= 7 ? 'bg-[#22C55E]' : daysAgo <= 30 ? 'bg-yellow-400' : 'bg-[#EF4444]';
               return (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-500 ml-auto">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-600 ml-auto">
                   <Clock size={10} />
                   <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
                   {t('dataFreshness')}: {daysAgo <= 0 ? t('today') : `${daysAgo}d`}
@@ -540,16 +540,16 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center gap-2 text-sm font-semibold text-gray-700"
             >
-              <SlidersHorizontal size={16} className="text-[#5CE0D2]" />
+              <SlidersHorizontal size={16} className="text-[#0F766E]" />
               {t('filters')}
               {activeFilterCount > 0 && (
-                <span className="px-1.5 py-0.5 bg-[#5CE0D2] text-white text-[10px] font-bold rounded-full">
+                <span className="px-1.5 py-0.5 bg-[#0F766E] text-white text-[10px] font-bold rounded-full">
                   {activeFilterCount}
                 </span>
               )}
             </button>
             {activeFilterCount > 0 && (
-              <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-500 hover:text-[#B91C1C] transition-colors">
+              <button onClick={clearFilters} className="flex items-center gap-1 text-xs text-gray-600 hover:text-[#B91C1C] transition-colors">
                 <X size={12} />
                 {t('clearFilters')}
               </button>
@@ -560,7 +560,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3">
               {/* City */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterCity')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterCity')}</label>
                 <select
                   value={filters.city}
                   onChange={e => setFilters(f => ({ ...f, city: e.target.value, zone: '' }))}
@@ -573,7 +573,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Zone / Colonia */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterZone')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterZone')}</label>
                 <select
                   value={filters.zone}
                   onChange={e => setFilters(f => ({ ...f, zone: e.target.value }))}
@@ -586,7 +586,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Property Type */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterType')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterType')}</label>
                 <select
                   value={filters.propertyType}
                   onChange={e => setFilters(f => ({ ...f, propertyType: e.target.value }))}
@@ -599,7 +599,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Bedrooms */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterBeds')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterBeds')}</label>
                 <select
                   value={filters.bedrooms}
                   onChange={e => setFilters(f => ({ ...f, bedrooms: e.target.value }))}
@@ -612,7 +612,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Rental Type */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterRentalType')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentalType')}</label>
                 <select
                   value={filters.rentalType}
                   onChange={e => setFilters(f => ({ ...f, rentalType: e.target.value }))}
@@ -626,7 +626,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Furnished */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterFurnished')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterFurnished')}</label>
                 <select
                   value={filters.furnished}
                   onChange={e => setFilters(f => ({ ...f, furnished: e.target.value }))}
@@ -640,7 +640,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Rent Min */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterRentMin')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentMin')}</label>
                 <input
                   type="number"
                   value={filters.rentMin || ''}
@@ -652,7 +652,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Rent Max */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterRentMax')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentMax')}</label>
                 <input
                   type="number"
                   value={filters.rentMax || ''}
@@ -664,7 +664,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
               {/* Min Samples per City */}
               <div>
-                <label className="block text-[10px] font-semibold text-gray-400 uppercase mb-1">{t('filterMinSamples')}</label>
+                <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterMinSamples')}</label>
                 <input
                   type="number"
                   value={filters.minSamples || ''}
@@ -678,11 +678,11 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
           )}
 
           {/* Active filter count + filtered result count */}
-          <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+          <div className="mt-3 flex items-center gap-2 text-xs text-gray-600">
             <span className="font-semibold text-gray-700">{filtered.length.toLocaleString()}</span>
             {t('ofTotal', { total: data.comparables.length.toLocaleString() })}
             {activeFilterCount > 0 && (
-              <span className="text-[#5CE0D2] font-medium">
+              <span className="text-[#0F766E] font-medium">
                 ({activeFilterCount} {activeFilterCount === 1 ? 'filtro' : 'filtros'})
               </span>
             )}
@@ -706,8 +706,8 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
           {metrics.avgM2 && (
             <div className="mt-3 text-center">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-100 text-sm">
-                <span className="text-gray-500">{t('rentPerM2')}:</span>
-                <span className="font-bold text-[#5CE0D2]">${metrics.avgM2}/m²</span>
+                <span className="text-gray-600">{t('rentPerM2')}:</span>
+                <span className="font-bold text-[#0F766E]">${metrics.avgM2}/m²</span>
               </span>
             </div>
           )}
@@ -728,7 +728,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
             <BreakdownCard
               title={t('filterCity')}
               data={metrics.byCity}
-              icon={<MapPin size={14} className="text-gray-400" />}
+              icon={<MapPin size={14} className="text-gray-600" />}
               activeKey={filters.city}
               onSelect={key => setFilters(f => ({ ...f, city: f.city === key ? '' : key, zone: '' }))}
             />
@@ -737,7 +737,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
             <BreakdownCard
               title={t('filterZone')}
               data={metrics.byZone}
-              icon={<MapPin size={14} className="text-gray-400" />}
+              icon={<MapPin size={14} className="text-gray-600" />}
               activeKey={filters.zone}
               onSelect={key => setFilters(f => ({ ...f, zone: f.zone === key ? '' : key }))}
             />
@@ -746,7 +746,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
             <BreakdownCard
               title={t('filterType')}
               data={metrics.byType}
-              icon={<Building2 size={14} className="text-gray-400" />}
+              icon={<Building2 size={14} className="text-gray-600" />}
               activeKey={filters.propertyType}
               onSelect={key => setFilters(f => ({ ...f, propertyType: f.propertyType === key ? '' : key }))}
               formatKey={k => k.replace('_', ' ')}
@@ -764,13 +764,13 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
         </section>
       )}
 
-      {/* AirDNA Market Section */}
+      {/* Market Data Section */}
       {airdnaData && filters.city && (
         <section className="max-w-[1280px] mx-auto px-4 md:px-6 mt-8">
           <div className="bg-[#0F1923] rounded-2xl p-6 md:p-8 text-white">
             <div className="flex items-center gap-3 mb-6">
               <h3 className="text-lg font-semibold">Mercado Vacacional — {filters.city}</h3>
-              <span className="px-2 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] font-bold rounded-full uppercase tracking-wider">AirDNA</span>
+              <span className="px-2 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] font-bold rounded-full uppercase tracking-wider">Data</span>
             </div>
 
             {/* Key metrics */}
@@ -811,7 +811,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
                     .map(([key, value]) => (
                       <div key={key} className="bg-white/5 rounded-lg p-2 text-center">
                         <div className="text-sm font-bold text-white">${value.toLocaleString()}</div>
-                        <div className="text-[10px] text-gray-500">{key.replace('_', ' ')}</div>
+                        <div className="text-[10px] text-gray-400">{key.replace('_', ' ')}</div>
                       </div>
                     ))}
                 </div>
@@ -846,13 +846,13 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
                     const month = new Date(point.date).toLocaleDateString('es-MX', { month: 'short' });
                     return (
                       <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                        <div className="text-[9px] text-gray-500">{Math.round(point.value)}%</div>
+                        <div className="text-[9px] text-gray-400">{Math.round(point.value)}%</div>
                         <div
                           className="w-full bg-[#5CE0D2]/60 rounded-t"
                           style={{ height: `${Math.max(height, 5)}%` }}
                           title={`${month}: ${Math.round(point.value)}%`}
                         />
-                        <div className="text-[8px] text-gray-600">{month}</div>
+                        <div className="text-[8px] text-gray-400">{month}</div>
                       </div>
                     );
                   })}
@@ -888,8 +888,8 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
             )}
 
             {airdnaData.latest_date && (
-              <p className="text-[10px] text-gray-500 mt-4">
-                Fuente: AirDNA · Datos al {new Date(airdnaData.latest_date).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}
+              <p className="text-[10px] text-gray-400 mt-4">
+                Fuente: Datos de Mercado · Datos al {new Date(airdnaData.latest_date).toLocaleDateString('es-MX', { month: 'long', year: 'numeric' })}
               </p>
             )}
           </div>
@@ -902,7 +902,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{t('rankingTitle')}</h2>
-              <p className="text-sm text-gray-500 mt-1">{t('rankingSubtitle')}</p>
+              <p className="text-sm text-gray-600 mt-1">{t('rankingSubtitle')}</p>
             </div>
             <div className="relative">
               <select
@@ -917,7 +917,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
                 <option value="estimated_rent">{t('sortRent')}</option>
                 <option value="price_min">{t('sortPrice')}</option>
               </select>
-              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
             </div>
           </div>
 
@@ -926,33 +926,33 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">#</th>
-                    <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('thDevelopment')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('thPrice')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3">{t('thEstRent')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden md:table-cell">{t('thYield')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden md:table-cell">{t('thCapRate')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden lg:table-cell">{t('thIrr5')}</th>
-                    <th className="text-right text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 hidden lg:table-cell">{t('thCashFlow')}</th>
+                    <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3">#</th>
+                    <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3">{t('thDevelopment')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3">{t('thPrice')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3">{t('thEstRent')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3 hidden md:table-cell">{t('thYield')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3 hidden md:table-cell">{t('thCapRate')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3 hidden lg:table-cell">{t('thIrr5')}</th>
+                    <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3 hidden lg:table-cell">{t('thCashFlow')}</th>
                     <th className="px-3 py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {sortedDevelopments.map((dev, i) => (
                     <tr key={dev.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="px-5 py-4 text-sm text-gray-400 font-mono">{i + 1}</td>
+                      <td className="px-5 py-4 text-sm text-gray-600 font-mono">{i + 1}</td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
                           {dev.image && <Image src={dev.image} alt={dev.name} width={40} height={40} unoptimized className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />}
                           <div className="min-w-0">
                             <div className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{dev.name}</div>
-                            <div className="text-xs text-gray-400 flex items-center gap-1"><MapPin size={10} />{dev.zone ? `${dev.zone}, ` : ''}{dev.city}</div>
+                            <div className="text-xs text-gray-600 flex items-center gap-1"><MapPin size={10} />{dev.zone ? `${dev.zone}, ` : ''}{dev.city}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700">{dev.price_min ? formatPrice(dev.price_min) : '—'}</td>
                       <td className="px-5 py-4 text-right">
-                        <div className="text-sm font-semibold text-[#5CE0D2]">{dev.estimated_rent ? formatPrice(dev.estimated_rent) : '—'}</div>
+                        <div className="text-sm font-semibold text-[#0F766E]">{dev.estimated_rent ? formatPrice(dev.estimated_rent) : '—'}</div>
                       </td>
                       <td className="px-5 py-4 text-right text-sm font-semibold text-gray-700 hidden md:table-cell">{dev.rent_yield_gross != null ? formatPercentage(dev.rent_yield_gross) : '—'}</td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700 hidden md:table-cell">{dev.cap_rate != null ? formatPercentage(dev.cap_rate) : '—'}</td>
@@ -961,7 +961,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
                         {dev.monthly_net_flow != null ? formatPrice(dev.monthly_net_flow) : '—'}
                       </td>
                       <td className="px-3 py-4">
-                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#5CE0D2]/10 text-gray-400 hover:text-[#5CE0D2] transition-colors">
+                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#0F766E]/10 text-gray-600 hover:text-[#0F766E] transition-colors">
                           <ArrowUpRight size={16} />
                         </Link>
                       </td>
@@ -976,7 +976,7 @@ export default function RentalAnalysisDashboard({ locale }: { locale: string }) 
 
       {/* Disclaimer */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pb-10">
-        <p className="text-xs text-gray-400 text-center">
+        <p className="text-xs text-gray-600 text-center">
           {t('disclaimer')}
           {data.model && ` · ${t('modelVersion')}: ${data.model.version}`}
         </p>
@@ -1006,7 +1006,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
 
   return (
     <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4">
-      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Distribución de rentas</div>
+      <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Distribución de rentas</div>
       <div className="flex items-end gap-1 h-24">
         {buckets.map((count, i) => {
           const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
@@ -1022,7 +1022,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
           );
         })}
       </div>
-      <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+      <div className="flex justify-between text-[10px] text-gray-600 mt-1">
         <span>${Math.round(min / 1000)}K</span>
         <span>${Math.round((min + max) / 2000)}K</span>
         <span>${Math.round(max / 1000)}K</span>
@@ -1037,7 +1037,7 @@ function MethodologySection({ t }: { t: (key: string) => string }) {
     <section className="max-w-[1280px] mx-auto px-4 md:px-6 mt-4">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-700 transition-colors"
       >
         <Info size={14} />
         <span>{t('methodology')}</span>
@@ -1055,7 +1055,7 @@ function MethodologySection({ t }: { t: (key: string) => string }) {
 function MetricCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 border ${highlight ? 'bg-[#0F1923] border-[#0F1923] text-white' : 'bg-white border-gray-100'}`}>
-      <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#5CE0D2]' : 'text-gray-400'}`}>{label}</div>
+      <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#5CE0D2]' : 'text-gray-600'}`}>{label}</div>
       <div className={`text-lg font-bold ${highlight ? 'text-white' : 'text-gray-900'}`}>{value}</div>
     </div>
   );
@@ -1091,11 +1091,11 @@ function BreakdownCard({
             <div className="flex items-center gap-2 min-w-0">
               {icon}
               <span className="text-sm capitalize truncate">{fk(key)}</span>
-              <span className="text-[10px] text-gray-400 flex-shrink-0">({stat.count})</span>
+              <span className="text-[10px] text-gray-600 flex-shrink-0">({stat.count})</span>
             </div>
             <div className="text-right flex-shrink-0 ml-2">
               <div className="text-sm font-semibold">{formatPrice(stat.median)}</div>
-              <div className="text-[10px] text-gray-400">prom: {formatPrice(stat.avg)}</div>
+              <div className="text-[10px] text-gray-600">prom: {formatPrice(stat.avg)}</div>
             </div>
           </button>
         ))}

@@ -97,6 +97,15 @@ const lightTheme: ThemeTokens = {
     footerPaddingTop: 48,
     footerPaddingBottom: 48,
   },
+  media: {
+    aspectRatioCard: '4/3',
+    aspectRatioHero: '16/9',
+    aspectRatioSquare: '1/1',
+    aspectRatioPortrait: '3/4',
+    imageObjectFit: 'cover' as const,
+    imageBorderRadius: 12,
+    cardImageHeight: 220,
+  },
 };
 
 // Dark: clona light y sobreescribe roles semánticos.
@@ -121,6 +130,8 @@ const darkTheme: ThemeTokens = {
       { x: 0, y: 20, blur: 40, spread: 0, color: 'rgba(0, 0, 0, 0.7)' },
     ],
   },
+  // media is identical for both themes
+  media: lightTheme.media,
 };
 
 export const DEFAULT_TOKENS: DesignTokens = {

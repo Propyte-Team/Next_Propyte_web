@@ -142,7 +142,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
   return (
     <div className="space-y-8">
       {/* Data freshness */}
-      <p className="text-xs text-gray-500 text-center">
+      <p className="text-xs text-gray-600 text-center">
         {isEn
           ? `Propyte analysis based on +2.5M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
           : `Análisis Propyte basado en +2.5 millones de registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
@@ -152,7 +152,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       <div className="flex flex-wrap gap-3 items-center">
         {/* City selector grouped by region */}
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2">
-          <MapPin className="w-4 h-4 text-gray-400" />
+          <MapPin className="w-4 h-4 text-gray-600" />
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
@@ -177,7 +177,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
 
         {/* Search input */}
         <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3 py-2 flex-1 min-w-[200px]">
-          <Search className="w-4 h-4 text-gray-400" />
+          <Search className="w-4 h-4 text-gray-600" />
           <input
             type="text"
             value={search}

@@ -95,12 +95,12 @@ export default function BrokerCommissionsTable({
                     <td className="px-4 py-3 text-gray-700">
                       {stageLabels[c.stage] ?? c.stage}
                       {note && (
-                        <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
                           {note}
                         </p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums font-bold text-[#0D9488] text-lg">
+                    <td className="px-4 py-3 text-right tabular-nums font-bold text-[#0F766E] text-lg">
                       {Number(c.commission_pct).toFixed(2)}%
                     </td>
                   </tr>
@@ -110,7 +110,7 @@ export default function BrokerCommissionsTable({
           </table>
         </div>
 
-        <p className="text-xs text-center text-gray-500 mt-4 max-w-2xl mx-auto">
+        <p className="text-xs text-center text-gray-600 mt-4 max-w-2xl mx-auto">
           {isEs
             ? 'Comisiones referenciales sobre precio de venta. Sujeto a contrato firmado y políticas vigentes. Negociable según volumen y exclusividad.'
             : 'Reference commissions on sale price. Subject to signed contract and current policies. Negotiable based on volume and exclusivity.'}

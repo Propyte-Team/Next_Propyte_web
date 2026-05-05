@@ -125,7 +125,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
                     </div>
                     <div>
                       <div className="w-10 h-10 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-3">
-                        <Icon size={20} className="text-[#0D9488]" />
+                        <Icon size={20} className="text-[#0F766E]" />
                       </div>
                       <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{step.title}</h3>
                       <p className="text-sm text-gray-600 leading-relaxed">{step.desc}</p>
@@ -199,7 +199,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
       {/* Legal disclaimer */}
       <div className="py-6 bg-gray-50">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <p className="text-xs text-gray-400 text-center">{t('disclaimer')}</p>
+          <p className="text-xs text-gray-600 text-center">{t('disclaimer')}</p>
         </div>
       </div>
     </>

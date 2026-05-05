@@ -27,7 +27,7 @@ export default function CurrencyToggle({ tone = 'light' }: CurrencyToggleProps =
     : 'bg-[#1A2F3F] text-white';
   const inactiveCls = isDark
     ? 'text-white/60 hover:text-white'
-    : 'text-gray-500 hover:text-[#1A2F3F]';
+    : 'text-gray-600 hover:text-[#1A2F3F]';
 
   return (
     <div

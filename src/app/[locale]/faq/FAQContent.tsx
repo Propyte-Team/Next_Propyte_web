@@ -65,7 +65,7 @@ export default function FAQContent({
                   <span className="font-semibold text-[#1A2F3F] pr-4">{faq.q}</span>
                   <ChevronDown
                     size={20}
-                    className={`flex-shrink-0 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    className={`flex-shrink-0 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                   />
                 </button>
                 {isOpen && (
@@ -79,7 +79,7 @@ export default function FAQContent({
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-gray-500 mb-4">{t('ctaStillHave')}</p>
+          <p className="text-gray-600 mb-4">{t('ctaStillHave')}</p>
           <Link
             href={`/${locale}/contacto`}
             className="inline-flex items-center gap-2 px-8 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"

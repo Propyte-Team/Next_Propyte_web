@@ -38,7 +38,7 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
             <MapPin size={24} strokeWidth={2} className="text-[#1A2F3F]" />
           </div>
           <p className="text-gray-600 font-medium">{t('mapApiKeyMissing')}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('mapApiKeyHint')}</p>
+          <p className="text-sm text-gray-600 mt-1">{t('mapApiKeyHint')}</p>
         </div>
       </div>
     );
@@ -49,7 +49,7 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8">
           <p className="text-gray-600 font-medium">{t('mapError')}</p>
-          <p className="text-sm text-gray-400 mt-1">{t('mapErrorHint')}</p>
+          <p className="text-sm text-gray-600 mt-1">{t('mapErrorHint')}</p>
         </div>
       </div>
     );
@@ -68,7 +68,7 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
             <MapPin size={24} strokeWidth={1.75} className="text-[#F5A623]" />
           </div>
           <p className="text-gray-600 font-medium">{t('mapNoCoords')}</p>
-          <p className="text-sm text-gray-400 mt-2">{t('mapNoCoordsHint')}</p>
+          <p className="text-sm text-gray-600 mt-2">{t('mapNoCoordsHint')}</p>
         </div>
       </div>
     );
@@ -107,10 +107,10 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
           >
             <div className="p-1 min-w-[180px]">
               <div className="text-sm font-bold text-[#1A2F3F] mb-1 line-clamp-1">{selected.name}</div>
-              <div className="text-xs text-gray-500 mb-2">
+              <div className="text-xs text-gray-600 mb-2">
                 {selected.location.zone}, {selected.location.city}
               </div>
-              <div className="text-sm font-bold text-[#0D9488]">
+              <div className="text-sm font-bold text-[#0F766E]">
                 {formatPriceShort(selected.price.mxn)}
               </div>
             </div>

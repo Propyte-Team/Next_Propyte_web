@@ -39,7 +39,7 @@ export default function FeaturedPostHero({ post, locale, t }: FeaturedPostHeroPr
           {/* Content overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
             <div className="flex items-center gap-3 mb-3">
-              <span className="px-3 py-1 text-xs font-semibold bg-[#5CE0D2] text-white rounded-full">
+              <span className="px-3 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded-full">
                 {t.featured}
               </span>
               <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">

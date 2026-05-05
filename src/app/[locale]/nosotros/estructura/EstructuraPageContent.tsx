@@ -70,7 +70,7 @@ function OrgCard({ role, title, name, color }: { role: string; title: string; na
   return (
     <div className="bg-white rounded-xl shadow-md p-5 text-center min-w-[180px]" style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}>
       <span className="text-xs font-bold uppercase tracking-wider" style={{ color }}>{role}</span>
-      <p className="text-xs text-gray-500 mt-1">{title}</p>
+      <p className="text-xs text-gray-600 mt-1">{title}</p>
       <p className="font-semibold text-gray-900 mt-1 text-sm">{name}</p>
     </div>
   );
@@ -95,7 +95,7 @@ function DeptAccordion({ dept }: { dept: typeof departments[0] }) {
             {dept.corp && <span className="ml-2 text-xs font-normal text-gray-600">(Corp.)</span>}
           </h3>
         </div>
-        {open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+        {open ? <ChevronUp size={18} className="text-gray-600" /> : <ChevronDown size={18} className="text-gray-600" />}
       </button>
       {open && (
         <div className="px-4 pb-4 space-y-2">
@@ -185,7 +185,7 @@ export default function EstructuraPageContent() {
             {stats.map(({ value, label }) => (
               <div key={label} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{value}</div>
-                <div className="text-sm text-gray-500 mt-1">{label}</div>
+                <div className="text-sm text-gray-600 mt-1">{label}</div>
               </div>
             ))}
           </div>
