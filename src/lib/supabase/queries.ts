@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { RENT_BOUNDS, AIRDNA_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { RENT_BOUNDS, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { cleanListingName } from '@/lib/formatters';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -583,12 +583,71 @@ export async function getDevelopers(client: Client) {
     .order('name');
 }
 
-export async function getDeveloperBySlug(client: Client, slug: string) {
-  return client
-    .from('developers')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+export interface DeveloperDevelopment {
+  id: string;
+  slug: string;
+  name: string;
+  images: string[] | null;
+  min_price_mxn: number | null;
+  price_mxn: number | null;
+  stage: string | null;
+  city: string | null;
+  zone: string | null;
+}
+
+export async function getDeveloperDevelopments(
+  client: Client,
+  developerId: string,
+): Promise<DeveloperDevelopment[]> {
+  if (!developerId) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_developments')
+      .select('id, slug, name, images, min_price_mxn, price_mxn, stage, city, zone')
+      .eq('developer_id', developerId)
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES)
+      .order('name');
+    if (error) { console.error('[getDeveloperDevelopments]', error.message); return []; }
+    return (data ?? []) as unknown as DeveloperDevelopment[];
+  } catch {
+    return [];
+  }
+}
+
+export async function getDeveloperBySlug(
+  client: Client,
+  slug: string,
+): Promise<DeveloperRecord | null> {
+  if (!slug) return null;
+  try {
+    const { data: v } = await hub(client)
+      .from('v_developers')
+      .select('*')
+      .or(`slug.eq.${slug},ext_slug_desarrollador.eq.${slug}`)
+      .maybeSingle();
+    if (!v) return null;
+    const d = v as Record<string, unknown>;
+    const name = (d.name as string | null) || (d.nombre_desarrollador as string | null) || '';
+    if (!name) return null;
+    return {
+      id: d.id as string,
+      name,
+      slug: (d.slug as string | null) || (d.ext_slug_desarrollador as string | null) || null,
+      logoUrl: (d.logo_url as string | null) || (d.logo as string | null) || null,
+      descriptionEs: (d.description_es as string | null) || (d.descripcion as string | null) || null,
+      descriptionEn: (d.description_en as string | null) || (d.ext_descripcion_en as string | null) || null,
+      website: (d.website as string | null) || (d.sitio_web as string | null) || null,
+      verified: !!(d.verified ?? d.es_verificado),
+      rating: (d.rating as number | null) ?? null,
+      activeProjects: (d.active_projects as number | null) ?? null,
+      yearsExperience: (d.years_experience as number | null) ?? null,
+      projectsDelivered: (d.delivered_projects as number | null) ?? null,
+      unitsDelivered: (d.delivered_units as number | null) ?? null,
+    };
+  } catch {
+    return null;
+  }
 }
 
 // ============================================================
@@ -1209,7 +1268,7 @@ async function fetchSubmarketZones(
 
   return Object.entries(bySubmarket)
     .map(([submarket, vals]) => ({
-      zone: AIRDNA_SUBMARKET_TO_ZONE[submarket] || submarket.toUpperCase(),
+      zone: MARKET_SUBMARKET_TO_ZONE[submarket] || submarket.toUpperCase(),
       submarket,
       occupancy: vals.occupancy,
       adr: vals.adr,
@@ -1402,7 +1461,7 @@ export async function getZoneDetail(client: Client, city: string, zone: string) 
   const score = scoreData?.[0] || null;
 
   // Get zone's submarket code for AirDNA lookups
-  const submarkets = AIRDNA_SUBMARKET_TO_ZONE;
+  const submarkets = MARKET_SUBMARKET_TO_ZONE;
   const zoneSubmarkets = Object.entries(submarkets)
     .filter(([, z]) => z === zone)
     .map(([sub]) => sub);
