@@ -13,9 +13,7 @@ VALUES (
 ON CONFLICT (id) DO NOTHING;
 
 -- Allow public reads
-CREATE POLICY IF NOT EXISTS "blog_images_public_read"
+DROP POLICY IF EXISTS "blog_images_public_read" ON storage.objects;
+CREATE POLICY "blog_images_public_read"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'blog-images');
-
--- Allow service_role to upload (hub uses service_role key)
--- service_role bypasses RLS by default, no policy needed
