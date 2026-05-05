@@ -19,6 +19,8 @@ import {
   Layout as LayoutIcon,
 } from 'lucide-react';
 import { isNavActive } from '@/lib/nav/isActive';
+import { useIsVisible } from '@/context/SiteVisibilityContext';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 
 type NavItem = {
   id: string;
@@ -33,6 +35,11 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+
+  const showMercado = useIsVisible(VISIBILITY_KEYS.NAV_MERCADO);
+  const showBrokers = useIsVisible(VISIBILITY_KEYS.NAV_BROKERS);
+  const showProviders = useIsVisible(VISIBILITY_KEYS.NAV_PROVIDERS);
+  const showBlog = useIsVisible(VISIBILITY_KEYS.NAV_BLOG);
 
   useEffect(() => {
     function handleOutside(e: MouseEvent) {
@@ -49,15 +56,15 @@ export default function Sidebar() {
     { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
     { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
-    { id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store },
+    ...(showMercado ? [{ id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store } as NavItem] : []),
   ];
 
   const moreItems: NavItem[] = [
     { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },
-    { id: 'brokers', labelKey: 'brokers', href: `/${locale}/corredores`, icon: Users },
-    { id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck },
+    ...(showBrokers ? [{ id: 'brokers', labelKey: 'brokers', href: `/${locale}/corredores`, icon: Users } as NavItem] : []),
+    ...(showProviders ? [{ id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck } as NavItem] : []),
     { id: 'recruitment', labelKey: 'recruitment', href: `/${locale}/unete`, icon: Zap },
-    { id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon },
+    ...(showBlog ? [{ id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon } as NavItem] : []),
   ];
 
   function isActive(id: string, href: string): boolean {

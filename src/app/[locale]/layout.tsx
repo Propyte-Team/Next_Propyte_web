@@ -12,6 +12,8 @@ import { Toaster } from 'sonner';
 import { MotionConfig } from 'framer-motion';
 import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
+import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
+import { getVisibility } from '@/lib/visibility';
 
 export default async function LocaleLayout({
   children,
@@ -29,13 +31,15 @@ export default async function LocaleLayout({
   // Enable static rendering — opts pages out of cookies()-based locale resolution
   setRequestLocale(locale);
 
-  const [messages, tA11y] = await Promise.all([
+  const [messages, tA11y, visibilityFlags] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getVisibility(),
   ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <SiteVisibilityProvider flags={visibilityFlags}>
       <CurrencyProvider>
       <SearchProvider>
       <MotionConfig reducedMotion="user">
@@ -69,6 +73,7 @@ export default async function LocaleLayout({
       </MotionConfig>
       </SearchProvider>
       </CurrencyProvider>
+      </SiteVisibilityProvider>
     </NextIntlClientProvider>
   );
 }

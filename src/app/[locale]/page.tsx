@@ -15,6 +15,7 @@ import JoinTeamBanner from '@/components/home/JoinTeamBanner';
 import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ScrollReveal from '@/components/shared/ScrollReveal';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -45,6 +46,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   let developers: Array<{ name: string; logo_url: string | null; slug: string }> = [];
   let featured: FeaturedDevelopment[] = [];
 
+  const visibility = await getVisibility();
+
   try {
     const supabase = await createServerSupabaseClient();
     const [statsData, devsRes, featuredRes] = await Promise.all([
@@ -65,29 +68,37 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <>
       <SchemaMarkup type="organization" />
-      <Hero stats={stats} />
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <Hero stats={stats} />}
       <ScrollReveal>
         <ExploreCategories typeCounts={stats.typeCounts} />
       </ScrollReveal>
-      <ScrollReveal delay={0.05}>
-        <FeaturedProperties developments={featured} />
-      </ScrollReveal>
-      <ScrollReveal>
-        <Testimonials />
-      </ScrollReveal>
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
+        <ScrollReveal delay={0.05}>
+          <FeaturedProperties developments={featured} />
+        </ScrollReveal>
+      )}
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_TESTIMONIALS) && (
+        <ScrollReveal>
+          <Testimonials />
+        </ScrollReveal>
+      )}
       <ScrollReveal delay={0.05}>
         <TrendingMarket />
       </ScrollReveal>
-      <ScrollReveal>
-        <WhyPropyte />
-      </ScrollReveal>
-      <ScrollReveal delay={0.05}>
-        <JoinTeamBanner />
-      </ScrollReveal>
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && (
+        <ScrollReveal>
+          <WhyPropyte />
+        </ScrollReveal>
+      )}
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
+        <ScrollReveal delay={0.05}>
+          <JoinTeamBanner />
+        </ScrollReveal>
+      )}
       <ScrollReveal>
         <DeveloperBanner />
       </ScrollReveal>
-      {developers.length > 0 && (
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_PARTNERS) && developers.length > 0 && (
         <ScrollReveal delay={0.05}>
           <DeveloperLogos developers={developers} />
         </ScrollReveal>
