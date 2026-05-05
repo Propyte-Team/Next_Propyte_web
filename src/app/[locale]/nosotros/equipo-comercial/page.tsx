@@ -53,7 +53,7 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0D9488', '#3AAFA9', '#5CE0D2'];
+const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0D9488', '#0F766E', '#134E4A'];
 
 function pickColor(name: string): string {
   let hash = 0;
@@ -113,7 +113,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
     desc: t(`level${i + 1}Desc`),
     req: i < 4 ? t(`level${i + 1}Req`) : undefined,
   }));
-  const levelColors = ['#5CE0D2', '#5CE0D2', '#3AAFA9', '#1A2F3F', '#F5A623'];
+  const levelColors = ['#0F766E', '#0F766E', '#0F766E', '#1A2F3F', '#92400E'];
 
   const benefits = [
     { icon: BookOpen, title: t('benefit1Title'), desc: t('benefit1Desc') },
@@ -163,9 +163,9 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
       <NosotrosTabs locale={locale} active="equipo-comercial" />
 
       {/* Section 1: Team */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
+          <p className="text-gray-700 text-center max-w-3xl mx-auto mb-12">{t('teamIntro')}</p>
 
           {teamMembers.length === 0 ? (
             <div className="max-w-2xl mx-auto bg-[#F4F6F8] rounded-2xl">
@@ -192,7 +192,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                     <h3 className="font-bold text-[#1A2F3F]">{m.name}</h3>
                     <p className="text-sm text-gray-500 mt-1">{m.role}</p>
                     {m.city && (
-                      <p className="text-xs text-gray-400 mt-1 flex items-center justify-center gap-1">
+                      <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
                         <MapPin size={11} /> {m.city}
                       </p>
                     )}
@@ -215,9 +215,9 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
             </div>
           )}
 
-          <p className="text-center text-gray-500 mb-4">{t('teamMore')}</p>
+          <p className="text-center text-gray-600 mb-4">{t('teamMore')}</p>
           <div className="text-center">
-            <Link href={`/${locale}/contacto`} className="text-[#0D9488] font-semibold hover:underline">{t('teamCta')}</Link>
+            <Link href={`/${locale}/contacto`} className="text-[#0F766E] font-semibold hover:underline">{t('teamCta')}</Link>
           </div>
         </div>
       </section>
@@ -226,7 +226,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
       <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-3">{t('careerTitle')}</h2>
-          <p className="text-gray-500 text-center mb-12">{t('careerSubtitle')}</p>
+          <p className="text-gray-600 text-center mb-12">{t('careerSubtitle')}</p>
 
           <div className="max-w-2xl mx-auto space-y-4">
             {levels.map((level, i) => (
@@ -239,9 +239,9 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                 </div>
                 <div className="pb-6">
                   <h3 className="text-lg font-bold text-[#1A2F3F]">{level.title}</h3>
-                  <p className="text-gray-500 text-sm mt-1">{level.desc}</p>
+                  <p className="text-gray-600 text-sm mt-1">{level.desc}</p>
                   {level.req && (
-                    <p className="text-xs text-[#0D9488] font-medium mt-2 bg-[#5CE0D2]/10 px-3 py-1 rounded-full inline-block">
+                    <p className="text-xs text-[#0F766E] font-medium mt-2 bg-[#5CE0D2]/10 px-3 py-1 rounded-full inline-block">
                       {t('requirement')}: {level.req}
                     </p>
                   )}
@@ -266,7 +266,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
       </section>
 
       {/* Section 3: Benefits */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-12">{t('benefitsTitle')}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -276,7 +276,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                   <Icon size={24} className="text-[#5CE0D2]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>

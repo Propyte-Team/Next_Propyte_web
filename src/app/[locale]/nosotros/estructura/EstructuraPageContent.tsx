@@ -6,13 +6,13 @@ import { ChevronDown, ChevronUp, Building2, Users, Monitor, DollarSign, Briefcas
 
 // ── Org data ────────────────────────────────────
 const cSuite = [
-  { role: 'CEO', title: 'Director General', name: 'José Benjamín Paredes', color: '#4285F4' },
+  { role: 'CEO', title: 'Director General', name: 'José Benjamín Paredes', color: '#1D4ED8' },
 ];
 
 const directors = [
   { role: 'CSO', title: 'Director Comercial', name: 'Felipe Luksic', color: '#1A2F3F' },
-  { role: 'COO', title: 'Director de Operaciones', name: 'Landy López', color: '#E67C00' },
-  { role: 'CFO', title: 'Director de Finanzas', name: 'Mario Caamal', color: '#EA4335' },
+  { role: 'COO', title: 'Director de Operaciones', name: 'Landy López', color: '#92400E' },
+  { role: 'CFO', title: 'Director de Finanzas', name: 'Mario Caamal', color: '#991B1B' },
 ];
 
 const departments = [
@@ -92,7 +92,7 @@ function DeptAccordion({ dept }: { dept: typeof departments[0] }) {
           <Icon size={18} className="text-[#1A2F3F]" />
           <h3 className="font-bold text-sm uppercase tracking-wider text-[#1A2F3F]">
             {dept.name}
-            {dept.corp && <span className="ml-2 text-xs font-normal text-gray-400">(Corp.)</span>}
+            {dept.corp && <span className="ml-2 text-xs font-normal text-gray-600">(Corp.)</span>}
           </h3>
         </div>
         {open ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
@@ -105,7 +105,7 @@ function DeptAccordion({ dept }: { dept: typeof departments[0] }) {
               {m.name ? (
                 <span className="font-medium text-gray-900">
                   {m.name}
-                  {(m as { corp?: boolean }).corp && <span className="ml-1 text-xs text-gray-400">(Corp.)</span>}
+                  {(m as { corp?: boolean }).corp && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
                 </span>
               ) : (
                 <span className="text-[#F5A623] text-xs font-medium">{t('hiring')}</span>
@@ -131,7 +131,7 @@ export default function EstructuraPageContent() {
   return (
     <>
       {/* Org Chart */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           {/* Desktop: visual org chart */}
           <div className="hidden md:block">
@@ -193,7 +193,7 @@ export default function EstructuraPageContent() {
       </section>
 
       {/* Philosophy */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-6">{t('structurePhilosophyTitle')}</h2>
           <p className="text-gray-600 leading-relaxed mb-8">{t('structurePhilosophyText')}</p>

@@ -117,7 +117,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <NosotrosTabs locale={locale} active="quienes-somos" />
 
       {/* Section 1: Intro */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-5 gap-12 items-center">
             <div className="lg:col-span-3">
@@ -145,7 +145,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="bg-white rounded-2xl p-8 md:p-10 border-l-4 border-[#5CE0D2] mb-10">
-            <span className="text-[#5CE0D2] text-sm font-bold tracking-[0.15em] uppercase">{t('missionLabel')}</span>
+            <span className="text-[#0F766E] text-sm font-bold tracking-[0.15em] uppercase">{t('missionLabel')}</span>
             <p className="mt-4 text-xl md:text-2xl font-medium text-[#1A2F3F] leading-relaxed">{t('missionText')}</p>
           </div>
           <div className="grid sm:grid-cols-2 gap-6">
@@ -155,7 +155,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                   <Icon size={24} className="text-[#5CE0D2]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -170,7 +170,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           <div className="mt-12 grid md:grid-cols-3 gap-8">
             {visionPillars.map(({ num, title, desc }) => (
               <div key={num} className="text-left">
-                <span className="text-4xl font-bold text-[#5CE0D2]/30">{num}</span>
+                <span className="text-4xl font-bold text-[#5CE0D2]/30" aria-hidden="true">{num}</span>
                 <h3 className="text-lg font-bold text-white mt-2">{title}</h3>
                 <p className="text-white/60 text-sm mt-2 leading-relaxed">{desc}</p>
               </div>
@@ -180,7 +180,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       </section>
 
       {/* Section 4: Value Proposition */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-12">{t('valueTitle')}</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -190,7 +190,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                   <Icon size={24} className="text-[#5CE0D2]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -207,7 +207,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 <span className="text-5xl font-bold text-[#1A2F3F]/10 leading-none flex-shrink-0 w-16 text-right">{i + 1}</span>
                 <div>
                   <h3 className="text-xl font-bold text-[#1A2F3F]">{title}</h3>
-                  <p className="text-gray-500 mt-2 leading-relaxed">{desc}</p>
+                  <p className="text-gray-600 mt-2 leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}

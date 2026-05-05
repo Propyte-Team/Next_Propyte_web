@@ -4022,6 +4022,420 @@ El URL filtered (`/blog?categoria=Para%20Inversionistas`) sí funcionaba porque 
 
 ---
 
+### 34.13 — Sesión 34 Batch 2: Glosario search + Mobile MXN/USD + Schema.org sameAs + CI bump + PropertySpecs defensa (2026-04-30)
+
+> 5 commits `23dde3f → 8456a67` + deploy `dpl_6KoRwunTZXVHcZmfp2bbmsqyhYNo`. Cierra 2 BAJA backlog Sesión 32 + avanza 3 parciales (34-C glosario, 34-D MXN/USD mobile, 34-D Schema.org sameAs).
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `23dde3f` | PropertySpecs defensa MISSING_MESSAGE `1BR/1BA` | ✅ `safeType`/`safeStage` try/catch wrappers consistentes con `UnitModelsTable.tsx`. Fallback string raw cuando `unit_type` está fuera de enum 8 valores. Cierra BAJA backlog Sesión 32 (defensa-en-código). Pendiente data cleanup DB + enum constraint |
+| 2 | `9397fa2` | Glosario search keyword + conteo letra | ✅ GlosarioClient.tsx (143 líneas) split del server page. Search input con normalización Unicode NFD strip diacritics, matchea name + def. Letter nav muestra solo letras presentes tras filtro con conteo `(N)` tabular-nums. Empty state "No se encontraron términos…" con `role="status"`. SSR + DefinedTermSet JSON-LD intactos. Live verificado /es/glosario 200 |
+| 3 | `fd53edc` | CurrencyToggle MXN/USD en MobileMenu drawer | ✅ Prop `tone='light'\|'dark'` con default `light` retro-compatible. Active teal `#5CE0D2` sobre navy `#0F1923`. Inactive `text-white/60` pasa AA por regla /55+. Sección "Moneda" antes de "Idioma" en drawer. Keys `nav.currency` ES+EN |
+| 4 | `3df8ba8` | CI bump checkout v5 + setup-node v6 | ✅ Cierra BAJA Sesión 32 (deadline 2-jun-2026 Node 20 deprecation). `node-version: 22` del proyecto sin tocar (independiente de runtime de actions) |
+| 5 | `8456a67` | Schema.org sameAs IG/FB + telephone real | ✅ Organization + LocalBusiness incluyen `sameAs:[instagram.com/propyte.mx, facebook.com/propyte]` (match exacto con Footer.tsx:63,72). Telephone real `+529843235354` reemplaza placeholder `+52XXXXXXXXXX` en LocalBusiness; agrega telephone explícito en Organization. Live verificado en JSON-LD home: `"telephone":"+529843235354"` + sameAs IG+FB rendered |
+
+**Hallazgos del auditor (Batch 2):**
+
+✅ **Bien hecho:**
+- PropertySpecs aplica el mismo patrón try/catch que ya estaba en UnitModelsTable — no introduce duplicación, sigue convención existente
+- Glosario mantiene SSR + JSON-LD `DefinedTermSet` intactos (server hace los terms hardcoded i18n con `getTranslations`, client sólo filtra). Normalización Unicode NFD correcta para "fideicomiso" sin acento ↔ "fideicomiso" con acento
+- CurrencyToggle prop opcional con default light → callsites previos no requieren update. WCAG verificado contra regla del repo
+- Schema.org URLs sameAs hacen match exacto con Footer (no se inventaron URLs); telephone consistente con `i18n.info.phone` ya seteado en commit `860590c`
+- CI bump quirúrgico (2 líneas), independiente del Node del proyecto
+
+❌ **Errores / huecos:**
+- **Dead code en glosario**: keys `glosario.resultsCount` ICU plural añadidas en es+en.json:1621 pero NUNCA consumidas en `GlosarioClient.tsx`. Probable que se planeó renderizar contador junto al search input y se olvidó cablear. Action: cablear (e.g. debajo del letter nav cuando `query` no vacío) o borrar
+- **Higiene de commit `fd53edc`**: arrastró 2 archivos QA untracked previos (`tests/qa-data/check-blog-in.mjs` 22 líneas + `tests/qa-phase4/audit-session-final.mjs` 175 líneas) por uso de `git add -A`. No rompe deploy, contamina changelog del feat MobileMenu. Hábito a evitar en próximos batches
+- **Glosario search bar NO sticky**: solo letter nav con `top-16`. Con catálogo de 22 términos no se nota; con scroll y filtro activo, el input desaparece de la vista. UX leve. Sugerencia: wrapper sticky compartido con backdrop-blur
+- **Wording commit `3df8ba8`**: dice "v5/v6 ya corren en Node 24 nativo" — confunde runtime de la action con `node-version: 22` del proyecto (que no cambió). El cambio es correcto, sólo es nota cosmética
+- **Schema.org sameAs incompleto**: si Propyte tiene LinkedIn/YouTube/TikTok activos, deberían listarse para Knowledge Graph. Verificar con marketing antes de cerrar 34-D Schema.org parcial
+
+**Estado post-Batch 2 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C (UX por hoja): 3 parciales** (`/financiamiento` calc + bancos, `/como-invertir` comparador, `/glosario` search+conteo)
+- **Fase 34-D (Transversales): 2 parciales** (banner contextual cerrado prev; MXN/USD mobile cerrado este batch; Schema.org sameAs cerrado este batch)
+- **Backlog técnico Sesión 32: 2/4 cerrados** (CI bump + PropertySpecs defensa). Quedan 2 BAJA (RentalDashboard useTransition refactor + AirDNA market_summary view nombre)
+- Recomendación auditor para batch 3: priorizar `/desarrollos` chips removibles + botones card (alto tráfico, cierra 34-C real) o `BreadcrumbList` JSON-LD global (bajo costo, alto SEO)
+
+---
+
+### 34.14 — Sesión 34 Batch 3: Glosario sticky+counter + FilterBar chips + useFavorites (2026-04-30)
+
+> 3 commits `176eedd → abc658a` + deploy `dpl_6fBoFsaNomg9uxoVDju5RyN5ZFcA`. Cierra deudas auditor batch 2 + avanza 2 ítems Fase 34-C (chips removibles + heart persistente en card). Constructor identificó correctamente que `BreadcrumbList` ya estaba implementado de origen.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `176eedd` | Glosario fix completo: cablea `resultsCount` ICU plural + sticky combinado | ✅ Search + counter + letter nav en único `sticky top-16 z-10 bg-white/95 backdrop-blur-md border-b shadow-sm`. Counter renderiza solo con `isSearching`. ICU plural via `tG('resultsCount',{count})` directo (next-intl resuelve nativamente, decisión correcta sobre escribir formatter manual). `role="status" + aria-live="polite"`. Cierra deudas auditor batch 2 (dead key + sticky perdido). Live verificado |
+| 2 | `8c579de` | FilterBar chips removibles + clearAll | ✅ Array `activeChips` con `{key, label, clear}` por filtro (search/city/price/type/roi). `Limpiar todo` aparece con 2+ chips. Drawer-only filtros (stage/usage) excluidos por diseño (esos tienen su propio reset en MobileFilters). Aplica a /desarrollos + /propiedades (ambos consumen MarketplaceContent → FilterBar). Live verificado /es/desarrollos?city=Tulum |
+| 3 | `abc658a` | useFavorites hook + heart persistente | ✅ Implementación canónica `useSyncExternalStore`. `getServerSnapshot=EMPTY_SET` (referencia estable, 0 hydration mismatch). Custom event `propyte:favorites-changed` necesario porque `storage` event no fire same-tab. `queueMicrotask(callback)` gatilla re-render tras subscribe inicial. MarketplaceCard agrega `aria-pressed={saved}` + `type="button"` + focus-visible ring teal |
+
+**Hallazgos del auditor (Batch 3):**
+
+✅ **Bien hecho:**
+- Constructor cerró las 2 deudas auditor batch 2 con precisión: `resultsCount` cableado correctamente con ICU plural directo, sticky combinado en un único contenedor
+- Decisión de excluir drawer-only filtros del chip-set bien justificada (esos tienen su propio reset)
+- `useFavorites` con patrón canónico React 18+: `useSyncExternalStore` + getServerSnapshot estable evita hydration mismatch sin hacks
+- Constructor identificó correctamente que `BreadcrumbList` JSON-LD ya estaba implementado de origen en `Breadcrumbs.tsx:37-53` y aplicado en 14 hojas — auditor confirma. El item del audit estaba cerrado de origen
+- Live verificado: `/es/desarrollos?city=Tulum` renderiza chips + "Limpiar todo"; `/es/glosario` con sticky combinado y backdrop-blur
+
+❌ **Errores / huecos:**
+- **Falta `safeType` wrapper en FilterBar:127**: `tTypes(filters.type as 'departamento')` tiene mismo riesgo MISSING_MESSAGE que motivó commit `23dde3f` para PropertySpecs. Inconsistente con la defensa ya aplicada. Severidad baja porque `filters.type` viene de dropdown controlado pero defense-in-depth correspondería
+- **Redundancia ARIA leve en glosario counter**: `role="status"` ya implica `aria-live="polite"` por default. Cosmético, 1 línea
+- **`writeSet` doble-set**: setea `cachedSnapshot` directo + dispatch event que dispara listener que vuelve a leer/setear. Optimización menor, no urgente
+- **FOUC potencial 1-frame en hearts**: hard reload con favoritos previos → SSR/getServerSnapshot=EMPTY_SET (correcto) → tras hydration+subscribe+microtask se actualiza. Trade-off acertado vs `useLayoutEffect` que rompería SSR
+
+**Sobre la pregunta del constructor (Comparar vs Brochure):**
+
+Auditor verificó que **`brochure_url` SÍ existe en el data layer**:
+- `src/types/property.ts:72` ya tiene `brochure?: string`
+- `src/lib/mappers/development-to-property.ts:125` ya hace `brochure: row.brochure_url ?? undefined`
+- `src/lib/supabase/types.ts:85` ya tiene `brochure_url: string | null` en schema
+
+El mapper ya pone el campo en el `Property` que renderiza la card. **No es deuda de data**, sólo render condicional `{property.brochure && <a href={property.brochure} download>...}` en MarketplaceCard. ~10 líneas. Procede directo.
+
+**Estado post-Batch 3 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C (UX por hoja): 5 parciales** (financiamiento, como-invertir, glosario completo modulo links/PDF, /desarrollos chips+heart, /propiedades chips+heart)
+- **Fase 34-D (Transversales): 2 parciales** + auditor confirma BreadcrumbList ya cerrado de origen, queda solo RealEstateListing por desarrollo individual
+- Recomendación auditor para batch 4:
+  - Commit 1: fix `safeType` en FilterBar (deuda batch 3)
+  - Commit 2: brochure download icon en MarketplaceCard (cierra 34-C parcial, ~10 líneas)
+  - Commit 3+4: useCompare hook + ComparePanel UI (cierra último item card de 34-C)
+  - Bonus: vista toggle Lista/Grid/Mapa en /desarrollos (cierra 34-C casi completo)
+
+---
+
+### 34.15 — Sesión 34 Batch 4: safeType + Brochure + Dedupe chips + Compare panel (2026-04-30)
+
+> 4 commits `f1fd865 → 2e64a43` + deploy `next-propyte-65meo6jw7-propyte`. Cierra deudas auditor batch 3 (safeType + aria cleanup) + completa card actions row (Guardar/Comparar/Brochure los 3 funcionales). Detección y fix de regresión doble chip-row introducida en batch 2.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `f1fd865` | safeType en FilterBar + aria-live cleanup glosario | ✅ Cierra ambas deudas auditor batch 3. `safeType` con try/catch aplicado en 2 callsites (chip label + pill activeLabel). Mismo patrón que PropertySpecs/UnitModelsTable. `aria-live="polite"` removido del `<p role="status">` glosario |
+| 2 | `60e2fc9` | Brochure download icon | ✅ Path correcto: `property.assets?.brochure` (no `property.brochure` — auditor sugería el path equivocado, constructor corrigió). Anchor con `download + target="_blank" + rel="noopener noreferrer"` + `e.stopPropagation()` para no disparar Link card. Top-right action stack con flex-col gap-1.5 |
+| 3 | `0472778` | Dedupe chips → single-source en FilterBar | ✅ Detección crítica: `MarketplaceContent` ya tenía su propio chip-row (líneas 37-57+75-84) lo que generaba doble-render tras `8c579de`. FilterBar absorbe stage+usage con `safeStage`/`safeUsage`. MarketplaceContent pierde activeChips array, priceFmt, FilterChip+MAX_PRICE imports. ⚠️ Claim "/desarrolladores gana chips" es **FALSO** — esa página tiene filter inline propio (DevelopersPageContent.tsx:60), no usa marketplace FilterBar |
+| 4 | `2e64a43` | useCompare + ComparePanel + modal | ✅ Mismo patrón canónico que useFavorites. `MAX_COMPARE=4` exportado. `Object.freeze` para inmutabilidad. `toggle` retorna `{ok, reason}` aunque MarketplaceCard ignora return (depende de `disabled` flag). ComparePanel sticky `bottom-0 z-40` con `safe-area-inset-bottom`. Modal con `aria-modal=true`, body scroll lock cleanup correcto, click backdrop close, sticky thead `top-0` dentro de scroll container. `modalOpen = open && selected.length > 0` derivado evita setState-in-effect |
+
+**Hallazgos del auditor (Batch 4):**
+
+✅ **Bien hecho:**
+- Constructor cerró las 2 deudas auditor batch 3 con precisión quirúrgica
+- Detectó y corrigió regresión doble chip-row de su propio commit batch 2 (`8c579de`) durante implementación de Compare — el smoke test no la detectó porque grep mostraba ambos. Buen self-audit
+- Corrección del path `property.assets.brochure` (auditor sugería `property.brochure` equivocado) — buena lectura de tipos antes de implementar
+- `useCompare` arquitectónicamente idéntico a useFavorites (singleton module-level + useSyncExternalStore + same-tab event + cross-tab event), ofrece consistencia fuerte
+- ComparePanel mounted en MarketplaceContent → activo en /propiedades + /desarrollos (que reusa MarketplaceContent)
+- Decisión de modal inline sobre ruta `/comparar` justificada (menos código, sin URL state), con concesión explícita de "si quieres deep-link, requiere otro commit"
+- Live verificado: `aria-label` rendered correctamente, sticky bar + modal operativos en código
+
+❌ **Errores / huecos:**
+- **🔴 BUG WhatsAppButton vs ComparePanel overlap (CRÍTICO antes merge a main)**: WhatsAppButton (`fixed right-6 z-50 bottom: max(1.5rem, env(safe-area-inset-bottom)+1.25rem)`) se renderiza ENCIMA del CTA "Comparar →" del ComparePanel (`z-40`, también right-aligned). Constructor predijo el bug en su mensaje pero no lo arregló. Fix: WhatsAppButton lee `useCompare().count` y suma `~5rem` al bottom cuando count>0. Aplica a layout global (`layout.tsx:52`)
+- **❌ Claim falso en commit `0472778`**: "/desarrolladores gana chips por primera vez como bonus" — verificado: esa página tiene su propio filter inline en `DevelopersPageContent.tsx:60-79` (search input + city select), NO importa la `FilterBar` del marketplace. El claim del commit message es incorrecto; no hay daño funcional
+- **⚠️ Modal a11y gaps**:
+  - Falta handler ESC key para cerrar (estándar `aria-modal=true`)
+  - Falta focus trap (Tab puede salir del modal hacia el body)
+  - Falta auto-focus al primer interactive del modal al abrir (botón close)
+- **⚠️ Mixed-kind compare confusion**: si usuario selecciona desarrollos en /desarrollos + unidades en /propiedades, localStorage acumula 4 IDs mezclados pero el ComparePanel filtra por `byId` del array `properties` actual → solo muestra los del kind de la página. IDs huérfanos persisten silenciosamente. Mitigación posible: refuse cross-kind add o reset on kind change con toast
+- **⚠️ `disabled + aria-pressed` en compare button**: `disabled` HTML attribute previene focus por tab → SR no escucha `title="Máximo 4..."`. Mobile users sin tooltip se quedan sin feedback al 5to tap. `useCompare.toggle` retorna `{ok:false, reason:'full'}` pero MarketplaceCard ignora el return — sería trivial cablear un toast pero queda como deuda futura
+
+**Estado post-Batch 4 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C (UX por hoja): 5 parciales** — `/desarrollos` y `/propiedades` cards completos (Guardar+Brochure+Comparar). Pendiente vista Lista/Grid/Mapa toggle (decisión UX abierta), badges tipo/estado, filtros recámaras/baños/m² para /propiedades
+- **Fase 34-D (Transversales): 2 parciales** sin cambio
+- **Deuda auditor batch 3: 4 cerradas (safeType + aria cleanup) + 0 abiertas previas**
+- **Deuda auditor batch 4 abierta: 1 crítica (WA overlap) + 4 minor (claim false, modal a11y x3, mixed-kind confusion)**
+
+**Recomendación auditor para batch 5:**
+- Commit 1: WhatsAppButton lee `useCompare().count` y suma offset (cierra bug crítico)
+- Commit 2: ESC key + focus trap básico en ComparePanel modal (a11y)
+- Commit 3+: Skeleton loaders en cards/mapas + microinteracciones hover (cierra 34-D, sin dependencias externas)
+- Bonus si alcanza: hero homepage estructural (placeholders para fotos pendientes Luis)
+- **Vista toggle Lista/Grid/Mapa pendiente wireframe Luis** — el split 60/40 actual ya cumple Mapa+Lista; agregar 4 toggles fragmenta UX sin guía
+- **`/como-comprar` timeline pendiente data Luis** — duración + costos % por paso
+
+---
+
+### 34.16 — Sesión 34 Batch 5: WA fix + ESC modal + 4 Skeletons + hover-lift (2026-04-30)
+
+> 2 commits `618a68f`+`1449042` + deploy `next-propyte-1y241cuxf-propyte`. Cierra bug crítico WA overlap señalado por auditor batch 4 + ESC modal a11y. Cobertura Skeleton +4 rutas alto tráfico (blog/mercado/detail x2). Microinteracciones hover-lift respetando `prefers-reduced-motion`.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `618a68f` | WA respeta ComparePanel + ESC modal | ✅ WhatsAppButton lee `useCompare().count`; cuando >0, sube bottom de `1.25rem`→`5rem` para no taparse con sticky bar (~64px). `transition-[bottom,opacity,transform]` evita transitionear bg accidental. Cleanup `md:bottom-6` no-op. ComparePanel modal gana ESC keydown listener dentro del mismo `useEffect` del scroll lock — cleanup unificado en return. Cierra bug crítico auditor batch 4 + ESC handler. Focus trap formal queda agendado |
+| 2 | `1449042` | Skeletons + hover-lift | ✅ 4 nuevos `loading.tsx`: /blog (hero navy + grid 3-col 6 cards skeleton article), /mercado (hero + 4 KPI strip + tabs + 8-row table), /desarrollos/[slug] + /propiedades/[slug] (gallery 16:9 + 6 thumbs + title + 4 metric cards + sticky sidebar). MarketplaceCard hover `-translate-y-1 + shadow-lg + transition-[transform,box-shadow] duration-200` con `motion-reduce:hover:translate-y-0 motion-reduce:transition-none`. MapView skip justificado (Google Maps SDK no expone `tilesloaded` callback confiable; placeholder produciría flicker). Live /blog/mercado/azul-vivo 200 |
+
+**Hallazgos del auditor (Batch 5):**
+
+✅ **Bien hecho:**
+- Constructor cerró bug crítico WA con math correcta (5rem clearance vs ~4rem panel + safe-area)
+- `transition-[bottom,opacity,transform]` evita transitionear `background-color` (snap esperado al cambiar bg-color, pero sin bug en bottom slide)
+- ESC handler dentro del `useEffect` del scroll lock — lifecycle correcto, evita listener huérfano
+- Skeleton.tsx existente reusado correctamente; layouts replican estructura SSR fidedignamente
+- `motion-reduce` respetado en hover-lift — accesibilidad correcta
+- Decisión skip MapView bien justificada con disclaimer técnico
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **Duplicación de loading.tsx detail**: `desarrollos/[slug]/loading.tsx` y `propiedades/[slug]/loading.tsx` byte-idénticos (65 líneas). Refactor sugerido: `<DetailSkeleton/>` shared component
+- **Hover bg-color snap**: `transition-[bottom,opacity,transform]` excluye `background-color`. `hover:bg-[#1EBE57]` ahora cambia instantáneamente sin transición. Cosmético; agregar `background-color` al list resuelve
+- **Claim "0 sin protección"**: precision matters — quedan rutas estáticas sin loading.tsx (glosario/financiamiento/contacto/faq) pero no necesitan skeleton porque son SSR con contenido inmediato. Constructor framing correcto en spirit, exagerado en letra
+- **FOUC potencial WA**: hard reload con compares previos → primer render bottom 1.25rem; tras hydration 5rem. WA hidden hasta scrollY>300 → invisible en práctica
+- **Pendientes auditor batch 4 NO cerrados (declarados explícitos)**: focus trap formal modal (agendado), cross-kind compare reset toast (decisión de producto), `disabled+aria-pressed` 5to-tap feedback mobile (mismo origen, requiere toast)
+
+**Estado post-Batch 5 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C: 5 parciales** (sin cambio en items raíz; deuda batch 3 toast 5to-tap se cerrará junto con Toaster global)
+- **Fase 34-D: 3 parciales** — Skeletons + microinteracciones cierran parcial (loading.tsx +4 rutas + hover-lift). Banner contextual + MXN/USD mobile cerrados batch previos. Schema.org sameAs cerrado. Quedan: RealEstateListing por desarrollo, OG image dedicada por hoja, Toaster + EmptyState ilustrado, disclaimer rewrite + footer legal único, sesión fotográfica
+- **Deuda auditor batch 4 abierta cerrada: 2/2** (WA overlap + ESC modal). Quedan agendados: focus trap, cross-kind compare, toast 5to-tap
+
+**Recomendación auditor para batch 6:**
+- Toaster global (sugerencia: `sonner` — 1 import + 1 provider, API limpia)
+- Cablear toast en `useCompare.toggle` cuando `{ok:false, reason:'full'}` → cierra deuda mobile-no-tooltip batch 3
+- Cablear toast en form contacto submit success/error
+- EmptyState component reutilizable con illustration + CTA
+- Aplicar EmptyState a /blog (vacío), /promociones (<2 promos), /equipo-comercial (sin seed), /desarrollos/[ciudad] (0 desarrollos)
+- Bonus: `/propiedades` badges tipo (depto/casa/terreno) + estado (preventa/inmediata/usada) en MarketplaceCard
+- **Hero homepage queda para batch 7** cuando Luis suba fotos profesionales 4 destinos
+
+---
+
+### 34.17 — Sesión 34 Batch 6: Sonner toaster + EmptyState + badges card (2026-04-30)
+
+> 3 commits `959f27c`+`dd64d42`+`02191f8` + deploy `next-propyte-mlzyupvtp-propyte`. Cierra Fase 34-D item Skeletons+empty+toaster+microinteracciones completo. Cierra deuda mobile-no-tooltip auditor batch 3 (5to-tap compare). Bonus badges /propiedades tipo+estado.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `959f27c` | Sonner toaster + 5to-tap + form contacto | ✅ `sonner ^2.0.7` instalado, `<Toaster bottom-center richColors closeButton font-sans>` en locale layout. Compare 5to-tap → `toast.warning(cardCompareFull)`. Cambio `disabled→aria-disabled` para que onClick fire en mobile (cierra deuda batch 3 mobile-no-tooltip). Form contacto submit → toast.success/error con keys `formSuccessToast`/`formErrorToast` ES+EN. Status state inline mantenido como secondary feedback |
+| 2 | `dd64d42` | EmptyState component + 4 hojas migradas | ✅ Componente reutilizable: icon LucideIcon en círculo teal + title + description + actions[] (primary/secondary, internal Link o external `<a>`), `tone='light'\|'dark'`, `role="status"` para SR. CTAs con focus-visible ring. Migración: /blog (BookOpen + 2 CTAs nuevas: emptyStateBody/emptyStateCtaContact/emptyStateCtaBack), /promociones (Tag, mantiene keys), /equipo-comercial (Users + 2 CTAs nuevas: teamEmptyCtaContact/teamEmptyCtaJoin), /desarrollos/[ciudad] (Building2). 4 hojas con tono visual y CTAs primary+secondary consistentes |
+| 3 | `02191f8` | Stage + Type badges con safe wrappers | ✅ Stage badge antes solo si `property.badge`, ahora fallback a `property.stage` (siempre visible). `(badge ?? stage) as Exclude<PropertyBadge, null>` cast TS-safe verificado: los 3 valores PropertyStage (preventa/construccion/entrega_inmediata) están todos en PropertyBadge. badgeColors cubre 7 valores + `\|\| 'bg-gray-600'` fallback. Type badge solo en `kind==='unit'` (pill blanca translúcida con backdrop-blur). safeStage+safeType wrappers consistentes con patrón repo. flex-col items-start gap-1 para apilar |
+
+**Hallazgos del auditor (Batch 6):**
+
+✅ **Bien hecho:**
+- `sonner` elección acertada: 1 dep, sin radix-bloat, API limpia. Mounted en locale layout (cubre todo el árbol)
+- `disabled→aria-disabled` en compare button cuando `compareFull && !comparing` — decisión UX correcta. Mobile sin tooltip ahora tiene feedback claro vía toast
+- EmptyState API bien diseñado: `actions[]` con variants + external flag cubre los 4 casos de migración. `tone='dark'` permite reuso futuro sobre fondos navy
+- Migración de las 4 hojas reduce código ad-hoc (~40 líneas neto eliminadas) y unifica visual+a11y
+- Stage badge fallback verificado tipo-correcto: PropertyStage ⊂ PropertyBadge, cast safe
+- `safeStage`/`safeType` con try/catch consistente con patrón establecido del repo
+- Live: /blog 200, /promociones 200, /tulum 200, `Toaster` rendered en home
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **Sonner `bottom-center` puede overlapear ComparePanel sticky 4s al 5to-tap**: el toast.warning aparece en bottom-center con z-index ~2147483647 > z-40 ComparePanel. Por 4s tapa la chip-row de items seleccionados. Sugerencia: `position="top-center"` en `<Toaster>` (1 línea), también queda lejos de WhatsApp flotante
+- **EmptyState `key={action.href + action.label}` collision risk**: improbable pero posible si dos actions tienen mismo href+label exacto. Más robusto: `key={action.label}` o índice
+- **EmptyState wrappers ad-hoc por hoja**: cada migración envuelve EmptyState en un `<div>` distinto (max-w-xl bg-white rounded-2xl en /promociones, max-w-2xl bg-[#F4F6F8] en /equipo-comercial, dashed-border teal en /desarrollos/[ciudad], sin wrapper en /blog). Visual consistency parcial. Si quieres total consistencia: variantes built-in en el componente
+- **Sonner `richColors` warning sale amarillo default**: si quieres marca-consistente, customizar `toastOptions.classNames.warning` con teal/amber suave del design system Propyte. Cosmético
+- **Type badge solo en units**: para developments queda solo stage badge. Decisión de producto correcta (developments agrupan múltiples tipos), pero implica que `/desarrollos` listing muestra solo stage, no tipo
+- **Pendientes batch 4 declarados explícitos NO cerrados**: focus trap modal (agendado), cross-kind compare (decisión producto), DetailSkeleton refactor (minor)
+
+**Estado post-Batch 6 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C: 5 parciales** (sin cambio en items raíz; deuda batch 3 mobile-no-tooltip CERRADA via toast 5to-tap)
+- **Fase 34-D: 3 parciales + 1 CERRADO** (`Skeletons+empty+toaster+microinteracciones` completo). Quedan: RealEstateListing por desarrollo, OG image dedicada, disclaimer rewrite, sesión fotográfica. Schema.org sameAs + BreadcrumbList + FAQPage cerrados
+- **Deudas auditor abiertas**: 0 críticas. Sólo cosméticas (sonner position, EmptyState key, wrappers, richColors). Pendientes agendados: focus trap, cross-kind, DetailSkeleton
+
+**Recomendación auditor para batch 7:**
+- **Schema.org `RealEstateListing` JSON-LD** helper en SchemaMarkup.tsx (`type='RealEstateListing'` con `price`, `priceCurrency`, `availability`, `numberOfRooms`, `floorSize`, `geo`, `image`, `address`)
+- Aplicar a `/desarrollos/[slug]` y `/propiedades/[slug]` (cierra 34-D Schema.org completo, último item Schema)
+- Bonus: **OG image dedicada por hoja** vía `next/og` dynamic (foto desarrollo + nombre + ciudad + ROI). Cierra otro chunk SEO de 34-D
+- **Hero homepage queda para batch 8** cuando Luis dé: 12-20 desarrollos publicados + textos testimonios + fotos profesionales 4 destinos. Estructura placeholder ahora se rompería contra catálogo de 1 desarrollo + lorem ipsum visible en testimonios
+
+---
+
+### 34.18 — Sesión 34 Batch 7: minors + OG dedicadas + cross-kind + honeypot + disclaimer (2026-04-30)
+
+> 4 commits `f794e52`+`adeae8b`+`3ddaa29`+`a5ecdbd` + deploy `next-propyte-5jd6f4ilv-propyte`. Cierra 3 items 34-D (Schema.org global completo, footer disclaimer, Topbar mobile). Avanza OG dedicadas (parcial) + /contacto (parcial honeypot+horario). Cierra deuda batch 3 cross-kind compare reset.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `f794e52` | Minors batch 5 + OG /built + /equipo-comercial | ✅ Toaster bottom-center→top-center (resuelve overlap WA + ComparePanel). EmptyState key=label (resuelve collision risk). OG dedicada Satori 1200×630 reusa `OGFrame` + `loadOGFonts` + path explícito en metadata.images por memory Next 16 no inheritance. Live: ambas 200 image/png. **Hallazgo**: `RealEstateListing` JSON-LD ya estaba completo de origen en DevelopmentDetailPage:369-402 + UnitDetailPage:160-195 (verificado live `sample-azul-vivo-5a4e4a4e`). **34-D Schema.org completamente cerrado** (Organization sameAs ✓, BreadcrumbList ✓, FAQPage ✓, RealEstateListing ✓) |
+| 2 | `adeae8b` | useCompare cross-kind reset con toast | ✅ Storage shape evoluciona `string[]`→`{kind:'unit'\|'development'\|null, ids:string[]}` con backward-compat (`Array.isArray(parsed)` detecta legacy y asume `'development'`). `toggle(id, newKind)` detecta cross-kind y resetea con `{ok:true, switched:true, switchedFrom}` + `toast.info('Comparativa reiniciada para {kind}')`. Cleanup storage cuando ids→0 (kind→null + removeItem). 3 keys i18n nuevas (compareReset/compareKind_unit/compareKind_development). MarketplaceCard pasa `property.kind ?? 'development'`. ComparePanel sigue coherente: navegación entre kinds sin click oculta (byId filter), reset solo al click explícito |
+| 3 | `3ddaa29` | Honeypot anti-spam + horario WhatsApp | ✅ Campo `website` triple-defensa (display:none + aria-hidden + tabIndex=-1 + autoComplete=off). Zod `z.string().max(0).optional()` rechaza non-empty. Horario respuesta visible ("menos de 2 horas hábiles" / "within 2 business hours"). Live verificado: `name="website"` rendered + texto horario rendered |
+| 4 | `a5ecdbd` | Footer disclaimer tono confianza | ✅ Reescritura efectiva: fuentes específicas (Banxico/INEGI/AirDNA/BMV) reemplazan "Información referencial" lavado. Disclaimer legal mínimo al final mantiene compliance. Live verificado en footer ES |
+
+**Hallazgos del auditor (Batch 7):**
+
+✅ **Bien hecho:**
+- Constructor cerró ambos minors auditor batch 5 con precisión quirúrgica (1-2 líneas por fix)
+- OG `/built` + `/equipo-comercial` reusa infra existente (OGFrame + loadOGFonts), 0 código duplicado, paths explícitos por memory Next 16
+- Constructor identificó correctamente que `RealEstateListing` ya estaba implementado de origen — auditor verificó live, claim correcto. Mismo caso que `BreadcrumbList` batch 2
+- `useCompare` migration con backward-compat clean: legacy `string[]` se detecta y migra al primer write. Decisión "refuse cross-kind con toast" del feedback batch 3 implementada correctamente
+- ComparePanel sigue coherente sin tocar — UX flow: navegación entre kinds oculta panel (byId filter), reset solo al click explícito (toast informa al usuario)
+- Honeypot triple-defensa: invisible para humanos, parsing-bots fallan, screen-reader bots ignoran (aria-hidden), keyboard bots no llegan (tabIndex=-1)
+- Disclaimer reescrito da credibilidad concreta — fuentes auditables vs fórmula lavada
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **🟡 Honeypot Zod redundancy → intent mismatch**: commit msg declara "drop silencioso con apariencia idéntica a éxito real, no señaliza al bot que fue detectado". Pero `z.string().max(0).optional()` rechaza el form ANTES de `onSubmit` (react-hook-form + zodResolver bloquea pre-submit). La rama `if (data.website && data.website.length > 0) setStatus('sent'); reset();` es **código muerto**. Bot ve form que no submite, NO ve fake success. Fix sugerido: cambiar a `z.string().optional()` sin `.max(0)` para que `onSubmit` reciba el valor y la rama silent drop fire. O eliminar la rama dead. Funcional pero inconsistente código vs comentario
+- **EmptyState key={action.label}**: ahora colisión si dos actions tienen mismo label (improbable; dos botones "Volver" en una hoja). `key={action.href}` más único. Cosmético
+- **`property.kind ?? 'development'`**: defensive cast TS-overkill (PropertyKind no incluye undefined en types). Cubre runtime drift. No bug
+- **Cross-kind reset silencioso al primer click**: 4 desarrollos seleccionados → click en unit card → pierden los 4 instantáneamente con `toast.info`. Algunos UX pediría confirmación previa pero precedent estándar es toast post-acción. Decisión defendible
+
+**Estado post-Batch 7 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio; queda 34-A.8 triple navegación abierto, decisión arquitectónica)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio; quedan catálogo vacío + Home propiedades destacadas, ambos dependen seed Luis)
+- **Fase 34-C: 5 parciales** (`/contacto` avanzado con honeypot+horario, queda reCAPTCHA+Calendly+social-proof)
+- **Fase 34-D**: **Schema.org completamente cerrado ✓** (4/4: Organization sameAs + BreadcrumbList + FAQPage + RealEstateListing). **Footer disclaimer cerrado ✓**. **Topbar mobile cerrado ✓**. **Skeletons+empty+toaster+microinteracciones cerrado ✓**. **OG image dedicada parcial** (home + blog/[slug] + desarrollos/[slug] + propiedades/[slug] + built + equipo-comercial; quedan content pages secundarias heredando fallback). **Sesión fotográfica pendiente Luis**
+- **Deuda batch 3 cross-kind compare CERRADA via toast.info reset**
+- **Deudas auditor abiertas**: 0 críticas. Solo cosméticas (honeypot intent mismatch, EmptyState key minor, focus trap modal agendado, DetailSkeleton refactor minor)
+
+**Recomendación auditor para batch 8:**
+- **Glosario PDF lead magnet** con `@react-pdf/renderer` ya instalado (Document → Page → secciones por letra → terms con name+def). Aplicar `margin*` no `gap` (memory `feedback_react_pdf_no_gap`). Cierra el último item de `/glosario` MEDIA 34-C + aporta lead magnet real
+- API route `/api/glossary/pdf` o button server action que streamea el PDF
+- Botón "Descargar glosario PDF" en `/glosario` (sticky bar combinada o footer)
+- Bonus: **forms validación visual** en `/desarrolladores` y `/corredores` (~30 líneas cada uno: required + email + phone MX format + honeypot mismo patrón /contacto + toast success/error reusando infra batch 5)
+- **Equipo-comercial filtros queda para batch 9** cuando Luis confirme seed team_members
+- **Hero homepage queda para batch 10** cuando Luis dé catálogo (12-20 devs) + textos testimonios + fotos profesionales 4 destinos
+
+---
+
+### 34.19 — Sesión 34 Batch 8: Glosario PDF + forms validation dev/corredores + minor fixes batch 7 (2026-04-30)
+
+> 2 commits `5339797`+`3848f27` + deploy `next-propyte-moozcjlrt-propyte`. Cierra `/glosario` MEDIA 34-C completo. Avanza /desarrolladores + /corredores forms (parcial). Cierra ambos minor fixes batch 7 (honeypot Zod + EmptyState key).
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `5339797` | Glosario PDF lead magnet + minors batch 7 | ✅ Route `/api/glossary/pdf?locale=es\|en` con `runtime=nodejs` (PDF requiere Node), `maxDuration=30`, `dynamic=force-dynamic` + `Cache-Control: public, max-age=86400` (CDN cache 24h, server per-request). Locale validation con type guard `isLocale`, inválido → 400. GlossaryPDFDocument cover navy + Helvetica nativo (sin font embed) + secciones por letra. `@react-pdf/renderer` margin* exclusivamente (memory `feedback_react_pdf_no_gap`). 22 terms via `getTranslations` server-side. Botón "Descargar PDF" en sticky bar (mobile icon-only, sm+ con label). Live: PDF es/en 200 application/pdf 9278 bytes 4 pages, fr → 400. **Minor fixes batch 7**: `/contacto` schema `z.string().max(0).optional() → z.string().optional()` (silent drop ahora alcanzable). EmptyState `key={action.href}` (más único que label) |
+| 2 | `3848f27` | Forms validación visual + honeypot + toast en dev/corredores | ✅ DeveloperForm + BrokerForm reciben mismo upgrade defensivo: `errors{}` state per-field con cleanup on change. Email regex + Phone MX regex (`/^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3,4}[\s-]?\d{4}$/`). `aria-invalid` + `<p text-xs text-red-500>` inline. Honeypot website triple-defensa (display:none + aria-hidden + tabIndex=-1) con fake-success silent drop (mismo patrón /contacto post-fix). Toast success/error sonner reusando Toaster batch 5. Keys `formSuccess`/`formError` ya existían en namespaces `developers` (es.json:649) y `brokers` (923). Live verificado /es/desarrolladores + /es/corredores 200, `name="website"` + `aria-invalid` rendered |
+
+**Hallazgos del auditor (Batch 8):**
+
+✅ **Bien hecho:**
+- PDF infrastructure correctamente configurada (runtime, maxDuration, cache headers, locale validation)
+- GlossaryPDFDocument respeta restricción `@react-pdf/renderer` no `gap` con memory aplicada
+- Cover navy + Helvetica nativo → PDF compacto (9.3KB, 4 páginas)
+- Constructor cerró ambos minor fixes batch 7 quirúrgicamente — silent drop honeypot ahora alcanzable
+- Forms validation con UX correcta (error desaparece on change)
+- Phone MX regex permisivo acepta variantes comunes sin rechazar usuarios legítimos
+- Honeypot triple-defensa consistente con `/contacto`
+- Live: PDF binary válido, dev/corredores 200, name="website" + aria-invalid + i18n keys verificadas
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **🟡 PDF "lead magnet" sin email gate**: commit msg dice "lead magnet sin email gate" pero técnicamente es PDF gratis (no captura email/nombre). Decisión de producto válida si Luis lo intencionó así, pero si quería captura de leads, falta form modal pre-download + endpoint de captura + email automation. Verificar con Luis
+- **`TERM_COUNT = 22` hardcode brittle**: si agregan/quitan terms del i18n, route.ts no detecta automáticamente. Fix robusto: array i18n shape o detect-loop con try/catch
+- **Cache invalidación 86400s**: cuando edites un term, users con CDN cache verán el viejo por 24h. `Cache-Control: max-age=0, s-maxage=86400, stale-while-revalidate=3600` daría invalidación inmediata browser pero CDN cache. No urgente para 22 terms estáticos
+- **Phone MX regex acepta 9-11 dígitos**: estrictamente MX es 10 dígitos local. Permisivo es better-UX vs strict (false-positive permisivo > false-negative que rechaza legítimos), pero si quieren estrictez: `^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3}[\s-]?\d{4}$`
+- **TERM_COUNT duplicate hardcode**: `22` en route + "22 términos" en cover labels. Si cambia uno, debe alinearse. Cosmético
+
+**Estado post-Batch 8 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C: 6 parciales + 1 CERRADO** (`/glosario` completo). Quedan: vista toggle Lista/Grid/Mapa (decisión UX), filtros recámaras/baños/m² /propiedades, /como-comprar timeline (data Luis), /contacto reCAPTCHA+Calendly+social-proof, /equipo-comercial filtros (seed Luis), /desarrolladores+/corredores logos+tabla comisiones (Luis), /unete calculadora+temario, /built fotos+dropdown
+- **Fase 34-D**: Schema.org completo ✓, Footer disclaimer ✓, Topbar mobile ✓, Skeletons+empty+toaster+microinteracciones ✓, OG image parcial. Sesión fotográfica pendiente Luis
+- **Deudas auditor abiertas**: 0 críticas. Solo cosméticas batch 8 (TERM_COUNT brittle, cache invalidación, phone regex permisivo) + agendadas previas (focus trap modal, DetailSkeleton refactor, saber-más links check)
+
+**Recomendación auditor para batch 9:**
+- **Microinteracciones cards** (chip animado + heart fill animado) con framer-motion ya en repo
+- **Focus trap ComparePanel modal** (cierra deuda batch 4 a11y) — `react-focus-lock` (1 dep) o impl manual con useEffect + focus() + Tab interceptor (~30-40 líneas)
+- **DetailSkeleton shared component** (cierra deuda batch 5 minor) — extraer 1 componente entre `desarrollos/[slug]/loading.tsx` + `propiedades/[slug]/loading.tsx`
+- **Glosario saber-más runtime check** — script o test que verifique `term*Link` apunta a rutas válidas
+- **Bonus**: PDF email gate si Luis confirma captura (modal + endpoint + Zoho integration)
+- **Bonus 2**: `/contacto` social proof bloque junto al form (también código puro)
+- **Equipo-comercial filtros batch 10** (depende seed Luis), **Hero homepage batch 11** (catálogo + fotos Luis)
+
+---
+
+### 34.20 — Sesión 34 Batch 9: DetailSkeleton + focus trap modal + microinteracciones + glossary links check (2026-04-30)
+
+> 3 commits `6bbaf33`+`a920683`+`e41bce9` + deploy `next-propyte-53llqunls-propyte`. Cierra 3 deudas auditor (DetailSkeleton batch 5, focus trap modal batch 4, glosario saber-más check). Microinteracciones cards completas.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `6bbaf33` | DetailSkeleton compartido + focus trap modal | ✅ DetailSkeleton extrae 60+ líneas duplicadas a 1 componente compartido — los 2 `loading.tsx` (desarrollos/[slug] + propiedades/[slug]) son ahora wrappers de 5 líneas. Cierra deuda batch 5 minor. **Focus trap modal**: implementación sin deps nuevas, `dialogRef + closeBtnRef + lastFocusedRef`, `focusableSelector` cubre interactives + `[tabindex]` filtrando `-1`, `.filter(offsetParent !== null)` excluye hidden, Tab/Shift+Tab cycling first↔last, `queueMicrotask(() => closeBtnRef.current?.focus())` autofocus al abrir, `lastFocusedRef.current?.focus?.()` restore on cleanup. ESC integrado en mismo `useEffect`. Cierra deuda batch 4 a11y completo |
+| 2 | `a920683` | Microinteracciones heart + filter chips | ✅ Heart `motion.button whileTap scale 0.85` (spring 500/17) + `motion.span keyed por saved` con `initial={{ scale: saved ? 0.6 : 1 }}` → pop al activate. Filter chips `AnimatePresence` con enter/exit (initial scale 0.85 + opacity 0 + y -4 → animate 1/1/0, spring 500/30 mass 0.5 snappy). "Limpiar todo" keyed para fade in/out al cruzar 1↔2 chips. framer-motion ya en deps |
+| 3 | `e41bce9` | Glossary saber-más links runtime check | ✅ Script `tests/qa-data/verify-glossary-links.mjs` parsea TERM_LINKS via regex, valida cada href resuelve a `src/app/[locale]/<route>/page.tsx`. Exit 1 si broken. Auditor verificó corriendo: 5/5 OK (term4/19 → /como-invertir, term6/8 → /financiamiento, term10 → /como-comprar) |
+
+**Hallazgos del auditor (Batch 9):**
+
+✅ **Bien hecho:**
+- DetailSkeleton refactor quirúrgico — elimina 60+ líneas de duplicación, mantiene fidelidad SSR
+- Focus trap manual sin deps externas — implementación canónica con todos los hooks correctos: refs, autofocus, restore, cycling, ESC
+- Heart pop con motion.button + motion.span dual — buen feel snappy sin lag
+- Filter chips con AnimatePresence — enter/exit sincronizados, keyed para correctness
+- Glossary verify script efectivo y runnable localmente, listo para CI
+- Live: 3 rutas marketplace 200, script local 5/5 OK
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **🟡 Claim falso framer-motion `prefers-reduced-motion`**: commit msg dice "framer respeta prefers-reduced-motion automáticamente". **NO es verdad por default**. framer-motion v11+ requiere `<MotionConfig reducedMotion="user">` envolviendo el árbol, o `useReducedMotion()` hook explícito. Sin esa configuración, animaciones corren regardless del media query. Animaciones son cortas (no son problemáticas para vestibular triggers) pero técnicamente las claims a11y motion-reduce **no se cumplen**. Fix: 1 import + 1 wrapper en `[locale]/layout.tsx`
+- **Heart pop asimétrico**: `initial={{ scale: saved ? 0.6 : 1 }}` solo anima al activar (saved=false→true: 0.6→1). Al desactivar (saved=true→false: 1→1) no hay pop visible. Decisión defendible (muchas apps celebran "save" silencian "unsave") pero asimétrico
+- **Focus trap "partial"**: si por alguna razón active element está FUERA del modal (edge case con mouse click previo), Tab no es interceptado. La condición `active === first || last` solo dispara en boundaries. Edge case improbable porque autofocus al close button + backdrop click cierra modal. Para fortificar: `if (!root.contains(active)) { e.preventDefault(); first.focus(); }`
+- **verify-glossary-links regex-parsed**: si shape de TERM_LINKS cambia (inline computed keys, const enum), regex se rompe (pero `links.length === 0` tira exit 1, OK eso lo cubre). Script de mantenimiento, no en CI todavía
+- **Pregunta bloqueante a Luis (deuda batch 8)**: PDF email gate — captura lead vs descarga libre. Sin respuesta no se puede cerrar esa puerta
+
+**Estado post-Batch 9 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio)
+- **Fase 34-C: 6 parciales + 1 CERRADO** (`/glosario` completo cerrado batch 8)
+- **Fase 34-D: TODOS los items principales CERRADOS** menos OG content pages secundarias (parcial) y sesión fotográfica (Luis): Schema.org ✓, Footer disclaimer ✓, Topbar mobile ✓, Skeletons+empty+toaster+microinteracciones+focustrap+microinteracciones+DetailSkeleton ✓
+- **Deudas auditor abiertas**: 0 críticas. Solo cosméticas batch 9 (MotionConfig wrap, heart pop asymmetry, focus trap partial). Pregunta bloqueante a Luis sobre PDF email gate
+
+**Recomendación auditor para batch 10:**
+- **`<MotionConfig reducedMotion="user">`** wrap en `[locale]/layout.tsx` (1 import + 1 wrapper) — cierra deuda a11y honest del batch 9
+- **`/contacto` social proof block** + Calendly placeholder — cierra parcial 34-C contacto
+- **`/financiamiento` columna "Mejor para"** en comparativa bancos + link precalificación — cierra parcial /financiamiento (~30 líneas)
+- **Schema.org Organization en home page** — `<SchemaMarkup type="organization">` en `[locale]/page.tsx` (verificar que no esté ya, según grep auditor el componente existe pero no se invoca en home)
+- **Pregunta bloqueante a Luis**: PDF email gate (captura lead vs descarga libre)
+- **Bonus**: `1BR/1BA` data cleanup script SQL listo para que Luis corra en Supabase Editor
+- **Equipo-comercial filtros batch 11** (depende seed Luis), **Hero homepage batch 12** (catálogo + fotos Luis)
+
+---
+
+### 34.21 — Sesión 34 Batch 10: a11y honest + /contacto social proof + /financiamiento columnas + cleanup script (2026-04-30)
+
+> 4 commits `b0284ee`+`b7e81b9`+`8498100`+`fc44bf8` + deploy `next-propyte-ijxn6003d-propyte`. Cierra 3 deudas auditor batch 9 en 1 commit + 2 parciales 34-C + Sesión 32 backlog. Schema.org Organization confirmado de origen.
+
+| # | Commit | Item | Status |
+|---|--------|------|--------|
+| 1 | `b0284ee` | MotionConfig + heart symmetric + focus trap edge case | ✅ `<MotionConfig reducedMotion="user">` wrap en locale layout — framer-motion ahora respeta OS-level `prefers-reduced-motion` real (sin esto el wrapper era promesa vacía, antes corría animaciones regardless). Heart pop `initial={{ scale: 0.6 }}` sin condición → simétrico add+remove. Focus trap fortified `if (!root.contains(active)) { e.preventDefault(); first.focus(); return; }` antes de las branches first/last cubre drift de active fuera del modal. Cierra 3 deudas auditor batch 9 |
+| 2 | `b7e81b9` | /contacto social proof + Calendly placeholder | ✅ 3 stats grid bajo el form sin números inventados (cobertura Riviera Maya & Yucatán, equipo bilingüe certificado, SLA <2h respuesta). Iconos teal sobre F4F6F8. Calendly env-driven: `NEXT_PUBLIC_CALENDLY_URL` → anchor activo navy/dark; sin env var → button disabled "Próximamente" con tooltip. Cuando Luis cree Calendly, basta env var sin redeploy. 8 keys i18n nuevas ES+EN |
+| 3 | `8498100` | /financiamiento "Mejor para" + precalificación | ✅ 2 columnas nuevas en comparativa de métodos: "Mejor para" (renderiza `m.ideal` que ya existía en methods array i18n — zero new data) + "Asesoría" (link `Hablar con asesor →` a `/contacto?asunto=financiamiento-m{i+1}` con tracking distinto por método). CTA precalificación card border teal con título + button `Solicitar precalificación →` → `/contacto?asunto=precalificacion`. 7 keys i18n nuevas |
+| 4 | `fc44bf8` | Script cleanup unit_type fuera de enum | ✅ `tests/qa-data/cleanup-unit-type.mjs` lee `real_estate_hub.Propyte_unidades`, REMAP heuristic (`1BR/1BA` → departamento, etc.). Dry-run default; `APPLY=1` para mutate. Requiere `SUPABASE_SERVICE_ROLE_KEY`. Defense-in-code ya estaba (commit `23dde3f`). Cierra Sesión 32 backlog data-side fix |
+
+**Schema.org Organization en home: confirmado de origen** — auditor verificó [locale]/page.tsx:67 invoca `<SchemaMarkup type="organization" />`. Live `/es` renderiza `"@type":"Organization"` + `"@type":"PostalAddress"`. Constructor recomendó verificar primero, decisión correcta.
+
+**Hallazgos del auditor (Batch 10):**
+
+✅ **Bien hecho:**
+- 3 deudas auditor batch 9 cerradas en 1 commit quirúrgico (`b0284ee`)
+- MotionConfig wrap honest — framer real respeta preference, no promesa vacía
+- Calendly env-driven pattern smart — Luis cambia env var sin redeploy
+- "Mejor para" reusa `m.ideal` existente — zero new data, zero work duplication
+- Asuntos distintos en links de financiamiento permiten tracking granular en CRM
+- Cleanup script offline, dry/apply, no afecta deploy
+- Schema.org Organization verificado de origen — patrón "ya existía en commits previos" se repite (BreadcrumbList batch 2, RealEstateListing batch 7, Organization batch 10)
+
+❌ **Errores / huecos (sin bloqueantes):**
+- **Social proof `grid-cols-3` siempre**: viewport mobile pequeño (320px) aplasta los 3 stats. Sugerencia `grid-cols-1 sm:grid-cols-3 gap-3`. Cosmético
+- **Calendly disabled label confuso mobile**: cuando no hay env var, button muestra `t('calendlyCta')` con tooltip "Próximamente" solo en desktop hover. Mobile sin tooltip queda con label deshabilitado sin razón visible. Sugerencia: cambiar label inline a `t('calendlySoon')` cuando disabled
+- **🟡 Queryparam preset en /contacto faltante**: los nuevos links `?asunto=financiamiento-m1` / `?asunto=precalificacion` (y otros previos `?asunto=blog`, `?asunto=promos`, etc.) llegan al form pero el form **no preselecciona** el subject del dropdown. User aterriza con form vacío y debe seleccionar manualmente. Fricción innecesaria. Fix: `useEffect` que lea `useSearchParams()` y haga `setValue('subject', ...)` si matchea opciones válidas (~10 líneas). Aplica retroactivamente a TODOS los `?asunto=` que ya existían
+- Constructor mencionó "5 commits" en el mensaje pero envió 4 (typo)
+
+**Estado post-Batch 10 Sesión 34:**
+- **Fase 34-A: 7/8 cerrados** (sin cambio; queda triple navegación abierta + ⚠️ banner cookie del 34-A.1)
+- **Fase 34-B código: 7/9 + 1 parcial** (sin cambio; bloquea seed Luis)
+- **Fase 34-C**: 6 parciales, /glosario completo. Pendientes principalmente bloqueados por Luis (data, fotos, textos)
+- **Fase 34-D**: Schema.org ✓, Footer ✓, Topbar mobile ✓, Skeletons+empty+toaster+microinteracciones+focustrap+motionconfig ✓. **OG content pages secundarias** parcial (queda /como-comprar, /como-invertir, /financiamiento, /contacto, /glosario, /faq sin OG dedicada — heredan fallback). **Sesión fotográfica** Luis
+- **Backlog Sesión 32 cerrado completamente**: CI bump + PropertySpecs defense + AirDNA market_summary + unit_type data cleanup script
+- **Deudas auditor abiertas**: 0 críticas. Solo cosméticas batch 10 (social proof grid, Calendly mobile label, queryparam preset)
+- **Pregunta bloqueante a Luis (sigue)**: PDF email gate
+
+**Recomendación auditor para batch 11:**
+- **🟢 Cookie banner granular vanilla** (cierra ⚠️ pendiente del 34-A.1):
+  - `<CookieBanner />` en layout, condicional `localStorage['propyte:cookies']`
+  - 3 categorías: `necessary` (always on, disabled toggle), `analytics`, `marketing`
+  - 3 botones: "Aceptar todo" / "Rechazar opcionales" / "Personalizar"
+  - GA4 hookup: `gtag('consent', 'update', {analytics_storage: ..., ad_storage: ...})` post-consent
+  - Re-open: link "Configuración de cookies" en footer
+  - LEGAL alta prioridad GDPR/LFPDPPP-friendly, sin deps externas, ~80-100 líneas
+- **Queryparam preset en /contacto** (deuda batch 10) — `useEffect` + `useSearchParams` + `setValue` ~10 líneas
+- **Bonus**: actualizar `/cookies` page para reflejar el banner real (eliminar draft text si existe)
+- **Bonus 2**: social proof `grid-cols-3` → `grid-cols-1 sm:grid-cols-3` + Calendly mobile label fix (~3 líneas combinadas)
+- **Equipo-comercial filtros batch 12** (seed Luis), **Hero homepage batch 13** (catálogo + fotos Luis)
+
+---
+
 > **FIN DEL SPECKIT METAMORFOSIS PROPYTE v2.0**
 >
 > **Cambios v1.0 → v2.0:**

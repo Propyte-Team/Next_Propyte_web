@@ -39,7 +39,7 @@ export default function BlogPostCard({
           </div>
         )}
         <div className="p-5">
-          <span className="inline-block px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-[#5CE0D2]/10 text-[#5CE0D2] mb-3">
+          <span className="inline-block px-2.5 py-1 text-xs font-bold uppercase rounded-md bg-[#0D9488]/10 text-[#0D9488] mb-3">
             {category}
           </span>
           <h3 className="text-lg font-bold text-[#2C2C2C] mb-2 line-clamp-2 group-hover:text-[#5CE0D2] transition-colors">

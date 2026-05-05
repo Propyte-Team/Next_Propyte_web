@@ -91,7 +91,7 @@ export default function CookieBanner() {
               type="button"
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
-              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0D9488] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
             >
               {t('customize')}
               <ChevronDown

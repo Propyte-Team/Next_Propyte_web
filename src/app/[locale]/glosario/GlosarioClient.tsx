@@ -62,7 +62,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
   return (
     <>
       {/* Sticky search + letter nav (combined) */}
-      <div className="sticky top-16 z-10 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
+      <div className="sticky top-[76px] lg:top-20 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 space-y-3">
           {/* Search bar + Download PDF */}
           <div className="max-w-2xl mx-auto flex items-center gap-2">

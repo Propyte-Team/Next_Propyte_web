@@ -23,7 +23,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
   const rentDisplay = smartRentEstimate || property.roi.rentalMonthly;
 
   return (
-    <div className="sticky top-20 space-y-4">
+    <div className="sticky top-24 space-y-4">
       {/* Main contact card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         {/* Price reminder */}

@@ -66,7 +66,7 @@ body {
   z-index: 999;
   padding: 8px 16px;
   background: var(--color-teal);
-  color: white;
+  color: #0F1923;
   font-weight: 600;
 }
 .skip-to-content:focus {
