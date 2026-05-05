@@ -18,8 +18,8 @@ export default function DesignPlaygroundShell() {
   const undoStack = useTokensStore((s) => s.undoStack);
   const redoStack = useTokensStore((s) => s.redoStack);
 
-  const [device, setDevice]               = useState<DeviceSize>('desktop');
-  const [inspectedSection, setInspectedSection] = useState<string | null>(null);
+  const [device, setDevice] = useState<DeviceSize>('desktop');
+  const [inspected, setInspected] = useState<{ category: string; label: string } | null>(null);
 
   // Writes active theme tokens to :root with 50ms debounce.
   useApplyDesignTokens();
@@ -112,8 +112,9 @@ export default function DesignPlaygroundShell() {
         {/* Left: controls */}
         <aside className="border-r border-neutral-200 bg-white overflow-hidden flex flex-col">
           <ControlPanel
-            forceOpen={inspectedSection}
-            onForceOpenHandled={() => setInspectedSection(null)}
+            forceOpen={inspected?.category ?? null}
+            forceOpenLabel={inspected?.label ?? ''}
+            onForceOpenHandled={() => setInspected(null)}
           />
         </aside>
 
@@ -122,7 +123,7 @@ export default function DesignPlaygroundShell() {
           <PreviewFrame
             device={device}
             onDeviceChange={setDevice}
-            onInspect={setInspectedSection}
+            onInspect={(category, label) => setInspected({ category, label })}
           />
         </section>
       </div>

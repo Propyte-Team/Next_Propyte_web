@@ -24,7 +24,7 @@ const DEFAULT_URL = '/es';
 interface PreviewFrameProps {
   device: DeviceSize;
   onDeviceChange: (d: DeviceSize) => void;
-  onInspect?: (category: string) => void;
+  onInspect?: (category: string, label: string) => void;
 }
 
 export default function PreviewFrame({ device, onDeviceChange, onInspect }: PreviewFrameProps) {
@@ -63,7 +63,7 @@ export default function PreviewFrame({ device, onDeviceChange, onInspect }: Prev
       if (e.data?.type !== 'PROPYTE_ELEMENT_CLICK') return;
       setInspecting(false);
       sendInspectorMsg(false);
-      onInspect?.(e.data.category as string);
+      onInspect?.(e.data.category as string, e.data.label as string);
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);

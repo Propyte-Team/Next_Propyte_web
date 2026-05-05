@@ -8,6 +8,7 @@ import SpacingSection from './sections/SpacingSection';
 import RadiusSection from './sections/RadiusSection';
 import ShadowSection from './sections/ShadowSection';
 import MediaSection from './sections/MediaSection';
+import QuickEditPanel from './QuickEditPanel';
 
 interface Section {
   id: string;
@@ -86,27 +87,24 @@ function SectionBlock({ section, isOpen, onToggle }: SectionBlockProps) {
 }
 
 interface ControlPanelProps {
-  forceOpen?: string | null;   // section id to open+scroll — set by inspector
+  forceOpen?: string | null;
+  forceOpenLabel?: string;
   onForceOpenHandled?: () => void;
 }
 
-export default function ControlPanel({ forceOpen, onForceOpenHandled }: ControlPanelProps) {
-  const [openSections, setOpenSections] = useState<Set<string>>(
-    new Set(['colors']),
-  );
+export default function ControlPanel({ forceOpen, forceOpenLabel = '', onForceOpenHandled }: ControlPanelProps) {
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['colors']));
   const [search, setSearch] = useState('');
+  const [quickEdit, setQuickEdit] = useState<{ category: string; label: string } | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // When the inspector says "open this section", expand it and scroll to it.
   useEffect(() => {
     if (!forceOpen) return;
+    setQuickEdit({ category: forceOpen, label: forceOpenLabel });
     setOpenSections((prev) => new Set([...prev, forceOpen]));
     setSearch('');
-    setTimeout(() => {
-      sectionRefs.current[forceOpen]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 80);
     onForceOpenHandled?.();
-  }, [forceOpen, onForceOpenHandled]);
+  }, [forceOpen, forceOpenLabel, onForceOpenHandled]);
 
   const toggle = (id: string) => {
     setOpenSections((prev) => {
@@ -133,6 +131,15 @@ export default function ControlPanel({ forceOpen, onForceOpenHandled }: ControlP
 
   return (
     <div className="flex flex-col h-full">
+      {/* Quick edit panel — shown when inspector detects a click */}
+      {quickEdit && (
+        <QuickEditPanel
+          category={quickEdit.category}
+          label={quickEdit.label}
+          onClose={() => setQuickEdit(null)}
+        />
+      )}
+
       {/* Search */}
       <div className="px-4 py-3 border-b border-neutral-100 sticky top-0 bg-white z-10">
         <div className="relative">
