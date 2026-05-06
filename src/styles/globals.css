@@ -108,6 +108,33 @@
   --color-error: #EF4444;
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1EBE57;
+
+  /* Typography — alias a los tokens del Design Playground (--fs-*, --fw-*).
+     Esto hace que las utilities text-sm/text-lg/text-3xl/font-bold... se
+     vuelvan dinámicas al cambiar los tokens en el playground. */
+  --text-xs:   var(--fs-xs);
+  --text-sm:   var(--fs-sm);
+  --text-base: var(--fs-base);
+  --text-lg:   var(--fs-lg);
+  --text-xl:   var(--fs-xl);
+  --text-2xl:  var(--fs-2xl);
+  --text-3xl:  var(--fs-3xl);
+  --text-4xl:  calc(var(--fs-3xl) * 1.25);
+  --text-5xl:  calc(var(--fs-3xl) * 1.5);
+  --text-6xl:  calc(var(--fs-3xl) * 1.85);
+
+  --font-weight-thin:       100;
+  --font-weight-extralight: 200;
+  --font-weight-light:      300;
+  --font-weight-normal:     var(--fw-normal);
+  --font-weight-medium:     var(--fw-medium);
+  --font-weight-semibold:   var(--fw-semibold);
+  --font-weight-bold:       var(--fw-bold);
+  --font-weight-extrabold:  800;
+  --font-weight-black:      900;
+
+  --font-sans:    var(--font-body);
+  --font-heading: var(--font-heading);
 }
 
 * {

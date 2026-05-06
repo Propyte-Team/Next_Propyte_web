@@ -1,5 +1,9 @@
 import type { Config } from "tailwindcss";
 
+// Colors reference CSS variables so the Design Playground can override them
+// at runtime via document.documentElement.style.setProperty(). The variables
+// are defined in src/styles/globals.css :root with the canonical Propyte hex
+// values as defaults.
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,31 +14,44 @@ const config: Config = {
     extend: {
       colors: {
         propyte: {
-          teal: '#5CE0D2',
-          'teal-dark': '#4BCEC0',
-          'teal-a11y': '#0D9488',
-          'aqua-bright': '#99FFFF',
-          navy: '#1A2F3F',
-          aztec: '#0F1923',
-          'deep-onyx': '#1A1A2E',
-          graphite: '#2C2C2C',
-          amber: '#F5A623',
-          light: '#F4F6F8',
+          teal:         'var(--color-teal)',
+          'teal-dark':  'var(--color-teal-dark)',
+          'teal-a11y':  'var(--color-teal-a11y)',
+          'aqua-bright':'var(--color-aqua-bright)',
+          navy:         'var(--color-navy)',
+          aztec:        'var(--color-aztec)',
+          'deep-onyx':  'var(--color-deep-onyx)',
+          graphite:     'var(--color-graphite)',
+          amber:        'var(--color-amber)',
+          light:        'var(--color-gray-light)',
         },
         // Shorthand aliases
-        navy: '#1A2F3F',
-        aztec: '#0F1923',
-        teal: { DEFAULT: '#5CE0D2', dark: '#4BCEC0', a11y: '#0D9488' },
-        'aqua-bright': '#99FFFF',
-        amber: '#F5A623',
-        graphite: '#2C2C2C',
-        'gray-light': '#F4F6F8',
-        success: '#22C55E',
-        error: '#EF4444',
-        whatsapp: { DEFAULT: '#25D366', dark: '#1EBE57' },
+        navy:          'var(--color-navy)',
+        aztec:         'var(--color-aztec)',
+        teal: {
+          DEFAULT: 'var(--color-teal)',
+          dark:    'var(--color-teal-dark)',
+          a11y:    'var(--color-teal-a11y)',
+        },
+        'aqua-bright': 'var(--color-aqua-bright)',
+        amber:         'var(--color-amber)',
+        graphite:      'var(--color-graphite)',
+        'gray-light':  'var(--color-gray-light)',
+        success:       'var(--color-success)',
+        error:         'var(--color-error)',
+        whatsapp: {
+          DEFAULT: 'var(--color-whatsapp)',
+          dark:    'var(--color-whatsapp-dark)',
+        },
+        // Design Playground semantic roles
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        muted:      'var(--color-muted)',
+        border:     'var(--color-border)',
       },
       fontFamily: {
-        sans: ['"Space Grotesk"', 'Inter', 'Arial', 'sans-serif'],
+        sans: ['var(--font-body)', '"Space Grotesk"', 'Inter', 'Arial', 'sans-serif'],
+        heading: ['var(--font-heading)', '"Space Grotesk"', 'Inter', 'sans-serif'],
       },
       maxWidth: {
         'container-sm': '640px',
@@ -43,28 +60,27 @@ const config: Config = {
         'container-xl': '1440px',
       },
       fontSize: {
-        'h1': ['36px', { lineHeight: '1.2', fontWeight: '700' }],
-        'h2': ['28px', { lineHeight: '1.3', fontWeight: '600' }],
-        'h3': ['22px', { lineHeight: '1.35', fontWeight: '600' }],
-        'body': ['16px', { lineHeight: '1.6', fontWeight: '400' }],
-        'body-sm': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
-        'price-card': ['22px', { lineHeight: '1.2', fontWeight: '700' }],
-        'price-micro': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
-        'metadata': ['14px', { lineHeight: '1.4', fontWeight: '500' }],
-        'badge': ['12px', { lineHeight: '1.0', fontWeight: '600' }],
-        'btn': ['16px', { lineHeight: '1.0', fontWeight: '600' }],
+        'h1':          ['var(--fs-3xl)', { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        'h2':          ['var(--fs-2xl)', { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-semibold)' }],
+        'h3':          ['var(--fs-xl)',  { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        'body':        ['var(--fs-base)', { lineHeight: 'var(--lh-relaxed)', fontWeight: 'var(--fw-normal)' }],
+        'body-sm':     ['var(--fs-sm)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-normal)' }],
+        'price-card':  ['var(--fs-xl)',   { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        'price-micro': ['var(--fs-2xl)',  { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        'metadata':    ['var(--fs-sm)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-medium)' }],
+        'badge':       ['var(--fs-xs)',   { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-semibold)' }],
+        'btn':         ['var(--fs-base)', { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-semibold)' }],
       },
       borderRadius: {
-        'card': '12px',
-        'btn': '8px',
-        'badge': '4px',
-        'pin': '4px',
+        'card':  'var(--radius-lg)',
+        'btn':   'var(--radius-md)',
+        'badge': 'var(--radius-sm)',
+        'pin':   'var(--radius-sm)',
       },
       boxShadow: {
-        // Calca WP — 2-layer shadows
-        'card': '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)',
-        'card-hover': '0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.05)',
-        'pin': '0 2px 6px rgba(0,0,0,0.2)',
+        'card':       'var(--shadow-md)',
+        'card-hover': 'var(--shadow-lg)',
+        'pin':        'var(--shadow-sm)',
       },
     },
   },

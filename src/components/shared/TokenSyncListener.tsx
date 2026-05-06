@@ -14,6 +14,7 @@
  * En visita normal (no-iframe): sale inmediatamente. Costo = 0.
  */
 import { useEffect } from 'react';
+import { buildPlaygroundOverrideCss } from './PlaygroundOverrideCss';
 
 function detectCategory(el: Element): { category: string; label: string } {
   const tag = el.tagName.toLowerCase();
@@ -67,6 +68,18 @@ export default function TokenSyncListener() {
     if (typeof window === 'undefined') return;
     if (window.self === window.top) return;
 
+    const debug = new URLSearchParams(window.location.search).has('debug');
+    if (debug) console.log('%c[Propyte Playground] TokenSyncListener mounted', 'color:#5CE0D2;font-weight:bold');
+
+    // Inyectar CSS de override para mapear arbitrary values (bg-[#5CE0D2]) → CSS vars.
+    const overrideId = 'propyte-playground-override-css';
+    if (!document.getElementById(overrideId)) {
+      const styleEl = document.createElement('style');
+      styleEl.id = overrideId;
+      styleEl.textContent = buildPlaygroundOverrideCss();
+      document.head.appendChild(styleEl);
+    }
+
     let clickHandler: ((e: MouseEvent) => void) | null = null;
 
     const msgHandler = (e: MessageEvent) => {
@@ -74,6 +87,7 @@ export default function TokenSyncListener() {
 
       if (e.data.type === 'PROPYTE_TOKENS') {
         const vars = e.data.vars as Record<string, string>;
+        if (debug) console.log('[Propyte Playground] Applying', Object.keys(vars).length, 'CSS vars. teal=', vars['--color-teal']);
         for (const [k, v] of Object.entries(vars))
           document.documentElement.style.setProperty(k, v);
         return;
@@ -106,6 +120,7 @@ export default function TokenSyncListener() {
     return () => {
       window.removeEventListener('message', msgHandler);
       removeInspectorStyles();
+      document.getElementById(overrideId)?.remove();
       if (clickHandler) document.removeEventListener('click', clickHandler, true);
     };
   }, []);
