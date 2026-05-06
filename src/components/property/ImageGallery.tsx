@@ -118,15 +118,16 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
       {count > 1 && (
         <div className="mt-3 -mx-4 md:mx-0">
           <div className="flex gap-2 px-4 md:px-0 md:grid md:grid-cols-5 overflow-x-auto no-scrollbar pb-1">
-            {safeImages.slice(0, 8).map((src, i) => {
+            {safeImages.slice(0, 5).map((src, i) => {
               const selected = i === current;
+              const isLast = i === 4 && count > 5;
               return (
                 <button
                   key={`${src}-${i}`}
                   type="button"
-                  onClick={() => setCurrent(i)}
+                  onClick={() => (isLast ? setModal(true) : setCurrent(i))}
                   aria-current={selected}
-                  aria-label={`Ver imagen ${i + 1}`}
+                  aria-label={isLast ? `Ver ${count - 4} fotos más` : `Ver imagen ${i + 1}`}
                   className={`relative aspect-[4/3] min-w-[88px] md:min-w-0 min-h-[66px] rounded-xl overflow-hidden border-2 transition-all ${
                     selected
                       ? 'border-[#5CE0D2] ring-2 ring-[#5CE0D2]/30'
@@ -140,9 +141,9 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
                     sizes="88px"
                     className="object-cover"
                   />
-                  {i === 7 && count > 8 && (
+                  {isLast && (
                     <div className="absolute inset-0 bg-black/55 flex items-center justify-center text-white text-sm font-bold">
-                      +{count - 7}
+                      +{count - 4}
                     </div>
                   )}
                 </button>

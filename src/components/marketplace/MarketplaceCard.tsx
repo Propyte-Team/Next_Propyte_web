@@ -149,18 +149,19 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               </motion.span>
             </motion.button>
             {property.assets?.brochure && (
-              <a
-                href={property.assets?.brochure}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                onClick={(e) => e.stopPropagation()}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(property.assets!.brochure!, '_blank', 'noopener,noreferrer');
+                }}
                 className="w-8 h-8 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
                 aria-label={tMkt('cardBrochure')}
                 title={tMkt('cardBrochure')}
               >
                 <Download size={14} strokeWidth={2.25} className="text-[#1A2F3F]" />
-              </a>
+              </button>
             )}
             <button
               type="button"

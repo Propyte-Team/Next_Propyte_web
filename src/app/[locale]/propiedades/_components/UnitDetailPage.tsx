@@ -256,21 +256,21 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           <span className="text-gray-700 font-medium truncate max-w-[240px]">{property.name}</span>
         </nav>
 
-        {/* Hero gallery */}
-        <ImageGallery
-          images={property.images}
-          alt={property.name}
-          badgeTopLeft={
-            <>
-              <span className="px-3 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-full">{stageLabel}</span>
-              {property.badge && <Badge type={property.badge} label={stageLabel} />}
-            </>
-          }
-        />
-
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Hero gallery */}
+            <ImageGallery
+              images={property.images}
+              alt={property.name}
+              badgeTopLeft={
+                <>
+                  <span className="px-3 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-full">{stageLabel}</span>
+                  {property.badge && <Badge type={property.badge} label={stageLabel} />}
+                </>
+              }
+            />
+
             {/* Title + Specs */}
             <div>
               <div className="flex items-center gap-2 text-xs text-[#0F766E] font-semibold uppercase tracking-wider mb-1">
@@ -357,6 +357,58 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                         )}
                       </div>
                       <AmenityList locale={locale} amenities={devAmenities.length > 0 ? devAmenities : property.amenities} />
+
+                      {developerDisplay?.name && (
+                        <div className="bg-gray-50 rounded-2xl p-6">
+                          <h2 className="text-lg font-bold text-gray-900 mb-4">
+                            {tProp('developerTitle')}
+                          </h2>
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                              {developerDisplay.logoUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
+                              ) : (
+                                <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
+                                  {developerDisplay.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
+                                {developerDisplay.verified && (
+                                  <span className="px-2 py-0.5 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                    {tProp('verified')}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-600 mt-0.5 flex items-center gap-2 flex-wrap">
+                                {developerProjects > 0 && <span>{tProp('projectsCount', { count: developerProjects })}</span>}
+                                {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
+                                  <span>· {developerDisplay.yearsExperience} {tProp('yearsExperience')}</span>
+                                )}
+                                {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
+                                  <span>· {developerDisplay.unitsDelivered.toLocaleString()} {tProp('unitsDelivered')}</span>
+                                )}
+                              </div>
+                            </div>
+                            {developerDisplay.slug && (
+                              <Link
+                                href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
+                                className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
+                              >
+                                {tProp('viewProfile')}
+                              </Link>
+                            )}
+                          </div>
+                          {(locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs) && (
+                            <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
+                              {locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ),
                 },
@@ -385,16 +437,26 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   id: 'geo',
                   label: tProp('tabGeo'),
                   panel: (
-                    <GeoAnalysis
-                      lat={property.location.lat ?? null}
-                      lng={property.location.lng ?? null}
-                      address={property.location.address || null}
-                      city={property.location.city}
-                      zone={property.location.zone || null}
-                      state={property.location.state || null}
-                      zoneScore={null}
-                      locale={locale}
-                    />
+                    <div className="space-y-8">
+                      <MarketIndicator
+                        city={property.location.city}
+                        price={property.price.mxn}
+                        monthlyRent={monthlyRentRes || null}
+                        capRate={property.capRate ?? null}
+                        airdnaOccupancy={airdnaOccupancy}
+                        locale={locale}
+                      />
+                      <GeoAnalysis
+                        lat={property.location.lat ?? null}
+                        lng={property.location.lng ?? null}
+                        address={property.location.address || null}
+                        city={property.location.city}
+                        zone={property.location.zone || null}
+                        state={property.location.state || null}
+                        zoneScore={null}
+                        locale={locale}
+                      />
+                    </div>
                   ),
                 }] as TabItem[] : []),
                 ...(isVisible(visibility, VISIBILITY_KEYS.PROPIEDADES_DETAIL_RENTABILIDAD) ? [{
@@ -429,17 +491,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
-            <div className="sticky top-24 space-y-4">
-              <MarketIndicator
-                city={property.location.city}
-                price={property.price.mxn}
-                monthlyRent={monthlyRentRes || null}
-                capRate={property.capRate ?? null}
-                airdnaOccupancy={airdnaOccupancy}
-                locale={locale}
-              />
-
+          <div className="space-y-6">
+            <div className="sticky top-24 space-y-6">
               <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 scroll-mt-24">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   {tProp('interestedUnitQuestion')}
@@ -460,57 +513,19 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 </a>
               </div>
 
-              {developerDisplay?.name && (
-                <div className="bg-gray-50 rounded-2xl p-6">
-                  <h2 className="text-lg font-bold text-gray-900 mb-4">
-                    {tProp('developerTitle')}
-                  </h2>
-                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                      {developerDisplay.logoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
-                      ) : (
-                        <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
-                          {developerDisplay.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
-                        {developerDisplay.verified && (
-                          <span className="px-2 py-0.5 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
-                            {tProp('verified')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-600 mt-0.5 flex items-center gap-2 flex-wrap">
-                        {developerProjects > 0 && <span>{tProp('projectsCount', { count: developerProjects })}</span>}
-                        {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
-                          <span>· {developerDisplay.yearsExperience} {tProp('yearsExperience')}</span>
-                        )}
-                        {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
-                          <span>· {developerDisplay.unitsDelivered.toLocaleString()} {tProp('unitsDelivered')}</span>
-                        )}
-                      </div>
-                    </div>
-                    {developerDisplay.slug && (
-                      <Link
-                        href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
-                        className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
-                      >
-                        {tProp('viewProfile')}
-                      </Link>
-                    )}
-                  </div>
-                  {(locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs) && (
-                    <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
-                      {locale === 'en' ? developerDisplay.descriptionEn : developerDisplay.descriptionEs}
-                    </p>
-                  )}
-                </div>
-              )}
+              <FloatingKeyData
+                price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
+                area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
+                bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
+                bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
+                labels={{
+                  title: locale === 'es' ? 'Datos clave' : 'Key data',
+                  price: locale === 'es' ? 'Precio' : 'Price',
+                  area: 'Área',
+                  bedrooms: tProp('bedrooms'),
+                  bathrooms: tProp('bathrooms'),
+                }}
+              />
             </div>
           </div>
         </div>
@@ -541,20 +556,6 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
         locale={locale}
         roiPct={property.roi.projected}
-      />
-
-      <FloatingKeyData
-        price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
-        area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
-        bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
-        bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
-        labels={{
-          title: locale === 'es' ? 'Datos clave' : 'Key data',
-          price: locale === 'es' ? 'Precio' : 'Price',
-          area: 'Área',
-          bedrooms: tProp('bedrooms'),
-          bathrooms: tProp('bathrooms'),
-        }}
       />
     </>
   );

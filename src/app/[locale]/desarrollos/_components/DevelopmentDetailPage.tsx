@@ -755,7 +755,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-24 scroll-mt-24">
+            <div className="sticky top-24 space-y-6">
+            <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 scroll-mt-24">
               {property.contact_name && (
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5CE0D2] to-[#1A2F3F] flex items-center justify-center text-white font-bold text-sm">
@@ -789,6 +790,41 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 </a>
               )}
             </div>
+
+            <FloatingKeyData
+              price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
+              area={
+                areaRange
+                  ? areaRange.min === areaRange.max
+                    ? `${areaRange.min} m²`
+                    : `${areaRange.min}–${areaRange.max} m²`
+                  : representativeArea
+                    ? `${representativeArea} m²`
+                    : null
+              }
+              bedrooms={
+                bedRange
+                  ? bedRange.min === bedRange.max
+                    ? String(bedRange.min)
+                    : `${bedRange.min}–${bedRange.max}`
+                  : null
+              }
+              bathrooms={
+                bathRange
+                  ? bathRange.min === bathRange.max
+                    ? String(bathRange.min)
+                    : `${bathRange.min}–${bathRange.max}`
+                  : null
+              }
+              labels={{
+                title: locale === 'es' ? 'Datos clave' : 'Key data',
+                price: locale === 'es' ? 'Precio desde' : 'Price from',
+                area: 'Área',
+                bedrooms: tProp('bedrooms'),
+                bathrooms: tProp('bathrooms'),
+              }}
+            />
+            </div>
           </div>
         </div>
 
@@ -801,40 +837,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         propertyUrl={`https://propyte.com/${locale}/desarrollos/${slug}`}
         locale={locale}
         roiPct={roiDisplay ?? undefined}
-      />
-
-      <FloatingKeyData
-        price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
-        area={
-          areaRange
-            ? areaRange.min === areaRange.max
-              ? `${areaRange.min} m²`
-              : `${areaRange.min}–${areaRange.max} m²`
-            : representativeArea
-              ? `${representativeArea} m²`
-              : null
-        }
-        bedrooms={
-          bedRange
-            ? bedRange.min === bedRange.max
-              ? String(bedRange.min)
-              : `${bedRange.min}–${bedRange.max}`
-            : null
-        }
-        bathrooms={
-          bathRange
-            ? bathRange.min === bathRange.max
-              ? String(bathRange.min)
-              : `${bathRange.min}–${bathRange.max}`
-            : null
-        }
-        labels={{
-          title: locale === 'es' ? 'Datos clave' : 'Key data',
-          price: locale === 'es' ? 'Precio desde' : 'Price from',
-          area: 'Área',
-          bedrooms: tProp('bedrooms'),
-          bathrooms: tProp('bathrooms'),
-        }}
       />
     </>
   );
