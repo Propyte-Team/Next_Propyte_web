@@ -2403,10 +2403,11 @@ export default {
 
 > Se puede iniciar en paralelo desde Fase 4 en adelante, o después del cutover de web.
 
-- [ ] Fase H1: Auth + Dashboard + Approvals (2 semanas)
-- [ ] Fase H2: Sync Engine (2 semanas)
-- [ ] Fase H3: Blog AI + Change Log + Team + Agents + Settings (1 semana)
-- [ ] Fase H4: Testing + Cutover del hub (1 semana)
+- [x] Fase H1: Auth + Dashboard + Approvals (2 semanas) — ✅ NextAuth v5, RBAC, 3 tabs, completeness, image upload
+- [x] Fase H2: Sync Engine (2 semanas) — ✅ ingest connectors, cron Hostinger, ISR trigger; falta conflict detection completa
+- [~] Fase H3: Blog AI + Change Log + Team + Agents + Settings (1 semana) — Blog AI, change log, team, settings ✅. Falta: blog scheduling cron, agent profiles 11 fields, Built Settings admin
+- [ ] Fase H4: Testing + Cutover del hub (1 semana) — pendiente
+- [+] Fase H5 (no estaba en plan original): Reports Module — calculadores ✅, UI ✅, CSV+XLSX+PDF ✅, Email distribution ✅. Falta: WhatsApp, Drive backup, alertas agregadas
 
 **Total estimado Next_Propyte_web: ~14 semanas (~3.5 meses)** — ahorro de ~6 semanas vs plan original gracias al scaffold de HERO-SITE  
 **Total estimado Propyte_hub: ~6 semanas adicionales** (puede correr en paralelo)  
@@ -2652,64 +2653,86 @@ PASO 5 — Post-mortem
 - [ ] Save/favorites (localStorage)
 - [ ] Image optimization (next/image)
 
-### Hub Backend (hub.propyte.com) — 0/48
+### Hub Backend (hub.propyte.com) — 35/52 (auditado 2026-05-07)
+
+> Auditoría 2026-05-07: contraste de checklist vs código real en `Propyte_hub/src/`.
+> `[x]` = evidencia clara en código · `[~]` = parcial / requiere verificación funcional · `[ ]` = no implementado.
 
 **Approval System:**
-- [ ] 3-tab interface (Developers, Developments, Units)
-- [ ] Bulk status update
-- [ ] Toggle web publication
-- [ ] Field editing with whitelist
-- [ ] Image upload & optimization
-- [ ] Image deletion
-- [ ] Record duplication
-- [ ] Completeness scoring (weighted)
-- [ ] Pipeline status visualization
-- [ ] Sync status badges (Zoho, Web)
-- [ ] Pagination (20-1000/page)
-- [ ] Filters (status, city, completeness, sync, web)
+- [x] 3-tab interface (Developers, Developments, Units) — `(dashboard)/{desarrolladores,desarrollos,unidades}/`
+- [x] Bulk status update — `/api/bulk` + `/api/unidades/bulk`
+- [x] Toggle web publication — `/api/site-config/visibility` + `(dashboard)/configuracion/visibilidad/`
+- [x] Field editing with whitelist — `lib/fields-config.ts`
+- [x] Image upload & optimization — `/api/images/{upload,sign,commit}` + Sharp + `lib/image-compress.ts`
+- [x] Image deletion — `/api/images/route.ts` (DELETE handler)
+- [x] Record duplication — `/api/record/route.ts`
+- [x] Completeness scoring (weighted) — `lib/completeness.ts`
+- [x] Pipeline status visualization — `(dashboard)/desarrollos/DevelopmentsTable.tsx`
+- [x] Sync status badges (Zoho, Web) — `lib/status-canonical.ts`
+- [~] Pagination (20-1000/page) — verificar rangos en DevelopmentsTable
+- [x] Filters (status, city, completeness, sync, web) — DevelopmentsTable.tsx
 
 **Sync Engine:**
-- [ ] Pull sync (Supabase → cache, quality filters)
-- [ ] Push sync (edits → Supabase, anti-loop)
-- [ ] Image sync (download, optimize, upload)
-- [ ] Conflict detection
-- [ ] Incremental sync (updated_at)
-- [ ] Full sync (manual trigger)
-- [ ] Cron scheduling (15min/6h/24h)
-- [ ] Sync dashboard (logs, errors, timestamps)
-- [ ] On-demand ISR trigger to propyte.com
+- [x] Pull sync (Supabase → cache, quality filters) — `/api/ingest/`
+- [x] Push sync (edits → Supabase, anti-loop) — vía mutation routes en `/api/desarrollos`, `/api/unidades`
+- [x] Image sync (download, optimize, upload) — `/api/cron/process-images`
+- [~] Conflict detection — verificar implementación
+- [x] Incremental sync (updated_at) — usa `last_synced_at` en ingest connectors
+- [x] Full sync (manual trigger) — endpoints `/api/ingest/zoho?full=1` etc
+- [x] Cron scheduling (15min/6h/24h) — `scripts/cron/hostinger-crons.txt`, 13 jobs
+- [x] Sync dashboard (logs, errors, timestamps) — `(dashboard)/sync/`
+- [x] On-demand ISR trigger to propyte.com — `/api/revalidate`
 
 **Content:**
-- [ ] Blog AI generator (Claude API)
-- [ ] Blog scheduling (cron)
-- [ ] Blog moderation (draft → publish)
+- [x] Blog AI generator (Claude API) — `/api/blog/generate`
+- [ ] Blog scheduling (cron) — sin `/api/cron/blog-*`, generación es manual
+- [x] Blog moderation (draft → publish) — `(dashboard)/blog/manage/`
 
 **Admin:**
-- [ ] Dashboard (stats, sync status, recent leads)
-- [ ] Change log (audit trail for prices/availability)
-- [ ] Team management (CRUD)
-- [ ] Agent profiles (11 meta fields)
-- [ ] Settings panel (Supabase, sync, analytics, CRM, diagnostics)
-- [ ] Settings diagnostics: 4 status cards (En Supabase, Aprobados, Pasan Quality, Sincronizados)
-- [ ] Settings diagnostics: rejection details table (20 max, with reasons)
+- [x] Dashboard (stats, sync status, recent leads) — `(dashboard)/page.tsx`
+- [x] Change log (audit trail for prices/availability) — `(dashboard)/cambios/page.tsx` + `lib/audit.ts`
+- [x] Team management (CRUD) — `(dashboard)/equipo/` + `/api/team`
+- [~] Agent profiles (11 meta fields) — verificar 11 campos completos en TeamManager
+- [x] Settings panel (Supabase, sync, analytics, CRM, diagnostics) — `(dashboard)/configuracion/`
+- [~] Settings diagnostics: 4 status cards (En Supabase, Aprobados, Pasan Quality, Sincronizados) — verificar
+- [~] Settings diagnostics: rejection details table (20 max, with reasons) — verificar
 - [ ] Built Settings admin (portfolio items, stats, services — NOT static page)
 
 **API:**
-- [ ] 5 approval routes
-- [ ] 3 sync routes
-- [ ] 2 blog routes
-- [ ] 1 revalidate route
-- [ ] 1 change-log route
-- [ ] 1 team route
-- [ ] 1 agents route
-- [ ] 1 settings route
-- [ ] 2 leads routes (receive + forward)
+- [~] 5 approval routes — sólo `/api/approve/route.ts` visible; verificar si las otras 4 están en otras carpetas o faltan
+- [x] 3 sync routes — `/api/cron/{sync-zoho,sync-ads,sync-ga4}`
+- [x] 2 blog routes — `/api/blog/{generate,save,list,pixabay}` (4, supera 2)
+- [x] 1 revalidate route — `/api/revalidate`
+- [~] 1 change-log route — UI existe pero no hay `/api/change-log` separado; queries via `lib/audit.ts`
+- [x] 1 team route — `/api/team`
+- [ ] 1 agents route — sin `/api/agents` independiente; cabe dentro de team
+- [x] 1 settings route — `/api/site-config`
+- [x] 2 leads routes (receive + forward) — `/api/leads`
 
 **Auth:**
-- [ ] Login page
-- [ ] JWT sessions (8h)
-- [ ] RBAC (ADMIN, DIRECTOR, GERENTE, MARKETING)
-- [ ] Middleware protection
+- [x] Login page — `app/login/page.tsx`
+- [x] JWT sessions (8h) — `lib/auth/index.ts` (NextAuth.js v5)
+- [x] RBAC (ADMIN, DIRECTOR, GERENTE, MARKETING) — `lib/auth/users.ts`
+- [x] Middleware protection — `src/middleware.ts`
+
+**Reports Module (NUEVO — fuera del scope original 0/48):**
+- [x] Schema `reports` en Supabase (001_init.sql aplicado)
+- [x] Connectors: Banxico, Zoho, Meta Ads, Google Ads, GA4, TikTok, Drive
+- [x] Calculadores KPIs Semanal (10 secciones) + Asesores Semanal + Mensual + Anual
+- [x] Crons generate-weekly/monthly/annual + evaluate-alerts
+- [x] UI: `/reportes/{kpis,asesores,mensual,anual,snapshots,alertas,config}`
+- [x] Generadores: CSV + XLSX + PDF (descarga via `/api/reports/export?format=csv|xlsx|pdf`)
+- [x] Email distribution: nodemailer + SMTP Hostinger, templates HTML, auto-envío tras cron `generate-*`, endpoint manual `/api/reports/email/send`
+- [ ] Generadores: WhatsApp Cloud API
+- [ ] Drive backup automático tras cada generate-*
+- [ ] 6 reglas de alertas agregadas (sólo individual asesor implementadas)
+
+**Pendientes reales (gaps confirmados):**
+1. Blog scheduling cron — agregar `/api/cron/blog-generate` + cron Hostinger
+2. Built Settings admin — actualmente página estática, requiere CRUD
+3. Generadores PDF/Email/WhatsApp + Drive backup (Bloque H Reports)
+4. Reglas de alertas agregadas (Bloque I Reports)
+5. Rutas API a verificar: 5 approval routes vs 1 actual, change-log route, agents route
 
 ---
 

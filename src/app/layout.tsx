@@ -35,6 +35,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // <html lang="es"> is the default; the locale-specific layout sets a
+  // dynamic lang via a client-side useEffect (Header component) so it
+  // updates when the user toggles ES↔EN without a full page reload.
   return (
     <html lang="es" className={spaceGrotesk.className}>
       <body className="min-h-screen flex flex-col">
