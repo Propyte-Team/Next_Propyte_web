@@ -1,10 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-
-// Routes whose hero section uses a dark (#0F1923) background.
-// The padding div must match so the body's white background doesn't bleed through.
-const DARK_HERO_ROUTES = ['/unete', '/corredores', '/reclutamiento', '/built', '/nosotros', '/blog'];
+import { isDarkHeroRoute } from '@/shared/constants/dark-hero-routes';
 
 export default function MainPadding({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -17,7 +14,9 @@ export default function MainPadding({ children }: { children: React.ReactNode })
   // blanco horrible arriba.
   const isListingArchive = !!bare.match(/^\/(desarrollos|propiedades)\/?$/);
 
-  const isDarkHero = DARK_HERO_ROUTES.some((r) => bare.startsWith(r));
+  // bg-dark detrás del padding-top → el área debajo del header transparente
+  // coincide con el hero oscuro. Sin esto se veía un strip blanco.
+  const isDarkHero = isDarkHeroRoute(pathname);
   const padTop = isListingArchive ? 'pt-[52px] lg:pt-[56px]' : 'pt-[76px] lg:pt-[80px]';
 
   return (
