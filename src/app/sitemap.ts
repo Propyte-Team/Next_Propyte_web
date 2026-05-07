@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
+import { TYPE_SLUGS } from '@/app/[locale]/desarrollos/_components/typeConfig';
+import { STAGE_SLUGS_URL } from '@/app/[locale]/desarrollos/_components/stageConfig';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 const LOCALES = ['es', 'en'];
@@ -45,6 +47,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 0.85,
+      });
+    }
+  }
+
+  // ── Type taxonomy pages (/desarrollos/tipo/{type}) ───
+  for (const type of TYPE_SLUGS) {
+    for (const locale of LOCALES) {
+      entries.push({
+        url: `${BASE_URL}/${locale}/desarrollos/tipo/${type}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.8,
+      });
+    }
+  }
+
+  // ── Stage taxonomy pages (/desarrollos/etapa/{stage}) ─
+  for (const stage of STAGE_SLUGS_URL) {
+    for (const locale of LOCALES) {
+      entries.push({
+        url: `${BASE_URL}/${locale}/desarrollos/etapa/${stage}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.8,
       });
     }
   }

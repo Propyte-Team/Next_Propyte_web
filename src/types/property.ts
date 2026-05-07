@@ -75,6 +75,14 @@ export interface PropertyAssets {
   drive?: string;       // Google Drive folder
 }
 
+export interface PropertyPromo {
+  /** Short banner copy. Bilingual via _es/_en, falls back to es when en missing. */
+  textEs: string;
+  textEn?: string;
+  /** ISO date — banner hides automatically after this. */
+  validUntil?: string;
+}
+
 export interface Property {
   id: string;
   slug: string;
@@ -108,4 +116,9 @@ export interface Property {
   // Financial metrics from development_financials (optional, enriched at listing level)
   capRate?: number;
   annualRevenue?: number;
+  // Promo / discount surface — optional, only set when Supabase has explicit promo data
+  /** Pre-discount price; rendered as strikethrough when greater than `price.mxn`. */
+  priceOriginal?: number;
+  /** Promotional banner shown over the card image. */
+  promo?: PropertyPromo;
 }

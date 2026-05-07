@@ -1,4 +1,4 @@
-import type { Property, PropertyStage, PropertyUsage, PropertyBadge } from '@/types/property';
+import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo } from '@/types/property';
 
 /**
  * Raw row from `real_estate_hub.v_units`.
@@ -101,6 +101,26 @@ export function mapUnitToProperty(row: UnitRow): Property {
   const statusKey = (row.availability_status || '').toLowerCase();
   const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusKey] ?? null;
 
+  // Promo / discount fields are optional in v_units — read defensively.
+  const priceOriginalRaw = row.price_original_mxn;
+  const priceOriginal = typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
+    ? priceOriginalRaw
+    : undefined;
+
+  const promoTextEs = typeof row.promo_text_es === 'string' ? row.promo_text_es.trim() : '';
+  const promoTextEn = typeof row.promo_text_en === 'string' ? row.promo_text_en.trim() : '';
+  const promoValidUntil = typeof row.promo_valid_until === 'string' ? row.promo_valid_until : undefined;
+  const promoExpired = promoValidUntil
+    ? new Date(promoValidUntil).getTime() < Date.now()
+    : false;
+  const promo: PropertyPromo | undefined = promoTextEs && !promoExpired
+    ? {
+        textEs: promoTextEs,
+        textEn: promoTextEn || undefined,
+        validUntil: promoValidUntil,
+      }
+    : undefined;
+
   return {
     id: row.id,
     slug: row.slug,
@@ -154,5 +174,7 @@ export function mapUnitToProperty(row: UnitRow): Property {
     createdAt: row.created_at || new Date().toISOString(),
     capRate: row.cap_rate ?? undefined,
     annualRevenue: row.annual_revenue ?? undefined,
+    priceOriginal,
+    promo,
   };
 }

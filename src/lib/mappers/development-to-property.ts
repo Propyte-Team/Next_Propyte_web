@@ -1,4 +1,4 @@
-import type { Property, PropertyStage, PropertyUsage, PropertyBadge } from '@/types/property';
+import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo } from '@/types/property';
 
 /**
  * Raw row from `real_estate_hub.v_developments`.
@@ -129,6 +129,28 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
   };
   const hasAssets = Object.values(assets).some((v) => v !== undefined);
 
+  // Promo / discount fields are optional in v_developments — read defensively.
+  // When Supabase doesn't have these columns, the card simply doesn't render them.
+  const priceOriginalRaw = row.price_original_mxn;
+  const priceOriginal = typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
+    ? priceOriginalRaw
+    : undefined;
+
+  const promoTextEs = typeof row.promo_text_es === 'string' ? row.promo_text_es.trim() : '';
+  const promoTextEn = typeof row.promo_text_en === 'string' ? row.promo_text_en.trim() : '';
+  const promoValidUntil = typeof row.promo_valid_until === 'string' ? row.promo_valid_until : undefined;
+  // Filter expired promos server-side so client cards don't need impure Date.now() in render.
+  const promoExpired = promoValidUntil
+    ? new Date(promoValidUntil).getTime() < Date.now()
+    : false;
+  const promo: PropertyPromo | undefined = promoTextEs && !promoExpired
+    ? {
+        textEs: promoTextEs,
+        textEn: promoTextEn || undefined,
+        validUntil: promoValidUntil,
+      }
+    : undefined;
+
   return {
     id: row.id,
     slug: row.slug,
@@ -184,5 +206,7 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
     inventory: hasInventory ? inventory : undefined,
     delivery: hasDelivery ? delivery : undefined,
     assets: hasAssets ? assets : undefined,
+    priceOriginal,
+    promo,
   };
 }

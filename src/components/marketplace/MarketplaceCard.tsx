@@ -11,6 +11,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useCompare } from '@/hooks/useCompare';
 import { toast } from 'sonner';
+import { trackAddToWishlist, trackFileDownload, trackSelectContent } from '@/lib/analytics/track';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -39,6 +40,22 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const formattedPrice = format(property.price.mxn);
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
+  // Price strikethrough — show pre-discount price when meaningfully higher than current.
+  const hasDiscount =
+    typeof property.priceOriginal === 'number' &&
+    property.priceOriginal > property.price.mxn &&
+    property.price.mxn > 0;
+  const formattedOriginal = hasDiscount ? format(property.priceOriginal!) : null;
+  const discountPct = hasDiscount
+    ? Math.round(((property.priceOriginal! - property.price.mxn) / property.priceOriginal!) * 100)
+    : 0;
+
+  // Promo banner — `validUntil` filtering is done server-side by the mapper.
+  const promoText = property.promo
+    ? (locale === 'en' ? (property.promo.textEn || property.promo.textEs) : property.promo.textEs)
+    : null;
+  const showPromo = !!promoText;
+
   const badgeColors: Record<Exclude<PropertyBadge, null>, string> = {
     preventa: 'bg-[#F5A623]',
     nuevo: 'bg-[#22C55E]',
@@ -53,7 +70,17 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
   return (
     <div className="border-b border-r border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-[transform,box-shadow] duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none group">
-      <Link href={`/${locale}/${detailBase}/${property.slug}`} className="block">
+      <Link
+        href={`/${locale}/${detailBase}/${property.slug}`}
+        className="block"
+        onClick={() =>
+          trackSelectContent({
+            contentType: 'property_card',
+            contentId: property.id,
+            contentName: property.name,
+          })
+        }
+      >
         {/* Image with carousel */}
         <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
           {property.images.map((src, i) => (
@@ -126,7 +153,17 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                const wasSaved = saved;
                 toggleFavorite(property.id);
+                // Fire only on the off→on transition; un-saving isn't a wishlist signal.
+                if (!wasSaved) {
+                  trackAddToWishlist({
+                    itemId: property.id,
+                    itemName: property.name,
+                    itemKind: property.kind ?? 'development',
+                    priceMxn: property.price.mxn || undefined,
+                  });
+                }
               }}
               whileTap={{ scale: 0.85 }}
               transition={{ type: 'spring', stiffness: 500, damping: 17 }}
@@ -154,6 +191,12 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  trackFileDownload({
+                    fileType: 'brochure',
+                    fileUrl: property.assets!.brochure!,
+                    propertyId: property.id,
+                    propertySlug: property.slug,
+                  });
                   window.open(property.assets!.brochure!, '_blank', 'noopener,noreferrer');
                 }}
                 className="w-8 h-8 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
@@ -225,13 +268,30 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               ))}
             </div>
           )}
+
+          {/* Promo banner — overlays bottom strip when active */}
+          {showPromo && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-3 py-1.5 text-white text-[10px] font-bold uppercase tracking-wider text-center line-clamp-1">
+              {promoText}
+            </div>
+          )}
         </div>
 
         {/* Info */}
         <div className="p-3">
-          {/* Price + $/m² */}
+          {/* Price + $/m² (+ strikethrough when discounted) */}
           <div className="flex items-baseline gap-2 flex-wrap">
             <span data-testid="marketplace-card-price" className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
+            {hasDiscount && (
+              <>
+                <span className="text-xs text-gray-500 line-through tabular-nums">
+                  {formattedOriginal}
+                </span>
+                <span className="text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
+                  -{discountPct}%
+                </span>
+              </>
+            )}
             {pricePerM2 !== null && (
               <span className="text-xs text-gray-600 tabular-nums font-medium">
                 {format(pricePerM2, { decimals: 0 })}/{tMkt('cardM2Short')}
