@@ -246,7 +246,13 @@
     "colInversionistas": "Para Inversionistas",
     "colInversionistasSubtitle": "Análisis, ROI y oportunidades",
     "viewAllCol": "Ver todo",
-    "noPostsCol": "Próximamente"
+    "noPostsCol": "Próximamente",
+    "newsletterTitle": "Recibe el mejor contenido",
+    "newsletterDesc": "Artículos, análisis de mercado y oportunidades de inversión, directo a tu correo. Sin spam.",
+    "newsletterPlaceholder": "tu@correo.com",
+    "newsletterCta": "Suscribirse",
+    "newsletterSuccess": "¡Listo! Te suscribiste correctamente.",
+    "newsletterError": "Hubo un problema. Inténtalo de nuevo."
   },
   "marketplace": {
     "title": "Propiedades",

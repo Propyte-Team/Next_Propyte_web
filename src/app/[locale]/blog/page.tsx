@@ -8,6 +8,7 @@ import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
 import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/categories';
 import BlogPagination from '@/components/blog/BlogPagination';
+import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
@@ -114,6 +115,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           </Suspense>
           </div>
         </section>
+
+        <NewsletterCTA />
       </>
     );
   }
@@ -206,6 +209,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           </div>
         </div>
       </section>
+
+      <NewsletterCTA />
     </>
   );
 }
