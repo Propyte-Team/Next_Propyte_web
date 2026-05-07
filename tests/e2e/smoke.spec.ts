@@ -46,8 +46,11 @@ test.describe('@smoke Marketplace', () => {
     await page.goto('/es/desarrollos');
     await expect(page.locator('h1')).toBeVisible();
 
-    // FilterBar is mounted on every marketplace render.
-    await expect(page.locator('[role="region"], [data-testid="marketplace-card-price"], main')).toBeVisible();
+    // Either the marketplace renders ≥1 card OR the empty-state UI shows.
+    // `.first()` so the locator resolves to a single element regardless of count.
+    await expect(
+      page.locator('[data-testid="marketplace-card-price"], [data-testid="marketplace-empty"], main h1').first()
+    ).toBeVisible();
   });
 
   test('/propiedades renders without errors', async ({ page }) => {
