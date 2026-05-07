@@ -25,19 +25,27 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const mode = deriveMode(pathname);
 
-  // Archives: hide floating header on desktop (archive has its own filter bar)
-  const isArchive =
-    pathname.match(/\/(es|en)\/propiedades(\/|$|\?)/) ||
-    pathname.match(/\/(es|en)\/desarrollos(\/|$|\?)/);
+  // Listing archives = exactamente /desarrollos y /propiedades (sin /tipo,
+  // /etapa, ciudades, ni detail). Aquí ocultamos burbuja porque la página
+  // ya tiene FilterBar propio + barra de búsqueda interna.
+  const isListingArchive = !!pathname.match(/^\/(es|en)\/(desarrollos|propiedades)\/?$/);
 
-  // Content-only pages: hide ActionsPill + SearchBubble on desktop. SearchBubble
-  // y ActionsPill no aportan en hojas de texto (glosario, faq, legal, nosotros,
-  // como-comprar, etc.) y compiten visualmente con el contenido.
-  const isContentOnly = pathname.match(
-    /\/(es|en)\/(glosario|faq|privacidad|terminos|cookies|nosotros|como-comprar|como-invertir|financiamiento|blog|promociones)(\/|$)/
-  );
+  // Home
+  const isHome = mode === 'home';
 
-  const showPill = !isArchive && !isContentOnly;
+  // Reglas:
+  //   home pre-scroll        → ocultar burbuja
+  //   /desarrollos /propiedades → ocultar burbuja siempre
+  //   resto                  → mostrar burbuja siempre
+  const hideBubble = (isHome && !scrolled) || isListingArchive;
+
+  // Pill (Anuncia + currency + idioma + Contacto): SIEMPRE visible.
+  // Antes lo escondíamos en archives + content-only, decisión revertida
+  // para mantener acceso constante a CTA Contacto.
+  const showPill = true;
+
+  // Bubble dark variant: cuando el hero detrás es oscuro y aún no hubo scroll
+  const darkBubble = (mode === 'home' || mode === 'dark') && !scrolled;
 
   useEffect(() => {
     function handleScroll() {
@@ -48,10 +56,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const hideBubbleOnHome = mode === 'home' && !scrolled;
-  const hideBubble = hideBubbleOnHome || !!isArchive || !!isContentOnly;
-  const darkBubble = (mode === 'home' || mode === 'dark') && !scrolled;
-
   return (
     <>
       <a href="#main-content" className="skip-to-content">
@@ -61,26 +65,33 @@ export default function Header() {
       {/* Desktop sidebar (72px) */}
       <Sidebar />
 
-      {/* Desktop floating header (search bubble + actions pill) */}
+      {/* Desktop floating header (search bubble + actions pill).
+          Padding vertical reducido en archives (no hay burbuja, así que
+          el alto del header se reduce y deja más aire al contenido). */}
       <header
-        className="hidden lg:block fixed top-0 left-0 right-0 z-40 lg:ml-[72px]"
+        className={`hidden lg:block fixed top-0 left-0 right-0 z-40 lg:ml-[72px]`}
         style={{ pointerEvents: 'none' }}
       >
-        <div className="flex items-start pt-4 pb-2 px-4 gap-4">
+        <div
+          className={`flex items-start px-4 gap-4 ${
+            isListingArchive ? 'pt-2 pb-1' : 'pt-4 pb-2'
+          }`}
+        >
           {/* Left spacer to balance the pill on the right */}
           {showPill && <div className="w-0 xl:w-[280px] 2xl:w-[320px] shrink-0" />}
 
-          {/* Search bubble (centered), hidden before scroll on home */}
+          {/* Search bubble (centered) */}
           <div
             className={`flex-1 max-w-[600px] mx-auto transition-all duration-300 ${
               hideBubble ? 'opacity-0 -translate-y-2' : 'opacity-100 translate-y-0'
             }`}
             style={{ pointerEvents: hideBubble ? 'none' : 'auto' }}
+            aria-hidden={hideBubble}
           >
             <SearchBubble variant="desktop" dark={darkBubble} />
           </div>
 
-          {/* Actions pill (right) */}
+          {/* Actions pill (right) — siempre visible */}
           {showPill && (
             <div className="shrink-0" style={{ pointerEvents: 'auto' }}>
               <ActionsPill />

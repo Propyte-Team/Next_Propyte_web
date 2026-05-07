@@ -11,9 +11,17 @@ export default function MainPadding({ children }: { children: React.ReactNode })
   const bare = pathname.replace(/^\/(es|en)/, '') || '/';
   const isHome = bare === '/' || bare === '';
   if (isHome) return <>{children}</>;
+
+  // Listing archives — el header se reduce porque no hay burbuja, entonces
+  // el padding-top también baja (de 80px a ~52px) para evitar el espacio
+  // blanco horrible arriba.
+  const isListingArchive = !!bare.match(/^\/(desarrollos|propiedades)\/?$/);
+
   const isDarkHero = DARK_HERO_ROUTES.some((r) => bare.startsWith(r));
+  const padTop = isListingArchive ? 'pt-[52px] lg:pt-[56px]' : 'pt-[76px] lg:pt-[80px]';
+
   return (
-    <div className={`pt-[76px] lg:pt-[80px]${isDarkHero ? ' bg-[#0F1923]' : ''}`}>
+    <div className={`${padTop}${isDarkHero ? ' bg-[#0F1923]' : ''}`}>
       {children}
     </div>
   );

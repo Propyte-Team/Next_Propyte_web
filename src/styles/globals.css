@@ -190,10 +190,36 @@ html {
 }
 
 .propyte-search-bubble:focus-within {
-  border-color: rgba(92, 224, 210, 0.5);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.08),
-    0 0 0 3px rgba(92, 224, 210, 0.15);
+  border-color: rgba(92, 224, 210, 0.7);
+  /* Anillo teal pulsante — intensidad superior al hover normal,
+     animación suave que mantiene la atención del usuario sin distraer. */
+  animation: propyte-bubble-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes propyte-bubble-pulse {
+  0%, 100% {
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 0 0 4px rgba(92, 224, 210, 0.25),
+      0 0 24px rgba(92, 224, 210, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 0 0 6px rgba(92, 224, 210, 0.4),
+      0 0 36px rgba(92, 224, 210, 0.55);
+  }
+}
+
+/* Respeta prefers-reduced-motion — apaga la animación, mantiene glow estático */
+@media (prefers-reduced-motion: reduce) {
+  .propyte-search-bubble:focus-within {
+    animation: none;
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.08),
+      0 0 0 4px rgba(92, 224, 210, 0.3),
+      0 0 24px rgba(92, 224, 210, 0.4);
+  }
 }
 
 .search-type-toggle {
