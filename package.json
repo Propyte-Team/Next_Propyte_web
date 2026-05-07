@@ -11,7 +11,12 @@
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
-    "test:playground": "node tests/design-playground-sync.mjs"
+    "test:playground": "node tests/design-playground-sync.mjs",
+    "vercel:link": "vercel link",
+    "vercel:env:pull": "vercel env pull .env.local",
+    "vercel:dev": "vercel deploy",
+    "vercel:preview": "vercel deploy --prebuilt",
+    "vercel:prod": "vercel deploy --prod"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
