@@ -1,7 +1,12 @@
-# Deploy a Vercel (staging — `develop`)
+# Deploy a Vercel (staging — `dev.propyte.com`)
 
-`propyte.com` corre en Hostinger; `dev.propyte.com` en Vercel desde la rama
-`develop`. Esta guía cubre la primera configuración del CLI.
+**Topología del proyecto:**
+- `main` → **Hostinger VPS** (productivo `propyte.com`). Hostinger tiene el
+  repo Git conectado: push a `main` deploya solo.
+- `develop` → **Vercel staging (`dev.propyte.com`)**. Vercel **NO** tiene
+  el repo Git conectado. Cada deploy a staging es **manual desde el CLI**.
+
+Push a `develop` en GitHub no hace nada en Vercel — hay que correr el CLI.
 
 ## Setup inicial (una sola vez)
 
@@ -12,57 +17,65 @@ vercel login
 # 2. Linkear el repo a un proyecto Vercel
 vercel link
 #   ? Set up "C:\Users\ptoral\Projects\Next_Propyte_web"?  Y
-#   ? Which scope?                          Propyte-Team
-#   ? Link to existing project?             Y / N
-#       Si Y → seleccionar "next-propyte-web" (o el nombre que tengas)
-#       Si N → crear nuevo, framework Next.js, branch develop
+#   ? Which scope?                          propyte
+#   ? Link to existing project?             Y
+#   ? What's the name?                      next-propyte-web
 ```
 
-`vercel link` crea `.vercel/project.json` (gitignore). Esto NO se commitea.
+`vercel link` crea `.vercel/project.json` (gitignored).
 
 ## Variables de entorno
 
-Las pulleas desde el dashboard de Vercel a tu `.env.local`:
+Pulleas desde el dashboard a tu `.env.local`:
 
 ```powershell
-vercel env pull .env.local
-# por defecto pulls el environment "development"
-# para staging:
 vercel env pull .env.local --environment=preview
+# Para production de Vercel (= dev.propyte.com):
+vercel env pull .env.local --environment=production
 ```
 
-Si vas a setear nuevas variables en Vercel:
+Setear nuevas variables:
 
 ```powershell
-# Sin valor → te pregunta interactivamente
-vercel env add NEXT_PUBLIC_SUPABASE_URL preview
-vercel env add SUPABASE_SERVICE_ROLE_KEY preview
-# etc
+vercel env add NEXT_PUBLIC_GA4_ID production
+vercel env add NEXT_PUBLIC_META_PIXEL_ID production
+# etc.
 ```
 
-Lista completa de vars que el proyecto necesita: ver `.env.example`.
+Lista completa de vars: ver `.env.example`.
 
 ## Deploy
 
-| Comando | Qué hace |
-|---|---|
-| `npm run vercel:dev` (`vercel deploy`) | Crea un preview con URL única |
-| `npm run vercel:preview` (`vercel deploy --prebuilt`) | Deploy del último build local |
-| `npm run vercel:prod` (`vercel deploy --prod`) | Deploy a propyte.com (NO usar — prod va a Hostinger) |
+| Comando | Qué hace | URL resultante |
+|---|---|---|
+| `npm run vercel:dev` (`vercel deploy`) | Preview deploy desde local | URL única `next-propyte-XXX-propyte.vercel.app` |
+| `npm run vercel:prod` (`vercel deploy --prod`) | Promueve a "Production" del proyecto Vercel | Actualiza alias **`dev.propyte.com`** |
 
-**Importante:** `--prod` apunta al dominio principal del proyecto Vercel, que
-para Propyte es `dev.propyte.com` (alias). Si quieres deployar a producción
-real (propyte.com en Hostinger), usar el workflow de GitHub Actions, no Vercel.
+**Importante — terminología confusa:** "Production" de Vercel = staging real
+del proyecto Propyte (`dev.propyte.com`). El productivo de verdad
+(`propyte.com`) corre en Hostinger, no en Vercel. Por lo tanto
+`vercel deploy --prod` NO toca `propyte.com`; solo refresca staging.
 
-## Auto-deploy desde Git
+## Workflow típico de staging
 
-Configurado en `vercel.json`:
-- Push a `main` → deploy a producción Vercel (alias: `dev.propyte.com`)
-- Push a `develop` → deploy a preview Vercel
-- PRs → preview con URL única por commit
+```powershell
+# 1. Trabajar en develop
+git checkout develop
+# ... cambios ...
+git commit -m "..."
+git push origin develop          # push GitHub — pero Vercel NO se entera
 
-Si solo querés auto-deploy y no manual, no necesitas `vercel deploy` — basta
-con `git push origin develop`.
+# 2. Subir a staging Vercel
+vercel deploy --prod              # actualiza dev.propyte.com
+```
+
+## Promote sin re-build
+
+Si ya hiciste un preview y querés promoverlo sin re-buildear:
+
+```powershell
+vercel promote next-propyte-brkh0l251-propyte.vercel.app
+```
 
 ## Rollback
 

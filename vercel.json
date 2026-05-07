@@ -5,16 +5,6 @@
   "buildCommand": "next build",
   "installCommand": "npm ci",
   "outputDirectory": ".next",
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "develop": true
-    }
-  },
-  "github": {
-    "silent": true,
-    "autoAlias": false
-  },
   "headers": [
     {
       "source": "/(.*)",
