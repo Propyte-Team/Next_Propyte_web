@@ -4,10 +4,10 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Search, MapPin, ShoppingBag, Sparkles } from 'lucide-react';
+import { Search, MapPin, Building2, Home } from 'lucide-react';
 import StatCounter from '@/components/shared/StatCounter';
 
-type IntentTab = 'comprar' | 'preventa';
+type IntentTab = 'desarrollos' | 'propiedades';
 
 interface HeroProps {
   stats?: {
@@ -27,7 +27,7 @@ export default function Hero({ stats }: HeroProps) {
   const tNav = useTranslations('nav');
   const locale = useLocale();
   const router = useRouter();
-  const [tab, setTab] = useState<IntentTab>('comprar');
+  const [tab, setTab] = useState<IntentTab>('desarrollos');
   const [query, setQuery] = useState('');
 
   const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
@@ -40,10 +40,13 @@ export default function Hero({ stats }: HeroProps) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    const stage = tab === 'preventa' ? 'preventa' : 'entrega_inmediata';
-    const params = new URLSearchParams({ stage });
+    // Cada tab apunta a su catálogo: Desarrollos = proyectos completos en
+    // preventa/construcción; Propiedades = unidades individuales listadas.
+    const path = tab === 'desarrollos' ? 'desarrollos' : 'propiedades';
+    const params = new URLSearchParams();
     if (query) params.set('search', query);
-    router.push(`/${locale}/desarrollos?${params.toString()}`);
+    const qs = params.toString();
+    router.push(`/${locale}/${path}${qs ? `?${qs}` : ''}`);
   }
 
   const quickLinks = [
@@ -90,35 +93,35 @@ export default function Hero({ stats }: HeroProps) {
         </p>
 
         <div className="max-w-2xl mx-auto">
-          {/* Intent tabs: Comprar / Preventa (Speckit §18) */}
+          {/* Intent tabs: Desarrollos / Propiedades — cada uno enruta a su catálogo */}
           <div className="flex justify-center gap-2 mb-4" role="tablist" aria-label={t('searchButton')}>
             <button
               type="button"
               role="tab"
-              aria-selected={tab === 'comprar'}
-              onClick={() => setTab('comprar')}
+              aria-selected={tab === 'desarrollos'}
+              onClick={() => setTab('desarrollos')}
               className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
-                tab === 'comprar'
+                tab === 'desarrollos'
                   ? 'bg-white text-[#1A2F3F] shadow-lg'
                   : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
               }`}
             >
-              <ShoppingBag size={15} strokeWidth={1.75} />
-              {t('tabComprar')}
+              <Building2 size={15} strokeWidth={1.75} />
+              {t('tabDesarrollos')}
             </button>
             <button
               type="button"
               role="tab"
-              aria-selected={tab === 'preventa'}
-              onClick={() => setTab('preventa')}
+              aria-selected={tab === 'propiedades'}
+              onClick={() => setTab('propiedades')}
               className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
-                tab === 'preventa'
+                tab === 'propiedades'
                   ? 'bg-white text-[#1A2F3F] shadow-lg'
                   : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
               }`}
             >
-              <Sparkles size={15} strokeWidth={1.75} />
-              {t('tabPreventa')}
+              <Home size={15} strokeWidth={1.75} />
+              {t('tabPropiedades')}
             </button>
           </div>
 
