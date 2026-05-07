@@ -41,7 +41,10 @@ export default function PreviewFrame({ device, onDeviceChange, onInspect }: Prev
   const [synced, setSynced]         = useState(false);
   const [inspecting, setInspecting] = useState(false);
 
-  themeRef.current = theme;
+  // Keep ref in sync via effect (avoids react-hooks/refs "update during render" rule).
+  useEffect(() => {
+    themeRef.current = theme;
+  }, [theme]);
 
   // ── Inspector mode ───────────────────────────────────────────────────────
   function sendInspectorMsg(on: boolean) {
@@ -67,14 +70,16 @@ export default function PreviewFrame({ device, onDeviceChange, onInspect }: Prev
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onInspect]);
 
-  // Turn off inspector when navigating to a new URL.
-  useEffect(() => {
-    if (inspecting) { setInspecting(false); }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url]);
+  // Turn off inspector when navigating to a new URL — uses the React docs
+  // pattern "Adjusting state when a prop changes": setState during render,
+  // gated by tracking the previous url value (avoids cascading effect renders).
+  const [prevUrl, setPrevUrl] = useState(url);
+  if (url !== prevUrl) {
+    setPrevUrl(url);
+    if (inspecting) setInspecting(false);
+  }
 
   // ── Push vars to iframe ──────────────────────────────────────────────────
   function pushTokens(iframe: HTMLIFrameElement | null = iframeRef.current) {
@@ -87,7 +92,6 @@ export default function PreviewFrame({ device, onDeviceChange, onInspect }: Prev
   // Re-push on every token change (real-time slider/color edits).
   useEffect(() => {
     pushTokens();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme]);
 
   // Clean up retry timers on unmount.

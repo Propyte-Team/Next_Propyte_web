@@ -13,18 +13,18 @@ async function captureGtag(page: Page) {
   await page.addInitScript(() => {
     // Capture every gtag call into an array on the window for the test to read.
     const calls: unknown[][] = [];
-    // @ts-expect-error — overwriting the real gtag for test purposes
+    // @ts-expect-error — overwriting real gtag stub for test inspection
     window.gtag = (...args: unknown[]) => {
       calls.push(args);
     };
-    // @ts-expect-error
+    // @ts-expect-error — attaching test-only capture array to window
     window.__gtagCalls = calls;
   });
 }
 
 async function getEventNames(page: Page): Promise<string[]> {
   return page.evaluate(() => {
-    // @ts-expect-error
+    // @ts-expect-error — reading test-only window field set by captureGtag
     const calls: unknown[][] = window.__gtagCalls || [];
     return calls
       .filter((c) => c[0] === 'event' && typeof c[1] === 'string')

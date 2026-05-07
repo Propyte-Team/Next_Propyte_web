@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 import ColorSection from './sections/ColorSection';
 import TypographySection from './sections/TypographySection';
@@ -98,13 +98,19 @@ export default function ControlPanel({ forceOpen, forceOpenLabel = '', onForceOp
   const [quickEdit, setQuickEdit] = useState<{ category: string; label: string } | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
-    if (!forceOpen) return;
-    setQuickEdit({ category: forceOpen, label: forceOpenLabel });
-    setOpenSections((prev) => new Set([...prev, forceOpen]));
-    setSearch('');
-    onForceOpenHandled?.();
-  }, [forceOpen, forceOpenLabel, onForceOpenHandled]);
+  // React to forceOpen prop changes via the "Adjusting state when a prop
+  // changes" pattern (setState during render, gated by tracked previous value)
+  // — avoids cascading effect renders.
+  const [prevForceOpen, setPrevForceOpen] = useState(forceOpen);
+  if (forceOpen !== prevForceOpen) {
+    setPrevForceOpen(forceOpen);
+    if (forceOpen) {
+      setQuickEdit({ category: forceOpen, label: forceOpenLabel });
+      setOpenSections((prev) => new Set([...prev, forceOpen]));
+      setSearch('');
+      onForceOpenHandled?.();
+    }
+  }
 
   const toggle = (id: string) => {
     setOpenSections((prev) => {
