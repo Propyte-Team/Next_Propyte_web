@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopments } from '@/lib/supabase/queries';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
@@ -35,7 +35,9 @@ export default async function TaxonomyDevelopmentsPage({
   let rawDevs: DevelopmentRow[] = [];
 
   try {
-    const supabase = await createServerSupabaseClient();
+    // Cookie-less client — pages declare `revalidate` + generateStaticParams,
+    // and `cookies()` would break ISR (DYNAMIC_SERVER_USAGE error).
+    const supabase = createPublicSupabaseClient();
     if (supabase) {
       const { data } = await getDevelopments(supabase, { ...filter, limit: 100, orderBy: 'newest' });
       if (data) {
