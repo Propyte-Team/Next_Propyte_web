@@ -8,7 +8,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import {
   Building2, Users, Target, BarChart3, TrendingUp, Palette, GraduationCap,
   ChevronDown, ChevronUp, CheckCircle, ArrowRight,
-  MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield,
+  MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield, ShieldCheck,
   Search, MapPin, BadgeCheck,
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
@@ -52,10 +52,10 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
   return (
     <section className="py-10 md:py-14 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        {/* Header */}
+        {/* Section header — h1 vive en Hero, aquí baja a h2 */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('archiveTitle')}</h1>
-          <p className="mt-2 text-gray-600 text-lg">{t('archiveSubtitle')}</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t('archiveTitle')}</h2>
+          <p className="mt-2 text-gray-600 text-base">{t('archiveSubtitle')}</p>
         </div>
 
         {/* FilterBar */}
@@ -518,11 +518,48 @@ function DeveloperForm() {
 }
 
 // ─────────────────────────────────────────────────────
+// HERO — angled bottom edge (calca page-desarrolladores.php WP)
+// ─────────────────────────────────────────────────────
+function DevelopersHero({ verifiedCount }: { verifiedCount: number }) {
+  const t = useTranslations('developers');
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/20">
+          <ShieldCheck size={18} className="text-[#5CE0D2]" />
+          <span className="text-sm font-semibold text-[#5CE0D2]">{t('heroBadgeVerified')}</span>
+        </div>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+          {t('heroTitle')} <span className="text-[#5CE0D2]">{t('heroTitleAccent')}</span>
+        </h1>
+        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
+          {t('heroSubtitle')}
+        </p>
+        {verifiedCount > 0 && (
+          <p className="text-white/50 text-sm">
+            <span className="text-white font-bold">{verifiedCount}</span>{' '}
+            {t('heroVerifiedCount', { count: verifiedCount }).replace(/^\d+\s/, '')}
+          </p>
+        )}
+      </div>
+      {/* Angled bottom edge — diagonal cut hacia el siguiente bg */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+        style={{ background: 'linear-gradient(to top right, #F4F6F8 49.5%, transparent 50.5%)' }}
+        aria-hidden="true"
+      />
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
 export default function DevelopersPageContent({ developers }: { developers: DeveloperRow[] }) {
+  const verifiedCount = developers.filter((d) => d.verified).length;
   return (
     <div>
+      <DevelopersHero verifiedCount={verifiedCount} />
       <Suspense fallback={null}>
         <DeveloperDirectory developers={developers} />
       </Suspense>
