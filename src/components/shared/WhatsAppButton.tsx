@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { useCompare } from '@/hooks/useCompare';
+import { trackWhatsAppClick } from '@/lib/analytics/track';
 
 interface WhatsAppButtonProps {
   propertyName?: string;
@@ -39,6 +40,7 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
       href={url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackWhatsAppClick({ surface: propertyId ? 'detail-floating' : 'floating', propertyId })}
       style={{
         bottom: `max(1.5rem, calc(env(safe-area-inset-bottom) + ${compareOffset}))`,
       }}

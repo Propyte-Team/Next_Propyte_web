@@ -50,6 +50,7 @@ import CetesComparison from '@/components/property/CetesComparison';
 import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndicator';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import FloatingKeyData from '@/components/property/FloatingKeyData';
+import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
 interface DevelopmentDetailPageProps {
@@ -371,6 +372,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   return (
     <>
+      <ViewItemTracker
+        itemId={property.id}
+        itemName={property.name}
+        itemKind="development"
+        city={property.city || undefined}
+        zone={property.zone || undefined}
+        priceMxn={property.price_min_mxn || property.price_mxn || undefined}
+      />
       <SchemaMarkup
         type="realEstateListing"
         data={{

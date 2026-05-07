@@ -49,6 +49,7 @@ export function writeConsent(consent: Omit<CookieConsent, 'v' | 'necessary' | 't
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(full));
     applyConsentToGtag(full);
+    applyConsentToMetaPixel(full);
     window.dispatchEvent(new CustomEvent(CHANGED_EVENT, { detail: full }));
   } catch {
     // localStorage may be unavailable
@@ -58,6 +59,7 @@ export function writeConsent(consent: Omit<CookieConsent, 'v' | 'necessary' | 't
 interface GtagWindow extends Window {
   gtag?: (...args: unknown[]) => void;
   dataLayer?: unknown[];
+  fbq?: (...args: unknown[]) => void;
 }
 
 export function applyConsentToGtag(consent: CookieConsent) {
@@ -75,6 +77,18 @@ export function applyConsentToGtag(consent: CookieConsent) {
     ad_user_data: consent.marketing ? 'granted' : 'denied',
     ad_personalization: consent.marketing ? 'granted' : 'denied',
   });
+}
+
+/**
+ * Flip Meta Pixel consent in lockstep with the marketing toggle. The Pixel
+ * snippet boots with `fbq('consent','revoke')` so events stay queued until
+ * the user grants consent.
+ */
+export function applyConsentToMetaPixel(consent: CookieConsent) {
+  if (typeof window === 'undefined') return;
+  const w = window as GtagWindow;
+  if (typeof w.fbq !== 'function') return;
+  w.fbq('consent', consent.marketing ? 'grant' : 'revoke');
 }
 
 export function reopenBanner() {

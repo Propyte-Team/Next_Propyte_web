@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { X, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { trackGenerateLead, trackFileDownload } from '@/lib/analytics/track';
 
 interface Props {
   open: boolean;
@@ -109,6 +110,8 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
       });
       if (!res.ok) throw new Error('lead-failed');
 
+      trackGenerateLead({ formType: 'glossary_pdf' });
+      trackFileDownload({ fileType: 'glossary_pdf' });
       window.location.assign(`/api/glossary/pdf?locale=${locale}`);
       toast.success(t('gateSuccess'));
       reset();

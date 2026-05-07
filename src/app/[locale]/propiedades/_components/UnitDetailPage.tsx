@@ -23,6 +23,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_MARKET_CODE, VAC } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import SimilarListings from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
@@ -196,6 +197,14 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
   return (
     <>
+      <ViewItemTracker
+        itemId={property.id}
+        itemName={property.name}
+        itemKind="unit"
+        city={property.location.city || undefined}
+        zone={property.location.zone || undefined}
+        priceMxn={property.price.mxn || undefined}
+      />
       <SchemaMarkup
         type="realEstateListing"
         data={{

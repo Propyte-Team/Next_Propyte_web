@@ -3,6 +3,10 @@ import Script from 'next/script';
 export default function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA4_ID;
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID;
+  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  // Skip Meta Pixel when env var is missing or still set to the placeholder.
+  const metaPixelEnabled =
+    !!metaPixelId && metaPixelId !== 'XXXXXXXXXXXXXXXXX' && /^\d+$/.test(metaPixelId);
 
   return (
     <>
@@ -41,6 +45,42 @@ export default function Analytics() {
           </Script>
         </>
       )}
+
+      {/* Meta Pixel — gated by ad_storage consent. fbq() queues calls before
+          the script loads, so events fired during page transitions are not
+          lost. Cookie banner flips `_propyte_pixel_consent` → re-call fbq('consent','grant'). */}
+      {metaPixelEnabled && (
+        <>
+          <Script id="meta-pixel-init" strategy="lazyOnload">
+            {`
+              !function(f,b,e,v,n,t,s)
+              {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+              if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+              n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t,s)}(window, document,'script',
+              'https://connect.facebook.net/en_US/fbevents.js');
+              fbq('consent', 'revoke');
+              fbq('init', '${metaPixelId}');
+              fbq('track', 'PageView');
+            `}
+          </Script>
+          {/* Noscript fallback for users with JS disabled — harmless tracking
+              pixel; respects DNT through the standard FB pipeline. */}
+          <noscript>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              height="1"
+              width="1"
+              style={{ display: 'none' }}
+              src={`https://www.facebook.com/tr?id=${metaPixelId}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
+        </>
+      )}
+
       {hotjarId && (
         <Script id="hotjar-init" strategy="lazyOnload">
           {`

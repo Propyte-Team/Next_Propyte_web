@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import MainPadding from '@/components/layout/MainPadding';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Analytics from '@/components/shared/Analytics';
+import UTMCapture from '@/components/shared/UTMCapture';
 import CookieBanner from '@/components/shared/CookieBanner';
 import { Toaster } from 'sonner';
 import { MotionConfig } from 'framer-motion';
@@ -61,6 +62,7 @@ export default async function LocaleLayout({
         <TokenSyncListener />
         <WhatsAppButton />
         <Analytics />
+        <UTMCapture />
         <CookieBanner />
         <Toaster
           position="top-center"
