@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk } from 'next/font/google';
+import { Space_Grotesk, Fraunces, JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import '@/styles/globals.css';
 
@@ -10,6 +10,24 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
   variable: '--font-space-grotesk',
   weight: ['300', '400', '500', '600', '700'],
+});
+
+// Display serif italic — accent voz "humana / editorial" en heros y headlines.
+// Solo italic 400/500 — usado para 1-2 palabras acentuadas, no body.
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-fraunces',
+  style: ['italic'],
+  weight: ['400', '500'],
+});
+
+// Mono — data forward. Stats, números, indicadores, code-like markers.
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+  weight: ['400', '500', '700'],
 });
 
 export const metadata: Metadata = {
@@ -39,7 +57,10 @@ export default function RootLayout({
   // dynamic lang via a client-side useEffect (Header component) so it
   // updates when the user toggles ES↔EN without a full page reload.
   return (
-    <html lang="es" className={spaceGrotesk.className}>
+    <html
+      lang="es"
+      className={`${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${spaceGrotesk.className}`}
+    >
       <body className="min-h-screen flex flex-col">
         {children}
         {GA_ID ? (

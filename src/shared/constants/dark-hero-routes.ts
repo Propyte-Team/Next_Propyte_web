@@ -29,6 +29,7 @@ export const DARK_HERO_ROUTES = [
   '/faq',
   '/glosario',
   '/promociones',
+  '/mercado',
 ];
 
 /**

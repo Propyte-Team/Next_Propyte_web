@@ -2407,7 +2407,7 @@ export default {
 - [x] Fase H2: Sync Engine (2 semanas) — ✅ ingest connectors, cron Hostinger, ISR trigger; falta conflict detection completa
 - [~] Fase H3: Blog AI + Change Log + Team + Agents + Settings (1 semana) — Blog AI, change log, team, settings ✅. Falta: blog scheduling cron, agent profiles 11 fields, Built Settings admin
 - [ ] Fase H4: Testing + Cutover del hub (1 semana) — pendiente
-- [+] Fase H5 (no estaba en plan original): Reports Module — calculadores ✅, UI ✅, CSV+XLSX+PDF ✅, Email distribution ✅. Falta: WhatsApp, Drive backup, alertas agregadas
+- [x] Fase H5 (no estaba en plan original): Reports Module — calculadores ✅, UI ✅, CSV+XLSX+PDF ✅, Email distribution ✅, Drive backup ✅. WhatsApp descartado. Pendiente: alertas agregadas (Bloque I).
 
 **Total estimado Next_Propyte_web: ~14 semanas (~3.5 meses)** — ahorro de ~6 semanas vs plan original gracias al scaffold de HERO-SITE  
 **Total estimado Propyte_hub: ~6 semanas adicionales** (puede correr en paralelo)  
@@ -2722,8 +2722,9 @@ PASO 5 — Post-mortem
 - [x] Crons generate-weekly/monthly/annual + evaluate-alerts
 - [x] UI: `/reportes/{kpis,asesores,mensual,anual,snapshots,alertas,config}`
 - [x] Generadores: CSV + XLSX + PDF (descarga via `/api/reports/export?format=csv|xlsx|pdf`)
-- [x] Email distribution: nodemailer + SMTP Hostinger, templates HTML, auto-envío tras cron `generate-*`, endpoint manual `/api/reports/email/send`
-- [ ] Generadores: WhatsApp Cloud API
+- [x] Email distribution: nodemailer + Gmail SMTP (Workspace), templates HTML, auto-envío tras cron `generate-*`, endpoint manual `/api/reports/email/send`
+- [x] Drive backup: googleapis + Service Account, autocrea subcarpetas {tipo}/{año}, auto-upload tras cron `generate-*`, endpoint manual `/api/reports/drive/upload`, standalone `/api/cron/backup-drive?days=N`
+- [~] WhatsApp Cloud API — descartado del scope (2026-05-07)
 - [ ] Drive backup automático tras cada generate-*
 - [ ] 6 reglas de alertas agregadas (sólo individual asesor implementadas)
 

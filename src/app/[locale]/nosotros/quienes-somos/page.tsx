@@ -94,50 +94,119 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
         ]}
       />
 
-      {/* HERO — Split: light left + dark right (calca WP page-nosotros.php) */}
-      <section className="relative min-h-[70vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 grid lg:grid-cols-2">
-          <div className="bg-[#F4F6F8]" />
-          <div className="hidden lg:block bg-gradient-to-br from-[#0F1923] to-[#1A2F3F]" />
-        </div>
-        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 w-full">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Light side */}
-            <div>
-              <span className="inline-block text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase mb-4">
+      {/* HERO — single dark canvas, editorial composition.
+          Layered: mesh gradient + grid blueprint + asymmetric content grid.
+          Headline grotesk + accent italic Fraunces sobre la palabra "Propyte"
+          aporta voz humana. Stats en mono tabular = data-forward.
+          La duality "humano + data" se expresa por contraste tipográfico,
+          no por split de columnas con línea dura. */}
+      <section className="propyte-hero-canvas relative min-h-[78vh] flex items-center">
+        {/* Watermark home icon — extremely faint, decorativo, lower-right */}
+        <Home
+          size={520}
+          strokeWidth={0.5}
+          aria-hidden="true"
+          className="absolute -right-32 -bottom-40 text-white/[0.025] pointer-events-none select-none hidden md:block"
+        />
+
+        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-24 md:py-32 w-full">
+          <div className="grid lg:grid-cols-12 gap-x-12 gap-y-14">
+            {/* Columna principal (8/12) — eyebrow + H1 + subtitle */}
+            <div className="lg:col-span-8">
+              <span
+                className="propyte-hero-eyebrow propyte-hero-rise"
+                style={{ animationDelay: '60ms' }}
+              >
+                <span className="propyte-hero-eyebrow__dot" aria-hidden="true" />
                 {t('label')}
               </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1A2F3F] leading-tight">
-                {t('title')}
+
+              <h1
+                className="mt-7 text-[clamp(2.5rem,6vw,4.75rem)] font-semibold leading-[0.98] tracking-[-0.025em] text-white propyte-hero-rise"
+                style={{ animationDelay: '160ms' }}
+              >
+                {t('title').split(' ').map((word, i, arr) => {
+                  const isLast = i === arr.length - 1;
+                  // Acentúa la última palabra del título con serif italic.
+                  // Si t('title') es "Conoce Propyte" → "Conoce" grotesk + "Propyte" italic.
+                  return (
+                    <span key={i}>
+                      {isLast ? (
+                        <span className="accent-serif text-[#5CE0D2]">{word}</span>
+                      ) : (
+                        word
+                      )}
+                      {!isLast && ' '}
+                    </span>
+                  );
+                })}
               </h1>
-              <p className="mt-5 text-lg text-gray-600 max-w-md leading-relaxed">
+
+              <p
+                className="mt-7 max-w-xl text-lg md:text-xl text-white/65 leading-relaxed propyte-hero-rise"
+                style={{ animationDelay: '260ms' }}
+              >
                 {t('subtitle')}
               </p>
             </div>
-            {/* Right: Dark side panel */}
-            <div className="bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl lg:rounded-none lg:bg-transparent p-10 md:p-12 text-center lg:text-left">
-              <div className="text-white/30 mb-4">
-                <Home size={48} strokeWidth={1} className="mx-auto lg:mx-0" aria-hidden="true" />
+
+            {/* Columna secundaria (4/12) — tagline editorial + stats grid.
+                Sobre lg el axis line crea separación sin línea dura. */}
+            <div className="lg:col-span-4 lg:pl-8 lg:border-l lg:border-white/10 relative">
+              {/* Vertical accent dots en la "axis line" del border-left */}
+              <span
+                aria-hidden="true"
+                className="hidden lg:block absolute left-0 top-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-[#5CE0D2]"
+              />
+              <span
+                aria-hidden="true"
+                className="hidden lg:block absolute left-0 bottom-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-[#5CE0D2]"
+              />
+
+              <div
+                className="propyte-hero-rise"
+                style={{ animationDelay: '360ms' }}
+              >
+                <p className="text-2xl md:text-[1.75rem] leading-tight font-medium text-white">
+                  <span className="accent-serif text-[#5CE0D2]">{t('heroTagline').replace(/\.$/, '')}</span>
+                  <span className="text-white/30">.</span>
+                </p>
+                <p className="mt-4 text-sm text-white/45 leading-relaxed">
+                  {t('heroTaglineSub')}
+                </p>
               </div>
-              <p className="text-white text-2xl md:text-3xl font-bold leading-tight">
-                {t('heroTagline')}
-              </p>
-              <p className="text-white/40 text-sm mt-4">{t('heroTaglineSub')}</p>
-              <div className="flex flex-wrap gap-6 mt-8 justify-center lg:justify-start">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#5CE0D2]">50+</div>
-                  <div className="text-xs text-white/40">{t('heroStatDevelopers')}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#5CE0D2]">300+</div>
-                  <div className="text-xs text-white/40">{t('heroStatBrokers')}</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#5CE0D2]">700+</div>
-                  <div className="text-xs text-white/40">{t('heroStatDevelopments')}</div>
-                </div>
-              </div>
+
+              {/* Stats — formato monoespaciado tabular, label uppercase mono.
+                  Layout horizontal con divider sutil, sin "tarjeta" — data como
+                  parte integrada del hero, no como widget aparte. */}
+              <dl
+                className="mt-10 grid grid-cols-3 gap-px bg-white/5 rounded-lg overflow-hidden propyte-hero-rise"
+                style={{ animationDelay: '460ms' }}
+              >
+                {[
+                  { v: '50+',  l: t('heroStatDevelopers') },
+                  { v: '300+', l: t('heroStatBrokers') },
+                  { v: '700+', l: t('heroStatDevelopments') },
+                ].map((s) => (
+                  <div key={s.l} className="bg-[#0F1923] px-2 py-4 text-center">
+                    <dt className="accent-mono text-2xl md:text-3xl font-medium text-[#5CE0D2]">
+                      {s.v}
+                    </dt>
+                    <dd className="mt-1.5 accent-mono text-[10px] text-white/45 uppercase tracking-[0.12em]">
+                      {s.l}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
+          </div>
+
+          {/* Coordinate marker bottom-left — architectural detail */}
+          <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-50">
+            <span className="block w-6 h-px bg-[#5CE0D2]" aria-hidden="true" />
+            <span className="accent-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
+              20.62°N · 87.07°W
+            </span>
           </div>
         </div>
       </section>

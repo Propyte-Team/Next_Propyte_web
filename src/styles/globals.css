@@ -420,3 +420,186 @@ html {
     left: 0;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   HERO ATMOSPHERE — sistema reutilizable para todos los heros del sitio.
+
+   Compone 3 capas para crear profundidad sin que se sienta plano:
+     1. .propyte-hero-canvas       → bg base aztec con mesh gradient
+     2. .propyte-hero-canvas::before → glow nodes asimétricos (teal radial)
+     3. .propyte-hero-canvas::after  → grid blueprint sutil (architectural feel)
+
+   Uso: <section class="propyte-hero-canvas">…contenido…</section>
+   El padding/min-height lo controla la página, no el canvas.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.propyte-hero-canvas {
+  position: relative;
+  isolation: isolate;
+  background-color: #0F1923;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Capa 1: glow nodes — dos halos teal con offset asimétrico crean dirección
+   de luz "desde la esquina superior derecha". Genera duality humano/data sin
+   línea dura, usando solo radial-gradients translúcidos. */
+.propyte-hero-canvas::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 15%, rgba(92, 224, 210, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 45% at 15% 85%, rgba(92, 224, 210, 0.08) 0%, transparent 60%),
+    linear-gradient(135deg, #0F1923 0%, #1A2F3F 55%, #0F1923 100%);
+  pointer-events: none;
+}
+
+/* Capa 2: grid blueprint — líneas verticales+horizontales 64px de paso, muy
+   tenues. Mask radial fundea los bordes para que no se vea como wallpaper. */
+.propyte-hero-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 75% at center, black 30%, transparent 100%);
+          mask-image: radial-gradient(ellipse 75% 75% at center, black 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Variante light — para heros sobre fondo claro (raro, casi no se usa).
+   Mantiene el grid pero invierte glow + base. */
+.propyte-hero-canvas--light {
+  background-color: #F4F6F8;
+  color: #1A2F3F;
+}
+.propyte-hero-canvas--light::before {
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 15%, rgba(92, 224, 210, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 45% at 15% 85%, rgba(26, 47, 63, 0.05) 0%, transparent 60%),
+    linear-gradient(135deg, #F4F6F8 0%, #ffffff 55%, #F4F6F8 100%);
+}
+.propyte-hero-canvas--light::after {
+  background-image:
+    linear-gradient(rgba(26, 47, 63, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 47, 63, 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* ─── Eyebrow con dot status ──────────────────────────────────────────────
+   Pill pequeño con dot pulsante a la izquierda. Usar para señalar estado
+   (datos vivos, intelligence indexed, etc.) sin recurrir a amber pop-out. */
+.propyte-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  background: rgba(92, 224, 210, 0.08);
+  border: 1px solid rgba(92, 224, 210, 0.2);
+  color: #5CE0D2;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.propyte-hero-eyebrow__dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #5CE0D2;
+  flex-shrink: 0;
+}
+.propyte-hero-eyebrow__dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: rgba(92, 224, 210, 0.4);
+  animation: propyte-hero-dot-pulse 2.4s ease-in-out infinite;
+}
+@keyframes propyte-hero-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(2); opacity: 0; }
+}
+
+/* ─── Tipografía display: serif italic accent + mono numerals ─────────────
+   .accent-serif: aplica a 1-2 palabras clave dentro de un H1 grotesk.
+   .accent-mono : tabular para stats y cifras grandes. */
+.accent-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+.accent-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+/* ─── Vertical accent line — separa secciones dentro del hero sin partir
+   en dos columnas duras. Decorativa, 1px gradient teal fade. */
+.propyte-hero-axis {
+  position: relative;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(92, 224, 210, 0.5) 30%,
+    rgba(92, 224, 210, 0.5) 70%,
+    transparent 100%
+  );
+}
+.propyte-hero-axis::before,
+.propyte-hero-axis::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border: 1px solid #5CE0D2;
+  border-radius: 9999px;
+  background: #0F1923;
+  transform: translateX(-50%);
+}
+.propyte-hero-axis::before { top: 30%; }
+.propyte-hero-axis::after  { bottom: 30%; }
+
+/* ─── Animaciones de entrada — usadas con animation-delay vía style attr ── */
+@keyframes propyte-hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes propyte-hero-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.propyte-hero-rise {
+  opacity: 0;
+  animation: propyte-hero-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+.propyte-hero-fade {
+  opacity: 0;
+  animation: propyte-hero-fade 1.2s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .propyte-hero-rise,
+  .propyte-hero-fade {
+    animation: none;
+    opacity: 1;
+  }
+  .propyte-hero-eyebrow__dot::after {
+    animation: none;
+    opacity: 0;
+  }
+}
