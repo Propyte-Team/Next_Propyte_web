@@ -7,6 +7,7 @@ import { formatPrice } from '@/lib/formatters';
 import { MapPin, Building2, Tag, ArrowRight } from 'lucide-react';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
+import { getCta } from '@/lib/hub-content';
 
 export const revalidate = 600;
 
@@ -69,6 +70,13 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   } catch (error) {
     console.error('[PromocionesPage] Supabase fetch failed:', error);
   }
+
+  // Hub CTA override del hero (eyebrow, color, título, subtítulo)
+  const heroCta = await getCta('promociones_hero');
+  const heroEyebrow = (locale === 'en' ? heroCta?.eyebrow_en : heroCta?.eyebrow_es) ?? t('heroEyebrow');
+  const heroTitle = (locale === 'en' ? heroCta?.title_en : heroCta?.title_es) ?? t('heroTitle');
+  const heroSubtitle = (locale === 'en' ? heroCta?.subtitle_en : heroCta?.subtitle_es) ?? t('heroSubtitle');
+  const heroAccent = heroCta?.accent_color ?? '#F5A623';
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
 
@@ -148,17 +156,20 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#F5A623]/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#F5A623]/20 rounded-full mb-6">
-            <Tag size={14} strokeWidth={2} className="text-[#F5A623]" />
-            <span className="text-[#F5A623] text-sm font-semibold tracking-wide uppercase">
-              {t('heroEyebrow')}
+          <div
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
+            style={{ backgroundColor: `${heroAccent}33` }}
+          >
+            <Tag size={14} strokeWidth={2} style={{ color: heroAccent }} />
+            <span className="text-sm font-semibold tracking-wide uppercase" style={{ color: heroAccent }}>
+              {heroEyebrow}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-            {t('heroTitle')}
+            {heroTitle}
           </h1>
           <p className="text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
-            {t('heroSubtitle')}
+            {heroSubtitle}
           </p>
           {items.length > 0 && (
             <p className="mt-6 text-sm text-[#5CE0D2] font-semibold uppercase tracking-wide">

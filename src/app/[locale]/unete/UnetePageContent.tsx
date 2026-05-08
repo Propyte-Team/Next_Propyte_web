@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Play,
@@ -28,9 +28,34 @@ import {
 } from 'lucide-react';
 
 // ============================================================
+// HUB CONTENT CONTEXT (Hub-driven editorial overrides)
+// ============================================================
+interface UneteTestimonialItem {
+  name: string;
+  role: string;
+  quote: string;
+  stats: string;
+}
+interface UneteFaqItem {
+  q: string;
+  a: string;
+}
+interface UneteHubData {
+  videoUrl: string | null;
+  testimonials: UneteTestimonialItem[];
+  faqs: UneteFaqItem[];
+}
+const UneteHubContext = createContext<UneteHubData>({
+  videoUrl: null,
+  testimonials: [],
+  faqs: [],
+});
+
+// ============================================================
 // HERO SECTION
 // ============================================================
 function HeroSection() {
+  const hub = useContext(UneteHubContext);
   const t = useTranslations('unete');
   const [showVideo, setShowVideo] = useState(false);
 
@@ -104,7 +129,7 @@ function HeroSection() {
             <div className="relative bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
               {showVideo ? (
                 <iframe
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0"
+                  src={hub.videoUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0'}
                   className="absolute inset-0 w-full h-full"
                   allow="autoplay; encrypted-media"
                   allowFullScreen
@@ -148,7 +173,7 @@ function HeroSection() {
         >
           <div className="w-full max-w-3xl aspect-video" onClick={e => e.stopPropagation()}>
             <iframe
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0"
+              src={hub.videoUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0'}
               className="w-full h-full rounded-xl"
               allow="autoplay; encrypted-media"
               allowFullScreen
@@ -505,12 +530,17 @@ function TechPlatform() {
 // ============================================================
 function Testimonials() {
   const t = useTranslations('unete');
-  const testimonials = [1, 2, 3].map((n) => ({
+  const hub = useContext(UneteHubContext);
+  const fallback = [1, 2, 3].map((n) => ({
     name: t(`t${n}Name` as 't1Name'),
     role: t(`t${n}Role` as 't1Role'),
     quote: t(`t${n}Quote` as 't1Quote'),
     stats: t(`t${n}Stats` as 't1Stats'),
-    avatar: t(`t${n}Name` as 't1Name')
+  }));
+  const source = hub.testimonials.length > 0 ? hub.testimonials : fallback;
+  const testimonials = source.map((tt) => ({
+    ...tt,
+    avatar: tt.name
       .split(' ')
       .slice(0, 2)
       .map((s) => s[0])
@@ -643,6 +673,7 @@ function JoinProcess() {
 // ============================================================
 function FAQ() {
   const t = useTranslations('unete');
+  const hub = useContext(UneteHubContext);
   const [open, setOpen] = useState<Set<number>>(new Set([0, 1, 2]));
   const toggle = (i: number) =>
     setOpen((s) => {
@@ -651,10 +682,11 @@ function FAQ() {
       else next.add(i);
       return next;
     });
-  const faqs = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
+  const fallback = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
     q: t(`faq${n}Q` as 'faq1Q'),
     a: t(`faq${n}A` as 'faq1A'),
   }));
+  const faqs = hub.faqs.length > 0 ? hub.faqs : fallback;
 
   return (
     <section className="py-20 md:py-28 bg-white">
@@ -918,21 +950,24 @@ function FinalCTA() {
 // ============================================================
 // MAIN PAGE
 // ============================================================
-export default function UnetePageContent() {
+export default function UnetePageContent({ hubData }: { hubData?: UneteHubData }) {
+  const value = hubData ?? { videoUrl: null, testimonials: [], faqs: [] };
   return (
-    <div>
-      <HeroSection />
-      <SocialProofBar />
-      <WhyPropyte />
-      <CommissionModel />
-      <RevenueSharing />
-      <TechPlatform />
-      <Testimonials />
-      <StatsSection />
-      <JoinProcess />
-      <FAQ />
-      <ApplicationForm />
-      <FinalCTA />
-    </div>
+    <UneteHubContext.Provider value={value}>
+      <div>
+        <HeroSection />
+        <SocialProofBar />
+        <WhyPropyte />
+        <CommissionModel />
+        <RevenueSharing />
+        <TechPlatform />
+        <Testimonials />
+        <StatsSection />
+        <JoinProcess />
+        <FAQ />
+        <ApplicationForm />
+        <FinalCTA />
+      </div>
+    </UneteHubContext.Provider>
   );
 }

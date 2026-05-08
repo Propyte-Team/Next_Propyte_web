@@ -10,6 +10,7 @@ import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/categories';
 import BlogPagination from '@/components/blog/BlogPagination';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import { Suspense } from 'react';
+import { getBlogFeatured } from '@/lib/hub-content';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -129,9 +130,31 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
   if (supabase) {
-    const all = await getBlogPosts(supabase, { locale, limit: 16, page: 1 });
-    const ases = all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4);
-    const inv = all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4);
+    // Si Hub tiene posts marcados como destacados para una categoría, usarlos
+    // (en el orden definido por sort_order). Si no, fallback a últimos 4.
+    const [hubAses, hubInv, all] = await Promise.all([
+      getBlogFeatured('asesores'),
+      getBlogFeatured('inversionistas'),
+      getBlogPosts(supabase, { locale, limit: 16, page: 1 }),
+    ]);
+    const pickFeatured = (
+      hubItems: Awaited<ReturnType<typeof getBlogFeatured>>,
+      defaultPick: typeof all.posts,
+    ) => {
+      if (hubItems.length === 0) return defaultPick;
+      const slugMap = new Map(all.posts.map((p) => [p.slug, p]));
+      return hubItems
+        .map((h) => slugMap.get(h.post_slug))
+        .filter((p): p is NonNullable<typeof p> => Boolean(p));
+    };
+    const ases = pickFeatured(
+      hubAses,
+      all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4),
+    );
+    const inv = pickFeatured(
+      hubInv,
+      all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4),
+    );
     asesorResult = { posts: ases, total: ases.length };
     invResult = { posts: inv, total: inv.length };
   }

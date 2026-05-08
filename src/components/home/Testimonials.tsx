@@ -11,9 +11,12 @@ interface TestimonialItem {
   text: string;
 }
 
-export default function Testimonials() {
+// Si `items` se pasa como prop (desde el server fetch de Hub), úsalo.
+// Si no, cae al listado hardcoded en i18n (`testimonials.items`).
+export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
   const t = useTranslations('testimonials');
-  const testimonials = t.raw('items') as TestimonialItem[];
+  const fromI18n = t.raw('items') as TestimonialItem[];
+  const testimonials = items && items.length > 0 ? items : fromI18n;
   const [startIndex, setStartIndex] = useState(0);
 
   const visibleCount = 3;

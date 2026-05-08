@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import UnetePageContent from './UnetePageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { getTestimonials, getFaqs, getCta } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -62,15 +63,43 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
     },
   };
 
+  // Hub-driven editorial overrides (con fallback a i18n)
+  const [hubTestimonials, hubFaqs, recruitVideoCta] = await Promise.all([
+    getTestimonials('recruitment'),
+    getFaqs('recruitment'),
+    getCta('unete_hero_video'),
+  ]);
+  const testimonials = hubTestimonials.map((t) => ({
+    name: t.name,
+    role: (locale === 'en' ? t.role_en : t.role_es) ?? '',
+    quote: locale === 'en' ? t.quote_en : t.quote_es,
+    stats: (locale === 'en' ? t.stat1_label_en : t.stat1_label_es)
+      ? `${t.stat1_value ?? ''} ${(locale === 'en' ? t.stat1_label_en : t.stat1_label_es) ?? ''}`.trim()
+      : '',
+  }));
+  const faqs = hubFaqs.map((f) => ({
+    q: locale === 'en' ? f.question_en : f.question_es,
+    a: locale === 'en' ? f.answer_en : f.answer_es,
+  }));
+  const videoUrl = recruitVideoCta?.button_href ?? null;
+  const hubData = { videoUrl, testimonials, faqs };
+
+  // FAQ schema usa Hub si tiene, si no fallback a i18n
+  const faqSchemaSource = faqs.length > 0
+    ? faqs
+    : Array.from({ length: 8 }, (_, i) => ({
+        q: t(`faq${i + 1}Q`),
+        a: t(`faq${i + 1}A`),
+      }));
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: Array.from({ length: 8 }, (_, i) => ({
+    mainEntity: faqSchemaSource.map((f) => ({
       '@type': 'Question',
-      name: t(`faq${i + 1}Q`),
+      name: f.q,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: t(`faq${i + 1}A`),
+        text: f.a,
       },
     })),
   };
@@ -91,7 +120,7 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: tBC('joinTeam') }]}
       />
-      <UnetePageContent />
+      <UnetePageContent hubData={hubData} />
     </>
   );
 }

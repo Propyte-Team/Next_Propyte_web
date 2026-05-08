@@ -16,6 +16,7 @@ import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
+import { getTestimonials, getCta } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -65,6 +66,26 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     console.error('[HomePage] Supabase fetch failed, using fallback stats:', error);
   }
 
+  // Contenido editorial dinámico desde Hub (con fallback a i18n hardcoded)
+  const [hubTestimonials, leadMagnetCta] = await Promise.all([
+    getTestimonials('home'),
+    getCta('home_lead_magnet'),
+  ]);
+  const homeTestimonials = hubTestimonials.map((t) => ({
+    name: t.name,
+    city: t.location ?? '',
+    rating: t.rating ?? 5,
+    text: locale === 'en' ? t.quote_en : t.quote_es,
+  }));
+  const leadMagnetProps = leadMagnetCta
+    ? {
+        eyebrow: locale === 'en' ? leadMagnetCta.eyebrow_en : leadMagnetCta.eyebrow_es,
+        title: locale === 'en' ? leadMagnetCta.title_en : leadMagnetCta.title_es,
+        subtitle: locale === 'en' ? leadMagnetCta.subtitle_en : leadMagnetCta.subtitle_es,
+        buttonLabel: locale === 'en' ? leadMagnetCta.button_label_en : leadMagnetCta.button_label_es,
+      }
+    : null;
+
   return (
     <>
       <SchemaMarkup type="organization" />
@@ -79,7 +100,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       )}
       {isVisible(visibility, VISIBILITY_KEYS.HOME_TESTIMONIALS) && (
         <ScrollReveal>
-          <Testimonials />
+          <Testimonials items={homeTestimonials} />
         </ScrollReveal>
       )}
       <ScrollReveal delay={0.05}>
@@ -104,7 +125,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       )}
       <ScrollReveal>
-        <LeadMagnet />
+        <LeadMagnet cta={leadMagnetProps} />
       </ScrollReveal>
       <ScrollReveal delay={0.05}>
         <AppDownloadBanner />

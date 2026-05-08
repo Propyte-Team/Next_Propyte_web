@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useTranslations } from 'next-intl';
+
+interface BrokerFaqItem { q: string; a: string }
+interface BrokersHubData { faqs: BrokerFaqItem[] }
+const BrokersHubContext = createContext<BrokersHubData>({ faqs: [] });
 import {
   Briefcase, Monitor, Brain, Percent, Palette, GraduationCap,
   Users, ChevronDown, ChevronUp,
@@ -201,6 +205,7 @@ function PlatformPreview() {
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('brokers');
+  const hub = useContext(BrokersHubContext);
   const [open, setOpen] = useState<Set<number>>(new Set([0, 1, 2]));
   const toggle = (i: number) =>
     setOpen((s) => {
@@ -210,10 +215,11 @@ function FAQ() {
       return next;
     });
 
-  const faqs = Array.from({ length: 8 }, (_, i) => ({
+  const fallback = Array.from({ length: 8 }, (_, i) => ({
     q: t(`faq${i + 1}Q`),
     a: t(`faq${i + 1}A`),
   }));
+  const faqs = hub.faqs.length > 0 ? hub.faqs : fallback;
 
   return (
     <section className="py-16 md:py-20">
@@ -480,16 +486,19 @@ function FinalCTA() {
 // ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
-export default function BrokersPageContent() {
+export default function BrokersPageContent({ hubData }: { hubData?: BrokersHubData }) {
+  const value = hubData ?? { faqs: [] };
   return (
-    <div>
-      <BrokerHero />
-      <ValueProposition />
-      <HowItWorks />
-      <PlatformPreview />
-      <FAQ />
-      <BrokerForm />
-      <FinalCTA />
-    </div>
+    <BrokersHubContext.Provider value={value}>
+      <div>
+        <BrokerHero />
+        <ValueProposition />
+        <HowItWorks />
+        <PlatformPreview />
+        <FAQ />
+        <BrokerForm />
+        <FinalCTA />
+      </div>
+    </BrokersHubContext.Provider>
   );
 }

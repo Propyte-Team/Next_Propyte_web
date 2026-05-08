@@ -6,6 +6,7 @@ import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
 import BrokerCommissionsTable from '@/components/shared/BrokerCommissionsTable';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { getFaqs } from '@/lib/hub-content';
 import {
   getPartners,
   getCaseStudies,
@@ -54,12 +55,23 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
     getTranslations({ locale, namespace: 'brokers' }),
   ]);
 
-  const faqEntities = Array.from({ length: 8 }, (_, i) => ({
+  // Hub-driven FAQs (con fallback a i18n)
+  const hubFaqs = await getFaqs('broker');
+  const brokerFaqs = hubFaqs.length > 0
+    ? hubFaqs.map((f) => ({
+        q: locale === 'en' ? f.question_en : f.question_es,
+        a: locale === 'en' ? f.answer_en : f.answer_es,
+      }))
+    : Array.from({ length: 8 }, (_, i) => ({
+        q: tBrokers(`faq${i + 1}Q`),
+        a: tBrokers(`faq${i + 1}A`),
+      }));
+  const faqEntities = brokerFaqs.map((f) => ({
     '@type': 'Question',
-    name: tBrokers(`faq${i + 1}Q`),
+    name: f.q,
     acceptedAnswer: {
       '@type': 'Answer',
-      text: tBrokers(`faq${i + 1}A`),
+      text: f.a,
     },
   }));
 
@@ -103,7 +115,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: tBC('brokers') }]}
       />
-      <BrokersPageContent />
+      <BrokersPageContent hubData={{ faqs: brokerFaqs }} />
       <BrokerCommissionsTable
         commissions={commissions}
         locale={locale}

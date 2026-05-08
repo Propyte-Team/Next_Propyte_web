@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Sparkles } from 'lucide-react';
 import FAQContent from './FAQContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { getFaqs } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -25,6 +26,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       languages: { es: '/es/faq', en: '/en/faq', 'x-default': '/es/faq' },
     },
   };
+}
+
+// Mapeo de category interna del Hub (buying/investing/...) a key de traducción.
+function mapHubCategoryToKey(
+  cat: string | null,
+): 'catBuying' | 'catInvestment' | 'catFinancing' | 'catRental' | 'catPlatform' {
+  switch (cat) {
+    case 'buying': return 'catBuying';
+    case 'investing': return 'catInvestment';
+    case 'financing': return 'catFinancing';
+    case 'rental': return 'catRental';
+    case 'platform': return 'catPlatform';
+    default: return 'catPlatform';
+  }
 }
 
 const FAQ_META: ReadonlyArray<{ q: string; a: string; cat: 'catBuying' | 'catInvestment' | 'catFinancing' | 'catRental' | 'catPlatform' }> = [
@@ -53,11 +68,20 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
-  const faqs = FAQ_META.map((meta) => ({
-    cat: t(meta.cat),
-    q: t(meta.q as 'q1'),
-    a: t(meta.a as 'a1'),
-  }));
+  // Si Hub tiene FAQs configuradas para context='general', usarlas.
+  // Fallback al listado hardcoded en i18n si Hub está vacío o falla la red.
+  const hubFaqs = await getFaqs('general');
+  const faqs = hubFaqs.length > 0
+    ? hubFaqs.map((f) => ({
+        cat: t(mapHubCategoryToKey(f.category)),
+        q: locale === 'en' ? f.question_en : f.question_es,
+        a: locale === 'en' ? f.answer_en : f.answer_es,
+      }))
+    : FAQ_META.map((meta) => ({
+        cat: t(meta.cat),
+        q: t(meta.q as 'q1'),
+        a: t(meta.a as 'a1'),
+      }));
 
   const categories = [
     t('catAll'),
