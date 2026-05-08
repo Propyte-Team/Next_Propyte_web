@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-08T21:22:23.768Z",
+  "generatedAt": "2026-05-08T22:27:39.864Z",
   "targets": {
     "local": {
       "url": "http://localhost:3000/es",
@@ -36,6 +36,861 @@
             },
             "h3": {
               "text": "Para Inversionistas",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "22px",
+              "fontWeight": "600",
+              "lineHeight": "33px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal",
+              "textTransform": "none"
+            },
+            "ctas": [
+              {
+                "text": "Saltar al contenido principal",
+                "tag": "a",
+                "rect": {
+                  "w": 251,
+                  "h": 44,
+                  "x": -9999,
+                  "y": 0
+                },
+                "bg": "rgb(92, 224, 210)",
+                "color": "rgb(15, 25, 35)",
+                "border": "0px solid rgb(15, 25, 35)",
+                "borderRadius": "0px",
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "padding": "8px 16px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Skip to content",
+                "tag": "a",
+                "rect": {
+                  "w": 152,
+                  "h": 44,
+                  "x": -9999,
+                  "y": 0
+                },
+                "bg": "rgb(92, 224, 210)",
+                "color": "rgb(15, 25, 35)",
+                "border": "0px solid rgb(15, 25, 35)",
+                "borderRadius": "0px",
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "padding": "8px 16px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Contacto",
+                "tag": "a",
+                "rect": {
+                  "w": 101,
+                  "h": 32,
+                  "x": 1310,
+                  "y": 30
+                },
+                "bg": "rgb(92, 224, 210)",
+                "color": "rgb(15, 25, 35)",
+                "border": "0px solid rgb(15, 25, 35)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "12px",
+                "fontWeight": "600",
+                "padding": "0px 14px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Desarrollos",
+                "tag": "button",
+                "rect": {
+                  "w": 147,
+                  "h": 44,
+                  "x": 600,
+                  "y": 421
+                },
+                "bg": "rgb(255, 255, 255)",
+                "color": "rgb(26, 47, 63)",
+                "border": "0px solid rgb(26, 47, 63)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "700",
+                "padding": "0px 24px",
+                "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px"
+              },
+              {
+                "text": "Propiedades",
+                "tag": "button",
+                "rect": {
+                  "w": 157,
+                  "h": 44,
+                  "x": 755,
+                  "y": 421
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.25)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "700",
+                "padding": "0px 24px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Playa del Carmen",
+                "tag": "a",
+                "rect": {
+                  "w": 178,
+                  "h": 44,
+                  "x": 443,
+                  "y": 654
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              }
+            ],
+            "hero": {
+              "height": 794,
+              "bg": "rgba(0, 0, 0, 0)",
+              "backgroundImage": "none",
+              "padding": "0px"
+            },
+            "sections": [
+              {
+                "h": 794,
+                "py": "0px / 0px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 378,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 505,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 1131,
+                "py": "112px / 112px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 275,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 275,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 451,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(26, 47, 63)"
+              },
+              {
+                "h": 641,
+                "py": "112px / 112px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              }
+            ],
+            "images": {
+              "total": 8,
+              "missingAlt": 0,
+              "lazyCount": 6,
+              "oversized": 1
+            },
+            "header": {
+              "height": 84,
+              "position": "fixed",
+              "bg": "rgba(0, 0, 0, 0)",
+              "zIndex": "40",
+              "blur": "none"
+            },
+            "bodyScroll": {
+              "scrollWidth": 1440,
+              "clientWidth": 1440,
+              "hasHorizontalScroll": false
+            },
+            "spacingScale": [
+              "0px",
+              "64px",
+              "80px",
+              "112px"
+            ],
+            "interactiveAboveFold": 28
+          },
+          "issues": [
+            {
+              "severity": "WARN",
+              "kind": "a11y-contrast",
+              "msg": "10 muestras con contraste < AA",
+              "samples": [
+                {
+                  "tag": "a",
+                  "fg": "rgb(44, 44, 44)",
+                  "bg": "rgb(15, 25, 35)",
+                  "fontSize": "16px",
+                  "text": "",
+                  "ratio": "1.27",
+                  "min": 4.5
+                },
+                {
+                  "tag": "button",
+                  "fg": "rgba(255, 255, 255, 0.9)",
+                  "bg": "rgba(255, 255, 255, 0.12)",
+                  "fontSize": "14px",
+                  "text": "Desarrollos",
+                  "ratio": "1.00",
+                  "min": 4.5
+                },
+                {
+                  "tag": "span",
+                  "fg": "rgba(255, 255, 255, 0.9)",
+                  "bg": "rgba(255, 255, 255, 0.12)",
+                  "fontSize": "14px",
+                  "text": "Desarrollos",
+                  "ratio": "1.00",
+                  "min": 4.5
+                },
+                {
+                  "tag": "h1",
+                  "fg": "rgb(255, 255, 255)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "56px",
+                  "text": "Departamentos, casas y terrenos en Riviera Maya",
+                  "ratio": "1.00",
+                  "min": 3
+                },
+                {
+                  "tag": "p",
+                  "fg": "rgb(92, 224, 210)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "16px",
+                  "text": "Invierte con datos. Decide con confianza.",
+                  "ratio": "1.61",
+                  "min": 4.5
+                }
+              ]
+            }
+          ]
+        },
+        "tablet": {
+          "design": {
+            "root": {
+              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
+              "fontSizeBase": "16px",
+              "lineHeightBase": "24px",
+              "bg": "rgb(255, 255, 255)",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal"
+            },
+            "h1": {
+              "text": "Departamentos, casas y terrenos en Riviera Maya",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "45.1832px",
+              "fontWeight": "700",
+              "lineHeight": "54.2199px",
+              "color": "rgb(255, 255, 255)",
+              "letterSpacing": "-0.903665px",
+              "textTransform": "none"
+            },
+            "h2": {
+              "text": "Explora por tipo de propiedad",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "30.5836px",
+              "fontWeight": "700",
+              "lineHeight": "36.7003px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "-0.611672px",
+              "textTransform": "none"
+            },
+            "h3": {
+              "text": "Para Inversionistas",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "20.3791px",
+              "fontWeight": "600",
+              "lineHeight": "30.5687px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal",
+              "textTransform": "none"
+            },
+            "ctas": [
+              {
+                "text": "Saltar al contenido principal",
+                "tag": "a",
+                "rect": {
+                  "w": 251,
+                  "h": 44,
+                  "x": -9999,
+                  "y": 0
+                },
+                "bg": "rgb(92, 224, 210)",
+                "color": "rgb(15, 25, 35)",
+                "border": "0px solid rgb(15, 25, 35)",
+                "borderRadius": "0px",
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "padding": "8px 16px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Skip to content",
+                "tag": "a",
+                "rect": {
+                  "w": 152,
+                  "h": 44,
+                  "x": -9999,
+                  "y": 0
+                },
+                "bg": "rgb(92, 224, 210)",
+                "color": "rgb(15, 25, 35)",
+                "border": "0px solid rgb(15, 25, 35)",
+                "borderRadius": "0px",
+                "fontSize": "16px",
+                "fontWeight": "600",
+                "padding": "8px 16px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Desarrollos",
+                "tag": "button",
+                "rect": {
+                  "w": 147,
+                  "h": 44,
+                  "x": 261,
+                  "y": 349
+                },
+                "bg": "rgb(255, 255, 255)",
+                "color": "rgb(26, 47, 63)",
+                "border": "0px solid rgb(26, 47, 63)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "700",
+                "padding": "0px 24px",
+                "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px"
+              },
+              {
+                "text": "Propiedades",
+                "tag": "button",
+                "rect": {
+                  "w": 157,
+                  "h": 44,
+                  "x": 416,
+                  "y": 349
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.25)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "700",
+                "padding": "0px 24px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Playa del Carmen",
+                "tag": "a",
+                "rect": {
+                  "w": 178,
+                  "h": 44,
+                  "x": 104,
+                  "y": 578
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Tulum",
+                "tag": "a",
+                "rect": {
+                  "w": 102,
+                  "h": 44,
+                  "x": 294,
+                  "y": 578
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              }
+            ],
+            "hero": {
+              "height": 718,
+              "bg": "rgba(0, 0, 0, 0)",
+              "backgroundImage": "none",
+              "padding": "0px"
+            },
+            "sections": [
+              {
+                "h": 718,
+                "py": "0px / 0px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 305,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 567,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 1485,
+                "py": "112px / 112px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 269,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 269,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 465,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(26, 47, 63)"
+              },
+              {
+                "h": 861,
+                "py": "112px / 112px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              }
+            ],
+            "images": {
+              "total": 8,
+              "missingAlt": 0,
+              "lazyCount": 6,
+              "oversized": 2
+            },
+            "header": {
+              "height": 0,
+              "position": "fixed",
+              "bg": "rgba(0, 0, 0, 0)",
+              "zIndex": "40",
+              "blur": "none"
+            },
+            "bodyScroll": {
+              "scrollWidth": 834,
+              "clientWidth": 834,
+              "hasHorizontalScroll": false
+            },
+            "spacingScale": [
+              "0px",
+              "64px",
+              "80px",
+              "112px"
+            ],
+            "interactiveAboveFold": 24
+          },
+          "issues": [
+            {
+              "severity": "WARN",
+              "kind": "a11y-contrast",
+              "msg": "10 muestras con contraste < AA",
+              "samples": [
+                {
+                  "tag": "a",
+                  "fg": "rgb(44, 44, 44)",
+                  "bg": "rgb(15, 25, 35)",
+                  "fontSize": "16px",
+                  "text": "",
+                  "ratio": "1.27",
+                  "min": 4.5
+                },
+                {
+                  "tag": "button",
+                  "fg": "rgba(255, 255, 255, 0.9)",
+                  "bg": "rgba(255, 255, 255, 0.12)",
+                  "fontSize": "14px",
+                  "text": "Desarrollos",
+                  "ratio": "1.00",
+                  "min": 4.5
+                },
+                {
+                  "tag": "span",
+                  "fg": "rgba(255, 255, 255, 0.9)",
+                  "bg": "rgba(255, 255, 255, 0.12)",
+                  "fontSize": "14px",
+                  "text": "Desarrollos",
+                  "ratio": "1.00",
+                  "min": 4.5
+                },
+                {
+                  "tag": "h1",
+                  "fg": "rgb(255, 255, 255)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "45.1832px",
+                  "text": "Departamentos, casas y terrenos en Riviera Maya",
+                  "ratio": "1.00",
+                  "min": 3
+                },
+                {
+                  "tag": "p",
+                  "fg": "rgb(92, 224, 210)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "16px",
+                  "text": "Invierte con datos. Decide con confianza.",
+                  "ratio": "1.61",
+                  "min": 4.5
+                }
+              ]
+            }
+          ]
+        },
+        "mobile": {
+          "design": {
+            "root": {
+              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
+              "fontSizeBase": "16px",
+              "lineHeightBase": "24px",
+              "bg": "rgb(255, 255, 255)",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal"
+            },
+            "h1": {
+              "text": "Departamentos, casas y terrenos en Riviera Maya",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "37.2534px",
+              "fontWeight": "700",
+              "lineHeight": "44.7041px",
+              "color": "rgb(255, 255, 255)",
+              "letterSpacing": "-0.745068px",
+              "textTransform": "none"
+            },
+            "h2": {
+              "text": "Explora por tipo de propiedad",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "26.6187px",
+              "fontWeight": "700",
+              "lineHeight": "31.9424px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "-0.532374px",
+              "textTransform": "none"
+            },
+            "h3": {
+              "text": "Para Inversionistas",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "19.1892px",
+              "fontWeight": "600",
+              "lineHeight": "28.7838px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal",
+              "textTransform": "none"
+            },
+            "ctas": [
+              {
+                "text": "Playa del Carmen",
+                "tag": "a",
+                "rect": {
+                  "w": 178,
+                  "h": 44,
+                  "x": 49,
+                  "y": 14
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Tulum",
+                "tag": "a",
+                "rect": {
+                  "w": 102,
+                  "h": 44,
+                  "x": 239,
+                  "y": 14
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Frente al mar",
+                "tag": "a",
+                "rect": {
+                  "w": 150,
+                  "h": 44,
+                  "x": 34,
+                  "y": 70
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              },
+              {
+                "text": "Menos de $3M",
+                "tag": "a",
+                "rect": {
+                  "w": 161,
+                  "h": 44,
+                  "x": 196,
+                  "y": 70
+                },
+                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
+                "color": "rgb(255, 255, 255)",
+                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
+                "borderRadius": "3.35544e+07px",
+                "fontSize": "14px",
+                "fontWeight": "500",
+                "padding": "10px 20px",
+                "boxShadow": "none"
+              }
+            ],
+            "hero": {
+              "height": 809,
+              "bg": "rgba(0, 0, 0, 0)",
+              "backgroundImage": "none",
+              "padding": "0px"
+            },
+            "sections": [
+              {
+                "h": 809,
+                "py": "0px / 0px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 609,
+                "py": "48px / 48px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 1070,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 2581,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 264,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
+                "h": 264,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
+              },
+              {
+                "h": 752,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(26, 47, 63)"
+              },
+              {
+                "h": 915,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgb(255, 255, 255)"
+              }
+            ],
+            "images": {
+              "total": 8,
+              "missingAlt": 0,
+              "lazyCount": 6,
+              "oversized": 2
+            },
+            "header": {
+              "height": 0,
+              "position": "fixed",
+              "bg": "rgba(0, 0, 0, 0)",
+              "zIndex": "40",
+              "blur": "none"
+            },
+            "bodyScroll": {
+              "scrollWidth": 390,
+              "clientWidth": 390,
+              "hasHorizontalScroll": false
+            },
+            "spacingScale": [
+              "0px",
+              "48px",
+              "64px",
+              "80px"
+            ],
+            "interactiveAboveFold": 21
+          },
+          "issues": [
+            {
+              "severity": "WARN",
+              "kind": "tap-target",
+              "msg": "8 tap targets < 36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "Explorar Propiedades",
+                  "w": 184,
+                  "h": 24
+                },
+                {
+                  "tag": "a",
+                  "text": "Conoce Más",
+                  "w": 114,
+                  "h": 24
+                },
+                {
+                  "tag": "a",
+                  "text": "Únete al Equipo",
+                  "w": 141,
+                  "h": 24
+                }
+              ]
+            },
+            {
+              "severity": "WARN",
+              "kind": "a11y-contrast",
+              "msg": "8 muestras con contraste < AA",
+              "samples": [
+                {
+                  "tag": "a",
+                  "fg": "rgb(44, 44, 44)",
+                  "bg": "rgb(15, 25, 35)",
+                  "fontSize": "16px",
+                  "text": "",
+                  "ratio": "1.27",
+                  "min": 4.5
+                },
+                {
+                  "tag": "h1",
+                  "fg": "rgb(255, 255, 255)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "37.2534px",
+                  "text": "Departamentos, casas y terrenos en Riviera Maya",
+                  "ratio": "1.00",
+                  "min": 3
+                },
+                {
+                  "tag": "p",
+                  "fg": "rgb(92, 224, 210)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "14px",
+                  "text": "Invierte con datos. Decide con confianza.",
+                  "ratio": "1.61",
+                  "min": 4.5
+                },
+                {
+                  "tag": "span",
+                  "fg": "rgb(255, 255, 255)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "14px",
+                  "text": "Departamentos",
+                  "ratio": "1.00",
+                  "min": 4.5
+                },
+                {
+                  "tag": "span",
+                  "fg": "rgb(255, 255, 255)",
+                  "bg": "rgb(255, 255, 255)",
+                  "fontSize": "14px",
+                  "text": "Penthouses",
+                  "ratio": "1.00",
+                  "min": 4.5
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "staging": {
+      "url": "https://dev.propyte.com/es",
+      "viewports": {
+        "desktop": {
+          "design": {
+            "root": {
+              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
+              "fontSizeBase": "16px",
+              "lineHeightBase": "24px",
+              "bg": "rgb(255, 255, 255)",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "normal"
+            },
+            "h1": {
+              "text": "Departamentos, casas y terrenos en Riviera Maya",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "56px",
+              "fontWeight": "700",
+              "lineHeight": "67.2px",
+              "color": "rgb(255, 255, 255)",
+              "letterSpacing": "-1.12px",
+              "textTransform": "none"
+            },
+            "h2": {
+              "text": "Explora por tipo de propiedad",
+              "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
+              "fontSize": "35.9952px",
+              "fontWeight": "700",
+              "lineHeight": "43.1942px",
+              "color": "rgb(44, 44, 44)",
+              "letterSpacing": "-0.719904px",
+              "textTransform": "none"
+            },
+            "h3": {
+              "text": "Nativa Tulum",
               "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
               "fontSize": "22px",
               "fontWeight": "600",
@@ -174,6 +1029,12 @@
                 "bg": "rgb(255, 255, 255)"
               },
               {
+                "h": 607,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
                 "h": 505,
                 "py": "80px / 80px",
                 "mb": "0px",
@@ -208,13 +1069,19 @@
                 "py": "112px / 112px",
                 "mb": "0px",
                 "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 600,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
               }
             ],
             "images": {
-              "total": 8,
+              "total": 10,
               "missingAlt": 0,
-              "lazyCount": 6,
-              "oversized": 1
+              "lazyCount": 8,
+              "oversized": 3
             },
             "header": {
               "height": 82,
@@ -240,7 +1107,7 @@
             {
               "severity": "WARN",
               "kind": "a11y-contrast",
-              "msg": "10 muestras con contraste < AA",
+              "msg": "11 muestras con contraste < AA",
               "samples": [
                 {
                   "tag": "a",
@@ -322,7 +1189,7 @@
               "textTransform": "none"
             },
             "h3": {
-              "text": "Para Inversionistas",
+              "text": "Nativa Tulum",
               "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
               "fontSize": "20.3791px",
               "fontWeight": "600",
@@ -461,6 +1328,12 @@
                 "bg": "rgb(255, 255, 255)"
               },
               {
+                "h": 587,
+                "py": "64px / 64px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
+              },
+              {
                 "h": 567,
                 "py": "80px / 80px",
                 "mb": "0px",
@@ -495,13 +1368,19 @@
                 "py": "112px / 112px",
                 "mb": "0px",
                 "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 496,
+                "py": "80px / 80px",
+                "mb": "0px",
+                "bg": "rgba(0, 0, 0, 0)"
               }
             ],
             "images": {
-              "total": 8,
+              "total": 10,
               "missingAlt": 0,
-              "lazyCount": 6,
-              "oversized": 7
+              "lazyCount": 8,
+              "oversized": 9
             },
             "header": {
               "height": 0,
@@ -527,7 +1406,7 @@
             {
               "severity": "WARN",
               "kind": "a11y-contrast",
-              "msg": "10 muestras con contraste < AA",
+              "msg": "11 muestras con contraste < AA",
               "samples": [
                 {
                   "tag": "a",
@@ -609,7 +1488,7 @@
               "textTransform": "none"
             },
             "h3": {
-              "text": "Para Inversionistas",
+              "text": "Nativa Tulum",
               "fontFamily": "\"Space Grotesk\", Inter, Arial, sans-serif",
               "fontSize": "19.1892px",
               "fontWeight": "600",
@@ -637,6 +1516,12 @@
                 "py": "48px / 48px",
                 "mb": "0px",
                 "bg": "rgb(255, 255, 255)"
+              },
+              {
+                "h": 975,
+                "py": "48px / 48px",
+                "mb": "0px",
+                "bg": "rgb(244, 246, 248)"
               },
               {
                 "h": 1070,
@@ -673,826 +1558,9 @@
                 "py": "80px / 80px",
                 "mb": "0px",
                 "bg": "rgb(255, 255, 255)"
-              }
-            ],
-            "images": {
-              "total": 8,
-              "missingAlt": 0,
-              "lazyCount": 6,
-              "oversized": 2
-            },
-            "header": {
-              "height": 0,
-              "position": "fixed",
-              "bg": "rgba(0, 0, 0, 0)",
-              "zIndex": "40",
-              "blur": "none"
-            },
-            "bodyScroll": {
-              "scrollWidth": 390,
-              "clientWidth": 390,
-              "hasHorizontalScroll": false
-            },
-            "spacingScale": [
-              "0px",
-              "48px",
-              "64px",
-              "80px"
-            ],
-            "interactiveAboveFold": 13
-          },
-          "issues": [
-            {
-              "severity": "WARN",
-              "kind": "tap-target",
-              "msg": "27 tap targets < 36px",
-              "samples": [
-                {
-                  "tag": "a",
-                  "text": "Explorar Propiedades",
-                  "w": 184,
-                  "h": 24
-                },
-                {
-                  "tag": "a",
-                  "text": "Conoce Más",
-                  "w": 114,
-                  "h": 24
-                },
-                {
-                  "tag": "a",
-                  "text": "Únete al Equipo",
-                  "w": 141,
-                  "h": 24
-                }
-              ]
-            },
-            {
-              "severity": "WARN",
-              "kind": "a11y-contrast",
-              "msg": "8 muestras con contraste < AA",
-              "samples": [
-                {
-                  "tag": "a",
-                  "fg": "rgb(44, 44, 44)",
-                  "bg": "rgb(15, 25, 35)",
-                  "fontSize": "16px",
-                  "text": "",
-                  "ratio": "1.27",
-                  "min": 4.5
-                },
-                {
-                  "tag": "h1",
-                  "fg": "rgb(255, 255, 255)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "37.2534px",
-                  "text": "Departamentos, casas y terrenos en Riviera Maya",
-                  "ratio": "1.00",
-                  "min": 3
-                },
-                {
-                  "tag": "p",
-                  "fg": "rgb(92, 224, 210)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "14px",
-                  "text": "Invierte con datos. Decide con confianza.",
-                  "ratio": "1.61",
-                  "min": 4.5
-                },
-                {
-                  "tag": "span",
-                  "fg": "rgb(255, 255, 255)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "14px",
-                  "text": "Departamentos",
-                  "ratio": "1.00",
-                  "min": 4.5
-                },
-                {
-                  "tag": "span",
-                  "fg": "rgb(255, 255, 255)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "14px",
-                  "text": "Penthouses",
-                  "ratio": "1.00",
-                  "min": 4.5
-                }
-              ]
-            }
-          ]
-        }
-      }
-    },
-    "staging": {
-      "url": "https://dev.propyte.com/es",
-      "viewports": {
-        "desktop": {
-          "design": {
-            "root": {
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSizeBase": "16px",
-              "lineHeightBase": "24px",
-              "bg": "rgb(255, 255, 255)",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal"
-            },
-            "h1": {
-              "text": "Departamentos, casas y terrenos en Riviera Maya",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "56px",
-              "fontWeight": "700",
-              "lineHeight": "70px",
-              "color": "rgb(255, 255, 255)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h2": {
-              "text": "Explora por tipo de propiedad",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "36px",
-              "fontWeight": "700",
-              "lineHeight": "43.2px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h3": {
-              "text": "Nativa Tulum",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "14px",
-              "fontWeight": "600",
-              "lineHeight": "20px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "ctas": [
-              {
-                "text": "Saltar al contenido principal",
-                "tag": "a",
-                "rect": {
-                  "w": 251,
-                  "h": 40,
-                  "x": -9999,
-                  "y": 0
-                },
-                "bg": "rgb(92, 224, 210)",
-                "color": "rgb(15, 25, 35)",
-                "border": "0px solid rgb(15, 25, 35)",
-                "borderRadius": "0px",
-                "fontSize": "16px",
-                "fontWeight": "600",
-                "padding": "8px 16px",
-                "boxShadow": "none"
               },
               {
-                "text": "Skip to content",
-                "tag": "a",
-                "rect": {
-                  "w": 152,
-                  "h": 40,
-                  "x": -9999,
-                  "y": 0
-                },
-                "bg": "rgb(92, 224, 210)",
-                "color": "rgb(15, 25, 35)",
-                "border": "0px solid rgb(15, 25, 35)",
-                "borderRadius": "0px",
-                "fontSize": "16px",
-                "fontWeight": "600",
-                "padding": "8px 16px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Contacto",
-                "tag": "a",
-                "rect": {
-                  "w": 101,
-                  "h": 32,
-                  "x": 1310,
-                  "y": 23
-                },
-                "bg": "rgb(92, 224, 210)",
-                "color": "rgb(15, 25, 35)",
-                "border": "0px solid rgb(15, 25, 35)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "12px",
-                "fontWeight": "600",
-                "padding": "0px 14px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Desarrollos",
-                "tag": "button",
-                "rect": {
-                  "w": 147,
-                  "h": 42,
-                  "x": 600,
-                  "y": 427
-                },
-                "bg": "rgb(255, 255, 255)",
-                "color": "rgb(26, 47, 63)",
-                "border": "0px solid rgb(26, 47, 63)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "700",
-                "padding": "10px 24px",
-                "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px"
-              },
-              {
-                "text": "Propiedades",
-                "tag": "button",
-                "rect": {
-                  "w": 157,
-                  "h": 42,
-                  "x": 755,
-                  "y": 427
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.25)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "700",
-                "padding": "10px 24px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Playa del Carmen",
-                "tag": "a",
-                "rect": {
-                  "w": 178,
-                  "h": 44,
-                  "x": 443,
-                  "y": 658
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "500",
-                "padding": "10px 20px",
-                "boxShadow": "none"
-              }
-            ],
-            "hero": {
-              "height": 798,
-              "bg": "rgba(0, 0, 0, 0)",
-              "backgroundImage": "none",
-              "padding": "0px"
-            },
-            "sections": [
-              {
-                "h": 798,
-                "py": "0px / 0px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 378,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 594,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 505,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 1116,
-                "py": "112px / 112px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 275,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 275,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 449,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(26, 47, 63)"
-              },
-              {
-                "h": 641,
-                "py": "112px / 112px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 582,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              }
-            ],
-            "images": {
-              "total": 10,
-              "missingAlt": 0,
-              "lazyCount": 8,
-              "oversized": 3
-            },
-            "header": {
-              "height": 76,
-              "position": "fixed",
-              "bg": "rgba(0, 0, 0, 0)",
-              "zIndex": "40",
-              "blur": "none"
-            },
-            "bodyScroll": {
-              "scrollWidth": 1440,
-              "clientWidth": 1440,
-              "hasHorizontalScroll": false
-            },
-            "spacingScale": [
-              "0px",
-              "64px",
-              "80px",
-              "112px"
-            ],
-            "interactiveAboveFold": 28
-          },
-          "issues": [
-            {
-              "severity": "WARN",
-              "kind": "a11y-contrast",
-              "msg": "11 muestras con contraste < AA",
-              "samples": [
-                {
-                  "tag": "a",
-                  "fg": "rgb(44, 44, 44)",
-                  "bg": "rgb(15, 25, 35)",
-                  "fontSize": "16px",
-                  "text": "",
-                  "ratio": "1.27",
-                  "min": 4.5
-                },
-                {
-                  "tag": "button",
-                  "fg": "rgba(255, 255, 255, 0.9)",
-                  "bg": "rgba(255, 255, 255, 0.12)",
-                  "fontSize": "14px",
-                  "text": "Desarrollos",
-                  "ratio": "1.00",
-                  "min": 4.5
-                },
-                {
-                  "tag": "span",
-                  "fg": "rgba(255, 255, 255, 0.9)",
-                  "bg": "rgba(255, 255, 255, 0.12)",
-                  "fontSize": "14px",
-                  "text": "Desarrollos",
-                  "ratio": "1.00",
-                  "min": 4.5
-                },
-                {
-                  "tag": "h1",
-                  "fg": "rgb(255, 255, 255)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "56px",
-                  "text": "Departamentos, casas y terrenos en Riviera Maya",
-                  "ratio": "1.00",
-                  "min": 3
-                },
-                {
-                  "tag": "p",
-                  "fg": "rgb(92, 224, 210)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "16px",
-                  "text": "Invierte con datos. Decide con confianza.",
-                  "ratio": "1.61",
-                  "min": 4.5
-                }
-              ]
-            }
-          ]
-        },
-        "tablet": {
-          "design": {
-            "root": {
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSizeBase": "16px",
-              "lineHeightBase": "24px",
-              "bg": "rgb(255, 255, 255)",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal"
-            },
-            "h1": {
-              "text": "Departamentos, casas y terrenos en Riviera Maya",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "54px",
-              "fontWeight": "700",
-              "lineHeight": "67.5px",
-              "color": "rgb(255, 255, 255)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h2": {
-              "text": "Explora por tipo de propiedad",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "36px",
-              "fontWeight": "700",
-              "lineHeight": "43.2px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h3": {
-              "text": "Nativa Tulum",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "14px",
-              "fontWeight": "600",
-              "lineHeight": "20px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "ctas": [
-              {
-                "text": "Desarrollos",
-                "tag": "button",
-                "rect": {
-                  "w": 147,
-                  "h": 42,
-                  "x": 261,
-                  "y": 403
-                },
-                "bg": "rgb(255, 255, 255)",
-                "color": "rgb(26, 47, 63)",
-                "border": "0px solid rgb(26, 47, 63)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "700",
-                "padding": "10px 24px",
-                "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.1) 0px 4px 6px -4px"
-              },
-              {
-                "text": "Propiedades",
-                "tag": "button",
-                "rect": {
-                  "w": 157,
-                  "h": 42,
-                  "x": 416,
-                  "y": 403
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.25)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "700",
-                "padding": "10px 24px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Playa del Carmen",
-                "tag": "a",
-                "rect": {
-                  "w": 178,
-                  "h": 44,
-                  "x": 104,
-                  "y": 634
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "500",
-                "padding": "10px 20px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Tulum",
-                "tag": "a",
-                "rect": {
-                  "w": 102,
-                  "h": 44,
-                  "x": 294,
-                  "y": 634
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "500",
-                "padding": "10px 20px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Frente al mar",
-                "tag": "a",
-                "rect": {
-                  "w": 150,
-                  "h": 44,
-                  "x": 408,
-                  "y": 634
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "500",
-                "padding": "10px 20px",
-                "boxShadow": "none"
-              },
-              {
-                "text": "Menos de $3M",
-                "tag": "a",
-                "rect": {
-                  "w": 161,
-                  "h": 44,
-                  "x": 570,
-                  "y": 634
-                },
-                "bg": "oklab(0.999994 0.0000455678 0.0000200868 / 0.15)",
-                "color": "rgb(255, 255, 255)",
-                "border": "1px solid oklab(0.999994 0.0000455678 0.0000200868 / 0.2)",
-                "borderRadius": "3.35544e+07px",
-                "fontSize": "14px",
-                "fontWeight": "500",
-                "padding": "10px 20px",
-                "boxShadow": "none"
-              }
-            ],
-            "hero": {
-              "height": 780,
-              "bg": "rgba(0, 0, 0, 0)",
-              "backgroundImage": "none",
-              "padding": "0px"
-            },
-            "sections": [
-              {
-                "h": 780,
-                "py": "0px / 0px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 311,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 585,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 573,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 1478,
-                "py": "112px / 112px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 275,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 275,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 464,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(26, 47, 63)"
-              },
-              {
-                "h": 882,
-                "py": "112px / 112px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 489,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              }
-            ],
-            "images": {
-              "total": 10,
-              "missingAlt": 0,
-              "lazyCount": 8,
-              "oversized": 9
-            },
-            "header": {
-              "height": 0,
-              "position": "fixed",
-              "bg": "rgba(0, 0, 0, 0)",
-              "zIndex": "40",
-              "blur": "none"
-            },
-            "bodyScroll": {
-              "scrollWidth": 862,
-              "clientWidth": 834,
-              "hasHorizontalScroll": true
-            },
-            "spacingScale": [
-              "0px",
-              "64px",
-              "80px",
-              "112px"
-            ],
-            "interactiveAboveFold": 22
-          },
-          "issues": [
-            {
-              "severity": "ERROR",
-              "kind": "overflow-x",
-              "msg": "Horizontal scroll: 862px > 834px"
-            },
-            {
-              "severity": "WARN",
-              "kind": "a11y-contrast",
-              "msg": "11 muestras con contraste < AA",
-              "samples": [
-                {
-                  "tag": "a",
-                  "fg": "rgb(44, 44, 44)",
-                  "bg": "rgb(15, 25, 35)",
-                  "fontSize": "16px",
-                  "text": "",
-                  "ratio": "1.27",
-                  "min": 4.5
-                },
-                {
-                  "tag": "button",
-                  "fg": "rgba(255, 255, 255, 0.9)",
-                  "bg": "rgba(255, 255, 255, 0.12)",
-                  "fontSize": "14px",
-                  "text": "Desarrollos",
-                  "ratio": "1.00",
-                  "min": 4.5
-                },
-                {
-                  "tag": "span",
-                  "fg": "rgba(255, 255, 255, 0.9)",
-                  "bg": "rgba(255, 255, 255, 0.12)",
-                  "fontSize": "14px",
-                  "text": "Desarrollos",
-                  "ratio": "1.00",
-                  "min": 4.5
-                },
-                {
-                  "tag": "h1",
-                  "fg": "rgb(255, 255, 255)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "54px",
-                  "text": "Departamentos, casas y terrenos en Riviera Maya",
-                  "ratio": "1.00",
-                  "min": 3
-                },
-                {
-                  "tag": "p",
-                  "fg": "rgb(92, 224, 210)",
-                  "bg": "rgb(255, 255, 255)",
-                  "fontSize": "16px",
-                  "text": "Invierte con datos. Decide con confianza.",
-                  "ratio": "1.61",
-                  "min": 4.5
-                }
-              ]
-            }
-          ]
-        },
-        "mobile": {
-          "design": {
-            "root": {
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSizeBase": "16px",
-              "lineHeightBase": "24px",
-              "bg": "rgb(255, 255, 255)",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal"
-            },
-            "h1": {
-              "text": "Departamentos, casas y terrenos en Riviera Maya",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "36px",
-              "fontWeight": "700",
-              "lineHeight": "45px",
-              "color": "rgb(255, 255, 255)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h2": {
-              "text": "Explora por tipo de propiedad",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "28px",
-              "fontWeight": "700",
-              "lineHeight": "37.3333px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "h3": {
-              "text": "Nativa Tulum",
-              "fontFamily": "\"Space Grotesk\", \"Space Grotesk Fallback\", \"Space Grotesk\", Arial, sans-serif",
-              "fontSize": "14px",
-              "fontWeight": "600",
-              "lineHeight": "20px",
-              "color": "rgb(44, 44, 44)",
-              "letterSpacing": "normal",
-              "textTransform": "none"
-            },
-            "ctas": [],
-            "hero": {
-              "height": 819,
-              "bg": "rgba(0, 0, 0, 0)",
-              "backgroundImage": "none",
-              "padding": "0px"
-            },
-            "sections": [
-              {
-                "h": 819,
-                "py": "0px / 0px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 619,
-                "py": "48px / 48px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 970,
-                "py": "48px / 48px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 1045,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 2579,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 275,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(244, 246, 248)"
-              },
-              {
-                "h": 312,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgba(0, 0, 0, 0)"
-              },
-              {
-                "h": 763,
-                "py": "64px / 64px",
-                "mb": "0px",
-                "bg": "rgb(26, 47, 63)"
-              },
-              {
-                "h": 943,
-                "py": "80px / 80px",
-                "mb": "0px",
-                "bg": "rgb(255, 255, 255)"
-              },
-              {
-                "h": 1265,
+                "h": 1288,
                 "py": "64px / 64px",
                 "mb": "0px",
                 "bg": "rgba(0, 0, 0, 0)"
@@ -1528,25 +1596,25 @@
             {
               "severity": "WARN",
               "kind": "tap-target",
-              "msg": "39 tap targets < 36px",
+              "msg": "29 tap targets < 36px",
               "samples": [
                 {
                   "tag": "a",
-                  "text": "Propyte",
-                  "w": 128,
+                  "text": "Ver todas las propiedades",
+                  "w": 220,
                   "h": 24
                 },
                 {
-                  "tag": "button",
-                  "text": "MXN",
-                  "w": 38,
-                  "h": 23
+                  "tag": "a",
+                  "text": "Explorar Propiedades",
+                  "w": 184,
+                  "h": 24
                 },
                 {
-                  "tag": "button",
-                  "text": "USD",
-                  "w": 35,
-                  "h": 23
+                  "tag": "a",
+                  "text": "Conoce Más",
+                  "w": 114,
+                  "h": 24
                 }
               ]
             },
@@ -1568,7 +1636,7 @@
                   "tag": "h1",
                   "fg": "rgb(255, 255, 255)",
                   "bg": "rgb(255, 255, 255)",
-                  "fontSize": "36px",
+                  "fontSize": "37.2534px",
                   "text": "Departamentos, casas y terrenos en Riviera Maya",
                   "ratio": "1.00",
                   "min": 3

@@ -100,7 +100,7 @@ export default function Hero({ stats }: HeroProps) {
               role="tab"
               aria-selected={tab === 'desarrollos'}
               onClick={() => setTab('desarrollos')}
-              className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
+              className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'desarrollos'
                   ? 'bg-white text-[#1A2F3F] shadow-lg'
                   : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
@@ -114,7 +114,7 @@ export default function Hero({ stats }: HeroProps) {
               role="tab"
               aria-selected={tab === 'propiedades'}
               onClick={() => setTab('propiedades')}
-              className={`flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-full transition-all ${
+              className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'propiedades'
                   ? 'bg-white text-[#1A2F3F] shadow-lg'
                   : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
@@ -146,7 +146,7 @@ export default function Hero({ stats }: HeroProps) {
             <button
               type="submit"
               aria-label={tNav('search')}
-              className="search-bubble-btn flex items-center justify-center w-10 h-10 md:w-11 md:h-11 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] rounded-full shrink-0 transition-all hover:scale-105"
+              className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] rounded-full shrink-0 transition-all hover:scale-105"
             >
               <Search size={18} strokeWidth={2} />
             </button>

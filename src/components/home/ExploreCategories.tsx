@@ -6,31 +6,31 @@ const categories = [
   {
     key: 'apartments',
     typeKey: 'departamento',
-    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=320&h=240&fit=crop&q=75',
     query: 'type=departamento',
   },
   {
     key: 'penthouses',
     typeKey: 'penthouse',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=320&h=240&fit=crop&q=75',
     query: 'type=penthouse',
   },
   {
     key: 'houses',
     typeKey: 'casa',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=320&h=240&fit=crop&q=75',
     query: 'type=casa',
   },
   {
     key: 'land',
     typeKey: 'terreno',
-    image: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=320&h=240&fit=crop&q=75',
     query: 'type=terreno',
   },
   {
     key: 'presale',
     typeKey: 'preventa',
-    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&h=300&fit=crop',
+    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=320&h=240&fit=crop&q=75',
     query: 'stage=preventa',
   },
 ];

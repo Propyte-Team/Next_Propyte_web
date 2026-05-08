@@ -46,9 +46,9 @@ export default function SearchBubble({
   }
 
   const isMobile = variant === 'mobile';
-  const heightCls = isMobile ? 'h-[42px]' : 'h-[52px]';
-  const toggleHeightCls = isMobile ? 'h-9' : 'h-10';
-  const btnSizeCls = isMobile ? 'w-9 h-9' : 'w-10 h-10';
+  const heightCls = isMobile ? 'h-[48px]' : 'h-[52px]';
+  const toggleHeightCls = isMobile ? 'h-11' : 'h-10';
+  const btnSizeCls = isMobile ? 'w-11 h-11' : 'w-10 h-10';
   const textSizeCls = isMobile ? 'text-xs' : 'text-sm';
   const typeLabel = type === 'propiedades' ? t('searchTypeUnit') : t('searchTypeDev');
   const placeholder = type === 'propiedades' ? t('searchPlaceholderUnit') : t('searchPlaceholderDev');

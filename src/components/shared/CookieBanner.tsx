@@ -81,7 +81,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectOptional}
                 aria-label={t('closeAria')}
-                className="w-8 h-8 -mt-1 -mr-1 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-11 h-11 -mt-1.5 -mr-1.5 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
               >
                 <X size={16} />
               </button>

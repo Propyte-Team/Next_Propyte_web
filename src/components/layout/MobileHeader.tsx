@@ -67,6 +67,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
             alt="Propyte"
             width={2420}
             height={452}
+            sizes="160px"
             priority
             className="h-6 w-auto object-contain"
           />

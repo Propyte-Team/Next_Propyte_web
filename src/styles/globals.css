@@ -232,15 +232,18 @@ h6, .h6 {
   letter-spacing: var(--ls-tight);
 }
 
-/* Skip to content */
+/* Skip to content — visible only on focus */
 .skip-to-content {
   position: absolute;
   left: -9999px;
   top: 0;
   z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 8px 16px;
   background: var(--color-teal);
-  color: #0F1923;
+  color: var(--color-aztec);
   font-weight: 600;
 }
 .skip-to-content:focus {
@@ -360,6 +363,8 @@ html {
     rgba(255, 255, 255, 0.4) 75%,
     rgba(255, 255, 255, 0) 100%
   );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding-bottom: 16px;
 }
 

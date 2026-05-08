@@ -55,6 +55,7 @@ export default function Footer() {
                 alt="Propyte"
                 width={2420}
                 height={452}
+                sizes="180px"
                 className="h-7 w-auto object-contain"
               />
             </Link>
@@ -85,11 +86,11 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('properties')}</h4>
             <ul className="space-y-2.5">
-              <li><Link href={`/${locale}/propiedades`} className="text-sm text-white/70 hover:text-white transition-colors">{t('allProperties')}</Link></li>
-              <li><Link href={`/${locale}/propiedades?city=Playa+del+Carmen`} className="text-sm text-white/70 hover:text-white transition-colors">{t('playaDelCarmen')}</Link></li>
-              <li><Link href={`/${locale}/propiedades?city=Tulum`} className="text-sm text-white/70 hover:text-white transition-colors">{t('tulum')}</Link></li>
-              <li><Link href={`/${locale}/propiedades?stage=preventa`} className="text-sm text-white/70 hover:text-white transition-colors">{t('presale')}</Link></li>
-              <li><Link href={`/${locale}/propiedades?type=terreno`} className="text-sm text-white/70 hover:text-white transition-colors">{t('land')}</Link></li>
+              <li><Link href={`/${locale}/propiedades`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('allProperties')}</Link></li>
+              <li><Link href={`/${locale}/propiedades?city=Playa+del+Carmen`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('playaDelCarmen')}</Link></li>
+              <li><Link href={`/${locale}/propiedades?city=Tulum`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('tulum')}</Link></li>
+              <li><Link href={`/${locale}/propiedades?stage=preventa`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('presale')}</Link></li>
+              <li><Link href={`/${locale}/propiedades?type=terreno`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('land')}</Link></li>
             </ul>
           </div>
 
@@ -97,13 +98,13 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('company')}</h4>
             <ul className="space-y-2.5">
-              <li><Link href={`/${locale}/nosotros/quienes-somos`} className="text-sm text-white/70 hover:text-white transition-colors">{t('aboutUs')}</Link></li>
-              <li><Link href={`/${locale}/como-comprar`} className="text-sm text-white/70 hover:text-white transition-colors">{t('howToBuy')}</Link></li>
-              <li><Link href={`/${locale}/como-invertir`} className="text-sm text-white/70 hover:text-white transition-colors">{t('howToInvest')}</Link></li>
-              <li><Link href={`/${locale}/financiamiento`} className="text-sm text-white/70 hover:text-white transition-colors">{t('financing')}</Link></li>
-              <li><Link href={`/${locale}/desarrolladores`} className="text-sm text-white/70 hover:text-white transition-colors">{t('developersLink')}</Link></li>
-              <li><Link href={`/${locale}/corredores`} className="text-sm text-white/70 hover:text-white transition-colors">{t('brokersLink')}</Link></li>
-              <li><Link href={`/${locale}/unete`} className="text-sm text-white/70 hover:text-white transition-colors">{t('careers')}</Link></li>
+              <li><Link href={`/${locale}/nosotros/quienes-somos`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('aboutUs')}</Link></li>
+              <li><Link href={`/${locale}/como-comprar`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('howToBuy')}</Link></li>
+              <li><Link href={`/${locale}/como-invertir`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('howToInvest')}</Link></li>
+              <li><Link href={`/${locale}/financiamiento`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('financing')}</Link></li>
+              <li><Link href={`/${locale}/desarrolladores`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('developersLink')}</Link></li>
+              <li><Link href={`/${locale}/corredores`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('brokersLink')}</Link></li>
+              <li><Link href={`/${locale}/unete`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('careers')}</Link></li>
             </ul>
           </div>
 
@@ -111,10 +112,10 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('resources')}</h4>
             <ul className="space-y-2.5">
-              <li><Link href={`/${locale}/faq`} className="text-sm text-white/70 hover:text-white transition-colors">FAQ</Link></li>
-              <li><Link href={`/${locale}/glosario`} className="text-sm text-white/70 hover:text-white transition-colors">{t('glossary')}</Link></li>
-              <li><Link href={`/${locale}/promociones`} className="text-sm text-white/70 hover:text-white transition-colors">{t('promotions')}</Link></li>
-              <li><Link href={`/${locale}/mercado`} className="text-sm text-white/70 hover:text-white transition-colors">{t('market')}</Link></li>
+              <li><Link href={`/${locale}/faq`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">FAQ</Link></li>
+              <li><Link href={`/${locale}/glosario`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('glossary')}</Link></li>
+              <li><Link href={`/${locale}/promociones`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('promotions')}</Link></li>
+              <li><Link href={`/${locale}/mercado`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('market')}</Link></li>
             </ul>
           </div>
 
@@ -122,9 +123,9 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('legal')}</h4>
             <ul className="space-y-2.5">
-              <li><Link href={`/${locale}/privacidad`} className="text-sm text-white/70 hover:text-white transition-colors">{t('privacy')}</Link></li>
-              <li><Link href={`/${locale}/terminos`} className="text-sm text-white/70 hover:text-white transition-colors">{t('terms')}</Link></li>
-              <li><Link href={`/${locale}/cookies`} className="text-sm text-white/70 hover:text-white transition-colors">{t('cookiesLink')}</Link></li>
+              <li><Link href={`/${locale}/privacidad`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('privacy')}</Link></li>
+              <li><Link href={`/${locale}/terminos`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('terms')}</Link></li>
+              <li><Link href={`/${locale}/cookies`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('cookiesLink')}</Link></li>
             </ul>
           </div>
 

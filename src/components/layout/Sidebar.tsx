@@ -90,6 +90,7 @@ export default function Sidebar() {
             alt="Propyte"
             width={650}
             height={650}
+            sizes="32px"
             priority
             className="w-7 h-7 object-contain"
           />
