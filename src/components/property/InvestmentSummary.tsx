@@ -270,7 +270,7 @@ export default async function InvestmentSummary({
                   <span className="inline-flex items-center gap-1.5">
                     {t('vacacional')}
                     {airdnaOccupancy != null && (
-                      <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] rounded">Data</span>
+                      <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-2xs rounded">Data</span>
                     )}
                   </span>
                 </th>
@@ -297,7 +297,7 @@ export default async function InvestmentSummary({
 
       {/* Vacation expense note */}
       {showDual && (
-        <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-gray-600">
+        <div className="mt-3 flex flex-wrap gap-3 text-2xs text-gray-600">
           <span>Residencial: gastos {Math.round(RES.EXPENSE_RATIO * 100)}%</span>
           <span>|</span>
           <span>Vacacional: gastos {Math.round(VAC.EXPENSE_RATIO * 100)}% + Airbnb {Math.round(VAC.PLATFORM_FEE * 100)}% + mgmt {Math.round(VAC.MGMT_FEE * 100)}%</span>

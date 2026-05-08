@@ -36,16 +36,38 @@
   --color-muted: #F4F6F8;
   --color-border: rgba(0, 0, 0, 0.08);
 
-  /* Tipografía */
+  /* Tipografía
+     Escala fluida 320 → 1440 px (mobile-first) basada en clamp().
+     Cada token interpola linealmente entre el min (mobile) y max (desktop).
+     Las utilities Tailwind text-* leen estas vars vía @theme, así que el
+     cambio es global: cualquier `text-3xl` se vuelve fluido sin tocar JSX. */
   --font-heading: "Space Grotesk", Inter, Arial, sans-serif;
   --font-body: "Space Grotesk", Inter, Arial, sans-serif;
-  --fs-xs: 12px;
-  --fs-sm: 14px;
-  --fs-base: 16px;
-  --fs-lg: 18px;
-  --fs-xl: 22px;
-  --fs-2xl: 28px;
-  --fs-3xl: 36px;
+
+  --fs-2xs:  clamp(0.625rem,  0.607rem + 0.089vw,  0.6875rem); /* 10  → 11 */
+  --fs-xs:   0.75rem;                                          /* 12  fixed */
+  --fs-sm:   0.875rem;                                         /* 14  fixed */
+  --fs-base: 1rem;                                             /* 16  fixed */
+  --fs-lg:   clamp(1.0625rem, 1.045rem + 0.089vw,  1.125rem);  /* 17  → 18 */
+  --fs-xl:   clamp(1.1875rem, 1.134rem + 0.268vw,  1.375rem);  /* 19  → 22 */
+  --fs-2xl:  clamp(1.375rem,  1.268rem + 0.536vw,  1.75rem);   /* 22  → 28 */
+  --fs-3xl:  clamp(1.625rem,  1.446rem + 0.893vw,  2.25rem);   /* 26  → 36 */
+  --fs-4xl:  clamp(1.875rem,  1.625rem + 1.250vw,  2.75rem);   /* 30  → 44 */
+  --fs-5xl:  clamp(2.25rem,   1.893rem + 1.786vw,  3.5rem);    /* 36  → 56 */
+  --fs-6xl:  clamp(2.625rem,  2.089rem + 2.679vw,  4.5rem);    /* 42  → 72 */
+  --fs-7xl:  clamp(3rem,      2.357rem + 3.214vw,  5.25rem);   /* 48  → 84 */
+
+  /* Heading semantic tokens — apuntan a la escala fluida.
+     Usar via clase utilitaria `.h1`...`.h6` o vía elemento (defaults base). */
+  --fs-h1:      var(--fs-5xl);  /* 36 → 56 */
+  --fs-h2:      var(--fs-3xl);  /* 26 → 36 */
+  --fs-h3:      var(--fs-xl);   /* 19 → 22 */
+  --fs-h4:      var(--fs-lg);   /* 17 → 18 */
+  --fs-h5:      var(--fs-base); /* 16 */
+  --fs-h6:      var(--fs-sm);   /* 14 */
+  --fs-display: var(--fs-6xl);  /* 42 → 72 — hero/marketing */
+  --fs-eyebrow: var(--fs-sm);   /* 14 — kicker text */
+
   --fw-normal: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
@@ -110,8 +132,10 @@
   --color-whatsapp-dark: #1EBE57;
 
   /* Typography — alias a los tokens del Design Playground (--fs-*, --fw-*).
-     Esto hace que las utilities text-sm/text-lg/text-3xl/font-bold... se
-     vuelvan dinámicas al cambiar los tokens en el playground. */
+     Las utilities Tailwind text-2xs / text-sm / ... / text-6xl heredan los
+     clamp() definidos en :root, por lo que TODO el sitio se vuelve fluido
+     sin migrar JSX (1300+ utilities ya en uso siguen funcionando). */
+  --text-2xs:  var(--fs-2xs);
   --text-xs:   var(--fs-xs);
   --text-sm:   var(--fs-sm);
   --text-base: var(--fs-base);
@@ -119,9 +143,10 @@
   --text-xl:   var(--fs-xl);
   --text-2xl:  var(--fs-2xl);
   --text-3xl:  var(--fs-3xl);
-  --text-4xl:  calc(var(--fs-3xl) * 1.25);
-  --text-5xl:  calc(var(--fs-3xl) * 1.5);
-  --text-6xl:  calc(var(--fs-3xl) * 1.85);
+  --text-4xl:  var(--fs-4xl);
+  --text-5xl:  var(--fs-5xl);
+  --text-6xl:  var(--fs-6xl);
+  --text-7xl:  var(--fs-7xl);
 
   --font-weight-thin:       100;
   --font-weight-extralight: 200;
@@ -145,8 +170,66 @@ body {
   font-family: var(--font-space-grotesk), 'Space Grotesk', Arial, sans-serif;
   color: var(--color-graphite);
   background: var(--color-white);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Heading defaults — escala fluida global.
+   Cualquier <h1>...<h6> sin clase utility usa estos defaults.
+   Las utilities text-* (text-3xl, text-5xl…) los override puntualmente. */
+h1, .h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-tight);
+}
+h2, .h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-tight);
+}
+h3, .h3 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-semibold);
+}
+h4, .h4 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-semibold);
+}
+h5, .h5 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h5);
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-semibold);
+}
+h6, .h6 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h6);
+  line-height: var(--lh-normal);
+  font-weight: var(--fw-semibold);
+}
+.eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+.display {
+  font-family: var(--font-heading);
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-tight);
 }
 
 /* Skip to content */

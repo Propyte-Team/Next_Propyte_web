@@ -56,7 +56,7 @@ export default function ColorSection() {
     <div>
       {(Object.keys(grouped) as ColorRow['group'][]).map((group) => (
         <fieldset key={group} className="mb-5">
-          <legend className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+          <legend className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
             {GROUP_LABELS[group]}
           </legend>
           <div>

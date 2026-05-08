@@ -243,7 +243,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
             {(property.badge || property.stage) && (
               <span
-                className={`px-2 py-0.5 text-[10px] font-bold uppercase text-white rounded ${
+                className={`px-2 py-0.5 text-2xs font-bold uppercase text-white rounded ${
                   badgeColors[(property.badge ?? property.stage) as Exclude<PropertyBadge, null>] || 'bg-gray-600'
                 }`}
               >
@@ -251,7 +251,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               </span>
             )}
             {property.kind === 'unit' && property.specs.type && (
-              <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
+              <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
                 {safeType(property.specs.type)}
               </span>
             )}
@@ -271,7 +271,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Promo banner — overlays bottom strip when active */}
           {showPromo && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-3 py-1.5 text-white text-[10px] font-bold uppercase tracking-wider text-center line-clamp-1">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
               {promoText}
             </div>
           )}
@@ -287,7 +287,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 <span className="text-xs text-gray-500 line-through tabular-nums">
                   {formattedOriginal}
                 </span>
-                <span className="text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
+                <span className="text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
                   -{discountPct}%
                 </span>
               </>
@@ -361,29 +361,29 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Developer attribution */}
           {property.developer && (
-            <div className="text-[10px] text-gray-600 mt-1.5">{property.developer}</div>
+            <div className="text-2xs text-gray-600 mt-1.5">{property.developer}</div>
           )}
 
           {/* Investment metrics row */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {property.roi.projected > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] text-[10px] font-bold rounded-full tabular-nums">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] text-2xs font-bold rounded-full tabular-nums">
                 ROI {property.roi.projected}%
               </span>
             )}
             {property.roi.appreciation > 0 && (
-              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full tabular-nums">
+              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
                 <TrendingUp size={10} />
                 +{property.roi.appreciation}% {tMkt('cardAppreciation')}
               </span>
             )}
             {property.capRate != null && property.capRate > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-[10px] font-bold rounded-full tabular-nums">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-2xs font-bold rounded-full tabular-nums">
                 Cap {property.capRate.toFixed(1)}%
               </span>
             )}
             {property.annualRevenue != null && property.annualRevenue > 0 && (
-              <span className="text-[10px] text-gray-600 font-medium tabular-nums">
+              <span className="text-2xs text-gray-600 font-medium tabular-nums">
                 ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
               </span>
             )}

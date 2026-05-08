@@ -37,7 +37,7 @@ export default function MediaSection() {
     <div>
       {/* Aspect ratios */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Aspect ratios
         </p>
         <SelectControl
@@ -80,7 +80,7 @@ export default function MediaSection() {
 
       {/* Object fit */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Object fit
         </p>
         <SelectControl
@@ -96,7 +96,7 @@ export default function MediaSection() {
 
       {/* Radii + heights */}
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Dimensiones de imagen
         </p>
         <SliderControl
@@ -127,7 +127,7 @@ export default function MediaSection() {
 
       {/* Live preview */}
       <div className="mt-5 pt-4 border-t border-neutral-100">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-3 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-3 font-medium">
           Preview
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -153,7 +153,7 @@ export default function MediaSection() {
                     }}
                   />
                 </div>
-                <p className="text-[10px] text-neutral-400 mt-1 text-center">{type} {ar}</p>
+                <p className="text-2xs text-neutral-400 mt-1 text-center">{type} {ar}</p>
               </div>
             );
           })}

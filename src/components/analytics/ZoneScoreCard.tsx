@@ -26,7 +26,7 @@ function IndexBadge({ value }: { value: number }) {
         {Math.round(value)}
       </span>
       <div className="flex flex-col">
-        <span className="text-[10px] text-gray-600 uppercase tracking-wide leading-tight">Índice Propyte</span>
+        <span className="text-2xs text-gray-600 uppercase tracking-wide leading-tight">Índice Propyte</span>
         <span className={`text-xs font-medium px-1.5 py-0.5 rounded border ${colors}`}>
           {label}
         </span>
@@ -50,7 +50,7 @@ function MetricRow({ label, value, context, trend }: {
       <div className="flex items-center gap-1.5">
         <span className="text-sm font-semibold text-gray-900">{value}</span>
         {trend && <TrendIcon className={`w-3.5 h-3.5 ${trendColor}`} />}
-        {context && <span className="text-[10px] text-gray-600">{context}</span>}
+        {context && <span className="text-2xs text-gray-600">{context}</span>}
       </div>
     </div>
   );

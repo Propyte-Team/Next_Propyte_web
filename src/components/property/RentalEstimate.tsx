@@ -336,26 +336,26 @@ function AirdnaInsight({ summary, city, zone, occupancyLabel, nightLabel }: {
   return (
     <div className="mt-4 p-3 bg-[#0F1923] rounded-xl">
       <div className="flex items-center gap-2 mb-2">
-        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[9px] font-bold rounded uppercase tracking-wider">Data</span>
-        <span className="text-[11px] text-gray-600">{displayLabel}</span>
+        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-2xs font-bold rounded uppercase tracking-wider">Data</span>
+        <span className="text-2xs text-gray-600">{displayLabel}</span>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center">
         {displayOcc != null && (
           <div>
             <div className="text-lg font-bold text-white">{Math.round(displayOcc)}%</div>
-            <div className="text-[10px] text-gray-600">{occupancyLabel}</div>
+            <div className="text-2xs text-gray-600">{occupancyLabel}</div>
           </div>
         )}
         {displayAdr != null && (
           <div>
             <div className="text-lg font-bold text-white">${displayAdr.toLocaleString()}</div>
-            <div className="text-[10px] text-gray-600">ADR/{nightLabel}</div>
+            <div className="text-2xs text-gray-600">ADR/{nightLabel}</div>
           </div>
         )}
         {summary.active_listings != null && (
           <div>
             <div className="text-lg font-bold text-white">{summary.active_listings.toLocaleString()}</div>
-            <div className="text-[10px] text-gray-600">Listings</div>
+            <div className="text-2xs text-gray-600">Listings</div>
           </div>
         )}
       </div>

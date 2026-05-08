@@ -115,7 +115,7 @@ export default function Sidebar() {
               }`}
             >
               <Icon size={20} strokeWidth={1.75} />
-              <span className="text-[10px] font-medium leading-tight text-center px-1">
+              <span className="text-2xs font-medium leading-tight text-center px-1">
                 {t(item.labelKey)}
               </span>
             </Link>
@@ -136,7 +136,7 @@ export default function Sidebar() {
           }`}
         >
           <MenuIcon size={18} strokeWidth={1.75} />
-          <span className="text-[10px] font-medium">{t('more')}</span>
+          <span className="text-2xs font-medium">{t('more')}</span>
         </button>
 
         {moreOpen && (

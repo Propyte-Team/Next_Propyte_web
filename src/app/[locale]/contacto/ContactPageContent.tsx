@@ -233,21 +233,21 @@ export default function ContactPageContent() {
                     <MapPin size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.coverageTitle')}</p>
-                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
+                  <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
                     <Users size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.teamTitle')}</p>
-                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
+                  <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
                     <ShieldCheck size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.slaTitle')}</p>
-                  <p className="text-[10px] text-gray-600 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
+                  <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
                 </div>
               </div>
             </form>

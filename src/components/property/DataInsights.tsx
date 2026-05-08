@@ -36,11 +36,11 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="text-base font-bold text-gray-900">{t('marketTitle')}</h3>
           <div className="flex flex-col items-end gap-1">
-            <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600">
+            <span className="text-2xs uppercase tracking-wider font-semibold text-gray-600">
               Datos de Mercado · {market}
             </span>
             {data.latest_date && (
-              <span className="text-[10px] text-gray-600 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
+              <span className="text-2xs text-gray-600 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5">
                 {t('updated')} {formatDaysAgo(data.latest_date, locale, t)}
               </span>
             )}
@@ -175,11 +175,11 @@ function KpiCard({
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-3 md:p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
+        <span className="text-2xs uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
         <span className="text-[#0F766E]">{icon}</span>
       </div>
       <div className="text-lg md:text-xl font-bold text-gray-900 truncate">{value}</div>
-      {subtitle && <div className="text-[10px] text-gray-600 mt-0.5 truncate">{subtitle}</div>}
+      {subtitle && <div className="text-2xs text-gray-600 mt-0.5 truncate">{subtitle}</div>}
     </div>
   );
 }

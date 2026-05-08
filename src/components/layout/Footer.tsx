@@ -46,9 +46,9 @@ export default function Footer() {
 
       {/* Main footer */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 md:gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-10">
           {/* Brand column */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link href={`/${locale}`} className="inline-flex items-center mb-4" aria-label="Propyte">
               <Image
                 src="/img/logos/logo-horizontal-white.png"

@@ -62,7 +62,7 @@ export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin
         ))}
       </div>
       {price > 0 && (
-        <p className="text-[11px] text-gray-600 mt-3">
+        <p className="text-2xs text-gray-600 mt-3">
           {isEn
             ? `Have a different question? Our advisors respond in under 5 minutes via WhatsApp.`
             : `¿Tienes otra pregunta? Nuestros asesores responden en menos de 5 minutos por WhatsApp.`}

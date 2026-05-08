@@ -95,7 +95,7 @@ export default function CaseStudies({
                     <dl className="grid grid-cols-3 gap-2 pt-4 border-t border-gray-100">
                       {metrics.map((m, i) => (
                         <div key={i} className="text-center">
-                          <dt className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide leading-tight">
+                          <dt className="text-2xs font-semibold text-gray-600 uppercase tracking-wide leading-tight">
                             {m.label}
                           </dt>
                           <dd className="text-lg font-bold text-[#0F766E] tabular-nums mt-1">

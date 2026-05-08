@@ -38,7 +38,7 @@ export default function DesignPlaygroundShell() {
           </div>
           <div className="hidden sm:block">
             <h1 className="text-sm font-semibold leading-tight">Design Playground</h1>
-            <p className="text-[11px] text-neutral-400 leading-tight">Propyte — tokens en vivo</p>
+            <p className="text-2xs text-neutral-400 leading-tight">Propyte — tokens en vivo</p>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function DesignPlaygroundShell() {
 
           {/* Dirty indicator */}
           {dirty && (
-            <span className="text-[11px] text-amber-600 font-medium">● Sin guardar</span>
+            <span className="text-2xs text-amber-600 font-medium">● Sin guardar</span>
           )}
 
           {/* Reset all */}

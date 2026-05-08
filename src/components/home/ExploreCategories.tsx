@@ -69,7 +69,7 @@ export default function ExploreCategories({ typeCounts }: ExploreCategoriesProps
                   {t(cat.key)}
                 </span>
                 {typeCounts && typeCounts[cat.typeKey] > 0 && (
-                  <span className="bg-white/90 backdrop-blur-sm text-[#1A2F3F] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-white/90 backdrop-blur-sm text-[#1A2F3F] text-2xs font-bold px-2 py-0.5 rounded-full">
                     {typeCounts[cat.typeKey]}
                   </span>
                 )}

@@ -228,7 +228,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                         )}
                       </div>
 
-                      <h3 className="font-semibold text-[#1A2F3F] text-sm mb-1 line-clamp-1">
+                      <h3 className="font-semibold text-[#1A2F3F] text-base mb-1 line-clamp-1">
                         {dev.name}
                       </h3>
                       <div className="flex items-center gap-1 text-xs text-gray-600">

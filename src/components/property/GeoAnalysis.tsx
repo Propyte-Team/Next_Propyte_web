@@ -102,7 +102,7 @@ export default function GeoAnalysis({
             <div className="mb-4 bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-xl p-5 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-[11px] uppercase tracking-wider font-semibold text-[#5CE0D2]/80">
+                  <div className="text-2xs uppercase tracking-wider font-semibold text-[#5CE0D2]/80">
                     {t('compositeScore')}
                   </div>
                   <div className="text-3xl font-extrabold mt-1">
@@ -189,7 +189,7 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
+        <span className="text-2xs uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
         <span style={{ color }}>{icon}</span>
       </div>
       <div className="flex items-baseline gap-1">
@@ -209,7 +209,7 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
 function RawMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-gray-50 rounded-xl p-3">
-      <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</div>
+      <div className="text-2xs uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</div>
       <div className="text-sm font-bold text-gray-900 mt-0.5 truncate">{value}</div>
     </div>
   );

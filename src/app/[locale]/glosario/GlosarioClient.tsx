@@ -114,7 +114,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                     className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-[#5CE0D2] hover:text-[#0F1923] rounded-lg transition-colors"
                   >
                     <span>{letter}</span>
-                    <span className="text-[11px] font-semibold opacity-60 tabular-nums">
+                    <span className="text-2xs font-semibold opacity-60 tabular-nums">
                       {grouped[letter].length}
                     </span>
                   </a>

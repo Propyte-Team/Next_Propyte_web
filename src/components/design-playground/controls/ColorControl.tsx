@@ -48,7 +48,7 @@ function WcagBadge({ ratio }: { ratio: number }) {
   const aaLarge = ratio >= 3;
   return (
     <span
-      className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+      className="text-2xs font-mono px-1.5 py-0.5 rounded"
       style={{
         background: aaa ? '#dcfce7' : aa ? '#fef9c3' : aaLarge ? '#fee2e2' : '#fee2e2',
         color: aaa ? '#166534' : aa ? '#854d0e' : '#991b1b',
@@ -117,7 +117,7 @@ export default function ColorControl({
         {showTooltip && (
           <span
             ref={tooltipRef}
-            className="absolute left-0 bottom-full mb-1 z-50 px-2 py-1 text-[10px] font-mono bg-neutral-900 text-white rounded shadow-lg whitespace-nowrap pointer-events-none"
+            className="absolute left-0 bottom-full mb-1 z-50 px-2 py-1 text-2xs font-mono bg-neutral-900 text-white rounded shadow-lg whitespace-nowrap pointer-events-none"
           >
             {cssVar}
           </span>

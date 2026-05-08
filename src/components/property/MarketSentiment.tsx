@@ -57,14 +57,14 @@ function SentimentCard({ indicator, labels }: { indicator: SentimentIndicator; l
   return (
     <div className={`rounded-xl p-4 border ${bg} ${border}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className={`inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold ${text}`}>
+        <span className={`inline-flex items-center gap-1 text-2xs uppercase tracking-wider font-bold ${text}`}>
           <Icon size={12} />
           {label}
         </span>
       </div>
       <div className="text-xs font-semibold text-gray-600 mb-1">{indicator.label}</div>
       <div className="text-lg font-bold text-gray-900">{indicator.value}</div>
-      <p className="text-[11px] text-gray-600 leading-snug mt-2">{indicator.rationale}</p>
+      <p className="text-2xs text-gray-600 leading-snug mt-2">{indicator.rationale}</p>
     </div>
   );
 }

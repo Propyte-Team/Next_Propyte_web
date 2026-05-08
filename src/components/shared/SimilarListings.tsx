@@ -60,7 +60,7 @@ export default async function SimilarListings({ items, kind, locale, title }: Si
               )}
             </div>
             <div className="p-4">
-              <h3 className="font-bold text-[#2C2C2C] group-hover:text-[#0F766E] transition-colors text-sm line-clamp-1">
+              <h3 className="font-bold text-[#2C2C2C] group-hover:text-[#0F766E] transition-colors text-base line-clamp-1">
                 {kind === 'unit' && item.developmentName
                   ? `${item.developmentName}${item.unitNumber ? ` · ${item.unitNumber}` : ''}`
                   : item.name}
@@ -74,7 +74,7 @@ export default async function SimilarListings({ items, kind, locale, title }: Si
               </div>
 
               {kind === 'unit' && (item.bedrooms || item.bathrooms || item.area) && (
-                <div className="flex items-center gap-2 mt-2 text-[11px] text-gray-600">
+                <div className="flex items-center gap-2 mt-2 text-2xs text-gray-600">
                   {item.bedrooms ? <span>{item.bedrooms} {t('bedShort', { count: item.bedrooms })}</span> : null}
                   {item.bathrooms ? <span>· {item.bathrooms} {t('bathAbbrev')}</span> : null}
                   {item.area ? <span>· {item.area} m²</span> : null}

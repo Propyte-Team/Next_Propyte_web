@@ -138,7 +138,7 @@ export default function FinancialSimulator({
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             {t('investmentAnalysis')}
-            <span className="px-2 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-[10px] font-bold rounded-full uppercase tracking-wider">
+            <span className="px-2 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-2xs font-bold rounded-full uppercase tracking-wider">
               {mode === 'vacacional' ? 'Airbnb' : 'Long-term'}
             </span>
           </h2>
@@ -196,7 +196,7 @@ export default function FinancialSimulator({
             </div>
           )}
 
-          <p className="text-[11px] text-gray-400 mt-3 leading-relaxed">
+          <p className="text-2xs text-gray-400 mt-3 leading-relaxed">
             {mode === 'vacacional'
               ? `Estimación basada en ${hasAirdna ? 'datos de mercado' : 'comparables vacacionales'}. ${hasAirdna ? `Ocupación real del mercado: ${airdnaOccupancy?.toFixed(1)}%.` : ''}`
               : `Valor promedio analizado en nuestra base de datos con más de ${(totalComparables || 10000).toLocaleString()} registros, actualizada al ${freshnessDate}.`
@@ -270,7 +270,7 @@ export default function FinancialSimulator({
           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#22C55E] rounded-full transition-all" style={{ width: `${Math.min((results.projectedValue / price) * 50, 100)}%` }} />
           </div>
-          <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+          <div className="flex justify-between text-2xs text-gray-600 mt-1">
             <span>{formatPrice(price)}</span>
             <span>{formatPrice(results.projectedValue)}</span>
           </div>
@@ -311,7 +311,7 @@ export default function FinancialSimulator({
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <label className="font-medium text-gray-700">
-                  Tasa de ocupación {hasAirdna && <span className="text-[10px] text-[#0F766E] ml-1">mercado</span>}
+                  Tasa de ocupación {hasAirdna && <span className="text-2xs text-[#0F766E] ml-1">mercado</span>}
                 </label>
                 <span className="font-semibold">{occupancy.toFixed(0)}%</span>
               </div>
@@ -336,7 +336,7 @@ export default function FinancialSimulator({
         </div>
       </div>
 
-      <p className="text-[11px] text-gray-600 leading-relaxed px-2">{t('disclaimer')}</p>
+      <p className="text-2xs text-gray-600 leading-relaxed px-2">{t('disclaimer')}</p>
     </div>
   );
 }

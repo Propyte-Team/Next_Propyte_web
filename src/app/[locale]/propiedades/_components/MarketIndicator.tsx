@@ -74,7 +74,7 @@ export default async function MarketIndicator({
         <FactorBar label={t('marketCoverageFactor')} value={locScore} max={25} />
       </div>
 
-      <p className="text-[10px] text-gray-600 mt-3 leading-relaxed">{t('description')}</p>
+      <p className="text-2xs text-gray-600 mt-3 leading-relaxed">{t('description')}</p>
     </div>
   );
 }
@@ -83,7 +83,7 @@ function FactorBar({ label, value, max }: { label: string; value: number; max: n
   const pct = (value / max) * 100;
   return (
     <div>
-      <div className="flex justify-between text-[10px] text-gray-600 mb-0.5">
+      <div className="flex justify-between text-2xs text-gray-600 mb-0.5">
         <span>{label}</span>
         <span className="font-semibold">{value}/{max}</span>
       </div>

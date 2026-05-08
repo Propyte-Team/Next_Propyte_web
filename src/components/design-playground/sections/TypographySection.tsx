@@ -42,7 +42,7 @@ export default function TypographySection() {
     <div>
       {/* Font families */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Fuentes
         </p>
         <SelectControl
@@ -69,7 +69,7 @@ export default function TypographySection() {
 
       {/* Font scale */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Escala tipográfica
         </p>
         {([
@@ -99,7 +99,7 @@ export default function TypographySection() {
 
       {/* Font weights */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Pesos
         </p>
         {([
@@ -123,7 +123,7 @@ export default function TypographySection() {
 
       {/* Line height */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Line height
         </p>
         {([
@@ -149,7 +149,7 @@ export default function TypographySection() {
 
       {/* Letter spacing */}
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Letter spacing (em)
         </p>
         {([

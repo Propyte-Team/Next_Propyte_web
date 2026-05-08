@@ -152,15 +152,15 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
 
                   <div className="grid grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg mb-4">
                     <div>
-                      <div className="text-[10px] text-gray-600 uppercase">{t('labelDownPayment')}</div>
+                      <div className="text-2xs text-gray-600 uppercase">{t('labelDownPayment')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.downPayment}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-600 uppercase">{t('labelRate')}</div>
+                      <div className="text-2xs text-gray-600 uppercase">{t('labelRate')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.rate}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-gray-600 uppercase">{t('labelTerm')}</div>
+                      <div className="text-2xs text-gray-600 uppercase">{t('labelTerm')}</div>
                       <div className="text-sm font-bold text-gray-900">{m.term}</div>
                     </div>
                   </div>

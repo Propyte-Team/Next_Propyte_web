@@ -120,7 +120,7 @@ export default function CookieBanner() {
                           <p className="text-sm font-bold text-[#1A2F3F]">
                             {t('necessaryTitle')}
                           </p>
-                          <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                          <span className="text-2xs font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
                             {t('alwaysOn')}
                           </span>
                         </div>

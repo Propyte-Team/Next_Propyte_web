@@ -245,7 +245,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             {submitting ? t('gateSubmitting') : t('gateSubmit')}
           </button>
 
-          <p className="text-[11px] text-center text-gray-600">
+          <p className="text-2xs text-center text-gray-600">
             <Link
               href={`/${locale}/privacidad`}
               className="hover:text-gray-600 underline"

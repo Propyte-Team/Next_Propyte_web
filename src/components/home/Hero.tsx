@@ -82,7 +82,7 @@ export default function Hero({ stats }: HeroProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/65" />
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[56px] font-bold text-white leading-tight mb-3 drop-shadow-lg">
+        <h1 className="text-h1 text-white leading-tight mb-3 drop-shadow-lg">
           {t('title')}
         </h1>
         <p className="text-lg md:text-xl lg:text-2xl font-medium text-white/90 mb-2 max-w-2xl mx-auto drop-shadow-md">

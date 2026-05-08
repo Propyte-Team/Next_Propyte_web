@@ -56,10 +56,10 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
   return (
     <header className="lg:hidden fixed top-0 left-0 right-0 z-50 propyte-mobile-header-bg" role="banner" aria-label={t('openMenu')}>
       {/* Row 1: Logo | Lang | Hamburger */}
-      <div className="flex items-center justify-between h-11 px-3">
+      <div className="flex items-stretch justify-between h-11 px-3">
         <Link
           href={`/${locale}`}
-          className="flex items-center shrink-0"
+          className="flex items-center shrink-0 min-w-[44px] min-h-[44px]"
           aria-label="Propyte"
         >
           <Image
@@ -75,7 +75,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
         <div className="flex items-center gap-1.5">
           <CurrencyToggle />
 
-          <div ref={langRef} className="relative">
+          <div ref={langRef} className="relative flex items-center">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}
@@ -83,7 +83,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               aria-haspopup="menu"
               aria-controls="mh-lang-panel"
               aria-label={t('language')}
-              className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/60 text-[#2C2C2C] transition-colors"
+              className="inline-flex items-center gap-1 min-h-[44px] px-3 text-xs font-medium bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/60 text-[#2C2C2C] transition-colors"
             >
               <span>{locale === 'en' ? '🇺🇸 EN' : '🇲🇽 ES'}</span>
               <ChevronDown size={10} strokeWidth={2} />
@@ -121,7 +121,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
             aria-expanded={isMenuOpen}
             aria-haspopup="dialog"
             aria-controls="mobile-menu-drawer"
-            className={`p-1.5 min-w-[40px] min-h-[40px] flex items-center justify-center rounded-lg hover:bg-gray-100/50 transition-colors ${darkTopRow ? 'text-white/90' : 'text-[#2C2C2C]'}`}
+            className={`p-1.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-gray-100/50 transition-colors ${darkTopRow ? 'text-white/90' : 'text-[#2C2C2C]'}`}
           >
             <Menu size={22} strokeWidth={1.75} />
           </button>

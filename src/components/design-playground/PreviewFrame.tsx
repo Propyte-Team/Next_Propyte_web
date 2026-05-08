@@ -188,7 +188,7 @@ export default function PreviewFrame({ device, onDeviceChange, onInspect }: Prev
 
         {/* Sync indicator */}
         <span
-          className={`text-[10px] font-medium shrink-0 transition-colors ${synced ? 'text-green-600' : 'text-neutral-400'}`}
+          className={`text-2xs font-medium shrink-0 transition-colors ${synced ? 'text-green-600' : 'text-neutral-400'}`}
           title={synced ? 'Tokens aplicados' : 'Sincronizando…'}
         >
           {synced ? '● Live' : '○ …'}

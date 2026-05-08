@@ -192,7 +192,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                     <dt className="accent-mono text-2xl md:text-3xl font-medium text-[#5CE0D2]">
                       {s.v}
                     </dt>
-                    <dd className="mt-1.5 accent-mono text-[10px] text-white/45 uppercase tracking-[0.12em]">
+                    <dd className="mt-1.5 accent-mono text-2xs text-white/45 uppercase tracking-[0.12em]">
                       {s.l}
                     </dd>
                   </div>
@@ -204,7 +204,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           {/* Coordinate marker bottom-left — architectural detail */}
           <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-50">
             <span className="block w-6 h-px bg-[#5CE0D2]" aria-hidden="true" />
-            <span className="accent-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
+            <span className="accent-mono text-2xs uppercase tracking-[0.18em] text-white/40">
               20.62°N · 87.07°W
             </span>
           </div>

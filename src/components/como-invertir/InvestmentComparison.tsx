@@ -142,7 +142,7 @@ export default function InvestmentComparison() {
                     d.highlight ? 'bg-[#5CE0D2]/10 ring-1 ring-[#5CE0D2]/30' : 'bg-gray-50'
                   }`}
                 >
-                  <div className="text-[10px] text-gray-600 uppercase tracking-wide">{d.name}</div>
+                  <div className="text-2xs text-gray-600 uppercase tracking-wide">{d.name}</div>
                   <div className="text-sm font-bold text-[#1A2F3F] tabular-nums">
                     {(d.rate * 100).toFixed(1)}%
                   </div>

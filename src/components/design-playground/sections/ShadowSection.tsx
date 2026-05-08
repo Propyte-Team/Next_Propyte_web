@@ -39,7 +39,7 @@ interface LayerEditorProps {
 function LayerEditor({ layer, index, total, onChange, onRemove }: LayerEditorProps) {
   const field = (key: keyof ShadowLayer, min: number, max: number, label: string) => (
     <label className="flex flex-col items-center gap-0.5 text-center">
-      <span className="text-[9px] text-neutral-400">{label}</span>
+      <span className="text-2xs text-neutral-400">{label}</span>
       <input
         type="number"
         value={key === 'color' ? '' : layer[key] as number}
@@ -54,14 +54,14 @@ function LayerEditor({ layer, index, total, onChange, onRemove }: LayerEditorPro
 
   return (
     <div className="flex items-end gap-1.5 mb-2">
-      <span className="text-[10px] text-neutral-400 w-4 shrink-0">L{index + 1}</span>
+      <span className="text-2xs text-neutral-400 w-4 shrink-0">L{index + 1}</span>
       {field('x',      -40,  40,   'X')}
       {field('y',      -40,  80,   'Y')}
       {field('blur',     0,  100,  'blur')}
       {field('spread', -20,   40,  'spread')}
       {/* Color */}
       <label className="flex flex-col items-center gap-0.5">
-        <span className="text-[9px] text-neutral-400">color</span>
+        <span className="text-2xs text-neutral-400">color</span>
         <input
           type="color"
           value={layer.color.startsWith('#') ? layer.color : '#000000'}
@@ -125,9 +125,9 @@ export default function ShadowSection() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-medium text-neutral-700">Shadow {label}</span>
-                  <span className="text-[10px] font-mono text-neutral-400">{cssVar}</span>
+                  <span className="text-2xs font-mono text-neutral-400">{cssVar}</span>
                 </div>
-                <span className="text-[9px] font-mono text-neutral-400 truncate block">
+                <span className="text-2xs font-mono text-neutral-400 truncate block">
                   {boxShadow || 'none'}
                 </span>
               </div>
@@ -159,7 +159,7 @@ export default function ShadowSection() {
               <button
                 type="button"
                 onClick={() => addLayer(key)}
-                className="flex items-center gap-1 text-[11px] text-neutral-500 hover:text-neutral-800 transition-colors mt-1"
+                className="flex items-center gap-1 text-2xs text-neutral-500 hover:text-neutral-800 transition-colors mt-1"
               >
                 <Plus size={11} /> Añadir capa
               </button>

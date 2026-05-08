@@ -20,14 +20,16 @@ export default function CurrencyToggle({ tone = 'light' }: CurrencyToggleProps =
 
   const isDark = tone === 'dark';
   const containerCls = isDark
-    ? 'inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-white/15 flex-shrink-0'
-    : 'inline-flex rounded-full overflow-hidden text-[10px] font-bold border border-gray-200 flex-shrink-0';
+    ? 'inline-flex items-stretch min-h-[44px] rounded-full overflow-hidden text-2xs font-bold border border-white/15 flex-shrink-0'
+    : 'inline-flex items-stretch min-h-[44px] rounded-full overflow-hidden text-2xs font-bold border border-gray-200 flex-shrink-0';
   const activeCls = isDark
     ? 'bg-[#5CE0D2] text-[#0F1923]'
     : 'bg-[#1A2F3F] text-white';
   const inactiveCls = isDark
     ? 'text-white/60 hover:text-white'
     : 'text-gray-600 hover:text-[#1A2F3F]';
+  const btnBase =
+    'inline-flex items-center justify-center px-3 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10';
 
   return (
     <div
@@ -41,9 +43,7 @@ export default function CurrencyToggle({ tone = 'light' }: CurrencyToggleProps =
         onClick={toggleCurrency}
         aria-pressed={currency === 'MXN'}
         disabled={currency === 'MXN'}
-        className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
-          currency === 'MXN' ? activeCls : inactiveCls
-        }`}
+        className={`${btnBase} ${currency === 'MXN' ? activeCls : inactiveCls}`}
       >
         MXN
       </button>
@@ -52,9 +52,7 @@ export default function CurrencyToggle({ tone = 'light' }: CurrencyToggleProps =
         onClick={toggleCurrency}
         aria-pressed={currency === 'USD'}
         disabled={currency === 'USD'}
-        className={`px-2 py-1 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10 ${
-          currency === 'USD' ? activeCls : inactiveCls
-        }`}
+        className={`${btnBase} ${currency === 'USD' ? activeCls : inactiveCls}`}
       >
         USD
       </button>

@@ -173,7 +173,7 @@ export default function ExportImport() {
 
             {/* Preset list */}
             {presets.length === 0 ? (
-              <p className="text-[11px] text-neutral-400 text-center py-2">Sin presets guardados</p>
+              <p className="text-2xs text-neutral-400 text-center py-2">Sin presets guardados</p>
             ) : (
               <ul className="space-y-1 max-h-48 overflow-y-auto">
                 {presets.map((preset: Preset) => (
@@ -203,7 +203,7 @@ export default function ExportImport() {
       </div>
 
       {importError && (
-        <span className="text-[11px] text-red-500">{importError}</span>
+        <span className="text-2xs text-red-500">{importError}</span>
       )}
     </div>
   );

@@ -109,7 +109,7 @@ export default async function CetesComparison({
         />
       </div>
 
-      <p className="text-[10px] text-gray-600 leading-snug mt-4">{t('disclaimer')}</p>
+      <p className="text-2xs text-gray-600 leading-snug mt-4">{t('disclaimer')}</p>
     </div>
   );
 }
@@ -150,7 +150,7 @@ function VehicleCard({
   return (
     <div className={`rounded-xl p-4 relative ${baseClasses}`}>
       {highlighted && (
-        <span className="absolute -top-2 right-3 px-2 py-0.5 bg-[#5CE0D2] text-[#0F1923] text-[10px] font-extrabold rounded-full uppercase tracking-wider">
+        <span className="absolute -top-2 right-3 px-2 py-0.5 bg-[#5CE0D2] text-[#0F1923] text-2xs font-extrabold rounded-full uppercase tracking-wider">
           {labels.ourOffer}
         </span>
       )}
@@ -158,7 +158,7 @@ function VehicleCard({
         <span className={highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}>{icon}</span>
         <span className={`font-bold ${valueClasses}`}>{title}</span>
       </div>
-      <div className={`text-[10px] mb-3 ${subtitleClasses}`}>{subtitle}</div>
+      <div className={`text-2xs mb-3 ${subtitleClasses}`}>{subtitle}</div>
       <div className={`text-xs font-bold ${highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'} mb-4`}>{rateLabel}</div>
 
       <div className={`space-y-2 pt-3 border-t ${dividerClasses}`}>
@@ -193,11 +193,11 @@ function Row({
 }) {
   return (
     <div>
-      <div className={`text-[10px] uppercase tracking-wider font-semibold ${labelClass}`}>{label}</div>
+      <div className={`text-2xs uppercase tracking-wider font-semibold ${labelClass}`}>{label}</div>
       <div className="flex items-baseline gap-2 mt-0.5">
         <div className={`text-base font-bold ${valueClass}`}>{value}</div>
         {gain != null && (
-          <div className={`text-[11px] font-bold ${gainClass}`}>
+          <div className={`text-2xs font-bold ${gainClass}`}>
             +{gain.toFixed(1)}% {totalSuffix}
           </div>
         )}

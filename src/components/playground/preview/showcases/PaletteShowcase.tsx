@@ -59,7 +59,7 @@ export default function PaletteShowcase() {
               style={{ background: `var(${s.varName})` }}
               aria-label={`${s.label} swatch`}
             />
-            <div className="p-2 text-[11px]">
+            <div className="p-2 text-2xs">
               <div className="font-medium">{s.label}</div>
               <div className="font-mono opacity-70">{colors[varToKey[s.varName]]}</div>
             </div>

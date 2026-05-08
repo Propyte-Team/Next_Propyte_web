@@ -158,7 +158,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                     {rentEst ? formatPrice(rentEst) : '—'}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`inline-block px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
+                    <span className={`inline-block px-2 py-0.5 text-2xs font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                       {statusLabel(status)}
                     </span>
                   </td>
@@ -182,7 +182,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                 <span className="font-bold text-gray-900">
                   {unit.typology || unit.unit_number || '—'}
                 </span>
-                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
+                <span className={`px-2 py-0.5 text-2xs font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                   {statusLabel(status)}
                 </span>
               </div>

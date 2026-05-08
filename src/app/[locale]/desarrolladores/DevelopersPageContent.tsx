@@ -146,7 +146,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
         <div className="min-w-0">
           <p className="font-bold text-[#1A2F3F] text-sm leading-tight truncate">{dev.name}</p>
           {dev.verified && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0F766E] mt-0.5">
+            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-[#0F766E] mt-0.5">
               <BadgeCheck size={11} />
               {t('verified')}
             </span>

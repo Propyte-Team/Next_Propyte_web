@@ -63,14 +63,14 @@ export default function ColorsPanel() {
     <div className="p-4">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-neutral-800">Colores</h2>
-        <span className="text-[11px] uppercase tracking-wide text-neutral-500">
+        <span className="text-2xs uppercase tracking-wide text-neutral-500">
           Tema: {mode === 'light' ? 'claro' : 'oscuro'}
         </span>
       </div>
 
       {(Object.keys(grouped) as ColorRow['group'][]).map((group) => (
         <fieldset key={group} className="mb-6">
-          <legend className="text-[11px] uppercase tracking-wide text-neutral-500 mb-2">
+          <legend className="text-2xs uppercase tracking-wide text-neutral-500 mb-2">
             {GROUP_LABELS[group]}
           </legend>
           <div className="space-y-2">

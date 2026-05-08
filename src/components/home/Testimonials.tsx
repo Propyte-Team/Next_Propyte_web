@@ -71,7 +71,7 @@ export default function Testimonials() {
                   <div className="font-bold text-gray-900 text-sm">{item.name}</div>
                   <div className="text-xs text-gray-600">{item.city}</div>
                 </div>
-                <div className="flex items-center gap-1 text-[10px] font-semibold text-[#15803D]">
+                <div className="flex items-center gap-1 text-2xs font-semibold text-[#15803D]">
                   <ShieldCheck size={12} strokeWidth={2} />
                   {t('verified')}
                 </div>
@@ -92,10 +92,15 @@ export default function Testimonials() {
                   setStartIndex(Math.min(i, Math.max(0, testimonials.length - visibleCount)))
                 }
                 aria-label={`${i + 1}`}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  active ? 'bg-[#5CE0D2]' : 'bg-gray-200'
-                }`}
-              />
+                className="relative flex items-center justify-center w-11 h-11 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+              >
+                <span
+                  aria-hidden="true"
+                  className={`block w-2 h-2 rounded-full transition-colors ${
+                    active ? 'bg-[#5CE0D2]' : 'bg-gray-200'
+                  }`}
+                />
+              </button>
             );
           })}
         </div>

@@ -60,9 +60,19 @@ const config: Config = {
         'container-xl': '1440px',
       },
       fontSize: {
-        'h1':          ['var(--fs-3xl)', { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
-        'h2':          ['var(--fs-2xl)', { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-semibold)' }],
-        'h3':          ['var(--fs-xl)',  { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        // — Escala fluida 320 → 1440 (clamps definidos en globals.css :root) —
+        '2xs':         ['var(--fs-2xs)',  { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-medium)' }],
+        '7xl':         ['var(--fs-7xl)',  { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        // — Heading semantic presets (apuntan a --fs-h1...h6 fluidos) —
+        'h1':          ['var(--fs-h1)',   { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        'h2':          ['var(--fs-h2)',   { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],
+        'h3':          ['var(--fs-h3)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        'h4':          ['var(--fs-h4)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        'h5':          ['var(--fs-h5)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        'h6':          ['var(--fs-h6)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-semibold)' }],
+        'display':     ['var(--fs-display)', { lineHeight: 'var(--lh-tight)', fontWeight: 'var(--fw-bold)' }],
+        'eyebrow':     ['var(--fs-eyebrow)', { lineHeight: 'var(--lh-tight)', fontWeight: 'var(--fw-semibold)', letterSpacing: 'var(--ls-wide)' }],
+        // — Component aliases —
         'body':        ['var(--fs-base)', { lineHeight: 'var(--lh-relaxed)', fontWeight: 'var(--fw-normal)' }],
         'body-sm':     ['var(--fs-sm)',   { lineHeight: 'var(--lh-normal)',  fontWeight: 'var(--fw-normal)' }],
         'price-card':  ['var(--fs-xl)',   { lineHeight: 'var(--lh-tight)',   fontWeight: 'var(--fw-bold)' }],

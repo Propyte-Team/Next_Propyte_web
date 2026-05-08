@@ -26,7 +26,7 @@ export default function RadiusSection() {
         {Object.entries(radii).map(([key, r]) => (
           <div key={key} className="flex flex-col items-center gap-1">
             <span style={previewStyle(r === 9999 ? 24 : r)} />
-            <span className="text-[9px] text-neutral-400">{key.replace('radius', '')}</span>
+            <span className="text-2xs text-neutral-400">{key.replace('radius', '')}</span>
           </div>
         ))}
       </div>

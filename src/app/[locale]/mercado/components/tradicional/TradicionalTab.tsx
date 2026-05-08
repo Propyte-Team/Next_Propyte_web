@@ -460,7 +460,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
             <SlidersHorizontal size={16} className="text-[#0F766E]" />
             {t('filters')}
             {activeFilterCount > 0 && (
-              <span className="px-1.5 py-0.5 bg-[#0F766E] text-white text-[10px] font-bold rounded-full">
+              <span className="px-1.5 py-0.5 bg-[#0F766E] text-white text-2xs font-bold rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -477,7 +477,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3">
             {/* City */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterCity')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterCity')}</label>
               <select
                 value={filters.city}
                 onChange={e => setFilters(f => ({ ...f, city: e.target.value, zone: '' }))}
@@ -490,7 +490,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Zone */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterZone')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterZone')}</label>
               <select
                 value={filters.zone}
                 onChange={e => setFilters(f => ({ ...f, zone: e.target.value }))}
@@ -503,7 +503,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Property Type */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterType')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterType')}</label>
               <select
                 value={filters.propertyType}
                 onChange={e => setFilters(f => ({ ...f, propertyType: e.target.value }))}
@@ -516,7 +516,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Bedrooms */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterBeds')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterBeds')}</label>
               <select
                 value={filters.bedrooms}
                 onChange={e => setFilters(f => ({ ...f, bedrooms: e.target.value }))}
@@ -529,7 +529,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Rental Type */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentalType')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterRentalType')}</label>
               <select
                 value={filters.rentalType}
                 onChange={e => setFilters(f => ({ ...f, rentalType: e.target.value }))}
@@ -543,7 +543,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Furnished */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterFurnished')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterFurnished')}</label>
               <select
                 value={filters.furnished}
                 onChange={e => setFilters(f => ({ ...f, furnished: e.target.value }))}
@@ -557,7 +557,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Rent Min */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentMin')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterRentMin')}</label>
               <input
                 type="number"
                 value={filters.rentMin || ''}
@@ -569,7 +569,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Rent Max */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterRentMax')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterRentMax')}</label>
               <input
                 type="number"
                 value={filters.rentMax || ''}
@@ -581,7 +581,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
             {/* Min Samples per City */}
             <div>
-              <label className="block text-[10px] font-semibold text-gray-600 uppercase mb-1">{t('filterMinSamples')}</label>
+              <label className="block text-2xs font-semibold text-gray-600 uppercase mb-1">{t('filterMinSamples')}</label>
               <input
                 type="number"
                 value={filters.minSamples || ''}
@@ -794,7 +794,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
           );
         })}
       </div>
-      <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+      <div className="flex justify-between text-2xs text-gray-600 mt-1">
         <span>${Math.round(min / 1000)}K</span>
         <span>${Math.round((min + max) / 2000)}K</span>
         <span>${Math.round(max / 1000)}K</span>
@@ -806,7 +806,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
 function MetricCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 border ${highlight ? 'bg-[#1A2F3F] border-[#1A2F3F] text-white' : 'bg-white border-gray-100'}`}>
-      <div className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#0F766E]' : 'text-gray-600'}`}>{label}</div>
+      <div className={`text-2xs font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#0F766E]' : 'text-gray-600'}`}>{label}</div>
       <div className={`text-lg font-bold ${highlight ? 'text-white' : 'text-gray-900'}`}>{value}</div>
     </div>
   );
@@ -842,11 +842,11 @@ function BreakdownCard({
             <div className="flex items-center gap-2 min-w-0">
               {icon}
               <span className="text-sm capitalize truncate">{fk(key)}</span>
-              <span className="text-[10px] text-gray-600 flex-shrink-0">({stat.count})</span>
+              <span className="text-2xs text-gray-600 flex-shrink-0">({stat.count})</span>
             </div>
             <div className="text-right flex-shrink-0 ml-2">
               <div className="text-sm font-semibold">{formatPrice(stat.median)}</div>
-              <div className="text-[10px] text-gray-600">prom: {formatPrice(stat.avg)}</div>
+              <div className="text-2xs text-gray-600">prom: {formatPrice(stat.avg)}</div>
             </div>
           </button>
         ))}

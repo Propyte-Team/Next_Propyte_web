@@ -74,7 +74,7 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
                 className="rounded-full object-cover"
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-[#1A2F3F] flex items-center justify-center text-white text-[10px] font-bold flex-none">
+              <div className="w-6 h-6 rounded-full bg-[#1A2F3F] flex items-center justify-center text-white text-2xs font-bold flex-none">
                 {post.author_name.charAt(0).toUpperCase()}
               </div>
             )}

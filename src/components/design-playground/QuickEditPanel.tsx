@@ -51,7 +51,7 @@ function TypographyQuick() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Tamaño</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Tamaño</p>
         <div className="grid grid-cols-4 gap-1.5">
           {sizes.map((s) => {
             const active = currentBase === s.base;
@@ -80,7 +80,7 @@ function TypographyQuick() {
       </div>
 
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Fuente</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Fuente</p>
         <div className="grid grid-cols-2 gap-1.5">
           {fonts.map((f) => {
             const active = currentHeading.includes(f.label);
@@ -107,7 +107,7 @@ function TypographyQuick() {
       </div>
 
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Peso</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Peso</p>
         <div className="grid grid-cols-4 gap-1.5">
           {weights.map((w) => {
             const active = typo.fontWeightBold === w.heading;
@@ -173,7 +173,7 @@ function ColorsQuick() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Paletas preset</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Paletas preset</p>
         <div className="grid grid-cols-2 gap-2">
           {palettes.map((p) => {
             const active = colors.teal === p.teal;
@@ -197,7 +197,7 @@ function ColorsQuick() {
                     <span key={c} className="flex-1 h-4 rounded" style={{ background: c }} />
                   ))}
                 </div>
-                <span className="text-[11px] text-neutral-600">{p.label}</span>
+                <span className="text-2xs text-neutral-600">{p.label}</span>
               </button>
             );
           })}
@@ -205,7 +205,7 @@ function ColorsQuick() {
       </div>
 
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Colores individuales</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Colores individuales</p>
         <div className="grid grid-cols-2 gap-2">
           {([
             ['teal',       'Primary',    '--color-teal'],
@@ -250,7 +250,7 @@ function RadiiQuick() {
 
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-3 font-medium">Forma de las esquinas</p>
+      <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-3 font-medium">Forma de las esquinas</p>
       <div className="grid grid-cols-3 gap-2">
         {presets.map((p) => {
           const active = radii.radiusLg === p.lg;
@@ -273,7 +273,7 @@ function RadiiQuick() {
                 className="w-9 h-9 bg-neutral-800"
                 style={{ borderRadius: p.lg }}
               />
-              <span className="text-[11px] text-neutral-600">{p.label}</span>
+              <span className="text-2xs text-neutral-600">{p.label}</span>
             </button>
           );
         })}
@@ -323,7 +323,7 @@ function ShadowsQuick() {
 
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-3 font-medium">Elevación / sombras</p>
+      <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-3 font-medium">Elevación / sombras</p>
       <div className="grid grid-cols-2 gap-2">
         {presets.map((p) => (
           <button
@@ -341,7 +341,7 @@ function ShadowsQuick() {
               className="w-10 h-10 rounded-lg bg-white border border-neutral-100"
               style={{ boxShadow: toShadow(p.md) }}
             />
-            <span className="text-[11px] text-neutral-600">{p.label}</span>
+            <span className="text-2xs text-neutral-600">{p.label}</span>
           </button>
         ))}
       </div>
@@ -365,7 +365,7 @@ function MediaQuick() {
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">Aspect ratio (card)</p>
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">Aspect ratio (card)</p>
         <div className="grid grid-cols-4 gap-2">
           {aspects.map((a) => (
             <button
@@ -380,7 +380,7 @@ function MediaQuick() {
                 className="bg-neutral-300 rounded"
                 style={{ aspectRatio: a.value, width: '100%', maxHeight: 40 }}
               />
-              <span className="text-[10px] text-neutral-500">{a.label}</span>
+              <span className="text-2xs text-neutral-500">{a.label}</span>
             </button>
           ))}
         </div>
@@ -412,7 +412,7 @@ export default function QuickEditPanel({ category, label, onClose }: QuickEditPa
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono text-neutral-400 truncate max-w-[120px]">{label}</span>
+          <span className="text-2xs font-mono text-neutral-400 truncate max-w-[120px]">{label}</span>
           <button
             type="button"
             onClick={onClose}

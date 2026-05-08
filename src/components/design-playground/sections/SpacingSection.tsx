@@ -18,7 +18,7 @@ export default function SpacingSection() {
     <div>
       {/* Spacing scale */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Escala de espaciado
         </p>
         {([
@@ -53,7 +53,7 @@ export default function SpacingSection() {
 
       {/* Layout */}
       <div className="mb-5">
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Layout
         </p>
         <SliderControl
@@ -96,7 +96,7 @@ export default function SpacingSection() {
 
       {/* Section padding */}
       <div>
-        <p className="text-[10px] uppercase tracking-widest text-neutral-400 mb-2 font-medium">
+        <p className="text-2xs uppercase tracking-widest text-neutral-400 mb-2 font-medium">
           Section padding vertical
         </p>
         {([

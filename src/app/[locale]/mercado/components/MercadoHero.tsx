@@ -123,7 +123,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
                 <dt className="accent-mono text-2xl md:text-3xl font-medium text-white">
                   {item.value}
                 </dt>
-                <dd className="mt-1.5 accent-mono text-[10px] uppercase tracking-[0.14em] text-white/45">
+                <dd className="mt-1.5 accent-mono text-2xs uppercase tracking-[0.14em] text-white/45">
                   {item.label}
                 </dd>
               </div>
@@ -136,7 +136,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
               style={{ animationDelay: '360ms' }}
             >
               <Activity size={14} className="animate-pulse" aria-hidden="true" />
-              <span className="accent-mono text-[11px] uppercase tracking-[0.12em] font-medium">
+              <span className="accent-mono text-2xs uppercase tracking-[0.12em] font-medium">
                 {t('updating')}
               </span>
             </div>

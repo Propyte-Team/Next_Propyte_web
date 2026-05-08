@@ -641,7 +641,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-[10px] font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}

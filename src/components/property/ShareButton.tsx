@@ -205,7 +205,7 @@ export default function ShareButton({
               </div>
             )}
 
-            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-600 text-center">
+            <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 text-2xs text-gray-600 text-center">
               Propyte · propyte.com
             </div>
           </div>

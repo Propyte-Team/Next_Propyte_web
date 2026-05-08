@@ -49,7 +49,7 @@ export default function SelectControl({
           {label}
         </button>
         {showTooltip && (
-          <span className="absolute left-0 bottom-full mb-1 z-50 px-2 py-1 text-[10px] font-mono bg-neutral-900 text-white rounded shadow-lg whitespace-nowrap pointer-events-none">
+          <span className="absolute left-0 bottom-full mb-1 z-50 px-2 py-1 text-2xs font-mono bg-neutral-900 text-white rounded shadow-lg whitespace-nowrap pointer-events-none">
             {cssVar}
           </span>
         )}

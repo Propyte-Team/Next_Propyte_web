@@ -73,7 +73,7 @@ export default function LeadMagnet() {
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : t('downloadCta')}
                 </button>
-                <p className="text-[10px] text-white/65 text-center">{t('consent')}</p>
+                <p className="text-2xs text-white/65 text-center">{t('consent')}</p>
               </form>
             )}
           </div>

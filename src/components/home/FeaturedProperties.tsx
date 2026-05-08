@@ -115,7 +115,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                       )}
                     </div>
 
-                    <h3 className="font-semibold text-[#2C2C2C] text-sm mb-1 line-clamp-1">
+                    <h3 className="font-semibold text-[#2C2C2C] text-base mb-1 line-clamp-1">
                       {dev.name}
                     </h3>
                     <div className="flex items-center gap-1 text-xs text-gray-600">
