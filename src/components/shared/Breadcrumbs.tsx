@@ -97,10 +97,10 @@ export default function Breadcrumbs({
                   ) : (
                     <Link
                       href={item.href}
-                      className={`${linkHover} transition-colors truncate max-w-[140px] md:max-w-[220px]`}
+                      className={`${linkHover} inline-flex items-center justify-center min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 px-1 -mx-1 transition-colors truncate max-w-[140px] md:max-w-[220px]`}
                     >
                       {isFirst ? (
-                        <Home size={14} strokeWidth={2} className="inline-block -mt-0.5" aria-hidden="true" />
+                        <Home size={14} strokeWidth={2} aria-hidden="true" />
                       ) : (
                         item.label
                       )}

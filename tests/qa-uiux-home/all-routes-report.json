@@ -1,0 +1,1124 @@
+{
+  "generatedAt": "2026-05-08T22:48:19.174Z",
+  "routes": {
+    "home": {
+      "path": "/",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Departamentos, casas y terrenos en Riviera Maya",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 8
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Departamentos, casas y terrenos en Riviera Maya",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 8
+          }
+        }
+      }
+    },
+    "desarrollos": {
+      "path": "/desarrollos",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Nuevos Desarrollos y Preventas",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Nuevos Desarrollos y Preventas",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "propiedades": {
+      "path": "/propiedades",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Propiedades en Riviera Maya",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Propiedades en Riviera Maya",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "nosotros-quienes": {
+      "path": "/nosotros/quienes-somos",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Conoce Propyte",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Conoce Propyte",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "nosotros-estructura": {
+      "path": "/nosotros/estructura",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Estructura organizacional",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Estructura organizacional",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "desarrolladores": {
+      "path": "/desarrolladores",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Vende tu desarrollo más rápido Verificados",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Vende tu desarrollo más rápido Verificados",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "corredores": {
+      "path": "/corredores",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Potencia tu negocio inmobiliario con el portafolio de Propyte",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Potencia tu negocio inmobiliario con el portafolio de Propyte",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "mercado": {
+      "path": "/mercado",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Analiza el mercado de rentas en México",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Analiza el mercado de rentas en México",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "financiamiento": {
+      "path": "/financiamiento",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Opciones de financiamiento en México",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Opciones de financiamiento en México",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "blog": {
+      "path": "/blog",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Ideas que\nmueven el mercado",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Ideas que\nmueven el mercado",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "contacto": {
+      "path": "/contacto",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Hablemos",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Hablemos",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "faq": {
+      "path": "/faq",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Preguntas frecuentes",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Preguntas frecuentes",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "glosario": {
+      "path": "/glosario",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Glosario inmobiliario",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Glosario inmobiliario",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "unete": {
+      "path": "/unete",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Tu carrera inmobiliaria sin límites",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "1 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Tu carrera inmobiliaria sin límites",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    },
+    "destacados": {
+      "path": "/destacados",
+      "viewports": {
+        "mobile": {
+          "issues": [
+            {
+              "kind": "tap-target-strict",
+              "severity": "WARN",
+              "msg": "1 <36px",
+              "samples": [
+                {
+                  "tag": "a",
+                  "text": "FAQ",
+                  "w": 25,
+                  "h": 44,
+                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                }
+              ]
+            },
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Desarrollos destacados en Riviera Maya",
+            "h1FontSize": "37.2534px",
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "imgCount": 3
+          }
+        },
+        "tablet": {
+          "issues": [
+            {
+              "kind": "img-oversized",
+              "severity": "INFO",
+              "msg": "2 imgs >2.5× display",
+              "samples": [
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "124×24",
+                  "alt": "Propyte"
+                },
+                {
+                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "natural": "2420×468",
+                  "display": "145×28",
+                  "alt": "Propyte"
+                }
+              ]
+            }
+          ],
+          "meta": {
+            "h1Text": "Desarrollos destacados en Riviera Maya",
+            "h1FontSize": "45.1832px",
+            "scrollWidth": 834,
+            "clientWidth": 834,
+            "imgCount": 3
+          }
+        }
+      }
+    }
+  }
+}

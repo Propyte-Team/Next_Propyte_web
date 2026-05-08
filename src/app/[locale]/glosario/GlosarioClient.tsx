@@ -152,7 +152,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                         {term.link && (
                           <Link
                             href={`/${locale}${term.link}`}
-                            className="ml-2 text-[#0F766E] hover:underline text-xs font-semibold"
+                            className="ml-2 inline-flex items-center min-h-[44px] md:min-h-0 text-[#0F766E] hover:underline text-xs font-semibold"
                           >
                             {labels.learnMore}
                           </Link>

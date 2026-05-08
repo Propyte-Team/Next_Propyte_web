@@ -49,7 +49,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 md:gap-10">
           {/* Brand column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
-            <Link href={`/${locale}`} className="inline-flex items-center mb-4" aria-label="Propyte">
+            <Link href={`/${locale}`} className="inline-flex items-center min-h-[44px] mb-4" aria-label="Propyte">
               <Image
                 src="/img/logos/logo-horizontal-white.png"
                 alt="Propyte"

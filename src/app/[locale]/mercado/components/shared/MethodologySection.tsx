@@ -33,7 +33,7 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
         {/* Expandable detail */}
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 text-sm font-medium text-[#0F766E] hover:text-[#134E4A] transition-colors ml-7"
+          className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-sm font-medium text-[#0F766E] hover:text-[#134E4A] transition-colors ml-7"
         >
           {t('seeFull')}
           <ChevronRight size={14} className={`transition-transform ${open ? 'rotate-90' : ''}`} />

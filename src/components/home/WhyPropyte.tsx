@@ -52,7 +52,7 @@ export default function WhyPropyte() {
                 <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
                 <Link
                   href={aud.href}
-                  className="inline-flex items-center gap-1.5 text-[#0F766E] font-medium hover:underline"
+                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0F766E] font-medium hover:underline"
                 >
                   {t(aud.ctaKey)}
                   <ArrowRight size={14} strokeWidth={2} />

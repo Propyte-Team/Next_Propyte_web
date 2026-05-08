@@ -219,7 +219,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/${locale}/contacto?asunto=financiamiento-m${i + 1}`}
-                        className="inline-flex items-center text-xs font-semibold text-[#0F766E] hover:underline whitespace-nowrap"
+                        className="inline-flex items-center min-h-[44px] md:min-h-0 text-xs font-semibold text-[#0F766E] hover:underline whitespace-nowrap"
                       >
                         {t('rowAdvisorCta')} →
                       </Link>

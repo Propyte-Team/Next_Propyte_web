@@ -91,7 +91,7 @@ export default function CookieBanner() {
               type="button"
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
-              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+              className="mt-3 inline-flex items-center gap-1 min-h-[44px] px-2 -mx-2 text-xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
             >
               {t('customize')}
               <ChevronDown
@@ -174,14 +174,14 @@ export default function CookieBanner() {
                   <button
                     type="button"
                     onClick={saveCustom}
-                    className="flex-1 h-11 px-5 rounded-full bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
                   >
                     {t('saveCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="flex-1 h-11 px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>
@@ -191,14 +191,14 @@ export default function CookieBanner() {
                   <button
                     type="button"
                     onClick={rejectOptional}
-                    className="flex-1 h-11 px-5 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
                   >
                     {t('rejectCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="flex-1 h-11 px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>

@@ -175,7 +175,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colAsesores')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
-                  className="flex items-center gap-1 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
+                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
@@ -206,7 +206,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colInversionistas')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
-                  className="flex items-center gap-1 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
+                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
