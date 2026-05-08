@@ -4,7 +4,9 @@
 // Si HUB_API_URL no está configurado o la red falla, las funciones
 // regresan [] y los componentes deben caer al fallback hardcoded.
 
-const HUB_BASE = process.env.HUB_API_URL ?? "";
+// PROPYTE_HUB_URL es el nombre canonico ya configurado en Vercel.
+// HUB_API_URL queda como alias por compat con el .env.example.
+const HUB_BASE = process.env.PROPYTE_HUB_URL ?? process.env.HUB_API_URL ?? "";
 
 const NEXT_FETCH_OPTIONS = {
   // Next.js ISR: revalidar cada 5 min en producción
