@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-08T22:48:19.174Z",
+  "generatedAt": "2026-05-08T22:53:28.103Z",
   "routes": {
     "home": {
       "path": "/",
@@ -9,8 +9,22 @@
             {
               "kind": "tap-target-strict",
               "severity": "WARN",
-              "msg": "1 <36px",
+              "msg": "3 <36px",
               "samples": [
+                {
+                  "tag": "a",
+                  "text": "Ver todas las propiedades",
+                  "w": 220,
+                  "h": 24,
+                  "cls": "inline-flex items-center gap-1 text-[#0F766E] font-semibold"
+                },
+                {
+                  "tag": "a",
+                  "text": "Ver todos los artículos",
+                  "w": 193,
+                  "h": 24,
+                  "cls": "flex items-center gap-1 text-[#0F766E] font-medium"
+                },
                 {
                   "tag": "a",
                   "text": "FAQ",
@@ -23,19 +37,25 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "4 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "124×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "358×224",
+                  "alt": "Nativa Tulum - Tulum"
+                },
+                {
+                  "src": "es.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80",
+                  "natural": "1600×1067",
+                  "display": "358×224",
+                  "alt": "AZUL VIVO Residences - Playa d"
                 }
               ]
             }
@@ -45,7 +65,7 @@
             "h1FontSize": "37.2534px",
             "scrollWidth": 390,
             "clientWidth": 390,
-            "imgCount": 8
+            "imgCount": 10
           }
         },
         "tablet": {
@@ -53,19 +73,25 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "4 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "124×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "383×239",
+                  "alt": "Nativa Tulum - Tulum"
+                },
+                {
+                  "src": "es.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80",
+                  "natural": "1600×1067",
+                  "display": "383×239",
+                  "alt": "AZUL VIVO Residences - Playa d"
                 }
               ]
             }
@@ -75,7 +101,7 @@
             "h1FontSize": "45.1832px",
             "scrollWidth": 834,
             "clientWidth": 834,
-            "imgCount": 8
+            "imgCount": 10
           }
         }
       }
@@ -88,33 +114,67 @@
             {
               "kind": "tap-target-strict",
               "severity": "WARN",
-              "msg": "1 <36px",
+              "msg": "7 <36px",
               "samples": [
                 {
-                  "tag": "a",
-                  "text": "FAQ",
-                  "w": 25,
-                  "h": 44,
-                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                  "tag": "button",
+                  "text": "Guardar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center focus-visible:outli"
+                },
+                {
+                  "tag": "button",
+                  "text": "Descargar brochure",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center bg-white/85 hover:b"
+                },
+                {
+                  "tag": "button",
+                  "text": "Comparar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center rounded-full shadow"
+                },
+                {
+                  "tag": "button",
+                  "text": "Guardar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center focus-visible:outli"
+                },
+                {
+                  "tag": "button",
+                  "text": "Descargar brochure",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center bg-white/85 hover:b"
                 }
               ]
             },
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "19 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "389×243",
+                  "alt": "Desarrollo de entrega Inmediat"
+                },
+                {
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417061-s8a3ff.webp",
+                  "natural": "2400×1350",
+                  "display": "389×243",
+                  "alt": "Desarrollo de entrega Inmediat"
                 }
               ]
             }
@@ -124,7 +184,7 @@
             "h1FontSize": "37.2534px",
             "scrollWidth": 390,
             "clientWidth": 390,
-            "imgCount": 3
+            "imgCount": 50
           }
         },
         "tablet": {
@@ -132,21 +192,32 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "15 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "1.043-1.1005%200-2.628.9691-2.5705%202.8661%22/%3E%3C/svg%3E",
+                  "natural": "300×126",
+                  "display": "66×26",
+                  "alt": "Google"
+                },
+                {
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "332×207",
+                  "alt": "Desarrollo de entrega Inmediat"
                 }
               ]
+            },
+            {
+              "kind": "a11y-img-alt",
+              "severity": "WARN",
+              "msg": "52 imgs sin alt"
             }
           ],
           "meta": {
@@ -154,7 +225,7 @@
             "h1FontSize": "45.1832px",
             "scrollWidth": 834,
             "clientWidth": 834,
-            "imgCount": 3
+            "imgCount": 106
           }
         }
       }
@@ -167,33 +238,67 @@
             {
               "kind": "tap-target-strict",
               "severity": "WARN",
-              "msg": "1 <36px",
+              "msg": "17 <36px",
               "samples": [
                 {
-                  "tag": "a",
-                  "text": "FAQ",
-                  "w": 25,
-                  "h": 44,
-                  "cls": "inline-flex items-center min-h-[44px] md:min-h-0 text-sm tex"
+                  "tag": "button",
+                  "text": "Guardar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center focus-visible:outli"
+                },
+                {
+                  "tag": "button",
+                  "text": "Comparar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center rounded-full shadow"
+                },
+                {
+                  "tag": "button",
+                  "text": "Guardar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center focus-visible:outli"
+                },
+                {
+                  "tag": "button",
+                  "text": "Comparar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center rounded-full shadow"
+                },
+                {
+                  "tag": "button",
+                  "text": "Guardar",
+                  "w": 32,
+                  "h": 32,
+                  "cls": "w-8 h-8 flex items-center justify-center focus-visible:outli"
                 }
               ]
             },
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "30 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "28d001-2610-4d2c-93a4-842ab7529887/1777591680560-vui6z6.webp",
+                  "natural": "2400×1600",
+                  "display": "389×243",
+                  "alt": "Nativa Tulum — 1302 - 1"
+                },
+                {
+                  "src": "28d001-2610-4d2c-93a4-842ab7529887/1777591679816-xejz8v.webp",
+                  "natural": "1600×2400",
+                  "display": "389×243",
+                  "alt": "Nativa Tulum — 1302 - 2"
                 }
               ]
             }
@@ -203,7 +308,7 @@
             "h1FontSize": "37.2534px",
             "scrollWidth": 390,
             "clientWidth": 390,
-            "imgCount": 3
+            "imgCount": 62
           }
         },
         "tablet": {
@@ -211,19 +316,25 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "25 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "28d001-2610-4d2c-93a4-842ab7529887/1777591680560-vui6z6.webp",
+                  "natural": "2400×1600",
+                  "display": "332×207",
+                  "alt": "Nativa Tulum — 1302 - 1"
+                },
+                {
+                  "src": "28d001-2610-4d2c-93a4-842ab7529887/1777591679816-xejz8v.webp",
+                  "natural": "1600×2400",
+                  "display": "332×207",
+                  "alt": "Nativa Tulum — 1302 - 2"
                 }
               ]
             }
@@ -233,7 +344,7 @@
             "h1FontSize": "45.1832px",
             "scrollWidth": 834,
             "clientWidth": 834,
-            "imgCount": 3
+            "imgCount": 62
           }
         }
       }
@@ -263,7 +374,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -287,7 +398,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -330,13 +441,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -360,13 +471,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -409,7 +520,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -433,7 +544,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -476,7 +587,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -500,7 +611,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -543,13 +654,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "124×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -573,13 +684,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "124×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -622,7 +733,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -643,18 +754,12 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
-                  "alt": "Propyte"
-                },
-                {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
                   "alt": "Propyte"
                 }
               ]
@@ -695,13 +800,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -725,13 +830,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -774,13 +879,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -804,13 +909,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -853,13 +958,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -883,13 +988,13 @@
               "msg": "2 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "145×28",
                   "alt": "Propyte"
@@ -932,7 +1037,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -956,7 +1061,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -999,7 +1104,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -1023,7 +1128,7 @@
               "msg": "1 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-dark.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
                   "natural": "2420×452",
                   "display": "128×24",
                   "alt": "Propyte"
@@ -1063,29 +1168,35 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "4 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-white.png",
                   "natural": "2420×468",
                   "display": "124×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "358×224",
+                  "alt": "Nativa Tulum — Tulum"
+                },
+                {
+                  "src": "es.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80",
+                  "natural": "1600×1067",
+                  "display": "358×224",
+                  "alt": "AZUL VIVO Residences — Playa d"
                 }
               ]
             }
           ],
           "meta": {
-            "h1Text": "Desarrollos destacados en Riviera Maya",
+            "h1Text": "Destacados del mes",
             "h1FontSize": "37.2534px",
             "scrollWidth": 390,
             "clientWidth": 390,
-            "imgCount": 3
+            "imgCount": 5
           }
         },
         "tablet": {
@@ -1093,29 +1204,35 @@
             {
               "kind": "img-oversized",
               "severity": "INFO",
-              "msg": "2 imgs >2.5× display",
+              "msg": "4 imgs >2.5× display",
               "samples": [
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "124×24",
+                  "src": "https://dev.propyte.com/img/logos/logo-horizontal-dark.png",
+                  "natural": "2420×452",
+                  "display": "128×24",
                   "alt": "Propyte"
                 },
                 {
-                  "src": "http://localhost:3000/img/logos/logo-horizontal-white.png",
-                  "natural": "2420×468",
-                  "display": "145×28",
-                  "alt": "Propyte"
+                  "src": "171eb4-f5f7-4ade-a8b1-0ef2a4926168/1777411417263-qka118.webp",
+                  "natural": "2400×1350",
+                  "display": "383×239",
+                  "alt": "Nativa Tulum — Tulum"
+                },
+                {
+                  "src": "es.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&q=80",
+                  "natural": "1600×1067",
+                  "display": "383×239",
+                  "alt": "AZUL VIVO Residences — Playa d"
                 }
               ]
             }
           ],
           "meta": {
-            "h1Text": "Desarrollos destacados en Riviera Maya",
+            "h1Text": "Destacados del mes",
             "h1FontSize": "45.1832px",
             "scrollWidth": 834,
             "clientWidth": 834,
-            "imgCount": 3
+            "imgCount": 5
           }
         }
       }

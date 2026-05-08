@@ -11,7 +11,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const SHOTS = join(HERE, 'screenshots-all');
 mkdirSync(SHOTS, { recursive: true });
 
-const BASE = 'http://localhost:3000/es';
+const BASE = process.env.AUDIT_BASE || 'http://localhost:3000/es';
 
 // Routes to audit. Slugs picked from src/app/[locale]/. Detail pages skipped
 // (need known slugs); use first development/property where applicable.

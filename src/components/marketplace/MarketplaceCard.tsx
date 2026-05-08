@@ -167,7 +167,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               }}
               whileTap={{ scale: 0.85 }}
               transition={{ type: 'spring', stiffness: 500, damping: 17 }}
-              className="w-8 h-8 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
+              className="w-11 h-11 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
               aria-label={tMkt('cardSave')}
               aria-pressed={saved}
             >
@@ -199,7 +199,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                   });
                   window.open(property.assets!.brochure!, '_blank', 'noopener,noreferrer');
                 }}
-                className="w-8 h-8 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-11 h-11 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
                 aria-label={tMkt('cardBrochure')}
                 title={tMkt('cardBrochure')}
               >
@@ -224,7 +224,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 }
               }}
               aria-disabled={!comparing && compareFull}
-              className={`w-8 h-8 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
+              className={`w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
                 comparing
                   ? 'bg-[#5CE0D2] text-[#0F1923]'
                   : compareFull

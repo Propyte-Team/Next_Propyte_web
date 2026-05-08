@@ -138,7 +138,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         <div className="mt-8 text-center md:hidden">
           <Link
             href={`/${locale}/desarrollos`}
-            className="inline-flex items-center gap-1 text-[#0F766E] font-semibold"
+            className="inline-flex items-center gap-1 min-h-[44px] text-[#0F766E] font-semibold"
           >
             {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>
