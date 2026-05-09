@@ -677,9 +677,10 @@ export interface TeamMemberRow {
 }
 
 /**
- * Lista miembros activos del equipo (sin entidades 'department'),
- * ordenados por sort_order. Lee de `real_estate_hub.v_team_members`.
- * Source of truth: hub.propyte.com/equipo.
+ * Lista miembros del equipo comercial. La vista v_team_members ya
+ * filtra active=true, level<>'department' y show_in_team_page=true.
+ * Aquí descartamos vacantes (no muestran nombre real).
+ * Source of truth: hub.propyte.com/equipo (toggle "Aparece en /equipo-comercial").
  */
 export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
   if (!client) return [];

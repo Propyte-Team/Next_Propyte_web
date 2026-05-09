@@ -99,10 +99,11 @@ function DeptAccordion({ dept }: { dept: DeptView }) {
   const t = useTranslations('about');
 
   return (
-    <div className="bg-[#F4F6F8] rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-[#F4F6F8] rounded-xl border border-gray-200 overflow-hidden relative">
       <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-100 transition-colors"
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-100 transition-colors text-left cursor-pointer"
         aria-expanded={open}
       >
         <div className="flex items-center gap-3">
