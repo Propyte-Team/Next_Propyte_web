@@ -15,6 +15,7 @@ import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
 import { getVisibility } from '@/lib/visibility';
+import { getSiteConfig } from '@/lib/hub-content';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
 
 export default async function LocaleLayout({
@@ -33,10 +34,11 @@ export default async function LocaleLayout({
   // Enable static rendering — opts pages out of cookies()-based locale resolution
   setRequestLocale(locale);
 
-  const [messages, tA11y, visibilityFlags] = await Promise.all([
+  const [messages, tA11y, visibilityFlags, siteConfig] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: 'a11y' }),
     getVisibility(),
+    getSiteConfig(),
   ]);
 
   return (
@@ -48,7 +50,7 @@ export default async function LocaleLayout({
         <a href="#main-content" className="skip-to-content">
           {tA11y('skipToContent')}
         </a>
-        <Header />
+        <Header siteConfig={siteConfig} />
         <div className="lg:ml-[72px]">
           <main
             id="main-content"
@@ -57,10 +59,10 @@ export default async function LocaleLayout({
           >
             <MainPadding>{children}</MainPadding>
           </main>
-          <Footer />
+          <Footer siteConfig={siteConfig} />
         </div>
         <TokenSyncListener />
-        <WhatsAppButton />
+        <WhatsAppButton siteConfig={siteConfig} />
         <Analytics />
         <UTMCapture />
         <CookieBanner />

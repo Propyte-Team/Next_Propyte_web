@@ -9,9 +9,19 @@ import { useLocale, useTranslations } from 'next-intl';
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, Calendar, ShieldCheck } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
+import type { HubSiteConfig } from '@/lib/hub-content';
 
-export default function ContactPageContent() {
-  void useLocale();
+function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
+  const v = config?.[key];
+  return typeof v === 'string' && v.length > 0 ? v : fallback;
+}
+
+function normalizePhone(raw: string): string {
+  return raw.replace(/[^\d]/g, '');
+}
+
+export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSiteConfig }) {
+  const locale = useLocale();
   const t = useTranslations('contact');
   const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -77,11 +87,29 @@ export default function ContactPageContent() {
     }
   }
 
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354';
+  // Site config con fallback a i18n (red de seguridad)
+  const configPhoneRaw = pickString(siteConfig, 'whatsapp.number', '');
+  const phone =
+    process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
+    (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
+    '529843235354';
+  const address = pickString(
+    siteConfig,
+    locale === 'en' ? 'contact.address_en' : 'contact.address_es',
+    t('info.address'),
+  );
+  const phoneDisplay = pickString(siteConfig, 'whatsapp.number', t('info.phone'));
+  const email = pickString(siteConfig, 'contact.email', t('info.email'));
+  const hours = pickString(
+    siteConfig,
+    locale === 'en' ? 'contact.hours_en' : 'contact.hours_es',
+    t('info.hours'),
+  );
+
   const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_URL || '';
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(t('whatsappMessage'))}`;
-  const telHref = `tel:${t('info.phone').replace(/[^+\d]/g, '')}`;
-  const mailHref = `mailto:${t('info.email')}`;
+  const telHref = `tel:${phoneDisplay.replace(/[^+\d]/g, '')}`;
+  const mailHref = `mailto:${email}`;
 
   const subjectOptions = [
     { value: 'general', label: t('subjectOptions.general') },
@@ -91,7 +119,7 @@ export default function ContactPageContent() {
     { value: 'career', label: t('subjectOptions.career') },
   ];
 
-  const mapQuery = encodeURIComponent(t('info.address'));
+  const mapQuery = encodeURIComponent(address);
   const mapEmbedUrl = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
 
   return (
@@ -263,7 +291,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.address')}</p>
-                    <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{t('info.address')}</p>
+                    <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{address}</p>
                   </div>
                 </div>
 
@@ -276,7 +304,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.phone')}</p>
-                    <p className="text-sm text-gray-600 mt-0.5">{t('info.phone')}</p>
+                    <p className="text-sm text-gray-600 mt-0.5">{phoneDisplay}</p>
                   </div>
                 </a>
 
@@ -289,7 +317,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.email')}</p>
-                    <p className="text-sm text-gray-600 mt-0.5 break-words">{t('info.email')}</p>
+                    <p className="text-sm text-gray-600 mt-0.5 break-words">{email}</p>
                   </div>
                 </a>
 
@@ -299,7 +327,7 @@ export default function ContactPageContent() {
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.hours')}</p>
-                    <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{t('info.hours')}</p>
+                    <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">{hours}</p>
                   </div>
                 </div>
               </div>

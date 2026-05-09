@@ -112,6 +112,41 @@ export async function getBlogFeatured(category: HubBlogFeatured["category"]): Pr
   return r?.items ?? [];
 }
 
+// =============================================================================
+// Site config — Fase B.1
+// =============================================================================
+// Speckit: Propyte_hub/specs/dynamic-content/spec.md §Fase B.1
+// Endpoint: GET /api/public/site-config → { config: { key: value, ... } }
+
+export type HubSiteConfig = Record<string, unknown>;
+
+// Next.js dedupa fetches con misma URL+options dentro del mismo request
+// (React request memoization), y revalida cada 300s gracias a NEXT_FETCH_OPTIONS.
+// No agregamos cache adicional a nivel de módulo — eso bloquea el revalidate.
+export async function getSiteConfig(): Promise<HubSiteConfig> {
+  const r = await fetchJson<{ config: HubSiteConfig }>(`/api/public/site-config`);
+  return r?.config ?? {};
+}
+
+// Resolver una key específica con tipo. Falla silenciosamente si no existe.
+export async function getSiteConfigValue<T = unknown>(key: string): Promise<T | null> {
+  const cfg = await getSiteConfig();
+  return (cfg[key] as T) ?? null;
+}
+
+// Resolver pair localizado `${baseKey}_es` / `${baseKey}_en` con fallback a ES.
+export async function getLocalizedSiteConfig(
+  baseKey: string,
+  locale: string,
+): Promise<string | null> {
+  const cfg = await getSiteConfig();
+  const lang = locale === "en" ? "en" : "es";
+  const localized = cfg[`${baseKey}_${lang}`];
+  if (typeof localized === "string") return localized;
+  const fallback = cfg[`${baseKey}_es`];
+  return typeof fallback === "string" ? fallback : null;
+}
+
 // Helpers para resolver locale-specific value desde una entrada bilingüe.
 export function localized<T extends Record<string, unknown>>(
   obj: T,

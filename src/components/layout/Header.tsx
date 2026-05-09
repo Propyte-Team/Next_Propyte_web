@@ -7,6 +7,7 @@ import SearchBubble from './SearchBubble';
 import ActionsPill from './ActionsPill';
 import MobileHeader from './MobileHeader';
 import MobileMenu from './MobileMenu';
+import type { HubSiteConfig } from '@/lib/hub-content';
 
 type HeaderMode = 'home' | 'dark' | 'default';
 
@@ -19,7 +20,7 @@ function deriveMode(pathname: string): HeaderMode {
   return 'default';
 }
 
-export default function Header() {
+export default function Header({ siteConfig }: { siteConfig?: HubSiteConfig }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -109,7 +110,7 @@ export default function Header() {
       />
 
       {/* Mobile menu drawer */}
-      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <MobileMenu isOpen={mobileOpen} onClose={() => setMobileOpen(false)} siteConfig={siteConfig} />
     </>
   );
 }

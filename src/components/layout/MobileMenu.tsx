@@ -23,13 +23,24 @@ import {
 } from 'lucide-react';
 import { isNavActive } from '@/lib/nav/isActive';
 import CurrencyToggle from '@/components/ui/CurrencyToggle';
+import type { HubSiteConfig } from '@/lib/hub-content';
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  siteConfig?: HubSiteConfig;
 }
 
-export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
+function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
+  const v = config?.[key];
+  return typeof v === 'string' && v.length > 0 ? v : fallback;
+}
+
+function normalizePhone(raw: string): string {
+  return raw.replace(/[^\d]/g, '');
+}
+
+export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuProps) {
   const locale = useLocale();
   const t = useTranslations('nav');
   const pathname = usePathname();
@@ -38,7 +49,21 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   function isActive(id: string, href: string): boolean {
     return isNavActive(pathname, id, href, locale);
   }
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
+
+  const configPhoneRaw = pickString(siteConfig, 'whatsapp.number', '');
+  const phone =
+    process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
+    (configPhoneRaw ? normalizePhone(configPhoneRaw) : '');
+  const presetEs = pickString(
+    siteConfig,
+    'whatsapp.preset_es',
+    'Hola, me interesa información sobre propiedades en la Riviera Maya',
+  );
+  const presetEn = pickString(
+    siteConfig,
+    'whatsapp.preset_en',
+    'Hi, I want info about properties in Riviera Maya',
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -184,9 +209,7 @@ export default function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               <div className="p-4 border-t border-white/10">
                 <a
                   href={`https://wa.me/${phone}?text=${encodeURIComponent(
-                    locale === 'es'
-                      ? 'Hola, me interesa información sobre propiedades en la Riviera Maya'
-                      : 'Hi, I want info about properties in Riviera Maya'
+                    locale === 'es' ? presetEs : presetEn,
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

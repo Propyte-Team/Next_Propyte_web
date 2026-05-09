@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { MapPin, Mail, Instagram, Facebook } from 'lucide-react';
 import { reopenBanner } from '@/lib/cookies/consent';
+import type { HubSiteConfig } from '@/lib/hub-content';
 
 // Pre-footer CTA copy varies per route to avoid generic repetition
 const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
@@ -16,10 +17,35 @@ const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
   financiamiento: { title: 'ctaTitleFinanciamiento', subtitle: 'ctaSubtitleFinanciamiento' },
 };
 
-export default function Footer() {
+const FALLBACK_ADDRESS_ES = '5ta Avenida, Playa del Carmen, Q.Roo';
+const FALLBACK_ADDRESS_EN = '5th Avenue, Playa del Carmen, Q.Roo';
+const FALLBACK_EMAIL = 'info@propyte.com';
+const FALLBACK_INSTAGRAM = 'https://www.instagram.com/propyte.mx/';
+const FALLBACK_FACEBOOK = 'https://www.facebook.com/propyte';
+
+function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
+  const v = config?.[key];
+  return typeof v === 'string' && v.length > 0 ? v : fallback;
+}
+function pickNullableString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
+  const v = config?.[key];
+  if (v === null) return fallback;
+  return typeof v === 'string' && v.length > 0 ? v : fallback;
+}
+
+export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
   const t = useTranslations('footer');
   const locale = useLocale();
   const pathname = usePathname();
+
+  const address = pickString(
+    siteConfig,
+    locale === 'en' ? 'contact.address_en' : 'contact.address_es',
+    locale === 'en' ? FALLBACK_ADDRESS_EN : FALLBACK_ADDRESS_ES,
+  );
+  const email = pickString(siteConfig, 'contact.email', FALLBACK_EMAIL);
+  const instagram = pickNullableString(siteConfig, 'social.instagram', FALLBACK_INSTAGRAM);
+  const facebook = pickNullableString(siteConfig, 'social.facebook', FALLBACK_FACEBOOK);
 
   const route = pathname?.replace(/^\/(es|en)/, '').split('/').filter(Boolean)[0] || 'home';
   const override = ROUTE_CTA_KEY[route];
@@ -62,7 +88,7 @@ export default function Footer() {
             <p className="text-sm text-white/70 leading-relaxed mb-4">{t('description')}</p>
             <div className="flex gap-3">
               <a
-                href="https://www.instagram.com/propyte.mx/"
+                href={instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
@@ -71,7 +97,7 @@ export default function Footer() {
                 <Instagram size={18} />
               </a>
               <a
-                href="https://www.facebook.com/propyte"
+                href={facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
@@ -135,11 +161,11 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-white/70">
                 <MapPin size={14} className="mt-0.5 flex-shrink-0" />
-                <span>5ta Avenida, Playa del Carmen, Q.Roo</span>
+                <span>{address}</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">
                 <Mail size={14} className="flex-shrink-0" />
-                <span>info@propyte.com</span>
+                <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
               </li>
             </ul>
           </div>
