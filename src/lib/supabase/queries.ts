@@ -654,6 +654,8 @@ export async function getDeveloperBySlug(
 // TEAM MEMBERS (real_estate_hub.v_team_members)
 // ============================================================
 
+export type TeamLevel = 'ceo' | 'director' | 'department' | 'member';
+
 export interface TeamMemberRow {
   id: string;
   name: string;
@@ -665,15 +667,19 @@ export interface TeamMemberRow {
   photo_url: string | null;
   bio_short: string | null;
   sort_order: number;
+  level: TeamLevel;
+  department_name: string | null;
+  reports_to_id: string | null;
+  role_code: string | null;
+  role_color: string | null;
+  is_corporate: boolean;
+  is_vacant: boolean;
 }
 
 /**
- * Lista miembros activos del equipo, ordenados por sort_order asc.
- * Lee de la vista `real_estate_hub.v_team_members` (filtra active=TRUE
- * + GRANT anon explícito). Source of truth: hub.propyte.com/equipo.
- *
- * Devuelve [] si la tabla aún no existe o falla la query (no rompe la
- * página — el caller renderiza fallback empty state).
+ * Lista miembros activos del equipo (sin entidades 'department'),
+ * ordenados por sort_order. Lee de `real_estate_hub.v_team_members`.
+ * Source of truth: hub.propyte.com/equipo.
  */
 export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
   if (!client) return [];
@@ -681,6 +687,7 @@ export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
     const { data, error } = await hub(client)
       .from('v_team_members')
       .select('*')
+      .eq('is_vacant', false)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: true });
     if (error) {
@@ -691,6 +698,84 @@ export async function getTeamMembers(client: Client): Promise<TeamMemberRow[]> {
   } catch (e) {
     console.warn('[getTeamMembers] exception:', e);
     return [];
+  }
+}
+
+// ============================================================
+// ORG STRUCTURE (real_estate_hub.v_org_structure)
+// ============================================================
+
+export interface OrgNodeRow {
+  id: string;
+  name: string;
+  role: string;
+  level: TeamLevel;
+  department_name: string | null;
+  reports_to_id: string | null;
+  icon_name: string | null;
+  role_code: string | null;
+  role_color: string | null;
+  is_corporate: boolean;
+  is_vacant: boolean;
+  sort_order: number;
+}
+
+/**
+ * Trae todos los nodos del organigrama (CEO + directores + departamentos
+ * + miembros activos). Source of truth: hub.propyte.com/equipo con campos
+ * jerárquicos. Devuelve [] si falla.
+ */
+export async function getOrgStructure(client: Client): Promise<OrgNodeRow[]> {
+  if (!client) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_org_structure')
+      .select('*')
+      .order('sort_order', { ascending: true });
+    if (error) {
+      console.warn('[getOrgStructure] error:', error.message);
+      return [];
+    }
+    return (data ?? []) as OrgNodeRow[];
+  } catch (e) {
+    console.warn('[getOrgStructure] exception:', e);
+    return [];
+  }
+}
+
+// ============================================================
+// PAGE CONTENT (real_estate_hub.page_content)
+// ============================================================
+
+/**
+ * Trae los textos editables de una página en un locale específico,
+ * indexados como `${section}.${field}` para acceso fácil. Si la fila
+ * no existe, el caller debe usar fallback i18n.
+ */
+export async function getPageContent(
+  client: Client,
+  pageKey: string,
+  locale: string,
+): Promise<Record<string, string>> {
+  if (!client) return {};
+  try {
+    const { data, error } = await hub(client)
+      .from('page_content')
+      .select('section_key, field_key, value')
+      .eq('page_key', pageKey)
+      .eq('locale', locale);
+    if (error) {
+      console.warn('[getPageContent] error:', error.message);
+      return {};
+    }
+    const out: Record<string, string> = {};
+    for (const row of (data ?? []) as Array<{ section_key: string; field_key: string; value: string | null }>) {
+      if (row.value != null) out[`${row.section_key}.${row.field_key}`] = row.value;
+    }
+    return out;
+  } catch (e) {
+    console.warn('[getPageContent] exception:', e);
+    return {};
   }
 }
 

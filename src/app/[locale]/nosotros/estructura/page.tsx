@@ -3,13 +3,21 @@ import { Sparkles } from 'lucide-react';
 import EstructuraPageContent from './EstructuraPageContent';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { getOrgStructure, getPageContent } from '@/lib/supabase/queries';
+
+export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const tSeo = await getTranslations({ locale, namespace: 'seo' });
   const tAbout = await getTranslations({ locale, namespace: 'about' });
 
-  const title = tAbout('structureTitle') + ' — Propyte';
+  const supabase = createPublicSupabaseClient();
+  const content = supabase ? await getPageContent(supabase, 'nosotros/estructura', locale) : {};
+  const heroTitle = content['hero.title'] ?? tAbout('structureTitle');
+
+  const title = heroTitle + ' — Propyte';
   const description = tSeo('aboutDescription');
 
   return {
@@ -44,6 +52,25 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
+  const supabase = createPublicSupabaseClient();
+  const [nodes, content] = supabase
+    ? await Promise.all([
+        getOrgStructure(supabase),
+        getPageContent(supabase, 'nosotros/estructura', locale),
+      ])
+    : [[], {} as Record<string, string>];
+
+  const heroTitle = content['hero.title'] ?? t('structureTitle');
+  const heroSubtitle = content['hero.subtitle'] ?? t('structureSubtitle');
+
+  const fallback = {
+    philosophyTitle: t('structurePhilosophyTitle'),
+    philosophyText: t('structurePhilosophyText'),
+    philosophyHighlight: t('structurePhilosophyHighlight'),
+    statValues: [t('stat1Value'), t('stat2Value'), t('stat3Value'), t('stat4Value')],
+    statLabels: [t('stat1Label'), t('stat2Label'), t('stat3Label'), t('stat4Label')],
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -69,17 +96,17 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-            {t('structureTitle')}
+            {heroTitle}
           </h1>
           <p className="text-lg md:text-xl text-white/75 max-w-3xl mx-auto leading-relaxed">
-            {t('structureSubtitle')}
+            {heroSubtitle}
           </p>
         </div>
       </section>
 
       <NosotrosTabs locale={locale} active="estructura" />
 
-      <EstructuraPageContent />
+      <EstructuraPageContent nodes={nodes} content={content} fallback={fallback} />
     </>
   );
 }
