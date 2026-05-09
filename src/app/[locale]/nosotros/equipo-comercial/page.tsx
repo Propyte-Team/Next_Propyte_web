@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
   BookOpen, Monitor, GraduationCap, DollarSign, Users, TrendingUp,
@@ -9,6 +10,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getTeamMembers, type TeamMemberRow } from '@/lib/supabase/queries';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
@@ -96,6 +98,10 @@ function buildWhatsappLink(member: TeamMemberRow): string | null {
 export default async function EquipoComercialPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const visibility = await getVisibility();
+  if (!isVisible(visibility, VISIBILITY_KEYS.NOSOTROS_EQUIPO_COMERCIAL)) {
+    notFound();
+  }
   const t = await getTranslations({ locale, namespace: 'about' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
@@ -160,7 +166,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
         </div>
       </section>
 
-      <NosotrosTabs locale={locale} active="equipo-comercial" />
+      <NosotrosTabs locale={locale} active="equipo-comercial" visibility={visibility} />
 
       {/* Section 1: Team */}
       <section className="py-16 md:py-20 bg-white">

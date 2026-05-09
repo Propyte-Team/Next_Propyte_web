@@ -1,10 +1,12 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import { Sparkles } from 'lucide-react';
 import EstructuraPageContent from './EstructuraPageContent';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getOrgStructure, getPageContent } from '@/lib/supabase/queries';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
@@ -46,6 +48,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function EstructuraPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const visibility = await getVisibility();
+  if (!isVisible(visibility, VISIBILITY_KEYS.NOSOTROS_ESTRUCTURA)) {
+    notFound();
+  }
   const t = await getTranslations({ locale, namespace: 'about' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
@@ -104,7 +110,7 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
         </div>
       </section>
 
-      <NosotrosTabs locale={locale} active="estructura" />
+      <NosotrosTabs locale={locale} active="estructura" visibility={visibility} />
 
       <EstructuraPageContent nodes={nodes} content={content} fallback={fallback} />
     </>

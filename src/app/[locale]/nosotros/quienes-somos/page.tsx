@@ -1,7 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   Building2,
   Users,
@@ -49,6 +51,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function QuienesSomosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const visibility = await getVisibility();
+  if (!isVisible(visibility, VISIBILITY_KEYS.NOSOTROS_QUIENES_SOMOS)) {
+    notFound();
+  }
   const t = await getTranslations({ locale, namespace: 'about' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
@@ -211,7 +217,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
         </div>
       </section>
 
-      <NosotrosTabs locale={locale} active="quienes-somos" />
+      <NosotrosTabs locale={locale} active="quienes-somos" visibility={visibility} />
 
       {/* Section 1: Intro — 5-col grid with Real Estate Lab callout */}
       <section className="py-20 md:py-28 bg-white">

@@ -25,6 +25,9 @@ export const VISIBILITY_KEYS = {
   BLOG_LISTING: "blog.listing",
   CONTACTO_CALENDLY: "contacto.calendly",
   CONTACTO_MAP: "contacto.map",
+  NOSOTROS_QUIENES_SOMOS: "nosotros.quienes-somos",
+  NOSOTROS_ESTRUCTURA: "nosotros.estructura",
+  NOSOTROS_EQUIPO_COMERCIAL: "nosotros.equipo-comercial",
 } as const;
 
 // fail-open: key not in map → visible
