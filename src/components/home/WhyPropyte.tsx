@@ -4,9 +4,6 @@ import {
   Shield,
   BarChart3,
   Headphones,
-  Zap,
-  Award,
-  Globe,
   TrendingUp,
   Building2,
   Users,
@@ -23,13 +20,30 @@ export default function WhyPropyte() {
     { icon: Users, titleKey: 'aud3Title', descKey: 'aud3Desc', ctaKey: 'aud3Cta', href: `/${locale}/unete` },
   ];
 
+  // Las rutas /metodologia, /equipo, /aviso-legal-inversion se crean en Bloque B (B4).
+  // Los links existen ya para que el cambio de copy sea coherente; rinden 404 hasta B4.
   const features = [
-    { icon: BarChart3, title: t('feature1Title'), desc: t('feature1Desc') },
-    { icon: Shield, title: t('feature2Title'), desc: t('feature2Desc') },
-    { icon: Zap, title: t('feature3Title'), desc: t('feature3Desc') },
-    { icon: Headphones, title: t('feature4Title'), desc: t('feature4Desc') },
-    { icon: Award, title: t('feature5Title'), desc: t('feature5Desc') },
-    { icon: Globe, title: t('feature6Title'), desc: t('feature6Desc') },
+    {
+      icon: BarChart3,
+      title: t('feature1Title'),
+      desc: t('feature1Desc'),
+      cta: t('feature1Cta'),
+      href: `/${locale}/metodologia`,
+    },
+    {
+      icon: Headphones,
+      title: t('feature2Title'),
+      desc: t('feature2Desc'),
+      cta: t('feature2Cta'),
+      href: `/${locale}/equipo`,
+    },
+    {
+      icon: Shield,
+      title: t('feature3Title'),
+      desc: t('feature3Desc'),
+      cta: t('feature3Cta'),
+      href: `/${locale}/aviso-legal-inversion`,
+    },
   ];
 
   return (
@@ -74,13 +88,20 @@ export default function WhyPropyte() {
             return (
               <div
                 key={i}
-                className="propyte-card-glass-light p-6 transition-transform hover:-translate-y-0.5"
+                className="propyte-card-glass-light p-6 transition-transform hover:-translate-y-0.5 flex flex-col"
               >
                 <div className="w-12 h-12 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center mb-4">
                   <Icon size={24} strokeWidth={1.75} className="text-[#0D9488]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>
+                <p className="text-sm text-gray-600 leading-relaxed mb-4 flex-1">{feat.desc}</p>
+                <Link
+                  href={feat.href}
+                  className="inline-flex items-center gap-1.5 text-[#0F766E] font-medium text-sm hover:underline mt-auto"
+                >
+                  {feat.cta}
+                  <ArrowRight size={14} strokeWidth={2} />
+                </Link>
               </div>
             );
           })}

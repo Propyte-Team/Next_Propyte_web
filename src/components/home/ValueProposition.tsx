@@ -26,7 +26,7 @@ export default function ValueProposition() {
       title: t('advisorsTitle'),
       desc: t('advisorsDesc'),
       cta: t('advisorsCta'),
-      href: '#',
+      href: `/${locale}/unete`,
     },
   ];
 
