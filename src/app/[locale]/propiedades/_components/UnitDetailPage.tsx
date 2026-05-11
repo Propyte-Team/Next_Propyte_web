@@ -502,6 +502,21 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="sticky top-24 space-y-6">
+              {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
+              <FloatingKeyData
+                price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
+                area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
+                bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
+                bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
+                labels={{
+                  title: locale === 'es' ? 'Datos clave' : 'Key data',
+                  price: locale === 'es' ? 'Precio' : 'Price',
+                  area: 'Área',
+                  bedrooms: tProp('bedrooms'),
+                  bathrooms: tProp('bathrooms'),
+                }}
+              />
+
               <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   {tProp('interestedUnitQuestion')}
@@ -521,20 +536,6 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   WhatsApp
                 </a>
               </div>
-
-              <FloatingKeyData
-                price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
-                area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
-                bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
-                bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
-                labels={{
-                  title: locale === 'es' ? 'Datos clave' : 'Key data',
-                  price: locale === 'es' ? 'Precio' : 'Price',
-                  area: 'Área',
-                  bedrooms: tProp('bedrooms'),
-                  bathrooms: tProp('bathrooms'),
-                }}
-              />
             </div>
           </div>
         </div>

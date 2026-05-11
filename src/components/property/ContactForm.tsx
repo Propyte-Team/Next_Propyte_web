@@ -11,9 +11,7 @@ const schema = z.object({
   name: z.string().min(1, 'required'),
   email: z.string().email('invalidEmail'),
   phone: z.string().optional(),
-  budget: z.string().optional(),
   investmentType: z.string().optional(),
-  message: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -54,7 +52,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
         <input
           id="contact-name"
           {...register('name')}
-          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
         />
         {errors.name && <p className="text-xs text-red-500 mt-1">{t('required')}</p>}
       </div>
@@ -65,7 +63,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
           id="contact-email"
           type="email"
           {...register('email')}
-          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
         />
         {errors.email && <p className="text-xs text-red-500 mt-1">{t('invalidEmail')}</p>}
       </div>
@@ -81,62 +79,32 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
             id="contact-phone"
             type="tel"
             {...register('phone')}
-            className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+            className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
           />
         </div>
       )}
 
-      {/* Budget & Investment Type */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label htmlFor="contact-budget" className="block text-xs font-medium text-gray-600 mb-1">
-            {tContact('formBudget') || 'Presupuesto'}
-          </label>
-          <select
-            id="contact-budget"
-            {...register('budget')}
-            className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm text-gray-600 focus:border-[#5CE0D2] focus:outline-none bg-white"
-          >
-            <option value="">—</option>
-            <option value="<2M">&lt; $2M</option>
-            <option value="2-5M">$2M - $5M</option>
-            <option value="5-10M">$5M - $10M</option>
-            <option value="10-20M">$10M - $20M</option>
-            <option value="20M+">$20M+</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="contact-investmentType" className="block text-xs font-medium text-gray-600 mb-1">
-            {tContact('formInvestmentType') || 'Tipo'}
-          </label>
-          <select
-            id="contact-investmentType"
-            {...register('investmentType')}
-            className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm text-gray-600 focus:border-[#5CE0D2] focus:outline-none bg-white"
-          >
-            <option value="">—</option>
-            <option value="residencial">Residencial</option>
-            <option value="vacacional">Vacacional</option>
-            <option value="plusvalia">{tContact('formPlusvalia') || 'Plusvalía'}</option>
-            <option value="mixto">Mixto</option>
-          </select>
-        </div>
-      </div>
-
       <div>
-        <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-1">{tContact('formMessage')}</label>
-        <textarea
-          id="contact-message"
-          {...register('message')}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none resize-none"
-        />
+        <label htmlFor="contact-investmentType" className="block text-sm font-medium text-gray-700 mb-1">
+          {tContact('formInvestmentType') || 'Tipo de inversión'}
+        </label>
+        <select
+          id="contact-investmentType"
+          {...register('investmentType')}
+          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm text-gray-700 focus:border-propyte-brand focus:outline-none bg-white"
+        >
+          <option value="">—</option>
+          <option value="residencial">Residencial</option>
+          <option value="vacacional">Vacacional</option>
+          <option value="plusvalia">{tContact('formPlusvalia') || 'Plusvalía'}</option>
+          <option value="mixto">Mixto</option>
+        </select>
       </div>
 
       <button
         type="submit"
         disabled={status === 'sending'}
-        className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
+        className="w-full h-12 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
       >
         {status === 'sending' ? t('sending') : status === 'sent' ? t('sent') : t('send')}
       </button>

@@ -765,6 +765,41 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="sticky top-24 space-y-6">
+            {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
+            <FloatingKeyData
+              price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
+              area={
+                areaRange
+                  ? areaRange.min === areaRange.max
+                    ? `${areaRange.min} m²`
+                    : `${areaRange.min}–${areaRange.max} m²`
+                  : representativeArea
+                    ? `${representativeArea} m²`
+                    : null
+              }
+              bedrooms={
+                bedRange
+                  ? bedRange.min === bedRange.max
+                    ? String(bedRange.min)
+                    : `${bedRange.min}–${bedRange.max}`
+                  : null
+              }
+              bathrooms={
+                bathRange
+                  ? bathRange.min === bathRange.max
+                    ? String(bathRange.min)
+                    : `${bathRange.min}–${bathRange.max}`
+                  : null
+              }
+              labels={{
+                title: locale === 'es' ? 'Datos clave' : 'Key data',
+                price: locale === 'es' ? 'Precio desde' : 'Price from',
+                area: 'Área',
+                bedrooms: tProp('bedrooms'),
+                bathrooms: tProp('bathrooms'),
+              }}
+            />
+
             <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
               {property.contact_name && (
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
@@ -799,40 +834,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 </a>
               )}
             </div>
-
-            <FloatingKeyData
-              price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
-              area={
-                areaRange
-                  ? areaRange.min === areaRange.max
-                    ? `${areaRange.min} m²`
-                    : `${areaRange.min}–${areaRange.max} m²`
-                  : representativeArea
-                    ? `${representativeArea} m²`
-                    : null
-              }
-              bedrooms={
-                bedRange
-                  ? bedRange.min === bedRange.max
-                    ? String(bedRange.min)
-                    : `${bedRange.min}–${bedRange.max}`
-                  : null
-              }
-              bathrooms={
-                bathRange
-                  ? bathRange.min === bathRange.max
-                    ? String(bathRange.min)
-                    : `${bathRange.min}–${bathRange.max}`
-                  : null
-              }
-              labels={{
-                title: locale === 'es' ? 'Datos clave' : 'Key data',
-                price: locale === 'es' ? 'Precio desde' : 'Price from',
-                area: 'Área',
-                bedrooms: tProp('bedrooms'),
-                bathrooms: tProp('bathrooms'),
-              }}
-            />
             </div>
           </div>
         </div>
