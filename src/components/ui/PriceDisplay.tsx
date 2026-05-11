@@ -31,11 +31,11 @@ const SIZE_SECONDARY: Record<NonNullable<PriceDisplayProps['size']>, string> = {
 };
 
 function formatCurrency(amount: number, currency: Currency): string {
-  return new Intl.NumberFormat(currency === 'MXN' ? 'es-MX' : 'en-US', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  // Formato consistente "$X,XXX,XXX MXN" / "$X,XXX,XXX USD". Evita que MXN
+  // salga como "MX$2,502,794" en es-MX (default Intl) y deja la sigla siempre
+  // explícita al final para que el usuario sepa qué moneda mira.
+  const num = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount);
+  return `$${num} ${currency}`;
 }
 
 export default function PriceDisplay({
