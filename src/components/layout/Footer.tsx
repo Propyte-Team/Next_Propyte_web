@@ -145,10 +145,13 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Legal & Transparencia */}
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('legal')}</h4>
             <ul className="space-y-2.5">
+              <li><Link href={`/${locale}/metodologia`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('methodology')}</Link></li>
+              <li><Link href={`/${locale}/equipo`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('team')}</Link></li>
+              <li><Link href={`/${locale}/aviso-legal-inversion`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('investmentNotice')}</Link></li>
               <li><Link href={`/${locale}/privacidad`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('privacy')}</Link></li>
               <li><Link href={`/${locale}/terminos`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('terms')}</Link></li>
               <li><Link href={`/${locale}/cookies`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('cookiesLink')}</Link></li>

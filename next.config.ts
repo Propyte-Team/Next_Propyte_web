@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
       { protocol: 'https', hostname: 'drive.google.com' },
+      // YouTube thumbnails para VideoPlayer (componente property/VideoPlayer.tsx)
+      { protocol: 'https', hostname: 'img.youtube.com' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
     ],
   },
   async redirects() {
@@ -39,6 +42,8 @@ const nextConfig: NextConfig = {
       { source: '/nosotros/',               destination: '/es/nosotros/quienes-somos', permanent: true },
       // N1: /locale/nosotros sin sub-ruta → quienes-somos
       { source: '/:locale/nosotros',        destination: '/:locale/nosotros/quienes-somos', permanent: true },
+      // B4.4: Manual §2.1 establece /equipo como ruta canónica; redirect 301 desde legacy
+      { source: '/:locale/nosotros/equipo-comercial', destination: '/:locale/equipo', permanent: true },
     ];
   },
   async headers() {

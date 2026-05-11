@@ -1,8 +1,9 @@
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 
 export default function MarketData() {
   const t = useTranslations('marketData');
+  const locale = useLocale();
 
   const stats = [
     { value: t('stat1Value'), label: t('stat1Label'), source: t('stat1Source') },
@@ -24,7 +25,7 @@ export default function MarketData() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <Link href="#" className="text-[#0F766E] font-medium hover:underline">
+          <Link href={`/${locale}/blog?category=analisis-mercado`} className="text-[#0F766E] font-medium hover:underline">
             {t('cta')} →
           </Link>
         </div>

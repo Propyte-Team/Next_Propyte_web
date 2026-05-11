@@ -18,10 +18,6 @@ interface HeroProps {
   };
 }
 
-// Speckit §18 social-proof floors — cuando Supabase regresa 0 (data gap),
-// el hero mantiene estos mínimos promocionales en lugar de mostrar "0 Ciudades".
-const FLOORS = { developments: 170, units: 500, cities: 5, zones: 30 };
-
 export default function Hero({ stats }: HeroProps) {
   const t = useTranslations('hero');
   const tNav = useTranslations('nav');
@@ -33,10 +29,14 @@ export default function Hero({ stats }: HeroProps) {
   const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
   const imageUrl = process.env.NEXT_PUBLIC_HERO_IMAGE_URL;
 
-  const d = Math.max(stats?.developments ?? 0, FLOORS.developments);
-  const u = Math.max(stats?.units ?? 0, FLOORS.units);
-  const c = Math.max(stats?.cities ?? 0, FLOORS.cities);
-  const z = Math.max(stats?.zones ?? 0, FLOORS.zones);
+  // Stats reales sin pisos inventados. Cada pill se omite si la cifra es 0,
+  // y el suffix "+" se aplica solo cuando el valor sugiere conteo agregado (>=10).
+  const heroStats = [
+    { value: stats?.developments ?? 0, label: t('statsDevelopments') },
+    { value: stats?.units ?? 0, label: t('statsUnits') },
+    { value: stats?.cities ?? 0, label: t('statsCities') },
+    { value: stats?.zones ?? 0, label: t('statsZones') },
+  ].filter((s) => s.value > 0);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -63,8 +63,15 @@ export default function Hero({ stats }: HeroProps) {
   const titleHead = lastTwoWordsMatch ? lastTwoWordsMatch[1] : titleRaw;
   const titleAccent = lastTwoWordsMatch ? lastTwoWordsMatch[2] : '';
 
+  // C4 Hero performance — preload del poster image como recurso LCP cuando existe.
+  // Next.js coloca este <link> en <head> automáticamente. Sin esto, el browser
+  // descubre la imagen del poster al parsear el <video>, después de varios bytes
+  // del HTML, perdiendo tiempo crítico para Largest Contentful Paint.
   return (
     <section className="propyte-hero hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
+      {imageUrl && (
+        <link rel="preload" as="image" href={imageUrl} fetchPriority="high" />
+      )}
       {videoUrl ? (
         <video
           className="absolute inset-0 w-full h-full object-cover"
@@ -72,7 +79,7 @@ export default function Hero({ stats }: HeroProps) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           poster={imageUrl}
         >
           <source src={videoUrl} type="video/mp4" />
@@ -92,7 +99,7 @@ export default function Hero({ stats }: HeroProps) {
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
         <span className="brand-eyebrow inline-block mb-4 px-4 py-1.5 rounded-full border border-[#A2F9FF]/40 text-[#A2F9FF] bg-[#A2F9FF]/[0.06] backdrop-blur-sm">
-          REAL ESTATE
+          {t('eyebrow')}
         </span>
         <h1 className="text-h1 text-white leading-tight mb-3 drop-shadow-lg">
           {titleHead}
@@ -171,25 +178,23 @@ export default function Hero({ stats }: HeroProps) {
           </form>
         </div>
 
-        {/* Social-proof stats — siempre 4 pills con floors Speckit §18 */}
-        <div className="flex flex-wrap justify-center gap-4 md:gap-8 mt-8 mb-2">
-          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
-            <StatCounter to={d} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
-            <span className="text-white/80 text-sm font-medium">{t('statsDevelopments')}</span>
+        {heroStats.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 mt-8 mb-2">
+            {heroStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5"
+              >
+                <StatCounter
+                  to={stat.value}
+                  suffix={stat.value >= 10 ? '+' : ''}
+                  className="text-[#A2F9FF] text-xl md:text-2xl font-bold"
+                />
+                <span className="text-white/80 text-sm font-medium">{stat.label}</span>
+              </div>
+            ))}
           </div>
-          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
-            <StatCounter to={u} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
-            <span className="text-white/80 text-sm font-medium">{t('statsUnits')}</span>
-          </div>
-          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
-            <StatCounter to={c} className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
-            <span className="text-white/80 text-sm font-medium">{t('statsCities')}</span>
-          </div>
-          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
-            <StatCounter to={z} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
-            <span className="text-white/80 text-sm font-medium">{t('statsZones')}</span>
-          </div>
-        </div>
+        )}
 
         <div className="flex flex-wrap justify-center gap-3 mt-6">
           {quickLinks.map((link) => (

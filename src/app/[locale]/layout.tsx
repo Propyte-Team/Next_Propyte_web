@@ -18,6 +18,7 @@ import { UnitsProvider } from '@/lib/units-context';
 import { getVisibility } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
+import SchemaMarkup from '@/components/shared/SchemaMarkup';
 
 export default async function LocaleLayout({
   children,
@@ -49,6 +50,9 @@ export default async function LocaleLayout({
       <UnitsProvider>
       <SearchProvider>
       <MotionConfig reducedMotion="user">
+        {/* WebSite + SearchAction schema — global, habilita Sitelinks Search Box.
+            Manual UX/UI §7.3. */}
+        <SchemaMarkup type="website" />
         <a href="#main-content" className="skip-to-content">
           {tA11y('skipToContent')}
         </a>

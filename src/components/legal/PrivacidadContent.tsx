@@ -45,7 +45,7 @@ export default function PrivacidadContent({ locale }: { locale: string }) {
       <p>{pickLang(locale, 'We use your data to:', 'Utilizamos tus datos para:')}</p>
       <ul>
         <li>{pickLang(locale, 'Contact you about properties, developments, financing, or your specific inquiries', 'Contactarte sobre propiedades, desarrollos, financiamiento o las consultas específicas que nos hagas')}</li>
-        <li>{pickLang(locale, 'Connect you with allied developers and Propyte certified advisors', 'Conectarte con desarrolladores aliados y asesores certificados Propyte')}</li>
+        <li>{pickLang(locale, 'Connect you with allied developers and Propyte advisors', 'Conectarte con desarrolladores aliados y asesores Propyte')}</li>
         <li>{pickLang(locale, 'Send personalized investment analyses (ROI, market trends, comparables)', 'Enviarte análisis personalizados de inversión (ROI, tendencias de mercado, comparables)')}</li>
         <li>{pickLang(locale, 'Comply with contractual and legal obligations arising from your interaction with our services', 'Cumplir obligaciones contractuales y legales derivadas de tu interacción con nuestros servicios')}</li>
       </ul>
@@ -70,7 +70,7 @@ export default function PrivacidadContent({ locale }: { locale: string }) {
       <p>{pickLang(locale, 'We may share your data with:', 'Podemos compartir tus datos con:')}</p>
       <ul>
         <li>{pickLang(locale, 'Allied developers — when you request information about a specific property; only the strictly necessary data is transferred', 'Desarrolladores aliados — cuando solicitas información de una propiedad específica; solo se transfieren los datos estrictamente necesarios')}</li>
-        <li>{pickLang(locale, 'Propyte certified advisors — to enable contact and follow-up', 'Asesores Propyte certificados — para habilitar el contacto y el seguimiento')}</li>
+        <li>{pickLang(locale, 'Propyte advisors — to enable contact and follow-up', 'Asesores Propyte — para habilitar el contacto y el seguimiento')}</li>
         <li>{pickLang(locale, 'Service providers under confidentiality agreement: hosting (Hostinger, Vercel, Supabase), CRM (Zoho), email (Hostinger SMTP), analytics (Google Analytics, Meta Pixel)', 'Proveedores de servicios bajo acuerdo de confidencialidad: hosting (Hostinger, Vercel, Supabase), CRM (Zoho), correo (Hostinger SMTP), analítica (Google Analytics, Meta Pixel)')}</li>
         <li>{pickLang(locale, 'Competent authorities, when required by law', 'Autoridades competentes cuando lo requiera la ley')}</li>
       </ul>

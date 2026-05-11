@@ -55,9 +55,9 @@
     "presale": "Preventa"
   },
   "featured": {
-    "title": "Propiedades destacadas",
-    "subtitle": "Seleccionadas por nuestro equipo de análisis de mercado",
-    "viewAll": "Ver todas las propiedades",
+    "title": "Desarrollos destacados en preventa · Tulum, Playa del Carmen y Mérida",
+    "subtitle": "Curados por el equipo Propyte con validación SOP-3.2 documentada",
+    "viewAll": "Ver Todas las Propiedades",
     "loading": "Cargando desarrollos destacados…",
     "from": "Desde",
     "photos": "fotos",
@@ -66,20 +66,20 @@
     "roiAnnual": "ROI {value}% anual"
   },
   "trending": {
-    "title": "Datos del mercado inmobiliario",
-    "subtitle": "Riviera Maya — actualizado en tiempo real",
+    "title": "Mercado inmobiliario Riviera Maya: ROI, plusvalía y demanda 2026",
+    "subtitle": "Riviera Maya — actualizado semanalmente con comparables públicos",
     "stat1Label": "ROI promedio anual",
     "stat2Label": "Plusvalía preventa vs entrega",
     "stat3Label": "Compradores internacionales",
     "stat4Label": "Crecimiento demanda anual",
     "zonesTitle": "Zonas con mayor plusvalía en Riviera Maya",
-    "footnoteWithData": "Datos basados en análisis de Manejo de Datos y comparables de renta. Actualizado semanalmente.",
+    "footnoteWithData": "Datos basados en comparables públicos de portales inmobiliarios y análisis de renta. Actualizado semanalmente.",
     "footnoteNoData": "Fuentes: datos estimados basados en análisis de mercado de la Riviera Maya. Rendimientos pasados no garantizan resultados futuros.",
     "occupancy": "Ocupación",
     "adr": "ADR"
   },
   "whyPropyte": {
-    "title": "¿Por qué Propyte?",
+    "title": "Por qué inversionistas eligen Propyte para Riviera Maya",
     "subtitle": "Equipo bilingüe, validación estratégica de cada desarrollo y proceso documentado desde el contacto hasta la escrituración.",
     "feature1Title": "Datos antes que entusiasmo",
     "feature1Desc": "Cada desarrollo pasa por validación estratégica con criterios documentados (claridad legal, fiabilidad de plazos, precio comparable, calidad constructiva).",
@@ -101,9 +101,135 @@
     "aud3Cta": "Únete al Equipo",
     "audienceHeading": "Para quién es Propyte"
   },
+  "nosotrosTeaser": {
+    "eyebrow": "Quiénes somos",
+    "title": "Comercializamos bienes raíces con datos y sin presión",
+    "paragraph1": "Desde 2017 acompañamos a inversionistas en Riviera Maya y Yucatán con un equipo bilingüe que entiende fideicomiso, plusvalía y rendimiento real — no promesas vacías.",
+    "paragraph2": "Cada desarrollo que listamos pasa por una validación estratégica documentada (Scorecard SOP-3.2). Lo que ves es lo que decides.",
+    "stat1": "8+ años en plaza",
+    "stat2": "Bilingüe ES/EN",
+    "stat3": "Validación SOP-3.2 documentada",
+    "cta": "Conoce al equipo"
+  },
+  "metodologiaTeaser": {
+    "eyebrow": "Metodología Propyte",
+    "title": "Cinco criterios antes de listar un desarrollo",
+    "subtitle": "Cada propiedad publicada pasa por la validación estratégica documentada del Scorecard SOP-3.2. Si un criterio no se cumple, el desarrollo no entra al portafolio.",
+    "criterion1Title": "Claridad legal",
+    "criterion1Desc": "Escritura, fideicomiso, anticorrupción y RFC del desarrollador.",
+    "criterion2Title": "Fiabilidad de plazos",
+    "criterion2Desc": "Historial de entregas previas, contratos y garantías documentadas.",
+    "criterion3Title": "Precio comparable",
+    "criterion3Desc": "Análisis de mercado por zona y benchmarks de comparables.",
+    "criterion4Title": "Calidad constructiva",
+    "criterion4Desc": "Visitas, especificaciones, materiales y supervisión del avance.",
+    "criterion5Title": "Vendibilidad",
+    "criterion5Desc": "Análisis de demanda real, ocupación esperada y reventa.",
+    "cta": "Ver metodología completa"
+  },
+  "processInfographic": {
+    "eyebrow": "Proceso de compra Propyte",
+    "title": "De la primera llamada a la escrituración",
+    "placeholderText": "Infografía en preparación — la próxima actualización incluirá los pasos del proceso documentado paso a paso, desde el primer contacto hasta la entrega de llaves.",
+    "placeholderHint": "Espacio reservado"
+  },
+  "dondeEstamos": {
+    "eyebrow": "Dónde estamos",
+    "title": "Cobertura en Riviera Maya y Yucatán",
+    "subtitle": "Operamos desde Playa del Carmen y cubrimos los principales mercados de la costa caribe y la península.",
+    "labTitle": "Real Estate Lab",
+    "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
+    "labHours": "Lunes a viernes, 9:00 – 18:00",
+    "labCta": "Agendar visita al Lab",
+    "zonesTitle": "Zonas que cubrimos",
+    "zone1": "Tulum",
+    "zone2": "Playa del Carmen",
+    "zone3": "Cancún",
+    "zone4": "Mérida",
+    "zone5": "Bacalar"
+  },
+  "metodologiaPage": {
+    "metaTitle": "Metodología Propyte: Scorecard SOP-3.2 — Cómo validamos un desarrollo",
+    "metaDescription": "El proceso documentado que aplicamos a cada desarrollo antes de listarlo: 5 criterios, equipo legal y comercial, decisión auditable.",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbCurrent": "Metodología",
+    "heroEyebrow": "Metodología Propyte",
+    "heroTitle": "Scorecard SOP-3.2: cómo validamos un desarrollo antes de listarlo",
+    "heroLead": "Cada desarrollo en el portafolio Propyte pasa por una validación estratégica documentada con cinco criterios obligatorios. Si un criterio no se cumple, el desarrollo no entra. Esta página resume cómo funciona el proceso.",
+    "section1Title": "Los cinco criterios",
+    "section1Lead": "Cada criterio tiene una rúbrica documentada con sub-puntos verificables. La revisión la firma una persona del equipo legal y otra del equipo comercial.",
+    "criterion1Heading": "01. Claridad legal",
+    "criterion1Body": "Verificamos escritura matriz, estatus del fideicomiso (cuando aplica), constitución legal del desarrollador, RFC vigente y revisión anticorrupción. Si la escritura no es clara o hay litigios activos, el desarrollo no se lista.",
+    "criterion2Heading": "02. Fiabilidad de plazos",
+    "criterion2Body": "Revisamos el historial de entregas previas del desarrollador, contratos de compraventa y garantías documentadas. Si no hay historial verificable o el contrato no protege al comprador ante retrasos, se exige addendum antes de listar.",
+    "criterion3Heading": "03. Precio comparable",
+    "criterion3Body": "Comparamos el precio por m² contra el promedio de la zona, ajustando por amenidades y etapa (preventa/construcción/entrega). Si el precio se sale del rango sin justificación clara, se documenta y se comunica al cliente antes de la venta.",
+    "criterion4Heading": "04. Calidad constructiva",
+    "criterion4Body": "Visita al sitio (o avance documentado fotográficamente), revisión de especificaciones, calidad de materiales y validación del avance comprometido. Si hay desfase entre lo comprometido y lo entregado, se exige corrección antes de continuar.",
+    "criterion5Heading": "05. Vendibilidad",
+    "criterion5Body": "Análisis de demanda real por zona, ocupación esperada (corta y larga), perfil de comprador típico y potencial de reventa. No prometemos ROI sin metodología — solo discutimos rangos honestos con datos disponibles.",
+    "section2Title": "Qué pasa si un criterio no se cumple",
+    "section2Body": "El desarrollo no se publica en el portafolio. Si el desarrollador puede subsanar (por ejemplo, addendum contractual, evidencia adicional), se reabre la revisión. Si no puede subsanarse, el desarrollo queda fuera. No hacemos excepciones por presión comercial.",
+    "section3Title": "Quién firma la validación",
+    "section3Body": "Cada Scorecard SOP-3.2 lleva la firma de un miembro del equipo legal y un miembro del equipo comercial. La validación es auditable internamente y puede compartirse con el cliente bajo solicitud.",
+    "ctaTitle": "¿Tienes preguntas sobre la metodología?",
+    "ctaBody": "Conversa con un asesor Propyte y solicita ver el Scorecard del desarrollo que te interesa.",
+    "ctaButton": "Hablar con un asesor"
+  },
+  "equipoPage": {
+    "metaTitle": "Equipo Propyte: asesores bilingües en Riviera Maya",
+    "metaDescription": "Conoce al equipo que comercializa los desarrollos y acompaña a inversionistas en Tulum, Playa del Carmen y Mérida.",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbCurrent": "Equipo",
+    "heroEyebrow": "Quiénes somos",
+    "heroTitle": "Equipo Propyte",
+    "heroLead": "Asesores bilingües con experiencia en plaza. Comercializamos bienes raíces en Riviera Maya con un proceso consultivo, sin presión y respaldado por datos documentados.",
+    "section1Title": "Cómo trabajamos",
+    "section1Body": "Cada cliente trabaja con una sola persona del equipo de principio a fin: primer contacto, análisis del Scorecard SOP-3.2, visita al desarrollo, simulación financiera, contratos y escrituración. Sin scripts agresivos, sin handoffs ciegos.",
+    "section2Title": "Bios del equipo",
+    "section2Placeholder": "Fotos, bios completas y credenciales en publicación — esta página está en construcción. Mientras tanto, agenda una llamada con el equipo directamente y conócenos.",
+    "ctaTitle": "Conoce al equipo directamente",
+    "ctaBody": "Agenda una llamada de 20 minutos sin compromiso para discutir tu inversión y conocer al asesor que te acompañaría.",
+    "ctaButton": "Agendar llamada"
+  },
+  "avisoLegalPage": {
+    "metaTitle": "Aviso legal de inversión: disclaimer, términos del simulador y fuentes",
+    "metaDescription": "Disclaimer YMYL completo de Propyte: alcance del simulador financiero, supuestos, limitaciones legales y fuentes citadas en propyte.com.",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbCurrent": "Aviso legal de inversión",
+    "heroEyebrow": "Transparencia",
+    "heroTitle": "Aviso legal de inversión",
+    "heroLead": "Este aviso aplica a todas las cifras, proyecciones, simulaciones y rangos publicados en propyte.com. Cualquier decisión de inversión es responsabilidad del usuario y debe consultarse con un asesor Propyte y, cuando aplique, con un profesional legal o financiero independiente.",
+    "section1Title": "Naturaleza de las cifras publicadas",
+    "section1Body": "Las proyecciones, simulaciones y rangos de rendimiento que aparecen en el sitio son estimaciones basadas en datos históricos del mercado, comparables públicos y supuestos del usuario. No constituyen garantía de rendimiento ni recomendación financiera. Rendimientos pasados no garantizan resultados futuros.",
+    "section2Title": "Alcance del simulador financiero",
+    "section2Body": "El simulador financiero permite proyectar ROI estimado, enganche, mensualidades y plusvalía basándose en parámetros que el usuario define: precio, enganche, plazo, tasa de apreciación, escenario de renta. Los resultados son referenciales. No incluyen impuestos por adquisición, gastos notariales, fideicomiso bancario (cuando aplica), comisiones de gestión ni seguros, salvo que el usuario los incluya explícitamente.",
+    "section3Title": "Fuentes de datos",
+    "section3Body": "Cuando publicamos cifras agregadas de mercado (ROI, plusvalía, demanda, etc.), citamos la fuente y la fecha de actualización. Al cierre de esta versión, Propyte no tiene licencia comercial activa con Softec ni AMPI Q.Roo — los rangos publicados se basan en comparables internos y datos públicos. Cuando exista licencia comercial, las fuentes se actualizarán con el nombre del reporte y la fecha de publicación.",
+    "section4Title": "Compra por extranjeros",
+    "section4Body": "La zona costera de Quintana Roo está en zona restringida federal. Los extranjeros compran propiedad a través de un fideicomiso bancario de 50 años (renovable). Propyte facilita el proceso pero no es notaría ni institución bancaria. Los costos y trámites específicos los confirma el notario y la institución fiduciaria asignada.",
+    "section5Title": "Validación de desarrollos",
+    "section5Body": "Cada desarrollo en el portafolio Propyte pasa por el Scorecard SOP-3.2 (ver /metodologia). La validación es documentada y auditable internamente. No constituye una garantía sobre el desempeño futuro del desarrollo ni asegura disponibilidad, precio ni condiciones específicas de venta — esos términos los establece el desarrollador en su contrato.",
+    "section6Title": "Limitaciones y responsabilidad",
+    "section6Body": "Propyte opera como marketplace inmobiliario y asesor comercial. No garantizamos retornos específicos, plusvalía ni ocupación. Los datos están sujetos a actualización. La decisión final de compra y la verificación de la información son responsabilidad del comprador y de los profesionales que lo acompañen (notario, contador, asesor legal).",
+    "section7Title": "Contacto de cumplimiento",
+    "section7Body": "Si detectas información inexacta, una cifra sin fuente o un disclaimer ausente, escríbenos a info@propyte.com con asunto \"Cumplimiento\". Revisamos cada reporte y publicamos corrección si procede."
+  },
+  "homeFAQ": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que más nos preguntan inversionistas",
+    "q1": "¿Un extranjero puede comprar propiedad en Tulum o Playa del Carmen?",
+    "a1": "Sí. La zona costera de Quintana Roo está en zona restringida federal, por lo que un extranjero compra a través de un fideicomiso bancario por 50 años (renovable). El proceso es estándar y un asesor Propyte te acompaña en cada paso.",
+    "q2": "¿Cuánto cuesta el cierre legal de una propiedad en Riviera Maya?",
+    "a2": "Los gastos de cierre suelen rondar entre 6% y 8% del valor de la propiedad e incluyen impuesto de adquisición, notario, fideicomiso (si aplica) y permisos. Las cifras varían por estado y por el tipo de propiedad — pedimos un análisis personalizado al asesor.",
+    "q3": "¿Cuál es el ROI realista de un Airbnb en Tulum?",
+    "a3": "El ROI depende de zona, calidad del producto, gestión y temporada. No publicamos cifras puntuales sin metodología — preferimos discutir rangos honestos con un asesor que conozca tu inversión específica y los comparables actuales.",
+    "q4": "¿Qué pasa si compro en preventa y el desarrollo se retrasa?",
+    "a4": "El contrato debe especificar penalidades por retraso y opciones de salida. Validamos esto en el criterio de Fiabilidad de Plazos antes de listar el desarrollo. Si compras y hay un retraso, el contrato es tu protección documentada."
+  },
   "joinTeam": {
     "title": "¿Quieres ser parte del equipo Propyte?",
-    "cta": "Únete al Equipo"
+    "cta": "Conoce el Plan de Carrera"
   },
   "roiSimulator": {
     "eyebrow": "Simulador Financiero",
@@ -148,7 +274,7 @@
         "name": "Fernando T.",
         "city": "Querétaro",
         "rating": 5,
-        "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los datos de Manejo de Datos me dieron confianza para tomar la decisión."
+        "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los comparables del mercado me dieron confianza para tomar la decisión."
       },
       {
         "name": "Laura S.",
@@ -166,13 +292,13 @@
     "comingSoon": "Próximamente"
   },
   "howItWorks": {
-    "title": "Cómo funciona",
+    "title": "Cómo invertir con Propyte: Explora, analiza, decide",
     "step1Title": "Explora",
-    "step1Desc": "Navega nuestro marketplace con mapa interactivo y filtros inteligentes",
+    "step1Desc": "Navega el marketplace con mapa interactivo y filtros por zona, tipo, presupuesto y etapa.",
     "step2Title": "Analiza",
-    "step2Desc": "Usa el simulador financiero para proyectar ROI, enganche y mensualidades",
+    "step2Desc": "Usa el simulador financiero con tus propios supuestos y compara el desarrollo contra benchmarks reales.",
     "step3Title": "Decide",
-    "step3Desc": "Contacta a un asesor certificado con toda la información que necesitas"
+    "step3Desc": "Agenda una llamada con un asesor Propyte. Sin presión, con todos los documentos del Scorecard SOP-3.2 a la mano."
   },
   "valueProp": {
     "investorsTitle": "Para Inversionistas",
@@ -200,7 +326,7 @@
   },
   "developerBanner": {
     "title": "Potencia la comercialización de tu desarrollo",
-    "cta": "Solicitar Propuesta"
+    "cta": "Solicitar Propuesta Comercial"
   },
   "blog": {
     "listingTitle": "Blog",
@@ -217,7 +343,7 @@
     "relatedTitle": "Artículos relacionados",
     "paginationPrev": "Anterior",
     "paginationNext": "Siguiente",
-    "title": "Artículos recientes",
+    "title": "Análisis y guías de inversión inmobiliaria · Riviera Maya",
     "viewAll": "Ver todos los artículos",
     "share": "Compartir:",
     "copyLink": "Copiar enlace",
@@ -239,7 +365,10 @@
     "newsletterPlaceholder": "tu@correo.com",
     "newsletterCta": "Suscribirse",
     "newsletterSuccess": "¡Listo! Te suscribiste correctamente.",
-    "newsletterError": "Hubo un problema. Inténtalo de nuevo."
+    "newsletterError": "Hubo un problema. Inténtalo de nuevo.",
+    "homeEmptyTitle": "Próximamente: análisis mensual de mercado y guías de inversión",
+    "homeEmptyBody": "Estamos preparando contenido editorial sobre inversión inmobiliaria en Riviera Maya. Suscríbete al newsletter para recibirlo directo en tu correo cuando se publique.",
+    "homeEmptyCta": "Suscribirme al newsletter"
   },
   "marketplace": {
     "title": "Propiedades",
@@ -746,11 +875,14 @@
     "legal": "Legal",
     "privacy": "Aviso de Privacidad",
     "terms": "Términos de Uso",
+    "methodology": "Metodología",
+    "investmentNotice": "Aviso legal de inversión",
+    "team": "Equipo",
     "contact": "Contacto",
     "cookieSettings": "Configurar cookies",
     "rights": "Todos los derechos reservados.",
     "ctaTitle": "¿Listo para invertir en la Riviera Maya?",
-    "ctaSubtitle": "Habla con un asesor certificado y recibe un análisis personalizado",
+    "ctaSubtitle": "Habla con un asesor Propyte y recibe un análisis personalizado",
     "ctaTitleBuilt": "¿Listo para construir tu proyecto?",
     "ctaSubtitleBuilt": "Diseño, construcción y entrega llave en mano con Propyte Built.",
     "ctaTitleUnete": "¿Listo para crecer con nosotros?",
@@ -1129,7 +1261,7 @@
     "stat4Value": "Creciendo",
     "stat4Label": "Posiciones abiertas",
     "teamTitle": "Nuestro equipo comercial",
-    "teamSubtitle": "Asesores certificados con conocimiento profundo del mercado de la Riviera Maya.",
+    "teamSubtitle": "Asesores Propyte con conocimiento profundo del mercado de la Riviera Maya.",
     "teamIntro": "El equipo comercial de Propyte opera desde el Real Estate Lab en 5ta Avenida, Playa del Carmen, con cobertura en Tulum a través de Nativa Tulum. Cada asesor está registrado ante SEDETUS y capacitado bajo nuestro Playbook Comercial.",
     "teamMore": "+ 5 asesores activos en Playa del Carmen y Tulum",
     "teamCta": "¿Quieres conocer a tu asesor?",
@@ -1370,7 +1502,7 @@
     "methodologyDisclaimer": "Las estimaciones no constituyen asesoría financiera.",
     "advisorTitle": "¿Necesitas un análisis personalizado?",
     "advisorDesc": "Nuestros asesores en Playa del Carmen y Tulum conocen cada zona.",
-    "advisorCta": "Hablar con un asesor certificado",
+    "advisorCta": "Hablar con un asesor Propyte",
     "currencyMxn": "MXN",
     "currencyUsd": "USD",
     "kpiZones": "Zonas",
@@ -1382,7 +1514,7 @@
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
     "openFreeCalculator": "Abrir calculadora gratuita",
-    "talkToAdvisor": "Hablar con un asesor certificado"
+    "talkToAdvisor": "Hablar con un asesor Propyte"
   },
   "zoneAnalytics": {
     "scoreUnavailable": "Score no disponible aún",
@@ -1417,7 +1549,7 @@
     "strFactorRevparDesc": "Ingreso por Habitación Disponible, combinando ocupación y tarifa en una sola métrica de potencial de ingresos.",
     "strFactorCompetition": "Competencia (20%)",
     "strFactorCompetitionDesc": "Puntuación inversa de saturación de oferta. Menos listings activos relativos a la demanda resultan en mayor puntuación.",
-    "strFooter": "Datos provenientes de Manejo de Datos con actualizaciones mensuales. Los scores se recalculan el 1ero de cada mes.",
+    "strFooter": "Datos basados en comparables públicos de portales inmobiliarios con actualizaciones mensuales. Los scores se recalculan el 1ero de cada mes.",
     "ltrSourcesTitle": "Fuentes de datos (7)",
     "ltrSource1": "Inmuebles24 — Portal inmobiliario más grande de México",
     "ltrSource2": "Segundamano — Marketplace de anuncios clasificados",
@@ -1487,7 +1619,7 @@
     "q4": "¿Qué es un fideicomiso bancario?",
     "a4": "Es un instrumento legal donde un banco mexicano mantiene la propiedad a nombre del comprador extranjero. Te otorga derechos completos de uso, renta, venta y herencia. Se renueva cada 50 años automáticamente.",
     "q5": "¿Qué ROI puedo esperar en la Riviera Maya?",
-    "a5": "El ROI varía según la estrategia: plusvalía en preventa 20-40% (2-3 años), renta residencial 5-8% anual, y renta vacacional 8-14% anual. Usamos datos reales de Manejo de Datos y comparables del mercado para estimar rendimientos.",
+    "a5": "El ROI varía según la estrategia: plusvalía en preventa 20-40% (2-3 años), renta residencial 5-8% anual, y renta vacacional 8-14% anual. Usamos comparables públicos de portales inmobiliarios y benchmarks de mercado para estimar rangos. Los rangos son referenciales, no garantizados.",
     "q6": "¿Qué es mejor: renta residencial o vacacional?",
     "a6": "Depende de tu perfil. La renta residencial ofrece ingresos estables con menor esfuerzo de gestión. La vacacional genera más ingresos pero requiere administración activa o un property manager (15-25% de comisión).",
     "q7": "¿Cómo se calcula el Cap Rate?",
@@ -1497,13 +1629,13 @@
     "q9": "¿Qué es el financiamiento directo del desarrollador?",
     "a9": "Es un plan de pago donde pagas directamente al desarrollador en mensualidades durante la construcción, típicamente a 0% de interés. Requiere un enganche del 20-30% y el saldo se cubre en 12-36 meses.",
     "q10": "¿Cuánto puedo ganar rentando en Airbnb en Tulum?",
-    "a10": "Un departamento de 1 recámara en Tulum puede generar entre $15,000-$30,000 MXN/mes en renta vacacional con ocupación del 60-75%. Un 2 recámaras puede alcanzar $25,000-$50,000 MXN/mes. Usamos datos de Manejo de Datos para estimaciones precisas.",
+    "a10": "Un departamento de 1 recámara en Tulum puede generar entre $15,000-$30,000 MXN/mes en renta vacacional con ocupación del 60-75%. Un 2 recámaras puede alcanzar $25,000-$50,000 MXN/mes. Las cifras son referenciales y se basan en comparables públicos de portales inmobiliarios; los rendimientos reales varían por zona, calidad de gestión y temporada.",
     "q11": "¿Necesito un administrador de propiedades?",
     "a11": "Para renta vacacional, es altamente recomendable. Un property manager se encarga de check-in/check-out, limpieza, mantenimiento y comunicación con huéspedes. La comisión típica es 15-25% del ingreso bruto.",
     "q12": "¿Propyte cobra comisión a los compradores?",
     "a12": "No. Nuestro servicio es gratuito para compradores e inversionistas. Trabajamos con desarrolladores que cubren nuestros honorarios como parte de su estrategia de venta.",
     "q13": "¿De dónde salen los datos de mercado?",
-    "a13": "Nuestros análisis combinan datos de Manejo de Datos (ocupación, ADR, RevPAR), comparables de renta de portales inmobiliarios, y modelos de machine learning propios. Los datos se actualizan semanalmente.",
+    "a13": "Nuestros análisis combinan comparables públicos de portales inmobiliarios (ocupación, ADR, RevPAR), benchmarks de renta y modelos internos propios. Los datos se actualizan semanalmente.",
     "q14": "¿Cómo filtro propiedades según mi presupuesto?",
     "a14": "En /propiedades usa los filtros de precio mínimo/máximo, ciudad, tipo de propiedad y etapa (preventa/construcción/entrega inmediata). Los resultados se actualizan en tiempo real. Puedes guardar búsquedas frecuentes en tu perfil.",
     "ctaStillHave": "¿Aún tienes preguntas?",
@@ -2060,7 +2192,7 @@
   "dataManagement": {
     "marketTitle": "Mercado de renta vacacional",
     "updated": "Actualizado",
-    "marketSubtitle": "Desempeño de renta corta según datos de Manejo de Datos.",
+    "marketSubtitle": "Desempeño de renta corta según comparables públicos de portales inmobiliarios.",
     "currentOccupancy": "Ocupación actual",
     "avg12m": "Prom. 12m",
     "currentAdr": "ADR actual",
@@ -2108,7 +2240,7 @@
     "h1": "Mapa de Rentabilidad",
     "subtitle": "Compara ocupación, ingreso por noche y competencia entre zonas antes de invertir",
     "methodology": "Metodología",
-    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen métricas de Manejo de Datos y 140K+ comparables de renta de 8+ portales. Los scores se actualizan semanalmente."
+    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente."
   },
   "geoAnalysis": {
     "location": "Ubicación",
@@ -2176,7 +2308,7 @@
   "leadMagnet": {
     "freeReport": "REPORTE GRATUITO",
     "title": "Top 10 Desarrollos con Mayor ROI 2026",
-    "description": "Obtén nuestro análisis exclusivo de las inversiones inmobiliarias de mayor rendimiento en la Riviera Maya. Basado en datos reales de Manejo de Datos, comparables de renta y proyecciones de mercado.",
+    "description": "Obtén nuestro análisis exclusivo de las inversiones inmobiliarias en la Riviera Maya. Basado en comparables públicos de portales inmobiliarios y proyecciones referenciales de mercado.",
     "checkEmail": "¡Revisa tu correo!",
     "checkEmailDesc": "Te hemos enviado el reporte a tu bandeja de entrada.",
     "name": "Nombre",

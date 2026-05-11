@@ -37,11 +37,11 @@ export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
           <p className="text-sm text-gray-600">
             {activeTab === 'vacacional'
               ? isEn
-                ? 'Our certified advisors can help you find the best vacation rental investment based on occupancy, rates, and projected returns.'
-                : 'Nuestros asesores certificados te ayudan a encontrar la mejor inversión en renta vacacional basándose en ocupación, tarifas y rendimientos proyectados.'
+                ? 'Our Propyte advisors can help you find the best vacation rental investment based on occupancy, rates, and projected returns.'
+                : 'Los asesores Propyte te ayudan a encontrar la mejor inversión en renta vacacional basándose en ocupación, tarifas y rendimientos proyectados.'
               : isEn
-                ? 'Our certified advisors can help you compare rental yields, cap rates, and cash flow projections for any development.'
-                : 'Nuestros asesores certificados te ayudan a comparar yields de renta, cap rates y proyecciones de flujo para cualquier desarrollo.'}
+                ? 'Our Propyte advisors can help you compare rental yields, cap rates, and cash flow projections for any development.'
+                : 'Los asesores Propyte te ayudan a comparar yields de renta, cap rates y proyecciones de flujo para cualquier desarrollo.'}
           </p>
         </div>
 
