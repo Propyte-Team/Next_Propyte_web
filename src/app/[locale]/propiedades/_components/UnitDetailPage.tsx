@@ -30,6 +30,7 @@ import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import AreaDisplay from '@/components/ui/AreaDisplay';
+import PriceDisplay from '@/components/ui/PriceDisplay';
 import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -310,11 +311,18 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               {/* Price + Share */}
               <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
                 {property.price.mxn > 0 && (
-                  <div className="flex items-baseline gap-4">
-                    <div className="text-4xl font-extrabold text-[#2C2C2C]">{formatPrice(property.price.mxn)}</div>
+                  <div className="flex items-baseline gap-4 flex-wrap">
+                    {/* Precio principal: MXN grande, USD chico abajo (toggle global MXN/USD).
+                        Incluye nota "TC ref. Banxico" debajo. */}
+                    <PriceDisplay mxn={property.price.mxn} variant="dual" size="xl" showRateNote />
                     {property.specs.area > 0 && (
                       <div className="text-sm text-gray-600">
-                        {formatPrice(Math.round(property.price.mxn / property.specs.area))}/m²
+                        <PriceDisplay
+                          mxn={Math.round(property.price.mxn / property.specs.area)}
+                          variant="single"
+                          size="sm"
+                          suffix="/m²"
+                        />
                       </div>
                     )}
                   </div>
@@ -508,8 +516,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
             <div className="sticky top-24 space-y-6">
               {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
               <FloatingKeyData
-                price={property.price.mxn > 0 ? formatPrice(property.price.mxn) : null}
-                area={property.specs.area > 0 ? `${property.specs.area} m²` : null}
+                priceMxn={property.price.mxn > 0 ? property.price.mxn : null}
+                areaM2={property.specs.area > 0 ? property.specs.area : null}
                 bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
                 bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
                 labels={{

@@ -1,8 +1,14 @@
+'use client';
+
 import { DollarSign, Square, Bed, Bath } from 'lucide-react';
+import PriceDisplay from '@/components/ui/PriceDisplay';
+import AreaDisplay from '@/components/ui/AreaDisplay';
 
 interface FloatingKeyDataProps {
-  price: string | null;
-  area: string | null;
+  /** Precio en MXN (fuente de verdad). Si null, omite la fila precio. */
+  priceMxn?: number | null;
+  /** Área en m² (fuente de verdad). Si null/0, omite la fila área. */
+  areaM2?: number | null;
   bedrooms: string | null;
   bathrooms: string | null;
   labels: {
@@ -14,13 +20,48 @@ interface FloatingKeyDataProps {
   };
 }
 
-export default function FloatingKeyData({ price, area, bedrooms, bathrooms, labels }: FloatingKeyDataProps) {
-  const items = [
-    price ? { icon: DollarSign, label: labels.price, value: price } : null,
-    area ? { icon: Square, label: labels.area, value: area } : null,
-    bedrooms ? { icon: Bed, label: labels.bedrooms, value: bedrooms } : null,
-    bathrooms ? { icon: Bath, label: labels.bathrooms, value: bathrooms } : null,
-  ].filter((x): x is NonNullable<typeof x> => x !== null);
+export default function FloatingKeyData({
+  priceMxn,
+  areaM2,
+  bedrooms,
+  bathrooms,
+  labels,
+}: FloatingKeyDataProps) {
+  const hasPrice = priceMxn != null && priceMxn > 0;
+  const hasArea = areaM2 != null && areaM2 > 0;
+  const items: Array<{ icon: typeof DollarSign; label: string; value: React.ReactNode; key: string }> = [];
+  if (hasPrice) {
+    items.push({
+      icon: DollarSign,
+      label: labels.price,
+      value: <PriceDisplay mxn={priceMxn} variant="dual" size="sm" className="text-white" />,
+      key: 'price',
+    });
+  }
+  if (hasArea) {
+    items.push({
+      icon: Square,
+      label: labels.area,
+      value: <AreaDisplay m2={areaM2} variant="dual" size="sm" className="text-white" />,
+      key: 'area',
+    });
+  }
+  if (bedrooms) {
+    items.push({
+      icon: Bed,
+      label: labels.bedrooms,
+      value: <span className="text-sm font-bold text-white">{bedrooms}</span>,
+      key: 'bedrooms',
+    });
+  }
+  if (bathrooms) {
+    items.push({
+      icon: Bath,
+      label: labels.bathrooms,
+      value: <span className="text-sm font-bold text-white">{bathrooms}</span>,
+      key: 'bathrooms',
+    });
+  }
 
   if (items.length === 0) return null;
 
@@ -33,12 +74,12 @@ export default function FloatingKeyData({ price, area, bedrooms, bathrooms, labe
           </span>
         </div>
         <div className="px-4 py-3 space-y-2.5">
-          {items.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-center gap-2">
+          {items.map(({ icon: Icon, label, value, key }) => (
+            <div key={key} className="flex items-center gap-2">
               <Icon size={13} className="text-propyte-brand shrink-0" />
-              <div className="flex-1 flex items-baseline justify-between gap-2 min-w-0">
+              <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
                 <span className="text-2xs text-white/55 shrink-0">{label}</span>
-                <span className="text-sm font-bold text-white truncate text-right">{value}</span>
+                <span className="text-right">{value}</span>
               </div>
             </div>
           ))}

@@ -767,15 +767,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
             <div className="sticky top-24 space-y-6">
             {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
             <FloatingKeyData
-              price={propertyPrice > 0 ? formatPrice(propertyPrice) : null}
-              area={
+              priceMxn={propertyPrice > 0 ? propertyPrice : null}
+              areaM2={
                 areaRange
-                  ? areaRange.min === areaRange.max
-                    ? `${areaRange.min} m²`
-                    : `${areaRange.min}–${areaRange.max} m²`
-                  : representativeArea
-                    ? `${representativeArea} m²`
-                    : null
+                  ? areaRange.min // FloatingKeyData no soporta rango — usa el mínimo como representativo
+                  : representativeArea ?? null
               }
               bedrooms={
                 bedRange
