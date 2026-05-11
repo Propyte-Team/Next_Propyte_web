@@ -102,13 +102,13 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('label')}
             </span>
           </div>

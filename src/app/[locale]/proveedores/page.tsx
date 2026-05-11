@@ -31,27 +31,27 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
 
   return (
     <section className="relative py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] overflow-hidden">
-      <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1120px] mx-auto px-4 md:px-6">
         {/* Hero */}
         <div className="text-center max-w-[760px] mx-auto mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('comingSoon')}
             </span>
           </div>
 
-          <div className="w-16 h-16 rounded-2xl bg-[#5CE0D2]/15 flex items-center justify-center mx-auto mb-6">
-            <Truck size={28} strokeWidth={1.75} className="text-[#5CE0D2]" />
+          <div className="w-16 h-16 rounded-2xl bg-propyte-cyan-100 flex items-center justify-center mx-auto mb-6">
+            <Truck size={28} strokeWidth={1.75} className="text-propyte-brand" />
           </div>
 
           <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
             {t('title')}
           </h1>
-          <p className="text-lg text-[#5CE0D2] font-medium mb-4">{t('subtitle')}</p>
+          <p className="text-lg text-propyte-brand font-medium mb-4">{t('subtitle')}</p>
           <p className="text-base md:text-lg text-white/70 leading-relaxed">{t('description')}</p>
         </div>
 

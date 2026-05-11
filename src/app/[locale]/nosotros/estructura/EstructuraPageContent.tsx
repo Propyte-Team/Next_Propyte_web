@@ -265,7 +265,7 @@ export default function EstructuraPageContent({ nodes, content, fallback }: Page
         <div className="max-w-3xl mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-6">{philosophyTitle}</h2>
           <p className="text-gray-600 leading-relaxed mb-8">{philosophyText}</p>
-          <div className="bg-[#F4F6F8] border-l-4 border-[#5CE0D2] rounded-r-xl p-6">
+          <div className="bg-[#F4F6F8] border-l-4 border-propyte-brand rounded-r-xl p-6">
             <p className="text-[#1A2F3F] font-medium italic">&ldquo;{philosophyHighlight}&rdquo;</p>
           </div>
         </div>

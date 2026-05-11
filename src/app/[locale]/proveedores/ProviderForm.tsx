@@ -80,9 +80,9 @@ export default function ProviderForm({ locale }: { locale: string }) {
 
   if (status === 'success') {
     return (
-      <div className="bg-white/10 backdrop-blur-sm border border-[#5CE0D2]/30 rounded-2xl p-8 md:p-10 text-center">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#5CE0D2]/20 mb-5">
-          <Check size={28} strokeWidth={2.5} className="text-[#5CE0D2]" />
+      <div className="bg-white/10 backdrop-blur-sm border border-propyte-brand/30 rounded-2xl p-8 md:p-10 text-center">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-propyte-cyan-100 mb-5">
+          <Check size={28} strokeWidth={2.5} className="text-propyte-brand" />
         </div>
         <h3 className="text-2xl font-bold text-white mb-3">{t('formSuccessTitle')}</h3>
         <p className="text-white/70 leading-relaxed max-w-md mx-auto">{t('formSuccess')}</p>
@@ -91,7 +91,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
   }
 
   const inputBase =
-    'w-full h-11 px-4 bg-white/5 border border-white/15 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#5CE0D2] focus:bg-white/10 transition-colors';
+    'w-full h-11 px-4 bg-white/5 border border-white/15 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-propyte-brand focus:bg-white/10 transition-colors';
   const labelBase = 'block text-white/80 text-sm font-medium mb-2';
   const errorBase = 'text-red-400 text-xs mt-1';
 
@@ -181,7 +181,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className="mt-6 w-full md:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] disabled:opacity-60 disabled:cursor-not-allowed text-[#0F1923] font-bold rounded-lg transition-colors"
+        className="mt-6 w-full md:w-auto inline-flex items-center justify-center gap-2 h-12 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed text-[#0F1923] font-bold rounded-lg transition-colors"
       >
         {status === 'submitting' ? (
           <>

@@ -82,21 +82,21 @@ function HeroSection() {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300B4C8' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-propyte-cyan-100 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 bg-[#5CE0D2]/20 text-[#5CE0D2] text-sm font-bold px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-propyte-cyan-100 text-propyte-brand text-sm font-bold px-4 py-2 rounded-full mb-6">
               <Zap size={14} />
               {t('heroEyebrow')}
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
               {t('heroTitlePart1')}{' '}
-              <span className="text-[#5CE0D2]">{t('heroTitleHighlight')}</span>
+              <span className="text-propyte-brand">{t('heroTitleHighlight')}</span>
             </h1>
 
             <p className="text-lg md:text-xl text-white/70 leading-relaxed mb-8 max-w-xl">
@@ -106,7 +106,7 @@ function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
               <a
                 href="#aplicar"
-                className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-lg rounded-xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-[#5CE0D2]/20"
+                className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-lg rounded-xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-propyte-brand/20"
               >
                 {t('heroCtaJoin')}
                 <ArrowRight size={20} />
@@ -124,7 +124,7 @@ function HeroSection() {
             <div className="grid grid-cols-3 gap-6">
               {stats.map((stat) => (
                 <div key={stat.label}>
-                  <div className="text-2xl md:text-3xl font-bold text-[#5CE0D2]">{stat.value}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-propyte-brand">{stat.value}</div>
                   <div className="text-sm text-white/75">{stat.label}</div>
                 </div>
               ))}
@@ -252,13 +252,13 @@ function WhyPropyte() {
             return (
               <div
                 key={b.title}
-                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all group"
+                className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all group"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center group-hover:bg-[#5CE0D2]/20 transition-colors">
+                  <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center group-hover:bg-propyte-cyan-100 transition-colors">
                     <Icon size={24} className="text-[#0F766E]" />
                   </div>
-                  <span className="text-xs font-bold text-[#0F766E] bg-[#5CE0D2]/10 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold text-[#0F766E] bg-propyte-cyan-100 px-2.5 py-1 rounded-full">
                     {b.highlight}
                   </span>
                 </div>
@@ -300,16 +300,16 @@ function CommissionModel() {
                   <div key={tier.range} className="bg-white/5 rounded-xl p-4 border border-white/10">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm text-white/60">{tier.range}</span>
-                      <span className="text-lg font-bold text-[#5CE0D2]">{tier.pct}</span>
+                      <span className="text-lg font-bold text-propyte-brand">{tier.pct}</span>
                     </div>
                     <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#00D4EA] rounded-full transition-all"
+                        className="h-full bg-gradient-to-r from-propyte-brand to-[#00D4EA] rounded-full transition-all"
                         style={{ width: `${tier.bar}%` }}
                       />
                     </div>
                     <div className="flex justify-between mt-2 text-xs">
-                      <span className="text-[#5CE0D2]">{t('youLabel')}: {tier.you}</span>
+                      <span className="text-propyte-brand">{t('youLabel')}: {tier.you}</span>
                       <span className="text-white/65">{t('propyteLabel')}: {tier.propyte}</span>
                     </div>
                   </div>
@@ -429,7 +429,7 @@ function RevenueSharing() {
               </div>
             ))}
 
-            <div className="bg-[#5CE0D2]/5 border border-[#5CE0D2]/20 rounded-xl p-4 mt-4">
+            <div className="bg-propyte-cyan-100/60 border border-propyte-brand/20 rounded-xl p-4 mt-4">
               <p className="text-sm text-[#2C2C2C] font-medium">
                 {t('revenueNote')}
               </p>
@@ -483,7 +483,7 @@ function TechPlatform() {
             return (
               <div key={tool.name} className="flex items-start gap-4 p-5 rounded-2xl hover:bg-[#F4F6F8] transition-colors">
                 <div className="w-10 h-10 bg-[#1A2F3F] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Icon size={20} className="text-[#5CE0D2]" />
+                  <Icon size={20} className="text-propyte-brand" />
                 </div>
                 <div>
                   <h4 className="font-bold text-[#2C2C2C] mb-1">{tool.name}</h4>
@@ -520,7 +520,7 @@ function TechPlatform() {
             <div className="px-6 pb-6">
               <div className="h-32 bg-white/5 rounded-lg flex items-end justify-around p-4 gap-2">
                 {[40, 65, 55, 80, 70, 90, 75, 95, 85, 60, 88, 92].map((h, i) => (
-                  <div key={i} className="flex-1 bg-[#5CE0D2]/60 rounded-t" style={{ height: `${h}%` }} />
+                  <div key={i} className="flex-1 bg-propyte-brand/60 rounded-t" style={{ height: `${h}%` }} />
                 ))}
               </div>
             </div>
@@ -557,7 +557,7 @@ function Testimonials() {
     <section className="py-20 md:py-28 bg-[#0F1923]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#5CE0D2] font-bold text-sm uppercase tracking-wider">{t('testimonialsEyebrow')}</span>
+          <span className="text-propyte-brand font-bold text-sm uppercase tracking-wider">{t('testimonialsEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-white mt-3">
             {t('testimonialsTitle')}
           </h2>
@@ -567,7 +567,7 @@ function Testimonials() {
           {testimonials.map((tt) => (
             <div
               key={tt.name}
-              className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-[#5CE0D2]/30 transition-all"
+              className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-propyte-brand/30 transition-all"
             >
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -576,7 +576,7 @@ function Testimonials() {
               </div>
               <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{tt.quote}&rdquo;</p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#5CE0D2]/20 rounded-full flex items-center justify-center text-[#5CE0D2] font-bold text-sm">
+                <div className="w-10 h-10 bg-propyte-cyan-100 rounded-full flex items-center justify-center text-propyte-brand font-bold text-sm">
                   {tt.avatar}
                 </div>
                 <div>
@@ -585,7 +585,7 @@ function Testimonials() {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-white/10">
-                <span className="text-[#5CE0D2] font-bold text-sm">{tt.stats}</span>
+                <span className="text-propyte-brand font-bold text-sm">{tt.stats}</span>
               </div>
             </div>
           ))}
@@ -620,7 +620,7 @@ function StatsSection() {
             const Icon = s.icon;
             return (
               <div key={s.label} className="text-center">
-                <div className="w-12 h-12 mx-auto bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-3">
+                <div className="w-12 h-12 mx-auto bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-3">
                   <Icon size={24} className="text-[#0F766E]" />
                 </div>
                 <div className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{s.value}</div>
@@ -659,10 +659,10 @@ function JoinProcess() {
           {steps.map((step, i) => (
             <li key={step.num} className="relative">
               {i < steps.length - 1 && (
-                <div className="hidden md:block absolute top-8 h-0.5 bg-[#5CE0D2]/20" style={{ left: 'calc(50% + 32px)', width: 'calc(100% - 32px)' }} />
+                <div className="hidden md:block absolute top-8 h-0.5 bg-propyte-cyan-100" style={{ left: 'calc(50% + 32px)', width: 'calc(100% - 32px)' }} />
               )}
-              <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all relative">
-                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#5CE0D2] to-[#4BCEC0] rounded-2xl flex items-center justify-center text-[#0F1923] text-2xl font-bold mb-4">
+              <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all relative">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-br from-propyte-brand to-propyte-cyan-200 rounded-2xl flex items-center justify-center text-[#0F1923] text-2xl font-bold mb-4">
                   {step.num}
                 </div>
                 <h4 className="font-bold text-[#2C2C2C] text-lg mb-2">{step.title}</h4>
@@ -713,7 +713,7 @@ function FAQ() {
               <div
                 key={faq.q}
                 className={`border rounded-xl overflow-hidden transition-all ${
-                  isOpen ? 'border-[#5CE0D2]/30 shadow-sm' : 'border-gray-200'
+                  isOpen ? 'border-propyte-brand/30 shadow-sm' : 'border-gray-200'
                 }`}
               >
                 <button
@@ -772,7 +772,7 @@ function ApplicationForm() {
 
   return (
     <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden">
-      <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
@@ -780,7 +780,7 @@ function ApplicationForm() {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               {t('formTitlePart1')}{' '}
-              <span className="text-[#5CE0D2]">{t('formTitleHighlight')}</span>?
+              <span className="text-propyte-brand">{t('formTitleHighlight')}</span>?
             </h2>
             <p className="text-white/70 leading-relaxed mb-8 text-lg">
               {t('formSubtitle')}
@@ -789,13 +789,13 @@ function ApplicationForm() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                  <Phone size={18} className="text-[#5CE0D2]" />
+                  <Phone size={18} className="text-propyte-brand" />
                 </div>
                 <span className="text-white/80 font-medium">{t('formPhone')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                  <Mail size={18} className="text-[#5CE0D2]" />
+                  <Mail size={18} className="text-propyte-brand" />
                 </div>
                 <span className="text-white/80 font-medium">{t('formEmail')}</span>
               </div>
@@ -827,7 +827,7 @@ function ApplicationForm() {
                         type="text"
                         required
                         autoComplete="name"
-                        className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
+                        className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formNamePlaceholder')}
                       />
                     </div>
@@ -839,7 +839,7 @@ function ApplicationForm() {
                         type="tel"
                         required
                         autoComplete="tel"
-                        className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
+                        className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formWhatsappPlaceholder')}
                       />
                     </div>
@@ -853,7 +853,7 @@ function ApplicationForm() {
                       type="email"
                       required
                       autoComplete="email"
-                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2]"
+                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                       placeholder={t('formEmailPlaceholder')}
                     />
                   </div>
@@ -865,7 +865,7 @@ function ApplicationForm() {
                       name="city"
                       required
                       defaultValue=""
-                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
+                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
                     >
                       <option value="" disabled>{t('formCityPlaceholder')}</option>
                       {cityOptions.map((opt) => (
@@ -880,7 +880,7 @@ function ApplicationForm() {
                       id="unete-experience"
                       name="experience"
                       defaultValue=""
-                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] bg-white"
+                      className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
                     >
                       <option value="" disabled>{t('formExpPlaceholder')}</option>
                       <option value="0">{t('formExp0')}</option>
@@ -896,7 +896,7 @@ function ApplicationForm() {
                       id="unete-interest"
                       name="interest"
                       rows={3}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#5CE0D2]/20 focus:border-[#5CE0D2] resize-none"
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand resize-none"
                       placeholder={t('formInterestPlaceholder')}
                     />
                   </div>
@@ -905,7 +905,7 @@ function ApplicationForm() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full mt-6 h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] disabled:bg-gray-300 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#5CE0D2]/20"
+                  className="w-full mt-6 h-12 bg-propyte-brand hover:bg-propyte-cyan-200 disabled:bg-gray-300 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-propyte-brand/20"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-[#0F1923]/30 border-t-[#0F1923] rounded-full animate-spin" />
@@ -935,7 +935,7 @@ function ApplicationForm() {
 function FinalCTA() {
   const t = useTranslations('unete');
   return (
-    <section className="py-16 bg-[#5CE0D2]">
+    <section className="py-16 bg-propyte-brand">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-[#0F1923] mb-4">
           {t('finalTitle')}
@@ -945,7 +945,7 @@ function FinalCTA() {
         </p>
         <a
           href="#aplicar"
-          className="inline-flex items-center gap-2 h-14 px-10 bg-[#0F1923] text-[#5CE0D2] font-bold text-lg rounded-xl hover:bg-[#1A2F3F] transition-all hover:shadow-lg"
+          className="inline-flex items-center gap-2 h-14 px-10 bg-[#0F1923] text-propyte-brand font-bold text-lg rounded-xl hover:bg-[#1A2F3F] transition-all hover:shadow-lg"
         >
           {t('finalCta')}
           <ArrowRight size={20} />

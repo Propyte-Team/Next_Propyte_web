@@ -48,7 +48,7 @@ export default async function MarketIndicator({
     total >= 80
       ? { label: t('excellent'), color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
       : total >= 60
-        ? { label: t('strong'), color: 'text-[#0F766E]', bg: 'bg-[#5CE0D2]/10 border-[#5CE0D2]/30' }
+        ? { label: t('strong'), color: 'text-[#0F766E]', bg: 'bg-propyte-cyan-100 border-propyte-brand/30' }
         : total >= 40
           ? { label: t('fair'), color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' }
           : { label: t('weak'), color: 'text-red-600', bg: 'bg-red-50 border-red-200' };
@@ -89,7 +89,7 @@ function FactorBar({ label, value, max }: { label: string; value: number; max: n
       </div>
       <div className="h-1.5 bg-white/60 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#0D9488] rounded-full"
+          className="h-full bg-gradient-to-r from-propyte-brand to-[#0D9488] rounded-full"
           style={{ width: `${pct}%` }}
         />
       </div>

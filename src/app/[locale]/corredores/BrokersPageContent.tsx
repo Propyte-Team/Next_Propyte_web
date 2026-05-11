@@ -23,16 +23,16 @@ function BrokerHero() {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]">
       {/* Decorative orbs */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1A2F3F]/40 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28">
         <div className="max-w-3xl">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Handshake size={16} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">Partner Program</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Handshake size={16} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">Partner Program</span>
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
@@ -46,7 +46,7 @@ function BrokerHero() {
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <a
               href="#registro"
-              className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-[#5CE0D2]/20 flex items-center justify-center gap-2"
+              className="h-14 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-base rounded-xl transition-all hover:shadow-lg hover:shadow-propyte-brand/20 flex items-center justify-center gap-2"
             >
               {t('heroCta')} <ArrowRight size={18} />
             </a>
@@ -92,8 +92,8 @@ function ValueProposition() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/20 hover:shadow-lg transition-all group">
-              <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#5CE0D2]/20 transition-colors">
+            <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-propyte-brand/20 hover:shadow-lg transition-all group">
+              <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-propyte-cyan-100 transition-colors">
                 <Icon size={24} className="text-[#0F766E]" />
               </div>
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
@@ -174,7 +174,7 @@ function PlatformPreview() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               {features.map((feat) => (
                 <div key={feat} className="bg-white/10 rounded-xl p-4">
-                  <div className="text-[#5CE0D2] text-2xl font-bold mb-1">--</div>
+                  <div className="text-propyte-brand text-2xl font-bold mb-1">--</div>
                   <div className="text-white/60 text-xs">{feat}</div>
                 </div>
               ))}
@@ -182,13 +182,13 @@ function PlatformPreview() {
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
                 <div key={i} className="flex items-center gap-4 bg-white/5 rounded-xl p-4">
-                  <div className="w-10 h-10 bg-[#5CE0D2]/20 rounded-lg flex-shrink-0" />
+                  <div className="w-10 h-10 bg-propyte-cyan-100 rounded-lg flex-shrink-0" />
                   <div className="flex-1">
                     <div className="h-3 bg-white/20 rounded w-3/4 mb-2" />
                     <div className="h-2 bg-white/10 rounded w-1/2" />
                   </div>
-                  <div className="px-3 py-1 bg-[#5CE0D2]/20 rounded-full">
-                    <span className="text-[#5CE0D2] text-xs font-bold">Active</span>
+                  <div className="px-3 py-1 bg-propyte-cyan-100 rounded-full">
+                    <span className="text-propyte-brand text-xs font-bold">Active</span>
                   </div>
                 </div>
               ))}
@@ -320,7 +320,7 @@ function BrokerForm() {
     }
   };
 
-  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 outline-none transition-colors";
+  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors";
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = "block text-sm font-semibold text-[#1A2F3F] mb-1.5";
 
@@ -341,8 +341,8 @@ function BrokerForm() {
                 { icon: CheckCircle, text: 'Estructura de comisiones clara desde el día 1' },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#5CE0D2]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-[#5CE0D2]" />
+                  <div className="w-8 h-8 bg-propyte-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon size={16} className="text-propyte-brand" />
                   </div>
                   <span className="text-white/70 text-sm">{text}</span>
                 </div>
@@ -435,7 +435,7 @@ function BrokerForm() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full h-14 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {status === 'sending' ? t('formSending') : t('formSubmit')}
                   {status === 'idle' && <ArrowRight size={18} />}
@@ -458,7 +458,7 @@ function BrokerForm() {
 function FinalCTA() {
   const t = useTranslations('brokers');
   return (
-    <section className="bg-[#5CE0D2]">
+    <section className="bg-propyte-brand">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{t('finalCtaTitle')}</h2>
         <p className="text-white/80 text-lg mb-8">{t('finalCtaSubtitle')}</p>

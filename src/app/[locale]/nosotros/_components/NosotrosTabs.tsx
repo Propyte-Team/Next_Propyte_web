@@ -38,8 +38,8 @@ export default async function NosotrosTabs({
                 aria-current={isActive ? 'page' : undefined}
                 className={`py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                   isActive
-                    ? 'text-[#0F766E] border-[#5CE0D2]'
-                    : 'text-gray-600 border-transparent hover:text-[#0F766E] hover:border-[#5CE0D2]'
+                    ? 'text-[#0F766E] border-propyte-brand'
+                    : 'text-gray-600 border-transparent hover:text-[#0F766E] hover:border-propyte-brand'
                 }`}
               >
                 {t(tab.key)}

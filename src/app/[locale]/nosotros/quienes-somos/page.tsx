@@ -150,7 +150,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                   return (
                     <span key={i}>
                       {isLast ? (
-                        <span className="accent-serif text-[#5CE0D2]">{word}</span>
+                        <span className="accent-serif text-propyte-brand">{word}</span>
                       ) : (
                         word
                       )}
@@ -174,11 +174,11 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               {/* Vertical accent dots en la "axis line" del border-left */}
               <span
                 aria-hidden="true"
-                className="hidden lg:block absolute left-0 top-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-[#5CE0D2]"
+                className="hidden lg:block absolute left-0 top-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-propyte-brand"
               />
               <span
                 aria-hidden="true"
-                className="hidden lg:block absolute left-0 bottom-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-[#5CE0D2]"
+                className="hidden lg:block absolute left-0 bottom-[18%] -translate-x-1/2 w-2 h-2 rounded-full bg-[#0F1923] border border-propyte-brand"
               />
 
               <div
@@ -186,7 +186,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 style={{ animationDelay: '360ms' }}
               >
                 <p className="text-2xl md:text-[1.75rem] leading-tight font-medium text-white">
-                  <span className="accent-serif text-[#5CE0D2]">{t('heroTagline').replace(/\.$/, '')}</span>
+                  <span className="accent-serif text-propyte-brand">{t('heroTagline').replace(/\.$/, '')}</span>
                   <span className="text-white/30">.</span>
                 </p>
                 <p className="mt-4 text-sm text-white/45 leading-relaxed">
@@ -203,7 +203,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               >
                 {heroStats.map((s) => (
                   <div key={s.l} className="bg-[#0F1923] px-2 py-4 text-center">
-                    <dt className="accent-mono text-2xl md:text-3xl font-medium text-[#5CE0D2]">
+                    <dt className="accent-mono text-2xl md:text-3xl font-medium text-propyte-brand">
                       {s.v}
                     </dt>
                     <dd className="mt-1.5 accent-mono text-2xs text-white/45 uppercase tracking-[0.12em]">
@@ -217,7 +217,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
 
           {/* Coordinate marker bottom-left — architectural detail */}
           <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-50">
-            <span className="block w-6 h-px bg-[#5CE0D2]" aria-hidden="true" />
+            <span className="block w-6 h-px bg-propyte-brand" aria-hidden="true" />
             <span className="accent-mono text-2xs uppercase tracking-[0.18em] text-white/40">
               20.62°N · 87.07°W
             </span>
@@ -243,7 +243,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
             </div>
             <div className="lg:col-span-2">
               <div className="aspect-[4/3] bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-[#5CE0D2]/5" />
+                <div className="absolute inset-0 bg-propyte-cyan-100/60" />
                 <div className="relative text-center text-white/40 px-8">
                   <Home size={56} strokeWidth={1} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
                   <p className="text-sm font-medium">Real Estate Lab</p>
@@ -258,7 +258,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       {/* Section 2: Mission + Bento grid (2 large + 2 small) */}
       <section className="py-20 md:py-24 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="bg-white rounded-2xl p-10 md:p-12 border-l-4 border-[#5CE0D2] mb-12 shadow-sm">
+          <div className="bg-white rounded-2xl p-10 md:p-12 border-l-4 border-propyte-brand mb-12 shadow-sm">
             <span className="text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase">
               {t('missionLabel')}
             </span>
@@ -273,9 +273,9 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 className={`${large ? 'md:col-span-2 bg-[#1A2F3F] text-white' : 'bg-white border border-gray-100'} p-7 rounded-xl hover:shadow-lg transition-shadow`}
               >
                 <div
-                  className={`w-11 h-11 ${large ? 'bg-[#5CE0D2]/20' : 'bg-[#5CE0D2]/10'} rounded-xl flex items-center justify-center mb-5`}
+                  className={`w-11 h-11 ${large ? 'bg-propyte-cyan-100' : 'bg-propyte-cyan-100'} rounded-xl flex items-center justify-center mb-5`}
                 >
-                  <Icon size={22} className="text-[#5CE0D2]" />
+                  <Icon size={22} className="text-propyte-brand" />
                 </div>
                 <h3 className={`text-base font-bold ${large ? '' : 'text-[#1A2F3F]'} mb-2`}>
                   {title}
@@ -294,7 +294,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       {/* Section 3: Vision (dark bg, 3-col stats) */}
       <section className="py-20 md:py-24 bg-[#1A2F3F]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <span className="text-[#5CE0D2] text-xs font-bold tracking-[0.2em] uppercase">
+          <span className="text-propyte-brand text-xs font-bold tracking-[0.2em] uppercase">
             {t('visionLabel')}
           </span>
           <p className="mt-6 text-2xl md:text-3xl font-medium text-white leading-relaxed max-w-3xl mx-auto">
@@ -303,7 +303,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           <div className="mt-16 grid md:grid-cols-3 gap-10 text-left">
             {visionPillars.map(({ num, title, desc }) => (
               <div key={num}>
-                <span className="text-5xl font-bold text-[#5CE0D2]/20" aria-hidden="true">
+                <span className="text-5xl font-bold text-propyte-brand/20" aria-hidden="true">
                   {num}
                 </span>
                 <h3 className="text-lg font-bold text-white mt-3">{title}</h3>
@@ -334,7 +334,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 key={title}
                 className="flex-shrink-0 w-[75vw] sm:w-[45vw] lg:w-[calc(25%-0.75rem)] snap-center bg-white p-7 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
               >
-                <div className="w-11 h-11 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-5">
+                <div className="w-11 h-11 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-5">
                   <Icon size={22} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-base font-bold text-[#1A2F3F] mb-2">{title}</h3>
@@ -383,7 +383,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href={`/${locale}/unete`}
-              className="h-14 px-10 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center"
+              className="h-14 px-10 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center"
             >
               {t('ctaJoin')}
             </Link>

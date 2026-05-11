@@ -147,13 +147,13 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('label')}
             </span>
           </div>
@@ -247,7 +247,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
                   <h3 className="text-lg font-bold text-[#1A2F3F]">{level.title}</h3>
                   <p className="text-gray-600 text-sm mt-1">{level.desc}</p>
                   {level.req && (
-                    <p className="text-xs text-[#0F766E] font-medium mt-2 bg-[#5CE0D2]/10 px-3 py-1 rounded-full inline-block">
+                    <p className="text-xs text-[#0F766E] font-medium mt-2 bg-propyte-cyan-100 px-3 py-1 rounded-full inline-block">
                       {t('requirement')}: {level.req}
                     </p>
                   )}
@@ -257,7 +257,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           </div>
 
           {/* Dimensions callout */}
-          <div className="mt-12 bg-white border-l-4 border-[#5CE0D2] rounded-r-xl p-6 max-w-3xl mx-auto">
+          <div className="mt-12 bg-white border-l-4 border-propyte-brand rounded-r-xl p-6 max-w-3xl mx-auto">
             <h3 className="font-bold text-[#1A2F3F] mb-4">{t('dimensionsTitle')}</h3>
             <div className="grid md:grid-cols-3 gap-4">
               {[1, 2, 3].map(i => (
@@ -278,7 +278,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {benefits.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
-                <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4">
                   <Icon size={24} className="text-[#0F766E]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
@@ -326,7 +326,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('recruitTitle')}</h2>
           <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">{t('recruitSubtitle')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+            <Link href={`/${locale}/unete`} className="h-14 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2">
               {t('recruitCta')} <ArrowRight size={18} />
             </Link>
             <a href={waUrl} target="_blank" rel="noopener noreferrer" className="h-14 px-8 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
