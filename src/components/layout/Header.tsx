@@ -68,13 +68,22 @@ export default function Header({ siteConfig }: { siteConfig?: HubSiteConfig }) {
 
       {/* Desktop floating header (search bubble + actions pill).
           Padding vertical reducido en archives (no hay burbuja, así que
-          el alto del header se reduce y deja más aire al contenido). */}
+          el alto del header se reduce y deja más aire al contenido).
+          Strip glass cristalino on-scroll: se monta detrás del contenido
+          cuando hay scroll para anclar visualmente la SearchBubble + Pill
+          sobre fondos blancos. Solo desktop (Q6 del speckit cristalino-sitio-wide). */}
       <header
         className={`hidden lg:block fixed top-0 left-0 right-0 z-40 lg:ml-[72px]`}
         style={{ pointerEvents: 'none' }}
       >
         <div
-          className={`flex items-start px-4 gap-4 ${
+          aria-hidden="true"
+          className={`absolute inset-0 propyte-strip-glass transition-opacity duration-300 ${
+            scrolled ? 'opacity-100' : 'opacity-0'
+          }`}
+        />
+        <div
+          className={`relative flex items-start px-4 gap-4 ${
             isListingArchive ? 'pt-2 pb-1' : 'pt-4 pb-2'
           }`}
         >

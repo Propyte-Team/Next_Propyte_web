@@ -797,6 +797,20 @@ html {
           backdrop-filter: blur(18px);
 }
 
+/* ─── Strip glass — variante full-width sin radius para header on-scroll,
+   navigation strips, breadcrumb bands. Hereda la estética cristalino light
+   pero con border solo en el bottom y radius 0. */
+.propyte-strip-glass {
+  background: rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(11, 28, 30, 0.06);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0  6px 18px 0 rgba(11, 28, 30, 0.05);
+  -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(18px);
+}
+
 /* ─── Hero overlay ────────────────────────────────────────────────────────
    Degradado oscuro vertical sobre la imagen del hero para mantener contraste
    AA con el título. Usar como capa absoluta encima del <img>:
