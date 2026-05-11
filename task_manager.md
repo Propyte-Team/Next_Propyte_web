@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-11 (Speckit cristalino-sitio-wide aprobado)
+> Última actualización: 2026-05-11 (cierre de sesión cristalino-sitio-wide)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,118 +8,57 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-_Próximo arranque: Pass 0 del speckit cristalino-sitio-wide (layout layer)._
+_Sin tareas activas — speckit cristalino-sitio-wide cerrado y deployado. Próxima sesión: cambios de contenido (no especificados aún)._
 
 ---
 
 ## Pendientes
 
-### Spec: Cristalino sitio-wide — `specs/cristalino-sitio-wide.md`
+### Decisiones del usuario (no código)
 
-> 38 rutas + 5 passes. Ejecutar en orden P0 → P4. Cada pass = 1+ commit + deploy staging.
+- [ ] **Validación visual humana en `dev.propyte.com`** — revisar deploy `dpl_EXv84fSZi7bfnh5yrJ1uGEawqjiK` en navegador real (no solo Playwright baseline). Foco en rutas críticas: `/`, `/propiedades` (cluster filter), `/desarrollos` (grid), `/unete` (glass refactor), `/contacto`.
+- [ ] **Merge `develop → main`** — ⚠️ NO ejecutar sin autorización explícita Luis. Dispara Hostinger pull-on-main → `propyte.com` prod.
+- [ ] **Validación cluster filter "+N"** — requiere ≥2 propiedades con coords en Supabase staging para que se active el clustering. Hoy hay solo 1 con coords válidas.
 
-**Pass 0 — Layout layer** (afecta todo el sitio)
-- [ ] T0.1 — `Header.tsx`: scroll glass strip (solo desktop, Q6)
-- [ ] T0.2 — `Sidebar.tsx`: hover/active items con `.propyte-glass-pill`
-- [ ] T0.3 — `Footer.tsx`: accents brand cyan + glass divider
-- [ ] T0.4 — `ActionsPill.tsx`: glass-pill con border cyan
-- [ ] T0.5 — `Breadcrumbs.tsx`: pills glass-light
-- [ ] T0.6 — Deploy + screenshot diff home pre/post-P0
+### Brand Identity Oficial — extensiones futuras
 
-**Pass 1 — Marketplaces**
-- [ ] T1.1 — `MarketplaceContent.tsx`: quitar `<MapView>` de `/propiedades` (queda solo en `/desarrollos`)
-- [ ] T1.2 — Refactor `MarketplaceCard.tsx` a Ficha 02 (glass-light + glass-pill specs)
-- [ ] T1.3 — `FilterBar.tsx` + `AdvancedFilters.tsx`: skin glass-light
-- [ ] T1.4 — `MobileBottomSheet.tsx`: skin glass dark + header pill
-- [ ] T1.5 — `ComparePanel.tsx`: skin glass-light sticky
-- [ ] T1.6 — Verificar taxonomy pages (`/desarrollos/cancun`, `/tipo/[type]`, `/etapa/[stage]`)
-- [ ] T1.7 — Deploy + click-through manual completo (favorites, compare, filters)
+- [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx` (Inter→Neue Haas, DM Sans→Normalidad). Vars `--font-display` / `--font-text` ya tienen el contrato listo.
+- [ ] **Eventual limpieza fallback i18n** — cuando B.1 site_config esté validado en prod ≥30 días, eliminar fallback i18n de contact info en `messages/{es,en}.json` (Fase D speckit dynamic-content).
+- [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll. Decisión visual con Luis (parcialmente cubierto por Pass 0/1).
 
-**Pass 2 — Detail pages**
-- [ ] T2.1 — `/desarrollos/[slug]` hero + secciones glass
-- [ ] T2.2 — `/propiedades/[slug]` hero + secciones glass
-- [ ] T2.3 — `/desarrolladores/[slug]` cards glass-light
-- [ ] T2.4 — `/zonas/[slug]` hero + map (conservar — Q4) + cards glass
-- [ ] T2.5 — `/blog/[slug]` hero + prose container glass-light
+### Próxima sesión (al regreso del usuario)
 
-**Pass 3 — Content/editorial**
-- [ ] T3.1 — `/mercado` (intelligence dashboard)
-- [ ] T3.2 — `/built` sin mapa (Q1) + cards portfolio glass
-- [ ] T3.3 — `/destacados` (featured)
-- [ ] T3.4 — `/promociones` glass-refactor (heroAccent espera Hub — Q3)
-- [ ] T3.5 — `/blog` (listing)
-- [ ] T3.6 — `/zonas` (listing)
-- [ ] T3.7 — `/desarrolladores` (directory)
-- [ ] T3.8 — `/contacto` (form + map embed)
-- [ ] T3.9 — `/como-comprar`, `/como-invertir`, `/financiamiento`, `/rentas`, `/faq`, `/glosario`
-
-**Pass 4 — Team/legal + auditoría**
-- [ ] T4.1 — `/nosotros/quienes-somos`, `/nosotros/estructura`, `/nosotros/equipo-comercial`
-- [ ] T4.2 — `/unete` glass-refactor completo (sobrescribe excepción HERO-SITE — Q5)
-- [ ] T4.3 — `/corredores`, `/proveedores`
-- [ ] T4.4 — `/privacidad`, `/terminos`, `/cookies` (draft badge amber semántico se mantiene — Q2)
-- [ ] T4.5 — Playwright `tests/qa-visual/all-routes.spec.ts` baseline (38 rutas × 3 viewports)
-- [ ] T4.6 — Typecheck + smoke run final
-- [ ] T4.7 — Validación Luis + merge `develop → main`
-
-### Otros pendientes
-
-- [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll, `MarketplaceCard`. (Cubierto parcialmente por Pass 0/1, validar al cierre)
-- [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx`. Vars `--font-display` / `--font-text` ya tienen el contrato listo.
-
-### Sesión anterior (B.1 + visibility — pendiente de validar)
-
-- [ ] **Validación E2E B.1 site_config en `dev.propyte.com`**:
-  - Footer muestra `contacto@propyte.com` (no `info@propyte.com`)
-  - Footer dirección "5ta Av., Playa del Carmen, Quintana Roo"
-  - WhatsApp button preset = `"Hola Propyte, me interesa una propiedad."` cuando no hay propertyName/Id
-  - `/contacto` muestra address/phone/email/hours del Hub
-- [ ] **Validación visibility en `dev.propyte.com`**:
-  - `/es/nosotros/estructura` retorna **404** (flag `visible_dev=false` ya en BD `site_visibility`)
-  - `/es/nosotros/quienes-somos` NO muestra tab "Estructura" en `NosotrosTabs`
-  - `/es/nosotros` redirige a `quienes-somos` (primer tab visible)
-- [ ] **Decisión usuario**: mergear `develop → main` (lleva brand identity + B.1 + visibility a `propyte.com` prod), o validar más en staging.
-- [ ] Si decide merge: `git checkout main && git merge develop && git push origin main` → Hostinger pull-on-main.
-- [ ] Eventual limpieza: cuando B.1 esté validado en prod ≥30 días, eliminar fallback i18n de contact info en `messages/{es,en}.json` (Fase D speckit dynamic-content).
+- [ ] **Cambios de contenido** — el usuario anunció que la próxima sesión será sobre modificaciones de contenido. Esperar instrucciones específicas.
 
 ---
 
 ## Bloqueadas
 
-_Nada bloqueado._
+_Ninguna._
 
 ---
 
 ## Completadas recientes
 
-- [x] **Migración acentos naranja → cyan/teal** (2026-05-11) — 8 archivos fuera del home migrados según regla dark bg → `#A2F9FF`, light bg → `#0D9488` (teal-a11y WCAG AA):
-  - `Badge.tsx` / `MarketplaceCard.tsx` — badges preventa/reservado + gradient promo
-  - `UnetePageContent.tsx` — 6 acentos (glows, badge top, cap annual callout, $45K stat, stars, glow CTA)
-  - `destacados/page.tsx` — filtro stage preventa
-  - `promociones/page.tsx` — hero accent default + glow + gradient "destacado"
-  - `LegalPage.tsx` — draft badge a Tailwind amber semantic (semántico, no brand)
-  - `EstructuraPageContent.tsx` — hiring label
-  - `PriceTimeline.tsx` — marker futuro
-  - **Preservados** (warnings semánticos / dev tools): `analytics/*`, `InvestmentDisclaimer`, `GeoAnalysis`, `MarketIndicator`, `ComparisonTable`, `RentalEstimate`, `playground/*`, `design-playground/*`, token `--color-amber` en globals.css
-- [x] **Brand Identity Oficial** — tokens `#A2F9FF` + cyans/darks + glass cards Ficha 01/02 + variantes pill/light + hero overlay + jerarquía editorial en `globals.css` (2026-05-09)
-- [x] **Hero home rediseñado** — eyebrow REAL ESTATE, "Riviera Maya" cyan, overlay aztec, search bubble Ficha 02 character, tabs/stats/quick-links glass-pill (2026-05-09)
-- [x] **Tipografía Inter + DM Sans** vía next/font como substitutos free de Neue Haas Display Pro / Normalidad VF, vars `--font-display` / `--font-text` componiendo `--font-heading` / `--font-body` en `:root` (2026-05-09)
-- [x] **Migración acentos naranja → brand cyan** en 11 componentes home + MapView empty-state (2026-05-09)
-- [x] **Speckit §6.1** reescrito con paleta brand, tabla coexistencia brand/teal, Ficha 01/02 CSS literal, hero overlay, jerarquía editorial (2026-05-09)
-- [x] **Deploy Vercel staging** `dev.propyte.com` (`dpl_9eGFTBJCPePqHMnHCpiNFauS5eNg`) con todos los cambios brand (2026-05-09)
-- [x] B.1 site_config integration — Footer/Header/MobileMenu/WhatsAppButton/contacto consumen `getSiteConfig()` con fallback graceful (commit `5286263`, 2026-05-09)
-- [x] Visibility consumers en `/nosotros/*` — 3 keys agregadas a `VISIBILITY_KEYS`, check con `notFound()` en cada page, `NosotrosTabs` filtra tabs (commit `e1b0855`, 2026-05-09)
-- [x] Vercel deploy anterior `dpl_rdsY1oLkEPgsQ1FkQ4geZL2rqDsJ` con B.1 + visibility (2026-05-09)
-- [x] Refactor `EstructuraPageContent.tsx` para consumir `v_org_structure` desde Supabase (2026-05-09)
+- [x] **T4.5 Playwright baseline visual** — `tests/e2e/cristalino-baseline.spec.ts` con 15 rutas × 2 viewports = 30 screenshots. Output `tests/qa-visual/screenshots/`. Commit `36cab2d` (2026-05-11)
+- [x] **Pass 4 Team/legal brand sync** — 10 archivos (nosotros/*, unete glass-refactor, corredores, proveedores). Commit `ad34896` (2026-05-11)
+- [x] **Pass 3 Content/editorial brand sync** — 19 archivos (mercado/*, built, destacados, promociones, blog listing, desarrolladores listing, contacto, guides, faq, glosario, taxonomy). Commit `6fd95e7` (2026-05-11)
+- [x] **Amendment 2026-05-11: swap arquitectónico + cluster filter** — `/propiedades` ahora tiene mapa + cluster "+N" filter; `/desarrollos` grid Ficha 02. Commit `9181f0f` (2026-05-11)
+- [x] **Pass 2 Detail pages** — 5 detail pages glass + brand sync. Commit `ca42afb` (2026-05-11)
+- [x] **Pass 1 Marketplaces** — MarketplaceContent.showMap + MarketplaceCard Ficha 02 + utilities globales. Commits `6e38eb7` + `3d48f1f` (2026-05-11)
+- [x] **Pass 0 Layout layer** — Header glass strip + Sidebar/Footer/ActionsPill/Breadcrumbs brand sync. Commits `987d4d4` + `16d72ea` (2026-05-11)
+- [x] **Speckit cristalino-sitio-wide formalizado** — `specs/cristalino-sitio-wide.md` (5 passes, 38 rutas). Commit `e7ee445` (2026-05-11)
+- [x] **Migración acentos naranja → cyan/teal** — 8 archivos fuera del home. Commit `2c7a638` (2026-05-11)
+- [x] **Cross-repo: Hub `accent_color` sync** — `promociones_hero` `#F5A623` → `#A2F9FF` via MCP execute_sql (2026-05-11)
 
 ---
 
 ## Notas
 
-- ISR `/nosotros/estructura` = 600s. `getVisibility()` = 30s. `getSiteConfig()` = 300s. Para revalidate inmediato, usar tags desde Hub.
-- `getVisibility` es **fail-open**: si una key no existe en BD o el endpoint falla, render incondicional. Crítico para fallback graceful pero significa que cualquier flag nuevo requiere consumidor explícito (memoria `feedback_site_visibility_consumer.md`).
-- `vercel --prod` SIEMPRE con `cd <repo> &&` inline (memoria `feedback_vercel_cli_cwd.md`).
-- El sitio lee con `createPublicSupabaseClient` (anon key). Cualquier vista nueva en `real_estate_hub` necesita `GRANT SELECT TO anon` antes de ser usable (memoria `feedback_supabase_schema_usage_grant.md`).
-- i18n actúa como fallback si `page_content` o `site_config` no devuelven la fila — mantener ambos en sync hasta Fase D.
-- **Brand identity**: regla "brand=action, teal=atmosphere". Detalle completo en `SPECKIT-METAMORFOSIS-PROPYTE.md §6.1.b` y memoria `project_next_propyte_brand_identity.md`. `#A2F9FF` no cumple WCAG AA contra blanco — usar `#0D9488` en superficies claras.
-- **next/font + `:root` composing**: `--font-display` y `--font-text` (next/font) componen `--font-heading` y `--font-body` (`:root`). Si necesitas swap a Adobe Fonts, solo cambia los `Inter()` y `DM_Sans()` en `layout.tsx`. Memoria: `feedback_nextfont_root_composing.md`.
+- **Sistema de utilities cristalino en `globals.css:736-915`** — todas las clases `.propyte-*` viven ahí (regla del usuario "todo en CSS global"). Cero hex brand-cyan sueltos en `src/app/[locale]/**`.
+- **Validación headless gotcha:** Playwright headless puede renderizar mal `backdrop-filter` en glass cards. Memoria: `feedback_playwright_glass_screenshots.md`. Validar con navegador real para rutas con glass crítico.
+- **Deploy actual staging:** `dpl_EXv84fSZi7bfnh5yrJ1uGEawqjiK` aliased a `https://dev.propyte.com`.
+- **Vercel CLI inline obligatorio:** `cd <repo> && vercel --prod` siempre en una línea. Memoria `feedback_vercel_cli_cwd.md`.
+- **Brand identity rule:** `#A2F9FF` solo en dark bg; light bg → `#0D9488` (teal-a11y WCAG AA). Memoria `project_next_propyte_brand_identity.md`.
+- **Naranja allowlist:** `analytics/*`, `InvestmentDisclaimer`, `GeoAnalysis`, `MarketIndicator` (semantic warnings), `playground/*`, `design-playground/*`, token `--color-amber` legacy.
+- **Cluster filter mecanismo** (`/propiedades`): WeakMap `markerToIdRef` + `onClusterClickRef` (ref-mirror para evitar re-suscripción) + state `clusterFilter` en MarketplaceContent que filtra `displayed = filtered ∩ clusterFilter`. Auto-clear con cualquier filter change.
