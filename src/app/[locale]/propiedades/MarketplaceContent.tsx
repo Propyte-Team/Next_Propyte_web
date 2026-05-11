@@ -23,6 +23,11 @@ interface MarketplaceContentProps {
   customTitle?: string;
   /** Override i18n key with explicit string (used by taxonomy pages). */
   customSubtitle?: string;
+  /**
+   * Show the split map+list layout (legacy /desarrollos) vs single-col grid
+   * (/propiedades — decisión speckit cristalino-sitio-wide, T1.1). Default false.
+   */
+  showMap?: boolean;
 }
 
 export default function MarketplaceContent({
@@ -31,6 +36,7 @@ export default function MarketplaceContent({
   subtitleKey = 'subtitlePropiedades',
   customTitle,
   customSubtitle,
+  showMap = false,
 }: MarketplaceContentProps) {
   const t = useTranslations('marketplace');
   const isMobile = useIsMobile();
@@ -79,10 +85,86 @@ export default function MarketplaceContent({
     return () => window.clearTimeout(timeout);
   }, [filters, filtered.length]);
 
+  // Layout split map+list (legacy /desarrollos) vs grid full-width (/propiedades).
+  if (showMap) {
+    return (
+      <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
+        {/* SEO heading */}
+        <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{heading}</h1>
+          <p className="text-sm text-gray-600 mt-1">{subheading}</p>
+        </div>
+
+        <FilterBar
+          filters={filters}
+          onFilterChange={updateFilter}
+          onOpenAdvanced={() => setShowAdvanced(true)}
+          advancedOpen={showAdvanced}
+          resultCount={filtered.length}
+        />
+
+        {/* Mobile toggle */}
+        {isMobile && (
+          <div className="flex border-b bg-white">
+            <button
+              onClick={() => setMobileView('map')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
+            >
+              <Map size={16} /> {t('mapView')}
+            </button>
+            <button
+              onClick={() => setMobileView('list')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
+            >
+              <List size={16} /> {t('listView')}
+            </button>
+          </div>
+        )}
+
+        <div className="flex-1 flex overflow-hidden">
+          {!isMobile ? (
+            <>
+              <div className="w-[60%] h-full">
+                <MapView properties={filtered} />
+              </div>
+              <div className="w-[40%] h-full border-l">
+                <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
+              </div>
+            </>
+          ) : (
+            <>
+              {mobileView === 'map' ? (
+                <div className="w-full h-full relative">
+                  <MapView properties={filtered} />
+                  <MobileBottomSheet properties={filtered} />
+                </div>
+              ) : (
+                <div className="w-full h-full overflow-y-auto">
+                  <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        <AdvancedFilters
+          isOpen={showAdvanced}
+          onClose={() => setShowAdvanced(false)}
+          filters={filters}
+          onFilterChange={updateFilter}
+          onClear={clearFilters}
+        />
+
+        <ComparePanel properties={properties} />
+      </div>
+    );
+  }
+
+  // Grid full-width — /propiedades sin mapa (estilo Ficha 02 del home).
   return (
-    <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
-      {/* SEO heading — visible al top */}
-      <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
+    <div className="propyte-marketplace-grid-canvas">
+      {/* SEO heading */}
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-6 pb-4">
         <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{heading}</h1>
         <p className="text-sm text-gray-600 mt-1">{subheading}</p>
       </div>
@@ -95,48 +177,13 @@ export default function MarketplaceContent({
         resultCount={filtered.length}
       />
 
-      {/* Mobile toggle */}
-      {isMobile && (
-        <div className="flex border-b bg-white">
-          <button
-            onClick={() => setMobileView('map')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
-          >
-            <Map size={16} /> {t('mapView')}
-          </button>
-          <button
-            onClick={() => setMobileView('list')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
-          >
-            <List size={16} /> {t('listView')}
-          </button>
-        </div>
-      )}
-
-      <div className="flex-1 flex overflow-hidden">
-        {!isMobile ? (
-          <>
-            <div className="w-[60%] h-full">
-              <MapView properties={filtered} />
-            </div>
-            <div className="w-[40%] h-full border-l">
-              <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
-            </div>
-          </>
-        ) : (
-          <>
-            {mobileView === 'map' ? (
-              <div className="w-full h-full relative">
-                <MapView properties={filtered} />
-                <MobileBottomSheet properties={filtered} />
-              </div>
-            ) : (
-              <div className="w-full h-full overflow-y-auto">
-                <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
-              </div>
-            )}
-          </>
-        )}
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-8">
+        <PropertyList
+          properties={filtered}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          variant="grid"
+        />
       </div>
 
       <AdvancedFilters

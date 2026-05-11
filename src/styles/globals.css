@@ -811,6 +811,42 @@ html {
           backdrop-filter: blur(18px);
 }
 
+/* ─── Marketplace grid canvas — fondo del listado /propiedades.
+   Gradiente sutil teal-cyan que da profundidad a las cards glass-light
+   sin competir con el contenido. Permanente: sirve para cualquier listing
+   marketplace en grid full-width. */
+.propyte-marketplace-grid-canvas {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(162, 249, 255, 0.07) 0%, transparent 60%),
+    linear-gradient(180deg, #F4F6F8 0%, #E9F2F4 100%);
+  min-height: calc(100dvh - 140px);
+}
+
+/* ─── Card hover glow — lift + cyan brand glow para tarjetas marketplace,
+   developer, zone, etc. Reusable en cualquier card sobre fondo claro. */
+.propyte-card-hover-glow {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+.propyte-card-hover-glow:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0  18px 40px 0 rgba(11, 28, 30, 0.10),
+    0  6px 18px 0 rgba(162, 249, 255, 0.20);
+  border-color: rgba(162, 249, 255, 0.45);
+}
+@media (prefers-reduced-motion: reduce) {
+  .propyte-card-hover-glow,
+  .propyte-card-hover-glow:hover {
+    transform: none;
+    transition: box-shadow 0.25s ease;
+  }
+}
+
 /* ─── Hero overlay ────────────────────────────────────────────────────────
    Degradado oscuro vertical sobre la imagen del hero para mantener contraste
    AA con el título. Usar como capa absoluta encima del <img>:

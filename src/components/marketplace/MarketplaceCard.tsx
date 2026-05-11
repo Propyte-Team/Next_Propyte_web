@@ -69,7 +69,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const detailBase = property.kind === 'unit' ? 'propiedades' : 'desarrollos';
 
   return (
-    <div className="border-b border-r border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-[transform,box-shadow] duration-200 motion-reduce:hover:translate-y-0 motion-reduce:transition-none group">
+    <div className="propyte-card-glass-light propyte-card-hover-glow overflow-hidden group">
       <Link
         href={`/${locale}/${detailBase}/${property.slug}`}
         className="block"
@@ -278,7 +278,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
         </div>
 
         {/* Info */}
-        <div className="p-3">
+        <div className="p-4">
           {/* Price + $/m² (+ strikethrough when discounted) */}
           <div className="flex items-baseline gap-2 flex-wrap">
             <span data-testid="marketplace-card-price" className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
