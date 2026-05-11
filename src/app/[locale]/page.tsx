@@ -16,7 +16,12 @@ import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
-import { getTestimonials, getCta } from '@/lib/hub-content';
+import {
+  getTestimonials,
+  getCta,
+  getExploreCategories,
+  localizedExploreLabel,
+} from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -67,10 +72,23 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   }
 
   // Contenido editorial dinámico desde Hub (con fallback a i18n hardcoded)
-  const [hubTestimonials, leadMagnetCta] = await Promise.all([
+  const [hubTestimonials, leadMagnetCta, hubExplore] = await Promise.all([
     getTestimonials('home'),
     getCta('home_lead_magnet'),
+    getExploreCategories(),
   ]);
+
+  // Hub override de cards "Explora": si trae al menos 1 row, sustituye TODAS.
+  // Si no, ExploreCategories cae al array hardcoded original.
+  const exploreOverride = hubExplore.length > 0
+    ? hubExplore.map((c) => ({
+        key: c.slug,
+        typeKey: c.type_key ?? c.slug,
+        label: localizedExploreLabel(c, locale),
+        image: c.image_url,
+        href: c.href,
+      }))
+    : null;
   const homeTestimonials = hubTestimonials.map((t) => ({
     name: t.name,
     city: t.location ?? '',
@@ -91,7 +109,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <SchemaMarkup type="organization" />
       {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <Hero stats={stats} />}
       <ScrollReveal>
-        <ExploreCategories typeCounts={stats.typeCounts} />
+        <ExploreCategories
+          typeCounts={stats.typeCounts}
+          override={exploreOverride}
+        />
       </ScrollReveal>
       {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
         <ScrollReveal delay={0.05}>

@@ -203,3 +203,34 @@ export function localizedStatSublabel(
 ): string | null {
   return locale === "en" ? stat.sublabel_en : stat.sublabel_es;
 }
+
+// =============================================================================
+// Explore categories — Fase B.3
+// =============================================================================
+// Speckit: Propyte_hub/specs/dynamic-content/spec.md §Fase B.3
+// Endpoint: GET /api/public/explore-categories → { items: HubExploreCategory[] }
+
+export interface HubExploreCategory {
+  id: string;
+  slug: string;
+  type_key: string | null;
+  label_es: string;
+  label_en: string;
+  image_url: string;
+  href: string;
+  sort_order: number;
+}
+
+export async function getExploreCategories(): Promise<HubExploreCategory[]> {
+  const r = await fetchJson<{ items: HubExploreCategory[] }>(
+    `/api/public/explore-categories`,
+  );
+  return r?.items ?? [];
+}
+
+export function localizedExploreLabel(
+  cat: HubExploreCategory,
+  locale: string,
+): string {
+  return locale === "en" ? cat.label_en : cat.label_es;
+}

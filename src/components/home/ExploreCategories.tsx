@@ -2,7 +2,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
 
-const categories = [
+const FALLBACK_CATEGORIES = [
   {
     key: 'apartments',
     typeKey: 'departamento',
@@ -35,13 +35,48 @@ const categories = [
   },
 ];
 
-interface ExploreCategoriesProps {
-  typeCounts?: Record<string, number>;
+// Cuando Hub provee override, cada card trae label resuelto y href absoluto
+// (sin locale prefix — el sitio antepone /{locale}/).
+export interface ExploreCategoryOverride {
+  key: string;
+  typeKey: string;
+  label: string;
+  image: string;
+  href: string; // path sin locale, ej. "/propiedades?type=departamento"
 }
 
-export default function ExploreCategories({ typeCounts }: ExploreCategoriesProps) {
+interface ExploreCategoriesProps {
+  typeCounts?: Record<string, number>;
+  override?: ExploreCategoryOverride[] | null;
+}
+
+export default function ExploreCategories({ typeCounts, override }: ExploreCategoriesProps) {
   const t = useTranslations('explore');
   const locale = useLocale();
+
+  // Normalizamos a una forma común para renderizar. Si Hub trae items, usamos
+  // su label ya resuelto. Si no, caemos al fallback con t(cat.key) i18n.
+  const items: Array<{
+    key: string;
+    typeKey: string;
+    label: string;
+    image: string;
+    href: string;
+  }> = override && override.length > 0
+    ? override.map((c) => ({
+        key: c.key,
+        typeKey: c.typeKey,
+        label: c.label,
+        image: c.image,
+        href: `/${locale}${c.href}`,
+      }))
+    : FALLBACK_CATEGORIES.map((c) => ({
+        key: c.key,
+        typeKey: c.typeKey,
+        label: t(c.key),
+        image: c.image,
+        href: `/${locale}/propiedades?${c.query}`,
+      }));
 
   // Brand: el título de la sección destaca la última palabra en cyan #A2F9FF
   // (mismo patrón que el hero — coherencia editorial en el home).
@@ -72,10 +107,10 @@ export default function ExploreCategories({ typeCounts }: ExploreCategoriesProps
           )}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {categories.map((cat) => (
+          {items.map((cat) => (
             <Link
               key={cat.key}
-              href={`/${locale}/propiedades?${cat.query}`}
+              href={cat.href}
               // Ficha 01 brand: rounded-[28px] mobile / 52px tablet+, border
               // sutil white/15, glass background detrás de la imagen para
               // suavizar el contacto con el grid oscuro.
@@ -83,7 +118,7 @@ export default function ExploreCategories({ typeCounts }: ExploreCategoriesProps
             >
               <Image
                 src={cat.image}
-                alt={t(cat.key)}
+                alt={cat.label}
                 fill
                 sizes="(max-width: 639px) 50vw, (max-width: 767px) 33vw, 20vw"
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -93,7 +128,7 @@ export default function ExploreCategories({ typeCounts }: ExploreCategoriesProps
               <div className="absolute inset-0 bg-gradient-to-t from-[#0B1C1E]/85 via-[#0B1C1E]/30 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
                 <span className="text-white font-bold text-sm md:text-base drop-shadow-md">
-                  {t(cat.key)}
+                  {cat.label}
                 </span>
                 {typeCounts && typeCounts[cat.typeKey] > 0 && (
                   <span className="bg-[#A2F9FF] text-[#0B1C1E] text-2xs font-bold px-2 py-0.5 rounded-full">
