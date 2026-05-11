@@ -57,7 +57,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                 href={`/${locale}/desarrollos/${dev.slug}`}
                 className="group block"
               >
-                <article className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+                <article className="propyte-card-glass-light overflow-hidden transition-all duration-300 hover:-translate-y-1">
                   <div className="relative aspect-[16/10] overflow-hidden">
                     {dev.images?.[0] ? (
                       <Image
@@ -74,7 +74,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                       <div className="absolute top-3 left-3">
                         <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
                           dev.stage === 'preventa'
-                            ? 'bg-[#F5A623] text-white'
+                            ? 'bg-[#A2F9FF] text-[#0B1C1E]'
                             : dev.stage === 'construccion'
                             ? 'bg-[#22C55E] text-white'
                             : 'bg-[#0F766E] text-white'
@@ -124,7 +124,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                     </div>
 
                     {dev.roi_estimated && dev.roi_estimated > 0 && (
-                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-bold rounded-full">
+                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#A2F9FF]/20 text-[#0D9488] text-xs font-bold rounded-full">
                         {t('roiAnnual', { value: dev.roi_estimated })}
                       </div>
                     )}

@@ -6,7 +6,7 @@
   --color-teal: #5CE0D2;
   --color-teal-dark: #4BCEC0;
   --color-teal-a11y: #0D9488;
-  --color-aqua-bright: #99FFFF;
+  --color-aqua-bright: #A2F9FF;
   --color-navy: #1A2F3F;
   --color-aztec: #0F1923;
   --color-deep-onyx: #1A1A2E;
@@ -18,6 +18,19 @@
   --color-error: #EF4444;
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1EBE57;
+
+  /* Propyte Brand Identity Oficial — paleta corporativa
+     Cyans claros (degradado claro) + teals oscuros (degradado oscuro).
+     Color de marca primario para acentos: --propyte-brand (#A2F9FF). */
+  --propyte-brand: #A2F9FF;
+  --propyte-cyan-50:  #E9FDFF;
+  --propyte-cyan-100: #C7FAFF;
+  --propyte-cyan-200: #A5F8FF;
+  --propyte-cyan-300: #81EAF1;
+  --propyte-dark-900: #0B1C1E;
+  --propyte-dark-800: #132B2E;
+  --propyte-dark-700: #1C3A3D;
+  --propyte-dark-600: #497379;
 
   /* Radii — calca WP */
   --radius-card: 12px;
@@ -41,8 +54,15 @@
      Cada token interpola linealmente entre el min (mobile) y max (desktop).
      Las utilities Tailwind text-* leen estas vars vía @theme, así que el
      cambio es global: cualquier `text-3xl` se vuelve fluido sin tocar JSX. */
-  --font-heading: "Space Grotesk", Inter, Arial, sans-serif;
-  --font-body: "Space Grotesk", Inter, Arial, sans-serif;
+  /* Brand identity oficial — jerarquía replica las publicaciones de RRSS:
+       --font-display → Neue Haas Grotesk Display Pro (Adobe). Substituto
+                        free: Inter (var inyectada por next/font en layout.tsx).
+       --font-text    → Normalidad VF (Adobe). Substituto free: DM Sans.
+       --font-eyebrow → Space Grotesk Bold (subtítulos, eyebrows, kickers).
+     Cuando se obtenga kit Adobe, basta swap del Google Font en layout.tsx. */
+  --font-heading: var(--font-display), 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body:    var(--font-text), 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-eyebrow-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
 
   --fs-2xs:  clamp(0.625rem,  0.607rem + 0.089vw,  0.6875rem); /* 10  → 11 */
   --fs-xs:   0.75rem;                                          /* 12  fixed */
@@ -119,7 +139,7 @@
   --color-teal: #5CE0D2;
   --color-teal-dark: #4BCEC0;
   --color-teal-a11y: #0D9488;
-  --color-aqua-bright: #99FFFF;
+  --color-aqua-bright: #A2F9FF;
   --color-navy: #1A2F3F;
   --color-aztec: #0F1923;
   --color-deep-onyx: #1A1A2E;
@@ -130,6 +150,18 @@
   --color-error: #EF4444;
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1EBE57;
+
+  /* Brand Identity Oficial — exposed a Tailwind como utilities
+     bg-propyte-brand / text-propyte-cyan-200 / border-propyte-dark-700, etc. */
+  --color-propyte-brand:    #A2F9FF;
+  --color-propyte-cyan-50:  #E9FDFF;
+  --color-propyte-cyan-100: #C7FAFF;
+  --color-propyte-cyan-200: #A5F8FF;
+  --color-propyte-cyan-300: #81EAF1;
+  --color-propyte-dark-900: #0B1C1E;
+  --color-propyte-dark-800: #132B2E;
+  --color-propyte-dark-700: #1C3A3D;
+  --color-propyte-dark-600: #497379;
 
   /* Typography — alias a los tokens del Design Playground (--fs-*, --fw-*).
      Las utilities Tailwind text-2xs / text-sm / ... / text-6xl heredan los
@@ -167,7 +199,7 @@
 }
 
 body {
-  font-family: var(--font-space-grotesk), 'Space Grotesk', Arial, sans-serif;
+  font-family: var(--font-body);
   color: var(--color-graphite);
   background: var(--color-white);
   font-size: var(--fs-base);
@@ -266,18 +298,22 @@ html {
    ───────────────────────────────────────────────────────── */
 .propyte-search-bubble {
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  /* Cristalino: 2 capas inset (top dim, bottom highlight) + drop suave +
+     drop largo — replica el lenguaje Ficha 02 a escala pill. */
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.08),
-    0 1px 4px rgba(0, 0, 0, 0.04);
+    0 -1px 1px 0 rgba(255, 255, 255, 0.40) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0  4px 14px 0 rgba(11, 28, 30, 0.10),
+    0  20px 48px 0 rgba(11, 28, 30, 0.18);
   transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .propyte-search-bubble:focus-within {
-  border-color: rgba(92, 224, 210, 0.7);
-  /* Anillo teal pulsante — intensidad superior al hover normal,
+  border-color: rgba(162, 249, 255, 0.7);
+  /* Anillo brand cyan pulsante — intensidad superior al hover normal,
      animación suave que mantiene la atención del usuario sin distraer. */
   animation: propyte-bubble-pulse 1.8s ease-in-out infinite;
 }
@@ -286,14 +322,14 @@ html {
   0%, 100% {
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.08),
-      0 0 0 4px rgba(92, 224, 210, 0.25),
-      0 0 24px rgba(92, 224, 210, 0.35);
+      0 0 0 4px rgba(162, 249, 255, 0.25),
+      0 0 24px rgba(162, 249, 255, 0.35);
   }
   50% {
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.08),
-      0 0 0 6px rgba(92, 224, 210, 0.4),
-      0 0 36px rgba(92, 224, 210, 0.55);
+      0 0 0 6px rgba(162, 249, 255, 0.4),
+      0 0 36px rgba(162, 249, 255, 0.55);
   }
 }
 
@@ -303,8 +339,8 @@ html {
     animation: none;
     box-shadow:
       0 4px 24px rgba(0, 0, 0, 0.08),
-      0 0 0 4px rgba(92, 224, 210, 0.3),
-      0 0 24px rgba(92, 224, 210, 0.4);
+      0 0 0 4px rgba(162, 249, 255, 0.3),
+      0 0 24px rgba(162, 249, 255, 0.4);
   }
 }
 
@@ -691,3 +727,173 @@ html {
     opacity: 0;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   BRAND IDENTITY OFICIAL — tarjetas glass + hero overlay + jerarquía editorial
+   Reglas tomadas del documento "NOTAS PARA CAMBIOS Y ARREGLOS DE DISEÑO WEB".
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Glass cards ─────────────────────────────────────────────────────────
+   Dos estilos canónicos basados en la guía oficial:
+
+   .propyte-card-glass     → Estilo Ficha 01 (simple, para datos / stats).
+   .propyte-card-glass-lg  → Estilo Ficha 02 (premium, para testimonios /
+                              contenido destacado, con borde + shadow stack). */
+
+.propyte-card-glass {
+  border-radius: 52px;
+  background: rgba(72, 115, 121, 0.40); /* #497379 @ 40% */
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+}
+
+.propyte-card-glass-lg {
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  background: rgba(72, 115, 121, 0.42); /* #497379 @ 42% */
+  box-shadow:
+    0 -1.042px 1.042px 0 rgba(255, 255, 255, 0.10) inset,
+    0  1.042px 1.042px 0 rgba(255, 255, 255, 0.25) inset,
+    0  8.336px 6.252px 0 rgba(0, 0, 0, 0.05);
+  -webkit-backdrop-filter: blur(52.10107421875px);
+          backdrop-filter: blur(52.10107421875px);
+}
+
+/* ─── Glass pill — Ficha 02 reducida para botones / chips / stats inline ──
+   Mismo lenguaje cristalino: border highlight + inset shadow + blur + bg
+   teal-dark translúcido. Se ajusta el border-radius por contenedor. */
+.propyte-glass-pill {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(72, 115, 121, 0.32);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.20) inset,
+    0  4px 14px 0 rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
+  transition: border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.propyte-glass-pill:hover {
+  border-color: rgba(162, 249, 255, 0.55);
+  background: rgba(72, 115, 121, 0.42);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.25) inset,
+    0  6px 22px 0 rgba(162, 249, 255, 0.18);
+}
+
+/* ─── Glass cristalino light — variante para bg claros (mantiene el carácter
+   cristalino sin invertir). Útil en TrendingMarket / WhyPropyte stat tiles. */
+.propyte-card-glass-light {
+  border-radius: 24px;
+  border: 1px solid rgba(11, 28, 30, 0.06);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0  10px 30px 0 rgba(11, 28, 30, 0.06),
+    0  2px 6px 0 rgba(11, 28, 30, 0.04);
+  -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(18px);
+}
+
+/* ─── Hero overlay ────────────────────────────────────────────────────────
+   Degradado oscuro vertical sobre la imagen del hero para mantener contraste
+   AA con el título. Usar como capa absoluta encima del <img>:
+
+     <div className="relative">
+       <Image ... />
+       <div className="propyte-hero-overlay" aria-hidden="true" />
+       <div className="relative z-10">…contenido…</div>
+     </div>                                                                 */
+
+.propyte-hero-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(11, 28, 30, 0.55) 0%,
+    rgba(11, 28, 30, 0.65) 45%,
+    rgba(11, 28, 30, 0.85) 100%
+  );
+}
+
+.propyte-hero-overlay--bottom {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 28, 30, 0.10) 0%,
+    rgba(11, 28, 30, 0.55) 55%,
+    rgba(11, 28, 30, 0.92) 100%
+  );
+}
+
+/* ─── Brand editorial type scale ──────────────────────────────────────────
+   Clases reutilizables que replican la jerarquía tipográfica de los posts
+   de redes (Neue Haas Grotesk Display Pro / Space Grotesk / Normalidad VF).
+   Los pt del manual se convierten a px aproximados (×1.333) y se exponen
+   como tokens fluidos para que respondan a viewport.
+
+   Uso: `<span class="brand-eyebrow">REAL ESTATE</span>` + `<h1 class="brand-display">…</h1>`. */
+
+.brand-eyebrow {
+  /* Subtítulo 1 manual: Space Grotesk Bold — única clase que NO usa display. */
+  font-family: var(--font-eyebrow-family);
+  font-weight: 700;
+  font-size: clamp(0.875rem, 0.7rem + 0.45vw, 1.1rem);  /* ~14 → 18 (S.G. Bold 28pt visual) */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.brand-display {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 1.4rem + 4.25vw, 5.75rem);  /* ~36 → 92 (Neue Haas Reg 55–70pt) */
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+}
+
+.brand-display-medium {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.3rem + 3.6vw, 5rem);          /* ~32 → 80 (Neue Haas Med 65pt) */
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(1rem, 0.9rem + 0.5vw, 1.35rem);       /* ~16 → 22 (S.G. Med 20pt) */
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.brand-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1rem, 0.92rem + 0.4vw, 1.25rem);      /* ~16 → 20 (Normalidad VF Reg 25pt) */
+  line-height: 1.6;
+}
+
+.brand-data {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.3rem + 3.5vw, 4.5rem);        /* ~32 → 72 (Wide Med 50pt) */
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  font-stretch: 125%; /* fallback wide para Space Grotesk */
+}
+
+.brand-body-light {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(0.9375rem, 0.88rem + 0.3vw, 1.1rem);  /* ~15 → 18 (Light 15–20pt) */
+  line-height: 1.65;
+}
+
+/* Helper: aplicar el color de marca oficial como acento de texto. */
+.text-propyte-brand { color: var(--propyte-brand); }
+.bg-propyte-brand   { background-color: var(--propyte-brand); }

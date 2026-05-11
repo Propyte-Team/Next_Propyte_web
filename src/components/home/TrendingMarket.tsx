@@ -82,7 +82,7 @@ export default function TrendingMarket() {
   const statCards = [
     { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
     { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0F766E]' },
-    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#F5A623]' },
+    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#0D9488]' },
     { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
   ];
 
@@ -100,10 +100,10 @@ export default function TrendingMarket() {
           </div>
         </div>
 
-        {/* Stats grid */}
+        {/* Stats grid — glass cristalino light sobre bg blanco */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {statCards.map((stat, i) => (
-            <div key={i} className="bg-[#F4F6F8] rounded-xl p-5 text-center hover:shadow-md transition-shadow">
+            <div key={i} className="propyte-card-glass-light p-5 text-center transition-transform hover:-translate-y-0.5">
               <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm mb-3 ${stat.color}`}>
                 <stat.icon size={20} />
               </div>
@@ -113,15 +113,15 @@ export default function TrendingMarket() {
           ))}
         </div>
 
-        {/* Trending zones */}
-        <div className="bg-[#1A2F3F] rounded-2xl p-6 md:p-8">
+        {/* Trending zones — surface dark brand */}
+        <div className="bg-[#0B1C1E] rounded-2xl p-6 md:p-8 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4">{t('zonesTitle')}</h3>
           <div className="space-y-3">
             {zones.map((zone) => (
               <Link
                 key={zone.zone}
                 href={`/${locale}/zonas/${zone.slug}`}
-                className="flex items-center justify-between p-3 bg-white/10 hover:bg-white/15 rounded-lg transition-colors group"
+                className="flex items-center justify-between p-3 bg-white/5 hover:bg-[#A2F9FF]/10 rounded-lg transition-colors group border border-transparent hover:border-[#A2F9FF]/30"
               >
                 <div>
                   <span className="text-white font-semibold">{zone.zone}</span>
@@ -132,9 +132,9 @@ export default function TrendingMarket() {
                     {t('occupancy')}: {zone.occupancy} · {t('adr')}: {zone.adr}
                   </span>
                   {zone.score > 0 && (
-                    <span className="text-[#4ADE80] font-bold text-sm">{zone.score}/100</span>
+                    <span className="text-[#A2F9FF] font-bold text-sm">{zone.score}/100</span>
                   )}
-                  <ArrowUpRight size={16} className="text-[#4ADE80] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight size={16} className="text-[#A2F9FF] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </Link>
             ))}

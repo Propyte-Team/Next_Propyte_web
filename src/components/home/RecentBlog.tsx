@@ -46,7 +46,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
                       priority={i === 0}
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-[#1A2F3F] to-[#5CE0D2]" />
+                    <div className="w-full h-full bg-gradient-to-br from-[#0B1C1E] to-[#A2F9FF]" />
                   )}
                   <div className="absolute top-3 left-3">
                     <span className="px-2 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded">

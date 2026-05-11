@@ -531,11 +531,20 @@ Cada página debe ser un **clon pixel-perfect** del WordPress actual. La estruct
 **Rendering:** ISR con revalidación cada 1 hora. Las stats se refrescan con el revalidation.
 
 **Hero Específico:**
-- Background: Video o imagen de fondo con overlay gradient
-- Search form tabulado: "Desarrollos" / "Propiedades" — cambia action URL + placeholder
-- Stats pills: Counts dinámicos (desarrollos, propiedades, ciudades)
+- Background: Video o imagen de fondo con overlay gradient `#0B1C1E` (55→85% bottom-heavy) — usar `.propyte-hero-overlay` (§6.1.d)
+- Eyebrow pill `REAL ESTATE` con borde `#A2F9FF/40` antes del H1 (§6.1.e `.brand-eyebrow`)
+- H1: título terminado con "Riviera Maya" coloreado en `#A2F9FF` (split del último par de palabras del título traducido)
+- Subtítulo blanco/90, tagline `#A2F9FF` uppercase tracking widish
+- Search form tabulado: "Desarrollos" / "Propiedades" — botón submit `bg-[#A2F9FF] hover:bg-[#81EAF1]` (cyan300)
+- Stats pills: StatCounters en `#A2F9FF`
 - Quick links: 4 filtros rápidos hardcoded
 - Altura mínima: `min-h-[calc(520px+80px)] md:min-h-[calc(600px+80px)] lg:min-h-[calc(680px+80px)]`
+
+**Brand Identity aplicada en Home (§6.1):**
+- ExploreCategories grid → cards con `.propyte-card-glass` (Ficha 01) sobre fondo dark
+- Testimonials → `.propyte-card-glass-lg` (Ficha 02) con foto avatar + cita
+- Cualquier acento naranja existente (`#F5A623` decorativo) → reemplazar por `#A2F9FF` en dark / `#0D9488` en light
+- StatCounters globales: brand cyan
 
 #### 4.1.2 Detalle Desarrollo (`/desarrollos/[slug]`)
 
@@ -731,31 +740,119 @@ Cada página debe ser un **clon pixel-perfect** del WordPress actual. La estruct
 
 ### 6.1 Paleta de Colores
 
+> **Brand Identity Oficial (2026-05-09):** la marca exige `#A2F9FF` como acento
+> primario y un degradado oscuro corporativo (`#0B1C1E` … `#497379`). Las
+> variaciones cyan no oficiales (`#99FFFF`) y los acentos naranja (`#F5A623`)
+> deben reemplazarse en toda nueva superficie. `#5CE0D2` permanece como teal
+> canónico de WP para hovers/atmosphere y CTAs sobre fondo oscuro; ver §6.1.b
+> para coexistencia. Documento fuente: `NOTAS PARA CAMBIOS Y ARREGLOS DE
+> DISEÑO WEB`.
+
 ```typescript
 // shared/constants/colors.ts
 export const colors = {
-  // Brand
-  teal:       '#5CE0D2',  // Primary CTA
-  tealDark:   '#4BCEC0',  // Hover state
-  tealA11y:   '#0D9488',  // WCAG AA text on white (4.5:1+)
-  aquaBright: '#99FFFF',  // Accent
-  navy:       '#1A2F3F',  // Primary text
-  graphite:   '#2C2C2C',  // Body text
-  aztec:      '#0F1923',  // Dark backgrounds
-  deepOnyx:   '#1A1A2E',  // Darker backgrounds
+  // Brand Identity Oficial (manual de marca PDF 2026-05-09)
+  brand:        '#A2F9FF',  // Acento primario corporativo — CTAs, hovers, links, highlights
+  cyan50:       '#E9FDFF',  // Cyan claro 1
+  cyan100:      '#C7FAFF',  // Cyan claro 2
+  cyan200:      '#A5F8FF',  // Cyan claro 3 (≈ brand)
+  cyan300:      '#81EAF1',  // Cyan claro 4 (hover de brand)
+  dark900:      '#0B1C1E',  // Aztec oficial — fondo principal oscuro
+  dark800:      '#132B2E',  // Fondo secundario
+  dark700:      '#1C3A3D',  // Surface elevada (cards con alpha)
+  dark600:      '#497379',  // Texto secundario / dividers / glass cards (alpha)
+
+  // Brand WP heredada (sigue válida; ver §6.1.b)
+  teal:         '#5CE0D2',  // CTA / atmosphere sobre dark — coexiste con brand
+  tealDark:     '#4BCEC0',  // Hover state teal
+  tealA11y:     '#0D9488',  // WCAG AA text on white (4.5:1+) — usar cuando brand no cumple contraste
+  navy:         '#1A2F3F',  // Primary text
+  graphite:     '#2C2C2C',  // Body text
+  aztec:        '#0F1923',  // Dark backgrounds (legacy)
+  deepOnyx:     '#1A1A2E',  // Darker backgrounds
 
   // Functional
-  amber:      '#F5A623',  // Warning/highlight
-  lightGray:  '#F4F6F8',  // Backgrounds
-  success:    '#22C55E',  // Positive states
-  error:      '#EF4444',  // Error states
-  whatsapp:   '#25D366',  // WhatsApp button
+  amber:        '#F5A623',  // ⚠ Solo para warnings reales — eliminar como acento decorativo
+  lightGray:    '#F4F6F8',  // Backgrounds claros
+  success:      '#22C55E',  // Positive states
+  error:        '#EF4444',  // Error states
+  whatsapp:     '#25D366',  // WhatsApp button
 
   // Social
-  instagram:  '#E1306C',
-  facebook:   '#1877F2',
+  instagram:    '#E1306C',
+  facebook:     '#1877F2',
 } as const;
 ```
+
+#### 6.1.b Reglas de coexistencia brand vs teal
+
+| Caso | Color | Razón |
+|---|---|---|
+| Hero overlay sobre imagen | `#0B1C1E` con alpha 55–85% | Brand-aligned; reemplaza `bg-black/*` |
+| Acento textual en titular ("Riviera Maya") | `#A2F9FF` | Manual de marca exige brand para palabra-clave del H1 |
+| StatCounters / cifras destacadas sobre dark | `#A2F9FF` | Brand visible en fondo oscuro |
+| CTA primaria sobre dark (botón pill cyan) | `#A2F9FF` con hover `#81EAF1` | Brand + cyan300 hover |
+| Texto sobre fondo claro (link, label, tag) | `#0D9488` (teal-a11y) | `#A2F9FF` no cumple WCAG AA contra blanco |
+| Glass card content (testimonios, datos) | `#497379 @ 40-42%` con blur | Ficha 01/02 oficiales (ver §6.1.c) |
+| Glow nodes / ambient atmosphere en hero | `#5CE0D2 @ 8-16%` | Sistema `.propyte-hero-canvas` legacy permanece |
+| Eyebrow dot pulsante | `#5CE0D2` | Acceso ya producido; no migrar todavía |
+| Iconos activos en sidebar | `#A2F9FF` | Acento de marca |
+| Warnings reales (alertas, validación) | `#F5A623` | Solo si semánticamente es warning |
+| Empty-state map (catálogo) | `#A2F9FF/15` bg + `#0D9488` icon | Ya migrado |
+
+Regla de oro: **brand = action**, **teal = atmosphere**.
+
+#### 6.1.c Glass cards (Ficha 01 + Ficha 02)
+
+Tomadas literal del manual de marca. Implementadas como utilidades CSS en
+`src/styles/globals.css`:
+
+```css
+/* .propyte-card-glass — Ficha 01: simple, para datos / stats */
+border-radius: 52px;
+background: rgba(72, 115, 121, 0.40);  /* dark600 @ 40% */
+backdrop-filter: blur(20px);
+
+/* .propyte-card-glass-lg — Ficha 02: premium, para testimoniales */
+border-radius: 40px;
+border: 1px solid rgba(255, 255, 255, 0.30);
+background: rgba(72, 115, 121, 0.42);  /* dark600 @ 42% */
+box-shadow:
+  0 -1.042px 1.042px 0 rgba(255,255,255,0.10) inset,
+  0  1.042px 1.042px 0 rgba(255,255,255,0.25) inset,
+  0  8.336px 6.252px 0 rgba(0,0,0,0.05);
+backdrop-filter: blur(52.10107421875px);
+```
+
+Uso esperado:
+
+- **Ficha 01** → `ExploreCategories`, `WhyPropyte` data tiles, market stats,
+  cards genéricos sobre fondo dark.
+- **Ficha 02** → `Testimonials`, casos de éxito, contenido editorial destacado.
+
+#### 6.1.d Hero overlay
+
+Utilidad `.propyte-hero-overlay` (vertical) y `.propyte-hero-overlay--bottom`
+(peso al pie). Reemplaza `bg-gradient-to-b from-black/* via-black/* to-black/*`
+en cualquier hero con imagen de fondo. Mantiene la cromaticidad corporativa
+y mejora contraste AA del título.
+
+#### 6.1.e Jerarquía editorial (clases CSS)
+
+Replica la escala del manual (Neue Haas Grotesk Display Pro / Space Grotesk /
+Normalidad VF). Como Neue Haas y Normalidad no son Google Fonts, se mantiene
+**Space Grotesk** como tipografía global (ya válida según el manual: "se ve en
+el header 'Conoce Propyte'") con la jerarquía aplicada vía clases:
+
+| Clase | Equivalente PDF | clamp(min, max) |
+|---|---|---|
+| `.brand-eyebrow` | Subtítulo 1 (S.G. Bold 28pt) | 14 → 18px, tracking 0.14em uppercase |
+| `.brand-display` | Título 1 (Neue Haas Reg 55-70pt) | 36 → 92px, leading 0.98 |
+| `.brand-display-medium` | Título 2 (Neue Haas Med 65pt) | 32 → 80px |
+| `.brand-subtitle` | Subtítulo 2/3 (S.G. Med 20pt) | 16 → 22px |
+| `.brand-body` | Cuerpo 1 (Normalidad VF Reg 25pt) | 16 → 20px |
+| `.brand-data` | Cuerpo 2 datos (Wide Med 50pt) | 32 → 72px tabular |
+| `.brand-body-light` | Cuerpo 3 (Light 15-20pt) | 15 → 18px weight 300 |
 
 ### 6.2 Tipografía
 

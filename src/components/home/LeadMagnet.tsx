@@ -33,12 +33,12 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   }
 
   return (
-    <section className="bg-[#1A2F3F] py-16 md:py-20">
+    <section className="bg-[#0B1C1E] py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left: Copy */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#5CE0D2]/20 text-[#5CE0D2] rounded-full text-xs font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#A2F9FF]/15 text-[#A2F9FF] border border-[#A2F9FF]/30 rounded-full text-xs font-bold mb-4">
               <FileDown size={14} />
               {eyebrow}
             </div>
@@ -63,7 +63,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#5CE0D2] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
                     placeholder={t('namePlaceholder')}
                   />
                 </div>
@@ -74,14 +74,14 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#5CE0D2] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
                     placeholder={t('emailPlaceholder')}
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : ctaLabel}

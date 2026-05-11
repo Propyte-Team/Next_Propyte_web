@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-09
+> Última actualización: 2026-05-09 (sesión Brand Identity + cristalino)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,25 +8,34 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-_Ninguna tarea activa._
+_Ninguna tarea activa — esperando feedback de Luis sobre dev.propyte.com._
 
 ---
 
-## Pendiente — Push
+## Pendientes
 
-- [ ] `git push origin develop` desde terminal local — 3 commits míos encolados:
-  - `59e36e5 feat(estructura): organigrama desde Supabase + page_content (i18n)`
-  - `b220487 fix(estructura): clicks defensivos en acordeones`
-  - `a97341d fix(i18n): renombrar CSO a CCO en stat2Label`
-- (Plus 2 commits previos del usuario: `ece05d0 feat(uiux): tap targets`, `54c0ecc feat(uiux-global)`)
+### Brand Identity Oficial — siguiente vuelta
 
----
+- [ ] **Validación visual de Luis en `dev.propyte.com`**: revisar cristalino + jerarquía tipográfica + contraste. Decidir qué afinar antes de promover a main.
+- [ ] **Migrar acentos naranja `#F5A623` restantes** — ~30 archivos fuera del home (auditoría con `grep amber|F5A623|orange-`). Regla: dark bg → `#A2F9FF`, light bg → `#0D9488` (teal-a11y para WCAG AA).
+- [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll, `MarketplaceCard`. Decisión visual con Luis.
+- [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx` (Inter→Neue Haas, DM Sans→Normalidad). Vars `--font-display` / `--font-text` ya tienen el contrato listo.
+- [ ] **Commit + push de los cambios brand** al `develop` (16 archivos pendientes — ya están live en Vercel pero no en git).
 
-## Pendientes (verificación post-deploy)
+### Sesión anterior (B.1 + visibility — pendiente de validar)
 
-- [ ] Tras push, verificar `propyte.com/es/nosotros/estructura` — organigrama debe leer de Supabase, vacantes mostrar "Contratando", Felipe = CCO
-- [ ] Verificar `propyte.com/es/nosotros/equipo-comercial` — debe seguir funcionando con el nuevo filtro `show_in_team_page=true` (vista lo aplica)
-- [ ] Si hay 2 acordeones que no abren todavía tras el fix defensivo, identificar cuáles dos específicos y abrir issue
+- [ ] **Validación E2E B.1 site_config en `dev.propyte.com`**:
+  - Footer muestra `contacto@propyte.com` (no `info@propyte.com`)
+  - Footer dirección "5ta Av., Playa del Carmen, Quintana Roo"
+  - WhatsApp button preset = `"Hola Propyte, me interesa una propiedad."` cuando no hay propertyName/Id
+  - `/contacto` muestra address/phone/email/hours del Hub
+- [ ] **Validación visibility en `dev.propyte.com`**:
+  - `/es/nosotros/estructura` retorna **404** (flag `visible_dev=false` ya en BD `site_visibility`)
+  - `/es/nosotros/quienes-somos` NO muestra tab "Estructura" en `NosotrosTabs`
+  - `/es/nosotros` redirige a `quienes-somos` (primer tab visible)
+- [ ] **Decisión usuario**: mergear `develop → main` (lleva brand identity + B.1 + visibility a `propyte.com` prod), o validar más en staging.
+- [ ] Si decide merge: `git checkout main && git merge develop && git push origin main` → Hostinger pull-on-main.
+- [ ] Eventual limpieza: cuando B.1 esté validado en prod ≥30 días, eliminar fallback i18n de contact info en `messages/{es,en}.json` (Fase D speckit dynamic-content).
 
 ---
 
@@ -38,16 +47,25 @@ _Nada bloqueado._
 
 ## Completadas recientes
 
+- [x] **Brand Identity Oficial** — tokens `#A2F9FF` + cyans/darks + glass cards Ficha 01/02 + variantes pill/light + hero overlay + jerarquía editorial en `globals.css` (2026-05-09)
+- [x] **Hero home rediseñado** — eyebrow REAL ESTATE, "Riviera Maya" cyan, overlay aztec, search bubble Ficha 02 character, tabs/stats/quick-links glass-pill (2026-05-09)
+- [x] **Tipografía Inter + DM Sans** vía next/font como substitutos free de Neue Haas Display Pro / Normalidad VF, vars `--font-display` / `--font-text` componiendo `--font-heading` / `--font-body` en `:root` (2026-05-09)
+- [x] **Migración acentos naranja → brand cyan** en 11 componentes home + MapView empty-state (2026-05-09)
+- [x] **Speckit §6.1** reescrito con paleta brand, tabla coexistencia brand/teal, Ficha 01/02 CSS literal, hero overlay, jerarquía editorial (2026-05-09)
+- [x] **Deploy Vercel staging** `dev.propyte.com` (`dpl_9eGFTBJCPePqHMnHCpiNFauS5eNg`) con todos los cambios brand (2026-05-09)
+- [x] B.1 site_config integration — Footer/Header/MobileMenu/WhatsAppButton/contacto consumen `getSiteConfig()` con fallback graceful (commit `5286263`, 2026-05-09)
+- [x] Visibility consumers en `/nosotros/*` — 3 keys agregadas a `VISIBILITY_KEYS`, check con `notFound()` en cada page, `NosotrosTabs` filtra tabs (commit `e1b0855`, 2026-05-09)
+- [x] Vercel deploy anterior `dpl_rdsY1oLkEPgsQ1FkQ4geZL2rqDsJ` con B.1 + visibility (2026-05-09)
 - [x] Refactor `EstructuraPageContent.tsx` para consumir `v_org_structure` desde Supabase (2026-05-09)
-- [x] Helpers `getOrgStructure()` y `getPageContent()` en `src/lib/supabase/queries.ts` (2026-05-09)
-- [x] `getTeamMembers` filtra `is_vacant=false` (2026-05-09)
-- [x] Fix click defensivo en DeptAccordion (`type="button"`, `cursor-pointer`, setOpen function form) (2026-05-09)
-- [x] Rename CSO→CCO en `messages/es.json` y `messages/en.json` (2026-05-09)
 
 ---
 
 ## Notas
 
-- ISR de `/nosotros/estructura` es 600s. Para forzar revalidate sin esperar, edita y guarda algo en Hub `/contenido/nosotros/estructura` — dispara on-demand revalidate.
-- El sitio lee con `createPublicSupabaseClient` (anon key). Cualquier vista nueva en `real_estate_hub` necesita `GRANT SELECT TO anon` antes de ser usable.
-- i18n actúa como fallback si `page_content` no devuelve la fila — mantener ambos en sync.
+- ISR `/nosotros/estructura` = 600s. `getVisibility()` = 30s. `getSiteConfig()` = 300s. Para revalidate inmediato, usar tags desde Hub.
+- `getVisibility` es **fail-open**: si una key no existe en BD o el endpoint falla, render incondicional. Crítico para fallback graceful pero significa que cualquier flag nuevo requiere consumidor explícito (memoria `feedback_site_visibility_consumer.md`).
+- `vercel --prod` SIEMPRE con `cd <repo> &&` inline (memoria `feedback_vercel_cli_cwd.md`).
+- El sitio lee con `createPublicSupabaseClient` (anon key). Cualquier vista nueva en `real_estate_hub` necesita `GRANT SELECT TO anon` antes de ser usable (memoria `feedback_supabase_schema_usage_grant.md`).
+- i18n actúa como fallback si `page_content` o `site_config` no devuelven la fila — mantener ambos en sync hasta Fase D.
+- **Brand identity**: regla "brand=action, teal=atmosphere". Detalle completo en `SPECKIT-METAMORFOSIS-PROPYTE.md §6.1.b` y memoria `project_next_propyte_brand_identity.md`. `#A2F9FF` no cumple WCAG AA contra blanco — usar `#0D9488` en superficies claras.
+- **next/font + `:root` composing**: `--font-display` y `--font-text` (next/font) componen `--font-heading` y `--font-body` (`:root`). Si necesitas swap a Adobe Fonts, solo cambia los `Inter()` y `DM_Sans()` en `layout.tsx`. Memoria: `feedback_nextfont_root_composing.md`.

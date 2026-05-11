@@ -7,24 +7,24 @@ export default function AppDownloadBanner() {
   const locale = useLocale();
 
   const metrics = [
-    { value: t('metric1Value'), label: t('metric1Label'), Icon: TrendingUp, color: '#5CE0D2' },
+    { value: t('metric1Value'), label: t('metric1Label'), Icon: TrendingUp, color: '#A2F9FF' },
     { value: t('metric2Value'), label: t('metric2Label'), Icon: ArrowUpRight, color: '#22C55E' },
-    { value: t('metric3Value'), label: t('metric3Label'), Icon: DollarSign, color: '#F5A623' },
-    { value: t('metric4Value'), label: t('metric4Label'), Icon: Clock, color: '#818CF8' },
+    { value: t('metric3Value'), label: t('metric3Label'), Icon: DollarSign, color: '#81EAF1' },
+    { value: t('metric4Value'), label: t('metric4Label'), Icon: Clock, color: '#C7FAFF' },
   ];
 
   return (
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="relative bg-gradient-to-br from-[#1A2F3F] to-[#0D2740] rounded-2xl overflow-hidden">
-          {/* Decorative blobs */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-[#5CE0D2]/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#5CE0D2]/5 rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none" />
+        <div className="relative bg-gradient-to-br from-[#132B2E] to-[#0B1C1E] rounded-2xl overflow-hidden">
+          {/* Decorative blobs — brand cyan en dark */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#A2F9FF]/10 rounded-full -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#A2F9FF]/5 rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
           <div className="relative flex flex-col lg:flex-row items-center gap-10 p-8 md:p-14">
             {/* Left: text + CTAs */}
             <div className="flex-1 text-center lg:text-left">
-              <span className="inline-block text-[#5CE0D2] text-xs font-bold tracking-widest uppercase mb-4">
+              <span className="inline-block text-[#A2F9FF] text-xs font-bold tracking-widest uppercase mb-4">
                 {t('eyebrow')}
               </span>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 leading-snug">
@@ -36,7 +36,7 @@ export default function AppDownloadBanner() {
               <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                 <Link
                   href={`/${locale}/propiedades#simulador`}
-                  className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-[8px] transition-colors text-sm"
+                  className="inline-flex items-center justify-center gap-2 h-12 px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-[8px] transition-colors text-sm"
                 >
                   <Calculator size={18} strokeWidth={1.75} />
                   {t('ctaPrimary')}

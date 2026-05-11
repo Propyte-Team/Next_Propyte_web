@@ -1,9 +1,32 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Fraunces, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
 import Script from 'next/script';
 import '@/styles/globals.css';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA4_ID || 'G-H4VD5TVEKM';
+
+// Brand identity oficial (manual de marca PDF) replica la jerarquía de las
+// publicaciones de redes sociales:
+//   - Títulos display → Neue Haas Grotesk Display Pro (Adobe paid).
+//     Substituto free más cercano: Inter (mismo carácter geométrico-grotesk,
+//     misma altura-x, terminales rectas). Si se obtiene kit Adobe se swap en
+//     una sola variable CSS (--font-heading).
+//   - Cuerpo → Normalidad VF (Adobe paid).
+//     Substituto free más cercano: DM Sans (humanist, mismas proporciones).
+//   - Eyebrows / subtítulos → Space Grotesk Bold (ya incluida).
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
+  weight: ['400', '500', '600', '700'],
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-text',
+  weight: ['300', '400', '500', '700'],
+});
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -59,7 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${spaceGrotesk.className}`}
+      className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
       <body className="min-h-screen flex flex-col">
         {children}

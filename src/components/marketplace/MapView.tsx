@@ -204,8 +204,8 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
     return (
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8 max-w-sm">
-          <div className="w-16 h-16 mx-auto mb-4 bg-[#F5A623]/15 rounded-full flex items-center justify-center">
-            <MapPin size={24} strokeWidth={1.75} className="text-[#F5A623]" />
+          <div className="w-16 h-16 mx-auto mb-4 bg-[#A2F9FF]/15 rounded-full flex items-center justify-center">
+            <MapPin size={24} strokeWidth={1.75} className="text-[#0D9488]" />
           </div>
           <p className="text-gray-600 font-medium">{t('mapNoCoords')}</p>
           <p className="text-sm text-gray-600 mt-2">{t('mapNoCoordsHint')}</p>

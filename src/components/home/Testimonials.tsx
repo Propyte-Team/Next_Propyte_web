@@ -24,12 +24,21 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
   const canNext = startIndex + visibleCount < testimonials.length;
 
   return (
-    <section className="py-16 md:py-20 bg-white">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+    <section className="relative py-16 md:py-20 bg-[#132B2E] overflow-hidden">
+      {/* Glow brand sutil — radial superior derecha + suave bottom-left teal. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 55% 45% at 90% 10%, rgba(162, 249, 255, 0.10), transparent 60%), radial-gradient(ellipse 40% 35% at 10% 90%, rgba(92, 224, 210, 0.06), transparent 65%)',
+        }}
+      />
+      <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t('title')}</h2>
-            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-white">{t('title')}</h2>
+            <p className="text-white/70 mt-1">{t('subtitle')}</p>
           </div>
           <div className="hidden md:flex items-center gap-2">
             <button
@@ -37,7 +46,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canPrev && setStartIndex(startIndex - 1)}
               disabled={!canPrev}
               aria-label={t('prev')}
-              className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 hover:border-[#5CE0D2] disabled:opacity-30 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
               <ChevronLeft size={18} strokeWidth={2} />
             </button>
@@ -46,7 +55,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canNext && setStartIndex(startIndex + 1)}
               disabled={!canNext}
               aria-label={t('next')}
-              className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 hover:border-[#5CE0D2] disabled:opacity-30 transition-colors"
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
               <ChevronRight size={18} strokeWidth={2} />
             </button>
@@ -57,24 +66,26 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
           {testimonials.slice(startIndex, startIndex + visibleCount).map((item, i) => (
             <div
               key={`${item.name}-${i}`}
-              className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              // Ficha 02 oficial: glass premium con border 1px white/30, shadow
+              // stack inset + drop, blur 52px. Padding 28px (vs 24px).
+              className="propyte-card-glass-lg p-7 transition-transform hover:-translate-y-1"
             >
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: item.rating }).map((_, j) => (
-                  <Star key={j} size={16} className="fill-[#F5A623] text-[#F5A623]" />
+                  <Star key={j} size={16} className="fill-[#A2F9FF] text-[#A2F9FF]" />
                 ))}
               </div>
 
-              <p className="text-sm text-gray-600 leading-relaxed mb-4 italic">
+              <p className="text-sm md:text-base text-white/90 leading-relaxed mb-4 italic">
                 &ldquo;{item.text}&rdquo;
               </p>
 
-              <div className="flex items-center justify-between pt-3 border-t border-gray-50">
+              <div className="flex items-center justify-between pt-3 border-t border-white/15">
                 <div>
-                  <div className="font-bold text-gray-900 text-sm">{item.name}</div>
-                  <div className="text-xs text-gray-600">{item.city}</div>
+                  <div className="font-bold text-white text-sm">{item.name}</div>
+                  <div className="text-xs text-white/60">{item.city}</div>
                 </div>
-                <div className="flex items-center gap-1 text-2xs font-semibold text-[#15803D]">
+                <div className="flex items-center gap-1 text-2xs font-semibold text-[#A2F9FF]">
                   <ShieldCheck size={12} strokeWidth={2} />
                   {t('verified')}
                 </div>
@@ -95,12 +106,12 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
                   setStartIndex(Math.min(i, Math.max(0, testimonials.length - visibleCount)))
                 }
                 aria-label={`${i + 1}`}
-                className="relative flex items-center justify-center w-11 h-11 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="relative flex items-center justify-center w-11 h-11 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A2F9FF]"
               >
                 <span
                   aria-hidden="true"
                   className={`block w-2 h-2 rounded-full transition-colors ${
-                    active ? 'bg-[#5CE0D2]' : 'bg-gray-200'
+                    active ? 'bg-[#A2F9FF]' : 'bg-white/25'
                   }`}
                 />
               </button>

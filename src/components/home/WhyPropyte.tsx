@@ -43,10 +43,10 @@ export default function WhyPropyte() {
             return (
               <div
                 key={aud.titleKey}
-                className="p-6 md:p-8 bg-white rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
+                className="propyte-card-glass-light p-6 md:p-8 transition-transform hover:-translate-y-1"
               >
-                <div className="w-12 h-12 mb-4 bg-[#1A2F3F]/10 rounded-lg flex items-center justify-center">
-                  <Icon size={24} strokeWidth={1.75} className="text-[#1A2F3F]" />
+                <div className="w-12 h-12 mb-4 bg-[#A2F9FF]/20 rounded-lg flex items-center justify-center">
+                  <Icon size={24} strokeWidth={1.75} className="text-[#0D9488]" />
                 </div>
                 <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{t(aud.titleKey)}</h3>
                 <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
@@ -74,10 +74,10 @@ export default function WhyPropyte() {
             return (
               <div
                 key={i}
-                className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow border border-gray-100"
+                className="propyte-card-glass-light p-6 transition-transform hover:-translate-y-0.5"
               >
-                <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} strokeWidth={1.75} className="text-[#0F766E]" />
+                <div className="w-12 h-12 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center mb-4">
+                  <Icon size={24} strokeWidth={1.75} className="text-[#0D9488]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{feat.desc}</p>

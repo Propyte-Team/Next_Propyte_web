@@ -56,6 +56,13 @@ export default function Hero({ stats }: HeroProps) {
     { label: t('quickUnder3M'), href: `/${locale}/propiedades?priceMax=3000000` },
   ];
 
+  // Brand: el headline destaca "Riviera Maya" en cyan oficial #A2F9FF — mismo
+  // patrón en ES y EN porque ambos títulos terminan con "Riviera Maya".
+  const titleRaw = t('title');
+  const lastTwoWordsMatch = titleRaw.match(/^(.*)\s(\S+\s+\S+)$/);
+  const titleHead = lastTwoWordsMatch ? lastTwoWordsMatch[1] : titleRaw;
+  const titleAccent = lastTwoWordsMatch ? lastTwoWordsMatch[2] : '';
+
   return (
     <section className="propyte-hero hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
       {videoUrl ? (
@@ -79,16 +86,27 @@ export default function Hero({ stats }: HeroProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0D2740]" />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/65" />
+      {/* Overlay vertical aztec — sigue Brand Identity Oficial (#0B1C1E) en
+          lugar de negro puro, para preservar warmth del azul-teal corporativo. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1C1E]/55 via-[#0B1C1E]/30 to-[#0B1C1E]/85" />
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
+        <span className="brand-eyebrow inline-block mb-4 px-4 py-1.5 rounded-full border border-[#A2F9FF]/40 text-[#A2F9FF] bg-[#A2F9FF]/[0.06] backdrop-blur-sm">
+          REAL ESTATE
+        </span>
         <h1 className="text-h1 text-white leading-tight mb-3 drop-shadow-lg">
-          {t('title')}
+          {titleHead}
+          {titleAccent && (
+            <>
+              {' '}
+              <span className="text-[#A2F9FF]">{titleAccent}</span>
+            </>
+          )}
         </h1>
         <p className="text-lg md:text-xl lg:text-2xl font-medium text-white/90 mb-2 max-w-2xl mx-auto drop-shadow-md">
           {t('subtitle')}
         </p>
-        <p className="text-sm md:text-base font-semibold tracking-wide text-[#5CE0D2] mb-10 drop-shadow-md italic">
+        <p className="text-sm md:text-base font-semibold tracking-[0.18em] uppercase text-[#A2F9FF] mb-10 drop-shadow-md">
           {t('tagline')}
         </p>
 
@@ -102,8 +120,8 @@ export default function Hero({ stats }: HeroProps) {
               onClick={() => setTab('desarrollos')}
               className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'desarrollos'
-                  ? 'bg-white text-[#1A2F3F] shadow-lg'
-                  : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
+                  ? 'bg-[#A2F9FF] text-[#0B1C1E] shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
+                  : 'propyte-glass-pill text-white'
               }`}
             >
               <Building2 size={15} strokeWidth={1.75} />
@@ -116,8 +134,8 @@ export default function Hero({ stats }: HeroProps) {
               onClick={() => setTab('propiedades')}
               className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'propiedades'
-                  ? 'bg-white text-[#1A2F3F] shadow-lg'
-                  : 'bg-white/15 text-white hover:bg-white/25 backdrop-blur-sm border border-white/25'
+                  ? 'bg-[#A2F9FF] text-[#0B1C1E] shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
+                  : 'propyte-glass-pill text-white'
               }`}
             >
               <Home size={15} strokeWidth={1.75} />
@@ -146,7 +164,7 @@ export default function Hero({ stats }: HeroProps) {
             <button
               type="submit"
               aria-label={tNav('search')}
-              className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] rounded-full shrink-0 transition-all hover:scale-105"
+              className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] rounded-full shrink-0 transition-all hover:scale-105"
             >
               <Search size={18} strokeWidth={2} />
             </button>
@@ -155,20 +173,20 @@ export default function Hero({ stats }: HeroProps) {
 
         {/* Social-proof stats — siempre 4 pills con floors Speckit §18 */}
         <div className="flex flex-wrap justify-center gap-4 md:gap-8 mt-8 mb-2">
-          <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
-            <StatCounter to={d} suffix="+" className="text-[#5CE0D2] text-xl md:text-2xl font-bold" />
+          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
+            <StatCounter to={d} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
             <span className="text-white/80 text-sm font-medium">{t('statsDevelopments')}</span>
           </div>
-          <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
-            <StatCounter to={u} suffix="+" className="text-[#5CE0D2] text-xl md:text-2xl font-bold" />
+          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
+            <StatCounter to={u} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
             <span className="text-white/80 text-sm font-medium">{t('statsUnits')}</span>
           </div>
-          <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
-            <StatCounter to={c} className="text-[#5CE0D2] text-xl md:text-2xl font-bold" />
+          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
+            <StatCounter to={c} className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
             <span className="text-white/80 text-sm font-medium">{t('statsCities')}</span>
           </div>
-          <div className="hero-stat flex items-center gap-2 bg-black/25 backdrop-blur-md rounded-full px-5 py-2.5">
-            <StatCounter to={z} suffix="+" className="text-[#5CE0D2] text-xl md:text-2xl font-bold" />
+          <div className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5">
+            <StatCounter to={z} suffix="+" className="text-[#A2F9FF] text-xl md:text-2xl font-bold" />
             <span className="text-white/80 text-sm font-medium">{t('statsZones')}</span>
           </div>
         </div>
@@ -178,7 +196,7 @@ export default function Hero({ stats }: HeroProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-5 py-2.5 text-sm font-medium text-white bg-white/15 hover:bg-white/25 hover:-translate-y-0.5 rounded-full backdrop-blur-sm border border-white/20 transition-all duration-200"
+              className="propyte-glass-pill inline-flex items-center gap-1.5 min-h-[44px] px-5 py-2.5 text-sm font-medium text-white hover:-translate-y-0.5 rounded-full transition-all duration-200"
             >
               <MapPin size={14} strokeWidth={1.75} />
               {link.label}
