@@ -406,10 +406,16 @@ export async function getSimilarUnits(
   seed: { id: string; city: string; zone: string | null; unit_type: string | null },
   limit = 4
 ) {
+  // Filtros canónicos (idénticos a getSimilarDevelopments, getUnits, getGlobalStats):
+  // solo unidades aprobadas + pipeline published. Previene fuga de unidades draft,
+  // duplicadas accidentales (slugs `-copy-`) o de developments unpublished a la
+  // sección "Propiedades similares" del detail page.
   const base = () =>
     hub(client)
       .from('v_units')
       .select('id, slug, name, unit_number, development_name, city, zone, images, price_mxn, bedrooms, bathrooms, area_m2, unit_type')
+      .not('approved_at', 'is', null)
+      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .neq('id', seed.id)
       .limit(limit);
 
