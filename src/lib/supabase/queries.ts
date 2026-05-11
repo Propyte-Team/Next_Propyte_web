@@ -136,10 +136,15 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
 
   if (devError || !dev) return { data: null, error: devError };
 
+  // Solo unidades aprobadas + pipeline published — coherencia con getGlobalStats
+  // y con la lista que muestra Hub /unidades. Previene fuga de unidades draft o
+  // duplicadas accidentales (slugs `-copy-`) al detail page del desarrollo.
   const { data: units, error: unitsError } = await hub
     .from('v_units')
     .select('*')
     .eq('development_id', (dev as { id: string }).id)
+    .not('approved_at', 'is', null)
+    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .order('unit_number', { ascending: true });
 
   const devRow = dev as { name?: string | null };
