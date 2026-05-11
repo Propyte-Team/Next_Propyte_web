@@ -105,7 +105,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
       >
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-3 flex items-center gap-3">
           <div className="flex items-center gap-2 flex-shrink-0">
-            <GitCompare size={16} className="text-[#5CE0D2]" />
+            <GitCompare size={16} className="text-propyte-brand" />
             <span className="text-sm font-semibold tabular-nums">
               {selected.length}/{MAX_COMPARE}
             </span>
@@ -122,7 +122,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                   type="button"
                   onClick={() => remove(p.id)}
                   aria-label={`${tMkt('removeFilter')}: ${p.name}`}
-                  className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5CE0D2]"
+                  className="w-5 h-5 flex items-center justify-center rounded-full hover:bg-white/15 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-propyte-brand/70"
                 >
                   <X size={11} strokeWidth={2.5} />
                 </button>
@@ -133,7 +133,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
           <button
             type="button"
             onClick={clear}
-            className="hidden sm:inline-flex items-center h-9 px-3 rounded-full text-xs font-semibold text-white/60 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+            className="hidden sm:inline-flex items-center h-9 px-3 rounded-full text-xs font-semibold text-white/60 hover:text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
           >
             {tMkt('clearAll')}
           </button>
@@ -142,7 +142,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
             type="button"
             onClick={() => setOpen(true)}
             disabled={selected.length < 2}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-[#5CE0D2] text-[#0F1923] text-sm font-bold hover:bg-[#4BCEC0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full bg-propyte-brand text-[#0F1923] text-sm font-bold hover:bg-propyte-cyan-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
             <ChevronUp size={14} strokeWidth={2.5} />
             {tMkt('compareCta')}
@@ -171,7 +171,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={tMkt('closeModal')}
-                className="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 hover:text-[#1A2F3F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 hover:text-[#1A2F3F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
               >
                 <X size={18} />
               </button>

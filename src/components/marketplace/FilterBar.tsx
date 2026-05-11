@@ -55,7 +55,7 @@ function PillDropdown({
         onClick={() => setOpen(!open)}
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive
-            ? 'bg-[#5CE0D2]/10 border-[#5CE0D2] text-[#4BCEC0]'
+            ? 'bg-propyte-cyan-100 border-propyte-brand text-[#0F766E]'
             : 'bg-white border-gray-300 text-[#2C2C2C] hover:border-gray-400'
         }`}
       >
@@ -188,7 +188,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
           <SlidersHorizontal size={14} />
           {t('mobileFiltersButton')}
           {activeCount > 0 && (
-            <span className="bg-[#5CE0D2] text-[#0F1923] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="bg-propyte-brand text-[#0F1923] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
               {activeCount}
             </span>
           )}
@@ -212,7 +212,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
             value={filters.search}
             onChange={e => onFilterChange('search', e.target.value)}
             placeholder={t('searchPlaceholder')}
-            className="h-10 w-44 lg:w-56 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-[#5CE0D2] focus:outline-none"
+            className="h-10 w-44 lg:w-56 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-propyte-brand focus:outline-none"
           />
         </div>
 
@@ -228,7 +228,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 key={city}
                 onClick={() => onFilterChange('city', city)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.city === city ? 'bg-[#5CE0D2]/10 text-[#4BCEC0] font-semibold' : 'hover:bg-gray-50'
+                  filters.city === city ? 'bg-propyte-cyan-100 text-[#0F766E] font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {city || t('filterAll')}
@@ -247,7 +247,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 value={filters.priceMin || ''}
                 onChange={e => onFilterChange('priceMin', Number(e.target.value) || 0)}
                 placeholder="Min"
-                className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
               />
               <span className="text-gray-600 text-sm">—</span>
               <input
@@ -255,7 +255,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 value={filters.priceMax < MAX_PRICE ? filters.priceMax : ''}
                 onChange={e => onFilterChange('priceMax', Number(e.target.value) || MAX_PRICE)}
                 placeholder="Max"
-                className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
               />
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -287,7 +287,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
             <button
               onClick={() => onFilterChange('type', '')}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                !filters.type ? 'bg-[#5CE0D2]/10 text-[#4BCEC0] font-semibold' : 'hover:bg-gray-50'
+                !filters.type ? 'bg-propyte-cyan-100 text-[#0F766E] font-semibold' : 'hover:bg-gray-50'
               }`}
             >
               {t('filterAll')}
@@ -297,7 +297,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 key={opt.value}
                 onClick={() => onFilterChange('type', filters.type === opt.value ? '' : opt.value)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.type === opt.value ? 'bg-[#5CE0D2]/10 text-[#4BCEC0] font-semibold' : 'hover:bg-gray-50'
+                  filters.type === opt.value ? 'bg-propyte-cyan-100 text-[#0F766E] font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {opt.label}
@@ -318,7 +318,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 key={roi}
                 onClick={() => onFilterChange('roiMin', roi)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.roiMin === roi ? 'bg-[#5CE0D2]/10 text-[#4BCEC0] font-semibold' : 'hover:bg-gray-50'
+                  filters.roiMin === roi ? 'bg-propyte-cyan-100 text-[#0F766E] font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {roi === 0 ? t('filterAll') : `${roi}%+`}
@@ -370,7 +370,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.85, y: -4 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.5 }}
-                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/40 text-xs font-semibold text-[#0F766E] hover:bg-[#5CE0D2]/20 hover:border-[#5CE0D2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-propyte-cyan-100 border border-propyte-brand/40 text-xs font-semibold text-[#0F766E] hover:bg-propyte-cyan-200 hover:border-propyte-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
               >
                 <span className="truncate max-w-[180px]">{chip.label}</span>
                 <X size={12} strokeWidth={2.5} aria-hidden="true" />
@@ -385,7 +385,7 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
               >
                 {t('clearAll')}
               </motion.button>

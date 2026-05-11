@@ -42,7 +42,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
                 <button
                   key={stage}
                   onClick={() => onFilterChange('stage', filters.stage === stage ? '' : stage)}
-                  className={`px-3 py-2 rounded-lg text-sm border transition-colors ${filters.stage === stage ? 'bg-[#5CE0D2] text-[#0F1923] border-[#5CE0D2]' : 'border-gray-200 hover:border-[#5CE0D2]'}`}
+                  className={`px-3 py-2 rounded-lg text-sm border transition-colors ${filters.stage === stage ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand' : 'border-gray-200 hover:border-propyte-brand'}`}
                 >
                   {tStages(stage)}
                 </button>
@@ -57,7 +57,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
                 <button
                   key={usage}
                   onClick={() => onFilterChange('usage', filters.usage === usage ? '' : usage)}
-                  className={`px-3 py-2 rounded-lg text-sm border transition-colors ${filters.usage === usage ? 'bg-[#5CE0D2] text-[#0F1923] border-[#5CE0D2]' : 'border-gray-200 hover:border-[#5CE0D2]'}`}
+                  className={`px-3 py-2 rounded-lg text-sm border transition-colors ${filters.usage === usage ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand' : 'border-gray-200 hover:border-propyte-brand'}`}
                 >
                   {tUsages(usage)}
                 </button>
@@ -70,7 +70,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
           <button onClick={onClear} className="flex-1 h-11 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
             {t('clearAll')}
           </button>
-          <button onClick={onClose} className="flex-1 h-11 bg-[#5CE0D2] text-[#0F1923] rounded-lg text-sm font-medium hover:bg-[#4BCEC0] transition-colors">
+          <button onClick={onClose} className="flex-1 h-11 bg-propyte-brand text-[#0F1923] rounded-lg text-sm font-medium hover:bg-propyte-cyan-200 transition-colors">
             OK
           </button>
         </div>
