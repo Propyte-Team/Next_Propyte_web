@@ -16,19 +16,39 @@ function getYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+/**
+ * Extrae el FILE_ID de un link de Google Drive.
+ * Soporta dos formatos:
+ *   - https://drive.google.com/file/d/FILE_ID/view?usp=drive_link
+ *   - https://drive.google.com/open?id=FILE_ID
+ * Drive bloquea `/view` y `/edit` dentro de iframes — solo `/preview` permite
+ * embed. Requisito: archivo compartido como "Cualquiera con el enlace".
+ */
+function getDriveFileId(url: string): string | null {
+  const fileMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch) return fileMatch[1];
+  const openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+  if (openMatch) return openMatch[1];
+  return null;
+}
+
 export default function VideoPlayer({ url, propertyName, thumbnail }: VideoPlayerProps) {
   const locale = useLocale();
   const [playing, setPlaying] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
 
   const ytId = getYouTubeId(url);
+  const driveFileId = !ytId ? getDriveFileId(url) : null;
   const thumbUrl = thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
   // YouTube no permite embed con `youtu.be/...` ni con URLs que tienen query
   // params previos (`?si=...?autoplay=1` queda inválido por doble `?`). Construir
-  // siempre el embed URL canónico desde el ID extraído.
+  // siempre el embed URL canónico desde el ID extraído. Drive idem: solo /preview
+  // funciona en iframe.
   const embedUrl = ytId
     ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`
-    : url;
+    : driveFileId
+      ? `https://drive.google.com/file/d/${driveFileId}/preview`
+      : url;
 
   return (
     <>

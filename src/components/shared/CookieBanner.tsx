@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Cookie, ChevronDown, X, ShieldCheck } from 'lucide-react';
+import { ChevronDown, X, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { readConsent, writeConsent, REOPEN_EVENT } from '@/lib/cookies/consent';
 
@@ -59,21 +59,18 @@ export default function CookieBanner() {
           role="dialog"
           aria-modal="false"
           aria-label={t('ariaLabel')}
-          initial={{ y: 32, opacity: 0 }}
+          initial={{ y: 24, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 32, opacity: 0 }}
+          exit={{ y: 24, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="fixed inset-x-3 sm:inset-x-6 bottom-3 sm:bottom-6 z-50 max-w-2xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-[0_12px_40px_rgba(15,25,35,0.18)] overflow-hidden"
+          className="fixed inset-x-3 sm:inset-x-auto sm:right-4 bottom-3 sm:bottom-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
-          <div className="p-5 md:p-6">
-            <div className="flex items-start gap-3">
-              <div className="hidden sm:flex w-10 h-10 rounded-full bg-[#5CE0D2]/15 items-center justify-center shrink-0">
-                <Cookie size={18} className="text-[#0F766E]" strokeWidth={2} />
-              </div>
+          <div className="p-3.5">
+            <div className="flex items-start gap-2">
               <div className="flex-1 min-w-0">
-                <h2 className="text-base md:text-lg font-bold text-[#1A2F3F]">{t('title')}</h2>
-                <p className="text-xs md:text-sm text-gray-600 mt-1 leading-relaxed">
+                <h2 className="text-sm font-bold text-[#1A2F3F] leading-tight">{t('title')}</h2>
+                <p className="text-xs text-gray-600 mt-1 leading-snug line-clamp-3">
                   {t('description')}
                 </p>
               </div>
@@ -81,9 +78,9 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectOptional}
                 aria-label={t('closeAria')}
-                className="w-11 h-11 -mt-1.5 -mr-1.5 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
+                className="w-7 h-7 -mt-1 -mr-1 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand shrink-0"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
             </div>
 
@@ -91,11 +88,11 @@ export default function CookieBanner() {
               type="button"
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
-              className="mt-3 inline-flex items-center gap-1 min-h-[44px] px-2 -mx-2 text-xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+              className="mt-2 inline-flex items-center gap-1 text-2xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
             >
               {t('customize')}
               <ChevronDown
-                size={14}
+                size={12}
                 strokeWidth={2.5}
                 className={`transition-transform ${expanded ? 'rotate-180' : ''}`}
               />
@@ -110,29 +107,29 @@ export default function CookieBanner() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <ul className="mt-4 space-y-3 border-t border-gray-100 pt-4">
-                    <li className="flex items-start gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
-                        <ShieldCheck size={16} className="text-emerald-600" />
+                  <ul className="mt-3 space-y-2.5 border-t border-gray-100 pt-3">
+                    <li className="flex items-start gap-2">
+                      <div className="w-7 h-7 rounded-md bg-emerald-50 flex items-center justify-center shrink-0">
+                        <ShieldCheck size={13} className="text-emerald-600" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-sm font-bold text-[#1A2F3F]">
+                          <p className="text-xs font-bold text-[#1A2F3F]">
                             {t('necessaryTitle')}
                           </p>
-                          <span className="text-2xs font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                          <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-1.5 py-0.5 shrink-0">
                             {t('alwaysOn')}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                        <p className="text-2xs text-gray-600 mt-0.5 leading-snug">
                           {t('necessaryDesc')}
                         </p>
                       </div>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <label className="flex items-center justify-between gap-2 cursor-pointer">
-                          <p className="text-sm font-bold text-[#1A2F3F]">
+                          <p className="text-xs font-bold text-[#1A2F3F]">
                             {t('analyticsTitle')}
                           </p>
                           <Toggle
@@ -141,15 +138,15 @@ export default function CookieBanner() {
                             ariaLabel={t('analyticsToggleAria')}
                           />
                         </label>
-                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                        <p className="text-2xs text-gray-600 mt-0.5 leading-snug">
                           {t('analyticsDesc')}
                         </p>
                       </div>
                     </li>
-                    <li className="flex items-start gap-3">
+                    <li className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <label className="flex items-center justify-between gap-2 cursor-pointer">
-                          <p className="text-sm font-bold text-[#1A2F3F]">
+                          <p className="text-xs font-bold text-[#1A2F3F]">
                             {t('marketingTitle')}
                           </p>
                           <Toggle
@@ -158,7 +155,7 @@ export default function CookieBanner() {
                             ariaLabel={t('marketingToggleAria')}
                           />
                         </label>
-                        <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+                        <p className="text-2xs text-gray-600 mt-0.5 leading-snug">
                           {t('marketingDesc')}
                         </p>
                       </div>
@@ -168,20 +165,20 @@ export default function CookieBanner() {
               )}
             </AnimatePresence>
 
-            <div className="mt-5 flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="mt-3 flex gap-2">
               {expanded ? (
                 <>
                   <button
                     type="button"
                     onClick={saveCustom}
-                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('saveCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>
@@ -191,14 +188,14 @@ export default function CookieBanner() {
                   <button
                     type="button"
                     onClick={rejectOptional}
-                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('rejectCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-5 rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors"
+                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>
@@ -228,13 +225,13 @@ function Toggle({
       aria-checked={checked}
       aria-label={ariaLabel}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex w-10 h-6 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
-        checked ? 'bg-[#5CE0D2]' : 'bg-gray-200'
+      className={`relative inline-flex w-9 h-5 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand shrink-0 ${
+        checked ? 'bg-propyte-brand' : 'bg-gray-200'
       }`}
     >
       <span
-        className={`inline-block w-4 h-4 bg-white rounded-full shadow transition-transform ${
-          checked ? 'translate-x-5' : 'translate-x-1'
+        className={`inline-block w-3.5 h-3.5 bg-white rounded-full shadow transition-transform ${
+          checked ? 'translate-x-[18px]' : 'translate-x-1'
         }`}
       />
     </button>
