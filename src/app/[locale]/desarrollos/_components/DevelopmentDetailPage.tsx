@@ -39,7 +39,7 @@ import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
-import { Layers, Tag } from 'lucide-react';
+import DevelopmentKeyData from '@/components/property/DevelopmentKeyData';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -52,7 +52,6 @@ import MarketSentiment, { type SentimentIndicator } from '@/components/property/
 import CetesComparison from '@/components/property/CetesComparison';
 import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndicator';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
-import FloatingKeyData from '@/components/property/FloatingKeyData';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 
@@ -774,50 +773,24 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="sticky top-24 space-y-6">
-            {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
-            <FloatingKeyData
+            {/* Datos clave (cuadro azul) — variante específica para desarrollos:
+                muestra unidades / tipo / ubicación (zona+estado) en lugar de
+                bedrooms/bathrooms del cuadrito de unidades. Client component
+                completo (los iconos LucideIcon no cruzan server→client). */}
+            <DevelopmentKeyData
               priceMxn={propertyPrice > 0 ? propertyPrice : null}
-              areaM2={
-                areaRange
-                  ? areaRange.min
-                  : representativeArea ?? null
-              }
-              extraItems={[
-                ...(totalUnits ? [{
-                  icon: Layers,
-                  label: locale === 'es' ? 'Unidades' : 'Units',
-                  value: (
-                    <span className="text-sm font-bold text-white">{totalUnits}</span>
-                  ),
-                  key: 'units',
-                }] : []),
-                {
-                  icon: Tag,
-                  label: locale === 'es' ? 'Tipo' : 'Type',
-                  value: (
-                    <span className="text-sm font-bold text-white capitalize">
-                      {mainType.replace(/_/g, ' ')}
-                    </span>
-                  ),
-                  key: 'type',
-                },
-                {
-                  icon: MapPin,
-                  label: locale === 'es' ? 'Ubicación' : 'Location',
-                  value: (
-                    <span className="text-sm font-bold text-white truncate">
-                      {[property.zone, property.state].filter(Boolean).join(' · ')}
-                    </span>
-                  ),
-                  key: 'location',
-                },
-              ]}
+              areaM2={areaRange ? areaRange.min : representativeArea ?? null}
+              totalUnits={totalUnits ?? null}
+              mainType={mainType}
+              zone={property.zone}
+              state={property.state}
               labels={{
                 title: locale === 'es' ? 'Datos clave' : 'Key data',
                 price: locale === 'es' ? 'Precio desde' : 'Price from',
                 area: 'Área',
-                bedrooms: tProp('bedrooms'),
-                bathrooms: tProp('bathrooms'),
+                units: locale === 'es' ? 'Unidades' : 'Units',
+                type: locale === 'es' ? 'Tipo' : 'Type',
+                location: locale === 'es' ? 'Ubicación' : 'Location',
               }}
             />
 
