@@ -14,6 +14,7 @@ import { MotionConfig } from 'framer-motion';
 import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
+import { UnitsProvider } from '@/lib/units-context';
 import { getVisibility } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
@@ -45,6 +46,7 @@ export default async function LocaleLayout({
     <NextIntlClientProvider messages={messages}>
       <SiteVisibilityProvider flags={visibilityFlags}>
       <CurrencyProvider>
+      <UnitsProvider>
       <SearchProvider>
       <MotionConfig reducedMotion="user">
         <a href="#main-content" className="skip-to-content">
@@ -78,6 +80,7 @@ export default async function LocaleLayout({
         />
       </MotionConfig>
       </SearchProvider>
+      </UnitsProvider>
       </CurrencyProvider>
       </SiteVisibilityProvider>
     </NextIntlClientProvider>

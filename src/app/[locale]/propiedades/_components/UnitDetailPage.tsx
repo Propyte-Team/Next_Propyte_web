@@ -29,6 +29,7 @@ import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
+import AreaDisplay from '@/components/ui/AreaDisplay';
 import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -330,7 +331,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   <SpecChip icon={<Bath size={16} />} label={`${property.specs.bathrooms} ${tProp('bathShort', { count: property.specs.bathrooms })}`} />
                 )}
                 {property.specs.area > 0 && (
-                  <SpecChip icon={<Square size={16} />} label={`${property.specs.area} m²`} />
+                  <SpecChip
+                    icon={<Square size={16} />}
+                    label={<AreaDisplay m2={property.specs.area} variant="dual" size="sm" />}
+                  />
                 )}
                 {row.parking && row.parking > 0 && (
                   <SpecChip icon={<Car size={16} />} label={`${row.parking} ${tProp('parkingShort')}`} />
@@ -571,7 +575,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   );
 }
 
-function SpecChip({ icon, label }: { icon: React.ReactNode; label: string }) {
+function SpecChip({ icon, label }: { icon: React.ReactNode; label: React.ReactNode }) {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
       <span className="text-[#0F766E]">{icon}</span>

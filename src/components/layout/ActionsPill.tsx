@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Building2, ChevronDown, Mail } from 'lucide-react';
 import CurrencyToggle from '@/components/ui/CurrencyToggle';
+import AreaToggle from '@/components/ui/AreaToggle';
 
 export default function ActionsPill() {
   const locale = useLocale();
@@ -50,6 +51,11 @@ export default function ActionsPill() {
 
       {/* MXN/USD toggle — segmented */}
       <CurrencyToggle />
+
+      <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
+
+      {/* m²/sqft toggle — área */}
+      <AreaToggle />
 
       <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
 
