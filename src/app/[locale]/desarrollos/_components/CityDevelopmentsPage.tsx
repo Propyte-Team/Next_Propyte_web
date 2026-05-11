@@ -110,16 +110,16 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
 
         {count > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
+            <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-[#0F766E]">{count}</div>
               <div className="text-xs text-gray-600">{t('stat_developments')}</div>
             </div>
-            <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center">
+            <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-[#0F766E]">{zones.length}</div>
               <div className="text-xs text-gray-600">{t('stat_zones')}</div>
             </div>
             {minPrice > 0 && (
-              <div className="bg-[#5CE0D2]/5 rounded-xl p-4 text-center col-span-2">
+              <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center col-span-2">
                 <div className="text-lg font-bold text-[#0F766E]">{formatPrice(minPrice)}</div>
                 <div className="text-xs text-gray-600">{t('stat_startingFrom')}</div>
               </div>
@@ -128,7 +128,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         )}
 
         {count === 0 && (
-          <div className="rounded-2xl border border-dashed border-[#5CE0D2]/40 bg-[#5CE0D2]/5 mb-10">
+          <div className="rounded-2xl border border-dashed border-propyte-brand/40 bg-propyte-cyan-100/60 mb-10">
             <EmptyState
               icon={Building2}
               title={t('emptyTitle', { city: cityInfo.name })}
@@ -161,7 +161,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
             <Link
               key={dev.id}
               href={`/${locale}/desarrollos/${dev.slug}`}
-              className="group bg-white rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all overflow-hidden"
+              className="group bg-white rounded-2xl border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all overflow-hidden"
             >
               <div className="aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200 relative">
                 {dev.images?.[0] ? (
@@ -173,7 +173,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
                   </div>
                 )}
                 <div className="absolute top-3 left-3">
-                  <span className="px-2.5 py-1 bg-[#5CE0D2] text-[#0F1923] text-xs font-bold rounded-full uppercase">
+                  <span className="px-2.5 py-1 bg-propyte-brand text-[#0F1923] text-xs font-bold rounded-full uppercase">
                     {dev.stage === 'preventa' ? t('stagePresale') : t('stageConstruction')}
                   </span>
                 </div>

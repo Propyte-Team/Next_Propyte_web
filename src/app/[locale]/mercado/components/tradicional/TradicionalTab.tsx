@@ -431,7 +431,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
           <Database size={14} className="text-gray-600" />
           {data.source_stats.map(s => (
             <span key={s.source} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5CE0D2]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-propyte-brand" />
               {s.source} <span className="text-gray-600">({s.count.toLocaleString()})</span>
             </span>
           ))}
@@ -481,7 +481,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.city}
                 onChange={e => setFilters(f => ({ ...f, city: e.target.value, zone: '' }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 {filterOptions.cities.map(c => <option key={c} value={c}>{c}</option>)}
@@ -494,7 +494,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.zone}
                 onChange={e => setFilters(f => ({ ...f, zone: e.target.value }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 {filterOptions.zones.map(z => <option key={z} value={z}>{z}</option>)}
@@ -507,7 +507,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.propertyType}
                 onChange={e => setFilters(f => ({ ...f, propertyType: e.target.value }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 {filterOptions.types.map(pt => <option key={pt} value={pt} className="capitalize">{pt.replace('_', ' ')}</option>)}
@@ -520,7 +520,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.bedrooms}
                 onChange={e => setFilters(f => ({ ...f, bedrooms: e.target.value }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 {filterOptions.beds.map(b => <option key={b} value={b}>{b === 'N/A' ? 'N/A' : `${b} rec`}</option>)}
@@ -533,7 +533,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.rentalType}
                 onChange={e => setFilters(f => ({ ...f, rentalType: e.target.value }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 <option value="residencial">Residencial</option>
@@ -547,7 +547,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={filters.furnished}
                 onChange={e => setFilters(f => ({ ...f, furnished: e.target.value }))}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               >
                 <option value="">{t('all')}</option>
                 <option value="true">{t('yes')}</option>
@@ -563,7 +563,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                 value={filters.rentMin || ''}
                 onChange={e => setFilters(f => ({ ...f, rentMin: Number(e.target.value) || 0 }))}
                 placeholder="$0"
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               />
             </div>
 
@@ -575,7 +575,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                 value={filters.rentMax || ''}
                 onChange={e => setFilters(f => ({ ...f, rentMax: Number(e.target.value) || 0 }))}
                 placeholder="∞"
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               />
             </div>
 
@@ -588,7 +588,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                 onChange={e => setFilters(f => ({ ...f, minSamples: Number(e.target.value) || 0 }))}
                 placeholder="0"
                 min={0}
-                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-[#5CE0D2] focus:outline-none"
+                className="w-full h-9 px-2 text-sm border border-gray-200 rounded-lg focus:border-propyte-brand focus:outline-none"
               />
             </div>
           </div>
@@ -680,7 +680,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as SortKey)}
-                className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm font-medium text-gray-700 focus:border-[#5CE0D2] focus:outline-none cursor-pointer"
+                className="appearance-none bg-white border border-gray-200 rounded-lg pl-3 pr-8 py-2 text-sm font-medium text-gray-700 focus:border-propyte-brand focus:outline-none cursor-pointer"
               >
                 <option value="rent_yield_gross">{t('sortYield')}</option>
                 <option value="irr_5yr">{t('sortIrr')}</option>
@@ -733,7 +733,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                         {dev.monthly_net_flow != null ? formatPrice(dev.monthly_net_flow) : '—'}
                       </td>
                       <td className="px-3 py-4">
-                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-[#5CE0D2]/10 text-gray-600 hover:text-[#0F766E] transition-colors">
+                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-propyte-cyan-100 text-gray-600 hover:text-[#0F766E] transition-colors">
                           <ArrowUpRight size={16} />
                         </Link>
                       </td>
@@ -786,7 +786,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
               <div
-                className="w-full bg-[#5CE0D2]/60 hover:bg-[#5CE0D2] rounded-t transition-colors cursor-default"
+                className="w-full bg-propyte-brand/60 hover:bg-propyte-brand rounded-t transition-colors cursor-default"
                 style={{ height: `${Math.max(height, 2)}%` }}
                 title={`$${Math.round(bucketMin / 1000)}K–$${Math.round((bucketMin + bucketSize) / 1000)}K: ${count}`}
               />
@@ -835,7 +835,7 @@ function BreakdownCard({
             onClick={() => onSelect(key)}
             className={`w-full flex items-center justify-between py-2 px-3 rounded-lg text-left transition-all ${
               activeKey === key
-                ? 'bg-[#5CE0D2]/10 border border-[#5CE0D2]/30'
+                ? 'bg-propyte-cyan-100 border border-propyte-brand/30'
                 : 'bg-gray-50 hover:bg-gray-100 border border-transparent'
             }`}
           >

@@ -104,13 +104,13 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
             </span>
           </div>
@@ -141,7 +141,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
               return (
                 <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center flex-shrink-0">
                       <Icon size={24} className="text-[#0F766E]" />
                     </div>
                     <div>
@@ -231,14 +231,14 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
           </div>
 
           {/* Pre-qualify CTA */}
-          <div className="mt-8 max-w-2xl mx-auto bg-white border border-[#5CE0D2]/40 rounded-2xl p-6 md:p-8 text-center shadow-sm">
+          <div className="mt-8 max-w-2xl mx-auto bg-white border border-propyte-brand/40 rounded-2xl p-6 md:p-8 text-center shadow-sm">
             <h3 className="text-xl md:text-2xl font-bold text-[#1A2F3F] mb-2">
               {t('preQualifyTitle')}
             </h3>
             <p className="text-sm text-gray-600 mb-5 leading-relaxed">{t('preQualifyDesc')}</p>
             <Link
               href={`/${locale}/contacto?asunto=precalificacion`}
-              className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm transition-colors"
+              className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-xl bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm transition-colors"
             >
               {t('preQualifyCta')} →
             </Link>
@@ -255,7 +255,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
           <p className="text-white/70 max-w-lg mx-auto mb-8">{t('ctaDesc')}</p>
           <Link
             href={`/${locale}/contacto`}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
           >
             {t('ctaButton')}
             <ArrowRight size={18} />

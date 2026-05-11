@@ -126,13 +126,13 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
     <>
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-24 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Send size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Send size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
             </span>
           </div>
@@ -164,7 +164,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                   <input
                     id="name"
                     {...register('name')}
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 focus:outline-none transition-colors"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
                   {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                 </div>
@@ -177,7 +177,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                     id="email"
                     type="email"
                     {...register('email')}
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 focus:outline-none transition-colors"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
                   {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                 </div>
@@ -190,7 +190,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                     id="subject"
                     {...register('subject')}
                     defaultValue=""
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 focus:outline-none transition-colors"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   >
                     <option value="" disabled>{t('formSubjectPlaceholder')}</option>
                     {subjectOptions.map((opt) => (
@@ -208,7 +208,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                     id="message"
                     rows={6}
                     {...register('message')}
-                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 focus:outline-none resize-none transition-colors"
+                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none resize-none transition-colors"
                   />
                   {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
                 </div>
@@ -227,7 +227,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
               </div>
 
               {status === 'sent' ? (
-                <div className="mt-6 flex items-center gap-3 bg-[#5CE0D2]/10 border border-[#5CE0D2]/30 text-[#0F766E] rounded-lg px-4 py-3">
+                <div className="mt-6 flex items-center gap-3 bg-propyte-cyan-100 border border-propyte-brand/30 text-[#0F766E] rounded-lg px-4 py-3">
                   <CheckCircle2 size={20} strokeWidth={2} />
                   <span className="text-sm font-medium">{tCommon('sent')}</span>
                 </div>
@@ -235,7 +235,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="mt-6 inline-flex items-center justify-center gap-2 h-12 px-8 bg-[#5CE0D2] hover:bg-[#4BCEC0] disabled:opacity-60 disabled:cursor-not-allowed text-[#0F1923] font-bold rounded-lg transition-colors"
+                  className="mt-6 inline-flex items-center justify-center gap-2 h-12 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed text-[#0F1923] font-bold rounded-lg transition-colors"
                 >
                   {status === 'sending' ? (
                     tCommon('sending')
@@ -257,21 +257,21 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
               {/* Social proof — coverage, certified team, response SLA */}
               <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
                     <MapPin size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.coverageTitle')}</p>
                   <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
                     <Users size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.teamTitle')}</p>
                   <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center mb-2">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
                     <ShieldCheck size={18} className="text-[#0F766E]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.slaTitle')}</p>
@@ -286,7 +286,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
 
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0">
                     <MapPin size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
@@ -297,9 +297,9 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
 
                 <a
                   href={telHref}
-                  className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-[#5CE0D2]/10 rounded-xl transition-colors group"
+                  className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0 group-hover:bg-[#5CE0D2]/25 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
                     <Phone size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
@@ -310,9 +310,9 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
 
                 <a
                   href={mailHref}
-                  className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-[#5CE0D2]/10 rounded-xl transition-colors group"
+                  className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0 group-hover:bg-[#5CE0D2]/25 transition-colors">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
                     <Mail size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">
@@ -322,7 +322,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                 </a>
 
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
-                  <div className="w-10 h-10 rounded-lg bg-[#5CE0D2]/15 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0">
                     <Clock size={18} strokeWidth={2} className="text-[#0F766E]" />
                   </div>
                   <div className="min-w-0">

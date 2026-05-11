@@ -41,7 +41,7 @@ function EditorialHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0F1923]">
       {/* Subtle background orbs */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-[#5CE0D2]/5 rounded-full blur-[120px]" />
+      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-propyte-cyan-100/60 rounded-full blur-[120px]" />
       <div className="absolute bottom-1/3 left-1/3 w-[400px] h-[400px] bg-[#1A2F3F]/30 rounded-full blur-[100px]" />
 
       <div className="relative text-center px-4 md:px-6">
@@ -55,7 +55,7 @@ function EditorialHero() {
               transition={{ duration: 0.8, delay: 0.3 + i * 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               <span className="block text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight">
-                {word.replace('.', '')}<span className="text-[#5CE0D2]">.</span>
+                {word.replace('.', '')}<span className="text-propyte-brand">.</span>
               </span>
             </motion.div>
           ))}
@@ -100,7 +100,7 @@ function PhilosophyStatement() {
           <p className="text-2xl md:text-3xl font-light italic text-white/70 leading-relaxed">
             &ldquo;{t('philosophyQuote')}&rdquo;
           </p>
-          <div className="w-16 h-px bg-[#5CE0D2] mx-auto mt-8" />
+          <div className="w-16 h-px bg-propyte-brand mx-auto mt-8" />
           <p className="text-sm text-white/60 uppercase tracking-[0.2em] mt-4">Propyte Built</p>
         </FadeIn>
       </div>
@@ -127,15 +127,15 @@ function ServicesGrid() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <FadeIn>
           <div className="mb-12">
-            <span className="text-[#5CE0D2] text-xs font-bold tracking-[0.2em]">{t('sectionServices')}</span>
+            <span className="text-propyte-brand text-xs font-bold tracking-[0.2em]">{t('sectionServices')}</span>
             <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">{t('servicesTitle')}</h2>
           </div>
         </FadeIn>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map(({ icon: Icon, title, desc }, i) => (
             <FadeIn key={title} delay={i * 0.1}>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-[#5CE0D2]/30 hover:bg-white/[0.07] transition-all duration-300 group h-full">
-                <Icon size={28} className="text-white/60 group-hover:text-[#5CE0D2] transition-colors duration-300" />
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-propyte-brand/30 hover:bg-white/[0.07] transition-all duration-300 group h-full">
+                <Icon size={28} className="text-white/60 group-hover:text-propyte-brand transition-colors duration-300" />
                 <h3 className="text-xl font-semibold text-white mt-4">{title}</h3>
                 <p className="text-white/75 text-sm mt-2 leading-relaxed">{desc}</p>
               </div>
@@ -222,7 +222,7 @@ function PortfolioShowcase() {
                   onClick={() => setFilter(key)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     filter === key
-                      ? 'bg-[#5CE0D2] text-[#0F1923]'
+                      ? 'bg-propyte-brand text-[#0F1923]'
                       : 'bg-white/5 text-white/75 hover:text-white hover:bg-white/10'
                   }`}
                 >
@@ -248,7 +248,7 @@ function PortfolioShowcase() {
                   />
                 </div>
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-[#5CE0D2]/0 group-hover:bg-[#5CE0D2]/10 transition-colors duration-500" />
+                <div className="absolute inset-0 bg-propyte-brand/0 group-hover:bg-propyte-cyan-100 transition-colors duration-500" />
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
                   <h3 className="text-xl md:text-2xl font-bold text-white">{project.title}</h3>
@@ -289,12 +289,12 @@ function ProcessTimeline() {
         <div className="hidden md:flex items-start justify-between relative">
           {/* Connecting line */}
           <div className="absolute top-6 left-[10%] right-[10%] h-px bg-white/10" />
-          <div className="absolute top-6 left-[10%] h-px bg-[#5CE0D2]/40" style={{ width: '80%' }} />
+          <div className="absolute top-6 left-[10%] h-px bg-propyte-brand/40" style={{ width: '80%' }} />
 
           {steps.map(({ icon: Icon, title, desc }, i) => (
             <FadeIn key={title} delay={i * 0.15} className="flex-1 text-center relative px-4">
-              <div className="w-12 h-12 mx-auto rounded-full border-2 border-[#5CE0D2] bg-[#0F1923] flex items-center justify-center relative z-10">
-                <Icon size={20} className="text-[#5CE0D2]" />
+              <div className="w-12 h-12 mx-auto rounded-full border-2 border-propyte-brand bg-[#0F1923] flex items-center justify-center relative z-10">
+                <Icon size={20} className="text-propyte-brand" />
               </div>
               <h3 className="text-lg font-semibold text-white mt-4">{title}</h3>
               <p className="text-sm text-white/65 mt-2 leading-relaxed">{desc}</p>
@@ -308,8 +308,8 @@ function ProcessTimeline() {
             <FadeIn key={title} delay={i * 0.1}>
               <div className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="w-10 h-10 rounded-full border-2 border-[#5CE0D2] bg-[#0F1923] flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-[#5CE0D2]" />
+                  <div className="w-10 h-10 rounded-full border-2 border-propyte-brand bg-[#0F1923] flex items-center justify-center flex-shrink-0">
+                    <Icon size={16} className="text-propyte-brand" />
                   </div>
                   {i < steps.length - 1 && <div className="w-px flex-1 bg-white/10 mt-2" />}
                 </div>
@@ -347,11 +347,11 @@ function TeamExpertise() {
           {areas.map(({ icon: Icon, title, role, desc }, i) => (
             <FadeIn key={title} delay={i * 0.15}>
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#5CE0D2]/10 flex items-center justify-center mb-4">
-                  <Icon size={28} className="text-[#5CE0D2]" />
+                <div className="w-16 h-16 mx-auto rounded-full bg-propyte-cyan-100 flex items-center justify-center mb-4">
+                  <Icon size={28} className="text-propyte-brand" />
                 </div>
                 <h3 className="text-xl font-bold text-white">{title}</h3>
-                <p className="text-sm text-[#5CE0D2] font-medium mt-1 uppercase tracking-wider">{role}</p>
+                <p className="text-sm text-propyte-brand font-medium mt-1 uppercase tracking-wider">{role}</p>
                 <p className="text-white/75 text-sm mt-3 leading-relaxed">{desc}</p>
               </div>
             </FadeIn>
@@ -389,7 +389,7 @@ function ConsultationForm() {
     }
   };
 
-  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 outline-none transition-colors";
+  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors";
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = "block text-sm font-semibold text-[#1A2F3F] mb-1.5";
 
@@ -410,8 +410,8 @@ function ConsultationForm() {
                   { icon: CheckCircle, text: t('formBenefit4') },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-[#5CE0D2]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon size={16} className="text-[#5CE0D2]" />
+                    <div className="w-8 h-8 bg-propyte-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon size={16} className="text-propyte-brand" />
                     </div>
                     <span className="text-white/70 text-sm">{text}</span>
                   </div>

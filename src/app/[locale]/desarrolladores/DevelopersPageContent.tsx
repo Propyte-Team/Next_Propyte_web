@@ -70,7 +70,7 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
               value={search}
               onChange={(e) => { setSearch(e.target.value); updateUrl(e.target.value, city); }}
               placeholder={t('searchPlaceholder')}
-              className="h-10 w-52 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-[#5CE0D2] focus:outline-none"
+              className="h-10 w-52 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-propyte-brand focus:outline-none"
             />
           </div>
 
@@ -81,7 +81,7 @@ function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
               id="dev-city"
               value={city}
               onChange={(e) => { setCity(e.target.value); updateUrl(search, e.target.value); }}
-              className="h-10 pl-4 pr-8 rounded-full border border-gray-300 text-sm bg-white focus:border-[#5CE0D2] focus:outline-none appearance-none cursor-pointer"
+              className="h-10 pl-4 pr-8 rounded-full border border-gray-300 text-sm bg-white focus:border-propyte-brand focus:outline-none appearance-none cursor-pointer"
             >
               <option value="">{t('filterCity')}: {t('filterAll')}</option>
               {cities.map((c) => (
@@ -125,7 +125,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
     .toUpperCase();
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/30 hover:shadow-lg transition-all p-5 flex flex-col gap-3">
+    <div className="bg-white rounded-2xl border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all p-5 flex flex-col gap-3">
       {/* Logo or initials */}
       <div className="flex items-center gap-3">
         {dev.logo_url ? (
@@ -165,7 +165,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
       {/* CTA */}
       <Link
         href={`/${locale}/desarrollos?search=${encodeURIComponent(dev.name)}`}
-        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-[#5CE0D2]/10 text-[#0F766E] rounded-xl hover:bg-[#5CE0D2]/20 transition-colors gap-1.5"
+        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-propyte-cyan-100 text-[#0F766E] rounded-xl hover:bg-propyte-cyan-100 transition-colors gap-1.5"
       >
         {t('viewProjects')} <ArrowRight size={12} />
       </Link>
@@ -190,7 +190,7 @@ function JoinBanner() {
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
             <a
               href="#registro"
-              className="h-12 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+              className="h-12 px-6 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
             >
               {t('joinBannerCta')} <ArrowRight size={16} />
             </a>
@@ -234,8 +234,8 @@ function ValueProposition() {
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-[#5CE0D2]/20 hover:shadow-lg transition-all group">
-              <div className="w-12 h-12 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#5CE0D2]/20 transition-colors">
+            <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-propyte-brand/20 hover:shadow-lg transition-all group">
+              <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-propyte-cyan-100 transition-colors">
                 <Icon size={24} className="text-[#0F766E]" />
               </div>
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
@@ -400,7 +400,7 @@ function DeveloperForm() {
     }
   };
 
-  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 outline-none transition-colors";
+  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors";
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = "block text-sm font-semibold text-[#1A2F3F] mb-1.5";
 
@@ -419,8 +419,8 @@ function DeveloperForm() {
                 { icon: CheckCircle, text: t('formBullet4') },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#5CE0D2]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-[#5CE0D2]" />
+                  <div className="w-8 h-8 bg-propyte-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon size={16} className="text-propyte-brand" />
                   </div>
                   <span className="text-white/70 text-sm">{text}</span>
                 </div>
@@ -502,7 +502,7 @@ function DeveloperForm() {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-14 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full h-14 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-base rounded-xl transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {status === 'sending' ? t('formSending') : t('formSubmit')}
                   {status === 'idle' && <ArrowRight size={18} />}
@@ -525,12 +525,12 @@ function DevelopersHero({ verifiedCount }: { verifiedCount: number }) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/20">
-          <ShieldCheck size={18} className="text-[#5CE0D2]" />
-          <span className="text-sm font-semibold text-[#5CE0D2]">{t('heroBadgeVerified')}</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-propyte-cyan-100 border border-propyte-brand/20">
+          <ShieldCheck size={18} className="text-propyte-brand" />
+          <span className="text-sm font-semibold text-propyte-brand">{t('heroBadgeVerified')}</span>
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-          {t('heroTitle')} <span className="text-[#5CE0D2]">{t('heroTitleAccent')}</span>
+          {t('heroTitle')} <span className="text-propyte-brand">{t('heroTitleAccent')}</span>
         </h1>
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
           {t('heroSubtitle')}

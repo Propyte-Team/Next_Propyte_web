@@ -77,7 +77,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
   const heroEyebrow = (locale === 'en' ? heroCta?.eyebrow_en : heroCta?.eyebrow_es) ?? t('heroEyebrow');
   const heroTitle = (locale === 'en' ? heroCta?.title_en : heroCta?.title_es) ?? t('heroTitle');
   const heroSubtitle = (locale === 'en' ? heroCta?.subtitle_en : heroCta?.subtitle_es) ?? t('heroSubtitle');
-  const heroAccent = heroCta?.accent_color ?? '#5CE0D2';
+  const heroAccent = heroCta?.accent_color ?? '#A2F9FF';
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
 
@@ -134,8 +134,8 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <div
@@ -154,7 +154,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
             {heroSubtitle}
           </p>
           {items.length > 0 && (
-            <p className="mt-6 text-sm text-[#5CE0D2] font-semibold uppercase tracking-wide">
+            <p className="mt-6 text-sm text-propyte-brand font-semibold uppercase tracking-wide">
               {t('countLabel', { count: items.length })}
             </p>
           )}
@@ -170,7 +170,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
               <p className="text-sm text-gray-600 mb-6">{t('emptyDesc')}</p>
               <Link
                 href={`/${locale}/desarrollos`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
               >
                 {t('viewAll')}
                 <ArrowRight size={16} />
@@ -184,7 +184,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                   href={`/${locale}/desarrollos/${dev.slug}`}
                   className="group block"
                 >
-                  <article className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                  <article className="propyte-card-glass-light propyte-card-hover-glow overflow-hidden h-full flex flex-col">
                     <div className="relative aspect-[16/10] overflow-hidden">
                       {dev.images?.[0] ? (
                         <Image
@@ -205,7 +205,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                                 ? 'bg-[#0D9488] text-white'
                                 : dev.stage === 'construccion'
                                   ? 'bg-[#22C55E] text-white'
-                                  : 'bg-[#5CE0D2] text-[#0F1923]'
+                                  : 'bg-propyte-brand text-[#0F1923]'
                             }`}
                           >
                             {tStages(dev.stage as 'preventa')}
@@ -251,7 +251,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       </div>
 
                       {dev.roi_estimated != null && dev.roi_estimated > 0 && (
-                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-bold rounded-full self-start">
+                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-propyte-cyan-100 text-[#0F766E] text-xs font-bold rounded-full self-start">
                           {t('roiBadge')} {dev.roi_estimated}%
                         </div>
                       )}
@@ -280,7 +280,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/${locale}/desarrollos`}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
             >
               {t('ctaAll')}
               <ArrowRight size={18} />

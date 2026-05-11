@@ -89,13 +89,13 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#5CE0D2]/15 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-[#5CE0D2]" />
-            <span className="text-[#5CE0D2] text-sm font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
             </span>
           </div>
@@ -120,11 +120,11 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
               return (
                 <li key={i} className="relative bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 bg-[#5CE0D2] text-[#0F1923] rounded-full flex items-center justify-center font-bold text-lg">
+                    <div className="flex-shrink-0 w-10 h-10 bg-propyte-brand text-[#0F1923] rounded-full flex items-center justify-center font-bold text-lg">
                       {i + 1}
                     </div>
                     <div>
-                      <div className="w-10 h-10 bg-[#5CE0D2]/10 rounded-xl flex items-center justify-center mb-3">
+                      <div className="w-10 h-10 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-3">
                         <Icon size={20} className="text-[#0F766E]" />
                       </div>
                       <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{step.title}</h3>
@@ -164,7 +164,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
           <p className="text-gray-600 max-w-xl mx-auto mb-8">{t('financingDesc')}</p>
           <Link
             href={`/${locale}/financiamiento`}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
           >
             {t('financingCta')}
             <ArrowRight size={18} />
@@ -182,7 +182,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/${locale}/propiedades`}
-              className="px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+              className="px-8 py-4 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
             >
               {t('ctaBrowse')}
             </Link>

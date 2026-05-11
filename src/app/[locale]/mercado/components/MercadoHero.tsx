@@ -50,7 +50,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
           Static, decorativo, refuerza el "data-forward" sin distraer. */}
       <svg
         aria-hidden="true"
-        className="absolute right-4 md:right-12 bottom-6 md:bottom-10 w-48 md:w-72 h-12 md:h-16 text-[#5CE0D2]/25 pointer-events-none"
+        className="absolute right-4 md:right-12 bottom-6 md:bottom-10 w-48 md:w-72 h-12 md:h-16 text-propyte-brand/25 pointer-events-none"
         viewBox="0 0 280 60"
         fill="none"
       >
@@ -95,7 +95,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
             return (
               <span key={i}>
                 {isLast ? (
-                  <span className="accent-serif text-[#5CE0D2]">{word}</span>
+                  <span className="accent-serif text-propyte-brand">{word}</span>
                 ) : (
                   word
                 )}
@@ -132,7 +132,7 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
         ) : (
           !stats && (
             <div
-              className="mt-10 inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-[#5CE0D2]/25 bg-[#5CE0D2]/[0.06] text-[#5CE0D2] propyte-hero-rise"
+              className="mt-10 inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-propyte-brand/25 bg-propyte-brand/[0.06] text-propyte-brand propyte-hero-rise"
               style={{ animationDelay: '360ms' }}
             >
               <Activity size={14} className="animate-pulse" aria-hidden="true" />

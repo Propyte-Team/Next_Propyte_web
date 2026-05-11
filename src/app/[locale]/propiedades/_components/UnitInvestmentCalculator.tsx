@@ -188,7 +188,7 @@ export default function UnitInvestmentCalculator({
                     <label className="text-sm font-medium text-gray-700">
                       {t('occupancy')}
                       {airdnaOccupancy != null && (
-                        <span className="ml-2 text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-2 py-0.5 rounded-full">Data</span>
+                        <span className="ml-2 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 px-2 py-0.5 rounded-full">Data</span>
                       )}
                     </label>
                     <span className="text-sm font-bold text-[#2C2C2C]">{occupancyVac.toFixed(0)}%</span>
@@ -197,7 +197,7 @@ export default function UnitInvestmentCalculator({
                     type="range" min={40} max={100} step={1}
                     value={occupancyVac}
                     onChange={(e) => setOccupancyVac(Number(e.target.value))}
-                    className="w-full accent-[#5CE0D2]"
+                    className="w-full accent-[#A2F9FF]"
                   />
                 </div>
                 <MetricsPanel
@@ -243,8 +243,8 @@ export default function UnitInvestmentCalculator({
                         onClick={() => setMonths(m)}
                         className={`px-4 py-2 rounded-lg text-sm border transition-colors ${
                           months === m
-                            ? 'bg-[#5CE0D2] text-[#0F1923] border-[#5CE0D2]'
-                            : 'border-gray-200 hover:border-[#5CE0D2] text-gray-700'
+                            ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand'
+                            : 'border-gray-200 hover:border-propyte-brand text-gray-700'
                         }`}
                       >
                         {t('termMonthsValue', { m })}
@@ -329,7 +329,7 @@ export default function UnitInvestmentCalculator({
                   <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projection.projectedValue10)}</div>
                   <div className="h-2 bg-gray-200 rounded-full overflow-hidden mt-2">
                     <div
-                      className="h-full bg-gradient-to-r from-[#5CE0D2] to-[#22C55E] rounded-full transition-all"
+                      className="h-full bg-gradient-to-r from-propyte-brand to-[#22C55E] rounded-full transition-all"
                       style={{ width: `${Math.min((projection.projectedValue10 / price) * 33, 100)}%` }}
                     />
                   </div>
@@ -400,8 +400,8 @@ function MetricsPanel({
           <span className="font-semibold">{formatPrice(effectiveRent)}/mo</span>
         </div>
         <div className="flex items-baseline justify-between text-sm pt-2">
-          <span className="text-[#5CE0D2] font-medium">{t('netAfterExpenses')}</span>
-          <span className="font-bold text-[#5CE0D2]">{formatPrice(netRent)}/mo</span>
+          <span className="text-propyte-brand font-medium">{t('netAfterExpenses')}</span>
+          <span className="font-bold text-propyte-brand">{formatPrice(netRent)}/mo</span>
         </div>
         {monthlyPayment > 0 && (
           <div className="flex items-baseline justify-between text-sm pt-2 border-t border-white/10 mt-2">
@@ -454,7 +454,7 @@ function Slider({
       <input
         type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[#5CE0D2]"
+        className="w-full accent-[#A2F9FF]"
       />
     </div>
   );
@@ -473,7 +473,7 @@ function FinKV({ label, value, note }: { label: string; value: string; note?: st
 function ProjTile({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 text-center ${highlight ? 'bg-[#0F1923] text-white' : 'bg-gray-50'}`}>
-      <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#1A2F3F]'}`}>{value}</div>
+      <div className={`text-xl font-bold ${highlight ? 'text-propyte-brand' : 'text-[#1A2F3F]'}`}>{value}</div>
       <div className={`text-xs mt-1 ${highlight ? 'text-gray-600' : 'text-gray-600'}`}>{label}</div>
     </div>
   );

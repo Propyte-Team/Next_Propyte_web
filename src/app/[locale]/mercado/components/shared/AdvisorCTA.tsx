@@ -27,7 +27,7 @@ export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-      <div className="bg-[#5CE0D2/10] border-2 border-[#5CE0D2] rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-propyte-cyan-100 border-2 border-propyte-brand rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-center md:text-left">
           <h3 className="text-lg font-bold text-[#1A2F3F] mb-1">
             {isEn

@@ -42,7 +42,7 @@ export default function FAQContent({
               aria-pressed={activeCategory === cat}
               className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
                 activeCategory === cat
-                  ? 'bg-[#5CE0D2] text-[#0F1923]'
+                  ? 'bg-propyte-brand text-[#0F1923]'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -82,7 +82,7 @@ export default function FAQContent({
           <p className="text-gray-600 mb-4">{t('ctaStillHave')}</p>
           <Link
             href={`/${locale}/contacto`}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-3 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
           >
             {t('ctaButton')}
           </Link>

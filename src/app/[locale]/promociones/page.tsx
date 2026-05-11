@@ -152,7 +152,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#A2F9FF]/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
@@ -172,7 +172,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
             {heroSubtitle}
           </p>
           {items.length > 0 && (
-            <p className="mt-6 text-sm text-[#5CE0D2] font-semibold uppercase tracking-wide">
+            <p className="mt-6 text-sm text-propyte-brand font-semibold uppercase tracking-wide">
               {t('countLabel', { count: items.length })}
             </p>
           )}
@@ -240,7 +240,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
                         </div>
                       )}
                       {roi > 0 && (
-                        <div className="mt-2 inline-flex self-start items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] text-xs font-bold rounded-full">
+                        <div className="mt-2 inline-flex self-start items-center px-2 py-0.5 bg-propyte-cyan-100 text-[#0F766E] text-xs font-bold rounded-full">
                           {t('roiBadge')} {roi}%
                         </div>
                       )}
@@ -267,7 +267,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
           <p className="text-white/70 max-w-lg mx-auto mb-8">{t('ctaDesc')}</p>
           <Link
             href={`/${locale}/contacto`}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold rounded-xl transition-colors"
           >
             {t('ctaButton')}
             <ArrowRight size={18} />

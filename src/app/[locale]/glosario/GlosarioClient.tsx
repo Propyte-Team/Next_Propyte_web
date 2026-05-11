@@ -78,13 +78,13 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={labels.searchPlaceholder}
                 aria-label={labels.searchAriaLabel}
-                className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-600 focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
+                className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-[#1A2F3F] placeholder:text-gray-600 focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/30 focus:outline-none"
               />
             </div>
             <button
               type="button"
               onClick={() => setGateOpen(true)}
-              className="inline-flex items-center gap-1.5 h-[42px] px-3 sm:px-4 rounded-xl bg-[#1A2F3F] text-white text-xs sm:text-sm font-bold hover:bg-[#0F1923] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] transition-colors flex-shrink-0"
+              className="inline-flex items-center gap-1.5 h-[42px] px-3 sm:px-4 rounded-xl bg-[#1A2F3F] text-white text-xs sm:text-sm font-bold hover:bg-[#0F1923] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors flex-shrink-0"
               aria-label={labels.downloadPdf}
               title={labels.downloadPdf}
             >
@@ -111,7 +111,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                   <a
                     key={letter}
                     href={`#letter-${letter}`}
-                    className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-[#5CE0D2] hover:text-[#0F1923] rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 h-9 text-sm font-bold text-[#1A2F3F] bg-gray-100 hover:bg-propyte-brand hover:text-[#0F1923] rounded-lg transition-colors"
                   >
                     <span>{letter}</span>
                     <span className="text-2xs font-semibold opacity-60 tabular-nums">
