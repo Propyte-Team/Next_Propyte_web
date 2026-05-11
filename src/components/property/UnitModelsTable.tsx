@@ -11,6 +11,7 @@ interface Unit {
   unit_number?: string;
   typology?: string;
   unit_type: string;
+  unit_subtype?: string | null;
   bedrooms: number;
   bathrooms: number;
   area_m2: number;
@@ -60,13 +61,30 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
 
   if (units.length === 0) return null;
 
-  const typeLabel = (type: string) => {
+  // Label de "Tipo" en la tabla de modelos:
+  // 1. Si la unidad tiene `unit_subtype` poblado (Penthouse, Pentgarden,
+  //    Loft, etc.), úsalo crudo — esa es la info más específica.
+  // 2. Si no, traducir `unit_type` vía i18n. next-intl puede retornar
+  //    `types.X` como path-fallback cuando la key falta (no throw); si
+  //    detectamos ese fallback usamos el raw type capitalizado.
+  const typeLabel = (unit: Unit) => {
+    if (unit.unit_subtype && unit.unit_subtype.trim().length > 0) {
+      return unit.unit_subtype;
+    }
+    const type = unit.unit_type;
+    if (!type) return '—';
     if (type === 'departamento') return tTypes('departamentoShort');
+    let label: string;
     try {
-      return tTypes(type as 'departamento');
+      label = tTypes(type as 'departamento');
     } catch {
       return type;
     }
+    // next-intl fallback: si retorna path completo (`types.Estudio`), usar raw.
+    if (label === `types.${type}` || label.startsWith('types.')) {
+      return type;
+    }
+    return label;
   };
 
   const statusLabel = (status: string) => {
@@ -147,7 +165,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                       unit.typology || unit.unit_number || '—'
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{typeLabel(unit.unit_type)}</td>
+                  <td className="px-4 py-3 text-gray-600">{typeLabel(unit)}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bedrooms}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bathrooms}</td>
                   <td className="px-4 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
@@ -188,7 +206,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               </div>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="text-gray-600">{t('type')}</div>
-                <div className="text-right text-gray-700">{typeLabel(unit.unit_type)}</div>
+                <div className="text-right text-gray-700">{typeLabel(unit)}</div>
                 <div className="text-gray-600">{t('bedsBaths')}</div>
                 <div className="text-right text-gray-700">{unit.bedrooms} / {unit.bathrooms}</div>
                 <div className="text-gray-600">m²</div>
