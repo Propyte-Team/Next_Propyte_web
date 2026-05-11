@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-11 (cierre de sesión cristalino-sitio-wide)
+> Última actualización: 2026-05-11 PM (sesión cristalino: detail UX + 5 bug fixes deployados a develop)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -16,7 +16,8 @@ _Sin tareas activas — speckit cristalino-sitio-wide cerrado y deployado. Próx
 
 ### Decisiones del usuario (no código)
 
-- [ ] **Validación visual humana en `dev.propyte.com`** — revisar deploy `dpl_EXv84fSZi7bfnh5yrJ1uGEawqjiK` en navegador real (no solo Playwright baseline). Foco en rutas críticas: `/`, `/propiedades` (cluster filter), `/desarrollos` (grid), `/unete` (glass refactor), `/contacto`.
+- [ ] **Validación visual humana en `dev.propyte.com`** — develop al día con commit `97354bc`. Foco: `/propiedades/estudio-pentgarden-con-alberca-privada` (tour Matterport), CookieBanner abajo-derecha, ContactForm simplificado, sidebar detail pages reorder.
+- [ ] **Hacer público el video Drive** en `estudio-pentgarden-con-alberca-privada` (Drive → Compartir → "Cualquier persona con el enlace") para que el embed cargue. El URL ya está OK en BD.
 - [ ] **Merge `develop → main`** — ⚠️ NO ejecutar sin autorización explícita Luis. Dispara Hostinger pull-on-main → `propyte.com` prod.
 - [ ] **Validación cluster filter "+N"** — requiere ≥2 propiedades con coords en Supabase staging para que se active el clustering. Hoy hay solo 1 con coords válidas.
 
@@ -40,16 +41,16 @@ _Ninguna._
 
 ## Completadas recientes
 
-- [x] **T4.5 Playwright baseline visual** — `tests/e2e/cristalino-baseline.spec.ts` con 15 rutas × 2 viewports = 30 screenshots. Output `tests/qa-visual/screenshots/`. Commit `36cab2d` (2026-05-11)
+- [x] **UnitModelsTable subtype fix** — Prefer `unit_subtype` sobre `tTypes(unit_type)` + detect path-fallback `types.X`. Commit `97354bc` (2026-05-11 PM)
+- [x] **CookieBanner compacto + Drive auto-embed** — Banner anclado right-corner 380px + VideoPlayer transforma URLs Drive a `/preview`. Commit `6e1fbf0` (2026-05-11 PM)
+- [x] **Fix 500 SSR cadena** en /propiedades/[slug] — 3 bugs: stages.Entregado MISSING_MESSAGE (mapper normalize + safeStage), property.tabTour key faltante, row.title fallback. Commits `2cba646` + `f4c7632` (2026-05-11 PM)
+- [x] **Detail pages UX** — Sidebar reorder (DATOS CLAVE arriba) + ContactForm simplificado (sin Presupuesto/Mensaje, mantiene Tipo de inversión). Commit `07f07ae` (2026-05-11 PM)
+- [x] **T4.5 Playwright baseline visual** — `tests/e2e/cristalino-baseline.spec.ts` con 15 rutas × 2 viewports = 30 screenshots. Commit `36cab2d` (2026-05-11)
 - [x] **Pass 4 Team/legal brand sync** — 10 archivos (nosotros/*, unete glass-refactor, corredores, proveedores). Commit `ad34896` (2026-05-11)
-- [x] **Pass 3 Content/editorial brand sync** — 19 archivos (mercado/*, built, destacados, promociones, blog listing, desarrolladores listing, contacto, guides, faq, glosario, taxonomy). Commit `6fd95e7` (2026-05-11)
-- [x] **Amendment 2026-05-11: swap arquitectónico + cluster filter** — `/propiedades` ahora tiene mapa + cluster "+N" filter; `/desarrollos` grid Ficha 02. Commit `9181f0f` (2026-05-11)
+- [x] **Pass 3 Content/editorial brand sync** — 19 archivos. Commit `6fd95e7` (2026-05-11)
+- [x] **Amendment 2026-05-11: swap arquitectónico + cluster filter** — `/propiedades` con mapa + cluster "+N" filter; `/desarrollos` grid Ficha 02. Commit `9181f0f` (2026-05-11)
 - [x] **Pass 2 Detail pages** — 5 detail pages glass + brand sync. Commit `ca42afb` (2026-05-11)
-- [x] **Pass 1 Marketplaces** — MarketplaceContent.showMap + MarketplaceCard Ficha 02 + utilities globales. Commits `6e38eb7` + `3d48f1f` (2026-05-11)
-- [x] **Pass 0 Layout layer** — Header glass strip + Sidebar/Footer/ActionsPill/Breadcrumbs brand sync. Commits `987d4d4` + `16d72ea` (2026-05-11)
-- [x] **Speckit cristalino-sitio-wide formalizado** — `specs/cristalino-sitio-wide.md` (5 passes, 38 rutas). Commit `e7ee445` (2026-05-11)
-- [x] **Migración acentos naranja → cyan/teal** — 8 archivos fuera del home. Commit `2c7a638` (2026-05-11)
-- [x] **Cross-repo: Hub `accent_color` sync** — `promociones_hero` `#F5A623` → `#A2F9FF` via MCP execute_sql (2026-05-11)
+- [x] **Pass 1 Marketplaces** — MarketplaceContent.showMap + Ficha 02. Commits `6e38eb7` + `3d48f1f` (2026-05-11)
 
 ---
 
