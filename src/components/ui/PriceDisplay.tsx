@@ -13,6 +13,9 @@ interface PriceDisplayProps {
   showRateNote?: boolean;
   /** Sufijo opcional (ej. "/m²") */
   suffix?: string;
+  /** Moneda en que se cotizó originalmente la unidad. Si la activa coincide,
+   *  se etiqueta como (Original); si no, (Referencial). Default: 'MXN'. */
+  originalCurrency?: Currency;
   className?: string;
 }
 
@@ -44,6 +47,7 @@ export default function PriceDisplay({
   size = 'md',
   showRateNote = false,
   suffix,
+  originalCurrency = 'MXN',
   className = '',
 }: PriceDisplayProps) {
   const { currency, toggleCurrency, rate, rateUpdatedAt } = useCurrency();
@@ -65,6 +69,9 @@ export default function PriceDisplay({
     day: 'numeric',
   });
   const tcNote = `TC ref. Banxico · ${rate.toFixed(2)} MXN/USD · ${tcDate}`;
+  const isOriginal = currency === originalCurrency;
+  const primaryBadge = isOriginal ? 'Original' : 'Referencial';
+  const secondaryBadge = isOriginal ? 'Referencial' : 'Original';
 
   if (variant === 'inline') {
     return (
@@ -87,8 +94,16 @@ export default function PriceDisplay({
         aria-label={`Cambiar a ${secondaryCurrency}`}
         className="inline-flex flex-col items-baseline text-left hover:opacity-80 transition-opacity cursor-pointer"
       >
-        <span className={SIZE_PRIMARY[size]}>{primaryLabel}</span>
-        <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>{secondaryLabel}</span>
+        <span className={SIZE_PRIMARY[size]}>
+          {primaryLabel}
+          <span className="ml-1.5 text-[10px] font-medium opacity-60 uppercase tracking-wide">
+            ({primaryBadge})
+          </span>
+        </span>
+        <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>
+          {secondaryLabel}
+          <span className="ml-1 opacity-70">({secondaryBadge})</span>
+        </span>
       </button>
       {showRateNote && (
         <span className="text-[10px] text-gray-400 mt-0.5 italic">{tcNote}</span>

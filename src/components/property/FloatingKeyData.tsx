@@ -3,10 +3,13 @@
 import { DollarSign, Square, Bed, Bath } from 'lucide-react';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
+import type { Currency } from '@/context/CurrencyContext';
 
 interface FloatingKeyDataProps {
   /** Precio en MXN (fuente de verdad). Si null, omite la fila precio. */
   priceMxn?: number | null;
+  /** Moneda en que se cotizó originalmente. La otra es "Referencial". Default 'MXN'. */
+  originalCurrency?: Currency;
   /** Área en m² (fuente de verdad). Si null/0, omite la fila área. */
   areaM2?: number | null;
   bedrooms: string | null;
@@ -22,6 +25,7 @@ interface FloatingKeyDataProps {
 
 export default function FloatingKeyData({
   priceMxn,
+  originalCurrency = 'MXN',
   areaM2,
   bedrooms,
   bathrooms,
@@ -34,7 +38,15 @@ export default function FloatingKeyData({
     items.push({
       icon: DollarSign,
       label: labels.price,
-      value: <PriceDisplay mxn={priceMxn} variant="dual" size="sm" className="text-white" />,
+      value: (
+        <PriceDisplay
+          mxn={priceMxn}
+          variant="dual"
+          size="sm"
+          originalCurrency={originalCurrency}
+          className="text-white"
+        />
+      ),
       key: 'price',
     });
   }
@@ -84,6 +96,15 @@ export default function FloatingKeyData({
             </div>
           ))}
         </div>
+        {hasPrice && (
+          <div className="px-4 pb-3 pt-1 border-t border-white/10">
+            <p className="text-[10px] text-white/55 leading-snug italic">
+              Precios mostrados en moneda referencial son aproximados y se calculan con tipo
+              de cambio de Banxico. El precio final depende del tipo de cambio acordado en
+              la negociación.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

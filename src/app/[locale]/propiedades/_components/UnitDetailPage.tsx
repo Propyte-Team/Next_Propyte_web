@@ -31,6 +31,8 @@ import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import AreaDisplay from '@/components/ui/AreaDisplay';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
+import type { Currency } from '@/context/CurrencyContext';
 import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -69,6 +71,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
   const property = mapUnitToProperty(row);
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
+  // Moneda en que se cotizó originalmente (moneda_principal en BD). Default MXN.
+  const originalCurrency: Currency = (row.currency || '').toUpperCase() === 'USD' ? 'USD' : 'MXN';
   const _citySlug = slugify(property.location.city); void _citySlug;
 
   // ── Parent development data (amenities + developer) ──
@@ -314,7 +318,13 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   <div className="flex items-baseline gap-4 flex-wrap">
                     {/* Precio principal: MXN grande, USD chico abajo (toggle global MXN/USD).
                         Incluye nota "TC ref. Banxico" debajo. */}
-                    <PriceDisplay mxn={property.price.mxn} variant="dual" size="xl" showRateNote />
+                    <PriceDisplay
+                      mxn={property.price.mxn}
+                      variant="dual"
+                      size="xl"
+                      showRateNote
+                      originalCurrency={originalCurrency}
+                    />
                     {property.specs.area > 0 && (
                       <div className="text-sm text-gray-600">
                         <PriceDisplay
@@ -517,6 +527,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
               <FloatingKeyData
                 priceMxn={property.price.mxn > 0 ? property.price.mxn : null}
+                originalCurrency={originalCurrency}
                 areaM2={property.specs.area > 0 ? property.specs.area : null}
                 bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
                 bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
@@ -570,6 +581,9 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           kind="unit"
           locale={locale}
         />
+
+        {/* Aviso legal sobre TC referencial — al final del contenido principal. */}
+        <PriceDisclaimer />
       </div>
 
       <MobileContactBar
