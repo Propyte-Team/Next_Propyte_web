@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-11 (sesión migración naranja → cyan/teal-a11y)
+> Última actualización: 2026-05-11 (Speckit cristalino-sitio-wide aprobado)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,17 +8,64 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-_Ninguna tarea activa — esperando feedback de Luis sobre dev.propyte.com._
+_Próximo arranque: Pass 0 del speckit cristalino-sitio-wide (layout layer)._
 
 ---
 
 ## Pendientes
 
-### Brand Identity Oficial — siguiente vuelta
+### Spec: Cristalino sitio-wide — `specs/cristalino-sitio-wide.md`
 
-- [ ] **Validación visual de Luis en `dev.propyte.com`**: revisar cristalino + jerarquía tipográfica + contraste + nueva paleta sin naranja. Decidir qué afinar antes de promover a main.
-- [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll, `MarketplaceCard`. Decisión visual con Luis.
-- [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx` (Inter→Neue Haas, DM Sans→Normalidad). Vars `--font-display` / `--font-text` ya tienen el contrato listo.
+> 38 rutas + 5 passes. Ejecutar en orden P0 → P4. Cada pass = 1+ commit + deploy staging.
+
+**Pass 0 — Layout layer** (afecta todo el sitio)
+- [ ] T0.1 — `Header.tsx`: scroll glass strip (solo desktop, Q6)
+- [ ] T0.2 — `Sidebar.tsx`: hover/active items con `.propyte-glass-pill`
+- [ ] T0.3 — `Footer.tsx`: accents brand cyan + glass divider
+- [ ] T0.4 — `ActionsPill.tsx`: glass-pill con border cyan
+- [ ] T0.5 — `Breadcrumbs.tsx`: pills glass-light
+- [ ] T0.6 — Deploy + screenshot diff home pre/post-P0
+
+**Pass 1 — Marketplaces**
+- [ ] T1.1 — `MarketplaceContent.tsx`: quitar `<MapView>` de `/propiedades` (queda solo en `/desarrollos`)
+- [ ] T1.2 — Refactor `MarketplaceCard.tsx` a Ficha 02 (glass-light + glass-pill specs)
+- [ ] T1.3 — `FilterBar.tsx` + `AdvancedFilters.tsx`: skin glass-light
+- [ ] T1.4 — `MobileBottomSheet.tsx`: skin glass dark + header pill
+- [ ] T1.5 — `ComparePanel.tsx`: skin glass-light sticky
+- [ ] T1.6 — Verificar taxonomy pages (`/desarrollos/cancun`, `/tipo/[type]`, `/etapa/[stage]`)
+- [ ] T1.7 — Deploy + click-through manual completo (favorites, compare, filters)
+
+**Pass 2 — Detail pages**
+- [ ] T2.1 — `/desarrollos/[slug]` hero + secciones glass
+- [ ] T2.2 — `/propiedades/[slug]` hero + secciones glass
+- [ ] T2.3 — `/desarrolladores/[slug]` cards glass-light
+- [ ] T2.4 — `/zonas/[slug]` hero + map (conservar — Q4) + cards glass
+- [ ] T2.5 — `/blog/[slug]` hero + prose container glass-light
+
+**Pass 3 — Content/editorial**
+- [ ] T3.1 — `/mercado` (intelligence dashboard)
+- [ ] T3.2 — `/built` sin mapa (Q1) + cards portfolio glass
+- [ ] T3.3 — `/destacados` (featured)
+- [ ] T3.4 — `/promociones` glass-refactor (heroAccent espera Hub — Q3)
+- [ ] T3.5 — `/blog` (listing)
+- [ ] T3.6 — `/zonas` (listing)
+- [ ] T3.7 — `/desarrolladores` (directory)
+- [ ] T3.8 — `/contacto` (form + map embed)
+- [ ] T3.9 — `/como-comprar`, `/como-invertir`, `/financiamiento`, `/rentas`, `/faq`, `/glosario`
+
+**Pass 4 — Team/legal + auditoría**
+- [ ] T4.1 — `/nosotros/quienes-somos`, `/nosotros/estructura`, `/nosotros/equipo-comercial`
+- [ ] T4.2 — `/unete` glass-refactor completo (sobrescribe excepción HERO-SITE — Q5)
+- [ ] T4.3 — `/corredores`, `/proveedores`
+- [ ] T4.4 — `/privacidad`, `/terminos`, `/cookies` (draft badge amber semántico se mantiene — Q2)
+- [ ] T4.5 — Playwright `tests/qa-visual/all-routes.spec.ts` baseline (38 rutas × 3 viewports)
+- [ ] T4.6 — Typecheck + smoke run final
+- [ ] T4.7 — Validación Luis + merge `develop → main`
+
+### Otros pendientes
+
+- [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll, `MarketplaceCard`. (Cubierto parcialmente por Pass 0/1, validar al cierre)
+- [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx`. Vars `--font-display` / `--font-text` ya tienen el contrato listo.
 
 ### Sesión anterior (B.1 + visibility — pendiente de validar)
 
