@@ -23,6 +23,12 @@ export default function VideoPlayer({ url, propertyName, thumbnail }: VideoPlaye
 
   const ytId = getYouTubeId(url);
   const thumbUrl = thumbnail || (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null);
+  // YouTube no permite embed con `youtu.be/...` ni con URLs que tienen query
+  // params previos (`?si=...?autoplay=1` queda inválido por doble `?`). Construir
+  // siempre el embed URL canónico desde el ID extraído.
+  const embedUrl = ytId
+    ? `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`
+    : url;
 
   return (
     <>
@@ -72,7 +78,7 @@ export default function VideoPlayer({ url, propertyName, thumbnail }: VideoPlaye
         <div className="relative w-full rounded-xl overflow-hidden bg-black">
           <div className="relative aspect-[16/9]">
             <iframe
-              src={`${url}?autoplay=1&rel=0&modestbranding=1`}
+              src={embedUrl}
               title={`${propertyName} - Video`}
               className="w-full h-full"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
@@ -120,7 +126,7 @@ export default function VideoPlayer({ url, propertyName, thumbnail }: VideoPlaye
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="w-full max-w-[90vw] aspect-[16/9]">
               <iframe
-                src={`${url}?autoplay=1&rel=0&modestbranding=1`}
+                src={embedUrl}
                 title={`${propertyName} - Video Fullscreen`}
                 className="w-full h-full rounded-lg"
                 allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
