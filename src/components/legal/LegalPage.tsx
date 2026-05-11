@@ -34,7 +34,7 @@ export default async function LegalPage({
             {t(descriptionKey)}
           </p>
           <div className="flex flex-wrap gap-3">
-            <span className="inline-flex items-center gap-2 px-3 py-1 bg-[#F5A623]/10 text-[#92400E] rounded-full text-xs font-semibold">
+            <span className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold">
               <AlertCircle size={12} strokeWidth={2.5} />
               {t('draftBadge')}
             </span>

@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-09 (sesión Brand Identity + cristalino)
+> Última actualización: 2026-05-11 (sesión migración naranja → cyan/teal-a11y)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -16,11 +16,9 @@ _Ninguna tarea activa — esperando feedback de Luis sobre dev.propyte.com._
 
 ### Brand Identity Oficial — siguiente vuelta
 
-- [ ] **Validación visual de Luis en `dev.propyte.com`**: revisar cristalino + jerarquía tipográfica + contraste. Decidir qué afinar antes de promover a main.
-- [ ] **Migrar acentos naranja `#F5A623` restantes** — ~30 archivos fuera del home (auditoría con `grep amber|F5A623|orange-`). Regla: dark bg → `#A2F9FF`, light bg → `#0D9488` (teal-a11y para WCAG AA).
+- [ ] **Validación visual de Luis en `dev.propyte.com`**: revisar cristalino + jerarquía tipográfica + contraste + nueva paleta sin naranja. Decidir qué afinar antes de promover a main.
 - [ ] **Considerar glass-light en otros bloques light**: `DeveloperLogos`, sticky header sobre scroll, `MarketplaceCard`. Decisión visual con Luis.
 - [ ] **Plan migración Adobe Fonts kit** (Neue Haas Display + Normalidad VF) cuando Luis tenga acceso al kit. Swap de 2 líneas en `layout.tsx` (Inter→Neue Haas, DM Sans→Normalidad). Vars `--font-display` / `--font-text` ya tienen el contrato listo.
-- [ ] **Commit + push de los cambios brand** al `develop` (16 archivos pendientes — ya están live en Vercel pero no en git).
 
 ### Sesión anterior (B.1 + visibility — pendiente de validar)
 
@@ -47,6 +45,15 @@ _Nada bloqueado._
 
 ## Completadas recientes
 
+- [x] **Migración acentos naranja → cyan/teal** (2026-05-11) — 8 archivos fuera del home migrados según regla dark bg → `#A2F9FF`, light bg → `#0D9488` (teal-a11y WCAG AA):
+  - `Badge.tsx` / `MarketplaceCard.tsx` — badges preventa/reservado + gradient promo
+  - `UnetePageContent.tsx` — 6 acentos (glows, badge top, cap annual callout, $45K stat, stars, glow CTA)
+  - `destacados/page.tsx` — filtro stage preventa
+  - `promociones/page.tsx` — hero accent default + glow + gradient "destacado"
+  - `LegalPage.tsx` — draft badge a Tailwind amber semantic (semántico, no brand)
+  - `EstructuraPageContent.tsx` — hiring label
+  - `PriceTimeline.tsx` — marker futuro
+  - **Preservados** (warnings semánticos / dev tools): `analytics/*`, `InvestmentDisclaimer`, `GeoAnalysis`, `MarketIndicator`, `ComparisonTable`, `RentalEstimate`, `playground/*`, `design-playground/*`, token `--color-amber` en globals.css
 - [x] **Brand Identity Oficial** — tokens `#A2F9FF` + cyans/darks + glass cards Ficha 01/02 + variantes pill/light + hero overlay + jerarquía editorial en `globals.css` (2026-05-09)
 - [x] **Hero home rediseñado** — eyebrow REAL ESTATE, "Riviera Maya" cyan, overlay aztec, search bubble Ficha 02 character, tabs/stats/quick-links glass-pill (2026-05-09)
 - [x] **Tipografía Inter + DM Sans** vía next/font como substitutos free de Neue Haas Display Pro / Normalidad VF, vars `--font-display` / `--font-text` componiendo `--font-heading` / `--font-body` en `:root` (2026-05-09)

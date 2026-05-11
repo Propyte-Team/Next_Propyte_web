@@ -57,12 +57,12 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
   const showPromo = !!promoText;
 
   const badgeColors: Record<Exclude<PropertyBadge, null>, string> = {
-    preventa: 'bg-[#F5A623]',
+    preventa: 'bg-[#0D9488]',
     nuevo: 'bg-[#22C55E]',
     construccion: 'bg-[#1A2F3F]',
     entrega_inmediata: 'bg-[#5CE0D2]',
     proximamente: 'bg-[#6366F1]',
-    reservado: 'bg-[#F5A623]/80',
+    reservado: 'bg-[#0D9488]/80',
     vendido: 'bg-gray-500',
   };
 
@@ -271,7 +271,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Promo banner — overlays bottom strip when active */}
           {showPromo && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#0D9488] to-[#0B7A6E] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
               {promoText}
             </div>
           )}

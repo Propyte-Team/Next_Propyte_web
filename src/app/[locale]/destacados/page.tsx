@@ -202,7 +202,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                           <span
                             className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
                               dev.stage === 'preventa'
-                                ? 'bg-[#F5A623] text-white'
+                                ? 'bg-[#0D9488] text-white'
                                 : dev.stage === 'construccion'
                                   ? 'bg-[#22C55E] text-white'
                                   : 'bg-[#5CE0D2] text-[#0F1923]'

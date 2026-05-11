@@ -83,7 +83,7 @@ function HeroSection() {
           }}
         />
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#F5A623]/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-32">
@@ -165,7 +165,7 @@ function HeroSection() {
                 </div>
               )}
             </div>
-            <div className="absolute -bottom-4 -left-4 bg-[#F5A623] text-[#2C2C2C] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
+            <div className="absolute -bottom-4 -left-4 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
               {t('heroTopBadge')}
             </div>
           </div>
@@ -316,8 +316,8 @@ function CommissionModel() {
                 ))}
               </div>
 
-              <div className="mt-6 bg-[#F5A623]/10 border border-[#F5A623]/20 rounded-xl p-4 flex items-start gap-3">
-                <Award size={20} className="text-[#F5A623] flex-shrink-0 mt-0.5" />
+              <div className="mt-6 bg-[#A2F9FF]/10 border border-[#A2F9FF]/20 rounded-xl p-4 flex items-start gap-3">
+                <Award size={20} className="text-[#A2F9FF] flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-bold text-white">{t('capAnnualLabel')}</p>
                   <p className="text-xs text-white/75 mt-1">
@@ -388,7 +388,7 @@ function RevenueSharing() {
                   <div className="text-xs text-gray-600 mt-1">{t('revenueDirectAgents')}</div>
                 </div>
                 <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#F5A623]">$45K</div>
+                  <div className="text-2xl font-bold text-[#0D9488]">$45K</div>
                   <div className="text-xs text-gray-600 mt-1">{t('revenueMonthlyExtra')}</div>
                 </div>
               </div>
@@ -571,7 +571,7 @@ function Testimonials() {
             >
               <div className="flex gap-1 mb-4">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={16} className="text-[#F5A623] fill-[#F5A623]" />
+                  <Star key={i} size={16} className="text-[#A2F9FF] fill-[#A2F9FF]" />
                 ))}
               </div>
               <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{tt.quote}&rdquo;</p>
@@ -773,7 +773,7 @@ function ApplicationForm() {
   return (
     <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden">
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-[#5CE0D2]/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#F5A623]/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">

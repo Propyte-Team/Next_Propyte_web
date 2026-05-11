@@ -76,7 +76,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   const heroEyebrow = (locale === 'en' ? heroCta?.eyebrow_en : heroCta?.eyebrow_es) ?? t('heroEyebrow');
   const heroTitle = (locale === 'en' ? heroCta?.title_en : heroCta?.title_es) ?? t('heroTitle');
   const heroSubtitle = (locale === 'en' ? heroCta?.subtitle_en : heroCta?.subtitle_es) ?? t('heroSubtitle');
-  const heroAccent = heroCta?.accent_color ?? '#F5A623';
+  const heroAccent = heroCta?.accent_color ?? '#A2F9FF';
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
 
@@ -153,7 +153,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
         <div className="absolute top-20 right-10 w-72 h-72 bg-[#5CE0D2]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#F5A623]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#A2F9FF]/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <div
@@ -219,7 +219,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
                           <Building2 size={36} className="text-gray-300" />
                         </div>
                       )}
-                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#F5A623] to-[#FF8C00] px-4 py-2 text-white text-xs font-bold uppercase tracking-wider text-center">
+                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#0D9488] to-[#0B7A6E] px-4 py-2 text-white text-xs font-bold uppercase tracking-wider text-center">
                         {t('featuredLabel')}
                       </div>
                     </div>

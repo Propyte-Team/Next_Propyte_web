@@ -56,7 +56,7 @@ export default function PriceTimeline({ property }: PriceTimelineProps) {
               {/* Timeline line */}
               <div className="flex flex-col items-center">
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                  isFuture ? 'bg-[#F5A623] border-2 border-[#F5A623]/30' :
+                  isFuture ? 'bg-[#0D9488] border-2 border-[#0D9488]/30' :
                   isLast ? 'bg-[#5CE0D2]' : 'bg-gray-300'
                 }`} />
                 {!isLast && <div className="w-0.5 h-full bg-gray-200 min-h-[40px]" />}
