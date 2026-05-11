@@ -112,7 +112,7 @@ export default function Sidebar() {
               title={t(item.labelKey)}
               aria-current={active ? 'page' : undefined}
               className={`group flex flex-col items-center gap-1 w-full py-2.5 rounded-xl transition-colors ${
-                active ? 'bg-white/10 text-[#5CE0D2]' : 'text-white/75 hover:text-white hover:bg-white/5'
+                active ? 'bg-white/10 text-propyte-brand' : 'text-white/75 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon size={20} strokeWidth={1.75} />
@@ -133,7 +133,7 @@ export default function Sidebar() {
           aria-controls="sidebar-more-panel"
           aria-current={hasActiveChild ? 'page' : undefined}
           className={`flex flex-col items-center gap-0.5 w-14 py-2 rounded-xl transition-colors ${
-            hasActiveChild ? 'bg-white/10 text-[#5CE0D2]' : 'text-white/65 hover:text-white hover:bg-white/5'
+            hasActiveChild ? 'bg-white/10 text-propyte-brand' : 'text-white/65 hover:text-white hover:bg-white/5'
           }`}
         >
           <MenuIcon size={18} strokeWidth={1.75} />
@@ -157,7 +157,7 @@ export default function Sidebar() {
                   onClick={() => setMoreOpen(false)}
                   aria-current={active ? 'page' : undefined}
                   className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
-                    active ? 'text-[#5CE0D2] bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'
+                    active ? 'text-propyte-brand bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Icon size={16} strokeWidth={1.75} className="shrink-0" />

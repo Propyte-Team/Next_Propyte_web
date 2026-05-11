@@ -94,7 +94,7 @@ export default function ActionsPill() {
 
       <Link
         href={`/${locale}/contacto`}
-        className="inline-flex items-center gap-1.5 h-8 px-3.5 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] text-xs font-semibold rounded-full transition-colors"
+        className="inline-flex items-center gap-1.5 h-8 px-3.5 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-semibold rounded-full transition-colors"
       >
         <Mail size={13} strokeWidth={2} />
         {t('contact')}

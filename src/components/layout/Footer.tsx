@@ -63,7 +63,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
           </div>
           <Link
             href={`/${locale}/contacto`}
-            className="h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-lg transition-colors flex items-center"
+            className="h-11 px-6 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-lg transition-colors flex items-center"
           >
             {t('ctaButton')}
           </Link>
@@ -181,13 +181,13 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               <button
                 type="button"
                 onClick={reopenBanner}
-                className="text-white/60 hover:text-[#5CE0D2] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+                className="text-white/60 hover:text-propyte-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
               >
                 {t('cookieSettings')}
               </button>
               <p className="text-white/60">
                 {t('developedBy')}{' '}
-                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="text-[#5CE0D2] hover:text-white transition-colors">
+                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="text-propyte-brand hover:text-white transition-colors">
                   Web Koi Studio
                 </a>
               </p>
