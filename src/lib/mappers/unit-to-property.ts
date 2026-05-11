@@ -124,7 +124,13 @@ export function mapUnitToProperty(row: UnitRow): Property {
   return {
     id: row.id,
     slug: row.slug,
-    name: row.unit_number ? `${row.development_name || row.name} — ${row.unit_number}` : row.name,
+    // v_units expone `title` (no `name`). Fallback chain defensive: title → name →
+    // development_name → slug → 'Propiedad'. Evita property.name=undefined que
+    // crashea .replace() en ShareDownloadModal, MobileContactBar y tracking.
+    name: (() => {
+      const base = (row.title as string | null) || (row.name as string | null) || row.development_name || row.slug || 'Propiedad';
+      return row.unit_number ? `${row.development_name || base} — ${row.unit_number}` : base;
+    })(),
     developer: row.developer_name || '',
     kind: 'unit',
     parentDevelopmentSlug: row.development_slug || undefined,
