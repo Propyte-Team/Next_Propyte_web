@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface Unit {
   id: string;
@@ -52,11 +53,25 @@ function findRentEstimate(unit: Unit, mlEstimates: MlEstimate[]): number | null 
   return match?.estimated_rent_residencial || match?.estimated_rent_vacacional || null;
 }
 
+// Precio referencial: equivalente USD del precio MXN. Usa price_usd de BD
+// si está disponible (más preciso); si no, calcula con el rate del context.
+function formatReferencialUsd(unit: Unit, rate: number): string {
+  const usd = unit.price_usd && unit.price_usd > 0
+    ? unit.price_usd
+    : unit.price_mxn > 0 ? Math.round(unit.price_mxn / rate) : 0;
+  if (usd <= 0) return '—';
+  return `$${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(usd)} USD`;
+}
+
 export default function UnitModelsTable({ units, mlEstimates, locale }: UnitModelsTableProps) {
   const router = useRouter();
   const t = useTranslations('unitModels');
   const tAvail = useTranslations('availability');
   const tTypes = useTranslations('types');
+  const { rate } = useCurrency();
+  // Aún silencio el lint del param `mlEstimates` por compat de signature externa;
+  // el cálculo de renta queda preservado para futuros usos.
+  void mlEstimates;
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
 
   if (units.length === 0) return null;
@@ -118,13 +133,15 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               <th className="px-4 py-3 text-center">{t('baths')}</th>
               <th className="px-4 py-3 text-right">m²</th>
               <th className="px-4 py-3 text-right">{t('price')}</th>
-              <th className="px-4 py-3 text-right">{t('estRent')}</th>
+              <th className="px-4 py-3 text-right">
+                {locale === 'en' ? 'Ref. price' : 'Precio Ref.'}
+              </th>
               <th className="px-4 py-3 text-center">{t('status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {units.map((unit) => {
-              const rentEst = findRentEstimate(unit, mlEstimates);
+              const referencial = formatReferencialUsd(unit, rate);
               const status = unit.status || 'disponible';
               const href = unitHref(unit);
               const isClickable = !!href;
@@ -172,8 +189,8 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                   <td className="px-4 py-3 text-right font-semibold text-gray-900">
                     {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
                   </td>
-                  <td className="px-4 py-3 text-right text-[#4BCEC0] font-semibold">
-                    {rentEst ? formatPrice(rentEst) : '—'}
+                  <td className="px-4 py-3 text-right text-gray-500 font-medium">
+                    {referencial}
                   </td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 text-2xs font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
@@ -190,7 +207,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {units.map((unit) => {
-          const rentEst = findRentEstimate(unit, mlEstimates);
+          const referencial = formatReferencialUsd(unit, rate);
           const status = unit.status || 'disponible';
           const href = unitHref(unit);
 
@@ -215,10 +232,12 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                 <div className="text-right font-bold text-gray-900">
                   {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
                 </div>
-                {rentEst && (
+                {referencial !== '—' && (
                   <>
-                    <div className="text-gray-600">{t('estRentShort')}</div>
-                    <div className="text-right font-semibold text-[#4BCEC0]">{formatPrice(rentEst)}/mes</div>
+                    <div className="text-gray-600">
+                      {locale === 'en' ? 'Ref. price' : 'Precio Ref.'}
+                    </div>
+                    <div className="text-right text-gray-500 font-medium">{referencial}</div>
                   </>
                 )}
               </div>

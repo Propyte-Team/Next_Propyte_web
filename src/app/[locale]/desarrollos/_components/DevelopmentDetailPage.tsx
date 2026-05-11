@@ -39,6 +39,7 @@ import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
+import { Layers, Tag } from 'lucide-react';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -472,7 +473,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                     <PriceDisplay
                       mxn={property.price_min_mxn || property.price_mxn}
                       variant="dual"
-                      size="lg"
+                      size="xl"
                       showRateNote
                     />
                   </div>
@@ -778,23 +779,39 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               priceMxn={propertyPrice > 0 ? propertyPrice : null}
               areaM2={
                 areaRange
-                  ? areaRange.min // FloatingKeyData no soporta rango — usa el mínimo como representativo
+                  ? areaRange.min
                   : representativeArea ?? null
               }
-              bedrooms={
-                bedRange
-                  ? bedRange.min === bedRange.max
-                    ? String(bedRange.min)
-                    : `${bedRange.min}–${bedRange.max}`
-                  : null
-              }
-              bathrooms={
-                bathRange
-                  ? bathRange.min === bathRange.max
-                    ? String(bathRange.min)
-                    : `${bathRange.min}–${bathRange.max}`
-                  : null
-              }
+              extraItems={[
+                ...(totalUnits ? [{
+                  icon: Layers,
+                  label: locale === 'es' ? 'Unidades' : 'Units',
+                  value: (
+                    <span className="text-sm font-bold text-white">{totalUnits}</span>
+                  ),
+                  key: 'units',
+                }] : []),
+                {
+                  icon: Tag,
+                  label: locale === 'es' ? 'Tipo' : 'Type',
+                  value: (
+                    <span className="text-sm font-bold text-white capitalize">
+                      {mainType.replace(/_/g, ' ')}
+                    </span>
+                  ),
+                  key: 'type',
+                },
+                {
+                  icon: MapPin,
+                  label: locale === 'es' ? 'Ubicación' : 'Location',
+                  value: (
+                    <span className="text-sm font-bold text-white truncate">
+                      {[property.zone, property.state].filter(Boolean).join(' · ')}
+                    </span>
+                  ),
+                  key: 'location',
+                },
+              ]}
               labels={{
                 title: locale === 'es' ? 'Datos clave' : 'Key data',
                 price: locale === 'es' ? 'Precio desde' : 'Price from',

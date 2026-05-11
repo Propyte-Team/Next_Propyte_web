@@ -3,7 +3,7 @@
 import { useCurrency, type Currency } from '@/context/CurrencyContext';
 
 interface PriceDisplayProps {
-  /** Precio en MXN (fuente de verdad). */
+  /** Precio en MXN (fuente de verdad almacenada en BD). */
   mxn: number | string | null | undefined;
   /** Variante visual (default: dual). */
   variant?: 'dual' | 'single' | 'inline';
@@ -13,8 +13,9 @@ interface PriceDisplayProps {
   showRateNote?: boolean;
   /** Sufijo opcional (ej. "/m²") */
   suffix?: string;
-  /** Moneda en que se cotizó originalmente la unidad. Si la activa coincide,
-   *  se etiqueta como (Original); si no, (Referencial). Default: 'MXN'. */
+  /** Moneda en que se cotizó originalmente la unidad. Siempre se muestra ARRIBA
+   *  grande, marcada como (Original). La otra moneda calculada va ABAJO chiquita
+   *  marcada como (Referencial). Default: 'MXN'. */
   originalCurrency?: Currency;
   className?: string;
 }
@@ -22,7 +23,7 @@ interface PriceDisplayProps {
 const SIZE_PRIMARY: Record<NonNullable<PriceDisplayProps['size']>, string> = {
   sm: 'text-sm font-semibold',
   md: 'text-base font-semibold',
-  lg: 'text-xl font-bold',
+  lg: 'text-2xl md:text-3xl font-bold text-[#2C2C2C]',
   xl: 'text-3xl md:text-4xl font-extrabold text-[#2C2C2C]',
 };
 
@@ -34,9 +35,8 @@ const SIZE_SECONDARY: Record<NonNullable<PriceDisplayProps['size']>, string> = {
 };
 
 function formatCurrency(amount: number, currency: Currency): string {
-  // Formato consistente "$X,XXX,XXX MXN" / "$X,XXX,XXX USD". Evita que MXN
-  // salga como "MX$2,502,794" en es-MX (default Intl) y deja la sigla siempre
-  // explícita al final para que el usuario sepa qué moneda mira.
+  // Formato consistente "$X,XXX,XXX MXN" / "$X,XXX,XXX USD" — sigla siempre
+  // explícita al final para que sea claro qué moneda se muestra.
   const num = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(amount);
   return `$${num} ${currency}`;
 }
@@ -50,61 +50,57 @@ export default function PriceDisplay({
   originalCurrency = 'MXN',
   className = '',
 }: PriceDisplayProps) {
-  const { currency, toggleCurrency, rate, rateUpdatedAt } = useCurrency();
+  const { rate, rateUpdatedAt } = useCurrency();
   if (mxn == null) return <span className={className}>—</span>;
   const n = typeof mxn === 'string' ? Number(mxn) : mxn;
   if (!Number.isFinite(n) || n <= 0) return <span className={className}>—</span>;
 
-  const usd = Math.round(n / rate);
-  const primaryAmount = currency === 'MXN' ? n : usd;
-  const secondaryAmount = currency === 'MXN' ? usd : n;
-  const secondaryCurrency: Currency = currency === 'MXN' ? 'USD' : 'MXN';
-  const primaryLabel = `${formatCurrency(primaryAmount, currency)}${suffix ?? ''}`;
-  const secondaryLabel = `${formatCurrency(secondaryAmount, secondaryCurrency)}${suffix ?? ''}`;
+  // n viene en MXN (BD). Si la moneda original es USD, el valor "original"
+  // que el comercial cotizó realmente es n/rate (rounded). Si original es MXN,
+  // el valor original es n directo.
+  const usdValue = Math.round(n / rate);
+  const mxnValue = n;
+  const originalValue = originalCurrency === 'MXN' ? mxnValue : usdValue;
+  const referencialValue = originalCurrency === 'MXN' ? usdValue : mxnValue;
+  const referencialCurrency: Currency = originalCurrency === 'MXN' ? 'USD' : 'MXN';
+  const originalLabel = `${formatCurrency(originalValue, originalCurrency)}${suffix ?? ''}`;
+  const referencialLabel = `${formatCurrency(referencialValue, referencialCurrency)}${suffix ?? ''}`;
 
-  // TC referencial date — usar locale es-MX para consistencia
   const tcDate = new Date(rateUpdatedAt).toLocaleDateString('es-MX', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   });
   const tcNote = `TC ref. Banxico · ${rate.toFixed(2)} MXN/USD · ${tcDate}`;
-  const isOriginal = currency === originalCurrency;
-  const primaryBadge = isOriginal ? 'Original' : 'Referencial';
-  const secondaryBadge = isOriginal ? 'Referencial' : 'Original';
 
   if (variant === 'inline') {
     return (
       <span className={className}>
-        {primaryLabel}{' '}
-        <span className="text-gray-500 text-xs">({secondaryLabel})</span>
+        {originalLabel}{' '}
+        <span className="text-gray-500 text-xs">({referencialLabel})</span>
       </span>
     );
   }
 
   if (variant === 'single') {
-    return <span className={`${SIZE_PRIMARY[size]} ${className}`}>{primaryLabel}</span>;
+    return <span className={`${SIZE_PRIMARY[size]} ${className}`}>{originalLabel}</span>;
   }
 
+  // variant === 'dual' — estático: original SIEMPRE arriba, referencial SIEMPRE
+  // abajo. No clickeable, no responde al toggle global de currency. Se muestran
+  // ambos al mismo tiempo para claridad sin ambigüedad.
   return (
     <div className={`inline-flex flex-col items-baseline ${className}`}>
-      <button
-        type="button"
-        onClick={toggleCurrency}
-        aria-label={`Cambiar a ${secondaryCurrency}`}
-        className="inline-flex flex-col items-baseline text-left hover:opacity-80 transition-opacity cursor-pointer"
-      >
-        <span className={SIZE_PRIMARY[size]}>
-          {primaryLabel}
-          <span className="ml-1.5 text-[10px] font-medium opacity-60 uppercase tracking-wide">
-            ({primaryBadge})
-          </span>
+      <span className={SIZE_PRIMARY[size]}>
+        {originalLabel}
+        <span className="ml-1.5 text-[10px] font-medium opacity-60 uppercase tracking-wide">
+          (Original)
         </span>
-        <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>
-          {secondaryLabel}
-          <span className="ml-1 opacity-70">({secondaryBadge})</span>
-        </span>
-      </button>
+      </span>
+      <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>
+        {referencialLabel}
+        <span className="ml-1 opacity-70">(Referencial)</span>
+      </span>
       {showRateNote && (
         <span className="text-[10px] text-gray-400 mt-0.5 italic">{tcNote}</span>
       )}
