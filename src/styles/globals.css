@@ -797,6 +797,22 @@ html {
           backdrop-filter: blur(18px);
 }
 
+/* ─── Glass cristalino light SMALL — variante con radius 16px para tarjetas
+   chicas (metric cards 2-4 cols, chips, mini-stats). Misma estética glass
+   pero proporcionada para containers <300px. */
+.propyte-card-glass-light-sm {
+  border-radius: 16px;
+  border: 1px solid rgba(11, 28, 30, 0.06);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0  6px 18px 0 rgba(11, 28, 30, 0.05),
+    0  1px 4px 0 rgba(11, 28, 30, 0.03);
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+}
+
 /* ─── Strip glass — variante full-width sin radius para header on-scroll,
    navigation strips, breadcrumb bands. Hereda la estética cristalino light
    pero con border solo en el bottom y radius 0. */

@@ -368,7 +368,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       <AmenityList locale={locale} amenities={devAmenities.length > 0 ? devAmenities : property.amenities} />
 
                       {developerDisplay?.name && (
-                        <div className="bg-gray-50 rounded-2xl p-6">
+                        <div className="propyte-card-glass-light p-6">
                           <h2 className="text-lg font-bold text-gray-900 mb-4">
                             {tProp('developerTitle')}
                           </h2>
@@ -387,7 +387,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}
@@ -405,7 +405,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                             {developerDisplay.slug && (
                               <Link
                                 href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
-                                className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
+                                className="px-4 py-2 bg-white border border-gray-200 hover:border-propyte-brand text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
                               >
                                 {tProp('viewProfile')}
                               </Link>
@@ -502,7 +502,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="sticky top-24 space-y-6">
-              <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 scroll-mt-24">
+              <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   {tProp('interestedUnitQuestion')}
                 </h3>

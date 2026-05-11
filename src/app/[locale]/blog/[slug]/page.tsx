@@ -216,7 +216,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               prose-a:text-[#0F766E] prose-a:no-underline hover:prose-a:underline
               prose-strong:text-[#1A2F3F]
               prose-img:rounded-xl prose-img:shadow-card
-              prose-blockquote:border-[#5CE0D2] prose-blockquote:text-gray-600
+              prose-blockquote:border-propyte-brand prose-blockquote:text-gray-600
               prose-code:bg-gray-100 prose-code:text-[#1A2F3F] prose-code:px-1 prose-code:rounded"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />

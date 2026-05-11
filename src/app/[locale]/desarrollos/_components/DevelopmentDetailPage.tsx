@@ -446,7 +446,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               images={(property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0)}
               alt={property.name}
               badgeTopLeft={
-                <span className="px-3 py-1.5 bg-[#5CE0D2] text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
+                <span className="px-3 py-1.5 bg-propyte-brand text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
               }
             />
 
@@ -536,9 +536,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             </div>
                           )}
                           {derivedAvailable != null && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-[#5CE0D2]/10 rounded-xl text-sm">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-propyte-cyan-100 rounded-xl text-sm">
                               <CheckCircle size={16} className="text-[#0F766E]" />
-                              <span className="text-[#4BCEC0] font-semibold">{derivedAvailable} {tProp('available')}</span>
+                              <span className="text-[#0F766E] font-semibold">{derivedAvailable} {tProp('available')}</span>
                             </div>
                           )}
                           {deliveryDisplay && (
@@ -616,7 +616,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       )}
 
                       {developerDisplay.name && (
-                        <div className="bg-gray-50 rounded-2xl p-6">
+                        <div className="propyte-card-glass-light p-6">
                           <h2 className="text-lg font-bold text-gray-900 mb-4">
                             {tProp('developerTitle')}
                           </h2>
@@ -641,7 +641,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}
@@ -665,7 +665,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             {developerDisplay.slug && (
                               <Link
                                 href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
-                                className="px-4 py-2 bg-white border border-gray-200 hover:border-[#5CE0D2] text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
+                                className="px-4 py-2 bg-white border border-gray-200 hover:border-propyte-brand text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
                               >
                                 {tProp('viewProfile')}
                               </Link>
@@ -765,10 +765,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="sticky top-24 space-y-6">
-            <div id="contact-form" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 scroll-mt-24">
+            <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
               {property.contact_name && (
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5CE0D2] to-[#1A2F3F] flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-propyte-brand to-[#1A2F3F] flex items-center justify-center text-white font-bold text-sm">
                     {property.contact_name.charAt(0)}
                   </div>
                   <div>
@@ -857,7 +857,7 @@ function MetricCard({
   icon, label, value,
 }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4 text-center">
+    <div className="propyte-card-glass-light-sm p-4 text-center">
       <span className="flex justify-center text-[#0F766E] mb-2">{icon}</span>
       <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
       <div className="text-xs text-gray-600 mt-0.5">{label}</div>

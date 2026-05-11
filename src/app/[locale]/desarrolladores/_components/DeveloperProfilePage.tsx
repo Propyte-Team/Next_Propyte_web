@@ -33,7 +33,7 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
   return (
     <Link
       href={`/${locale}/desarrollos/${dev.slug}`}
-      className="group block bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-[#5CE0D2]/60 shadow-sm hover:shadow-md transition-all duration-200"
+      className="group block propyte-card-glass-light propyte-card-hover-glow overflow-hidden"
     >
       <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
         {img ? (
@@ -49,7 +49,7 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
           </div>
         )}
         {stageLabel && (
-          <span className="absolute top-3 left-3 px-2 py-0.5 bg-[#5CE0D2] text-[#1A2332] text-2xs font-bold rounded-full uppercase tracking-wider">
+          <span className="absolute top-3 left-3 px-2 py-0.5 bg-propyte-brand text-[#1A2332] text-2xs font-bold rounded-full uppercase tracking-wider">
             {stageLabel}
           </span>
         )}
@@ -161,7 +161,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A2332] leading-tight">{developer.name}</h1>
                 {developer.verified && (
-                  <span className="px-2.5 py-0.5 text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/20 rounded-full uppercase tracking-wider">
+                  <span className="px-2.5 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                     {locale === 'es' ? 'Verificado' : 'Verified'}
                   </span>
                 )}
@@ -238,7 +238,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href={`/${locale}/contacto?desarrollador=${encodeURIComponent(developer.name)}`}
-              className="px-6 py-3 bg-[#5CE0D2] text-[#1A2332] font-bold rounded-xl text-sm hover:bg-[#4DD4C8] transition-colors"
+              className="px-6 py-3 bg-propyte-brand text-[#1A2332] font-bold rounded-xl text-sm hover:bg-propyte-cyan-200 transition-colors"
             >
               {locale === 'es' ? 'Contactar asesor' : 'Contact advisor'}
             </Link>
