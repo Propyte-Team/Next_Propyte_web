@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Building2, ChevronDown, Mail } from 'lucide-react';
-import CurrencyToggle from '@/components/ui/CurrencyToggle';
 import AreaToggle from '@/components/ui/AreaToggle';
 
 export default function ActionsPill() {
@@ -49,12 +48,9 @@ export default function ActionsPill() {
 
       <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
 
-      {/* MXN/USD toggle — segmented */}
-      <CurrencyToggle />
-
-      <span aria-hidden="true" className="w-px h-4 bg-gray-200" />
-
-      {/* m²/sqft toggle — área */}
+      {/* m²/sqft toggle — área. El toggle MXN/USD fue removido (2026-05-11):
+          ahora el precio muestra ambas monedas estáticamente (Original arriba,
+          Referencial abajo) sin necesidad de seleccionar moneda activa. */}
       <AreaToggle />
 
       <span aria-hidden="true" className="w-px h-4 bg-gray-200" />

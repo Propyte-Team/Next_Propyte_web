@@ -22,7 +22,6 @@ import {
   Megaphone,
 } from 'lucide-react';
 import { isNavActive } from '@/lib/nav/isActive';
-import CurrencyToggle from '@/components/ui/CurrencyToggle';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
 interface MobileMenuProps {
@@ -165,14 +164,8 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
               })}
 
               {/* Currency */}
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <p className="px-3 text-xs text-white/65 uppercase tracking-wider mb-2">
-                  {t('currency')}
-                </p>
-                <div className="px-3">
-                  <CurrencyToggle tone="dark" />
-                </div>
-              </div>
+              {/* CurrencyToggle removido 2026-05-11: precio ahora estático
+                  Original/Referencial sin selector activo. */}
 
               {/* Language */}
               <div className="mt-4 pt-4 border-t border-white/10">
