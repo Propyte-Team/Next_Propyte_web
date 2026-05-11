@@ -7,6 +7,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getOrgStructure, getPageContent } from '@/lib/supabase/queries';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
+import { getCompanyStats, localizedStatLabel } from '@/lib/hub-content';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
@@ -59,22 +60,32 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
   ]);
 
   const supabase = createPublicSupabaseClient();
-  const [nodes, content] = supabase
+  const [nodes, content, hubStats] = supabase
     ? await Promise.all([
         getOrgStructure(supabase),
         getPageContent(supabase, 'nosotros/estructura', locale),
+        getCompanyStats('estructura'),
       ])
-    : [[], {} as Record<string, string>];
+    : [[], {} as Record<string, string>, []];
 
   const heroTitle = content['hero.title'] ?? t('structureTitle');
   const heroSubtitle = content['hero.subtitle'] ?? t('structureSubtitle');
+
+  // Hub override: si trae al menos 1 stat, sustituye TODOS los slots (no mezcla
+  // hardcoded con hub para evitar inconsistencia). Si no, fallback a i18n.
+  const statValues = hubStats.length > 0
+    ? hubStats.slice(0, 4).map((s) => s.value)
+    : [t('stat1Value'), t('stat2Value'), t('stat3Value'), t('stat4Value')];
+  const statLabels = hubStats.length > 0
+    ? hubStats.slice(0, 4).map((s) => localizedStatLabel(s, locale))
+    : [t('stat1Label'), t('stat2Label'), t('stat3Label'), t('stat4Label')];
 
   const fallback = {
     philosophyTitle: t('structurePhilosophyTitle'),
     philosophyText: t('structurePhilosophyText'),
     philosophyHighlight: t('structurePhilosophyHighlight'),
-    statValues: [t('stat1Value'), t('stat2Value'), t('stat3Value'), t('stat4Value')],
-    statLabels: [t('stat1Label'), t('stat2Label'), t('stat3Label'), t('stat4Label')],
+    statValues,
+    statLabels,
   };
 
   return (

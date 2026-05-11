@@ -40,15 +40,21 @@ interface UneteFaqItem {
   q: string;
   a: string;
 }
+interface UneteStatOverride {
+  value: string;
+  label: string;
+}
 interface UneteHubData {
   videoUrl: string | null;
   testimonials: UneteTestimonialItem[];
   faqs: UneteFaqItem[];
+  statsOverride: UneteStatOverride[] | null;
 }
 const UneteHubContext = createContext<UneteHubData>({
   videoUrl: null,
   testimonials: [],
   faqs: [],
+  statsOverride: null,
 });
 
 // ============================================================
@@ -594,13 +600,15 @@ function Testimonials() {
 // ============================================================
 function StatsSection() {
   const t = useTranslations('unete');
+  const hub = useContext(UneteHubContext);
   const ICONS = [Users, DollarSign, MapPin, Building2, Award, Zap] as const;
   const stats = ICONS.map((Icon, i) => {
     const n = i + 1;
+    const override = hub.statsOverride?.[i];
     return {
       icon: Icon,
-      value: t(`stat${n}Value` as 'stat1Value'),
-      label: t(`stat${n}Label` as 'stat1Label'),
+      value: override?.value ?? t(`stat${n}Value` as 'stat1Value'),
+      label: override?.label ?? t(`stat${n}Label` as 'stat1Label'),
     };
   });
 
@@ -951,7 +959,12 @@ function FinalCTA() {
 // MAIN PAGE
 // ============================================================
 export default function UnetePageContent({ hubData }: { hubData?: UneteHubData }) {
-  const value = hubData ?? { videoUrl: null, testimonials: [], faqs: [] };
+  const value = hubData ?? {
+    videoUrl: null,
+    testimonials: [],
+    faqs: [],
+    statsOverride: null,
+  };
   return (
     <UneteHubContext.Provider value={value}>
       <div>

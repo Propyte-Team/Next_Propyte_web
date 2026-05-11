@@ -157,3 +157,49 @@ export function localized<T extends Record<string, unknown>>(
   const v = obj[key];
   return typeof v === "string" ? v : null;
 }
+
+// =============================================================================
+// Company stats — Fase B.2
+// =============================================================================
+// Speckit: Propyte_hub/specs/dynamic-content/spec.md §Fase B.2
+// Endpoint: GET /api/public/company-stats?context=<...> → { items: HubCompanyStat[] }
+
+export type HubCompanyStatContext =
+  | "home"
+  | "quienes_somos"
+  | "estructura"
+  | "unete"
+  | "built";
+
+export interface HubCompanyStat {
+  id: string;
+  context: HubCompanyStatContext;
+  key: string;
+  value: string;
+  label_es: string;
+  label_en: string;
+  sublabel_es: string | null;
+  sublabel_en: string | null;
+  sort_order: number;
+}
+
+export async function getCompanyStats(
+  context: HubCompanyStatContext,
+): Promise<HubCompanyStat[]> {
+  const r = await fetchJson<{ items: HubCompanyStat[] }>(
+    `/api/public/company-stats?context=${context}`,
+  );
+  return r?.items ?? [];
+}
+
+// Resolver label + sublabel localizados de un stat. Devuelve string vacío si no hay match.
+export function localizedStatLabel(stat: HubCompanyStat, locale: string): string {
+  return locale === "en" ? stat.label_en : stat.label_es;
+}
+
+export function localizedStatSublabel(
+  stat: HubCompanyStat,
+  locale: string,
+): string | null {
+  return locale === "en" ? stat.sublabel_en : stat.sublabel_es;
+}

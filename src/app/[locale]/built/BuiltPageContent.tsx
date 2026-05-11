@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
@@ -9,6 +9,12 @@ import {
   Compass, Pencil, FileCheck, Wrench, KeyRound
 } from 'lucide-react';
 import { submitForm } from '@/lib/submitForm';
+
+interface BuiltStatOverride {
+  value: string;
+  label: string;
+}
+const BuiltStatsContext = createContext<BuiltStatOverride[] | null>(null);
 
 // ── Scroll-reveal wrapper ───────────────────────────
 function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
@@ -146,12 +152,20 @@ function ServicesGrid() {
 // ─────────────────────────────────────────────────────
 function ImpactStats() {
   const t = useTranslations('built');
-  const stats = [
-    { value: t('stat1Value'), label: t('stat1Label') },
-    { value: t('stat2Value'), label: t('stat2Label') },
-    { value: t('stat3Value'), label: t('stat3Label') },
-    { value: t('stat4Value'), label: t('stat4Label') },
-  ];
+  const override = useContext(BuiltStatsContext);
+  const stats = override && override.length > 0
+    ? [
+        { value: override[0]?.value ?? t('stat1Value'), label: override[0]?.label ?? t('stat1Label') },
+        { value: override[1]?.value ?? t('stat2Value'), label: override[1]?.label ?? t('stat2Label') },
+        { value: override[2]?.value ?? t('stat3Value'), label: override[2]?.label ?? t('stat3Label') },
+        { value: override[3]?.value ?? t('stat4Value'), label: override[3]?.label ?? t('stat4Label') },
+      ]
+    : [
+        { value: t('stat1Value'), label: t('stat1Label') },
+        { value: t('stat2Value'), label: t('stat2Label') },
+        { value: t('stat3Value'), label: t('stat3Label') },
+        { value: t('stat4Value'), label: t('stat4Label') },
+      ];
 
   return (
     <section className="bg-[#1A2F3F] border-t border-b border-white/10">
@@ -529,18 +543,24 @@ function FinalCTA() {
 // ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
-export default function BuiltPageContent() {
+export default function BuiltPageContent({
+  statsOverride = null,
+}: {
+  statsOverride?: BuiltStatOverride[] | null;
+} = {}) {
   return (
-    <div className="bg-[#0F1923]">
-      <EditorialHero />
-      <PhilosophyStatement />
-      <ServicesGrid />
-      <ImpactStats />
-      <PortfolioShowcase />
-      <ProcessTimeline />
-      <TeamExpertise />
-      <ConsultationForm />
-      <FinalCTA />
-    </div>
+    <BuiltStatsContext.Provider value={statsOverride}>
+      <div className="bg-[#0F1923]">
+        <EditorialHero />
+        <PhilosophyStatement />
+        <ServicesGrid />
+        <ImpactStats />
+        <PortfolioShowcase />
+        <ProcessTimeline />
+        <TeamExpertise />
+        <ConsultationForm />
+        <FinalCTA />
+      </div>
+    </BuiltStatsContext.Provider>
   );
 }

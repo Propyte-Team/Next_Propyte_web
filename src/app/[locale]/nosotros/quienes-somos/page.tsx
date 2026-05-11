@@ -4,6 +4,7 @@ import Link from 'next/link';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
+import { getCompanyStats, localizedStatLabel } from '@/lib/hub-content';
 import {
   Building2,
   Users,
@@ -56,10 +57,21 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
     notFound();
   }
   const t = await getTranslations({ locale, namespace: 'about' });
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, hubStats] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getCompanyStats('quienes_somos'),
   ]);
+
+  // Hub override: si trae stats, mapeamos al shape del hero {v, l};
+  // si no, fallback a los i18n hardcoded.
+  const heroStats = hubStats.length > 0
+    ? hubStats.slice(0, 3).map((s) => ({ v: s.value, l: localizedStatLabel(s, locale) }))
+    : [
+        { v: '50+',  l: t('heroStatDevelopers') },
+        { v: '300+', l: t('heroStatBrokers') },
+        { v: '700+', l: t('heroStatDevelopments') },
+      ];
 
   // Bento grid (mission section): 4 items, alternates large/small/small/large.
   const missionCards = [
@@ -189,11 +201,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 className="mt-10 grid grid-cols-3 gap-px bg-white/5 rounded-lg overflow-hidden propyte-hero-rise"
                 style={{ animationDelay: '460ms' }}
               >
-                {[
-                  { v: '50+',  l: t('heroStatDevelopers') },
-                  { v: '300+', l: t('heroStatBrokers') },
-                  { v: '700+', l: t('heroStatDevelopments') },
-                ].map((s) => (
+                {heroStats.map((s) => (
                   <div key={s.l} className="bg-[#0F1923] px-2 py-4 text-center">
                     <dt className="accent-mono text-2xl md:text-3xl font-medium text-[#5CE0D2]">
                       {s.v}
