@@ -63,8 +63,15 @@ export default function Hero({ stats }: HeroProps) {
   const titleHead = lastTwoWordsMatch ? lastTwoWordsMatch[1] : titleRaw;
   const titleAccent = lastTwoWordsMatch ? lastTwoWordsMatch[2] : '';
 
+  // C4 Hero performance — preload del poster image como recurso LCP cuando existe.
+  // Next.js coloca este <link> en <head> automáticamente. Sin esto, el browser
+  // descubre la imagen del poster al parsear el <video>, después de varios bytes
+  // del HTML, perdiendo tiempo crítico para Largest Contentful Paint.
   return (
     <section className="propyte-hero hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
+      {imageUrl && (
+        <link rel="preload" as="image" href={imageUrl} fetchPriority="high" />
+      )}
       {videoUrl ? (
         <video
           className="absolute inset-0 w-full h-full object-cover"
@@ -72,7 +79,7 @@ export default function Hero({ stats }: HeroProps) {
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           poster={imageUrl}
         >
           <source src={videoUrl} type="video/mp4" />
