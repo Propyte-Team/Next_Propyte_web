@@ -133,8 +133,13 @@ export function mapUnitToProperty(row: UnitRow): Property {
       city: row.city || '',
       zone: row.zone || row.neighborhood || row.city || '',
       state: row.state || '',
-      lat: row.lat ?? null,
-      lng: row.lng ?? null,
+      // Supabase JS serializa NUMERIC como string para preservar precisión.
+      // Google Maps requiere number; coerción explícita evita crash en
+      // <Map defaultCenter={{lat, lng}}>. Tras migration 013, v_units expone
+      // lat/lng (antes era undefined → null), entonces esta coerción es
+      // requisito para que rendere la sección de mapa.
+      lat: row.lat != null ? Number(row.lat) : null,
+      lng: row.lng != null ? Number(row.lng) : null,
       address: row.address || '',
     },
     price: {
