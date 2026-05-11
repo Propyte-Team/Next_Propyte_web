@@ -37,6 +37,8 @@ import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
+import PriceDisplay from '@/components/ui/PriceDisplay';
+import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -464,9 +466,15 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 {(property.price_min_mxn || property.price_mxn) > 0 ? (
                   <div>
                     <span className="text-sm text-gray-600">{tProp('startingFrom')}</span>
-                    <div className="text-3xl font-bold text-gray-900">
-                      {formatPrice(property.price_min_mxn || property.price_mxn)}
-                    </div>
+                    {/* Precio dual MXN/USD con TC ref Banxico debajo.
+                        Desarrollos cotizan en MXN por default (no exponen
+                        moneda_principal a nivel agregado). */}
+                    <PriceDisplay
+                      mxn={property.price_min_mxn || property.price_mxn}
+                      variant="dual"
+                      size="lg"
+                      showRateNote
+                    />
                   </div>
                 ) : <div />}
                 <ShareDownloadModal data={shareData} locale={locale} />
@@ -835,6 +843,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         </div>
 
         <SimilarListings items={similar} kind="development" locale={locale} />
+
+        {/* Aviso legal sobre TC referencial — al final del contenido principal. */}
+        <PriceDisclaimer />
       </div>
 
       <MobileContactBar
