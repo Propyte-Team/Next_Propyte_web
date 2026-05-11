@@ -55,9 +55,9 @@
     "presale": "Pre-sale"
   },
   "featured": {
-    "title": "Featured properties",
-    "subtitle": "Handpicked by our market analysis team",
-    "viewAll": "View all properties",
+    "title": "Featured developments in pre-sale · Tulum, Playa del Carmen and Mérida",
+    "subtitle": "Curated by the Propyte team with documented SOP-3.2 validation",
+    "viewAll": "View All Properties",
     "loading": "Loading featured developments…",
     "from": "From",
     "photos": "photos",
@@ -66,20 +66,20 @@
     "roiAnnual": "ROI {value}% annual"
   },
   "trending": {
-    "title": "Real estate market data",
-    "subtitle": "Riviera Maya — real-time",
+    "title": "Riviera Maya real estate market: ROI, appreciation and demand 2026",
+    "subtitle": "Riviera Maya — updated weekly with public comparables",
     "stat1Label": "Average annual ROI",
     "stat2Label": "Pre-sale vs delivery appreciation",
     "stat3Label": "International buyers",
     "stat4Label": "Annual demand growth",
     "zonesTitle": "Highest appreciation zones in Riviera Maya",
-    "footnoteWithData": "Data based on Data Management analysis and rental comparables. Updated weekly.",
+    "footnoteWithData": "Data based on public comparables from real estate portals and rental analysis. Updated weekly.",
     "footnoteNoData": "Sources: estimates based on Riviera Maya market analysis. Past performance does not guarantee future results.",
     "occupancy": "Occupancy",
     "adr": "ADR"
   },
   "whyPropyte": {
-    "title": "Why Propyte?",
+    "title": "Why investors choose Propyte for Riviera Maya",
     "subtitle": "Bilingual team, strategic validation of every development, and a documented process from first contact to closing.",
     "feature1Title": "Data before enthusiasm",
     "feature1Desc": "Every development goes through strategic validation with documented criteria (legal clarity, schedule reliability, comparable pricing, build quality).",
@@ -229,7 +229,7 @@
   },
   "joinTeam": {
     "title": "Want to join the Propyte team?",
-    "cta": "Join the Team"
+    "cta": "See the Career Plan"
   },
   "roiSimulator": {
     "eyebrow": "Financial Simulator",
@@ -274,7 +274,7 @@
         "name": "Fernando T.",
         "city": "Querétaro",
         "rating": 5,
-        "text": "I invested in two apartments thanks to the Cap Rate analysis the platform offers. Data Management data gave me confidence to make the decision."
+        "text": "I invested in two apartments thanks to the Cap Rate analysis the platform offers. Market comparables gave me confidence to make the decision."
       },
       {
         "name": "Laura S.",
@@ -326,7 +326,7 @@
   },
   "developerBanner": {
     "title": "Supercharge your development's sales",
-    "cta": "Request Proposal"
+    "cta": "Request Commercial Proposal"
   },
   "blog": {
     "listingTitle": "Blog",
@@ -343,7 +343,7 @@
     "relatedTitle": "Related articles",
     "paginationPrev": "Previous",
     "paginationNext": "Next",
-    "title": "Recent articles",
+    "title": "Real estate investment analysis and guides · Riviera Maya",
     "viewAll": "View all articles",
     "share": "Share:",
     "copyLink": "Copy link",
@@ -365,7 +365,10 @@
     "newsletterPlaceholder": "you@example.com",
     "newsletterCta": "Subscribe",
     "newsletterSuccess": "Done! You're subscribed.",
-    "newsletterError": "Something went wrong. Try again."
+    "newsletterError": "Something went wrong. Try again.",
+    "homeEmptyTitle": "Coming soon: monthly market analysis and investment guides",
+    "homeEmptyBody": "We are preparing editorial content on real estate investment in Riviera Maya. Subscribe to the newsletter to get it directly in your inbox when it's published.",
+    "homeEmptyCta": "Subscribe to the newsletter"
   },
   "marketplace": {
     "title": "Properties",
@@ -1258,7 +1261,7 @@
     "stat4Value": "Growing",
     "stat4Label": "Open positions",
     "teamTitle": "Our sales team",
-    "teamSubtitle": "Certified advisors with deep knowledge of the Riviera Maya market.",
+    "teamSubtitle": "Propyte advisors with deep knowledge of the Riviera Maya market.",
     "teamIntro": "Propyte's commercial team operates from the Real Estate Lab on 5th Avenue, Playa del Carmen, with coverage in Tulum through Nativa Tulum. Every advisor is registered with SEDETUS and trained under our Commercial Playbook.",
     "teamMore": "+ 5 active advisors in Playa del Carmen and Tulum",
     "teamCta": "Want to meet your advisor?",
@@ -1546,7 +1549,7 @@
     "strFactorRevparDesc": "Revenue Per Available Room, combining occupancy and rate into a single metric of revenue potential.",
     "strFactorCompetition": "Competition (20%)",
     "strFactorCompetitionDesc": "Inverse supply saturation score. Fewer active listings relative to demand results in a higher score.",
-    "strFooter": "Data sourced from Data Management with monthly updates. Scores are recalculated on the 1st of each month.",
+    "strFooter": "Data based on public comparables from real estate portals with monthly updates. Scores are recalculated on the 1st of each month.",
     "ltrSourcesTitle": "Data Sources (7)",
     "ltrSource1": "Inmuebles24 — Largest Mexican real estate portal",
     "ltrSource2": "Segundamano — Classified listings marketplace",
@@ -1616,7 +1619,7 @@
     "q4": "What is a fideicomiso (bank trust)?",
     "a4": "A legal instrument where a Mexican bank holds the property on behalf of the foreign buyer. It grants full rights of use, rental, sale and inheritance. It renews automatically every 50 years.",
     "q5": "What ROI can I expect in the Riviera Maya?",
-    "a5": "ROI varies by strategy: pre-sale appreciation 20-40% (2-3 years), residential rental 5-8% annually, and vacation rental 8-14% annually. We use real Data Management data and market comparables to estimate returns.",
+    "a5": "ROI varies by strategy: pre-sale appreciation 20-40% (2-3 years), residential rental 5-8% annually, and vacation rental 8-14% annually. We use public comparables from real estate portals and market benchmarks to estimate ranges. Ranges are referential, not guaranteed.",
     "q6": "Is residential or vacation rental better?",
     "a6": "It depends on your profile. Residential rental offers stable income with less management effort. Vacation rental generates more income but requires active management or a property manager (15-25% commission).",
     "q7": "How is Cap Rate calculated?",
@@ -1626,13 +1629,13 @@
     "q9": "What is developer financing?",
     "a9": "A payment plan where you pay the developer directly in monthly installments during construction, typically at 0% interest. Requires a 20-30% down payment with the balance covered in 12-36 months.",
     "q10": "How much can I earn renting on Airbnb in Tulum?",
-    "a10": "A 1-bedroom apartment in Tulum can generate $15,000-$30,000 MXN/month in vacation rental at 60-75% occupancy. A 2-bedroom can reach $25,000-$50,000 MXN/month. We use Data Management data for precise estimates.",
+    "a10": "A 1-bedroom apartment in Tulum can generate $15,000-$30,000 MXN/month in vacation rental at 60-75% occupancy. A 2-bedroom can reach $25,000-$50,000 MXN/month. Figures are referential and based on public comparables from real estate portals; actual returns vary by zone, management quality and season.",
     "q11": "Do I need a property manager?",
     "a11": "For vacation rental, it's highly recommended. A property manager handles check-in/check-out, cleaning, maintenance and guest communication. Typical commission is 15-25% of gross income.",
     "q12": "Does Propyte charge buyers?",
     "a12": "No. Our service is free for buyers and investors. We work with developers who cover our fees as part of their sales strategy.",
     "q13": "Where does the market data come from?",
-    "a13": "Our analyses combine Data Management data (occupancy, ADR, RevPAR), rental comparables from real estate portals and proprietary machine learning models. Data is updated weekly.",
+    "a13": "Our analyses combine public comparables from real estate portals (occupancy, ADR, RevPAR), rental benchmarks and proprietary internal models. Data is updated weekly.",
     "q14": "How do I filter properties by my budget?",
     "a14": "On /propiedades use the min/max price, city, property type and stage (preventa/construction/ready-to-deliver) filters. Results update in real time. You can save frequent searches in your profile.",
     "ctaStillHave": "Still have questions?",
@@ -2189,7 +2192,7 @@
   "dataManagement": {
     "marketTitle": "Vacation rental market",
     "updated": "Updated",
-    "marketSubtitle": "Short-term rental performance from Data Management market data.",
+    "marketSubtitle": "Short-term rental performance from public comparables of real estate portals.",
     "currentOccupancy": "Current occupancy",
     "avg12m": "Avg 12m",
     "currentAdr": "Current ADR",
@@ -2237,7 +2240,7 @@
     "h1": "Profitability Map",
     "subtitle": "Compare occupancy, nightly rates and competition across zones before investing",
     "methodology": "Methodology",
-    "methodologyText": "Zone Intelligence Scores (0-100) combine five weighted components: rental yield (30%), occupancy rate (25%), ADR growth (20%), supply pressure (15%), and market liquidity (10%). Data sources include Data Management vacation rental metrics and 140K+ rental comparables from 8+ portals. Scores are updated weekly."
+    "methodologyText": "Zone Intelligence Scores (0-100) combine five weighted components: rental yield (30%), occupancy rate (25%), ADR growth (20%), supply pressure (15%), and market liquidity (10%). Data sources include 140K+ public rental comparables from 8+ real estate portals. Scores are updated weekly."
   },
   "geoAnalysis": {
     "location": "Location",
@@ -2305,7 +2308,7 @@
   "leadMagnet": {
     "freeReport": "FREE REPORT",
     "title": "Top 10 Developments with Highest ROI 2026",
-    "description": "Get our exclusive analysis of the highest-performing real estate investments in Mexico's Riviera Maya. Based on real Data Management data, rental comparables, and market projections.",
+    "description": "Get our exclusive analysis of real estate investments in Mexico's Riviera Maya. Based on public comparables from real estate portals and referential market projections.",
     "checkEmail": "Check your email!",
     "checkEmailDesc": "We've sent the report to your inbox.",
     "name": "Name",

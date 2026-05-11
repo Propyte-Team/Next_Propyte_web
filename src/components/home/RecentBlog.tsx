@@ -1,13 +1,15 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Clock } from 'lucide-react';
+import { ArrowRight, Clock, FileText, Mail } from 'lucide-react';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts } from '@/lib/supabase/queries';
 
 interface RecentBlogProps {
   locale: string;
 }
+
+const MIN_POSTS_FOR_GRID = 3;
 
 export default async function RecentBlog({ locale }: RecentBlogProps) {
   const t = await getTranslations({ locale, namespace: 'blog' });
@@ -17,7 +19,34 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
     ? await getBlogPosts(supabase, { locale, limit: 3, page: 1 })
     : { posts: [] };
 
-  if (!posts.length) return null;
+  // B7: si posts < 3, render placeholder con CTA newsletter en lugar de ocultar.
+  // Comunica intención editorial sin claims engañosos sobre contenido inexistente.
+  if (posts.length < MIN_POSTS_FOR_GRID) {
+    return (
+      <section className="py-16 md:py-20 bg-white">
+        <div className="max-w-3xl mx-auto px-4 md:px-6">
+          <div className="propyte-card-glass-light p-8 md:p-12 text-center border-2 border-dashed border-[#A2F9FF]/40 rounded-2xl">
+            <div className="w-14 h-14 mx-auto mb-5 bg-[#A2F9FF]/20 rounded-2xl flex items-center justify-center">
+              <FileText size={28} strokeWidth={1.5} className="text-[#0D9488]" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-4 leading-snug">
+              {t('homeEmptyTitle')}
+            </h2>
+            <p className="text-base text-gray-700 leading-relaxed mb-8 max-w-xl mx-auto">
+              {t('homeEmptyBody')}
+            </p>
+            <Link
+              href={`/${locale}/blog`}
+              className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
+            >
+              <Mail size={16} strokeWidth={1.75} />
+              {t('homeEmptyCta')}
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-16 md:py-20">

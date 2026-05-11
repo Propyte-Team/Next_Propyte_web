@@ -17,7 +17,7 @@ export default function TerminosContent({ locale }: { locale: string }) {
       </p>
 
       <h2>{pickLang(locale, '1. Nature of the service', '1. Naturaleza del servicio')}</h2>
-      <p>{pickLang(locale, 'Propyte operates as a real estate marketplace and information platform. We facilitate the connection between users interested in real estate investments and developers, property managers, and certified advisors.', 'Propyte opera como un marketplace inmobiliario y plataforma de información. Facilitamos la conexión entre usuarios interesados en inversiones inmobiliarias y desarrolladores, gestores y asesores certificados.')}</p>
+      <p>{pickLang(locale, 'Propyte operates as a real estate marketplace and information platform. We facilitate the connection between users interested in real estate investments and developers, property managers, and Propyte advisors.', 'Propyte opera como un marketplace inmobiliario y plataforma de información. Facilitamos la conexión entre usuarios interesados en inversiones inmobiliarias y desarrolladores, gestores y asesores Propyte.')}</p>
       <p>
         <strong>{pickLang(locale, 'Important: ', 'Importante: ')}</strong>
         {pickLang(locale, 'Propyte does not directly own the properties listed nor process payment transactions. The final commercial relationship is established between you and the corresponding developer/seller.', 'Propyte no es propietaria directa de las propiedades listadas ni procesa transacciones de pago. La relación comercial final se establece entre tú y el desarrollador/vendedor correspondiente.')}

@@ -55,9 +55,9 @@
     "presale": "Preventa"
   },
   "featured": {
-    "title": "Propiedades destacadas",
-    "subtitle": "Seleccionadas por nuestro equipo de análisis de mercado",
-    "viewAll": "Ver todas las propiedades",
+    "title": "Desarrollos destacados en preventa · Tulum, Playa del Carmen y Mérida",
+    "subtitle": "Curados por el equipo Propyte con validación SOP-3.2 documentada",
+    "viewAll": "Ver Todas las Propiedades",
     "loading": "Cargando desarrollos destacados…",
     "from": "Desde",
     "photos": "fotos",
@@ -66,20 +66,20 @@
     "roiAnnual": "ROI {value}% anual"
   },
   "trending": {
-    "title": "Datos del mercado inmobiliario",
-    "subtitle": "Riviera Maya — actualizado en tiempo real",
+    "title": "Mercado inmobiliario Riviera Maya: ROI, plusvalía y demanda 2026",
+    "subtitle": "Riviera Maya — actualizado semanalmente con comparables públicos",
     "stat1Label": "ROI promedio anual",
     "stat2Label": "Plusvalía preventa vs entrega",
     "stat3Label": "Compradores internacionales",
     "stat4Label": "Crecimiento demanda anual",
     "zonesTitle": "Zonas con mayor plusvalía en Riviera Maya",
-    "footnoteWithData": "Datos basados en análisis de Manejo de Datos y comparables de renta. Actualizado semanalmente.",
+    "footnoteWithData": "Datos basados en comparables públicos de portales inmobiliarios y análisis de renta. Actualizado semanalmente.",
     "footnoteNoData": "Fuentes: datos estimados basados en análisis de mercado de la Riviera Maya. Rendimientos pasados no garantizan resultados futuros.",
     "occupancy": "Ocupación",
     "adr": "ADR"
   },
   "whyPropyte": {
-    "title": "¿Por qué Propyte?",
+    "title": "Por qué inversionistas eligen Propyte para Riviera Maya",
     "subtitle": "Equipo bilingüe, validación estratégica de cada desarrollo y proceso documentado desde el contacto hasta la escrituración.",
     "feature1Title": "Datos antes que entusiasmo",
     "feature1Desc": "Cada desarrollo pasa por validación estratégica con criterios documentados (claridad legal, fiabilidad de plazos, precio comparable, calidad constructiva).",
@@ -229,7 +229,7 @@
   },
   "joinTeam": {
     "title": "¿Quieres ser parte del equipo Propyte?",
-    "cta": "Únete al Equipo"
+    "cta": "Conoce el Plan de Carrera"
   },
   "roiSimulator": {
     "eyebrow": "Simulador Financiero",
@@ -274,7 +274,7 @@
         "name": "Fernando T.",
         "city": "Querétaro",
         "rating": 5,
-        "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los datos de Manejo de Datos me dieron confianza para tomar la decisión."
+        "text": "Invertí en dos departamentos gracias al análisis de Cap Rate que ofrece la plataforma. Los comparables del mercado me dieron confianza para tomar la decisión."
       },
       {
         "name": "Laura S.",
@@ -326,7 +326,7 @@
   },
   "developerBanner": {
     "title": "Potencia la comercialización de tu desarrollo",
-    "cta": "Solicitar Propuesta"
+    "cta": "Solicitar Propuesta Comercial"
   },
   "blog": {
     "listingTitle": "Blog",
@@ -343,7 +343,7 @@
     "relatedTitle": "Artículos relacionados",
     "paginationPrev": "Anterior",
     "paginationNext": "Siguiente",
-    "title": "Artículos recientes",
+    "title": "Análisis y guías de inversión inmobiliaria · Riviera Maya",
     "viewAll": "Ver todos los artículos",
     "share": "Compartir:",
     "copyLink": "Copiar enlace",
@@ -365,7 +365,10 @@
     "newsletterPlaceholder": "tu@correo.com",
     "newsletterCta": "Suscribirse",
     "newsletterSuccess": "¡Listo! Te suscribiste correctamente.",
-    "newsletterError": "Hubo un problema. Inténtalo de nuevo."
+    "newsletterError": "Hubo un problema. Inténtalo de nuevo.",
+    "homeEmptyTitle": "Próximamente: análisis mensual de mercado y guías de inversión",
+    "homeEmptyBody": "Estamos preparando contenido editorial sobre inversión inmobiliaria en Riviera Maya. Suscríbete al newsletter para recibirlo directo en tu correo cuando se publique.",
+    "homeEmptyCta": "Suscribirme al newsletter"
   },
   "marketplace": {
     "title": "Propiedades",
@@ -1258,7 +1261,7 @@
     "stat4Value": "Creciendo",
     "stat4Label": "Posiciones abiertas",
     "teamTitle": "Nuestro equipo comercial",
-    "teamSubtitle": "Asesores certificados con conocimiento profundo del mercado de la Riviera Maya.",
+    "teamSubtitle": "Asesores Propyte con conocimiento profundo del mercado de la Riviera Maya.",
     "teamIntro": "El equipo comercial de Propyte opera desde el Real Estate Lab en 5ta Avenida, Playa del Carmen, con cobertura en Tulum a través de Nativa Tulum. Cada asesor está registrado ante SEDETUS y capacitado bajo nuestro Playbook Comercial.",
     "teamMore": "+ 5 asesores activos en Playa del Carmen y Tulum",
     "teamCta": "¿Quieres conocer a tu asesor?",
@@ -1546,7 +1549,7 @@
     "strFactorRevparDesc": "Ingreso por Habitación Disponible, combinando ocupación y tarifa en una sola métrica de potencial de ingresos.",
     "strFactorCompetition": "Competencia (20%)",
     "strFactorCompetitionDesc": "Puntuación inversa de saturación de oferta. Menos listings activos relativos a la demanda resultan en mayor puntuación.",
-    "strFooter": "Datos provenientes de Manejo de Datos con actualizaciones mensuales. Los scores se recalculan el 1ero de cada mes.",
+    "strFooter": "Datos basados en comparables públicos de portales inmobiliarios con actualizaciones mensuales. Los scores se recalculan el 1ero de cada mes.",
     "ltrSourcesTitle": "Fuentes de datos (7)",
     "ltrSource1": "Inmuebles24 — Portal inmobiliario más grande de México",
     "ltrSource2": "Segundamano — Marketplace de anuncios clasificados",
@@ -1616,7 +1619,7 @@
     "q4": "¿Qué es un fideicomiso bancario?",
     "a4": "Es un instrumento legal donde un banco mexicano mantiene la propiedad a nombre del comprador extranjero. Te otorga derechos completos de uso, renta, venta y herencia. Se renueva cada 50 años automáticamente.",
     "q5": "¿Qué ROI puedo esperar en la Riviera Maya?",
-    "a5": "El ROI varía según la estrategia: plusvalía en preventa 20-40% (2-3 años), renta residencial 5-8% anual, y renta vacacional 8-14% anual. Usamos datos reales de Manejo de Datos y comparables del mercado para estimar rendimientos.",
+    "a5": "El ROI varía según la estrategia: plusvalía en preventa 20-40% (2-3 años), renta residencial 5-8% anual, y renta vacacional 8-14% anual. Usamos comparables públicos de portales inmobiliarios y benchmarks de mercado para estimar rangos. Los rangos son referenciales, no garantizados.",
     "q6": "¿Qué es mejor: renta residencial o vacacional?",
     "a6": "Depende de tu perfil. La renta residencial ofrece ingresos estables con menor esfuerzo de gestión. La vacacional genera más ingresos pero requiere administración activa o un property manager (15-25% de comisión).",
     "q7": "¿Cómo se calcula el Cap Rate?",
@@ -1626,13 +1629,13 @@
     "q9": "¿Qué es el financiamiento directo del desarrollador?",
     "a9": "Es un plan de pago donde pagas directamente al desarrollador en mensualidades durante la construcción, típicamente a 0% de interés. Requiere un enganche del 20-30% y el saldo se cubre en 12-36 meses.",
     "q10": "¿Cuánto puedo ganar rentando en Airbnb en Tulum?",
-    "a10": "Un departamento de 1 recámara en Tulum puede generar entre $15,000-$30,000 MXN/mes en renta vacacional con ocupación del 60-75%. Un 2 recámaras puede alcanzar $25,000-$50,000 MXN/mes. Usamos datos de Manejo de Datos para estimaciones precisas.",
+    "a10": "Un departamento de 1 recámara en Tulum puede generar entre $15,000-$30,000 MXN/mes en renta vacacional con ocupación del 60-75%. Un 2 recámaras puede alcanzar $25,000-$50,000 MXN/mes. Las cifras son referenciales y se basan en comparables públicos de portales inmobiliarios; los rendimientos reales varían por zona, calidad de gestión y temporada.",
     "q11": "¿Necesito un administrador de propiedades?",
     "a11": "Para renta vacacional, es altamente recomendable. Un property manager se encarga de check-in/check-out, limpieza, mantenimiento y comunicación con huéspedes. La comisión típica es 15-25% del ingreso bruto.",
     "q12": "¿Propyte cobra comisión a los compradores?",
     "a12": "No. Nuestro servicio es gratuito para compradores e inversionistas. Trabajamos con desarrolladores que cubren nuestros honorarios como parte de su estrategia de venta.",
     "q13": "¿De dónde salen los datos de mercado?",
-    "a13": "Nuestros análisis combinan datos de Manejo de Datos (ocupación, ADR, RevPAR), comparables de renta de portales inmobiliarios, y modelos de machine learning propios. Los datos se actualizan semanalmente.",
+    "a13": "Nuestros análisis combinan comparables públicos de portales inmobiliarios (ocupación, ADR, RevPAR), benchmarks de renta y modelos internos propios. Los datos se actualizan semanalmente.",
     "q14": "¿Cómo filtro propiedades según mi presupuesto?",
     "a14": "En /propiedades usa los filtros de precio mínimo/máximo, ciudad, tipo de propiedad y etapa (preventa/construcción/entrega inmediata). Los resultados se actualizan en tiempo real. Puedes guardar búsquedas frecuentes en tu perfil.",
     "ctaStillHave": "¿Aún tienes preguntas?",
@@ -2189,7 +2192,7 @@
   "dataManagement": {
     "marketTitle": "Mercado de renta vacacional",
     "updated": "Actualizado",
-    "marketSubtitle": "Desempeño de renta corta según datos de Manejo de Datos.",
+    "marketSubtitle": "Desempeño de renta corta según comparables públicos de portales inmobiliarios.",
     "currentOccupancy": "Ocupación actual",
     "avg12m": "Prom. 12m",
     "currentAdr": "ADR actual",
@@ -2237,7 +2240,7 @@
     "h1": "Mapa de Rentabilidad",
     "subtitle": "Compara ocupación, ingreso por noche y competencia entre zonas antes de invertir",
     "methodology": "Metodología",
-    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen métricas de Manejo de Datos y 140K+ comparables de renta de 8+ portales. Los scores se actualizan semanalmente."
+    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente."
   },
   "geoAnalysis": {
     "location": "Ubicación",
@@ -2305,7 +2308,7 @@
   "leadMagnet": {
     "freeReport": "REPORTE GRATUITO",
     "title": "Top 10 Desarrollos con Mayor ROI 2026",
-    "description": "Obtén nuestro análisis exclusivo de las inversiones inmobiliarias de mayor rendimiento en la Riviera Maya. Basado en datos reales de Manejo de Datos, comparables de renta y proyecciones de mercado.",
+    "description": "Obtén nuestro análisis exclusivo de las inversiones inmobiliarias en la Riviera Maya. Basado en comparables públicos de portales inmobiliarios y proyecciones referenciales de mercado.",
     "checkEmail": "¡Revisa tu correo!",
     "checkEmailDesc": "Te hemos enviado el reporte a tu bandeja de entrada.",
     "name": "Nombre",
