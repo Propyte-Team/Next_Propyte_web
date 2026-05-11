@@ -107,7 +107,7 @@ export default async function MarketplacePage({ params }: { params: Promise<{ lo
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: tBC('properties') }]}
       />
-      <MarketplaceContent properties={properties} />
+      <MarketplaceContent properties={properties} showMap />
     </>
   );
 }

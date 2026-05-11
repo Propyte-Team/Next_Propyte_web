@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { MarkerClusterer } from '@googlemaps/markerclusterer';
-import type { Marker } from '@googlemaps/markerclusterer';
+import type { Cluster, Marker } from '@googlemaps/markerclusterer';
 import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
 import { formatPriceShort } from '@/lib/formatters';
@@ -16,38 +16,51 @@ type PropertyWithCoords = Property & {
 interface MapViewProps {
   properties: Property[];
   onPropertyClick?: (property: Property) => void;
+  /**
+   * Callback invocado cuando el usuario clickea un cluster pin "+N".
+   * Recibe los property.id de las unidades agrupadas para que el listado
+   * pueda filtrar a solo esas unidades. (Decisión arquitectónica 2026-05-11.)
+   */
+  onClusterClick?: (propertyIds: string[]) => void;
 }
 
 const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
 const DEFAULT_ZOOM = 9;
-const CLUSTER_THRESHOLD = 20;
 
 // ─────────────────────────────────────────────────────
-// Custom renderer for cluster markers (matches MapCluster.tsx style)
+// Custom renderer para cluster markers — pin "+N" con brand cyan.
+// onClusterClickRef se inyecta para que el handler de click pueda
+// emitir los IDs de las propiedades al parent en el momento del click,
+// sin re-renderear el clusterer en cada cambio de callback.
 // ─────────────────────────────────────────────────────
 function createClusterRenderer() {
   return {
-    render({ count, position }: { count: number; position: google.maps.LatLng }) {
-      const size = count > 20 ? 48 : count > 10 ? 40 : 32;
-      const fontSize = count > 20 ? 14 : 12;
+    render({ count, position }: Cluster) {
+      const size = count > 20 ? 52 : count > 10 ? 44 : 36;
+      const fontSize = count > 20 ? 14 : count > 10 ? 13 : 12;
 
       const el = document.createElement('div');
       el.style.cssText = `
         width: ${size}px; height: ${size}px;
         border-radius: 50%;
-        background: #1A2F3F;
-        color: white;
-        font-weight: 700;
+        background: #A2F9FF;
+        color: #0F1923;
+        font-weight: 800;
         font-size: ${fontSize}px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        box-shadow:
+          0 -1px 1px 0 rgba(255, 255, 255, 0.55) inset,
+          0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
+          0  4px 12px rgba(162, 249, 255, 0.45),
+          0  2px 6px rgba(11, 28, 30, 0.20);
         border: 2px solid white;
         cursor: pointer;
-        transition: transform 0.15s;
+        transition: transform 0.15s ease;
+        font-variant-numeric: tabular-nums;
       `;
-      el.textContent = String(count);
+      el.textContent = `+${count}`;
       el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.1)'; });
       el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
 
@@ -66,15 +79,25 @@ function createClusterRenderer() {
 function MapContent({
   properties,
   onPropertyClick,
+  onClusterClick,
 }: {
   properties: PropertyWithCoords[];
   onPropertyClick?: (property: Property) => void;
+  onClusterClick?: (propertyIds: string[]) => void;
 }) {
   const map = useMap();
   const [selected, setSelected] = useState<PropertyWithCoords | null>(null);
   const clusterer = useRef<MarkerClusterer | null>(null);
   const markersRef = useRef<Record<string, Marker>>({});
-  const enableClustering = properties.length > CLUSTER_THRESHOLD;
+  const markerToIdRef = useRef<WeakMap<Marker, string>>(new WeakMap());
+  // Ref-mirror del callback para que el handler del clusterer (registrado
+  // una sola vez) siempre invoque la versión más reciente sin re-suscribir.
+  const onClusterClickRef = useRef(onClusterClick);
+  onClusterClickRef.current = onClusterClick;
+
+  // Activamos clustering siempre que haya 2+ markers — incluye el caso de
+  // varias unidades en el mismo edificio (mismo lat/lng). Decisión 2026-05-11.
+  const enableClustering = properties.length >= 2;
 
   const handleMarkerClick = useCallback(
     (property: PropertyWithCoords) => {
@@ -91,6 +114,17 @@ function MapContent({
       clusterer.current = new MarkerClusterer({
         map,
         renderer: createClusterRenderer(),
+        onClusterClick: (event, cluster) => {
+          // Prevenimos zoom-in default y emitimos IDs al parent para filtrar
+          // el listado. Si no hay handler, dejamos pasar el comportamiento
+          // estándar de zoom-in.
+          if (!onClusterClickRef.current) return;
+          event.stop?.();
+          const ids = (cluster.markers || [])
+            .map((m) => markerToIdRef.current.get(m))
+            .filter((id): id is string => typeof id === 'string');
+          if (ids.length > 0) onClusterClickRef.current(ids);
+        },
       });
     }
     return () => {
@@ -115,7 +149,10 @@ function MapContent({
 
       if (marker) {
         markersRef.current[key] = marker;
+        markerToIdRef.current.set(marker, key);
       } else {
+        const existing = markersRef.current[key];
+        if (existing) markerToIdRef.current.delete(existing);
         delete markersRef.current[key];
       }
     },
@@ -164,9 +201,9 @@ function MapContent({
 }
 
 // ─────────────────────────────────────────────────────
-// Main MapView (public API unchanged)
+// Main MapView
 // ─────────────────────────────────────────────────────
-export default function MapView({ properties, onPropertyClick }: MapViewProps) {
+export default function MapView({ properties, onPropertyClick, onClusterClick }: MapViewProps) {
   const t = useTranslations('marketplace');
   const [error, setError] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -224,7 +261,11 @@ export default function MapView({ properties, onPropertyClick }: MapViewProps) {
         disableDefaultUI={false}
         className="w-full h-full"
       >
-        <MapContent properties={validProperties} onPropertyClick={onPropertyClick} />
+        <MapContent
+          properties={validProperties}
+          onPropertyClick={onPropertyClick}
+          onClusterClick={onClusterClick}
+        />
       </Map>
     </APIProvider>
   );

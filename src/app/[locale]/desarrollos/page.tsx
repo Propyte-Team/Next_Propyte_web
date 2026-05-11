@@ -103,7 +103,6 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
         properties={properties}
         titleKey="h1Desarrollos"
         subtitleKey="subtitleDesarrollos"
-        showMap
       />
     </>
   );

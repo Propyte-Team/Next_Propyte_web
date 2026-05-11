@@ -268,6 +268,8 @@
     "removeFilter": "Remove filter",
     "moreFilters": "More filters",
     "mobileFiltersButton": "Filters",
+    "clusterFilterActive": "Showing {count} units in this spot",
+    "clusterFilterClear": "View all",
     "sortBy": "Sort by",
     "sortRelevance": "Relevance",
     "sortPriceAsc": "Price: low to high",

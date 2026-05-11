@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Map, List } from 'lucide-react';
+import { Map, List, X } from 'lucide-react';
 import { useFilters } from '@/hooks/useFilters';
 import type { Property } from '@/types/property';
 import { useIsMobile } from '@/hooks/useMediaQuery';
@@ -24,8 +24,9 @@ interface MarketplaceContentProps {
   /** Override i18n key with explicit string (used by taxonomy pages). */
   customSubtitle?: string;
   /**
-   * Show the split map+list layout (legacy /desarrollos) vs single-col grid
-   * (/propiedades — decisión speckit cristalino-sitio-wide, T1.1). Default false.
+   * Split map+list layout. Decisión arquitectónica 2026-05-11:
+   * /propiedades → showMap=true (cluster pin "+N" filtra el listado);
+   * /desarrollos + taxonomies → showMap=false (grid Ficha 02 full-width).
    */
   showMap?: boolean;
 }
@@ -42,14 +43,30 @@ export default function MarketplaceContent({
   const isMobile = useIsMobile();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('list');
+  // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
+  // guardamos los IDs de las unidades agrupadas y restringimos el listado.
+  const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
   const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy } = useFilters(properties);
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
 
+  // Cualquier cambio en los filtros normales invalida el cluster filter
+  // (sino quedaría "pegado" mostrando IDs que ya no califican).
+  useEffect(() => {
+    setClusterFilter(null);
+  }, [filters.search, filters.city, filters.type, filters.priceMin, filters.priceMax, filters.roiMin, filters.stage, filters.usage]);
+
+  // Lista final visible en el sidebar: filtered intersect clusterFilter (si activo).
+  const displayed = useMemo(() => {
+    if (!clusterFilter || clusterFilter.length === 0) return filtered;
+    const set = new Set(clusterFilter);
+    return filtered.filter((p) => set.has(p.id));
+  }, [filtered, clusterFilter]);
+
   // Debounced GA4 `search` event — fires 600ms after the user stops
-  // tweaking filters. Skips the initial mount (no signal worth recording
-  // for a default landing) and skips the case where no filters are active.
+  // tweaking filters. Skips the initial mount and the case where no
+  // filters are active.
   const initialMount = useRef(true);
   useEffect(() => {
     if (initialMount.current) {
@@ -85,7 +102,8 @@ export default function MarketplaceContent({
     return () => window.clearTimeout(timeout);
   }, [filters, filtered.length]);
 
-  // Layout split map+list (legacy /desarrollos) vs grid full-width (/propiedades).
+  // Layout split map+list (legacy + decisión 2026-05-11 para /propiedades)
+  // vs grid full-width (decisión 2026-05-11 para /desarrollos + taxonomies).
   if (showMap) {
     return (
       <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
@@ -100,8 +118,25 @@ export default function MarketplaceContent({
           onFilterChange={updateFilter}
           onOpenAdvanced={() => setShowAdvanced(true)}
           advancedOpen={showAdvanced}
-          resultCount={filtered.length}
+          resultCount={displayed.length}
         />
+
+        {/* Cluster filter chip — visible cuando el user clickeó un "+N" */}
+        {clusterFilter && clusterFilter.length > 0 && (
+          <div className="bg-propyte-cyan-100 border-b border-propyte-brand/30 px-4 md:px-6 py-2 flex items-center gap-3">
+            <span className="text-sm font-semibold text-[#0F766E]">
+              {t('clusterFilterActive', { count: displayed.length })}
+            </span>
+            <button
+              type="button"
+              onClick={() => setClusterFilter(null)}
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-propyte-brand/40 hover:border-propyte-brand text-xs font-semibold text-[#0F766E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+              aria-label={t('clusterFilterClear')}
+            >
+              {t('clusterFilterClear')} <X size={12} strokeWidth={2.5} />
+            </button>
+          </div>
+        )}
 
         {/* Mobile toggle */}
         {isMobile && (
@@ -125,22 +160,22 @@ export default function MarketplaceContent({
           {!isMobile ? (
             <>
               <div className="w-[60%] h-full">
-                <MapView properties={filtered} />
+                <MapView properties={filtered} onClusterClick={setClusterFilter} />
               </div>
               <div className="w-[40%] h-full border-l">
-                <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
+                <PropertyList properties={displayed} sortBy={sortBy} onSortChange={setSortBy} />
               </div>
             </>
           ) : (
             <>
               {mobileView === 'map' ? (
                 <div className="w-full h-full relative">
-                  <MapView properties={filtered} />
-                  <MobileBottomSheet properties={filtered} />
+                  <MapView properties={filtered} onClusterClick={(ids) => { setClusterFilter(ids); setMobileView('list'); }} />
+                  <MobileBottomSheet properties={displayed} />
                 </div>
               ) : (
                 <div className="w-full h-full overflow-y-auto">
-                  <PropertyList properties={filtered} sortBy={sortBy} onSortChange={setSortBy} />
+                  <PropertyList properties={displayed} sortBy={sortBy} onSortChange={setSortBy} />
                 </div>
               )}
             </>
@@ -160,7 +195,7 @@ export default function MarketplaceContent({
     );
   }
 
-  // Grid full-width — /propiedades sin mapa (estilo Ficha 02 del home).
+  // Grid full-width — /desarrollos + taxonomies sin mapa (estilo Ficha 02).
   return (
     <div className="propyte-marketplace-grid-canvas">
       {/* SEO heading */}

@@ -235,10 +235,24 @@ Para cada ruta de P2/P3/P4 el patrón es:
 
 1. **`/built`** sin mapa. ✓
 2. **Draft badge legales** se mantiene como warning semántico (amber Tailwind palette). Sin migración brand. ✓
-3. **`/promociones` heroAccent`** — el frontend NO fuerza fallback. Se espera a que el Hub actualice `accent_color` en la fila `getCta('promociones_hero')`. Task asignada al `task_manager.md` de **Propyte_hub** (no parte de este speckit). ✓
+3. **`/promociones` heroAccent`** — Hub actualizó `accent_color` de `#F5A623` → `#A2F9FF` via MCP el 2026-05-11. Cerrado. ✓
 4. **Mapa `/zonas/[slug]`** — se conserva. ✓
 5. **`/unete`** — recibe glass-refactor completo (no solo cleanup). Sobrescribe la excepción HERO-SITE del SPECKIT-METAMORFOSIS §0. ✓
 6. **Header glass strip** — solo desktop scroll. Mobile sin strip. ✓
+
+## 9.b — Amendment arquitectónico 2026-05-11 (post-Pass 1)
+
+**Decisión Luis (revierte T1.1 original):**
+- `/desarrollos` → **grid full-width sin mapa** (estilo Ficha 02). Mapa removido. Taxonomies (`/desarrollos/cancun`, `/tipo/[type]`, `/etapa/[stage]`) heredan grid.
+- `/propiedades` → **split map+list con mapa** (recupera la vista que originalmente quitamos en T1.1).
+- **Nuevo feature: cluster pin "+N" en `/propiedades`** — cuando ≥2 unidades coinciden o son cercanas en el mapa, mostrar pin con count "+N". Click en cluster → filtra el listado a solo esas unidades + chip "Mostrando N unidades en este punto · [×]" para limpiar.
+
+**Racional:** Los desarrollos son entidades editorial/feature (1 punto cada uno) — el mapa aporta poco valor. Las unidades individuales son densas en zonas/edificios — el mapa con cluster filter es la mejor herramienta de navegación.
+
+**Tareas derivadas:**
+- T1.1b — Swap `showMap` entre `/propiedades` (true) y `/desarrollos` + taxonomies (false).
+- T1.8 — MapView: bajar CLUSTER_THRESHOLD, renderer "+N", `onClusterClick(ids)` callback.
+- T1.9 — MarketplaceContent: state `clusterFilter`, chip "limpiar", filter `filtered` por IDs.
 
 ---
 

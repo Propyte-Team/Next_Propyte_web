@@ -105,7 +105,6 @@ export default async function TaxonomyDevelopmentsPage({
         properties={properties}
         customTitle={title}
         customSubtitle={subtitle}
-        showMap
       />
     </>
   );
