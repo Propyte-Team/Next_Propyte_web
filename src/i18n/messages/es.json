@@ -101,6 +101,65 @@
     "aud3Cta": "Únete al Equipo",
     "audienceHeading": "Para quién es Propyte"
   },
+  "nosotrosTeaser": {
+    "eyebrow": "Quiénes somos",
+    "title": "Comercializamos bienes raíces con datos y sin presión",
+    "paragraph1": "Desde 2017 acompañamos a inversionistas en Riviera Maya y Yucatán con un equipo bilingüe que entiende fideicomiso, plusvalía y rendimiento real — no promesas vacías.",
+    "paragraph2": "Cada desarrollo que listamos pasa por una validación estratégica documentada (Scorecard SOP-3.2). Lo que ves es lo que decides.",
+    "stat1": "8+ años en plaza",
+    "stat2": "Bilingüe ES/EN",
+    "stat3": "Validación SOP-3.2 documentada",
+    "cta": "Conoce al equipo"
+  },
+  "metodologiaTeaser": {
+    "eyebrow": "Metodología Propyte",
+    "title": "Cinco criterios antes de listar un desarrollo",
+    "subtitle": "Cada propiedad publicada pasa por la validación estratégica documentada del Scorecard SOP-3.2. Si un criterio no se cumple, el desarrollo no entra al portafolio.",
+    "criterion1Title": "Claridad legal",
+    "criterion1Desc": "Escritura, fideicomiso, anticorrupción y RFC del desarrollador.",
+    "criterion2Title": "Fiabilidad de plazos",
+    "criterion2Desc": "Historial de entregas previas, contratos y garantías documentadas.",
+    "criterion3Title": "Precio comparable",
+    "criterion3Desc": "Análisis de mercado por zona y benchmarks de comparables.",
+    "criterion4Title": "Calidad constructiva",
+    "criterion4Desc": "Visitas, especificaciones, materiales y supervisión del avance.",
+    "criterion5Title": "Vendibilidad",
+    "criterion5Desc": "Análisis de demanda real, ocupación esperada y reventa.",
+    "cta": "Ver metodología completa"
+  },
+  "processInfographic": {
+    "eyebrow": "Proceso de compra Propyte",
+    "title": "De la primera llamada a la escrituración",
+    "placeholderText": "Infografía en preparación — la próxima actualización incluirá los pasos del proceso documentado paso a paso, desde el primer contacto hasta la entrega de llaves.",
+    "placeholderHint": "Espacio reservado"
+  },
+  "dondeEstamos": {
+    "eyebrow": "Dónde estamos",
+    "title": "Cobertura en Riviera Maya y Yucatán",
+    "subtitle": "Operamos desde Playa del Carmen y cubrimos los principales mercados de la costa caribe y la península.",
+    "labTitle": "Real Estate Lab",
+    "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
+    "labHours": "Lunes a viernes, 9:00 – 18:00",
+    "labCta": "Agendar visita al Lab",
+    "zonesTitle": "Zonas que cubrimos",
+    "zone1": "Tulum",
+    "zone2": "Playa del Carmen",
+    "zone3": "Cancún",
+    "zone4": "Mérida",
+    "zone5": "Bacalar"
+  },
+  "homeFAQ": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que más nos preguntan inversionistas",
+    "q1": "¿Un extranjero puede comprar propiedad en Tulum o Playa del Carmen?",
+    "a1": "Sí. La zona costera de Quintana Roo está en zona restringida federal, por lo que un extranjero compra a través de un fideicomiso bancario por 50 años (renovable). El proceso es estándar y un asesor Propyte te acompaña en cada paso.",
+    "q2": "¿Cuánto cuesta el cierre legal de una propiedad en Riviera Maya?",
+    "a2": "Los gastos de cierre suelen rondar entre 6% y 8% del valor de la propiedad e incluyen impuesto de adquisición, notario, fideicomiso (si aplica) y permisos. Las cifras varían por estado y por el tipo de propiedad — pedimos un análisis personalizado al asesor.",
+    "q3": "¿Cuál es el ROI realista de un Airbnb en Tulum?",
+    "a3": "El ROI depende de zona, calidad del producto, gestión y temporada. No publicamos cifras puntuales sin metodología — preferimos discutir rangos honestos con un asesor que conozca tu inversión específica y los comparables actuales.",
+    "q4": "¿Qué pasa si compro en preventa y el desarrollo se retrasa?",
+    "a4": "El contrato debe especificar penalidades por retraso y opciones de salida. Validamos esto en el criterio de Fiabilidad de Plazos antes de listar el desarrollo. Si compras y hay un retraso, el contrato es tu protección documentada."
+  },
   "joinTeam": {
     "title": "¿Quieres ser parte del equipo Propyte?",
     "cta": "Únete al Equipo"
@@ -166,13 +225,13 @@
     "comingSoon": "Próximamente"
   },
   "howItWorks": {
-    "title": "Cómo funciona",
+    "title": "Cómo invertir con Propyte: Explora, analiza, decide",
     "step1Title": "Explora",
-    "step1Desc": "Navega nuestro marketplace con mapa interactivo y filtros inteligentes",
+    "step1Desc": "Navega el marketplace con mapa interactivo y filtros por zona, tipo, presupuesto y etapa.",
     "step2Title": "Analiza",
-    "step2Desc": "Usa el simulador financiero para proyectar ROI, enganche y mensualidades",
+    "step2Desc": "Usa el simulador financiero con tus propios supuestos y compara el desarrollo contra benchmarks reales.",
     "step3Title": "Decide",
-    "step3Desc": "Contacta a un asesor certificado con toda la información que necesitas"
+    "step3Desc": "Agenda una llamada con un asesor Propyte. Sin presión, con todos los documentos del Scorecard SOP-3.2 a la mano."
   },
   "valueProp": {
     "investorsTitle": "Para Inversionistas",
@@ -750,7 +809,7 @@
     "cookieSettings": "Configurar cookies",
     "rights": "Todos los derechos reservados.",
     "ctaTitle": "¿Listo para invertir en la Riviera Maya?",
-    "ctaSubtitle": "Habla con un asesor certificado y recibe un análisis personalizado",
+    "ctaSubtitle": "Habla con un asesor Propyte y recibe un análisis personalizado",
     "ctaTitleBuilt": "¿Listo para construir tu proyecto?",
     "ctaSubtitleBuilt": "Diseño, construcción y entrega llave en mano con Propyte Built.",
     "ctaTitleUnete": "¿Listo para crecer con nosotros?",
@@ -1370,7 +1429,7 @@
     "methodologyDisclaimer": "Las estimaciones no constituyen asesoría financiera.",
     "advisorTitle": "¿Necesitas un análisis personalizado?",
     "advisorDesc": "Nuestros asesores en Playa del Carmen y Tulum conocen cada zona.",
-    "advisorCta": "Hablar con un asesor certificado",
+    "advisorCta": "Hablar con un asesor Propyte",
     "currencyMxn": "MXN",
     "currencyUsd": "USD",
     "kpiZones": "Zonas",
@@ -1382,7 +1441,7 @@
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
     "openFreeCalculator": "Abrir calculadora gratuita",
-    "talkToAdvisor": "Hablar con un asesor certificado"
+    "talkToAdvisor": "Hablar con un asesor Propyte"
   },
   "zoneAnalytics": {
     "scoreUnavailable": "Score no disponible aún",

@@ -166,28 +166,74 @@ El spec optimiza el sitio para soportar los 5 pilares sin inventar contenido fal
 
 #### Bloque B — Reorganización mensajes
 
-- [ ] **B1. Orden Home — alineado al Manual §4.2** *(Manual UX/UI v1.0 §4.2 es canónico)* — Editar `src/app/[locale]/page.tsx`. **Resolución de Q2:** el Manual prescribe el orden y ambas audiencias secundarias (Desarrolladores #2 y Asesores Potenciales #4) coexisten como banners separados. Orden canónico:
+- [ ] **B1. Home rebuild — Manual §4.2 + ampliación E-E-A-T 2026** *(Decisión Luis 2026-05-11)* — El orden canónico del Manual §4.2 se mantiene como **base estructural** pero se amplía con 4 secciones nuevas de certidumbre porque el Manual fue escrito en marzo 2026 sin alinear a estándares YMYL/E-E-A-T sept-2025. El Bloque A dejó el Home delgado; este rebuild agrega sustancia sin tocar paleta ni tratamiento visual (solo decide **slots por sección** — dark/claro/glass — para alternancia rítmica).
 
-  | # | Sección Manual | Componente | Decisión |
-  |---|---|---|---|
-  | 1 | Hero | `Hero` | mantener (con cambios A1, A6); estilo intacto |
-  | 2 | Propiedades Destacadas | `FeaturedProperties` | mantener |
-  | 3 | Cómo Funciona (Explora → Analiza → Decide) | `HowItWorks` | **reactivar componente existente** (ver §4.1 — ya está en `src/components/home/`, no renderizado en `page.tsx`); revisar copy y conectar. Sin rediseño visual. |
-  | 4 | Propuesta de Valor (3 columnas) | `WhyPropyte` (versión 3-features) | reescribir per A2 |
-  | 5 | Datos del Mercado | `TrendingMarket` / `MarketData` | mantener, con fuente citada |
-  | 6 | Desarrolladores Banner | `DeveloperBanner` | mantener |
-  | 7 | Únete al Equipo Banner | `JoinTeamBanner` | mantener |
-  | 8 | Blog Reciente | `RecentBlog` | mantener, render condicional (ver B7) |
+  **Orden Home post-rebuild:**
 
-  **Componentes a retirar del Home** (no listados en Manual §4.2):
-  - `Testimonials` → retirar (ver B3).
-  - `LeadMagnet` → migrar a `/blog` o `/propiedades` como sidebar/footer-CTA (decisión Luis durante B).
-  - `ExploreCategories` → migrar a `/propiedades` como navegación inicial de tipo (decisión consciente: aporta filtrado por type con data viva en BD, pero el Manual lo ubica fuera del Home).
-  - `AppDownloadBanner` → migrar al cierre de `/propiedades` o a página dedicada `/simulador` cuando esté lista.
+  | # | Sección | Componente | Slot visual | Origen |
+  |---|---|---|---|---|
+  | 1 | Hero | `Hero` (post-A) | dark | Manual §4.2 #1 |
+  | 2 | Nosotros teaser | **NUEVO** `NosotrosTeaser` | claro | Ampliación E-E-A-T |
+  | 3 | Propiedades destacadas | `FeaturedProperties` | claro | Manual §4.2 #2 |
+  | 4 | Metodología teaser | **NUEVO** `MetodologiaTeaser` (5 criterios SOP-3.2) | dark | Ampliación E-E-A-T |
+  | 5 | Proceso de compra | **NUEVO** `ProcessInfographicPlaceholder` (espacio reservado para infografía Propyte — copy de Luis pendiente) | claro | Ampliación Luis 2026-05-11 |
+  | 6 | Cómo funciona | `HowItWorks` (reactivar — ya existe) | claro o glass | Manual §4.2 #3 |
+  | 7 | Por qué Propyte | `WhyPropyte` (3 features post-A2) | claro `#F4F6F8` | Manual §4.2 #4 |
+  | 8 | Datos del mercado | `TrendingMarket` / `MarketData` | dark | Manual §4.2 #5 |
+  | 9 | Dónde estamos | **NUEVO** `DondeEstamos` (Real Estate Lab + zonas cubiertas) | claro | Ampliación E-E-A-T |
+  | 10 | Logos desarrolladores | `DeveloperLogos` (excepción E-E-A-T) | claro | Spec v2.1 |
+  | 11 | FAQ del Home | **NUEVO** `HomeFAQ` (4 Q&A + JSON-LD FAQPage) | claro | Adelanto Bloque C2 |
+  | 12 | Banner desarrolladores | `DeveloperBanner` | dark | Manual §4.2 #6 |
+  | 13 | Banner únete al equipo | `JoinTeamBanner` | dark | Manual §4.2 #7 |
+  | 14 | Blog reciente | `RecentBlog` (condicional B7) | claro | Manual §4.2 #8 |
+  | 15 | Footer | `Footer` (post-A3a) | dark | Layout |
 
-  **Excepción documentada:** `DeveloperLogos` **se preserva** en el Home aunque no esté en Manual §4.2. Justificación: aporta sustento E-E-A-T real (filtra por `verified=true` en BD, son partners verificables) y es la única prueba social legítima disponible hasta dic-2026 (Manual §7.1). Ubicación sugerida: entre #7 JoinTeamBanner y #8 RecentBlog. Confirmar con Luis durante B1.
+  **Componentes retirados del Home** (no listados en Manual §4.2 ni ampliación):
+  - `Testimonials` → retirar (B3, Manual §7.1).
+  - `LeadMagnet` → migrar a `/blog` o `/propiedades` (decisión Q11).
+  - `ExploreCategories` → migrar a `/propiedades` como nav inicial de tipo (Q11).
+  - `AppDownloadBanner` → migrar al cierre de `/propiedades` o a `/simulador` futuro (Q11).
+  - `ValueProposition` → retirar (queda redundante con WhyPropyte 3-features).
 
-  **No se rediseñan visualmente** los componentes que permanecen.
+  **Slots visuales — decisión "solo slots" (Luis 2026-05-11)**: la paleta brand (#A2F9FF, navy `#1A2F3F`, aztec `#0F1923`, dark900 `#0B1C1E`, dark600 `#132B2E`, light `#F4F6F8`) **no se toca**. Cada sección decide solo si su fondo es dark/claro/glass para alternancia rítmica que da estructura visual sin rediseño. Las secciones nuevas reutilizan utilities existentes (`propyte-card-glass-light`, `propyte-glass-pill`, tokens cyan-100/200).
+
+  **Justificación documental**: Manual §4.2 sigue siendo base. La ampliación queda registrada en memoria `project_next_propyte_propyte_canon.md` como excepción documentada cuando se requiere certidumbre YMYL adicional. No desautoriza el Manual.
+
+- [ ] **B1.1 NosotrosTeaser** *(nueva sección — Ampliación E-E-A-T)* — Crear `src/components/home/NosotrosTeaser.tsx`. Slot: claro. Copy:
+  - Eyebrow: "Quiénes somos"
+  - Título: "Comercializamos bienes raíces con datos y sin presión"
+  - Descripción (2 párrafos): equipo bilingüe + años en plaza (de Manual/Playbook) + qué hacemos diferente (validación estratégica de cada desarrollo, asesoría consultiva, transparencia documentada)
+  - 3 mini-stats (sin cifras inventadas — solo verificables): "8+ años en plaza", "Bilingüe ES/EN", "Validación SOP-3.2 documentada"
+  - CTA: "Conoce al equipo" → `/equipo` (creado en B4)
+  - Sin testimoniales (Manual §7.1)
+
+- [ ] **B1.2 MetodologiaTeaser** *(nueva sección — Ampliación E-E-A-T)* — Crear `src/components/home/MetodologiaTeaser.tsx`. Slot: dark. Los 5 criterios del Scorecard SOP-3.2:
+  1. **Claridad legal** — escritura, fideicomiso, anticorrupción
+  2. **Fiabilidad de plazos** — historial del desarrollador, contratos
+  3. **Precio comparable** — análisis de mercado por zona
+  4. **Calidad constructiva** — visitas, especificaciones, materiales
+  5. **Vendibilidad** — análisis de demanda y reventa
+  - Eyebrow: "Metodología Propyte"
+  - Título: "Cinco criterios antes de listar un desarrollo"
+  - Subtitle breve explicando que cada criterio es validado por el equipo legal/comercial
+  - 5 cards horizontales (1 línea de descripción cada una)
+  - CTA: "Ver metodología completa" → `/metodologia` (creado en B4)
+
+- [ ] **B1.3 ProcessInfographicPlaceholder** *(espacio reservado)* — Crear `src/components/home/ProcessInfographic.tsx` como placeholder. Slot: claro. Contenido provisional:
+  - Eyebrow: "Proceso de compra Propyte"
+  - Título: "De la primera llamada a la escrituración"
+  - Espacio amplio (~600px alto, max-width 1280px) con border dashed `border-2 border-dashed border-[#A2F9FF]/30` y texto centrado: *"Infografía en preparación — próxima sesión incluirá los pasos del proceso documentado paso a paso."*
+  - Sin CTA (componente en construcción)
+  - Cuando Luis pase el contenido, el placeholder se reemplaza por el componente final con steps reales
+
+- [ ] **B1.4 DondeEstamos** *(nueva sección — Ampliación E-E-A-T)* — Crear `src/components/home/DondeEstamos.tsx`. Slot: claro. Contenido:
+  - Eyebrow: "Dónde estamos"
+  - Título: "Cobertura en Riviera Maya y Yucatán"
+  - Layout 2 columnas:
+    - Izquierda: card "Real Estate Lab" con dirección `Calle 5 Norte 95, Playa del Carmen, Q. Roo` (SOP Hostess §2.1), teléfono, horario, link a `/contacto`
+    - Derecha: lista visual de zonas cubiertas (Tulum, Playa del Carmen, Cancún, Mérida, Bacalar) cada una con número de desarrollos activos si la query devuelve >0
+  - Sin mapa interactivo en esta versión (evitar dependencia Google Maps en Home — ya está en `/propiedades`)
+  - Posible CTA secundario: "Agendar visita al Lab" → `/contacto`
 - [ ] **B2. Microcopy CTAs** *(Manual §4.2 + Playbook tono consultor)* — Reescribir labels primarios en JSON ES/EN:
   | Key | Antes | Después | Fuente |
   |---|---|---|---|

@@ -101,6 +101,65 @@
     "aud3Cta": "Join the Team",
     "audienceHeading": "Who Propyte is for"
   },
+  "nosotrosTeaser": {
+    "eyebrow": "About us",
+    "title": "We sell real estate with data — and without pressure",
+    "paragraph1": "Since 2017 we have walked alongside investors in Riviera Maya and Yucatán with a bilingual team that understands trust, appreciation and actual returns — not empty promises.",
+    "paragraph2": "Every development we list goes through a documented strategic validation (Scorecard SOP-3.2). What you see is what you decide.",
+    "stat1": "8+ years on the ground",
+    "stat2": "Bilingual ES/EN",
+    "stat3": "SOP-3.2 documented validation",
+    "cta": "Meet the team"
+  },
+  "metodologiaTeaser": {
+    "eyebrow": "Propyte methodology",
+    "title": "Five criteria before listing any development",
+    "subtitle": "Every published property goes through the documented strategic validation of our SOP-3.2 Scorecard. If one criterion fails, the development does not enter the portfolio.",
+    "criterion1Title": "Legal clarity",
+    "criterion1Desc": "Title, trust, anti-corruption checks and developer tax registration.",
+    "criterion2Title": "Schedule reliability",
+    "criterion2Desc": "Track record of previous deliveries, contracts and documented guarantees.",
+    "criterion3Title": "Comparable pricing",
+    "criterion3Desc": "Zone market analysis and comparable property benchmarks.",
+    "criterion4Title": "Build quality",
+    "criterion4Desc": "Site visits, specifications, materials and progress supervision.",
+    "criterion5Title": "Marketability",
+    "criterion5Desc": "Real demand analysis, expected occupancy and resale potential.",
+    "cta": "See full methodology"
+  },
+  "processInfographic": {
+    "eyebrow": "Propyte buying process",
+    "title": "From first call to closing",
+    "placeholderText": "Infographic in preparation — the next update will include the documented step-by-step process, from first contact to handover of keys.",
+    "placeholderHint": "Reserved space"
+  },
+  "dondeEstamos": {
+    "eyebrow": "Where we operate",
+    "title": "Coverage in Riviera Maya and Yucatán",
+    "subtitle": "We operate from Playa del Carmen and cover the main markets of the Caribbean coast and the peninsula.",
+    "labTitle": "Real Estate Lab",
+    "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
+    "labHours": "Monday to Friday, 9:00 – 18:00",
+    "labCta": "Schedule a visit to the Lab",
+    "zonesTitle": "Zones we cover",
+    "zone1": "Tulum",
+    "zone2": "Playa del Carmen",
+    "zone3": "Cancún",
+    "zone4": "Mérida",
+    "zone5": "Bacalar"
+  },
+  "homeFAQ": {
+    "eyebrow": "Frequently asked",
+    "title": "What investors ask us the most",
+    "q1": "Can a foreigner buy property in Tulum or Playa del Carmen?",
+    "a1": "Yes. The Quintana Roo coastal area is in a federal restricted zone, so foreigners buy through a 50-year bank trust (renewable). The process is standard and a Propyte advisor walks you through every step.",
+    "q2": "How much does the legal closing of a property in Riviera Maya cost?",
+    "a2": "Closing costs usually range from 6% to 8% of the property value and include acquisition tax, notary, trust (if applicable) and permits. Figures vary by state and property type — we ask the advisor for a personalized analysis.",
+    "q3": "What is a realistic ROI for an Airbnb in Tulum?",
+    "a3": "ROI depends on zone, product quality, management and seasonality. We do not publish point figures without methodology — we prefer to discuss honest ranges with an advisor who knows your specific investment and current comparables.",
+    "q4": "What happens if I buy presale and the development is delayed?",
+    "a4": "The contract must specify penalties for delays and exit options. We validate this under the Schedule Reliability criterion before listing the development. If you buy and a delay occurs, your contract is your documented protection."
+  },
   "joinTeam": {
     "title": "Want to join the Propyte team?",
     "cta": "Join the Team"
@@ -166,13 +225,13 @@
     "comingSoon": "Coming soon"
   },
   "howItWorks": {
-    "title": "How it works",
+    "title": "How to invest with Propyte: Explore, analyze, decide",
     "step1Title": "Explore",
-    "step1Desc": "Browse our marketplace with interactive map and smart filters",
+    "step1Desc": "Browse the marketplace with an interactive map and filters by zone, type, budget and stage.",
     "step2Title": "Analyze",
-    "step2Desc": "Use the financial simulator to project ROI, down payment and monthly payments",
+    "step2Desc": "Use the financial simulator with your own assumptions and compare the development against real benchmarks.",
     "step3Title": "Decide",
-    "step3Desc": "Contact a certified advisor with all the information you need"
+    "step3Desc": "Schedule a call with a Propyte advisor. No pressure, with all SOP-3.2 Scorecard documents on hand."
   },
   "valueProp": {
     "investorsTitle": "For Investors",
@@ -750,13 +809,13 @@
     "cookieSettings": "Cookie settings",
     "rights": "All rights reserved.",
     "ctaTitle": "Ready to invest in the Riviera Maya?",
-    "ctaSubtitle": "Talk to a certified advisor and get a personalized analysis",
+    "ctaSubtitle": "Talk to a Propyte advisor and get a personalized analysis",
     "ctaTitleBuilt": "Ready to build your project?",
     "ctaSubtitleBuilt": "Design, construction and turnkey delivery with Propyte Built.",
     "ctaTitleUnete": "Ready to grow with us?",
     "ctaSubtitleUnete": "Join the Propyte team and multiply your income with backing, data and technology.",
     "ctaTitleDesarrolladores": "Ready to take your project to the next level?",
-    "ctaSubtitleDesarrolladores": "We market your development with data, certified advisors and high-impact marketing.",
+    "ctaSubtitleDesarrolladores": "We market your development with data, Propyte advisors and high-impact marketing.",
     "ctaTitleCorredores": "Ready to multiply your commissions?",
     "ctaSubtitleCorredores": "Platform, leads and support for brokers looking to scale.",
     "ctaTitleFinanciamiento": "Ready to finance your property?",
@@ -1370,7 +1429,7 @@
     "methodologyDisclaimer": "Estimates do not constitute financial advice.",
     "advisorTitle": "Need a personalized analysis?",
     "advisorDesc": "Our advisors in Playa del Carmen and Tulum know every zone.",
-    "advisorCta": "Talk to a certified advisor",
+    "advisorCta": "Talk to a Propyte advisor",
     "currencyMxn": "MXN",
     "currencyUsd": "USD",
     "kpiZones": "Zones",
@@ -1382,7 +1441,7 @@
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",
     "openFreeCalculator": "Open free calculator",
-    "talkToAdvisor": "Talk to a certified advisor"
+    "talkToAdvisor": "Talk to a Propyte advisor"
   },
   "zoneAnalytics": {
     "scoreUnavailable": "Score not available yet",
