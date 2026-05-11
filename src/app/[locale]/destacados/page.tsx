@@ -208,7 +208,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                                   : 'bg-propyte-brand text-[#0F1923]'
                             }`}
                           >
-                            {tStages(dev.stage as 'preventa')}
+                            {(() => { try { return tStages(dev.stage as 'preventa'); } catch { return dev.stage; } })()}
                           </span>
                         </div>
                       )}

@@ -30,6 +30,12 @@ export default async function FeaturedProperties({ developments = [] }: Featured
   const locale = await getLocale();
   const items = developments.slice(0, 6);
   if (items.length === 0) return null;
+  // Defensive: si Supabase trae un stage no canónico (ej. "Entregado" raw
+  // del Hub), `tStages(...)` truena con MISSING_MESSAGE y crashea el SSR.
+  // Aceptamos cualquier string y fallback al valor crudo si no hay key.
+  const safeStage = (s: string) => {
+    try { return tStages(s as 'preventa'); } catch { return s; }
+  };
 
   return (
     <section className="py-12 md:py-16 bg-[#F4F6F8]">
@@ -79,7 +85,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                             ? 'bg-[#22C55E] text-white'
                             : 'bg-[#0F766E] text-white'
                         }`}>
-                          {tStages(dev.stage)}
+                          {safeStage(dev.stage)}
                         </span>
                       </div>
                     )}

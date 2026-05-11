@@ -77,6 +77,22 @@ export interface DevelopmentRow {
 }
 
 const VALID_STAGES: ReadonlyArray<PropertyStage> = ['preventa', 'construccion', 'entrega_inmediata'];
+
+/**
+ * Normalize raw stage values from Hub/Supabase to the canonical i18n keys.
+ * El Hub a veces graba valores legacy con mayúscula/acento ("Entregado",
+ * "En construcción") que no existen como keys en messages/{es,en}.json y
+ * crashean tStages() server-side con MISSING_MESSAGE. Mapeamos defensivamente.
+ */
+function normalizeStage(raw: string | null | undefined): PropertyStage | null {
+  if (!raw) return null;
+  const lower = raw.toLowerCase().trim();
+  if (VALID_STAGES.includes(lower as PropertyStage)) return lower as PropertyStage;
+  if (lower === 'entregado' || lower === 'entrega inmediata') return 'entrega_inmediata';
+  if (lower === 'construcción' || lower === 'en construcción' || lower === 'en construccion') return 'construccion';
+  if (lower === 'pre-venta' || lower === 'pre venta') return 'preventa';
+  return null;
+}
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
 
@@ -87,9 +103,7 @@ const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', '
  * live at the unit level (v_units). Cards hide them when 0.
  */
 export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
-  const stage: PropertyStage = VALID_STAGES.includes(row.stage as PropertyStage)
-    ? (row.stage as PropertyStage)
-    : 'preventa';
+  const stage: PropertyStage = normalizeStage(row.stage) ?? 'preventa';
 
   const badge: PropertyBadge = VALID_BADGES.includes(row.badge as Exclude<PropertyBadge, null>)
     ? (row.badge as PropertyBadge)
