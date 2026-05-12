@@ -525,7 +525,7 @@ function DevelopersHero({ verifiedCount }: { verifiedCount: number }) {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-propyte-cyan-100 border border-propyte-brand/20">
+        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-propyte-brand/15 border border-propyte-brand/30">
           <ShieldCheck size={18} className="text-propyte-brand" />
           <span className="text-sm font-semibold text-propyte-brand">{t('heroBadgeVerified')}</span>
         </div>

@@ -37,7 +37,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
       <div className="relative max-w-[1120px] mx-auto px-4 md:px-6">
         {/* Hero */}
         <div className="text-center max-w-[760px] mx-auto mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
             <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('comingSoon')}

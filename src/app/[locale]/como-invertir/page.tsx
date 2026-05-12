@@ -105,7 +105,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-propyte-brand/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
             <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
