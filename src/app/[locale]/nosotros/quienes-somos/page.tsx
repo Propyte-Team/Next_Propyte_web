@@ -235,7 +235,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-5 gap-16 items-center">
             <div className="lg:col-span-3">
-              <span className="text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase">
+              <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
                 {t('label')}
               </span>
               <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F] mb-6 leading-tight">
@@ -262,7 +262,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="bg-white rounded-2xl p-10 md:p-12 border-l-4 border-propyte-brand mb-12 shadow-sm">
-            <span className="text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
               {t('missionLabel')}
             </span>
             <p className="mt-5 text-xl md:text-2xl font-medium text-[#1A2F3F] leading-relaxed">
@@ -306,7 +306,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
           <div className="mt-16 grid md:grid-cols-3 gap-10 text-left">
             {visionPillars.map(({ num, title, desc }) => (
               <div key={num}>
-                <span className="text-5xl font-bold text-propyte-brand/20" aria-hidden="true">
+                <span className="text-5xl font-bold text-propyte-brand/50" aria-hidden="true">
                   {num}
                 </span>
                 <h3 className="text-lg font-bold text-white mt-3">{title}</h3>
@@ -321,7 +321,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="text-center mb-14">
-            <span className="text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
               {t('ecosystemLabel')}
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F]">
@@ -352,7 +352,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="mb-14">
-            <span className="text-[#0D9488] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
               {t('cultureLabel')}
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F]">

@@ -187,8 +187,8 @@ function PlatformPreview() {
                     <div className="h-3 bg-white/20 rounded w-3/4 mb-2" />
                     <div className="h-2 bg-white/10 rounded w-1/2" />
                   </div>
-                  <div className="px-3 py-1 bg-propyte-cyan-100 rounded-full">
-                    <span className="text-propyte-brand text-xs font-bold">Active</span>
+                  <div className="px-3 py-1 bg-propyte-brand rounded-full">
+                    <span className="text-[#0F1923] text-xs font-bold">Active</span>
                   </div>
                 </div>
               ))}
@@ -460,8 +460,8 @@ function FinalCTA() {
   return (
     <section className="bg-propyte-brand">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{t('finalCtaTitle')}</h2>
-        <p className="text-white/80 text-lg mb-8">{t('finalCtaSubtitle')}</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#0F1923] mb-3">{t('finalCtaTitle')}</h2>
+        <p className="text-[#0F1923]/80 text-lg mb-8">{t('finalCtaSubtitle')}</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#registro"
