@@ -31,7 +31,7 @@ export default function NosotrosTeaser() {
               {t('paragraph2')}
             </p>
             <Link
-              href={`/${locale}/equipo`}
+              href={`/${locale}/nosotros/equipo-comercial`}
               className="inline-flex items-center gap-2 min-h-[44px] px-6 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
             >
               {t('cta')}

@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { isVisible, VISIBILITY_KEYS, type VisibilityMap } from '@/lib/visibility';
 
-// B4.4 2026-05-12: /equipo es canónica fuera de /nosotros (Manual §2.1) → ya no aparece como tab.
 type TabId = 'quienes-somos' | 'estructura' | 'equipo-comercial';
 
-const TAB_ORDER: { id: TabId; key: 'tab1' | 'tab2'; visKey: string }[] = [
+const TAB_ORDER: { id: TabId; key: 'tab1' | 'tab2' | 'tab3'; visKey: string }[] = [
   { id: 'quienes-somos', key: 'tab1', visKey: VISIBILITY_KEYS.NOSOTROS_QUIENES_SOMOS },
   { id: 'estructura', key: 'tab2', visKey: VISIBILITY_KEYS.NOSOTROS_ESTRUCTURA },
+  { id: 'equipo-comercial', key: 'tab3', visKey: VISIBILITY_KEYS.NOSOTROS_EQUIPO_COMERCIAL },
 ];
 
 export default async function NosotrosTabs({
@@ -21,7 +21,6 @@ export default async function NosotrosTabs({
 }) {
   const t = await getTranslations({ locale, namespace: 'about' });
   const tabs = TAB_ORDER.filter((tab) => isVisible(visibility, tab.visKey));
-  if (tabs.length < 2) return null;
 
   return (
     <nav

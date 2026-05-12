@@ -16,10 +16,10 @@ export default async function Image({
 
   return new ImageResponse(
     <OGFrame
-      title={isEn ? 'Propyte Team — bilingual advisors' : 'Equipo Propyte — asesores bilingües'}
-      location={isEn ? 'Riviera Maya & Yucatán' : 'Riviera Maya y Yucatán'}
-      badge={isEn ? 'Without pressure' : 'Sin presión'}
+      title={isEn ? 'Meet our commercial team' : 'Conoce a nuestro equipo comercial'}
+      location={isEn ? 'Riviera Maya advisors' : 'Asesores en Riviera Maya'}
+      badge={isEn ? 'Bilingual · Certified' : 'Bilingües · Certificados'}
     />,
-    { ...size, fonts }
+    { ...size, fonts },
   );
 }

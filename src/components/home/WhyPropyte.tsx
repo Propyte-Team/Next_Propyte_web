@@ -35,7 +35,7 @@ export default function WhyPropyte() {
       title: t('feature2Title'),
       desc: t('feature2Desc'),
       cta: t('feature2Cta'),
-      href: `/${locale}/equipo`,
+      href: `/${locale}/nosotros/equipo-comercial`,
     },
     {
       icon: Shield,

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ArrowRight, Users, MapPin, MessageCircle } from 'lucide-react';
+import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getTeamMembers, type TeamMemberRow } from '@/lib/supabase/queries';
@@ -12,6 +13,7 @@ export const revalidate = 600; // 10 min ISR; on-demand revalidate desde Hub al 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'equipoPage' });
+  const tBC = await getTranslations({ locale, namespace: 'breadcrumbs' });
   const title = t('metaTitle');
   const description = t('metaDescription');
   return {
@@ -23,16 +25,18 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
+      images: [`/${locale}/nosotros/equipo-comercial/opengraph-image`],
     },
     twitter: { card: 'summary_large_image', title, description },
     alternates: {
-      canonical: `/${locale}/equipo`,
+      canonical: `/${locale}/nosotros/equipo-comercial`,
       languages: {
-        es: '/es/equipo',
-        en: '/en/equipo',
-        'x-default': '/es/equipo',
+        es: '/es/nosotros/equipo-comercial',
+        en: '/en/nosotros/equipo-comercial',
+        'x-default': '/es/nosotros/equipo-comercial',
       },
     },
+    other: { 'breadcrumb-about': tBC('about') },
   };
 }
 
@@ -86,7 +90,7 @@ function buildWhatsappLink(member: TeamMemberRow): string | null {
   return `https://wa.me/${clean}`;
 }
 
-export default async function EquipoPage({ params }: { params: Promise<{ locale: string }> }) {
+export default async function EquipoComercialPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const visibility = await getVisibility();
@@ -94,6 +98,10 @@ export default async function EquipoPage({ params }: { params: Promise<{ locale:
     notFound();
   }
   const t = await getTranslations({ locale, namespace: 'equipoPage' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const supabase = createPublicSupabaseClient();
   const teamMembers = supabase ? await getTeamMembers(supabase) : [];
@@ -102,9 +110,12 @@ export default async function EquipoPage({ params }: { params: Promise<{ locale:
     <>
       <Breadcrumbs
         locale={locale}
-        homeLabel={t('breadcrumbHome')}
-        ariaLabel="Breadcrumb"
-        items={[{ label: t('breadcrumbCurrent') }]}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[
+          { label: tBC('about'), href: `/${locale}/nosotros/quienes-somos` },
+          { label: t('breadcrumbCurrent') },
+        ]}
       />
 
       {/* Hero */}
@@ -121,6 +132,8 @@ export default async function EquipoPage({ params }: { params: Promise<{ locale:
           </p>
         </div>
       </section>
+
+      <NosotrosTabs locale={locale} active="equipo-comercial" visibility={visibility} />
 
       {/* Section 1: cómo trabajamos */}
       <section className="bg-[#F4F6F8] py-16 md:py-20">
