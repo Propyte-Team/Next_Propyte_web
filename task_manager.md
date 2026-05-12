@@ -46,7 +46,7 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
 
 **Bloque 0 — Setup (pre-código)**
 
-- [ ] **Z0.1.** Luis: crear Assignment Rule en Zoho — **Opción B (3 entries) aprobada 2026-05-12**.
+- [x] **Z0.1.** ✅ Luis: Assignment Rule "Web Leads — Propyte" creada en Zoho (2026-05-12, Opción B 3 entries).
 
   **Pasos exactos en Zoho UI:**
   1. **Setup → Automation → Assignment Rules → Leads**
@@ -77,11 +77,11 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
   **Pendiente confirmación pre-setup:**
   - Plan Zoho de Propyte (¿Standard / Professional / Enterprise / Ultimate?)
   - Lista final de comerciales activos en rotación Entry 3 (los 4 propuestos son los top owners por volumen 2026-05; Luis confirma)
-- [ ] **Z0.2.** Luis: confirmar picklist `Industry` (rótulo "Sector") con los 13 valores agregados (Inmobiliaria, Desarrolladora, Constructora, Otra, Notaría/Legal, Finanzas, Arquitectura, Construcción, Mudanzas, Mobiliario, Seguros, Marketing, Otro).
-- [ ] **Z0.3.** Replicar 8 env vars en Hostinger Next_Propyte_web: `ZOHO_CLIENT_ID`, `ZOHO_CLIENT_SECRET`, `ZOHO_REFRESH_TOKEN`, `ZOHO_API_BASE_URL`, `ZOHO_ACCOUNTS_URL`, `ZOHO_DAILY_API_LIMIT=10000` (verificar plan), `CRON_SECRET` nuevo, `LEADS_ALLOWED_ORIGINS=""`.
-- [ ] **Z0.4.** Luis: responder Q5 (¿`NEXT_PUBLIC_WEBHOOK_URL` activo? ¿leads recientes a Zoho desde web?).
-- [ ] **Z0.5.** Crear branch `feat/zoho-forms-integration` desde `develop`.
-- [ ] **Z0.6.** Luis: confirmar valores exactos del picklist `Idioma` en Zoho UI (`"Español"` y `"Ingles"` — mayúsculas/tildes). Bloquea Z3.1 si difieren.
+- [x] **Z0.2.** ✅ Luis: picklist `Industry` (Sector) confirmado con los 13 valores (2026-05-12).
+- [x] **Z0.3.** ✅ Env vars puestas en Hostinger Next_Propyte_web (2026-05-12): 8 vars Zoho + CRON_SECRET + LEADS_ALLOWED_ORIGINS.
+- [ ] **Z0.4.** Luis: responder Q5 (¿`NEXT_PUBLIC_WEBHOOK_URL` activo? ¿leads recientes a Zoho desde web?). _No bloquea inicio, solo cleanup final Z7.7._
+- [x] **Z0.5.** ✅ Branch `feat/zoho-forms-integration` creado (commit `b0dce63` 2026-05-12).
+- [x] **Z0.6.** ✅ Luis: valores picklist `Idioma` = `"Español"` y `"Ingles"` (sin tilde, capitalización correcta) confirmados 2026-05-12.
 
 **Bloque A — Cliente Zoho + tipos (1 día)**
 
@@ -93,9 +93,9 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
 
 **Bloque B — Migración Supabase (Luis ejecuta SQL)**
 
-- [ ] **Z2.1.** Generar SQL `supabase/migrations/20260512_leads_zoho_columns.sql` con los 6 pasos del §6.5 (ALTER property_id nullable + 7 cols intake/UTM + 7 cols Zoho + index parcial + función `claim_zoho_retry_batch` hardened + COMMENT PII).
-- [ ] **Z2.2.** Entregar SQL a Luis para aplicar en Supabase SQL Editor (regla prod DDL).
-- [ ] **Z2.3.** Verificar vía MCP: columnas existen, `property_id` nullable, index funcional, `SELECT claim_zoho_retry_batch(0)` ejecuta, `prosecdef + proconfig` muestran `search_path` explícito.
+- [x] **Z2.1.** ✅ SQL `supabase/migrations/20260512_leads_zoho_columns.sql` con los 6 pasos (commit `b0dce63`).
+- [x] **Z2.2.** ✅ Aplicado vía MCP `apply_migration` con autorización explícita de Luis (2026-05-12). Migration name: `leads_zoho_columns`.
+- [x] **Z2.3.** ✅ Verificado via MCP `execute_sql`: 23 columnas en `public.leads` (9 originales + 14 nuevas), `property_id` nullable=YES, `idx_leads_zoho_retry` creado, `claim_zoho_retry_batch` con `prosecdef=true` + `proconfig=["search_path=pg_catalog, public"]`, ejecución `claim_zoho_retry_batch(0)` retorna 0 filas (clamp OK).
 
 **Bloque C — Refactor endpoint `/api/leads` (1-2 días)**
 
