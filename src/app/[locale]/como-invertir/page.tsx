@@ -121,7 +121,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
       </section>
 
       {/* 3 Strategies */}
-      <section className="py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-10 text-center">
             {t('strategiesTitle')}
@@ -194,7 +194,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
       <InvestmentComparison />
 
       {/* Key Metrics */}
-      <section className="py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-8 text-center">
             {t('metricsTitle')}

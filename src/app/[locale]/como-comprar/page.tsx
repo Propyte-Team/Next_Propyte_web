@@ -109,7 +109,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
       </section>
 
       {/* 6-Step Process */}
-      <section className="py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-10 text-center">
             {t('stepsTitle')}
@@ -156,7 +156,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
       </section>
 
       {/* Financing Preview */}
-      <section className="py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-4">
             {t('financingTitle')}
