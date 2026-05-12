@@ -31,7 +31,7 @@ export default function FAQContent({
     });
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="bg-white py-12 md:py-16">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex flex-wrap gap-2 mb-8 justify-center">
           {categories.map((cat) => (
