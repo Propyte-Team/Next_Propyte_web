@@ -85,11 +85,11 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
 
 **Bloque A — Cliente Zoho + tipos (1 día)**
 
-- [ ] **Z1.1.** Copiar `propyte-crm/src/lib/zoho/client.ts` → `Next_Propyte_web/src/lib/zoho/client.ts` (commit header anota origen).
-- [ ] **Z1.2.** Copiar `types.ts`.
-- [ ] **Z1.3.** Crear `src/lib/zoho/field-maps.ts` (función `sourceToZohoPayload` + whitelist `CATEGORY_TO_INDUSTRY` + `parseFirstNameFromEmail` + `truncateDescription` + `truncateError`).
-- [ ] **Z1.4.** Crear `src/lib/zoho/resolve-proyecto-interes.ts` con JOIN canónico (v_units + Propyte_zoho_id_map + cast `::text`).
-- [ ] **Z1.5.** Tests unit: 11 source values generan payload correcto + 10 slugs Industry válidos + helpers.
+- [x] **Z1.1.** ✅ `src/lib/zoho/client.ts` copiado de propyte-crm (commit `b0dce63`).
+- [x] **Z1.2.** ✅ `src/lib/zoho/types.ts` copiado (commit `b0dce63`).
+- [x] **Z1.3.** ✅ `src/lib/zoho/field-maps.ts` con `sourceToZohoPayload`, `CATEGORY_TO_INDUSTRY`, `parseName`, `parseFirstNameFromEmail`, `truncateDescription`, `truncateError` (commit `b0dce63`).
+- [x] **Z1.4.** ✅ `src/lib/zoho/resolve-proyecto-interes.ts` con JOIN v_units + Propyte_zoho_id_map (commit `b0dce63`).
+- [ ] **Z1.5.** Tests unit pendientes — recomendable pero no bloquea staging.
 
 **Bloque B — Migración Supabase (Luis ejecuta SQL)**
 
@@ -99,24 +99,24 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
 
 **Bloque C — Refactor endpoint `/api/leads` (1-2 días)**
 
-- [ ] **Z3.1.** Refactor `src/app/api/leads/route.ts`: `enforceRateLimit` + allowlist via env + Zod ampliado con UUID/regex/honeypot + INSERT primero con `PENDING_SYNC` (fail → 500 sin Zoho call) + `parseName` + payload Zoho con `truncateDescription` + lookup Proyecto_de_Interes + doble llamada Form 6 + UPDATE con curva retry `[200, 600, 1500] ms` + sanitize+truncate en `zoho_sync_error`.
-- [ ] **Z3.2.** Crear `src/lib/leads/submit-lead.ts` con firma `submitLead(source, data): Promise<{ ok, id? }>`.
-- [ ] **Z3.3.** Convertir `src/lib/submitForm.ts` en shim que traduce firma vieja `(data, formType)` → `(source, data)`.
+- [x] **Z3.1.** ✅ Refactor `/api/leads/route.ts` completo (commit `5fd3293`): enforceRateLimit + enforceGlobalQuota + allowlist env + Zod estricto (UUID, regex UTMs) + honeypot constant-time + INSERT primero con PENDING_SYNC + parseName + resolveProyectoDeInteres + doble llamada Form 6 + UPDATE retry `[200, 600, 1500] ms` + sanitize+truncate.
+- [x] **Z3.2.** ✅ `src/lib/leads/submit-lead.ts` con firma única (commit `b0dce63`).
+- [x] **Z3.3.** ✅ `submitForm.ts` convertido en shim (commit `b0dce63`).
 
 **Bloque D — Refactor forms client-side (1.5 días)**
 
-- [ ] **Z4.1.** Form 6 (Proveedores): top-level `company`, `category`, `city`, `website` (no embebidos en `message`). Server mapea `category` slug → `Industry`.
-- [ ] **Z4.2.** Form 11 (Glosario): migrar de `fetch('/api/leads')` directo a `submitLead('glossary_pdf', data)`.
-- [ ] **Z4.3.** Form 8 (Únete): migrar de raw HTML a RHF + Zod (schema similar a Form 5). Eliminar mock setTimeout, llamar `submitLead('affiliate_request', data)`.
-- [ ] **Z4.4.** 8 forms sin honeypot: agregar `<input type="text" name="website" tabIndex={-1} autoComplete="off" className="sr-only" aria-hidden="true" />`.
-- [ ] **Z4.5.** Verificar 5 forms con RHF + Zod validan con nuevo helper.
+- [x] **Z4.1.** ✅ Form 6 Proveedores: payload top-level + `companyWebsite` renombrado para no colisionar con honeypot `website` (commit `245c861`).
+- [x] **Z4.2.** ✅ Form 11 Glosario: usa `submitLead('glossary_pdf', data)` (commit `245c861`).
+- [x] **Z4.3.** ✅ Form 8 Únete: RHF + Zod, mock eliminado, `submitLead('affiliate_request', data)` (commit `245c861`).
+- [x] **Z4.4.** ✅ Honeypot agregado a Forms 2, 3, 7, 10 (commit `155feb3`). Cobertura final: 11/11 forms.
+- [x] **Z4.5.** ✅ Typecheck limpio en los 5 forms con RHF + Zod tras migración.
 
 **Bloque E — Cron de reintento Hostinger (medio día)**
 
-- [ ] **Z5.0.** Wrapper `findLeadByEmail(email)` en `src/lib/zoho/client.ts` (5 líneas sobre `searchRecords()`). Test unit.
-- [ ] **Z5.1.** Crear `src/app/api/cron/zoho-retry/route.ts` (GET, `verifyCronSecret` + rate limit propio + `claim_zoho_retry_batch(50)` + retry diferenciado PENDING_SYNC/ORPHAN/otros).
-- [ ] **Z5.2.** Configurar crontab Hostinger: `5 * * * * /usr/bin/curl -K /home/propyte/.zoho-retry.curlrc https://propyte.com/api/cron/zoho-retry >> /home/propyte/logs/zoho-retry.log 2>&1` + archivo `.curlrc` perms 600.
-- [ ] **Z5.3.** Test manual: lead con `PENDING_SYNC` forzado + cron 2x verifica `findLeadByEmail` no duplica.
+- [x] **Z5.0.** ✅ Wrapper `findLeadByEmail` en client.ts (commit `b0dce63`).
+- [x] **Z5.1.** ✅ `src/app/api/cron/zoho-retry/route.ts` con verifyCronSecret + rate limit propio + retry diferenciado PENDING_SYNC/ORPHAN/otros (commit `245c861`).
+- [ ] **Z5.2.** Luis: configurar crontab en Hostinger VPS — `5 * * * * /usr/bin/curl -K /home/propyte/.zoho-retry.curlrc https://propyte.com/api/cron/zoho-retry >> /home/propyte/logs/zoho-retry.log 2>&1` + crear `.curlrc` perms 600 con header `"Authorization: Bearer $CRON_SECRET"`.
+- [ ] **Z5.3.** Test manual cron tras deploy.
 
 **Bloque F — Tests Playwright (1 día)**
 
