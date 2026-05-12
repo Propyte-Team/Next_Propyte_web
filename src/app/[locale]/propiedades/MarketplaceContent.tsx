@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Map, List, X } from 'lucide-react';
+import { Map, List, X, Sparkles } from 'lucide-react';
 import { useFilters } from '@/hooks/useFilters';
 import type { Property } from '@/types/property';
 import { useIsMobile } from '@/hooks/useMediaQuery';
@@ -14,6 +14,43 @@ import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import ComparePanel from '@/components/marketplace/ComparePanel';
 import { trackSearch } from '@/lib/analytics/track';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
+
+/**
+ * Heading band con identidad Propyte: eyebrow pill brand + H1 con accent
+ * cyan en la última palabra + orb decorativo brand/15 translúcido.
+ * Compact: 1 banda integrada al canvas, no un hero pesado (los marketplaces
+ * priorizan filtros + cards, no el hero).
+ */
+function MarketplaceHero({ heading, subheading, eyebrow }: { heading: string; subheading: string; eyebrow: string }) {
+  // Split último token para acento — soporta locales ES/EN, fallback: heading completo si 1 palabra.
+  const tokens = heading.trim().split(/\s+/);
+  const lastWord = tokens.length > 1 ? tokens[tokens.length - 1] : '';
+  const restOfHeading = tokens.length > 1 ? tokens.slice(0, -1).join(' ') : heading;
+  return (
+    <div className="relative overflow-hidden bg-white border-b border-gray-100">
+      {/* Glow brand sutil — anclado top-right para no competir con el contenido */}
+      <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 bg-propyte-brand/15 rounded-full blur-3xl" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-32 left-1/3 w-96 h-96 bg-propyte-brand/8 rounded-full blur-3xl" aria-hidden="true" />
+
+      <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 pt-7 md:pt-9 pb-5 md:pb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-4">
+          <Sparkles size={12} strokeWidth={2.25} className="text-[#0F766E]" />
+          <span className="text-[#0F766E] text-2xs font-bold tracking-[0.18em] uppercase">{eyebrow}</span>
+        </div>
+        <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-bold text-[#1A2F3F] leading-[1.1] tracking-tight">
+          {restOfHeading}
+          {lastWord && (
+            <>
+              {' '}
+              <span className="text-[#0F766E]">{lastWord}</span>
+            </>
+          )}
+        </h1>
+        <p className="mt-3 text-sm md:text-base text-gray-600 max-w-2xl leading-relaxed">{subheading}</p>
+      </div>
+    </div>
+  );
+}
 
 interface MarketplaceContentProps {
   properties: Property[];
@@ -50,6 +87,8 @@ export default function MarketplaceContent({
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
+  // Eyebrow pill: canonical Propyte tagline para todas las listadas (ES/EN).
+  const eyebrowLabel = t('heroEyebrow');
 
   // Cualquier cambio en los filtros normales invalida el cluster filter
   // (sino quedaría "pegado" mostrando IDs que ya no califican).
@@ -106,12 +145,8 @@ export default function MarketplaceContent({
   // vs grid full-width (decisión 2026-05-11 para /desarrollos + taxonomies).
   if (showMap) {
     return (
-      <div className="flex flex-col h-[calc(100dvh-140px)] lg:h-[calc(100dvh-144px)]">
-        {/* SEO heading */}
-        <div className="px-4 md:px-6 pt-4 pb-3 bg-white border-b border-gray-100">
-          <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{heading}</h1>
-          <p className="text-sm text-gray-600 mt-1">{subheading}</p>
-        </div>
+      <div className="flex flex-col min-h-[calc(100dvh-140px)] lg:min-h-[calc(100dvh-144px)]">
+        <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
 
         <FilterBar
           filters={filters}
@@ -198,11 +233,7 @@ export default function MarketplaceContent({
   // Grid full-width — /desarrollos + taxonomies sin mapa (estilo Ficha 02).
   return (
     <div className="propyte-marketplace-grid-canvas">
-      {/* SEO heading */}
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-6 pb-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{heading}</h1>
-        <p className="text-sm text-gray-600 mt-1">{subheading}</p>
-      </div>
+      <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
 
       <FilterBar
         filters={filters}
