@@ -532,11 +532,11 @@ function DevelopersHero({ verifiedCount }: { verifiedCount: number }) {
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
           {t('heroTitle')} <span className="text-propyte-brand">{t('heroTitleAccent')}</span>
         </h1>
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
+        <p className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10">
           {t('heroSubtitle')}
         </p>
         {verifiedCount > 0 && (
-          <p className="text-white/50 text-sm">
+          <p className="text-white/75 text-sm">
             <span className="text-white font-bold">{verifiedCount}</span>{' '}
             {t('heroVerifiedCount', { count: verifiedCount }).replace(/^\d+\s/, '')}
           </p>

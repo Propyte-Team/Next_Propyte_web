@@ -152,7 +152,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
 
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] text-white py-20 md:py-28 overflow-hidden">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-brand/20 rounded-full blur-3xl" />
         <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#A2F9FF]/10 rounded-full blur-3xl" />
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">

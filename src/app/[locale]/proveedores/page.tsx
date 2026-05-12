@@ -31,8 +31,8 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
 
   return (
     <section className="relative py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] overflow-hidden">
-      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-brand/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-brand/10 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1120px] mx-auto px-4 md:px-6">
         {/* Hero */}

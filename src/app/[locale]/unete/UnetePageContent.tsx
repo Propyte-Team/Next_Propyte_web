@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { createContext, useContext, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -82,14 +82,14 @@ function HeroSection() {
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300B4C8' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         />
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-propyte-cyan-100 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-propyte-brand/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 bg-propyte-cyan-100 text-propyte-brand text-sm font-bold px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center gap-2 bg-propyte-brand/15 border border-propyte-brand/30 text-propyte-brand text-sm font-bold px-4 py-2 rounded-full mb-6">
               <Zap size={14} />
               {t('heroEyebrow')}
             </div>
@@ -576,7 +576,7 @@ function Testimonials() {
               </div>
               <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{tt.quote}&rdquo;</p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-propyte-cyan-100 rounded-full flex items-center justify-center text-propyte-brand font-bold text-sm">
+                <div className="w-10 h-10 bg-propyte-brand rounded-full flex items-center justify-center text-[#0F1923] font-bold text-sm">
                   {tt.avatar}
                 </div>
                 <div>
@@ -772,7 +772,7 @@ function ApplicationForm() {
 
   return (
     <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden">
-      <div className="absolute top-1/4 right-0 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
+      <div className="absolute top-1/4 right-0 w-96 h-96 bg-propyte-brand/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">

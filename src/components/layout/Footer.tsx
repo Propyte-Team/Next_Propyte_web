@@ -197,7 +197,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-white/5">
-            <p className="text-xs text-white/55 text-center">
+            <p className="text-xs text-white/70 text-center">
               {t('disclaimer')}
             </p>
           </div>

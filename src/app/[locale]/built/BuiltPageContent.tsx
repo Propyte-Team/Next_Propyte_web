@@ -41,7 +41,7 @@ function EditorialHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0F1923]">
       {/* Subtle background orbs */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-propyte-cyan-100/60 rounded-full blur-[120px]" />
+      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-propyte-brand/10 rounded-full blur-[120px]" />
       <div className="absolute bottom-1/3 left-1/3 w-[400px] h-[400px] bg-[#1A2F3F]/30 rounded-full blur-[100px]" />
 
       <div className="relative text-center px-4 md:px-6">

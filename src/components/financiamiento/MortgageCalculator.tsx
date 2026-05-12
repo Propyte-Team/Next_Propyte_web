@@ -109,7 +109,7 @@ export default function MortgageCalculator() {
               <div className="text-4xl md:text-5xl font-bold tabular-nums">
                 {format(Math.round(calc.monthlyPayment))}
               </div>
-              <div className="text-xs text-white/55 mt-1">{currency}/{t('monthShort')}</div>
+              <div className="text-xs text-white/75 mt-1">{currency}/{t('monthShort')}</div>
             </div>
 
             <div className="h-44 mb-4">

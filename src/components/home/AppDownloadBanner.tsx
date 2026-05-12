@@ -41,7 +41,7 @@ export default function AppDownloadBanner() {
               </Link>
             </div>
             {/* Disclaimer YMYL canónico Manual §6.3.2 — link a /aviso-legal-inversion pendiente B4 */}
-            <p className="text-white/55 text-xs max-w-2xl leading-relaxed mt-2">
+            <p className="text-white/75 text-xs max-w-2xl leading-relaxed mt-2">
               {t('footnote')}
             </p>
           </div>

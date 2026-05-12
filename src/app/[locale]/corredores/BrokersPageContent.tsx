@@ -22,15 +22,15 @@ function BrokerHero() {
   const t = useTranslations('brokers');
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]">
-      {/* Decorative orbs */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-cyan-100 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-cyan-100/60 rounded-full blur-3xl" />
+      {/* Decorative orbs — brand glow translúcido (no blanco-cyan que ilumina demasiado) */}
+      <div className="absolute top-20 right-10 w-72 h-72 bg-propyte-brand/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-propyte-brand/10 rounded-full blur-3xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1A2F3F]/40 rounded-full blur-3xl" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28">
         <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-cyan-100 rounded-full mb-6">
+          {/* Badge — pill brand glow + texto cyan brillante (contraste WCAG AA sobre dark hero) */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
             <Handshake size={16} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">Partner Program</span>
           </div>
@@ -38,7 +38,7 @@ function BrokerHero() {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             {t('heroTitle')}
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl">
+          <p className="mt-6 text-lg md:text-xl text-white/85 leading-relaxed max-w-2xl">
             {t('heroSubtitle')}
           </p>
 
@@ -60,7 +60,7 @@ function BrokerHero() {
             </a>
           </div>
 
-          <p className="mt-8 text-base text-white/60 max-w-xl">
+          <p className="mt-8 text-base text-white/75 max-w-xl">
             {t('heroDescriptive')}
           </p>
         </div>

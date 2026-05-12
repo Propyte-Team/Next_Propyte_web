@@ -124,7 +124,7 @@ export default function DevelopmentKeyData({
             <div key={key} className="flex items-center gap-2">
               <Icon size={13} className="text-propyte-brand shrink-0" />
               <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
-                <span className="text-2xs text-white/55 shrink-0">{label}</span>
+                <span className="text-2xs text-white/75 shrink-0">{label}</span>
                 <span className="text-right">{value}</span>
               </div>
             </div>
