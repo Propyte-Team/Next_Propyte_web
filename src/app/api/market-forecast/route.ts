@@ -2,8 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getForecasts, getOccupancyTrend, getADRTrend } from '@/lib/supabase/queries';
 import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
+import { enforceRateLimit } from '@/lib/rateLimit';
+
+const RL = { bucket: 'market-forecast', limit: 30, windowMs: 60_000 };
 
 export async function GET(request: NextRequest) {
+  const limited = enforceRateLimit(request, RL);
+  if (limited) return limited;
+
   try {
     const { searchParams } = new URL(request.url);
     const city = searchParams.get('city');

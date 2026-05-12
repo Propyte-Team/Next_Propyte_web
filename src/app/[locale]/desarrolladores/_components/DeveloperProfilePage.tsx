@@ -10,6 +10,7 @@ import {
 } from '@/lib/supabase/queries';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { safeExternalUrl } from '@/lib/security/safeUrl';
 
 interface Props {
   locale: string;
@@ -166,17 +167,21 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
                   </span>
                 )}
               </div>
-              {developer.website && (
-                <a
-                  href={developer.website.startsWith('http') ? developer.website : `https://${developer.website}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 mt-2 text-sm text-[#0F766E] hover:underline"
-                >
-                  <Globe size={13} />
-                  {developer.website.replace(/^https?:\/\//, '')}
-                </a>
-              )}
+              {(() => {
+                const safeDevWebsite = safeExternalUrl(developer.website);
+                if (!safeDevWebsite) return null;
+                return (
+                  <a
+                    href={safeDevWebsite}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-[#0F766E] hover:underline"
+                  >
+                    <Globe size={13} />
+                    {safeDevWebsite.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                  </a>
+                );
+              })()}
             </div>
           </div>
 

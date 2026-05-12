@@ -21,6 +21,7 @@ import {
   getZoneDetail,
 } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
+import { safeExternalUrl } from '@/lib/security/safeUrl';
 import {
   CITY_TO_MARKET_CODE,
   RES,
@@ -593,13 +594,16 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
                       <AmenityList locale={locale} amenities={property.amenities || undefined} />
 
-                      {property.brochure_url && (
+                      {(() => {
+                        const safeBrochureUrl = safeExternalUrl(property.brochure_url);
+                        if (!safeBrochureUrl) return null;
+                        return (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
                             {tProp('documentsTitle')}
                           </h2>
                           <a
-                            href={property.brochure_url}
+                            href={safeBrochureUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
@@ -612,7 +616,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 {tProp('brochure')}
                               </div>
                               <div className="text-xs text-gray-600 truncate">
-                                {deriveFilenameFromUrl(property.brochure_url, 'brochure.pdf')}
+                                {deriveFilenameFromUrl(safeBrochureUrl, 'brochure.pdf')}
                               </div>
                             </div>
                             <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0F766E] group-hover:text-[#0F766E] shrink-0">
@@ -621,7 +625,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             </div>
                           </a>
                         </div>
-                      )}
+                        );
+                      })()}
 
                       {developerDisplay.name && (
                         <div className="propyte-card-glass-light p-6">

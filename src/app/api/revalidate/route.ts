@@ -18,6 +18,7 @@
 
 import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { safeEqualSecret } from "@/lib/security/compareSecret";
 
 export async function POST(req: Request) {
   const secret = process.env.REVALIDATION_SECRET;
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
 
   const auth = req.headers.get("authorization") ?? "";
   const provided = auth.startsWith("Bearer ") ? auth.slice(7) : null;
-  if (provided !== secret) {
+  if (!safeEqualSecret(provided, secret)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 

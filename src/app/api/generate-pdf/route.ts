@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { enforceRateLimit } from '@/lib/rateLimit';
 import type { DocumentProps } from '@react-pdf/renderer';
 import { renderToStream } from '@react-pdf/renderer';
 import QRCode from 'qrcode';
@@ -30,10 +31,16 @@ export const runtime = 'nodejs';
 // Allow up to 60s for server render
 export const maxDuration = 60;
 
+// PDF rendering is expensive — keep this tight.
+const RL = { bucket: 'generate-pdf', limit: 5, windowMs: 60_000 };
+
 const isLocale = (s: string | null): s is 'es' | 'en' => s === 'es' || s === 'en';
 const isKind = (s: string | null): s is 'development' | 'unit' => s === 'development' || s === 'unit';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const limited = enforceRateLimit(req, RL);
+  if (limited) return limited;
+
   const url = new URL(req.url);
   const slug = url.searchParams.get('slug');
   const kindParam = url.searchParams.get('kind');
@@ -80,8 +87,7 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     console.error('generate-pdf failed:', err);
-    const msg = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ error: 'pdf generation failed', detail: msg }, { status: 500 });
+    return NextResponse.json({ error: 'pdf generation failed' }, { status: 500 });
   }
 }
 

@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { enforceRateLimit } from '@/lib/rateLimit';
 import type { DocumentProps } from '@react-pdf/renderer';
 import { renderToStream } from '@react-pdf/renderer';
 import { createElement, type ReactElement } from 'react';
@@ -14,9 +15,14 @@ export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 const TERM_COUNT = 22;
+const RL = { bucket: 'glossary-pdf', limit: 5, windowMs: 60_000 };
+
 const isLocale = (s: string | null): s is 'es' | 'en' => s === 'es' || s === 'en';
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  const limited = enforceRateLimit(req, RL);
+  if (limited) return limited;
+
   const url = new URL(req.url);
   const localeParam = url.searchParams.get('locale');
   if (localeParam !== null && !isLocale(localeParam)) {
@@ -81,7 +87,6 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     console.error('glossary pdf failed:', err);
-    const msg = err instanceof Error ? err.message : 'unknown error';
-    return NextResponse.json({ error: 'pdf generation failed', detail: msg }, { status: 500 });
+    return NextResponse.json({ error: 'pdf generation failed' }, { status: 500 });
   }
 }

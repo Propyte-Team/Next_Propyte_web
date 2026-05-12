@@ -8,6 +8,7 @@ import RelatedPosts from '@/components/blog/RelatedPosts';
 import BlogShareBar from '@/components/blog/BlogShareBar';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { formatDate } from '@/lib/helpers/format-date';
+import { sanitizeRichHtml } from '@/lib/security/sanitizeHtml';
 import { Calendar, Clock, Tag, ChevronLeft } from 'lucide-react';
 
 export const revalidate = 3600;
@@ -218,7 +219,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               prose-img:rounded-xl prose-img:shadow-card
               prose-blockquote:border-propyte-brand prose-blockquote:text-gray-600
               prose-code:bg-gray-100 prose-code:text-[#1A2F3F] prose-code:px-1 prose-code:rounded"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(post.content) }}
           />
         )}
 

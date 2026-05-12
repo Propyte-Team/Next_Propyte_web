@@ -1,4 +1,4 @@
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 /**
  * In-memory rate limiter (sliding-window-ish, fixed window). Use only for
@@ -47,18 +47,56 @@ export interface RateLimitResult {
 }
 
 /**
- * Best-effort client identifier. Reads `x-forwarded-for` (Hostinger Nginx
- * sets this) and falls back to `x-real-ip`. When neither is set we bucket
- * by user-agent + a constant fallback to avoid global lockouts.
+ * Best-effort client identifier. Reads the *last* `x-forwarded-for` hop so an
+ * attacker cannot reset their bucket by prepending fake IPs. The number of
+ * trusted upstream proxies is configurable via `RATE_LIMIT_TRUSTED_PROXY_HOPS`
+ * (defaults to 1 — fits Hostinger+Nginx or Vercel edge alone). Vercel-specific
+ * headers (`x-vercel-forwarded-for`, `x-real-ip`) take precedence when present.
  */
 export function getClientKey(request: NextRequest): string {
-  const xff = request.headers.get('x-forwarded-for');
-  if (xff) return xff.split(',')[0]!.trim();
+  const vercelXff = request.headers.get('x-vercel-forwarded-for');
+  if (vercelXff) return vercelXff.split(',')[0]!.trim();
+
   const realIp = request.headers.get('x-real-ip');
   if (realIp) return realIp.trim();
+
+  const xff = request.headers.get('x-forwarded-for');
+  if (xff) {
+    const parts = xff.split(',').map((s) => s.trim()).filter(Boolean);
+    if (parts.length > 0) {
+      const hops = Math.max(1, Number(process.env.RATE_LIMIT_TRUSTED_PROXY_HOPS ?? 1));
+      const idx = Math.max(0, parts.length - hops);
+      return parts[idx]!;
+    }
+  }
+
   // Last-resort identifier — not cryptographically meaningful, but keeps
   // anonymous clients in distinct buckets.
   return 'anon:' + (request.headers.get('user-agent') || 'unknown').slice(0, 80);
+}
+
+/**
+ * One-call helper for routes that just want to bail out with a 429 on excess.
+ * Returns a `NextResponse` to be returned by the handler when the limit is hit,
+ * or `null` to continue processing. Adds standard X-RateLimit headers.
+ */
+export function enforceRateLimit(
+  request: NextRequest,
+  options: RateLimitOptions,
+): NextResponse | null {
+  const result = rateLimit(request, options);
+  if (result.ok) return null;
+  return NextResponse.json(
+    { error: 'Too many requests. Please wait a moment and try again.' },
+    {
+      status: 429,
+      headers: {
+        'Retry-After': String(result.retryAfterSec),
+        'X-RateLimit-Limit': String(options.limit),
+        'X-RateLimit-Remaining': '0',
+      },
+    },
+  );
 }
 
 export function rateLimit(

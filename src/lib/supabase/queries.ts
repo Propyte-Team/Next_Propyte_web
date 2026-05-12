@@ -5,6 +5,21 @@ import { cleanListingName } from '@/lib/formatters';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
 
+// PostgREST `.or()` / `.filter()` strings use `,` `(` `)` `*` `%` `:` `\` as
+// syntactic separators. When user input flows into one of these strings we
+// must strip those characters first to prevent filter-clause injection that
+// would let a caller bypass the `approved_at` / `zoho_pipeline_status` /
+// `ext_publicado` gates on the underlying view/table.
+function sanitizePostgrestFilter(input: string, maxLen = 80): string {
+  return input.replace(/[,()*%\\:]/g, '').trim().slice(0, maxLen);
+}
+
+// Slugs are restricted to URL-safe characters; anything else is a router
+// artefact or an attempt to inject filter syntax. Caps at 200 chars.
+function sanitizeSlug(slug: string): string {
+  return slug.replace(/[^a-zA-Z0-9-_]/g, '').slice(0, 200);
+}
+
 // Strip seed prefixes ([SAMPLE], [DEMO], [TEST]) from row.name on read.
 // Applied at the query layer so every consumer sees clean display names
 // without mutating Supabase data.
@@ -81,7 +96,8 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   if (filters.featured) query = query.eq('featured', true);
 
   if (filters.search) {
-    query = query.or(`name.ilike.*${filters.search}*,city.ilike.*${filters.search}*,zone.ilike.*${filters.search}*`);
+    const q = sanitizePostgrestFilter(filters.search);
+    if (q) query = query.or(`name.ilike.*${q}*,city.ilike.*${q}*,zone.ilike.*${q}*`);
   }
 
   switch (filters.orderBy) {
@@ -358,7 +374,8 @@ export async function getUnits(client: Client, filters: UnitFilters = {}) {
   if (filters.developmentId) query = query.eq('development_id', filters.developmentId);
 
   if (filters.search) {
-    query = query.or(`name.ilike.*${filters.search}*,city.ilike.*${filters.search}*,zone.ilike.*${filters.search}*,development_name.ilike.*${filters.search}*`);
+    const q = sanitizePostgrestFilter(filters.search);
+    if (q) query = query.or(`name.ilike.*${q}*,city.ilike.*${q}*,zone.ilike.*${q}*,development_name.ilike.*${q}*`);
   }
 
   switch (filters.orderBy) {
@@ -631,11 +648,13 @@ export async function getDeveloperBySlug(
   slug: string,
 ): Promise<DeveloperRecord | null> {
   if (!slug) return null;
+  const safeSlug = sanitizeSlug(slug);
+  if (!safeSlug) return null;
   try {
     const { data: v } = await hub(client)
       .from('v_developers')
       .select('*')
-      .or(`slug.eq.${slug},ext_slug_desarrollador.eq.${slug}`)
+      .or(`slug.eq.${safeSlug},ext_slug_desarrollador.eq.${safeSlug}`)
       .maybeSingle();
     if (!v) return null;
     const d = v as Record<string, unknown>;
@@ -1502,7 +1521,6 @@ export async function getZoneScores(client: Client, city?: string) {
   const { data, error } = await query.limit(5000);
   if (error) { console.error('[getZoneScores] Supabase error:', error.code, error.message, error.details); return []; }
   if (!data) { console.warn('[getZoneScores] No data returned (null)'); return []; }
-  console.log(`[getZoneScores] Raw rows: ${data.length}, city filter: ${city ?? 'none'}`);
 
   // Keep only latest per (city, zone)
   const seen = new Set<string>();

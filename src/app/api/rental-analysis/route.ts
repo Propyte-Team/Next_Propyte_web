@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { enforceRateLimit } from '@/lib/rateLimit';
 
 export const revalidate = 3600; // Cache for 1 hour
+
+const RL = { bucket: 'rental-analysis', limit: 15, windowMs: 60_000 };
 
 // ── Data cleaning constants (mirrors Python pipeline) ──
 const RENT_MIN = 2_000;
@@ -106,6 +109,9 @@ function median(arr: number[]): number {
 }
 
 export async function GET(request: NextRequest) {
+  const limited = enforceRateLimit(request, RL);
+  if (limited) return limited;
+
   const { searchParams } = request.nextUrl;
   const city = searchParams.get('city');
 

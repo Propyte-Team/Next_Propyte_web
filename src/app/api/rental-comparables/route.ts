@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { safeEqualSecret } from '@/lib/security/compareSecret';
 import { z } from 'zod';
 
 const RentalComparableSchema = z.object({
@@ -25,9 +26,10 @@ const BulkInsertSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Validate API key
+    // Validate API key (constant-time comparison)
     const apiKey = request.headers.get('x-api-key');
-    if (!process.env.RENTAL_SCRAPER_API_KEY || apiKey !== process.env.RENTAL_SCRAPER_API_KEY) {
+    const expected = process.env.RENTAL_SCRAPER_API_KEY;
+    if (!expected || !safeEqualSecret(apiKey, expected)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

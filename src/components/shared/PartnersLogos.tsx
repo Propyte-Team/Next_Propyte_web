@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import type { PartnerRow } from '@/lib/supabase/queries';
+import { safeExternalUrl } from '@/lib/security/safeUrl';
 
 interface PartnersLogosProps {
   partners: PartnerRow[];
@@ -63,11 +64,12 @@ export default function PartnersLogos({
 
             if (!logoBlock) return null;
 
+            const safeWebsite = safeExternalUrl(p.website_url);
             return (
               <li key={p.id} className="flex-shrink-0">
-                {p.website_url ? (
+                {safeWebsite ? (
                   <a
-                    href={p.website_url}
+                    href={safeWebsite}
                     target="_blank"
                     rel="noopener noreferrer nofollow"
                     title={p.name}
