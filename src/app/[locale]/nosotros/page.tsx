@@ -7,7 +7,6 @@ export default async function NosotrosRedirect({ params }: { params: Promise<{ l
   const order: Array<{ slug: string; key: string }> = [
     { slug: 'quienes-somos', key: VISIBILITY_KEYS.NOSOTROS_QUIENES_SOMOS },
     { slug: 'estructura', key: VISIBILITY_KEYS.NOSOTROS_ESTRUCTURA },
-    { slug: 'equipo-comercial', key: VISIBILITY_KEYS.NOSOTROS_EQUIPO_COMERCIAL },
   ];
   const first = order.find((t) => isVisible(visibility, t.key));
   if (!first) notFound();

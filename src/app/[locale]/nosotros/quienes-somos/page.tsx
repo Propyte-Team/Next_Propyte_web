@@ -388,7 +388,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               {t('ctaJoin')}
             </Link>
             <Link
-              href={`/${locale}/nosotros/equipo-comercial`}
+              href={`/${locale}/equipo`}
               className="h-14 px-10 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center"
             >
               {t('ctaTeam')}

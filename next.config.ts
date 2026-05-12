@@ -42,7 +42,9 @@ const nextConfig: NextConfig = {
       { source: '/nosotros/',               destination: '/es/nosotros/quienes-somos', permanent: true },
       // N1: /locale/nosotros sin sub-ruta → quienes-somos
       { source: '/:locale/nosotros',        destination: '/:locale/nosotros/quienes-somos', permanent: true },
-      // B4.4: Manual §2.1 establece /equipo como ruta canónica; redirect 301 desde legacy
+      // B4.4: Manual §2.1 establece /equipo como ruta canónica. La lógica Hub-driven
+      // (v_team_members) vive ahora en /equipo, así que el redirect 301 desde la URL
+      // legacy es seguro.
       { source: '/:locale/nosotros/equipo-comercial', destination: '/:locale/equipo', permanent: true },
     ];
   },

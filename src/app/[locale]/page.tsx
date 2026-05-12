@@ -4,9 +4,11 @@ import { getGlobalStats, getDevelopers, getFeaturedDevelopments } from '@/lib/su
 import Hero from '@/components/home/Hero';
 import NosotrosTeaser from '@/components/home/NosotrosTeaser';
 import FeaturedProperties, { type FeaturedDevelopment } from '@/components/home/FeaturedProperties';
+import ExploreCategories from '@/components/home/ExploreCategories';
 import MetodologiaTeaser from '@/components/home/MetodologiaTeaser';
 import ProcessInfographic from '@/components/home/ProcessInfographic';
 import HowItWorks from '@/components/home/HowItWorks';
+import Testimonials from '@/components/home/Testimonials';
 import WhyPropyte from '@/components/home/WhyPropyte';
 import TrendingMarket from '@/components/home/TrendingMarket';
 import DondeEstamos from '@/components/home/DondeEstamos';
@@ -14,10 +16,17 @@ import DeveloperLogos from '@/components/home/DeveloperLogos';
 import HomeFAQ from '@/components/home/HomeFAQ';
 import DeveloperBanner from '@/components/home/DeveloperBanner';
 import JoinTeamBanner from '@/components/home/JoinTeamBanner';
+import LeadMagnet from '@/components/home/LeadMagnet';
 import RecentBlog from '@/components/home/RecentBlog';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
+import {
+  getTestimonials,
+  getCta,
+  getExploreCategories,
+  localizedExploreLabel,
+} from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -69,10 +78,46 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     console.error('[HomePage] Supabase fetch failed:', error);
   }
 
-  // Orden Home — Manual UX/UI §4.2 + ampliación E-E-A-T (decisión Luis 2026-05-11):
-  // Hero → Nosotros → Featured → Metodología → ProcessInfographic →
-  // HowItWorks → WhyPropyte → TrendingMarket → DondeEstamos →
-  // DeveloperLogos → HomeFAQ → DeveloperBanner → JoinTeamBanner → RecentBlog
+  // Contenido editorial dinámico desde Hub. Auto-hide si Hub no devuelve data:
+  // si Luis quiere ocultar la sección, basta con borrar/desactivar los datos en hub.propyte.com.
+  const [hubTestimonials, leadMagnetCta, hubExplore] = await Promise.all([
+    getTestimonials('home'),
+    getCta('home_lead_magnet'),
+    getExploreCategories(),
+  ]);
+
+  const homeTestimonials = hubTestimonials.map((t) => ({
+    name: t.name,
+    city: t.location ?? '',
+    rating: t.rating ?? 5,
+    text: locale === 'en' ? t.quote_en : t.quote_es,
+  }));
+
+  const exploreOverride = hubExplore.length > 0
+    ? hubExplore.map((c) => ({
+        key: c.slug,
+        typeKey: c.type_key ?? c.slug,
+        label: localizedExploreLabel(c, locale),
+        image: c.image_url,
+        href: c.href,
+      }))
+    : null;
+
+  const leadMagnetProps = leadMagnetCta
+    ? {
+        eyebrow: locale === 'en' ? leadMagnetCta.eyebrow_en : leadMagnetCta.eyebrow_es,
+        title: locale === 'en' ? leadMagnetCta.title_en : leadMagnetCta.title_es,
+        subtitle: locale === 'en' ? leadMagnetCta.subtitle_en : leadMagnetCta.subtitle_es,
+        buttonLabel: locale === 'en' ? leadMagnetCta.button_label_en : leadMagnetCta.button_label_es,
+      }
+    : null;
+
+  // Orden Home — Manual UX/UI §4.2 + ampliación E-E-A-T (decisión Luis 2026-05-11)
+  // + reintegración 2026-05-12 de slots Hub-driven con auto-hide:
+  // Hero → Nosotros → Featured → ExploreCategories(Hub) → Metodología →
+  // ProcessInfographic → HowItWorks → Testimonials(Hub) → WhyPropyte →
+  // TrendingMarket → DondeEstamos → DeveloperLogos → HomeFAQ →
+  // DeveloperBanner → JoinTeamBanner → LeadMagnet(Hub) → RecentBlog
   return (
     <>
       <SchemaMarkup type="organization" />
@@ -88,6 +133,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       )}
 
+      {exploreOverride && (
+        <ScrollReveal>
+          <ExploreCategories typeCounts={stats.typeCounts} override={exploreOverride} />
+        </ScrollReveal>
+      )}
+
       <ScrollReveal>
         <MetodologiaTeaser />
       </ScrollReveal>
@@ -99,6 +150,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <ScrollReveal>
         <HowItWorks />
       </ScrollReveal>
+
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_TESTIMONIALS) && homeTestimonials.length > 0 && (
+        <ScrollReveal delay={0.05}>
+          <Testimonials items={homeTestimonials} />
+        </ScrollReveal>
+      )}
 
       {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && (
         <ScrollReveal delay={0.05}>
@@ -131,6 +188,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
         <ScrollReveal delay={0.05}>
           <JoinTeamBanner />
+        </ScrollReveal>
+      )}
+
+      {leadMagnetProps && (
+        <ScrollReveal>
+          <LeadMagnet cta={leadMagnetProps} />
         </ScrollReveal>
       )}
 
