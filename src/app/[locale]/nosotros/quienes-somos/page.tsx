@@ -112,12 +112,13 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
         ]}
       />
 
-      {/* HERO — single dark canvas, editorial composition.
-          Layered: mesh gradient + grid blueprint + asymmetric content grid.
-          Headline grotesk + accent italic Fraunces sobre la palabra "Propyte"
-          aporta voz humana. Stats en mono tabular = data-forward.
-          La duality "humano + data" se expresa por contraste tipográfico,
-          no por split de columnas con línea dura. */}
+      {/* HERO — single dark canvas, editorial composition Propyte.
+          Tipografía canónica Manual UX/UI: Inter (Neue Haas substitute) en
+          titulares + DM Sans body + Space Grotesk eyebrows + JetBrains Mono
+          en stats/coordinates tabulares. Detalles editoriales (coordenadas,
+          watermark Home, axis dots) preservados como carácter visual; el
+          acento de marca vive en color `--propyte-brand` (#A2F9FF), no en
+          italic serif. */}
       <section className="propyte-hero-canvas relative min-h-[78vh] flex items-center">
         {/* Watermark home icon — extremely faint, decorativo, lower-right */}
         <Home
@@ -145,12 +146,13 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               >
                 {t('title').split(' ').map((word, i, arr) => {
                   const isLast = i === arr.length - 1;
-                  // Acentúa la última palabra del título con serif italic.
-                  // Si t('title') es "Conoce Propyte" → "Conoce" grotesk + "Propyte" italic.
+                  // Acentúa la última palabra del título con el color de marca.
+                  // Si t('title') es "Conoce Propyte" → "Conoce" Inter blanco +
+                  // "Propyte" Inter cyan brand (mismo peso, distinto color).
                   return (
                     <span key={i}>
                       {isLast ? (
-                        <span className="accent-serif text-propyte-brand">{word}</span>
+                        <span className="text-propyte-brand">{word}</span>
                       ) : (
                         word
                       )}
@@ -185,11 +187,11 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 className="propyte-hero-rise"
                 style={{ animationDelay: '360ms' }}
               >
-                <p className="text-2xl md:text-[1.75rem] leading-tight font-medium text-white">
-                  <span className="accent-serif text-propyte-brand">{t('heroTagline').replace(/\.$/, '')}</span>
+                <p className="font-heading text-2xl md:text-[1.75rem] leading-tight font-medium tracking-[-0.01em] text-white">
+                  <span className="text-propyte-brand">{t('heroTagline').replace(/\.$/, '')}</span>
                   <span className="text-white/30">.</span>
                 </p>
-                <p className="mt-4 text-sm text-white/45 leading-relaxed">
+                <p className="mt-4 text-sm text-white/70 leading-relaxed">
                   {t('heroTaglineSub')}
                 </p>
               </div>
@@ -206,7 +208,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                     <dt className="accent-mono text-2xl md:text-3xl font-medium text-propyte-brand">
                       {s.v}
                     </dt>
-                    <dd className="mt-1.5 accent-mono text-2xs text-white/45 uppercase tracking-[0.12em]">
+                    <dd className="mt-1.5 accent-mono text-2xs text-white/70 uppercase tracking-[0.12em]">
                       {s.l}
                     </dd>
                   </div>
@@ -215,10 +217,11 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
             </div>
           </div>
 
-          {/* Coordinate marker bottom-left — architectural detail */}
-          <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-50">
+          {/* Coordinate marker bottom-left — architectural detail (decorativo).
+              opacity-70 sobre dark + white/65 da contraste AA en text-2xs. */}
+          <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-70">
             <span className="block w-6 h-px bg-propyte-brand" aria-hidden="true" />
-            <span className="accent-mono text-2xs uppercase tracking-[0.18em] text-white/40">
+            <span className="accent-mono text-2xs uppercase tracking-[0.18em] text-white/65">
               20.62°N · 87.07°W
             </span>
           </div>
