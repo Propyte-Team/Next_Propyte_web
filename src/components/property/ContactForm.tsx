@@ -12,6 +12,7 @@ const schema = z.object({
   email: z.string().email('invalidEmail'),
   phone: z.string().optional(),
   investmentType: z.string().optional(),
+  website: z.string().optional(), // honeypot (REQ-F-02)
 });
 
 type FormData = z.infer<typeof schema>;
@@ -47,6 +48,16 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+        {...register('website')}
+      />
+
       <div>
         <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-1">{tContact('formName')}</label>
         <input

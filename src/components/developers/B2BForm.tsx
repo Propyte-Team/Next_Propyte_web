@@ -14,6 +14,7 @@ const schema = z.object({
   phone: z.string().min(1),
   location: z.string().min(1),
   message: z.string().optional(),
+  website: z.string().optional(), // honeypot (REQ-F-02)
 });
 
 type FormData = z.infer<typeof schema>;
@@ -52,6 +53,16 @@ export default function B2BForm() {
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#2C2C2C] mb-8">{t('formTitle')}</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="sr-only"
+            {...register('website')}
+          />
+
           {fields.map(field => (
             <div key={field.name}>
               <label htmlFor={`b2b-${field.name}`} className="block text-sm font-medium text-gray-700 mb-1">
