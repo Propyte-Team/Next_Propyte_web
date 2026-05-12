@@ -199,7 +199,7 @@ function JoinBanner() {
                 href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-12 px-6 bg-[#25D366] hover:bg-[#1EBE57] text-white font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+                className="h-12 px-6 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} /> WhatsApp
               </a>

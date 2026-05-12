@@ -10,7 +10,7 @@ const variantStyles = {
   primary: 'bg-[#5CE0D2] text-[#0F1923] hover:bg-[#4BCEC0]',
   secondary: 'bg-transparent text-[#1A2F3F] border-2 border-[#1A2F3F] hover:bg-[#1A2F3F]/10',
   ghost: 'bg-transparent text-[#0F766E] hover:bg-[#0F766E]/10',
-  whatsapp: 'bg-[#25D366] text-white hover:bg-[#1EBE57]',
+  whatsapp: 'bg-[#25D366] text-[#0F1923] hover:bg-[#1EBE57]',
 };
 
 const sizeStyles = {

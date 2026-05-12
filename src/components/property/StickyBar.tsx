@@ -60,7 +60,7 @@ export default function StickyBar({ property }: StickyBarProps) {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 h-9 px-4 bg-[#25D366] hover:bg-[#1EBE57] text-white text-sm font-bold rounded-lg transition-colors"
+            className="flex items-center gap-1.5 h-9 px-4 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] text-sm font-bold rounded-lg transition-colors"
           >
             <MessageCircle size={14} />
             WhatsApp

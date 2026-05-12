@@ -49,7 +49,7 @@ export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
           href={waUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#22BF5B] text-white font-semibold rounded-xl transition-colors shadow-lg shadow-[#25D366]/20 whitespace-nowrap"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#22BF5B] text-[#0F1923] font-semibold rounded-xl transition-colors shadow-lg shadow-[#25D366]/20 whitespace-nowrap"
         >
           <MessageCircle size={18} />
           {tMer('talkToAdvisor')}

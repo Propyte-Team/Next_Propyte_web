@@ -34,7 +34,7 @@ export default function BlogShareBar({ title, url, shareLabel, copyLabel, copied
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="p-2 rounded-full bg-[#25D366] text-white hover:opacity-80 transition-opacity"
+        className="p-2 rounded-full bg-[#25D366] text-[#0F1923] hover:opacity-80 transition-opacity"
         aria-label={whatsappLabel}
       >
         <MessageCircle size={16} />

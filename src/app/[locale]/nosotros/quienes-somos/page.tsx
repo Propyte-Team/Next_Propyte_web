@@ -276,9 +276,9 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 className={`${large ? 'md:col-span-2 bg-[#1A2F3F] text-white' : 'bg-white border border-gray-100'} p-7 rounded-xl hover:shadow-lg transition-shadow`}
               >
                 <div
-                  className={`w-11 h-11 ${large ? 'bg-propyte-cyan-100' : 'bg-propyte-cyan-100'} rounded-xl flex items-center justify-center mb-5`}
+                  className={`w-11 h-11 ${large ? 'bg-propyte-brand/15 border border-propyte-brand/30' : 'bg-propyte-cyan-100'} rounded-xl flex items-center justify-center mb-5`}
                 >
-                  <Icon size={22} className="text-propyte-brand" />
+                  <Icon size={22} className={large ? 'text-propyte-brand' : 'text-[#0F766E]'} />
                 </div>
                 <h3 className={`text-base font-bold ${large ? '' : 'text-[#1A2F3F]'} mb-2`}>
                   {title}
