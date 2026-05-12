@@ -1,0 +1,44 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: "America/Cancun"
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - automated
+    groups:
+      types:
+        patterns:
+          - "@types/*"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@typescript-eslint/*"
+      playwright:
+        patterns:
+          - "@playwright/*"
+          - "playwright"
+          - "@axe-core/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+    ignore:
+      # next + react are pinned exactly on purpose; bump via dedicated PRs.
+      - dependency-name: "next"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+      - ci
+      - automated
