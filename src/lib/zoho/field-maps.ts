@@ -41,7 +41,7 @@ export interface FormData {
   experience?: string | null;
   focusArea?: string | null;
   category?: string | null;
-  website?: string | null; // NOTE: en payload "user" website (Form 6); también honeypot — el endpoint lo separa antes
+  companyWebsite?: string | null; // Form 6: URL del proveedor (Account.Website). NO confundir con `website` honeypot.
   budget?: string | null;
   whatsapp?: string | null;
   interest?: string | null;
@@ -264,7 +264,7 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
     case "provider_form": {
       const industry = data.category ? CATEGORY_TO_INDUSTRY[data.category] ?? data.category : undefined;
       if (industry) parts.push(`Categoría: ${industry}`);
-      if (data.website) parts.push(`Sitio web: ${data.website}`);
+      if (data.companyWebsite) parts.push(`Sitio web: ${data.companyWebsite}`);
       if (data.message) parts.push(`Mensaje: ${data.message}`);
       break;
     }
@@ -374,7 +374,7 @@ export function sourceToZohoPayload(
       Fuente_de_Empresa: "Sitio web",
       Estado_de_Empresa: "NUEVO",
       ...(data.phone ? { Phone: data.phone } : {}),
-      ...(data.website ? { Website: data.website } : {}),
+      ...(data.companyWebsite ? { Website: data.companyWebsite } : {}),
       ...(data.city ? { Billing_City: data.city } : {}),
       Billing_Country: "Mexico",
       ...(desc ? { Description: desc } : {}),

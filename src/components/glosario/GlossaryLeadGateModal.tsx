@@ -8,7 +8,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { X, Download, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { trackGenerateLead, trackFileDownload } from '@/lib/analytics/track';
+import { trackFileDownload } from '@/lib/analytics/track';
+import { submitLead } from '@/lib/leads/submit-lead';
 
 interface Props {
   open: boolean;
@@ -91,36 +92,25 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
   if (!open) return null;
 
   async function onSubmit(data: FormData) {
-    if (data.website && data.website.length > 0) {
-      reset();
-      onClose();
-      return;
-    }
     setSubmitting(true);
-    try {
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          source: 'glossary_pdf',
-          locale,
-        }),
-      });
-      if (!res.ok) throw new Error('lead-failed');
-
-      trackGenerateLead({ formType: 'glossary_pdf' });
+    // submitLead se encarga del honeypot server-side (REQ-F-02) y del trackGenerateLead.
+    // El cliente solo decide qué hacer con el resultado UX.
+    const result = await submitLead('glossary_pdf', {
+      name: data.name,
+      email: data.email,
+      website: data.website, // honeypot — el endpoint lo evalúa
+      locale,
+    });
+    if (result.ok) {
       trackFileDownload({ fileType: 'glossary_pdf' });
       window.location.assign(`/api/glossary/pdf?locale=${locale}`);
       toast.success(t('gateSuccess'));
       reset();
       onClose();
-    } catch {
+    } else {
       toast.error(t('gateError'));
-    } finally {
-      setSubmitting(false);
     }
+    setSubmitting(false);
   }
 
   return (
