@@ -212,6 +212,7 @@ function baseLeadFields(
     Lead_Status: "Nuevo",
     Etapa_interna_de_contacto: ["Sin Contactar"],
     Idioma: locale === "es" ? "Español" : "Ingles",
+    Plataforma_de_llegada: "Sitio web",
     Nombre_de_Campa_a: `Propyte web - ${campaignSlug(source)}`,
     Nombre_del_formulario: formDescription(source, locale),
     // UTM tracking — solo si vienen poblados (Zoho no acepta string vacío en algunos picklists)
@@ -233,49 +234,46 @@ function tipoDeContacto(source: LeadSource): string {
   }
 }
 
-/** Description compuesta — concatena campos extra que no tienen field dedicado en Zoho. */
+/**
+ * Description = contexto del form (asunto, tipo proyecto, presupuesto, etc.)
+ *   — info estructurada del prospecto que NO es texto libre.
+ * NO incluye `data.message` ni `data.interest` libres — esos van a `Mensaje` (composeMensaje).
+ */
 function composeDescription(source: LeadSource, data: FormData): string | undefined {
   const parts: string[] = [];
 
   switch (source) {
     case "contact":
       if (data.subject) parts.push(`Asunto: ${data.subject}`);
-      if (data.message) parts.push(data.message);
       break;
     case "property_inquiry":
       if (data.investmentType) parts.push(`Tipo inversión: ${data.investmentType}`);
       if (data.propertyName) parts.push(`Propiedad: ${data.propertyName}`);
-      if (data.message) parts.push(data.message);
       break;
     case "developer_request":
       if (data.projectType) parts.push(`Tipo proyecto: ${data.projectType}`);
       if (data.unitCount) parts.push(`Unidades: ${data.unitCount}`);
-      if (data.message) parts.push(data.message);
       break;
     case "b2b_request":
-      if (data.message) parts.push(data.message);
+      // sin contexto adicional — el mensaje libre va a Mensaje
       break;
     case "broker_registration":
       if (data.brokerType) parts.push(`Tipo broker: ${data.brokerType}`);
       if (data.experience) parts.push(`Experiencia: ${data.experience}`);
       if (data.focusArea) parts.push(`Zona enfoque: ${data.focusArea}`);
-      if (data.message) parts.push(`Mensaje: ${data.message}`);
       break;
     case "provider_form": {
       const industry = data.category ? CATEGORY_TO_INDUSTRY[data.category] ?? data.category : undefined;
       if (industry) parts.push(`Categoría: ${industry}`);
       if (data.companyWebsite) parts.push(`Sitio web: ${data.companyWebsite}`);
-      if (data.message) parts.push(`Mensaje: ${data.message}`);
       break;
     }
     case "built_consultation":
       if (data.projectType) parts.push(`Tipo proyecto: ${data.projectType}`);
       if (data.budget) parts.push(`Presupuesto: ${data.budget}`);
-      if (data.message) parts.push(data.message);
       break;
     case "affiliate_request":
       if (data.experience) parts.push(`Experiencia: ${data.experience}`);
-      if (data.interest) parts.push(`Interés: ${data.interest}`);
       break;
     case "lead_magnet":
       parts.push("Descargó reporte gratuito.");
@@ -289,6 +287,98 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
   }
 
   return parts.length > 0 ? truncateDescription(parts.join("\n")) : undefined;
+}
+
+/**
+ * Mensaje = texto libre del prospecto.
+ * Para `affiliate_request` el campo libre es `interest` (no hay `message`).
+ * Para newsletter / lead_magnet / glossary_pdf no hay mensaje.
+ */
+function composeMensaje(source: LeadSource, data: FormData): string | undefined {
+  if (source === "affiliate_request") {
+    return data.interest ? truncateDescription(data.interest) : undefined;
+  }
+  if (source === "newsletter" || source === "lead_magnet" || source === "glossary_pdf") {
+    return undefined;
+  }
+  return data.message ? truncateDescription(data.message) : undefined;
+}
+
+/**
+ * Compone título + contenido de la Nota que se anexa al Lead duplicado
+ * cuando Zoho rechaza el create por DUPLICATE_DATA (Opción C del spec).
+ */
+export function composeDuplicateNote(
+  source: LeadSource,
+  data: FormData,
+  locale: Locale,
+  utms: UtmData,
+): { title: string; content: string } {
+  const langTag = locale === "en" ? "EN" : "ES";
+  const formName = formDescription(source, locale);
+  const campaign = `Propyte web - ${campaignSlug(source)}`;
+
+  const title = `Nuevo contacto web — ${formName.replace(/^Formulario Propyte web (ES|EN) - /, "")}`;
+
+  const lines: string[] = [
+    `📩 Nuevo touchpoint desde ${langTag === "ES" ? "el sitio web" : "the website"}.`,
+    "",
+    `Formulario: ${formName}`,
+    `Campaña: ${campaign}`,
+    `Fecha: ${new Date().toISOString()}`,
+  ];
+
+  if (data.email) lines.push(`Email enviado: ${data.email}`);
+  if (data.phone) lines.push(`Teléfono: ${data.phone}`);
+  if (data.whatsapp) lines.push(`WhatsApp: ${data.whatsapp}`);
+  if (data.company) lines.push(`Empresa: ${data.company}`);
+  if (data.city) lines.push(`Ciudad: ${data.city}`);
+  if (data.location) lines.push(`Ubicación: ${data.location}`);
+
+  const desc = composeDescription(source, data);
+  if (desc) {
+    lines.push("");
+    lines.push("--- Contexto ---");
+    lines.push(desc);
+  }
+
+  const mensaje = composeMensaje(source, data);
+  if (mensaje) {
+    lines.push("");
+    lines.push("--- Mensaje del prospecto ---");
+    lines.push(mensaje);
+  }
+
+  // UTM tracking si está poblado
+  const utmParts: string[] = [];
+  if (utms.utm_source) utmParts.push(`source=${utms.utm_source}`);
+  if (utms.utm_medium) utmParts.push(`medium=${utms.utm_medium}`);
+  if (utms.utm_campaign) utmParts.push(`campaign=${utms.utm_campaign}`);
+  if (utms.gclid) utmParts.push(`gclid=${utms.gclid}`);
+  if (utmParts.length > 0) {
+    lines.push("");
+    lines.push(`UTM: ${utmParts.join(" | ")}`);
+  }
+
+  return {
+    title,
+    content: lines.join("\n"),
+  };
+}
+
+/**
+ * Extrae el id del Lead existente del error DUPLICATE_DATA de Zoho.
+ * Zoho devuelve algo como:
+ *   { code: "DUPLICATE_DATA", details: { api_name: "Email", id: "55000..." } }
+ * Pero nosotros loggeamos el error como string ya sanitizado, así que aquí
+ * necesitamos el objeto raw — el caller debe pasar el detail original.
+ */
+export function extractDuplicateLeadId(
+  detail: { code?: string; details?: { id?: string } } | null | undefined,
+): string | null {
+  if (!detail) return null;
+  if (detail.code !== "DUPLICATE_DATA") return null;
+  return detail.details?.id || null;
 }
 
 /**
@@ -360,14 +450,23 @@ export function sourceToZohoPayload(
     // Si no hay mapping, composeDescription ya incluyó "Propiedad: <name>"
   }
 
-  // Description (catch-all)
+  // Description (contexto estructurado) — sin texto libre
   const desc = composeDescription(source, data);
   if (desc) lead.Description = desc;
+
+  // Mensaje (texto libre del prospecto)
+  const mensaje = composeMensaje(source, data);
+  if (mensaje) lead.Mensaje = mensaje;
 
   // Form 6 — segunda llamada a Accounts
   let account: ZohoAccount | undefined;
   if (source === "provider_form") {
     const industry = data.category ? CATEGORY_TO_INDUSTRY[data.category] ?? "Otro" : "Otro";
+    // Para el Account, Description sí concatena contexto + mensaje (Accounts no tiene campo Mensaje propio)
+    const accountDescriptionParts = [desc, mensaje ? `Mensaje: ${mensaje}` : undefined].filter(Boolean);
+    const accountDesc = accountDescriptionParts.length > 0
+      ? truncateDescription(accountDescriptionParts.join("\n"))
+      : undefined;
     account = {
       Account_Name: data.company || "Proveedor sin nombre",
       Industry: industry,
@@ -377,7 +476,7 @@ export function sourceToZohoPayload(
       ...(data.companyWebsite ? { Website: data.companyWebsite } : {}),
       ...(data.city ? { Billing_City: data.city } : {}),
       Billing_Country: "Mexico",
-      ...(desc ? { Description: desc } : {}),
+      ...(accountDesc ? { Description: accountDesc } : {}),
     };
   }
 

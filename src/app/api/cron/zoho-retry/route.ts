@@ -5,6 +5,8 @@ import { verifyCronSecret } from '@/lib/security/cron-auth';
 import { sanitizeErrorMessage } from '@/lib/security/sanitize-error';
 import { getZohoClient } from '@/lib/zoho/client';
 import {
+  composeDuplicateNote,
+  extractDuplicateLeadId,
   sourceToZohoPayload,
   truncateError,
   type FormData,
@@ -99,6 +101,8 @@ async function rebuildPayload(
   payload: { lead: ZohoLead; account?: ZohoAccount };
   locale: Locale;
   email: string | null;
+  formData: FormData;
+  utms: UtmData;
 } | null> {
   const source = row.source;
   if (!source || !KNOWN_SOURCES.includes(source as LeadSource)) return null;
@@ -136,7 +140,7 @@ async function rebuildPayload(
     zohoDevelopmentId,
   );
 
-  return { source: source as LeadSource, payload, locale, email: row.email };
+  return { source: source as LeadSource, payload, locale, email: row.email, formData, utms };
 }
 
 async function retryOne(
@@ -166,7 +170,7 @@ async function retryOne(
     return 'skipped';
   }
 
-  const { source, payload, email } = rebuilt;
+  const { source, payload, email, formData, utms, locale } = rebuilt;
 
   // Rama PENDING_SYNC: search por email primero para evitar duplicar (REQ-F-10)
   const isPending = row.zoho_sync_error === 'PENDING_SYNC';
@@ -194,16 +198,31 @@ async function retryOne(
   }
 
   // Rama otros: POST normal a /Leads (y /Accounts si form 6)
+  // Si Zoho rechaza por DUPLICATE_DATA → anexar Nota al Lead existente (Opción C).
   let zohoLeadId: string | undefined;
+  let attachedAsNote = false;
   try {
     const leadResult = await zoho.createRecords('Leads', [payload.lead]);
     const detail = leadResult.data?.[0];
     if (detail && detail.status === 'success' && detail.details?.id) {
       zohoLeadId = detail.details.id;
     } else {
-      throw new Error(
-        `Zoho Lead create non-success: ${JSON.stringify(detail)}`,
-      );
+      const duplicateId = extractDuplicateLeadId(detail);
+      if (duplicateId) {
+        const note = composeDuplicateNote(source, formData, locale, utms);
+        const noteResult = await zoho.createNote(duplicateId, 'Leads', note.title, note.content);
+        if (noteResult) {
+          zohoLeadId = duplicateId;
+          attachedAsNote = true;
+        } else {
+          await updateLeadLocal(supabase, row.id, {
+            zoho_sync_error: truncateError(`DUPLICATE_NOTE_FAILED: existing_lead_id=${duplicateId}`),
+          });
+          return 'failed';
+        }
+      } else {
+        throw new Error(`Zoho Lead create non-success: ${JSON.stringify(detail)}`);
+      }
     }
   } catch (err) {
     await updateLeadLocal(supabase, row.id, {
@@ -214,7 +233,7 @@ async function retryOne(
 
   let zohoAccountId: string | undefined;
   let accountError: string | undefined;
-  if (source === 'provider_form' && payload.account) {
+  if (source === 'provider_form' && payload.account && !attachedAsNote) {
     try {
       const acctResult = await zoho.createRecords('Accounts', [payload.account]);
       const detail = acctResult.data?.[0];
@@ -232,7 +251,11 @@ async function retryOne(
     zoho_lead_id: zohoLeadId,
     zoho_account_id: zohoAccountId ?? null,
     zoho_synced_at: new Date().toISOString(),
-    zoho_sync_error: accountError ? truncateError(accountError) : null,
+    zoho_sync_error: attachedAsNote
+      ? truncateError(`DUPLICATE_NOTE: anexado como Nota al Lead existente ${zohoLeadId}`)
+      : accountError
+      ? truncateError(accountError)
+      : null,
   });
   return 'success';
 }

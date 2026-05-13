@@ -331,6 +331,40 @@ export class ZohoClient {
   }
 
   /**
+   * Crea una Nota asociada a un record (Lead/Account/Deal/etc).
+   * Usado cuando Zoho rechaza un Lead nuevo por DUPLICATE_DATA — en vez de
+   * perder el touchpoint, anexamos el contexto al Lead existente como Nota
+   * (Opción C del spec § Duplicados).
+   *
+   * @param parentId    ID del record padre (ej. Lead existente).
+   * @param parentModule Nombre del módulo padre ("Leads", "Accounts", etc.).
+   * @param title       Note_Title (máx ~120 chars recomendado).
+   * @param content     Note_Content (texto libre, soporta saltos de línea).
+   * @returns { id } de la nota creada, o null si falla.
+   */
+  async createNote(
+    parentId: string,
+    parentModule: string,
+    title: string,
+    content: string,
+  ): Promise<{ id: string } | null> {
+    if (!parentId) return null;
+    const result = await this.createRecords("Notes", [
+      {
+        Parent_Id: parentId,
+        se_module: parentModule,
+        Note_Title: title.slice(0, 120),
+        Note_Content: content.slice(0, 32_000),
+      },
+    ]);
+    const detail = result.data?.[0];
+    if (detail?.status === "success" && detail.details?.id) {
+      return { id: detail.details.id };
+    }
+    return null;
+  }
+
+  /**
    * Wrapper sobre searchRecords() — busca un Lead por Email exact-match.
    * Usado por el cron retry para evitar duplicar cuando un PENDING_SYNC se
    * reintenta y Zoho ya recibió el primer POST (REQ-F-10, REQ-F-20).
