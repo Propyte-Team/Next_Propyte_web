@@ -28,6 +28,21 @@ export interface SubmitLeadResult {
 }
 
 /**
+ * Detecta el locale del primer segmento del pathname (/es/... o /en/...).
+ * Fallback a 'es' si pathname no matchea — el endpoint también default a 'es'
+ * para que `Idioma` Zoho sea siempre uno de los 2 valores válidos del picklist.
+ *
+ * CRÍTICO para asignación correcta a comerciales: leads en EN deben asignarse
+ * a asesores bilingües. Si el locale es incorrecto, la rotación de Zoho puede
+ * mandar leads en inglés a un comercial que no habla inglés.
+ */
+function detectLocaleFromPathname(): 'es' | 'en' {
+  if (typeof window === 'undefined') return 'es';
+  const seg = window.location.pathname.split('/')[1];
+  return seg === 'en' ? 'en' : 'es';
+}
+
+/**
  * submitLead(source, data)
  *
  * Envía un lead al endpoint /api/leads. NO maneja success/error UI — eso es
@@ -36,16 +51,20 @@ export interface SubmitLeadResult {
  * @param source  Uno de los 11 valores LeadSource (ej. 'contact', 'broker_registration').
  * @param data    Campos del form. Honeypot `website` lo pasa cualquier form que lo tenga.
  *                UTMs se agregan automáticamente desde getCapturedUTMs().
+ *                `locale` se auto-detecta del pathname; si `data.locale` viene
+ *                explícito, sobrescribe el detectado.
  */
 export async function submitLead(
   source: LeadSource,
   data: Record<string, unknown>,
 ): Promise<SubmitLeadResult> {
   const utms = getCapturedUTMs();
+  const detectedLocale = detectLocaleFromPathname();
 
   const payload = {
     ...utms,
-    ...data,
+    locale: detectedLocale, // default — robusto contra forms que olvidan pasar locale
+    ...data,                // data.locale sobrescribe si está presente
     source,
     page: typeof window !== "undefined" ? window.location.href : undefined,
   };
