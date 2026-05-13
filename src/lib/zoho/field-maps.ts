@@ -180,6 +180,37 @@ function campaignSlug(source: LeadSource): string {
   }
 }
 
+/**
+ * Tag indicativo de Tipo_de_Contacto embebido en Nombre_de_Campa_a.
+ * Permite que las reglas Zoho asignen Tipo_de_Contacto por `Nombre_de_Campa_a CONTIENE [XXX]`,
+ * mismo patrón que campañas Meta Ads (ej. "74 CAMPAÑA DE FINANCIAMIENTO - [LEADS] - MEXICO").
+ */
+function campaignTag(source: LeadSource): string {
+  switch (source) {
+    case "broker_registration": return "[BROKERS]";
+    case "provider_form":       return "[PROVEEDORES]";
+    case "b2b_request":
+    case "developer_request":
+    case "built_consultation":  return "[DESARROLLADORES]";
+    case "affiliate_request":   return "[EMPLEO]";
+    default:                    return "[LEADS]";
+  }
+}
+
+/**
+ * Sub-tag opcional con paréntesis para segmentar dentro de un Tipo_de_Contacto.
+ * Ejemplos: F8 → "(ASESOR)" dentro de [EMPLEO]; F3 → "(HERO)" y F4 → "(REGISTRO)" dentro de [DESARROLLADORES].
+ * Patrón paralelo al de Meta Ads cuando una campaña necesita doble clasificación.
+ */
+function campaignSubtag(source: LeadSource): string | undefined {
+  switch (source) {
+    case "b2b_request":       return "(HERO)";
+    case "developer_request": return "(REGISTRO)";
+    case "affiliate_request": return "(ASESOR)";
+    default:                  return undefined;
+  }
+}
+
 /** Descripción humana del form para Nombre_del_formulario. */
 function formDescription(source: LeadSource, locale: Locale): string {
   const langTag = locale === "en" ? "EN" : "ES";
@@ -213,7 +244,11 @@ function baseLeadFields(
     Etapa_interna_de_contacto: ["Sin Contactar"],
     Idioma: locale === "es" ? "Español" : "Ingles",
     Plataforma_de_llegada: "Sitio web",
-    Nombre_de_Campa_a: `Propyte web - ${campaignSlug(source)}`,
+    Nombre_de_Campa_a: (() => {
+      const subtag = campaignSubtag(source);
+      const base = `Propyte web - ${campaignSlug(source)} - ${campaignTag(source)}`;
+      return subtag ? `${base} ${subtag}` : base;
+    })(),
     Nombre_del_formulario: formDescription(source, locale),
     // UTM tracking — solo si vienen poblados (Zoho no acepta string vacío en algunos picklists)
     ...(utms.gclid ? { GCLID: utms.gclid } : {}),
@@ -228,8 +263,10 @@ function tipoDeContacto(source: LeadSource): string {
   switch (source) {
     case "broker_registration": return "Broker";
     case "provider_form":       return "Proveedor";
-    // Q6 abierta — afiliados defaultean a Lead hasta confirmación de Luis
-    case "affiliate_request":   return "Lead";
+    case "b2b_request":
+    case "developer_request":
+    case "built_consultation":  return "Desarrollador";
+    case "affiliate_request":   return "Empleo";
     default:                    return "Lead";
   }
 }
@@ -458,23 +495,31 @@ export function sourceToZohoPayload(
   const mensaje = composeMensaje(source, data);
   if (mensaje) lead.Mensaje = mensaje;
 
-  // Form 6 — segunda llamada a Accounts
+  // Forms con Account asociado: F6 (Proveedor), F3/F4/F7 (Desarrolladora) — doble llamada Lead + Account.
+  // F7 (built_consultation): company es OPCIONAL en el form — solo creamos Account si el usuario la llenó.
   let account: ZohoAccount | undefined;
-  if (source === "provider_form") {
-    const industry = data.category ? CATEGORY_TO_INDUSTRY[data.category] ?? "Otro" : "Otro";
+  const isProvider = source === "provider_form";
+  const isDeveloper = source === "b2b_request" || source === "developer_request";
+  const isBuiltWithCompany = source === "built_consultation" && !!data.company;
+  if (isProvider || isDeveloper || isBuiltWithCompany) {
+    const industry = isProvider
+      ? (data.category ? CATEGORY_TO_INDUSTRY[data.category] ?? "Otro" : "Otro")
+      : "Desarrolladora";
+    const fallbackName = isProvider ? "Proveedor sin nombre" : "Desarrolladora sin nombre";
     // Para el Account, Description sí concatena contexto + mensaje (Accounts no tiene campo Mensaje propio)
     const accountDescriptionParts = [desc, mensaje ? `Mensaje: ${mensaje}` : undefined].filter(Boolean);
     const accountDesc = accountDescriptionParts.length > 0
       ? truncateDescription(accountDescriptionParts.join("\n"))
       : undefined;
+    const billingCity = data.city || data.location;
     account = {
-      Account_Name: data.company || "Proveedor sin nombre",
+      Account_Name: data.company || fallbackName,
       Industry: industry,
       Fuente_de_Empresa: "Sitio web",
       Estado_de_Empresa: "NUEVO",
       ...(data.phone ? { Phone: data.phone } : {}),
       ...(data.companyWebsite ? { Website: data.companyWebsite } : {}),
-      ...(data.city ? { Billing_City: data.city } : {}),
+      ...(billingCity ? { Billing_City: billingCity } : {}),
       Billing_Country: "Mexico",
       ...(accountDesc ? { Description: accountDesc } : {}),
     };

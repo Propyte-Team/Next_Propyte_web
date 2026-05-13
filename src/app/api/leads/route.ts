@@ -222,12 +222,12 @@ async function pushToZoho(
     }
   }
 
-  // Form 6 Proveedores — doble llamada Lead + Account (REQ-F-06)
+  // Forms con Account asociado (F6 Proveedor, F3/F4 Desarrolladora) — doble llamada Lead + Account (REQ-F-06)
   // Si el Lead se anexó como Nota a un duplicado, NO creamos Account nuevo
   // (el Account existente del duplicado se usa).
   let zohoAccountId: string | undefined;
   let accountError: string | undefined;
-  if (source === 'provider_form' && payload.account && !attachedAsNote) {
+  if (payload.account && !attachedAsNote) {
     try {
       const acctResult = await zoho.createRecords('Accounts', [payload.account]);
       const acctDetail = acctResult.data?.[0];
@@ -447,18 +447,7 @@ export async function POST(request: NextRequest) {
         error: sanitizeErrorMessage(insertErr),
       }),
     );
-    // Diagnóstico temporal: expone razón del fallo en development header.
-    // TODO eliminar tras estabilizar el endpoint en prod (REQ-S-09 prohíbe eco
-    // de payload pero no de error metadata del propio server).
-    return NextResponse.json(
-      { error: 'Failed to save lead' },
-      {
-        status: 500,
-        headers: {
-          'X-Diag-Reason': sanitizeErrorMessage(insertErr).slice(0, 200),
-        },
-      },
-    );
+    return NextResponse.json({ error: 'Failed to save lead' }, { status: 500 });
   }
 
   // 8. Push a Zoho — fire-and-await dentro del request.

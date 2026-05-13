@@ -233,7 +233,7 @@ async function retryOne(
 
   let zohoAccountId: string | undefined;
   let accountError: string | undefined;
-  if (source === 'provider_form' && payload.account && !attachedAsNote) {
+  if (payload.account && !attachedAsNote) {
     try {
       const acctResult = await zoho.createRecords('Accounts', [payload.account]);
       const detail = acctResult.data?.[0];
