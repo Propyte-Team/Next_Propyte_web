@@ -8,8 +8,7 @@ type Client = SupabaseClient<any, any, any>;
 // PostgREST `.or()` / `.filter()` strings use `,` `(` `)` `*` `%` `:` `\` as
 // syntactic separators. When user input flows into one of these strings we
 // must strip those characters first to prevent filter-clause injection that
-// would let a caller bypass the `approved_at` / `zoho_pipeline_status` /
-// `ext_publicado` gates on the underlying view/table.
+// would let a caller bypass the `approved_at` gate on the underlying view/table.
 function sanitizePostgrestFilter(input: string, maxLen = 80): string {
   return input.replace(/[,()*%\\:]/g, '').trim().slice(0, maxLen);
 }
@@ -63,17 +62,30 @@ export interface DevelopmentFilters {
   orderBy?: 'price_asc' | 'price_desc' | 'newest' | 'roi' | 'units';
 }
 
-// Canonical public gate (alineado con Propyte_hub 2026-04-20).
-// Vocabulario antiguo ES 7 valores (discovery/analisis/presentacion/
-// aprobado/listo/descartado/pausado) → nuevo set EN 5 valores alineados
-// con Genesis: draft | review | published | paused | possible_duplicate.
-// El gate público mostra EXCLUSIVAMENTE `published`. Antes era
-// ['aprobado', 'Aprobado', 'listo', 'Listo'].
-// Source of truth: Propyte_hub/src/lib/status-canonical.ts +
-// scripts/sql/standardize-status.sql (migration idempotente ejecutada
-// en Supabase oaijxdpevakashxshhvm, 1258 unidades migradas).
-// Mantenemos un array para compat con `.in(...)` y posibles extensiones
-// (p.ej. si el Hub permite un modo "draft público" a futuro).
+// Canonical public gate (alineado con Propyte_hub 2026-05-13).
+//
+// La verdad canónica del gate público es `web_status='published'`. El trigger
+// SQL `fn_sync_ext_publicado` (real_estate_hub) garantiza:
+//   web_status='published'  ⟺  ext_publicado=true  ⟺  approved_at IS NOT NULL
+// y limpia approved_at/ext_publicado cuando web_status pasa a 'draft'.
+//
+// Como las views v_units/v_developments NO exponen web_status pero SÍ
+// approved_at, filtrar por `approved_at IS NOT NULL` captura completamente
+// el gate. El antiguo filtro `zoho_pipeline_status IN ('published')` quedó
+// obsoleto: zoho_pipeline_status es el pipeline interno de Zoho CRM, no
+// controla la visibilidad web (ver comentario del trigger SQL).
+//
+// Incidente que motivó la limpieza (2026-05-13): unidades duplicadas en Hub
+// quedan con zoho_pipeline_status='draft' por seguridad. Al aprobar en Hub,
+// web_status pasa a 'published' (trigger setea approved_at) pero
+// zoho_pipeline_status sigue en 'draft' → el sitio las ocultaba aunque el
+// Hub mostraba el badge "Sitio: ✓ publicado".
+//
+// Source of truth: Propyte_hub/src/lib/status-canonical.ts
+// + scripts/sql/add-web-status.sql (trigger fn_sync_ext_publicado).
+//
+// @deprecated — usar `applyPublicGate(query)` o agregar `.not('approved_at', 'is', null)`.
+// Se mantiene exportado por consumidores externos (page.tsx).
 export const APPROVED_STATUSES = ['published'] as const;
 
 export async function getDevelopments(client: Client, filters: DevelopmentFilters = {}) {
@@ -81,8 +93,7 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   let query = hub
     .from('v_developments')
     .select('*', { count: 'exact' })
-    .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES);
+    .not('approved_at', 'is', null);
 
   if (filters.city) query = query.eq('city', filters.city);
   if (filters.zone) query = query.eq('zone', filters.zone);
@@ -152,15 +163,14 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
 
   if (devError || !dev) return { data: null, error: devError };
 
-  // Solo unidades aprobadas + pipeline published — coherencia con getGlobalStats
-  // y con la lista que muestra Hub /unidades. Previene fuga de unidades draft o
+  // Solo unidades con web_status='published' (capturado vía approved_at IS NOT NULL
+  // por trigger fn_sync_ext_publicado). Previene fuga de unidades draft o
   // duplicadas accidentales (slugs `-copy-`) al detail page del desarrollo.
   const { data: units, error: unitsError } = await hub
     .from('v_units')
     .select('*')
     .eq('development_id', (dev as { id: string }).id)
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .order('unit_number', { ascending: true });
 
   const devRow = dev as { name?: string | null };
@@ -193,7 +203,6 @@ export async function getSimilarDevelopments(
       .from('v_developments')
       .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name')
       .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .neq('id', seed.id)
       .limit(limit);
 
@@ -217,15 +226,15 @@ export async function getSimilarDevelopments(
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
-  // Data vive en schema real_estate_hub (view v_developments), matching WP sync.
-  // Filter schema matches WP sync-manager.php (approved_at + zoho_pipeline_status).
+  // Data vive en schema real_estate_hub (view v_developments).
+  // Gate público: approved_at IS NOT NULL ⟺ web_status='published' (vía trigger
+  // fn_sync_ext_publicado). zoho_pipeline_status NO controla visibilidad web.
   const hub = client.schema('real_estate_hub' as 'public');
 
   const featured = await hub
     .from('v_developments')
     .select('*')
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .eq('featured', true)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -244,7 +253,6 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .from('v_developments')
     .select('*')
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .order('created_at', { ascending: false })
     .limit(fillLimit);
 
@@ -267,7 +275,6 @@ export async function getDevelopmentsByCity(client: Client, city: string) {
     .from('v_developments')
     .select('*', { count: 'exact' })
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .eq('city', city)
     .order('created_at', { ascending: false });
 }
@@ -278,8 +285,7 @@ export async function getCityCounts(client: Client) {
     .schema('real_estate_hub' as 'public')
     .from('v_developments')
     .select('city', { count: 'exact', head: false })
-    .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES);
+    .not('approved_at', 'is', null);
 }
 
 export async function getGlobalStats(client: Client) {
@@ -288,13 +294,11 @@ export async function getGlobalStats(client: Client) {
     hub
       .from('v_developments')
       .select('*', { count: 'exact' })
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES),
+      .not('approved_at', 'is', null),
     hub
       .from('v_units')
       .select('id', { count: 'exact', head: true })
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES),
+      .not('approved_at', 'is', null),
   ]);
 
   const devs = (devsRes.data || []) as Array<Record<string, unknown>>;
@@ -361,8 +365,7 @@ export async function getUnits(client: Client, filters: UnitFilters = {}) {
   let query = hub(client)
     .from('v_units')
     .select('*', { count: 'exact' })
-    .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES);
+    .not('approved_at', 'is', null);
 
   if (filters.city) query = query.eq('city', filters.city);
   if (filters.zone) query = query.eq('zone', filters.zone);
@@ -423,16 +426,15 @@ export async function getSimilarUnits(
   seed: { id: string; city: string; zone: string | null; unit_type: string | null },
   limit = 4
 ) {
-  // Filtros canónicos (idénticos a getSimilarDevelopments, getUnits, getGlobalStats):
-  // solo unidades aprobadas + pipeline published. Previene fuga de unidades draft,
-  // duplicadas accidentales (slugs `-copy-`) o de developments unpublished a la
-  // sección "Propiedades similares" del detail page.
+  // Filtro canónico (idéntico a getSimilarDevelopments, getUnits, getGlobalStats):
+  // approved_at IS NOT NULL ⟺ web_status='published' (vía trigger). Previene fuga
+  // de unidades draft, duplicadas (slugs `-copy-`) o de developments unpublished
+  // a la sección "Propiedades similares" del detail page.
   const base = () =>
     hub(client)
       .from('v_units')
       .select('id, slug, name, unit_number, development_name, city, zone, images, price_mxn, bedrooms, bathrooms, area_m2, unit_type')
       .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .neq('id', seed.id)
       .limit(limit);
 
@@ -593,8 +595,7 @@ export async function getDeveloperProjectCount(client: Client, developerId: stri
       .from('v_developments')
       .select('id', { count: 'exact', head: true })
       .eq('developer_id', developerId)
-      .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES);
+      .not('approved_at', 'is', null);
     return count || 0;
   } catch {
     return 0;
@@ -607,7 +608,6 @@ export async function getDevelopers(client: Client) {
     .from('v_developers')
     .select('*')
     .not('approved_at', 'is', null)
-    .in('zoho_pipeline_status', APPROVED_STATUSES)
     .order('name');
 }
 
@@ -634,7 +634,6 @@ export async function getDeveloperDevelopments(
       .select('id, slug, name, images, min_price_mxn, price_mxn, stage, city, zone')
       .eq('developer_id', developerId)
       .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .order('name');
     if (error) { console.error('[getDeveloperDevelopments]', error.message); return []; }
     return (data ?? []) as unknown as DeveloperDevelopment[];
