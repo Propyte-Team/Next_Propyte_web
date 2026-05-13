@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getDevelopers, APPROVED_STATUSES } from '@/lib/supabase/queries';
+import { getDevelopers } from '@/lib/supabase/queries';
 import type { DeveloperRow } from '@/lib/supabase/types';
 import DeveloperProfilePage from '../_components/DeveloperProfilePage';
 

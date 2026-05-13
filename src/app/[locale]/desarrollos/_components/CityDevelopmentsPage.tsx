@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { ChevronRight, MapPin, Building2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { APPROVED_STATUSES } from '@/lib/supabase/queries';
 import { pickLang } from '@/lib/i18n/pickLang';
 import { formatPrice } from '@/lib/formatters';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
@@ -49,7 +48,6 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         { count: 'exact' }
       )
       .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .ilike('city', `%${cityInfo.matchTerm}%`)
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);

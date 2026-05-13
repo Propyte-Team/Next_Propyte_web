@@ -1,6 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { APPROVED_STATUSES } from '@/lib/supabase/queries';
 import DevelopmentDetailPage from '../_components/DevelopmentDetailPage';
 import { buildDetailMetadata } from '../_components/buildDetailMetadata';
 import { CITY_SLUGS } from '../_components/cityConfig';
@@ -16,7 +15,6 @@ export async function generateStaticParams() {
       .from('v_developments')
       .select('slug')
       .not('approved_at', 'is', null)
-      .in('zoho_pipeline_status', APPROVED_STATUSES)
       .limit(1000);
     // Exclude city slugs — those have their own literal pages
     return (data || [])
