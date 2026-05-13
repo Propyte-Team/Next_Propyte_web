@@ -341,6 +341,26 @@ export async function POST(request: NextRequest) {
   // 7. Insert public.leads PRIMERO con marker PENDING_SYNC (REQ-F-04, REQ-F-04b)
   const supabase = await createServiceRoleClient();
 
+  // createServiceRoleClient retorna null si NEXT_PUBLIC_SUPABASE_URL o
+  // SUPABASE_SERVICE_ROLE_KEY faltan en el environment runtime. Hacer
+  // .from(...) en null tiraría TypeError → 500 genérico sin contexto.
+  // Mejor responder explícito (REQ-S-09 dice no echo de payload, pero
+  // marcar "service unavailable" es OK — el cliente reintenta o el usuario
+  // verá que algo está mal del lado servidor, no de su input).
+  if (!supabase) {
+    console.error(
+      JSON.stringify({
+        event: 'leads.supabase-misconfigured',
+        url_set: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        key_set: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      }),
+    );
+    return NextResponse.json(
+      { error: 'Service temporarily unavailable. Please try again.' },
+      { status: 503 },
+    );
+  }
+
   const formData: FormData = {
     name: data.name || null,
     email: data.email || null,
