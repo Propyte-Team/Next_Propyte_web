@@ -396,10 +396,19 @@ export async function POST(request: NextRequest) {
   };
 
   // Resolver Proyecto_de_Interes si form 2 (lookup unit → development → zoho_id)
+  // Side effect: si la unidad NO existe en v_units, NO persistimos property_id
+  // en public.leads (evita FK violation si la columna tiene constraint).
   let zohoDevelopmentId: string | undefined;
+  let propertyIdToPersist: string | null = data.propertyId || null;
   if (source === 'property_inquiry' && data.propertyId) {
     const resolved = await resolveProyectoDeInteres(supabase, data.propertyId);
-    if (resolved) zohoDevelopmentId = resolved;
+    if (resolved) {
+      zohoDevelopmentId = resolved;
+    } else {
+      // Lookup falló — la unidad no existe en v_units. NO persistir property_id
+      // para no romper FK constraints. El propertyName ya va en Description.
+      propertyIdToPersist = null;
+    }
   }
 
   // Generar payload Zoho (necesitamos los identificadores para auditar en Supabase)
@@ -412,7 +421,7 @@ export async function POST(request: NextRequest) {
       email: data.email || null,
       phone: data.phone || data.whatsapp || null,
       message: data.message || null,
-      property_id: data.propertyId || null,
+      property_id: propertyIdToPersist,
       source,
       intake_status: 'nuevo',
       locale,
@@ -438,7 +447,18 @@ export async function POST(request: NextRequest) {
         error: sanitizeErrorMessage(insertErr),
       }),
     );
-    return NextResponse.json({ error: 'Failed to save lead' }, { status: 500 });
+    // Diagnóstico temporal: expone razón del fallo en development header.
+    // TODO eliminar tras estabilizar el endpoint en prod (REQ-S-09 prohíbe eco
+    // de payload pero no de error metadata del propio server).
+    return NextResponse.json(
+      { error: 'Failed to save lead' },
+      {
+        status: 500,
+        headers: {
+          'X-Diag-Reason': sanitizeErrorMessage(insertErr).slice(0, 200),
+        },
+      },
+    );
   }
 
   // 8. Push a Zoho — fire-and-await dentro del request.
