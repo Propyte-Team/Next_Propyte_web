@@ -45,8 +45,6 @@ export interface FormData {
   budget?: string | null;
   whatsapp?: string | null;
   interest?: string | null;
-  /** URL exacta de la página donde se envió el form — mapeada a Nombre_anuncio. */
-  page?: string | null;
 }
 
 export interface UtmData {
@@ -496,9 +494,6 @@ export function sourceToZohoPayload(
   // Mensaje (texto libre del prospecto)
   const mensaje = composeMensaje(source, data);
   if (mensaje) lead.Mensaje = mensaje;
-
-  // Nombre_anuncio = URL exacta donde se envió el form (más confiable que slug/título).
-  if (data.page) lead.Nombre_anuncio = data.page;
 
   // Forms con Account asociado: F6 (Proveedor), F3/F4/F7 (Desarrolladora) — doble llamada Lead + Account.
   // F7 (built_consultation): company es OPCIONAL en el form — solo creamos Account si el usuario la llenó.
