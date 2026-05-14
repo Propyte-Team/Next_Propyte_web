@@ -8,10 +8,15 @@
 // HUB_API_URL queda como alias por compat con el .env.example.
 const HUB_BASE = process.env.PROPYTE_HUB_URL ?? process.env.HUB_API_URL ?? "";
 
+// Default: 5min ISR, no tags. Para entidades específicas, usamos withTag()
+// (Fase A.1: permite forzar refresh desde Hub UI vía revalidateTag).
 const NEXT_FETCH_OPTIONS = {
-  // Next.js ISR: revalidar cada 5 min en producción
   next: { revalidate: 300 },
 };
+
+function withTag(tag: string) {
+  return { next: { revalidate: 300, tags: [tag] } };
+}
 
 export interface HubTestimonial {
   id: string;
@@ -70,10 +75,13 @@ export interface HubBlogFeatured {
   sort_order: number;
 }
 
-async function fetchJson<T>(path: string): Promise<T | null> {
+async function fetchJson<T>(
+  path: string,
+  options: { next: { revalidate: number; tags?: string[] } } = NEXT_FETCH_OPTIONS,
+): Promise<T | null> {
   if (!HUB_BASE) return null;
   try {
-    const res = await fetch(`${HUB_BASE}${path}`, NEXT_FETCH_OPTIONS);
+    const res = await fetch(`${HUB_BASE}${path}`, options);
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
@@ -86,6 +94,7 @@ export async function getTestimonials(
 ): Promise<HubTestimonial[]> {
   const r = await fetchJson<{ items: HubTestimonial[] }>(
     `/api/public/testimonials?context=${context}`,
+    withTag("hub:testimonials"),
   );
   return r?.items ?? [];
 }
@@ -96,18 +105,25 @@ export async function getFaqs(
 ): Promise<HubFaq[]> {
   const qs = new URLSearchParams({ context });
   if (category) qs.set("category", category);
-  const r = await fetchJson<{ items: HubFaq[] }>(`/api/public/faqs?${qs.toString()}`);
+  const r = await fetchJson<{ items: HubFaq[] }>(
+    `/api/public/faqs?${qs.toString()}`,
+    withTag("hub:faqs"),
+  );
   return r?.items ?? [];
 }
 
 export async function getCta(slot: string): Promise<HubCta | null> {
-  const r = await fetchJson<{ item: HubCta | null }>(`/api/public/ctas?slot=${slot}`);
+  const r = await fetchJson<{ item: HubCta | null }>(
+    `/api/public/ctas?slot=${slot}`,
+    withTag("hub:ctas"),
+  );
   return r?.item ?? null;
 }
 
 export async function getBlogFeatured(category: HubBlogFeatured["category"]): Promise<HubBlogFeatured[]> {
   const r = await fetchJson<{ items: HubBlogFeatured[] }>(
     `/api/public/blog-featured?category=${category}`,
+    withTag("hub:blog-featured"),
   );
   return r?.items ?? [];
 }
@@ -124,7 +140,10 @@ export type HubSiteConfig = Record<string, unknown>;
 // (React request memoization), y revalida cada 300s gracias a NEXT_FETCH_OPTIONS.
 // No agregamos cache adicional a nivel de módulo — eso bloquea el revalidate.
 export async function getSiteConfig(): Promise<HubSiteConfig> {
-  const r = await fetchJson<{ config: HubSiteConfig }>(`/api/public/site-config`);
+  const r = await fetchJson<{ config: HubSiteConfig }>(
+    `/api/public/site-config`,
+    withTag("hub:site-config"),
+  );
   return r?.config ?? {};
 }
 
@@ -188,6 +207,7 @@ export async function getCompanyStats(
 ): Promise<HubCompanyStat[]> {
   const r = await fetchJson<{ items: HubCompanyStat[] }>(
     `/api/public/company-stats?context=${context}`,
+    withTag("hub:company-stats"),
   );
   return r?.items ?? [];
 }
@@ -224,6 +244,7 @@ export interface HubExploreCategory {
 export async function getExploreCategories(): Promise<HubExploreCategory[]> {
   const r = await fetchJson<{ items: HubExploreCategory[] }>(
     `/api/public/explore-categories`,
+    withTag("hub:explore-categories"),
   );
   return r?.items ?? [];
 }
