@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { Check, Loader2 } from 'lucide-react';
+import { submitLead } from '@/lib/leads/submit-lead';
 
 const CATEGORIES = [
   'Notary',
@@ -30,11 +31,14 @@ export default function ProviderForm({ locale }: { locale: string }) {
     company: z.string().min(2, t('formRequired')),
     category: z.enum(CATEGORIES, { message: t('formRequired') }),
     city: z.string().min(2, t('formRequired')),
-    website: z.string().url(t('formInvalidUrl')).optional().or(z.literal('')),
+    companyWebsite: z.string().url(t('formInvalidUrl')).optional().or(z.literal('')),
     contactName: z.string().min(2, t('formRequired')),
     email: z.string().email(t('formInvalidEmail')),
     phone: z.string().min(8, t('formRequired')),
     message: z.string().min(10, t('formRequired')),
+    // Honeypot — el endpoint trata `website` populado como bot (REQ-F-02).
+    // Mantiene nombre canónico `website` (= los otros 8 forms usan el mismo).
+    website: z.string().optional().or(z.literal('')),
   });
 
   type FormValues = z.infer<typeof schema>;
@@ -48,32 +52,27 @@ export default function ProviderForm({ locale }: { locale: string }) {
 
   async function onSubmit(values: FormValues) {
     setStatus('submitting');
-    try {
-      const payload = {
-        name: values.contactName,
-        email: values.email,
-        phone: values.phone,
-        source: 'provider_form',
-        locale,
-        message: [
-          `[Provider Application]`,
-          `Company: ${values.company}`,
-          `Category: ${values.category}`,
-          `City: ${values.city}`,
-          `Website: ${values.website || 'N/A'}`,
-          ``,
-          values.message,
-        ].join('\n'),
-      };
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error('Request failed');
+    // Top-level fields (refactor Z4.1) — el endpoint los mapea a Zoho:
+    //   company → Account.Account_Name + Lead.Company
+    //   category → CATEGORY_TO_INDUSTRY → Account.Industry
+    //   city → Lead.City + Account.Billing_City
+    //   companyWebsite → Account.Website
+    const result = await submitLead('provider_form', {
+      name: values.contactName,
+      email: values.email,
+      phone: values.phone,
+      message: values.message,
+      company: values.company,
+      category: values.category,
+      city: values.city,
+      companyWebsite: values.companyWebsite,
+      website: values.website, // honeypot al endpoint
+      locale,
+    });
+    if (result.ok) {
       setStatus('success');
       reset();
-    } catch {
+    } else {
       setStatus('error');
     }
   }
@@ -101,6 +100,16 @@ export default function ProviderForm({ locale }: { locale: string }) {
       className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 text-left"
       noValidate
     >
+      {/* Honeypot — invisible para humanos; bots lo llenan y el endpoint los detecta (REQ-F-02). */}
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="sr-only"
+        {...register('website')}
+      />
+
       <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{t('formHeading')}</h3>
       <p className="text-white/60 text-sm mb-6">{t('formIntro')}</p>
 
@@ -136,9 +145,9 @@ export default function ProviderForm({ locale }: { locale: string }) {
         </div>
 
         <div>
-          <label htmlFor="website" className={labelBase}>{t('formWebsite')}</label>
-          <input id="website" type="url" placeholder={t('formWebsitePlaceholder')} className={inputBase} {...register('website')} />
-          {errors.website && <p className={errorBase}>{errors.website.message}</p>}
+          <label htmlFor="companyWebsite" className={labelBase}>{t('formWebsite')}</label>
+          <input id="companyWebsite" type="url" placeholder={t('formWebsitePlaceholder')} className={inputBase} {...register('companyWebsite')} />
+          {errors.companyWebsite && <p className={errorBase}>{errors.companyWebsite.message}</p>}
         </div>
 
         <div>

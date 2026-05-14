@@ -371,6 +371,7 @@ function ConsultationForm() {
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', company: '',
     projectType: '', budget: '', location: '', message: '',
+    website: '', // honeypot (REQ-F-02) — el endpoint trata populado como bot
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -442,6 +443,18 @@ function ConsultationForm() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="sr-only"
+                  />
+
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>{t('formName')} *</label>

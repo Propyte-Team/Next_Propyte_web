@@ -1,7 +1,11 @@
 ﻿'use client';
 
 import { createContext, useContext, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useLocale, useTranslations } from 'next-intl';
+import { submitLead } from '@/lib/leads/submit-lead';
 import {
   Play,
   TrendingUp,
@@ -748,8 +752,9 @@ function FAQ() {
 // ============================================================
 function ApplicationForm() {
   const t = useTranslations('unete');
+  const locale = useLocale();
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const cityOptions: Array<{ value: string; key: 'city2' | 'city3' | 'city4' | 'city5' | 'city6' | 'city7' | 'city8' | 'formCityOther' }> = [
     { value: 'playa', key: 'city2' },
@@ -762,12 +767,41 @@ function ApplicationForm() {
     { value: 'otra', key: 'formCityOther' },
   ];
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
-    setLoading(false);
-    setSubmitted(true);
+  const schema = z.object({
+    name: z.string().trim().min(2),
+    whatsapp: z.string().trim().min(8),
+    email: z.string().trim().email(),
+    city: z.string().min(1),
+    experience: z.string().optional().or(z.literal('')),
+    interest: z.string().max(2000).optional().or(z.literal('')),
+    // Honeypot — bots lo llenan, el endpoint los detecta (REQ-F-02)
+    website: z.string().optional().or(z.literal('')),
+  });
+  type FormValues = z.infer<typeof schema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+
+  async function onSubmit(values: FormValues) {
+    setError(false);
+    const result = await submitLead('affiliate_request', {
+      name: values.name,
+      email: values.email,
+      whatsapp: values.whatsapp,
+      city: values.city,
+      experience: values.experience,
+      interest: values.interest,
+      website: values.website, // honeypot
+      locale,
+    });
+    if (result.ok) {
+      setSubmitted(true);
+    } else {
+      setError(true);
+    }
   }
 
   return (
@@ -814,7 +848,17 @@ function ApplicationForm() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                {/* Honeypot — invisible para humanos; bots lo llenan y el endpoint los detecta (REQ-F-02). */}
+                <input
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="sr-only"
+                  {...register('website')}
+                />
+
                 <h3 className="text-xl font-bold text-[#2C2C2C] mb-6">{t('formHeadline')}</h3>
 
                 <div className="space-y-4">
@@ -823,24 +867,22 @@ function ApplicationForm() {
                       <label htmlFor="unete-name" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formNameLabel')}</label>
                       <input
                         id="unete-name"
-                        name="name"
                         type="text"
-                        required
                         autoComplete="name"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formNamePlaceholder')}
+                        {...register('name')}
                       />
                     </div>
                     <div>
                       <label htmlFor="unete-whatsapp" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
                       <input
                         id="unete-whatsapp"
-                        name="whatsapp"
                         type="tel"
-                        required
                         autoComplete="tel"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formWhatsappPlaceholder')}
+                        {...register('whatsapp')}
                       />
                     </div>
                   </div>
@@ -849,12 +891,11 @@ function ApplicationForm() {
                     <label htmlFor="unete-email" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formEmailLabel')}</label>
                     <input
                       id="unete-email"
-                      name="email"
                       type="email"
-                      required
                       autoComplete="email"
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                       placeholder={t('formEmailPlaceholder')}
+                      {...register('email')}
                     />
                   </div>
 
@@ -862,10 +903,9 @@ function ApplicationForm() {
                     <label htmlFor="unete-city" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formCityLabel')}</label>
                     <select
                       id="unete-city"
-                      name="city"
-                      required
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
+                      {...register('city')}
                     >
                       <option value="" disabled>{t('formCityPlaceholder')}</option>
                       {cityOptions.map((opt) => (
@@ -878,9 +918,9 @@ function ApplicationForm() {
                     <label htmlFor="unete-experience" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formExpLabel')}</label>
                     <select
                       id="unete-experience"
-                      name="experience"
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
+                      {...register('experience')}
                     >
                       <option value="" disabled>{t('formExpPlaceholder')}</option>
                       <option value="0">{t('formExp0')}</option>
@@ -894,20 +934,26 @@ function ApplicationForm() {
                     <label htmlFor="unete-interest" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formInterestLabel')}</label>
                     <textarea
                       id="unete-interest"
-                      name="interest"
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand resize-none"
                       placeholder={t('formInterestPlaceholder')}
+                      {...register('interest')}
                     />
                   </div>
                 </div>
 
+                {error && (
+                  <p className="text-red-600 text-sm mt-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+                    {t('formError')}
+                  </p>
+                )}
+
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={isSubmitting}
                   className="w-full mt-6 h-12 bg-propyte-brand hover:bg-propyte-cyan-200 disabled:bg-gray-300 text-[#0F1923] font-bold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-propyte-brand/20"
                 >
-                  {loading ? (
+                  {isSubmitting ? (
                     <div className="w-5 h-5 border-2 border-[#0F1923]/30 border-t-[#0F1923] rounded-full animate-spin" />
                   ) : (
                     <>

@@ -17,6 +17,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   const t = useTranslations('leadMagnet');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState(''); // honeypot (REQ-F-02)
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   const eyebrow = cta?.eyebrow ?? t('freeReport');
@@ -28,7 +29,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
     setStatus('sending');
-    const result = await submitForm({ name, email }, 'lead_magnet');
+    const result = await submitForm({ name, email, website }, 'lead_magnet');
     setStatus(result.success ? 'success' : 'error');
   }
 
@@ -56,6 +57,18 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
+                <input
+                  type="text"
+                  name="website"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="sr-only"
+                />
+
                 <div>
                   <label className="block text-xs font-medium text-white/75 mb-1">{t('name')}</label>
                   <input
