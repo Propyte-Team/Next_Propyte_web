@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   reactStrictMode: true,
   poweredByHeader: false,
+  // Fuerza inclusión de los helpers SWC en el output standalone. Sin esto, el
+  // tree-shaking de Next.js 16 omite `_interop_require_default.js` y rutas
+  // que lo necesitan en runtime fallan con 500 (incident 2026-05-14).
+  outputFileTracingIncludes: {
+    '/*': ['./node_modules/@swc/helpers/esm/**/*'],
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
