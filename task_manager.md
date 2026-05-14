@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-12 noche (audit a11y AA sitio-wide completo + equipo merge a /nosotros/equipo-comercial + MarketplaceHero brand-aligned + spec Zoho v1.5 aprobado)
+> Última actualización: 2026-05-14 (cierre workstream Zoho web-forms — merged a develop, page → Nombre_anuncio + tags por campaña + build fix @swc/helpers)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,165 +8,22 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-_Sin tareas activas — 2 specs aprobados esperando arranque:_
-- _`content-audit-seo-2026` v2.1 — rama `feat/content-audit-seo-2026` ya creada. Próximo: A0 (Q1+Q8 con Luis)._
-- _`web-forms-zoho-integration` v1.5 — rama `feat/zoho-forms-integration` pendiente de crear. Próximo: Z0.1-Z0.6 (setup Zoho + Assignment Rule + env vars + branch)._
+- [ ] **`feat/dynamic-content-a1-pulido`** — 2 commits ahead de develop (`78896e0` hub-content tags + `f54597f` A.1 banners home). Workstream Hub consumer.
 
 ---
 
 ## Pendientes
 
-### Security pass Cyber Neo — validación + flip CSP
+### Workstream Zoho — QA + pulido post-merge
 
-> 3 commits ya en `develop` + pusheados + deployed a `dev.propyte.com` (build `dpl_AJBbXiqo1uWhhxFZCg84T6eHjKaA`). 21 de 25 findings cerrados, risk score 76 → ~6 (Low). **NO** mergear `develop → main` hasta cerrar validación + flip CSP.
+- [ ] **QA manual F3/F4/F5/F10** — 8 leads no automatizados por selectores stale del Playwright spec. Pruebas manuales desde `dev.propyte.com/{es,en}/desarrolladores` (F3 hero + F4 #registro), `/corredores#registro` (F5), homepage scroll a "Descargar reporte" (F10). Validar Tipo_de_Contacto + Nombre_anuncio + Account (F3/F4 → Desarrollador + Industry=Desarrolladora; F5 → Broker; F10 → Lead).
+- [ ] **Arreglar selectores stale en `tests/e2e/zoho-forms.spec.ts`** (opcional, para 22/22 verde): F3 `#b2b-name` no espera carga lazy, F4 `select[name="projectType"]` strict mode dialog, F5 `select[name="brokerType"]` location below fold, F10 button "Descargar reporte" está a 9668px de scroll.
+- [ ] **Cron retry no persiste `page` en BD** — si quieres `Nombre_anuncio` también en retries, requiere agregar columna `nombre_anuncio` (o `page`) a `public.leads` + actualizar INSERT en `route.ts:419` + `rebuildPayload` en cron retry. Primer intento (99%) ya funciona.
 
-- [ ] **SEC-V1.** Abrir `https://dev.propyte.com` en navegador real (no headless). DevTools → Network → request del documento HTML. Verificar headers presentes: `Content-Security-Policy-Report-Only`, `Strict-Transport-Security`, `Permissions-Policy`, `X-Frame-Options`, `Referrer-Policy`.
-- [ ] **SEC-V2.** Recorrer home + 1 desarrollo + 1 propiedad + glosario + (si hay posts) blog. Consola del browser DEBE estar limpia de `[Report Only] Refused to load...`. Si aparece alguna violación, ajustar CSP en [next.config.ts:63-78](next.config.ts#L63-L78) y redeploy.
-- [ ] **SEC-V3.** Smoke test formularios desde `dev.propyte.com`:
-  - `/es/proveedores` (Form 6) → submit con datos válidos. Esperar `200 { success: true, id: ... }`.
-  - `/es/glosario` con lead gate (Form 11) → submit. Esperar `200`.
-  - Validar que `403 Forbidden` aparece SOLO si Origin no whitelisted (el Origin del propio `dev.propyte.com` SÍ está en allowlist).
-- [ ] **SEC-V4.** Si tienes posts en `blog_posts`, abrir `/es/blog/[slug]` y verificar que el contenido se renderiza igual visualmente (DOMPurify allow-list cubre rich-text estándar).
-- [ ] **SEC-V5.** Después de 24-48h con consola limpia, flippear CSP a enforcing: en [next.config.ts:89](next.config.ts#L89) cambiar `Content-Security-Policy-Report-Only` → `Content-Security-Policy`. Redeploy con `cd <repo> && vercel --prod --yes`.
-- [ ] **SEC-V6.** Una vez `develop` validado en staging, autorizar merge `develop → main` para que Hostinger pull-on-main propague la mejora a `propyte.com` prod.
+### Branches en limbo
 
-**Notas técnicas heredadas del security pass:**
-- Reporte completo: `~/Desktop/cyber-neo-report-Next_Propyte_web-2026-05-12.md`
-- 3 nuevos helpers en `src/lib/security/` (`compareSecret.ts`, `safeUrl.ts`, `sanitizeHtml.ts`) — disponibles para el spec Zoho (Z3.1 puede reutilizar `sanitizeRichHtml` si Description recibe HTML del usuario).
-- `enforceRateLimit()` helper en [src/lib/rateLimit.ts](src/lib/rateLimit.ts) — usado por las 8 rutas públicas + `/api/leads`. Z3.1 lo reutiliza.
-- XFF parsing toma el último hop (configurable via `RATE_LIMIT_TRUSTED_PROXY_HOPS`, default 1). Prefiere `x-vercel-forwarded-for` cuando existe.
-- `/api/leads` actualmente hardcodea Origins (propyte.com + www + dev). Si Z3.1 introduce `LEADS_ALLOWED_ORIGINS` env var, reemplazar el set hardcoded.
-- npm audit residual: 2 moderate (postcss bundleado dentro de Next.js — solo se resuelve cuando Next 16.3+ ship).
-
----
-
-### Spec: Web Forms → Zoho CRM Integration — `specs/web-forms-zoho-integration.md`
-
-> Rama: `feat/zoho-forms-integration` (desde develop). **Estado:** v1.5 aprobado tras 4 vueltas de audit (estructura + security hardening + correctness + scope reduction). Q5/Q6 abiertas pero NO bloquean inicio (Z0.4 resuelve Q5; Q6 se decide antes de Z3.1). Alcance: unificar 11 forms → endpoint server-side `/api/leads` → Zoho CRM con fallback Supabase + cron retry. **NO** se toca UI visual.
-
-**Bloque 0 — Setup (pre-código)**
-
-- [x] **Z0.1.** ✅ Luis: Assignment Rule "Web Leads — Propyte" creada en Zoho (2026-05-12, Opción B 3 entries).
-
-  **Pasos exactos en Zoho UI:**
-  1. **Setup → Automation → Assignment Rules → Leads**
-  2. **Create Rule** → Nombre: `"Web Leads — Propyte"`
-  3. Marcar **Active** ✅
-  4. Marcar **"Apply this rule to records created or edited via API"** ✅ (crítico — sin esto la rule no dispara desde nuestro endpoint)
-  5. **Add Rule Entry** (×3, evaluadas en orden):
-
-  **Entry 1 — Brokers & Proveedores (Luis filtra antes)**
-  - Criteria: `Lead_Source equals "Sitio web"` **AND** `Tipo_de_Contacto` in `[Broker, Proveedor]`
-  - Assign to: **Luis Flores** (user fijo)
-
-  **Entry 2 — Desarrolladores B2B**
-  - Criteria: `Lead_Source equals "Sitio web"` **AND** `Nombre_de_Campa_a contains "desarrolladores"`
-  - Assign to: **Felipe Luksic** (user fijo) — o Round Robin [Felipe, Conrad Alvarado] si el plan lo soporta
-
-  **Entry 3 — Catch-all residencial (rotación comercial)**
-  - Criteria: `Lead_Source equals "Sitio web"` (sin filtros adicionales — última en orden recoge todo lo que no matchó arriba)
-  - Assign to: **Round Robin** [Alejandro Zamudio, Maricela Diaz, Filiberto Arias, Sonia Cervantes]
-  - Si plan **no soporta** Round Robin (Standard/Professional): asignar fijo a Alejandro y rotar manual cada semana editando
-
-  6. **Save** — la Rule queda activa inmediatamente.
-
-  **Verificación:** crear lead de prueba desde Zoho UI con `Lead_Source="Sitio web"`, `Tipo_de_Contacto="Broker"` → debe asignarse a Luis automáticamente. Cambiar a `Tipo_de_Contacto="Lead"` → debe rotar entre comerciales.
-
-  **Caveat plan:** si en Zoho aparece la opción **Round Robin** disponible en el dropdown de Assign, plan es Enterprise+. Si solo permite user fijo, ajustar Entry 3 con un user único.
-
-  **Pendiente confirmación pre-setup:**
-  - Plan Zoho de Propyte (¿Standard / Professional / Enterprise / Ultimate?)
-  - Lista final de comerciales activos en rotación Entry 3 (los 4 propuestos son los top owners por volumen 2026-05; Luis confirma)
-- [x] **Z0.2.** ✅ Luis: picklist `Industry` (Sector) confirmado con los 13 valores (2026-05-12).
-- [x] **Z0.3.** ✅ Env vars puestas en Hostinger Next_Propyte_web (2026-05-12): 8 vars Zoho + CRON_SECRET + LEADS_ALLOWED_ORIGINS.
-- [ ] **Z0.4.** Luis: responder Q5 (¿`NEXT_PUBLIC_WEBHOOK_URL` activo? ¿leads recientes a Zoho desde web?). _No bloquea inicio, solo cleanup final Z7.7._
-- [x] **Z0.5.** ✅ Branch `feat/zoho-forms-integration` creado (commit `b0dce63` 2026-05-12).
-- [x] **Z0.6.** ✅ Luis: valores picklist `Idioma` = `"Español"` y `"Ingles"` (sin tilde, capitalización correcta) confirmados 2026-05-12.
-
-**Bloque A — Cliente Zoho + tipos (1 día)**
-
-- [x] **Z1.1.** ✅ `src/lib/zoho/client.ts` copiado de propyte-crm (commit `b0dce63`).
-- [x] **Z1.2.** ✅ `src/lib/zoho/types.ts` copiado (commit `b0dce63`).
-- [x] **Z1.3.** ✅ `src/lib/zoho/field-maps.ts` con `sourceToZohoPayload`, `CATEGORY_TO_INDUSTRY`, `parseName`, `parseFirstNameFromEmail`, `truncateDescription`, `truncateError` (commit `b0dce63`).
-- [x] **Z1.4.** ✅ `src/lib/zoho/resolve-proyecto-interes.ts` con JOIN v_units + Propyte_zoho_id_map (commit `b0dce63`).
-- [ ] **Z1.5.** Tests unit pendientes — recomendable pero no bloquea staging.
-
-**Bloque B — Migración Supabase (Luis ejecuta SQL)**
-
-- [x] **Z2.1.** ✅ SQL `supabase/migrations/20260512_leads_zoho_columns.sql` con los 6 pasos (commit `b0dce63`).
-- [x] **Z2.2.** ✅ Aplicado vía MCP `apply_migration` con autorización explícita de Luis (2026-05-12). Migration name: `leads_zoho_columns`.
-- [x] **Z2.3.** ✅ Verificado via MCP `execute_sql`: 23 columnas en `public.leads` (9 originales + 14 nuevas), `property_id` nullable=YES, `idx_leads_zoho_retry` creado, `claim_zoho_retry_batch` con `prosecdef=true` + `proconfig=["search_path=pg_catalog, public"]`, ejecución `claim_zoho_retry_batch(0)` retorna 0 filas (clamp OK).
-
-**Bloque C — Refactor endpoint `/api/leads` (1-2 días)**
-
-- [x] **Z3.1.** ✅ Refactor `/api/leads/route.ts` completo (commit `5fd3293`): enforceRateLimit + enforceGlobalQuota + allowlist env + Zod estricto (UUID, regex UTMs) + honeypot constant-time + INSERT primero con PENDING_SYNC + parseName + resolveProyectoDeInteres + doble llamada Form 6 + UPDATE retry `[200, 600, 1500] ms` + sanitize+truncate.
-- [x] **Z3.2.** ✅ `src/lib/leads/submit-lead.ts` con firma única (commit `b0dce63`).
-- [x] **Z3.3.** ✅ `submitForm.ts` convertido en shim (commit `b0dce63`).
-
-**Bloque D — Refactor forms client-side (1.5 días)**
-
-- [x] **Z4.1.** ✅ Form 6 Proveedores: payload top-level + `companyWebsite` renombrado para no colisionar con honeypot `website` (commit `245c861`).
-- [x] **Z4.2.** ✅ Form 11 Glosario: usa `submitLead('glossary_pdf', data)` (commit `245c861`).
-- [x] **Z4.3.** ✅ Form 8 Únete: RHF + Zod, mock eliminado, `submitLead('affiliate_request', data)` (commit `245c861`).
-- [x] **Z4.4.** ✅ Honeypot agregado a Forms 2, 3, 7, 10 (commit `155feb3`). Cobertura final: 11/11 forms.
-- [x] **Z4.5.** ✅ Typecheck limpio en los 5 forms con RHF + Zod tras migración.
-
-**Bloque E — Cron de reintento Hostinger (medio día)**
-
-- [x] **Z5.0.** ✅ Wrapper `findLeadByEmail` en client.ts (commit `b0dce63`).
-- [x] **Z5.1.** ✅ `src/app/api/cron/zoho-retry/route.ts` con verifyCronSecret + rate limit propio + retry diferenciado PENDING_SYNC/ORPHAN/otros (commit `245c861`).
-- [ ] **Z5.2.** Luis: configurar crontab en Hostinger VPS — `5 * * * * /usr/bin/curl -K /home/propyte/.zoho-retry.curlrc https://propyte.com/api/cron/zoho-retry >> /home/propyte/logs/zoho-retry.log 2>&1` + crear `.curlrc` perms 600 con header `"Authorization: Bearer $CRON_SECRET"`.
-- [ ] **Z5.3.** Test manual cron tras deploy.
-
-**Bloque F — Tests Playwright (1 día)**
-
-- [ ] **Z6.1.** Crear `tests/api/leads-zoho.spec.ts` con 11 sub-tests (1 por source).
-- [ ] **Z6.2.** Mock endpoint Zoho.
-- [ ] **Z6.3.** Test rate limit (6 submits → 429).
-- [ ] **Z6.4.** Test honeypot (200 silencioso, 0 rows).
-- [ ] **Z6.5.** Test fallback Supabase (Zoho 500 → `zoho_sync_error`).
-- [ ] **Z6.6.** Test Proyecto_de_Interes (match con development real conocido + no-match con UUID `00000000-...`).
-- [ ] **Z6.7.** Test whitelist Industry (10 slugs).
-
-**Bloque G — Rollout (1+ semana validación)**
-
-- [ ] **Z7.1.** Push `feat/zoho-forms-integration` → Vercel preview staging.
-- [ ] **Z7.2.** Submit 1 lead desde cada uno de los 11 forms en staging.
-- [ ] **Z7.2b.** **Regression test antiduplicado:** forzar `PENDING_SYNC` + crear Lead manual en Zoho con mismo email + correr cron 2x → 1 solo Lead en Zoho.
-- [ ] **Z7.3.** Verificar en Zoho UI: 11 Leads + 1 Account + identificadores correctos + owner asignado por Rule.
-- [ ] **Z7.4.** Merge `feat/zoho-forms-integration` → `develop`.
-- [ ] **Z7.5.** Push `develop` → `main` (Hostinger auto-deploy).
-- [ ] **Z7.6.** Monitor 1 semana dashboard manual (tasa `zoho_lead_id NOT NULL` + frecuencia `zoho_sync_error`).
-- [ ] **Z7.7.** Cleanup `submitForm.ts` SOLO cuando: ≥100 leads + ≥98% success en leads ≥24h + ≥1 por form. PR separado.
-
-**Bloque H' — Security hardening (paralelo a A-F, integra antes de Z7)**
-
-- [ ] **ZS.1.** Crear `src/lib/security/sanitize-error.ts` con `sanitizeErrorMessage` + tests (4 patrones PII + unicode + cap 2KB).
-- [ ] **ZS.2.** Crear `src/lib/security/cron-auth.ts` con `verifyCronSecret` (`crypto.timingSafeEqual` + fail-closed sin secret + fail-closed < 32 chars).
-- [ ] **ZS.3.** Crear `src/lib/security/global-quota.ts` con `enforceGlobalQuota` (1000/h/proceso, bucket `leads-global`). Test 1001 IPs → 503.
-- [ ] **ZS.4.** Aplicar `sanitizeErrorMessage` en `/api/leads` y `/api/cron/zoho-retry` (grep CI: 0 ocurrencias de `update({ zoho_sync_error:` sin sanitize).
-- [ ] **ZS.5.** Aplicar `verifyCronSecret` en cron handler (grep CI: 0 ocurrencias de `=== process.env.CRON_SECRET`).
-- [ ] **ZS.6.** Aplicar `enforceGlobalQuota` antes del rate limit por IP en `/api/leads`.
-- [ ] **ZS.7.** Aplicar `crypto.randomInt(180, 421)` ms en honeypot path (timing constant anti-fingerprinting).
-- [ ] **ZS.8.** Zod estricto: `propertyId.uuid()` + regex `^[A-Za-z0-9._~-]{0,200}$` en `gclid`/`utm_*`. Test rechazo string no-UUID → 400.
-- [ ] **ZS.9.** Migración SQL con clamp 1..500 + `SET search_path` + `REVOKE...GRANT` + `COMMENT ON COLUMN`. Verificar `prosecdef, proconfig`.
-- [ ] **ZS.10.** Crontab Hostinger usa `-K /home/propyte/.zoho-retry.curlrc` perms 600. `grep -r Bearer ~/.bash_history` vacío.
-- [ ] **ZS.11.** 8 forms con honeypot nuevo tienen `autocomplete="off"` (REQ-F-14 ampliado).
-- [ ] **ZS.12.** Tests Playwright: payload email único no aparece en respuesta error + cron sin auth → 401 + cron 11 requests rápidas → 429.
-
-**Bloque H — Rollback plan (si >10% `zoho_sync_error` en prod)**
-
-- [ ] **Z8.1.** Revert commits Bloque C.
-- [ ] **Z8.2.** Restore `submitForm.ts` con env webhook fallback.
-- [ ] **Z8.3.** Reprocesar manualmente leads con `zoho_sync_error`.
-- [ ] **Z8.4.** Columnas SQL se mantienen (additive).
-
-**Open Questions activas (no bloquean código pero sí rollout final)**
-
-- [ ] **Q5.** ¿Está activo `NEXT_PUBLIC_WEBHOOK_URL` en Hostinger? ¿Llegaron leads a Zoho desde la web en últimas 2 semanas? (Pre Z7.7 cleanup)
-- [ ] **Q6.** Form 8 `Tipo_de_Contacto` — `Lead` / `Broker` / nuevo `"Afiliado"`. (Pre Z3.1)
-
----
+- [ ] **Revisar branch `feat/content-audit-seo-recovery`** (local-only, commit `cac2249 wip: copy/SEO audit i18n recovered from stash`) — decidir si los cambios sobre **SOP-3.2** / "Manejo de Datos" / "Plan de Carrera" siguen aplicando. La branch original `feat/content-audit-seo-2026` fue borrada del remoto en algún punto.
+- [ ] **`infografia` branch (stand by)** — Luis dejó pruebas en pausa. `stash@{0}` tiene rediseño grande de `ProcessInfographic.tsx` (+774 líneas) preservado. Retomar cuando se quiera continuar.
 
 ### Spec: Auditoría Contenido SEO 2026 + Tono Propyte — `specs/content-audit-seo-2026.md`
 
@@ -245,6 +102,58 @@ _Sin tareas activas — 2 specs aprobados esperando arranque:_
 
 ---
 
+### Spec: Tier 1 Quick Wins de Optimización — `specs/tier-1-perf-optimization-quick-wins.md`
+
+> Rama: `feat/perf-optimization-tier-1` (desde develop, post-merge Zoho). Alcance: 5 quick wins simultáneos — Lenis, bundle-analyzer, plaiceholder, next/og audit+uplift, Sentry. Aditivo, reversible, sin rediseño UI. Defaults documentados en sesión de aprobación (sección "Open Questions" del spec).
+>
+> **Solapamiento detectado con `content-audit-seo-2026` Bloque C3:** ambas specs tocan `opengraph-image.tsx` por ruta. **Coordinación:** si C3 se mergea antes que Tier 1, QW-5 (next/og audit + uplift) consume el trabajo de C3 y solo agrega las rutas faltantes. Si Tier 1 mergea antes, C3 se reduce a verificación.
+
+**Bloque QW-1 — Setup y baseline**
+- [ ] **QW-1.1** Crear branch `feat/perf-optimization-tier-1` desde `develop` ✅ (creada 2026-05-14).
+- [ ] **QW-1.2** Documentar baseline pre-cambios → `docs/bundle-baseline-2026-05-14.md` (Lighthouse + bundle size + lista rutas con OG existente).
+
+**Bloque QW-2 — Lenis (smooth scroll)**
+- [ ] **QW-2.1** Instalar `lenis@^1.3`. Crear `src/components/providers/SmoothScrollProvider.tsx` (Client Component) con guard `prefers-reduced-motion` + env flag `NEXT_PUBLIC_LENIS=0`.
+- [ ] **QW-2.2** Envolver `src/app/[locale]/layout.tsx` con el provider.
+- [ ] **QW-2.3** Crear `useLenisAnchor()` y aplicar en FAQ + Glosario + footer anchors.
+- [ ] **QW-2.4** Smoke Playwright `tests/e2e/smooth-scroll.spec.ts` + toggle reduced-motion.
+
+**Bloque QW-3 — Bundle analyzer**
+- [ ] **QW-3.1** Instalar `@next/bundle-analyzer` (devDep), wrapper en `next.config.ts`. Script `npm run analyze`.
+- [ ] **QW-3.2** Run inicial. Top-3 oportunidades documentadas en `docs/bundle-baseline-2026-05-14.md` (candidatos: `recharts`, `@react-pdf/renderer`, `html2canvas`, `lucide-react` barrel).
+- [ ] **QW-3.3** Implementar 2 quick fixes (lazy-load + tree-shake).
+- [ ] **QW-3.4** Re-run analyzer. Documentar delta. AC4: bundle cliente NO crece neto.
+
+**Bloque QW-4 — plaiceholder (blur placeholders)**
+- [ ] **QW-4.1** Instalar `plaiceholder` + `@plaiceholder/next`. Helper `withBlurDataURL()` en `src/lib/supabase/`.
+- [ ] **QW-4.2** **SQL entregable a Luis** (harness no ejecuta DDL prod): `ALTER TABLE Propyte_desarrolladores ADD COLUMN blur_data_url TEXT;` + idem `Propyte_unidades`.
+- [ ] **QW-4.3** Aplicar `withBlurDataURL` a queries: `getDevelopers`, `getDeveloperBySlug`, `getUnits`, `getUnitById`.
+- [ ] **QW-4.4** Actualizar `<Image>` cards/hero: `placeholder="blur" blurDataURL={...}`.
+- [ ] **QW-4.5** Script backfill `scripts/backfill-blur-placeholders.ts` para imágenes existentes.
+
+**Bloque QW-5 — next/og audit + uplift**
+- [ ] **QW-5.1** Auditoría rutas indexables (sitemap.ts) vs rutas con `opengraph-image.tsx`. Gap → `docs/og-audit-2026-05-14.md`. **Cruzar con C3 antes de duplicar.**
+- [ ] **QW-5.2** Mejorar `src/lib/og/OGFrame.tsx` con variantes: `entity` (foto hero + datos reales), `marketing` (gradient teal→aztec + título), `default`.
+- [ ] **QW-5.3** Crear `opengraph-image.tsx` para top-7 faltantes (home, /desarrollos índice, /propiedades/[id], 4 ciudades). **Si C3 ya cubre alguna, skip y enfocar en uplift visual.**
+- [ ] **QW-5.4** Playwright `tests/e2e/og-images.spec.ts`: validar `Content-Type: image/*` en 12+ rutas.
+
+**Bloque QW-6 — Sentry**
+- [ ] **QW-6.1** **Luis ejecuta:** crear proyecto Sentry `propyte-web` en org Propyte. Compartir DSN + auth token.
+- [ ] **QW-6.2** Run `npx @sentry/wizard -i nextjs`. Revisar generados: `sentry.{client,server,edge}.config.ts`, `instrumentation.ts`, `app/global-error.tsx`, wrapper en `next.config.ts`.
+- [ ] **QW-6.3** Custom config: `tracesSampleRate: 0.1` (prod), `replaysSessionSampleRate: 0.05`, `replaysOnErrorSampleRate: 1.0`, `sendDefaultPii: false`, `beforeSend` sanitiza query params, `ignoreErrors` whitelist.
+- [ ] **QW-6.4** Update CSP en `next.config.ts`: `connect-src` agregar `https://*.ingest.sentry.io`.
+- [ ] **QW-6.5** GitHub Actions deploy Hostinger: paso `sentry-cli releases files ... upload-sourcemaps`. Secrets: `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`.
+- [ ] **QW-6.6** Vercel env: `vercel env add SENTRY_AUTH_TOKEN` (preview + prod).
+- [ ] **QW-6.7** Deploy a `dev.propyte.com`. Forzar error de prueba. Verificar evento + source map en dashboard Sentry.
+
+**Bloque QW-7 — Cierre**
+- [ ] **QW-7.1** Verificar AC1-AC12 del spec. Marcar checklist en spec.
+- [ ] **QW-7.2** Actualizar `project_next_propyte_web_estado.md` con Tier 1 completado.
+- [ ] **QW-7.3** PR `feat/perf-optimization-tier-1` → `develop`. Smoke staging.
+- [ ] **QW-7.4** Merge a `develop` → cherry-pick/merge a `main` → deploy Hostinger.
+
+---
+
 ## Bloqueadas
 
 _Ninguna._
@@ -253,15 +162,15 @@ _Ninguna._
 
 ## Completadas recientes
 
-- [x] **MarketplaceHero brand-aligned** — `<MarketplaceHero>` reutilizable en `/desarrollos` + `/propiedades`: 2 orbs brand/15+brand/8 + pill eyebrow brand glow ("Bienes raíces · Riviera Maya") + H1 fluido con última palabra accent `#0F766E` + subtitle max-w-2xl. i18n `marketplace.heroEyebrow` ES+EN. Commit `588276d` (2026-05-12)
-- [x] **A11y audit WCAG AA sitio-wide** — `tests/e2e/a11y-contrast-audit.spec.ts` persistido. 23 rutas, 0 violaciones reales. 6 commits develop: `b3c8218` (orbs + opacities) + `67c9634` (9 hero pills) + `5d71c94` (pills/CTAs/numbers/eyebrows axe-driven) + `827fdf3` (legal-prose + bg-white explícito + test e2e) + `d2f1f65` (FAQContent) + `5b47a63` (iconos bento + WhatsApp 14 archivos text-[#0F1923]). Decisión: WhatsApp cumple AA sobre brand book. Memorias `feedback_propyte_a11y_pills_pattern.md` + `feedback_axe_section_bg_false_positive.md`. (2026-05-12)
-- [x] **Hero /quienes-somos tipografía canónica Propyte** — Removido `accent-serif` (Fraunces italic) en "Propyte" del H1 y tagline → Inter heading + cyan brand color. Detalles editoriales (coordenadas, watermark, axis dots, stats mono) PRESERVADOS. Commit `12a4793` (2026-05-12)
-- [x] **Equipo merge a /nosotros/equipo-comercial** — Decisión Luis: subpágina de Nosotros (NO top-level /equipo). 2 commits: `417e377` primer merge en /equipo + reintegración slots Hub al Home (ExploreCategories/Testimonials/LeadMagnet con auto-hide); `feb4e77` inversión a /nosotros/equipo-comercial con NosotrosTabs restaurado, redirect 301 /equipo → /nosotros/equipo-comercial. Memoria `feedback_propyte_equipo_canonical_route.md`. (2026-05-12)
-- [x] **Spec web-forms-zoho-integration audit 4 vueltas** — v1.0 → v1.5. Como auditor externo del spec (no implementación). Hallazgos verificados contra código: `searchRecords` ya existe → `findLeadByEmail` 5 líneas; `enforceRateLimit` ya existe; `Propyte_zoho_id_map` tiene 103 rows development (feature Form 2 funcional). v1.5 APROBADO. (2026-05-12)
-- [x] **Security pass Cyber Neo** — audit completo (35 findings, score 76) + 3 commits `develop`: `27c323d` (deps) + `72aa5f4` (CI hardening) + `acfa670` (app hardening). 21 de 25 findings cerrados. Risk 76 → ~6. (2026-05-12 PM)
+- [x] **Zoho web-forms integration cerrado + merged a develop** (2026-05-14) — 16 commits del workstream merged a `develop` (`00eb513`). Bug Tipo_de_Contacto resuelto end-to-end: 14/14 leads automatizados llegaron con Tipo correcto. Reglas Zoho rebuilt por Luis con lógica basada en tags `[XXX] (YYY)` que mi código embebe en `Nombre_de_Campa_a`.
+- [x] **Feature `page → Nombre_anuncio`** (2026-05-14) — `submitLead` envía `window.location.href` y `sourceToZohoPayload` lo mapea a `lead.Nombre_anuncio`. Resuelve ambigüedad de slugs/títulos confusos. Schema acepta `page` con validación `.url()`. Commit `2fd16d4` + reapply `3e56aaf`.
+- [x] **Build fix `@swc/helpers` standalone** (2026-05-14) — Incident: Vercel runtime excluía `_interop_require_default.js` del bundle. Fix: `outputFileTracingIncludes` en `next.config.ts`. Workaround durante incidente: `vercel alias set` manual (Hobby plan no permite `vercel rollback` >1 step). Commit `5fb7f67`. Memoria `feedback_nextjs16_swc_helpers_standalone.md`.
+- [x] **Tags `[XXX] (YYY)` en Nombre_de_Campa_a** (2026-05-13/14) — Nuevas funciones `campaignTag()` + `campaignSubtag()`. F1-F2-F9-F10-F11 → `[LEADS]`, F3-F4-F7 → `[DESARROLLADORES]` (con `(HERO)`/`(REGISTRO)` para F3/F4), F5 → `[BROKERS]`, F6 → `[PROVEEDORES]`, F8 → `[EMPLEO] (ASESOR)`. `tipoDeContacto()` actualizado para F3/F4/F7 → Desarrollador, F8 → Empleo. Commit `63fb057`.
+- [x] **Doble llamada Lead+Account para F3/F4/F6/F7** (2026-05-13) — Account con `Industry="Desarrolladora"` para F3/F4 siempre + F7 condicional (si `data.company` viene). F6 mantiene Industry derivada de `CATEGORY_TO_INDUSTRY`. Commit `63fb057`.
+- [x] **Cleanup branches mergeadas** (2026-05-14) — Borradas 4: `feat/zoho-forms-integration` local, `fix/public-gate-decouple-zoho-pipeline` local+remote, `origin/feat/revalidate-endpoint`. Estado: `develop`, `feat/dynamic-content-a1-pulido` ★, `feat/content-audit-seo-recovery` (nueva), `infografia` (stand by), `main`.
 - [x] **UnitModelsTable subtype fix** — Prefer `unit_subtype` sobre `tTypes(unit_type)` + detect path-fallback `types.X`. Commit `97354bc` (2026-05-11 PM)
 - [x] **CookieBanner compacto + Drive auto-embed** — Banner anclado right-corner 380px + VideoPlayer transforma URLs Drive a `/preview`. Commit `6e1fbf0` (2026-05-11 PM)
-- [x] **Fix 500 SSR cadena** en /propiedades/[slug] — 3 bugs: stages.Entregado MISSING_MESSAGE, property.tabTour key faltante, row.title fallback. Commits `2cba646` + `f4c7632` (2026-05-11 PM)
+- [x] **Fix 500 SSR cadena** en /propiedades/[slug] — 3 bugs: stages.Entregado MISSING_MESSAGE (mapper normalize + safeStage), property.tabTour key faltante, row.title fallback. Commits `2cba646` + `f4c7632` (2026-05-11 PM)
 - [x] **Detail pages UX** — Sidebar reorder (DATOS CLAVE arriba) + ContactForm simplificado. Commit `07f07ae` (2026-05-11 PM)
 
 ---
