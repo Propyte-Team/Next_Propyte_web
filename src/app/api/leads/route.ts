@@ -83,6 +83,10 @@ const LeadSchema = z.object({
   whatsapp: z.string().max(40).optional().nullable().or(z.literal('')),
   interest: z.string().max(2000).optional().nullable().or(z.literal('')),
 
+  // URL exacta donde se hizo el submit — mapeada a Nombre_anuncio en Zoho.
+  // Útil cuando el slug de propiedad o el título no identifican claramente el origen.
+  page: z.string().max(2000).url().optional().nullable().or(z.literal('')),
+
   // UTM tracking
   utm_source: optionalUtm,
   utm_medium: optionalUtm,
@@ -383,6 +387,7 @@ export async function POST(request: NextRequest) {
     budget: data.budget || null,
     whatsapp: data.whatsapp || null,
     interest: data.interest || null,
+    page: data.page || null,
     // website NO se incluye — es honeypot, ya fue manejado arriba
   };
 
