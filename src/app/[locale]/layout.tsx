@@ -19,6 +19,7 @@ import { getVisibility } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
 
 export default async function LocaleLayout({
   children,
@@ -50,6 +51,7 @@ export default async function LocaleLayout({
       <UnitsProvider>
       <SearchProvider>
       <MotionConfig reducedMotion="user">
+      <SmoothScrollProvider>
         {/* WebSite + SearchAction schema — global, habilita Sitelinks Search Box.
             Manual UX/UI §7.3. */}
         <SchemaMarkup type="website" />
@@ -82,6 +84,7 @@ export default async function LocaleLayout({
             },
           }}
         />
+      </SmoothScrollProvider>
       </MotionConfig>
       </SearchProvider>
       </UnitsProvider>
