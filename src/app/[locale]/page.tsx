@@ -80,9 +80,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   // Contenido editorial dinámico desde Hub. Auto-hide si Hub no devuelve data:
   // si Luis quiere ocultar la sección, basta con borrar/desactivar los datos en hub.propyte.com.
-  const [hubTestimonials, leadMagnetCta, hubExplore] = await Promise.all([
+  const [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore] = await Promise.all([
     getTestimonials('home'),
     getCta('home_lead_magnet'),
+    getCta('home_developer_banner'),
+    getCta('home_join_team'),
     getExploreCategories(),
   ]);
 
@@ -109,6 +111,22 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         title: locale === 'en' ? leadMagnetCta.title_en : leadMagnetCta.title_es,
         subtitle: locale === 'en' ? leadMagnetCta.subtitle_en : leadMagnetCta.subtitle_es,
         buttonLabel: locale === 'en' ? leadMagnetCta.button_label_en : leadMagnetCta.button_label_es,
+      }
+    : null;
+
+  const developerBannerProps = developerBannerCta
+    ? {
+        title: (locale === 'en' ? developerBannerCta.title_en : developerBannerCta.title_es) || '',
+        buttonLabel: locale === 'en' ? developerBannerCta.button_label_en : developerBannerCta.button_label_es,
+        buttonHref: developerBannerCta.button_href,
+      }
+    : null;
+
+  const joinTeamBannerProps = joinTeamCta
+    ? {
+        title: (locale === 'en' ? joinTeamCta.title_en : joinTeamCta.title_es) || '',
+        buttonLabel: locale === 'en' ? joinTeamCta.button_label_en : joinTeamCta.button_label_es,
+        buttonHref: joinTeamCta.button_href,
       }
     : null;
 
@@ -182,12 +200,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </ScrollReveal>
 
       <ScrollReveal>
-        <DeveloperBanner />
+        <DeveloperBanner cta={developerBannerProps} />
       </ScrollReveal>
 
       {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
         <ScrollReveal delay={0.05}>
-          <JoinTeamBanner />
+          <JoinTeamBanner cta={joinTeamBannerProps} />
         </ScrollReveal>
       )}
 
