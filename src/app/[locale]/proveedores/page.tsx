@@ -60,7 +60,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
           {benefits.map((key) => (
             <div
               key={key}
-              className="p-5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-left"
+              className="propyte-card-glass-sm p-5 text-left"
             >
               <p className="text-white/80 text-sm leading-relaxed">{t(key)}</p>
             </div>

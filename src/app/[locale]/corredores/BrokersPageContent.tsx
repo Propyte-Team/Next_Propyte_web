@@ -173,7 +173,7 @@ function PlatformPreview() {
           <div className="p-6 md:p-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               {features.map((feat) => (
-                <div key={feat} className="bg-white/10 rounded-xl p-4">
+                <div key={feat} className="propyte-card-glass-sm p-4">
                   <div className="text-propyte-brand text-2xl font-bold mb-1">--</div>
                   <div className="text-white/60 text-xs">{feat}</div>
                 </div>
@@ -181,7 +181,7 @@ function PlatformPreview() {
             </div>
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="flex items-center gap-4 bg-white/5 rounded-xl p-4">
+                <div key={i} className="propyte-card-glass-sm flex items-center gap-4 p-4">
                   <div className="w-10 h-10 bg-propyte-cyan-100 rounded-lg flex-shrink-0" />
                   <div className="flex-1">
                     <div className="h-3 bg-white/20 rounded w-3/4 mb-2" />

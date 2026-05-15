@@ -782,6 +782,26 @@ html {
     0  6px 22px 0 rgba(162, 249, 255, 0.18);
 }
 
+/* ─── Glass cristalino dark SMALL — variante para cards rectangulares chicas
+   sobre dark (info tiles, benefits, feature cards 2-4 cols). Mismo lenguaje
+   que .propyte-card-glass pero con radius 16px y border/tint más sutil. */
+.propyte-card-glass-sm {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(72, 115, 121, 0.28);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0  4px 12px 0 rgba(0, 0, 0, 0.16);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.propyte-card-glass-sm:hover {
+  border-color: rgba(162, 249, 255, 0.40);
+  background: rgba(72, 115, 121, 0.36);
+}
+
 /* ─── Glass cristalino light — variante para bg claros (mantiene el carácter
    cristalino sin invertir). Útil en TrendingMarket / WhyPropyte stat tiles. */
 .propyte-card-glass-light {
