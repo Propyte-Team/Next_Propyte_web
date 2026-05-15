@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-14 (cierre workstream Zoho web-forms — merged a develop, page → Nombre_anuncio + tags por campaña + build fix @swc/helpers)
+> Última actualización: 2026-05-15 (Hero atmosphere + parallax + Q11 migrations deployadas a dev.propyte.com. SEO 100/100 en 4 rutas. Esperando feedback estético de Luis antes del merge develop→main.)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -89,10 +89,12 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ### Decisiones del usuario (no código)
 
-- [ ] **Validación visual humana en `dev.propyte.com`** — develop al día con commit `97354bc`. Foco: `/propiedades/estudio-pentgarden-con-alberca-privada` (tour Matterport), CookieBanner abajo-derecha, ContactForm simplificado, sidebar detail pages reorder.
-- [ ] **Hacer público el video Drive** en `estudio-pentgarden-con-alberca-privada` (Drive → Compartir → "Cualquier persona con el enlace") para que el embed cargue. El URL ya está OK en BD.
-- [ ] **Merge `develop → main`** — ⚠️ NO ejecutar sin autorización explícita Luis. Dispara Hostinger pull-on-main → `propyte.com` prod.
+- [ ] **Más ajustes estéticos pre-merge develop→main** — Luis 2026-05-15: "hay cosas que aún no me convencen, debemos mejorar". Esperando que indique cuáles componentes/secciones. El Hero ya quedó OK con HeroAtmosphere.
+- [ ] **Decidir destino branch `prueba-liquid-glass`** — commit `7524c2b` (Hero + Q11) está local-only en esta rama. Posibilidades: (a) cherry-pick a develop, (b) push y mergear como PR, (c) rebase a develop. Untracked `src/components/ui/glass/` es WIP paralelo de Luis (liquid-glass experiment), NO mezclar.
+- [ ] **Merge `develop → main`** — ⚠️ NO ejecutar sin autorización Luis. 320 commits ahead. Dispara Hostinger pull-on-main → `propyte.com` prod.
 - [ ] **Validación cluster filter "+N"** — requiere ≥2 propiedades con coords en Supabase staging para que se active el clustering. Hoy hay solo 1 con coords válidas.
+- [x] **Validación visual humana en `dev.propyte.com`** (2026-05-15) — Hero + Q11 migrations + Tier 1 Lenis validados en producción.
+- [x] **Hacer público el video Drive** (2026-05-15) — Luis lo hizo público.
 
 ### Brand Identity Oficial — extensiones futuras
 
@@ -162,16 +164,16 @@ _Ninguna._
 
 ## Completadas recientes
 
-- [x] **Zoho web-forms integration cerrado + merged a develop** (2026-05-14) — 16 commits del workstream merged a `develop` (`00eb513`). Bug Tipo_de_Contacto resuelto end-to-end: 14/14 leads automatizados llegaron con Tipo correcto. Reglas Zoho rebuilt por Luis con lógica basada en tags `[XXX] (YYY)` que mi código embebe en `Nombre_de_Campa_a`.
-- [x] **Feature `page → Nombre_anuncio`** (2026-05-14) — `submitLead` envía `window.location.href` y `sourceToZohoPayload` lo mapea a `lead.Nombre_anuncio`. Resuelve ambigüedad de slugs/títulos confusos. Schema acepta `page` con validación `.url()`. Commit `2fd16d4` + reapply `3e56aaf`.
-- [x] **Build fix `@swc/helpers` standalone** (2026-05-14) — Incident: Vercel runtime excluía `_interop_require_default.js` del bundle. Fix: `outputFileTracingIncludes` en `next.config.ts`. Workaround durante incidente: `vercel alias set` manual (Hobby plan no permite `vercel rollback` >1 step). Commit `5fb7f67`. Memoria `feedback_nextjs16_swc_helpers_standalone.md`.
-- [x] **Tags `[XXX] (YYY)` en Nombre_de_Campa_a** (2026-05-13/14) — Nuevas funciones `campaignTag()` + `campaignSubtag()`. F1-F2-F9-F10-F11 → `[LEADS]`, F3-F4-F7 → `[DESARROLLADORES]` (con `(HERO)`/`(REGISTRO)` para F3/F4), F5 → `[BROKERS]`, F6 → `[PROVEEDORES]`, F8 → `[EMPLEO] (ASESOR)`. `tipoDeContacto()` actualizado para F3/F4/F7 → Desarrollador, F8 → Empleo. Commit `63fb057`.
-- [x] **Doble llamada Lead+Account para F3/F4/F6/F7** (2026-05-13) — Account con `Industry="Desarrolladora"` para F3/F4 siempre + F7 condicional (si `data.company` viene). F6 mantiene Industry derivada de `CATEGORY_TO_INDUSTRY`. Commit `63fb057`.
-- [x] **Cleanup branches mergeadas** (2026-05-14) — Borradas 4: `feat/zoho-forms-integration` local, `fix/public-gate-decouple-zoho-pipeline` local+remote, `origin/feat/revalidate-endpoint`. Estado: `develop`, `feat/dynamic-content-a1-pulido` ★, `feat/content-audit-seo-recovery` (nueva), `infografia` (stand by), `main`.
-- [x] **UnitModelsTable subtype fix** — Prefer `unit_subtype` sobre `tTypes(unit_type)` + detect path-fallback `types.X`. Commit `97354bc` (2026-05-11 PM)
-- [x] **CookieBanner compacto + Drive auto-embed** — Banner anclado right-corner 380px + VideoPlayer transforma URLs Drive a `/preview`. Commit `6e1fbf0` (2026-05-11 PM)
-- [x] **Fix 500 SSR cadena** en /propiedades/[slug] — 3 bugs: stages.Entregado MISSING_MESSAGE (mapper normalize + safeStage), property.tabTour key faltante, row.title fallback. Commits `2cba646` + `f4c7632` (2026-05-11 PM)
-- [x] **Detail pages UX** — Sidebar reorder (DATOS CLAVE arriba) + ContactForm simplificado. Commit `07f07ae` (2026-05-11 PM)
+- [x] **Hero atmosphere + parallax mouse sutil** (2026-05-15) — Nuevo `HeroAtmosphere.tsx` con grid blueprint + 3 glow orbs + watermark Home icon + coordenadas editoriales. Springs framer-motion `{stiffness:70, damping:22}`. Hero.tsx usa `.propyte-hero-canvas`. Fix gotcha: listener en parent `<section>` (no en div con `pointer-events-none`). Commit `7524c2b`. Memorias `feedback_pointer_events_none_listener.md` + `feedback_parallax_blur_magnitudes.md`.
+- [x] **Q11 migrations** (2026-05-15) — ExploreCategories → `/propiedades` (post-breadcrumb), LeadMagnet → `/blog` (reemplaza NewsletterCTA condicionalmente), AppDownloadBanner → cierre `/propiedades` + `/desarrollos`. Home limpio. Hub connections preservadas. Commit `7524c2b`.
+- [x] **F3/F4/F5/F10 QA manual** (2026-05-15) — Luis validó 8 leads manualmente en Zoho UI. Tipo_de_Contacto + Nombre_anuncio + Account correctos. Workstream Zoho 22/22 funcional.
+- [x] **Validación SEO end-to-end** (2026-05-15) — 8/8 schemas C1 detectados en dev.propyte.com (Organization, WebSite+SearchAction, RealEstateListing, BreadcrumbList, FAQPage, LocalBusiness, BlogPosting, CollectionPage+ItemList). Lighthouse SEO **100/100** en `/es`, `/es/propiedades/[slug]`, `/es/desarrolladores`, `/es/nosotros/equipo-comercial`.
+- [x] **Deploy 2026-05-15** — `dpl_7ctuQhFEEhorQ6srqvgC1vfsFjVn` desde branch `prueba-liquid-glass` (NO pushed a origin). Custom domain `dev.propyte.com` aliased. Rollback chain: `6QJzhfWMwoAdXxbMFSssDQkGV6b5` (Tier 1).
+- [x] **Zoho web-forms integration cerrado + merged a develop** (2026-05-14) — 16 commits del workstream merged a `develop` (`00eb513`).
+- [x] **Build fix `@swc/helpers` standalone** (2026-05-14) — `outputFileTracingIncludes` en `next.config.ts`. Commit `5fb7f67`.
+- [x] **Tags `[XXX] (YYY)` en Nombre_de_Campa_a + doble llamada Lead+Account F3/F4/F6/F7** (2026-05-13/14) — Commit `63fb057`.
+- [x] **UnitModelsTable subtype fix + CookieBanner compacto + Drive auto-embed** (2026-05-11 PM) — Commits `97354bc`, `6e1fbf0`.
+- [x] **Fix 500 SSR cadena en /propiedades/[slug] + detail pages UX** (2026-05-11 PM) — Commits `2cba646`, `f4c7632`, `07f07ae`.
 
 ---
 
@@ -179,7 +181,7 @@ _Ninguna._
 
 - **Sistema de utilities cristalino en `globals.css:736-915`** — todas las clases `.propyte-*` viven ahí (regla del usuario "todo en CSS global"). Cero hex brand-cyan sueltos en `src/app/[locale]/**`.
 - **Validación headless gotcha:** Playwright headless puede renderizar mal `backdrop-filter` en glass cards. Memoria: `feedback_playwright_glass_screenshots.md`. Validar con navegador real para rutas con glass crítico.
-- **Deploy actual staging:** `dpl_EXv84fSZi7bfnh5yrJ1uGEawqjiK` aliased a `https://dev.propyte.com`.
+- **Deploy actual staging:** `dpl_EhFYpkBqKuYCum1VNvASsEkcuAhw` (Glass system Tanda 1 + perf WIP, 2026-05-15) aliased a `https://dev.propyte.com`. Rollback: `vercel alias set dpl_7ctuQhFEEhorQ6srqvgC1vfsFjVn dev.propyte.com` (Hero atmosphere + Q11 previo). PR abierto: https://github.com/Propyte-Team/Next_Propyte_web/pull/4 (`feat/glass-system-propagation` → `develop`).
 - **Vercel CLI inline obligatorio:** `cd <repo> && vercel --prod` siempre en una línea. Memoria `feedback_vercel_cli_cwd.md`.
 - **Brand identity rule:** `#A2F9FF` solo en dark bg; light bg → `#0D9488` (teal-a11y WCAG AA). Memoria `project_next_propyte_brand_identity.md`.
 - **Naranja allowlist:** `analytics/*`, `InvestmentDisclaimer`, `GeoAnalysis`, `MarketIndicator` (semantic warnings), `playground/*`, `design-playground/*`, token `--color-amber` legacy.
