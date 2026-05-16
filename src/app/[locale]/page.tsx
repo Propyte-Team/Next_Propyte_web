@@ -112,20 +112,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       }
     : null;
 
-  // Orden Home — Manual UX/UI §4.2 + ampliación E-E-A-T (decisión Luis 2026-05-11)
-  // + reintegración 2026-05-12 de slots Hub-driven con auto-hide:
-  // Hero → Nosotros → Featured → ExploreCategories(Hub) → Metodología →
-  // ProcessInfographic → HowItWorks → Testimonials(Hub) → WhyPropyte →
-  // TrendingMarket → DondeEstamos → DeveloperLogos → HomeFAQ →
-  // DeveloperBanner → JoinTeamBanner → LeadMagnet(Hub) → RecentBlog
+  // Orden Home — Ajuste 2026-05-16 (decisión Luis):
+  // Fijo top: Hero → ProcessInfographic → LeadMagnet(Hub) → FeaturedProperties →
+  // DeveloperBanner → NosotrosTeaser
+  // Resto reordenado para flujo CTA progresivo + SEO (E-E-A-T, FAQ schema,
+  // freshness, internal linking):
+  // ExploreCategories(Hub) → WhyPropyte → Metodología → HowItWorks →
+  // Testimonials(Hub) → TrendingMarket → DondeEstamos → DeveloperLogos →
+  // RecentBlog → HomeFAQ → JoinTeamBanner
   return (
     <>
       <SchemaMarkup type="organization" />
       {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <Hero stats={stats} />}
 
-      <ScrollReveal>
-        <NosotrosTeaser />
+      <ScrollReveal delay={0.05}>
+        <ProcessInfographic />
       </ScrollReveal>
+
+      {leadMagnetProps && (
+        <ScrollReveal>
+          <LeadMagnet cta={leadMagnetProps} />
+        </ScrollReveal>
+      )}
 
       {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
         <ScrollReveal delay={0.05}>
@@ -133,18 +141,28 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       )}
 
+      <ScrollReveal>
+        <DeveloperBanner />
+      </ScrollReveal>
+
+      <ScrollReveal>
+        <NosotrosTeaser />
+      </ScrollReveal>
+
       {exploreOverride && (
         <ScrollReveal>
           <ExploreCategories typeCounts={stats.typeCounts} override={exploreOverride} />
         </ScrollReveal>
       )}
 
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && (
+        <ScrollReveal delay={0.05}>
+          <WhyPropyte />
+        </ScrollReveal>
+      )}
+
       <ScrollReveal>
         <MetodologiaTeaser />
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.05}>
-        <ProcessInfographic />
       </ScrollReveal>
 
       <ScrollReveal>
@@ -154,12 +172,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {isVisible(visibility, VISIBILITY_KEYS.HOME_TESTIMONIALS) && homeTestimonials.length > 0 && (
         <ScrollReveal delay={0.05}>
           <Testimonials items={homeTestimonials} />
-        </ScrollReveal>
-      )}
-
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && (
-        <ScrollReveal delay={0.05}>
-          <WhyPropyte />
         </ScrollReveal>
       )}
 
@@ -177,12 +189,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       )}
 
-      <ScrollReveal delay={0.05}>
-        <HomeFAQ />
+      <ScrollReveal>
+        <RecentBlog locale={locale} />
       </ScrollReveal>
 
-      <ScrollReveal>
-        <DeveloperBanner />
+      <ScrollReveal delay={0.05}>
+        <HomeFAQ />
       </ScrollReveal>
 
       {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
@@ -190,16 +202,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <JoinTeamBanner />
         </ScrollReveal>
       )}
-
-      {leadMagnetProps && (
-        <ScrollReveal>
-          <LeadMagnet cta={leadMagnetProps} />
-        </ScrollReveal>
-      )}
-
-      <ScrollReveal>
-        <RecentBlog locale={locale} />
-      </ScrollReveal>
     </>
   );
 }
