@@ -53,7 +53,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
   const darkTopRow = (mode === 'home' || mode === 'dark') && !isScrolled;
 
   return (
-    <header className="lg:hidden fixed top-0 left-0 right-0 z-50 propyte-mobile-header-bg" role="banner" aria-label={t('openMenu')}>
+    <header className={`lg:hidden fixed top-0 left-0 right-0 z-50 ${darkTopRow ? '' : 'propyte-mobile-header-bg'}`} role="banner" aria-label={t('openMenu')}>
       {/* Row 1: Logo | Lang | Hamburger */}
       <div className="flex items-stretch justify-between h-11 px-3">
         <Link

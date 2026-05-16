@@ -41,7 +41,7 @@ export default function ValueProposition() {
               </div>
               <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{card.title}</h3>
               <p className="text-gray-600 mb-4">{card.desc}</p>
-              <Link href={card.href} className="text-[#0F766E] font-medium hover:underline">
+              <Link href={card.href} className="inline-flex items-center min-h-[44px] md:min-h-0 text-[#0F766E] font-medium hover:underline">
                 {card.cta} →
               </Link>
             </div>

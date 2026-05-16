@@ -146,7 +146,7 @@ function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
         <div className="min-w-0">
           <p className="font-bold text-[#1A2F3F] text-sm leading-tight truncate">{dev.name}</p>
           {dev.verified && (
-            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-[#0F766E] mt-0.5">
+            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-[var(--propyte-dark-900)] mt-0.5">
               <BadgeCheck size={11} />
               {t('verified')}
             </span>
@@ -199,7 +199,7 @@ function JoinBanner() {
                 href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-12 px-6 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+                className="h-12 px-6 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} /> WhatsApp
               </a>

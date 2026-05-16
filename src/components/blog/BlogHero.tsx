@@ -24,7 +24,7 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
     <section className="bg-[#0F1923] w-full py-16 md:py-24">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#5CE0D2]/10 border border-[#5CE0D2]/30 text-[#5CE0D2] text-xs font-semibold tracking-widest uppercase mb-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#A2F9FF]/10 border border-[#A2F9FF]/30 text-[#A2F9FF] text-xs font-semibold tracking-widest uppercase mb-8">
           <LayoutGrid size={12} />
           Propyte Blog
         </div>
@@ -32,7 +32,7 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
         {/* H1 */}
         <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4">
           <span className="text-white block">{t.heroHeadLine1}</span>
-          <span className="text-[#5CE0D2] block">{t.heroHeadLine2}</span>
+          <span className="text-[#A2F9FF] block">{t.heroHeadLine2}</span>
         </h1>
 
         {/* Description */}
@@ -46,8 +46,8 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
             href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
             className={`px-6 py-3 rounded-full font-semibold text-sm transition-all ${
               activeCategory === CAT_ASESORES
-                ? 'bg-[#5CE0D2] text-[#0F1923] shadow-lg shadow-[#5CE0D2]/20 ring-2 ring-white/30'
-                : 'bg-[#5CE0D2]/80 text-[#0F1923] hover:bg-[#5CE0D2]'
+                ? 'bg-[#A2F9FF] text-[#0F1923] shadow-lg shadow-[#A2F9FF]/20 ring-2 ring-white/30'
+                : 'bg-[#A2F9FF]/80 text-[#0F1923] hover:bg-[#A2F9FF]'
             }`}
           >
             {t.ctaAsesores}
@@ -56,8 +56,8 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
             href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
             className={`px-6 py-3 rounded-full font-semibold text-sm border-2 transition-all ${
               activeCategory === CAT_INVERSIONISTAS
-                ? 'border-[#5CE0D2] bg-[#5CE0D2] text-[#0F1923]'
-                : 'border-[#5CE0D2] text-[#5CE0D2] hover:bg-[#5CE0D2] hover:text-[#0F1923]'
+                ? 'border-[#A2F9FF] bg-[#A2F9FF] text-[#0F1923]'
+                : 'border-[#A2F9FF] text-[#A2F9FF] hover:bg-[#A2F9FF] hover:text-[#0F1923]'
             }`}
           >
             {t.ctaInversionistas}

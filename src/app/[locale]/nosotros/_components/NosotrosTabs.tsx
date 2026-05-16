@@ -25,7 +25,10 @@ export default async function NosotrosTabs({
   return (
     <nav
       aria-label={t('label')}
-      className="bg-white border-b border-gray-200 sticky top-[108px] lg:top-20 z-30"
+      // Audit 2026-05-15 (D4.2): barra secundaria con strip glass para que no
+      // se vea "incrustada" sobre el contenido al hacer scroll. Shadow sutil
+      // marca la elevación y separa visualmente del bloque inferior.
+      className="propyte-strip-glass sticky top-[108px] lg:top-20 z-30"
     >
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex gap-8 overflow-x-auto no-scrollbar">
@@ -38,8 +41,8 @@ export default async function NosotrosTabs({
                 aria-current={isActive ? 'page' : undefined}
                 className={`py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                   isActive
-                    ? 'text-[#0F766E] border-propyte-brand'
-                    : 'text-gray-600 border-transparent hover:text-[#0F766E] hover:border-propyte-brand'
+                    ? 'text-[var(--propyte-dark-900)] border-propyte-brand'
+                    : 'text-[var(--propyte-dark-600)] border-transparent hover:text-[var(--propyte-dark-900)] hover:border-propyte-brand'
                 }`}
               >
                 {t(tab.key)}

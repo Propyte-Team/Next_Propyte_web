@@ -1,9 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from '@vis.gl/react-google-maps';
-import { MarkerClusterer } from '@googlemaps/markerclusterer';
-import type { Cluster, Marker } from '@googlemaps/markerclusterer';
+import { useCallback, useMemo, useState } from 'react';
+import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import { useTranslations } from 'next-intl';
 import { MapPin } from 'lucide-react';
 import { formatPriceShort } from '@/lib/formatters';
@@ -27,54 +25,26 @@ interface MapViewProps {
 const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
 const DEFAULT_ZOOM = 9;
 
-// ─────────────────────────────────────────────────────
-// Custom renderer para cluster markers — pin "+N" con brand cyan.
-// onClusterClickRef se inyecta para que el handler de click pueda
-// emitir los IDs de las propiedades al parent en el momento del click,
-// sin re-renderear el clusterer en cada cambio de callback.
-// ─────────────────────────────────────────────────────
-function createClusterRenderer() {
-  return {
-    render({ count, position }: Cluster) {
-      const size = count > 20 ? 52 : count > 10 ? 44 : 36;
-      const fontSize = count > 20 ? 14 : count > 10 ? 13 : 12;
-
-      const el = document.createElement('div');
-      el.style.cssText = `
-        width: ${size}px; height: ${size}px;
-        border-radius: 50%;
-        background: #A2F9FF;
-        color: #0F1923;
-        font-weight: 800;
-        font-size: ${fontSize}px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow:
-          0 -1px 1px 0 rgba(255, 255, 255, 0.55) inset,
-          0  1px 1px 0 rgba(255, 255, 255, 0.85) inset,
-          0  4px 12px rgba(162, 249, 255, 0.45),
-          0  2px 6px rgba(11, 28, 30, 0.20);
-        border: 2px solid white;
-        cursor: pointer;
-        transition: transform 0.15s ease;
-        font-variant-numeric: tabular-nums;
-      `;
-      el.textContent = `+${count}`;
-      el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.1)'; });
-      el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1)'; });
-
-      return new google.maps.marker.AdvancedMarkerElement({
-        position,
-        content: el,
-        zIndex: 1000 + count,
-      });
-    },
-  };
+// Precisión 4 decimales ≈ 11m. Suficiente para considerar "mismo punto" 2+
+// unidades del mismo desarrollo (que heredan lat/lng del padre) sin agrupar
+// edificios distintos a 100m de distancia.
+function coordKey(lat: number, lng: number): string {
+  return `${lat.toFixed(4)},${lng.toFixed(4)}`;
 }
 
+type Group = {
+  key: string;
+  lat: number;
+  lng: number;
+  properties: PropertyWithCoords[];
+};
+
 // ─────────────────────────────────────────────────────
-// Inner map content (needs map context from APIProvider)
+// Inner map content — agrupación manual.
+// Reemplaza @googlemaps/markerclusterer porque su integración con
+// @vis.gl/react-google-maps AdvancedMarker tiene un timing bug (los markers
+// se crean async tras carga del SDK, el effect del clusterer no los ve).
+// Agrupar manualmente por coord rounded da control 100%.
 // ─────────────────────────────────────────────────────
 function MapContent({
   properties,
@@ -85,19 +55,28 @@ function MapContent({
   onPropertyClick?: (property: Property) => void;
   onClusterClick?: (propertyIds: string[]) => void;
 }) {
-  const map = useMap();
   const [selected, setSelected] = useState<PropertyWithCoords | null>(null);
-  const clusterer = useRef<MarkerClusterer | null>(null);
-  const markersRef = useRef<Record<string, Marker>>({});
-  const markerToIdRef = useRef<WeakMap<Marker, string>>(new WeakMap());
-  // Ref-mirror del callback para que el handler del clusterer (registrado
-  // una sola vez) siempre invoque la versión más reciente sin re-suscribir.
-  const onClusterClickRef = useRef(onClusterClick);
-  onClusterClickRef.current = onClusterClick;
 
-  // Activamos clustering siempre que haya 2+ markers — incluye el caso de
-  // varias unidades en el mismo edificio (mismo lat/lng). Decisión 2026-05-11.
-  const enableClustering = properties.length >= 2;
+  // Agrupar properties por coord rounded. Stable via useMemo.
+  // (Usamos `Record` para evitar shadowing del componente `Map` de vis.gl.)
+  const groups = useMemo<Group[]>(() => {
+    const byKey: Record<string, Group> = {};
+    for (const p of properties) {
+      const key = coordKey(p.location.lat, p.location.lng);
+      const existing = byKey[key];
+      if (existing) {
+        existing.properties.push(p);
+      } else {
+        byKey[key] = {
+          key,
+          lat: p.location.lat,
+          lng: p.location.lng,
+          properties: [p],
+        };
+      }
+    }
+    return Object.values(byKey);
+  }, [properties]);
 
   const handleMarkerClick = useCallback(
     (property: PropertyWithCoords) => {
@@ -107,75 +86,66 @@ function MapContent({
     [onPropertyClick],
   );
 
-  // Initialize clusterer once map is ready
-  useEffect(() => {
-    if (!map || !enableClustering) return;
-    if (!clusterer.current) {
-      clusterer.current = new MarkerClusterer({
-        map,
-        renderer: createClusterRenderer(),
-        onClusterClick: (event, cluster) => {
-          // Prevenimos zoom-in default y emitimos IDs al parent para filtrar
-          // el listado. Si no hay handler, dejamos pasar el comportamiento
-          // estándar de zoom-in.
-          if (!onClusterClickRef.current) return;
-          event.stop?.();
-          const ids = (cluster.markers || [])
-            .map((m) => markerToIdRef.current.get(m))
-            .filter((id): id is string => typeof id === 'string');
-          if (ids.length > 0) onClusterClickRef.current(ids);
-        },
-      });
-    }
-    return () => {
-      clusterer.current?.clearMarkers();
-      clusterer.current?.setMap(null);
-      clusterer.current = null;
-    };
-  }, [map, enableClustering]);
-
-  // Sync markers with clusterer when properties change
-  useEffect(() => {
-    if (!clusterer.current || !enableClustering) return;
-    clusterer.current.clearMarkers();
-    clusterer.current.addMarkers(Object.values(markersRef.current));
-  }, [properties, enableClustering]);
-
-  const setMarkerRef = useCallback(
-    (marker: Marker | null, key: string) => {
-      if (!enableClustering) return;
-      if (marker && markersRef.current[key]) return;
-      if (!marker && !markersRef.current[key]) return;
-
-      if (marker) {
-        markersRef.current[key] = marker;
-        markerToIdRef.current.set(marker, key);
-      } else {
-        const existing = markersRef.current[key];
-        if (existing) markerToIdRef.current.delete(existing);
-        delete markersRef.current[key];
-      }
-    },
-    [enableClustering],
-  );
-
   return (
     <>
-      {properties.map((property) => (
-        <AdvancedMarker
-          key={property.id}
-          position={{ lat: property.location.lat, lng: property.location.lng }}
-          onClick={() => handleMarkerClick(property)}
-          ref={(marker) => setMarkerRef(marker, property.id)}
-        >
-          <div
-            className="bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-colors"
-            style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+      {groups.map((group) => {
+        if (group.properties.length === 1) {
+          // Single property → marker normal con precio
+          const property = group.properties[0];
+          return (
+            <AdvancedMarker
+              key={property.id}
+              position={{ lat: group.lat, lng: group.lng }}
+              onClick={() => handleMarkerClick(property)}
+            >
+              <div
+                className="bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-colors"
+                style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+              >
+                {formatPriceShort(property.price.mxn)}
+              </div>
+            </AdvancedMarker>
+          );
+        }
+
+        // Cluster pin "+N" — onClick filtra el listado a estos IDs
+        const count = group.properties.length;
+        const size = count > 20 ? 52 : count > 10 ? 44 : 36;
+        const fontSize = count > 20 ? 14 : count > 10 ? 13 : 12;
+        return (
+          <AdvancedMarker
+            key={group.key}
+            position={{ lat: group.lat, lng: group.lng }}
+            onClick={() => {
+              if (onClusterClick) {
+                onClusterClick(group.properties.map((p) => p.id));
+              }
+            }}
           >
-            {formatPriceShort(property.price.mxn)}
-          </div>
-        </AdvancedMarker>
-      ))}
+            <div
+              style={{
+                width: size,
+                height: size,
+                borderRadius: '50%',
+                background: '#A2F9FF',
+                color: '#0F1923',
+                fontWeight: 800,
+                fontSize,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow:
+                  '0 -1px 1px 0 rgba(255, 255, 255, 0.55) inset, 0 1px 1px 0 rgba(255, 255, 255, 0.85) inset, 0 4px 12px rgba(162, 249, 255, 0.45), 0 2px 6px rgba(11, 28, 30, 0.2)',
+                border: '2px solid white',
+                cursor: 'pointer',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              +{count}
+            </div>
+          </AdvancedMarker>
+        );
+      })}
 
       {selected && (
         <InfoWindow

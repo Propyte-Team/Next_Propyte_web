@@ -53,7 +53,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full h-12 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-bold rounded-lg transition-colors mb-3 shadow-sm"
+          className="flex items-center justify-center gap-2 w-full h-12 propyte-cta-whatsapp font-bold rounded-lg transition-colors mb-3 shadow-sm"
         >
           <MessageCircle size={20} />
           {t('whatsappContact')}

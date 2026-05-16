@@ -111,10 +111,11 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
             <Link
               key={cat.key}
               href={cat.href}
-              // Ficha 01 brand: rounded-[28px] mobile / 52px tablet+, border
-              // sutil white/15, glass background detrás de la imagen para
-              // suavizar el contacto con el grid oscuro.
-              className="group relative aspect-[4/3] rounded-[28px] md:rounded-[52px] overflow-hidden border border-white/15 bg-[rgba(72,115,121,0.40)] backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-[#A2F9FF]/50 hover:shadow-[0_12px_36px_rgba(162,249,255,0.20)] transition-all duration-300"
+              // Audit 2026-05-15: radius reducido (antes 28/52px → 16/24px) para
+              // que la imagen tenga más protagonismo y matchee el feel del
+              // listado. Glass background detrás de la imagen suaviza el
+              // contacto con el grid oscuro.
+              className="group relative aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden border border-white/15 bg-[rgba(72,115,121,0.40)] backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-[#A2F9FF]/50 hover:shadow-[0_12px_36px_rgba(162,249,255,0.20)] transition-all duration-300"
             >
               <Image
                 src={cat.image}

@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { Truck, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import ProviderForm from './ProviderForm';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -44,10 +44,6 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
             </span>
           </div>
 
-          <div className="w-16 h-16 rounded-2xl bg-propyte-cyan-100 flex items-center justify-center mx-auto mb-6">
-            <Truck size={28} strokeWidth={1.75} className="text-propyte-brand" />
-          </div>
-
           <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-4">
             {t('title')}
           </h1>
@@ -60,7 +56,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
           {benefits.map((key) => (
             <div
               key={key}
-              className="p-5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-left"
+              className="propyte-card-glass-sm p-5 text-left"
             >
               <p className="text-white/80 text-sm leading-relaxed">{t(key)}</p>
             </div>

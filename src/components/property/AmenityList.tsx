@@ -68,17 +68,17 @@ export default async function AmenityList({ locale, amenities, title }: AmenityL
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-[#2C2C2C] mb-4">{resolvedTitle}</h2>
+      <h2 className="text-xl font-bold text-[var(--propyte-dark-900)] mb-4">{resolvedTitle}</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {items.map((a) => {
           const Icon = a.icon;
           return (
             <div
               key={a.key}
-              className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 rounded-xl border border-gray-100"
+              className="flex items-center gap-2 px-3 py-2.5 bg-[var(--propyte-cyan-50)]/60 rounded-xl border border-[var(--propyte-cyan-100)]/40"
             >
-              <Icon size={18} className="text-[#0F766E] shrink-0" />
-              <span className="text-sm text-gray-700 font-medium truncate">{a.label}</span>
+              <Icon size={18} className="propyte-amenity-icon" />
+              <span className="text-sm text-[var(--propyte-dark-900)] font-medium truncate">{a.label}</span>
             </div>
           );
         })}

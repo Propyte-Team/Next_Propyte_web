@@ -260,9 +260,9 @@ function WhyPropyte() {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center group-hover:bg-propyte-cyan-100 transition-colors">
-                    <Icon size={24} className="text-[#0F766E]" />
+                    <Icon size={24} className="propyte-amenity-icon" />
                   </div>
-                  <span className="text-xs font-bold text-[#0F766E] bg-propyte-cyan-100 px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold text-[var(--propyte-dark-700)] bg-propyte-cyan-100 px-2.5 py-1 rounded-full">
                     {b.highlight}
                   </span>
                 </div>

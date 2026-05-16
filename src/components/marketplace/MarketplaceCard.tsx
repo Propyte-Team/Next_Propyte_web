@@ -56,14 +56,17 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
     : null;
   const showPromo = !!promoText;
 
-  const badgeColors: Record<Exclude<PropertyBadge, null>, string> = {
-    preventa: 'bg-[#0D9488]',
-    nuevo: 'bg-[#22C55E]',
-    construccion: 'bg-[#1A2F3F]',
-    entrega_inmediata: 'bg-[#5CE0D2]',
-    proximamente: 'bg-[#6366F1]',
-    reservado: 'bg-[#0D9488]/80',
-    vendido: 'bg-gray-500',
+  // Audit 2026-05-15: cada badge define su par bg+text para garantizar contraste
+  // accesible. Antes era bg-only con `text-white` global, fallaba sobre cyan claro.
+  // Preventa: dark + brand (destaca como CTA). Entrega Inmediata: brand + dark.
+  const badgeStyles: Record<Exclude<PropertyBadge, null>, string> = {
+    preventa: 'bg-[var(--propyte-dark-900)] text-[var(--propyte-brand)]',
+    nuevo: 'bg-[#22C55E] text-white',
+    construccion: 'bg-[#1A2F3F] text-white',
+    entrega_inmediata: 'bg-[var(--propyte-brand)] text-[var(--propyte-dark-900)]',
+    proximamente: 'bg-[#6366F1] text-white',
+    reservado: 'bg-[#0D9488]/80 text-white',
+    vendido: 'bg-gray-500 text-white',
   };
 
   const detailBase = property.kind === 'unit' ? 'propiedades' : 'desarrollos';
@@ -146,8 +149,10 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             </div>
           )}
 
-          {/* Top-right action stack: Save heart + Brochure download */}
-          <div className="absolute top-2 right-2 flex flex-col gap-1.5">
+          {/* Top-right action stack: Save heart + Brochure download.
+              Layout horizontal para evitar que la 3ra acción (compare) baje
+              hasta el área del carousel arrow centrado vertical (overlap). */}
+          <div className="absolute top-2 right-2 flex flex-row gap-1.5">
             <motion.button
               type="button"
               onClick={(e) => {
@@ -243,8 +248,8 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
             {(property.badge || property.stage) && (
               <span
-                className={`px-2 py-0.5 text-2xs font-bold uppercase text-white rounded ${
-                  badgeColors[(property.badge ?? property.stage) as Exclude<PropertyBadge, null>] || 'bg-gray-600'
+                className={`px-2 py-0.5 text-2xs font-bold uppercase rounded ${
+                  badgeStyles[(property.badge ?? property.stage) as Exclude<PropertyBadge, null>] || 'bg-gray-600 text-white'
                 }`}
               >
                 {safeStage(property.badge ?? property.stage)}
@@ -281,7 +286,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
         <div className="p-4">
           {/* Price + $/m² (+ strikethrough when discounted) */}
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span data-testid="marketplace-card-price" className="text-lg font-bold text-[#2C2C2C] tabular-nums">{formattedPrice}</span>
+            <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">{formattedPrice}</span>
             {hasDiscount && (
               <>
                 <span className="text-xs text-gray-500 line-through tabular-nums">
@@ -301,7 +306,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Specs: solo cuando haya algún valor real (units tienen, developments aggregate no) */}
           {(property.specs.bedrooms > 0 || property.specs.bathrooms > 0 || property.specs.area > 0) && (
-            <div className="flex items-center gap-1 text-sm text-gray-600 mt-0.5">
+            <div className="flex items-center gap-1 text-base text-[var(--propyte-dark-700)] mt-1">
               {property.specs.bedrooms > 0 && (
                 <>
                   <span className="font-semibold">{property.specs.bedrooms}</span>
@@ -354,8 +359,8 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           )}
 
           {/* Address */}
-          <div className="flex items-center gap-1 text-xs text-gray-600 mt-1 line-clamp-1">
-            <MapPin size={10} className="flex-shrink-0" />
+          <div className="flex items-center gap-1.5 text-sm text-[var(--propyte-dark-700)] mt-1.5 line-clamp-1">
+            <MapPin size={12} className="flex-shrink-0" />
             {property.location.zone}, {property.location.city}
           </div>
 

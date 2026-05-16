@@ -97,7 +97,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 text-left"
+      className="propyte-card-glass-sm p-6 md:p-8 text-left"
       noValidate
     >
       {/* Honeypot — invisible para humanos; bots lo llenan y el endpoint los detecta (REQ-F-02). */}

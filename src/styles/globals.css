@@ -11,6 +11,9 @@
   --color-aztec: #0F1923;
   --color-deep-onyx: #1A1A2E;
   --color-graphite: #2C2C2C;
+  /* --color-amber: SEMÁNTICO WARNING. NO usar como accent decorativo (audit
+     2026-05-15). Uso válido: disclaimers financieros, market indicators "fair",
+     alerts de pérdida de datos. Para acentos visuales usar --propyte-brand. */
   --color-amber: #F5A623;
   --color-gray-light: #F4F6F8;
   --color-white: #FFFFFF;
@@ -782,6 +785,26 @@ html {
     0  6px 22px 0 rgba(162, 249, 255, 0.18);
 }
 
+/* ─── Glass cristalino dark SMALL — variante para cards rectangulares chicas
+   sobre dark (info tiles, benefits, feature cards 2-4 cols). Mismo lenguaje
+   que .propyte-card-glass pero con radius 16px y border/tint más sutil. */
+.propyte-card-glass-sm {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(72, 115, 121, 0.28);
+  box-shadow:
+    0 -1px 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0  1px 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0  4px 12px 0 rgba(0, 0, 0, 0.16);
+  -webkit-backdrop-filter: blur(16px);
+          backdrop-filter: blur(16px);
+  transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+.propyte-card-glass-sm:hover {
+  border-color: rgba(162, 249, 255, 0.40);
+  background: rgba(72, 115, 121, 0.36);
+}
+
 /* ─── Glass cristalino light — variante para bg claros (mantiene el carácter
    cristalino sin invertir). Útil en TrendingMarket / WhyPropyte stat tiles. */
 .propyte-card-glass-light {
@@ -811,6 +834,46 @@ html {
     0  1px 4px 0 rgba(11, 28, 30, 0.03);
   -webkit-backdrop-filter: blur(14px);
           backdrop-filter: blur(14px);
+}
+
+/* ─── WhatsApp CTA — inversión visual (audit 2026-05-15 decisión Luis).
+   Antes: bg verde `#25D366` puro chocaba con `--propyte-brand` (ambos saturados).
+   Ahora: fondo dark + texto/icono brand para integrar con paleta corporativa.
+   El verde queda solo en chips representativos (ícono share) no en CTA principal. */
+.propyte-cta-whatsapp {
+  background: var(--propyte-dark-900);
+  color: var(--propyte-brand);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.propyte-cta-whatsapp:hover {
+  background: var(--propyte-dark-800);
+}
+.propyte-cta-whatsapp svg {
+  color: var(--propyte-brand);
+}
+
+/* ─── Amenity icon — token para iconos en listings de amenidades/features.
+   Default: --propyte-dark-700 (teal oscuro, contraste a11y sobre bg claro).
+   Sobre bg oscuro override a `text-propyte-brand` puntual. Audit 2026-05-15
+   pidió iconos alineados con la paleta (no teal genérico de Tailwind). */
+.propyte-amenity-icon {
+  color: var(--propyte-dark-700);
+  flex-shrink: 0;
+}
+.propyte-amenity-icon-on-dark {
+  color: var(--propyte-brand);
+  flex-shrink: 0;
+}
+
+/* ─── Step number — tipografía + tabular-nums para numeración 01/02/03.
+   Pareada con `formatStepNumber(n)` o `String(n).padStart(2, '0')`.
+   Color heredado del contenedor (sobre bg dark: brand; sobre bg claro: dark-700). */
+.propyte-step-number {
+  font-family: var(--font-eyebrow-family);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-wide);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 /* ─── Strip glass — variante full-width sin radius para header on-scroll,

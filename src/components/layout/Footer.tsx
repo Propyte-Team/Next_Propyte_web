@@ -53,9 +53,10 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
   const subtitleKey = override?.subtitle ?? 'ctaSubtitle';
 
   return (
-    <footer className="bg-[#0F1923] text-white">
-      {/* Top CTA strip */}
-      <div className="bg-[#1A2F3F]">
+    <footer className="bg-[var(--propyte-dark-900)] text-white">
+      {/* Top CTA strip — audit 2026-05-15: navy genérico (#1A2F3F) reemplazado
+          por dark-800 brand para alinear con paleta corporativa. */}
+      <div className="bg-[var(--propyte-dark-800)]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold">{t(titleKey)}</h3>
@@ -168,7 +169,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">
                 <Mail size={14} className="flex-shrink-0" />
-                <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a>
+                <a href={`mailto:${email}`} className="inline-flex items-center min-h-[44px] md:min-h-0 hover:text-white transition-colors">{email}</a>
               </li>
             </ul>
           </div>
@@ -184,13 +185,13 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               <button
                 type="button"
                 onClick={reopenBanner}
-                className="text-white/60 hover:text-propyte-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
+                className="inline-flex items-center min-h-[44px] md:min-h-0 text-white/60 hover:text-propyte-brand transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
               >
                 {t('cookieSettings')}
               </button>
               <p className="text-white/60">
                 {t('developedBy')}{' '}
-                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="text-propyte-brand hover:text-white transition-colors">
+                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3 -my-3 md:py-0 md:my-0 text-propyte-brand hover:text-white transition-colors">
                   Web Koi Studio
                 </a>
               </p>

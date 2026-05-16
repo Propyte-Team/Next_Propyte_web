@@ -54,7 +54,7 @@ export default function PropertyList({
             <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-7">
             {properties.map((property, i) => (
               <MarketplaceCard key={property.id} property={property} priority={i < 8} />
             ))}
@@ -87,14 +87,14 @@ export default function PropertyList({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overscroll-contain" data-lenis-prevent>
         {properties.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>
             <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
             {properties.map((property, i) => (
               <MarketplaceCard key={property.id} property={property} priority={i < 6} />
             ))}

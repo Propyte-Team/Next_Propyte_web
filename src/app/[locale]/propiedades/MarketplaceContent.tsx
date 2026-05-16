@@ -33,16 +33,16 @@ function MarketplaceHero({ heading, subheading, eyebrow }: { heading: string; su
       <div className="pointer-events-none absolute -bottom-32 left-1/3 w-96 h-96 bg-propyte-brand/8 rounded-full blur-3xl" aria-hidden="true" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 pt-7 md:pt-9 pb-5 md:pb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-4">
-          <Sparkles size={12} strokeWidth={2.25} className="text-[#0F766E]" />
-          <span className="text-[#0F766E] text-2xs font-bold tracking-[0.18em] uppercase">{eyebrow}</span>
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 border border-propyte-brand/40 rounded-full mb-4">
+          <Sparkles size={12} strokeWidth={2.25} className="text-[var(--propyte-dark-700)]" />
+          <span className="text-[var(--propyte-dark-700)] text-2xs font-bold tracking-[0.18em] uppercase">{eyebrow}</span>
         </div>
-        <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-bold text-[#1A2F3F] leading-[1.1] tracking-tight">
+        <h1 className="text-3xl md:text-4xl lg:text-[2.75rem] font-bold text-[var(--propyte-dark-900)] leading-[1.1] tracking-tight">
           {restOfHeading}
           {lastWord && (
             <>
               {' '}
-              <span className="text-[#0F766E]">{lastWord}</span>
+              <span className="text-[var(--propyte-dark-700)]">{lastWord}</span>
             </>
           )}
         </h1>
@@ -145,7 +145,7 @@ export default function MarketplaceContent({
   // vs grid full-width (decisión 2026-05-11 para /desarrollos + taxonomies).
   if (showMap) {
     return (
-      <div className="flex flex-col min-h-[calc(100dvh-140px)] lg:min-h-[calc(100dvh-144px)]">
+      <div className="flex flex-col h-[100dvh]">
         <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
 
         <FilterBar
