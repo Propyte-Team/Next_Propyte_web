@@ -206,7 +206,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full h-12 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-semibold rounded-lg transition-colors"
+                  className="flex items-center justify-center gap-2 w-full h-12 propyte-cta-whatsapp font-semibold rounded-lg transition-colors"
                 >
                   <MessageCircle size={18} strokeWidth={2} />
                   WhatsApp

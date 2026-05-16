@@ -78,7 +78,7 @@ export default function CookieBanner() {
                 type="button"
                 onClick={rejectOptional}
                 aria-label={t('closeAria')}
-                className="w-7 h-7 -mt-1 -mr-1 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand shrink-0"
+                className="w-11 h-11 -mt-2 -mr-2 flex items-center justify-center rounded-full text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand shrink-0"
               >
                 <X size={14} />
               </button>
@@ -88,7 +88,7 @@ export default function CookieBanner() {
               type="button"
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
-              className="mt-2 inline-flex items-center gap-1 text-2xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
+              className="mt-2 inline-flex items-center gap-1 min-h-[44px] -my-2 text-2xs font-semibold text-[#0F766E] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand rounded"
             >
               {t('customize')}
               <ChevronDown

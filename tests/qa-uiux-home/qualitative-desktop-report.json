@@ -1,0 +1,463 @@
+{
+  "generatedAt": "2026-05-15T17:21:21.466Z",
+  "base": "https://dev.propyte.com/es",
+  "routes": {
+    "home": {
+      "path": "/",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 17,
+        "paddings": [
+          "112px",
+          "64px",
+          "80px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 689,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "desarrollos": {
+      "path": "/desarrollos",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 72,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 1,
+        "paddings": []
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "propiedades": {
+      "path": "/propiedades",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 72,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 1,
+        "paddings": []
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "nosotros-quienes": {
+      "path": "/nosotros/quienes-somos",
+      "tealOnLight": [
+        {
+          "tag": "span",
+          "text": "NOSOTROS",
+          "fontSize": "11px",
+          "bg": "rgba(92, 224, 210, 0.08)"
+        }
+      ],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 8,
+        "paddings": [
+          "112px",
+          "96px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "nosotros-estructura": {
+      "path": "/nosotros/estructura",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "static",
+        "bg": "rgb(255, 255, 255)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 76,
+        "zIndex": "auto"
+      },
+      "spacing": {
+        "count": 0,
+        "paddings": []
+      },
+      "cookieState": null
+    },
+    "desarrolladores": {
+      "path": "/desarrolladores",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 8,
+        "paddings": [
+          "56px",
+          "64px",
+          "80px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "corredores": {
+      "path": "/corredores",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 8,
+        "paddings": [
+          "80px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "mercado": {
+      "path": "/mercado",
+      "tealOnLight": [
+        {
+          "tag": "span",
+          "text": "INTELIGENCIA DE MERCADO CON +2M REGISTROS DE RENTA",
+          "fontSize": "11px",
+          "bg": "rgba(92, 224, 210, 0.08)"
+        }
+      ],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 4,
+        "paddings": [
+          "24px",
+          "48px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "financiamiento": {
+      "path": "/financiamiento",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 7,
+        "paddings": [
+          "112px",
+          "48px",
+          "80px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "blog": {
+      "path": "/blog",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 4,
+        "paddings": [
+          "56px",
+          "64px",
+          "96px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "contacto": {
+      "path": "/contacto",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 3,
+        "paddings": [
+          "80px",
+          "96px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "faq": {
+      "path": "/faq",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 3,
+        "paddings": [
+          "112px",
+          "64px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "glosario": {
+      "path": "/glosario",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 3,
+        "paddings": [
+          "112px",
+          "64px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "unete": {
+      "path": "/unete",
+      "tealOnLight": [],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 13,
+        "paddings": [
+          "112px",
+          "32px",
+          "64px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    },
+    "destacados": {
+      "path": "/destacados",
+      "tealOnLight": [
+        {
+          "tag": "span",
+          "text": "SELECCIÓN PROPYTE",
+          "fontSize": "14px",
+          "bg": "rgba(92, 224, 210, 0.15)"
+        }
+      ],
+      "deadZones": [],
+      "headerScrolled": {
+        "position": "fixed",
+        "bg": "rgba(0, 0, 0, 0)",
+        "backdropFilter": "none",
+        "top": 0,
+        "height": 84,
+        "zIndex": "40"
+      },
+      "spacing": {
+        "count": 4,
+        "paddings": [
+          "112px",
+          "80px"
+        ]
+      },
+      "cookieState": {
+        "present": true,
+        "rect": {
+          "x": 1044,
+          "y": 665,
+          "w": 380,
+          "h": 219
+        },
+        "viewportH": 900
+      }
+    }
+  }
+}

@@ -162,7 +162,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A2332] leading-tight">{developer.name}</h1>
                 {developer.verified && (
-                  <span className="px-2.5 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
+                  <span className="px-2.5 py-0.5 text-2xs font-bold text-[var(--propyte-dark-900)] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                     {locale === 'es' ? 'Verificado' : 'Verified'}
                   </span>
                 )}

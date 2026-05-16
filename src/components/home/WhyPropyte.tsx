@@ -97,7 +97,7 @@ export default function WhyPropyte() {
                 <p className="text-sm text-gray-600 leading-relaxed mb-4 flex-1">{feat.desc}</p>
                 <Link
                   href={feat.href}
-                  className="inline-flex items-center gap-1.5 text-[#0F766E] font-medium text-sm hover:underline mt-auto"
+                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0F766E] font-medium text-sm hover:underline mt-auto"
                 >
                   {feat.cta}
                   <ArrowRight size={14} strokeWidth={2} />

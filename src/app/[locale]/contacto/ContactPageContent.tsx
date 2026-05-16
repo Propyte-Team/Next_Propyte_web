@@ -336,7 +336,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full h-12 bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-bold rounded-lg transition-colors"
+                className="flex items-center justify-center gap-2 w-full h-12 propyte-cta-whatsapp font-bold rounded-lg transition-colors"
               >
                 <MessageCircle size={20} strokeWidth={2} />
                 {t('whatsappCta')}

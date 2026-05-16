@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { Search, MapPin, Building2, Home } from 'lucide-react';
 import StatCounter from '@/components/shared/StatCounter';
+import HeroAtmosphere from './HeroAtmosphere';
 
 type IntentTab = 'desarrollos' | 'propiedades';
 
@@ -68,7 +69,7 @@ export default function Hero({ stats }: HeroProps) {
   // descubre la imagen del poster al parsear el <video>, después de varios bytes
   // del HTML, perdiendo tiempo crítico para Largest Contentful Paint.
   return (
-    <section className="propyte-hero hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
+    <section className="propyte-hero-canvas hero-grain relative w-full min-h-[calc(100vh-80px)] md:min-h-[680px] flex items-center justify-center overflow-hidden">
       {imageUrl && (
         <link rel="preload" as="image" href={imageUrl} fetchPriority="high" />
       )}
@@ -89,13 +90,19 @@ export default function Hero({ stats }: HeroProps) {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${imageUrl})` }}
         />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0D2740]" />
-      )}
+      ) : null}
+
+      {/* Atmósfera geométrica con parallax sutil al mouse (sobre desktop con
+          puntero). Cuando hay video/imagen, queda encima con opacidad baja y
+          le da textura tech-data sin pelearse con el bg. Cuando no hay video,
+          la atmósfera + las capas CSS del canvas son el show. */}
+      <HeroAtmosphere />
 
       {/* Overlay vertical aztec — sigue Brand Identity Oficial (#0B1C1E) en
-          lugar de negro puro, para preservar warmth del azul-teal corporativo. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1C1E]/55 via-[#0B1C1E]/30 to-[#0B1C1E]/85" />
+          lugar de negro puro, para preservar warmth del azul-teal corporativo.
+          Audit 2026-05-15 (propuesta dos): reforzar opacidad central para que
+          el H1 + subtitle tengan contraste legible sobre cualquier foto. */}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-b from-[#0B1C1E]/70 via-[#0B1C1E]/55 to-[#0B1C1E]/90" />
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
         <span className="brand-eyebrow inline-block mb-4 px-4 py-1.5 rounded-full border border-[#A2F9FF]/40 text-[#A2F9FF] bg-[#A2F9FF]/[0.06] backdrop-blur-sm">

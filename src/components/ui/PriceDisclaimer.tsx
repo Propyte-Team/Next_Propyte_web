@@ -17,13 +17,13 @@ export default function PriceDisclaimer({ className = '' }: { className?: string
 
   return (
     <aside
-      className={`mt-8 rounded-2xl border border-gray-200 bg-[#F4F6F8] px-5 py-4 ${className}`}
+      className={`mt-8 rounded-2xl border border-[var(--propyte-cyan-100)]/40 bg-[var(--propyte-cyan-50)]/50 px-5 py-4 ${className}`}
       aria-label="Aviso de tipo de cambio"
     >
-      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+      <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--propyte-dark-700)] mb-2">
         Aviso de precio y tipo de cambio
       </h3>
-      <p className="text-xs text-gray-600 leading-relaxed">
+      <p className="text-xs text-[var(--propyte-dark-700)] leading-relaxed">
         Los precios convertidos entre <strong>MXN ↔ USD</strong> son únicamente{' '}
         <strong>referenciales</strong> y se calculan al tipo de cambio publicado por
         Banco de México (<strong>{rate.toFixed(2)} MXN/USD</strong>, actualizado al{' '}

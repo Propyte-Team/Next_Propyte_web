@@ -67,7 +67,7 @@ export default function MobileContactBar({
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#25D366] hover:bg-[#1EBE57] text-[#0F1923] font-bold rounded-xl transition-colors text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] propyte-cta-whatsapp font-bold rounded-xl transition-colors text-sm"
             aria-label={tProp('whatsappContact')}
           >
             <MessageCircle size={16} />

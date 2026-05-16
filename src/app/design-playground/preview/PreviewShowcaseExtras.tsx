@@ -74,7 +74,7 @@ export default function PreviewShowcaseExtras() {
             {[
               { label: 'Disponible', bg: 'var(--color-success, #22C55E)', color: '#fff' },
               { label: 'Vendido', bg: 'var(--color-error, #EF4444)', color: '#fff' },
-              { label: 'Preventa', bg: 'var(--color-amber, #F5A623)', color: 'var(--color-aztec)' },
+              { label: 'Preventa', bg: 'var(--propyte-cyan-300, #81EAF1)', color: 'var(--propyte-dark-900)' },
               { label: 'Destacado', bg: 'var(--color-teal, #5CE0D2)', color: 'var(--color-aztec)' },
               { label: 'Nuevo', bg: 'var(--color-navy, #1A2F3F)', color: '#fff' },
             ].map(({ label, bg, color }) => (
