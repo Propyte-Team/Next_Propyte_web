@@ -10,7 +10,6 @@ import ScrollReveal from '@/components/shared/ScrollReveal';
 
 type Step = { n: string; title: string; desc: string; key?: boolean; win?: string };
 type Pillar = { before: string; strong: string; after: string };
-type Stat = { value: string; label: string };
 
 const STROKE = 'currentColor';
 
@@ -19,7 +18,6 @@ const NAVY = '#1A2F3F';
 const BRAND = '#A2F9FF';
 const EYEBROW_TEAL = '#0E7490';
 const DANGER_DEEP = '#B91C1C';
-const AZTEC_DARK = '#0F1923';
 
 // ─── Icon catalogue ──────────────────────────────────────────────────────
 
@@ -117,7 +115,6 @@ export default function ProcessInfographic() {
   const stepsA = t.raw('panelA.steps') as Step[];
   const stepsB = t.raw('panelB.steps') as Step[];
   const pillars = t.raw('pillars') as Pillar[];
-  const stats = t.raw('tangibleDiff.stats') as Stat[];
   const keyTag = t('panelB.keyTag');
 
   return (
@@ -208,46 +205,6 @@ export default function ProcessInfographic() {
             </div>
           </div>
         </div>
-
-        {/* ─── BLOQUE TANGIBLE DIFF (dark, alto contraste) ─── */}
-        <ScrollReveal>
-          <div
-            className="mt-12 md:mt-16 rounded-3xl p-8 md:p-12 relative overflow-hidden"
-            style={{ backgroundColor: AZTEC_DARK }}
-          >
-            {/* Glow brand sutil */}
-            <div
-              aria-hidden="true"
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'radial-gradient(ellipse 60% 60% at 50% 0%, rgba(162,249,255,0.15), transparent 70%)',
-              }}
-            />
-            <div className="relative text-center mb-8 md:mb-10">
-              <span className="inline-block text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] mb-2" style={{ color: BRAND }}>
-                {t('tangibleDiff.eyebrow')}
-              </span>
-              <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white">
-                {t('tangibleDiff.title')}
-              </h3>
-            </div>
-            <div className="relative grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-              {stats.map((stat, i) => (
-                <ScrollReveal key={i} delay={0.05 + i * 0.06}>
-                  <div className="text-center">
-                    <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-1.5 leading-none" style={{ color: BRAND }}>
-                      {stat.value}
-                    </div>
-                    <div className="text-[11px] md:text-xs text-white/70 leading-relaxed font-medium">
-                      {stat.label}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
 
         {/* ─── Pilares ─── */}
         <div className="mt-10 md:mt-12 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
@@ -357,8 +314,14 @@ function DesktopHorizontal({
         {/* ═══ TIMELINE CENTRAL ═══ */}
         <CentralTimeline cols={cols} stepsB={stepsB} keyTag={keyTag} />
 
+        {/* ─── Panel B header (audit 2026-05-18 Luis: arriba de los pasos
+            verdes, para mirroring con SIN PROPYTE arriba de los rojos) ─── */}
+        <div className="mt-3">
+          <CompactPanelHeader accent="brand" badge={panelBBadge} name={panelBName} subtitle={panelBSubtitle} icon={IconCheck} />
+        </div>
+
         {/* ─── B row (cards abajo con desc + win) ─── */}
-        <div className="grid grid-cols-7 gap-2.5 mb-3">
+        <div className="grid grid-cols-7 gap-2.5 mt-3 mb-3">
           {cols.map((i) => (
             <MiniCard
               key={`mini-b-${i}`}
@@ -369,9 +332,6 @@ function DesktopHorizontal({
             />
           ))}
         </div>
-
-        {/* ─── Panel B header ─── */}
-        <CompactPanelHeader accent="brand" badge={panelBBadge} name={panelBName} subtitle={panelBSubtitle} icon={IconCheck} />
       </ScrollReveal>
 
       {/* ─── Result blocks ─── */}
