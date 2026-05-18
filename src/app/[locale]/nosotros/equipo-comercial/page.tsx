@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ArrowRight, Users, MapPin, MessageCircle } from 'lucide-react';
+import { ArrowRight, Users, MapPin, MessageCircle, Home } from 'lucide-react';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -118,18 +118,60 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
         ]}
       />
 
-      {/* Hero */}
-      <section className="bg-white pt-6 pb-12 md:pb-16">
-        <div className="max-w-3xl mx-auto px-4 md:px-6">
-          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
-            {t('heroEyebrow')}
-          </span>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A2F3F] leading-tight mb-5">
-            {t('heroTitle')}
-          </h1>
-          <p className="text-base md:text-lg text-gray-700 leading-relaxed">
-            {t('heroLead')}
-          </p>
+      {/* HERO — dark canvas editorial Propyte, mismo lenguaje que quienes-somos:
+          eyebrow con dot + H1 con última palabra en brand cyan + lead.
+          Watermark Home icon + coordenadas mantienen el carácter editorial. */}
+      <section className="propyte-hero-canvas relative min-h-[60vh] flex items-center">
+        <Home
+          size={520}
+          strokeWidth={0.5}
+          aria-hidden="true"
+          className="absolute -right-32 -bottom-40 text-white/[0.025] pointer-events-none select-none hidden md:block"
+        />
+
+        <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 py-24 md:py-32 w-full">
+          <div className="max-w-3xl">
+            <span
+              className="propyte-hero-eyebrow propyte-hero-rise"
+              style={{ animationDelay: '60ms' }}
+            >
+              <span className="propyte-hero-eyebrow__dot" aria-hidden="true" />
+              {t('heroEyebrow')}
+            </span>
+
+            <h1
+              className="mt-7 text-[clamp(2.5rem,6vw,4.75rem)] font-semibold leading-[0.98] tracking-[-0.025em] text-white propyte-hero-rise"
+              style={{ animationDelay: '160ms' }}
+            >
+              {t('heroTitle').split(' ').map((word, i, arr) => {
+                const isLast = i === arr.length - 1;
+                return (
+                  <span key={i}>
+                    {isLast ? (
+                      <span className="text-propyte-brand">{word}</span>
+                    ) : (
+                      word
+                    )}
+                    {!isLast && ' '}
+                  </span>
+                );
+              })}
+            </h1>
+
+            <p
+              className="mt-7 max-w-2xl text-lg md:text-xl text-white/65 leading-relaxed propyte-hero-rise"
+              style={{ animationDelay: '260ms' }}
+            >
+              {t('heroLead')}
+            </p>
+          </div>
+
+          <div className="hidden md:flex absolute bottom-8 left-4 md:left-6 items-center gap-3 opacity-70">
+            <span className="block w-6 h-px bg-propyte-brand" aria-hidden="true" />
+            <span className="accent-mono text-2xs uppercase tracking-[0.18em] text-white/65">
+              20.62°N · 87.07°W
+            </span>
+          </div>
         </div>
       </section>
 

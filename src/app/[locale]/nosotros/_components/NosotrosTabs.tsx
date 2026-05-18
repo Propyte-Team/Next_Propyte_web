@@ -25,10 +25,11 @@ export default async function NosotrosTabs({
   return (
     <nav
       aria-label={t('label')}
-      // Audit 2026-05-15 (D4.2): barra secundaria con strip glass para que no
-      // se vea "incrustada" sobre el contenido al hacer scroll. Shadow sutil
-      // marca la elevación y separa visualmente del bloque inferior.
-      className="propyte-strip-glass sticky top-[108px] lg:top-20 z-30"
+      // Audit 2026-05-18 (Luis): bg blanco sólido en flujo normal. NO sticky,
+      // NO debe acompañar al scroll — se queda en su posición natural (debajo
+      // del hero) y scrollea fuera con el contenido. Underline activo en
+      // cyan-700 (#0E7490) canon para fondos claros.
+      className="bg-white border-b border-gray-200"
     >
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex gap-8 overflow-x-auto no-scrollbar">
@@ -41,8 +42,8 @@ export default async function NosotrosTabs({
                 aria-current={isActive ? 'page' : undefined}
                 className={`py-4 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
                   isActive
-                    ? 'text-[var(--propyte-dark-900)] border-propyte-brand'
-                    : 'text-[var(--propyte-dark-600)] border-transparent hover:text-[var(--propyte-dark-900)] hover:border-propyte-brand'
+                    ? 'text-[#0E7490] border-[#0E7490]'
+                    : 'text-[var(--propyte-dark-600)] border-transparent hover:text-[#0E7490] hover:border-[#0E7490]/50'
                 }`}
               >
                 {t(tab.key)}
