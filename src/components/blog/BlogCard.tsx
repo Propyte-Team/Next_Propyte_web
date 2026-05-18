@@ -56,7 +56,7 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
             </span>
           </div>
 
-          <h3 className="font-semibold text-[#1A2F3F] line-clamp-2 leading-snug group-hover:text-[#0F766E] transition-colors">
+          <h3 className="font-semibold text-[#1A2F3F] line-clamp-2 leading-snug group-hover:text-[#0E7490] transition-colors">
             {post.title}
           </h3>
 

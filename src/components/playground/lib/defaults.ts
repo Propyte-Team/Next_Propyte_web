@@ -11,7 +11,7 @@ const lightTheme: ThemeTokens = {
   colors: {
     teal: '#5CE0D2',
     tealDark: '#4BCEC0',
-    tealA11y: '#0D9488',
+    tealA11y: '#0E7490',
     aquaBright: '#99FFFF',
     navy: '#1A2F3F',
     aztec: '#0F1923',

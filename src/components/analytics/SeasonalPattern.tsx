@@ -69,7 +69,7 @@ export function SeasonalPattern({
           <Bar
             dataKey="factor"
             radius={[4, 4, 0, 0]}
-            fill="#0D9488"
+            fill="#0E7490"
             fillOpacity={0.8}
           />
         </BarChart>

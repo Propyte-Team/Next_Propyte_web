@@ -214,7 +214,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             <input
               type="checkbox"
               {...register('consent')}
-              className="mt-0.5 rounded border-gray-300 text-[#0F766E] focus:ring-[#5CE0D2]"
+              className="mt-0.5 rounded border-gray-300 text-[#0E7490] focus:ring-[#5CE0D2]"
             />
             <span>{t('gateConsent')}</span>
           </label>

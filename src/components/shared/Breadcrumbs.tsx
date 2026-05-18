@@ -65,9 +65,9 @@ export default function Breadcrumbs({
   };
 
   // Color tokens según variante. Dark hero → brand cyan (sobre fondo oscuro
-  // cumple contraste); light → teal-a11y #0F766E que pasa WCAG AA sobre blanco.
+  // cumple contraste); light → teal-a11y #0E7490 que pasa WCAG AA sobre blanco.
   const trailText = isDark ? 'text-white/60' : 'text-gray-600';
-  const linkHover = isDark ? 'hover:text-propyte-brand' : 'hover:text-[#0F766E]';
+  const linkHover = isDark ? 'hover:text-propyte-brand' : 'hover:text-[#0E7490]';
   const currentText = isDark ? 'text-white font-semibold' : 'font-semibold text-[#1A2F3F]';
   const sepColor = isDark ? 'text-white/30' : 'text-gray-300';
 

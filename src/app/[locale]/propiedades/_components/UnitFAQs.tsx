@@ -44,7 +44,7 @@ export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin
         }}
       />
       <h2 className="text-xl font-bold text-[#2C2C2C] mb-4 flex items-center gap-2">
-        <HelpCircle size={22} className="text-[#0F766E]" />
+        <HelpCircle size={22} className="text-[#0E7490]" />
         {locale === 'en' ? 'Frequently Asked Questions' : 'Preguntas Frecuentes'}
       </h2>
       <div className="space-y-3">
@@ -55,7 +55,7 @@ export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin
           >
             <summary className="cursor-pointer list-none px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors">
               <span className="text-sm font-semibold text-[#2C2C2C] pr-4">{f.q}</span>
-              <span className="text-[#0F766E] text-lg font-bold group-open:rotate-45 transition-transform inline-block shrink-0">+</span>
+              <span className="text-[#0E7490] text-lg font-bold group-open:rotate-45 transition-transform inline-block shrink-0">+</span>
             </summary>
             <div className="px-4 pb-4 text-sm text-gray-600 leading-relaxed">{f.a}</div>
           </details>

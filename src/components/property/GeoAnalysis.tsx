@@ -52,11 +52,11 @@ export default function GeoAnalysis({
               {hasCoords && (
                 <AdvancedMarker position={center}>
                   <div className="flex flex-col items-center">
-                    <div className="bg-[#0D9488] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                    <div className="bg-[#0E7490] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
                       {t('location')}
                     </div>
                     <div
-                      className="w-3 h-3 bg-[#0D9488] rotate-45 -mt-1.5"
+                      className="w-3 h-3 bg-[#0E7490] rotate-45 -mt-1.5"
                       style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
                     />
                   </div>

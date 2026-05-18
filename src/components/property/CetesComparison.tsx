@@ -155,11 +155,11 @@ function VehicleCard({
         </span>
       )}
       <div className="flex items-center gap-2 mb-1">
-        <span className={highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}>{icon}</span>
+        <span className={highlighted ? 'text-[#5CE0D2]' : 'text-[#0E7490]'}>{icon}</span>
         <span className={`font-bold ${valueClasses}`}>{title}</span>
       </div>
       <div className={`text-2xs mb-3 ${subtitleClasses}`}>{subtitle}</div>
-      <div className={`text-xs font-bold ${highlighted ? 'text-[#5CE0D2]' : 'text-[#0F766E]'} mb-4`}>{rateLabel}</div>
+      <div className={`text-xs font-bold ${highlighted ? 'text-[#5CE0D2]' : 'text-[#0E7490]'} mb-4`}>{rateLabel}</div>
 
       <div className={`space-y-2 pt-3 border-t ${dividerClasses}`}>
         <Row

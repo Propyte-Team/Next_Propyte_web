@@ -41,7 +41,7 @@ export default function EmptyState({
         <Icon
           size={32}
           strokeWidth={1.75}
-          className={isDark ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}
+          className={isDark ? 'text-[#5CE0D2]' : 'text-[#0E7490]'}
         />
       </div>
       <h3

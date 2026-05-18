@@ -128,10 +128,72 @@
     "cta": "See full methodology"
   },
   "processInfographic": {
-    "eyebrow": "Propyte buying process",
-    "title": "From first call to closing",
-    "placeholderText": "Infographic in preparation — the next update will include the documented step-by-step process, from first contact to handover of keys.",
-    "placeholderHint": "Reserved space"
+    "eyebrow": "The intelligence behind every real estate decision",
+    "title": "Real Estate Investment:",
+    "titleAccent": "Navigate Alone or Decide With a System?",
+    "startNode": {
+      "tag": "Everyone starts the same",
+      "title": "Search on portals and social media.",
+      "desc": "Every investor starts from the same place. The difference is what comes next: navigating without guidance, or deciding with a system."
+    },
+    "panelA": {
+      "badge": "A",
+      "name": "Without Propyte",
+      "subtitle": "Navigates alone",
+      "steps": [
+        { "n": "01", "title": "Gets overwhelmed by dozens of options.", "desc": "Oversupply leads to analysis paralysis and confusion." },
+        { "n": "02", "title": "Bombarded by multiple agents.", "desc": "Calls and messages from agents with scattered interests." },
+        { "n": "03", "title": "Visits properties with no criteria.", "desc": "Random tours without a comparison metric." },
+        { "n": "04", "title": "Buys on marketing, not on data.", "desc": "Decisions based on renders and slogans, with no real financial analysis." },
+        { "n": "05", "title": "Receives the property not knowing what to do.", "desc": "Stuck managing paperwork, furniture or rentals alone." },
+        { "n": "06", "title": "Ends up regretting it.", "desc": "Without expert support or long-term vision." }
+      ],
+      "result": {
+        "label": "Outcome",
+        "title": "You decide alone, with whatever you find.",
+        "desc": "A reactive process where the investor bears all the risk without any control tools."
+      },
+      "afterEnd": {
+        "title": "Left without guidance.",
+        "desc": "The journey ends here. No post-signing support."
+      }
+    },
+    "panelB": {
+      "badge": "B",
+      "name": "With Propyte",
+      "subtitle": "Navigates with a system",
+      "steps": [
+        { "n": "01", "title": "We understand your profile.", "desc": "Initial analysis of your situation, goals and investor profile.", "win": "Clear profile" },
+        { "n": "02", "title": "We explain the market.", "desc": "Context first, product second. We only show you what we'd invest in ourselves.", "win": "Informed decision" },
+        { "n": "03", "title": "Visits + clear comparison.", "desc": "Coordinated tours with side-by-side analysis so you can choose with criteria.", "win": "Time saved" },
+        { "n": "04", "title": "Data-driven negotiation.", "desc": "Numbers, comparables and real evidence as your offer basis — not intuition.", "key": true, "win": "Better closing price" },
+        { "n": "05", "title": "We're with you through delivery.", "desc": "Signing, deeds and supervised handover with a technical checklist.", "win": "No surprises" },
+        { "n": "06", "title": "Trusted partners.", "desc": "Network of interior designers and operators so your investment performs from day one.", "win": "Rental from day 1" },
+        { "n": "07", "title": "We support you when you sell.", "desc": "Strategic advisory for when it's time to capitalize the gain.", "win": "Better exit" }
+      ],
+      "result": {
+        "label": "Outcome",
+        "title": "You decide with a system.",
+        "desc": "A smart and efficient experience where technology and data power every decision."
+      },
+      "keyTag": "Key"
+    },
+    "tangibleDiff": {
+      "eyebrow": "Tangible difference",
+      "title": "What you gain with Propyte",
+      "stats": [
+        { "value": "+25%", "label": "average appreciation" },
+        { "value": "3 months", "label": "saved in search time" },
+        { "value": "0", "label": "surprises at handover" },
+        { "value": "1:1", "label": "dedicated advisor" }
+      ]
+    },
+    "pillars": [
+      { "before": "", "strong": "Less uncertainty,", "after": " more clarity." },
+      { "before": "Decisions based on ", "strong": "data, not on guesses.", "after": "" },
+      { "before": "Savings in ", "strong": "time, effort and money.", "after": "" },
+      { "before": "Better results, ", "strong": "a more profitable investment.", "after": "" }
+    ]
   },
   "dondeEstamos": {
     "eyebrow": "Where we operate",

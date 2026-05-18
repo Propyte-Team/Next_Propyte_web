@@ -160,7 +160,7 @@ function MapContent({
             <div className="text-xs text-gray-600 mb-2">
               {selected.location.zone}, {selected.location.city}
             </div>
-            <div className="text-sm font-bold text-[#0F766E]">
+            <div className="text-sm font-bold text-[#0E7490]">
               {formatPriceShort(selected.price.mxn)}
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function MapView({ properties, onPropertyClick, onClusterClick }:
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8 max-w-sm">
           <div className="w-16 h-16 mx-auto mb-4 bg-[#A2F9FF]/15 rounded-full flex items-center justify-center">
-            <MapPin size={24} strokeWidth={1.75} className="text-[#0D9488]" />
+            <MapPin size={24} strokeWidth={1.75} className="text-[#0E7490]" />
           </div>
           <p className="text-gray-600 font-medium">{t('mapNoCoords')}</p>
           <p className="text-sm text-gray-600 mt-2">{t('mapNoCoordsHint')}</p>

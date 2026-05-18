@@ -90,11 +90,11 @@ export default async function TaxonomyDevelopmentsPage({
       />
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4">
         <nav className="flex items-center gap-1 text-xs text-gray-600">
-          <Link href={`/${locale}`} className="hover:text-[#0F766E]">
+          <Link href={`/${locale}`} className="hover:text-[#0E7490]">
             {tBC('home')}
           </Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0F766E]">
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">
             {tBC('developments')}
           </Link>
           <ChevronRight size={12} />

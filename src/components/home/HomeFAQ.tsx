@@ -33,7 +33,7 @@ export default function HomeFAQ() {
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
-          <span className="inline-block text-[#0F766E] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
             {t('eyebrow')}
           </span>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1A2F3F] leading-snug">
@@ -61,7 +61,7 @@ export default function HomeFAQ() {
                   <ChevronDown
                     size={20}
                     strokeWidth={2}
-                    className={`shrink-0 text-[#0F766E] transition-transform ${
+                    className={`shrink-0 text-[#0E7490] transition-transform ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   />

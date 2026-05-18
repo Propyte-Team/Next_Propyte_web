@@ -100,7 +100,7 @@ export default function BrokerCommissionsTable({
                         </p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums font-bold text-[#0F766E] text-lg">
+                    <td className="px-4 py-3 text-right tabular-nums font-bold text-[#0E7490] text-lg">
                       {Number(c.commission_pct).toFixed(2)}%
                     </td>
                   </tr>

@@ -55,7 +55,7 @@ export default function MobileContactBar({
               {price > 0 ? formatPrice(price) : '—'}
             </span>
             {roiPct != null && roiPct > 0 && (
-              <span className="text-2xs font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] rounded-full whitespace-nowrap">
+              <span className="text-2xs font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] rounded-full whitespace-nowrap">
                 ROI {roiPct}%
               </span>
             )}
@@ -76,7 +76,7 @@ export default function MobileContactBar({
           <button
             type="button"
             onClick={onContactClick}
-            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#0D9488] hover:bg-[#0B7F75] text-white font-bold rounded-xl transition-colors text-sm"
+            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#0E7490] hover:bg-[#0B7F75] text-white font-bold rounded-xl transition-colors text-sm"
           >
             <ArrowDown size={16} />
             {tNav('contact')}

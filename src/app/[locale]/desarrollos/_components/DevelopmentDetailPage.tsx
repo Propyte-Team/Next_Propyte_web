@@ -432,11 +432,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
         <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-600 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#0F766E]">{tProp('breadcrumbHome')}</Link>
+          <Link href={`/${locale}`} className="hover:text-[#0E7490]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0F766E]">{tProp('breadcrumbDevelopments')}</Link>
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">{tProp('breadcrumbDevelopments')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#0F766E]">{property.city}</Link>
+          <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#0E7490]">{property.city}</Link>
           <ChevronRight size={12} />
           <span className="text-gray-700 font-medium truncate max-w-[200px]">{property.name}</span>
         </nav>
@@ -546,8 +546,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                           )}
                           {derivedAvailable != null && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-propyte-cyan-100 rounded-xl text-sm">
-                              <CheckCircle size={16} className="text-[#0F766E]" />
-                              <span className="text-[#0F766E] font-semibold">{derivedAvailable} {tProp('available')}</span>
+                              <CheckCircle size={16} className="text-[#0E7490]" />
+                              <span className="text-[#0E7490] font-semibold">{derivedAvailable} {tProp('available')}</span>
                             </div>
                           )}
                           {deliveryDisplay && (
@@ -609,7 +609,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
                           >
                             <div className="w-12 h-12 rounded-lg bg-[#1A2F3F] flex items-center justify-center shrink-0">
-                              <FileText size={22} className="text-[#0F766E]" />
+                              <FileText size={22} className="text-[#0E7490]" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-bold text-gray-900 truncate">
@@ -619,7 +619,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 {deriveFilenameFromUrl(safeBrochureUrl, 'brochure.pdf')}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0F766E] group-hover:text-[#0F766E] shrink-0">
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0E7490] group-hover:text-[#0E7490] shrink-0">
                               <Download size={16} />
                               {tProp('download')}
                             </div>
@@ -643,7 +643,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                   className="w-full h-full object-contain"
                                 />
                               ) : developerInitials ? (
-                                <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
+                                <span className="text-xl font-extrabold text-[#0E7490] tracking-tight">
                                   {developerInitials}
                                 </span>
                               ) : (
@@ -654,7 +654,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0E7490] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}
@@ -861,7 +861,7 @@ function MetricCard({
 }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="propyte-card-glass-light-sm p-4 text-center">
-      <span className="flex justify-center text-[#0F766E] mb-2">{icon}</span>
+      <span className="flex justify-center text-[#0E7490] mb-2">{icon}</span>
       <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
       <div className="text-xs text-gray-600 mt-0.5">{label}</div>
     </div>

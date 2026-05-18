@@ -27,7 +27,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
         <div className="max-w-3xl mx-auto px-4 md:px-6">
           <div className="propyte-card-glass-light p-8 md:p-12 text-center border-2 border-dashed border-[#A2F9FF]/40 rounded-2xl">
             <div className="w-14 h-14 mx-auto mb-5 bg-[#A2F9FF]/20 rounded-2xl flex items-center justify-center">
-              <FileText size={28} strokeWidth={1.5} className="text-[#0D9488]" />
+              <FileText size={28} strokeWidth={1.5} className="text-[#0E7490]" />
             </div>
             <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-4 leading-snug">
               {t('homeEmptyTitle')}
@@ -55,7 +55,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
           <h2 className="text-2xl md:text-3xl font-semibold text-[#2C2C2C]">{t('title')}</h2>
           <Link
             href={`/${locale}/blog`}
-            className="hidden md:flex items-center gap-1 text-[#0F766E] font-medium hover:underline"
+            className="hidden md:flex items-center gap-1 text-[#0E7490] font-medium hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
@@ -78,7 +78,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
                     <div className="w-full h-full bg-gradient-to-br from-[#0B1C1E] to-[#A2F9FF]" />
                   )}
                   <div className="absolute top-3 left-3">
-                    <span className="px-2 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded">
+                    <span className="px-2 py-1 text-xs font-semibold bg-[#0E7490] text-white rounded">
                       {post.category}
                     </span>
                   </div>
@@ -103,7 +103,7 @@ export default async function RecentBlog({ locale }: RecentBlogProps) {
           ))}
         </div>
         <div className="mt-6 flex justify-center md:hidden">
-          <Link href={`/${locale}/blog`} className="inline-flex items-center gap-1 min-h-[44px] text-[#0F766E] font-medium">
+          <Link href={`/${locale}/blog`} className="inline-flex items-center gap-1 min-h-[44px] text-[#0E7490] font-medium">
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
         </div>

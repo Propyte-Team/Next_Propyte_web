@@ -241,7 +241,7 @@ function WhyPropyte() {
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('whyEyebrow')}</span>
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('whyEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
             {t('whyTitlePart1')} <span className="text-[#1A2F3F]">{t('whyTitleHighlight')}</span>
           </h2>
@@ -333,7 +333,7 @@ function CommissionModel() {
           </div>
 
           <div>
-            <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('commissionEyebrow')}</span>
+            <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('commissionEyebrow')}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
               {t('commissionTitlePart1')}{' '}
               <span className="text-[#1A2F3F]">{t('commissionTitleHighlight')}</span>
@@ -345,7 +345,7 @@ function CommissionModel() {
             <ul className="space-y-4">
               {points.map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <CheckCircle size={20} className="text-[#0F766E] flex-shrink-0 mt-0.5" />
+                  <CheckCircle size={20} className="text-[#0E7490] flex-shrink-0 mt-0.5" />
                   <span className="text-[#2C2C2C] font-medium">{item}</span>
                 </li>
               ))}
@@ -363,9 +363,9 @@ function CommissionModel() {
 function RevenueSharing() {
   const t = useTranslations('unete');
   const levels = [
-    { level: 1, pct: '3.5%', whoKey: 'level1Who', color: '#0F766E' },
-    { level: 2, pct: '1.5%', whoKey: 'level2Who', color: '#0F766E' },
-    { level: 3, pct: '1.0%', whoKey: 'level3Who', color: '#0F766E' },
+    { level: 1, pct: '3.5%', whoKey: 'level1Who', color: '#0E7490' },
+    { level: 2, pct: '1.5%', whoKey: 'level2Who', color: '#0E7490' },
+    { level: 3, pct: '1.0%', whoKey: 'level3Who', color: '#0E7490' },
     { level: 4, pct: '0.5%', whoKey: 'level4Who', color: '#1A2F3F' },
     { level: 5, pct: '0.25%', whoKey: 'level5Who', color: '#0F1923' },
   ] as const;
@@ -375,7 +375,7 @@ function RevenueSharing() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
-            <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('revenueEyebrow')}</span>
+            <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('revenueEyebrow')}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
               {t('revenueTitlePart1')}{' '}
               <span className="text-[#1A2F3F]">{t('revenueTitleHighlight')}</span>
@@ -388,11 +388,11 @@ function RevenueSharing() {
               <h4 className="font-bold text-[#2C2C2C] mb-4">{t('revenueExampleTitle')}</h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#0F766E]">10</div>
+                  <div className="text-2xl font-bold text-[#0E7490]">10</div>
                   <div className="text-xs text-gray-600 mt-1">{t('revenueDirectAgents')}</div>
                 </div>
                 <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#0D9488]">$45K</div>
+                  <div className="text-2xl font-bold text-[#0E7490]">$45K</div>
                   <div className="text-xs text-gray-600 mt-1">{t('revenueMonthlyExtra')}</div>
                 </div>
               </div>
@@ -417,7 +417,7 @@ function RevenueSharing() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-[#2C2C2C]">{t('levelPrefix')} {l.level}</span>
-                    <span className="text-lg font-bold text-[#0F766E]">{l.pct}</span>
+                    <span className="text-lg font-bold text-[#0E7490]">{l.pct}</span>
                   </div>
                   <span className="text-sm text-gray-600">{t(l.whoKey)}</span>
                 </div>
@@ -472,7 +472,7 @@ function TechPlatform() {
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('techEyebrow')}</span>
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('techEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
             {t('techTitlePart1')} <span className="text-[#1A2F3F]">{t('techTitleHighlight')}</span>
           </h2>
@@ -625,7 +625,7 @@ function StatsSection() {
             return (
               <div key={s.label} className="text-center">
                 <div className="w-12 h-12 mx-auto bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-3">
-                  <Icon size={24} className="text-[#0F766E]" />
+                  <Icon size={24} className="text-[#0E7490]" />
                 </div>
                 <div className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{s.value}</div>
                 <div className="text-xs text-gray-600 mt-1">{s.label}</div>
@@ -653,7 +653,7 @@ function JoinProcess() {
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('processEyebrow')}</span>
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('processEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
             {t('processTitlePart1')} <span className="text-[#1A2F3F]">{t('processTitleHighlight')}</span>
           </h2>
@@ -704,7 +704,7 @@ function FAQ() {
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="text-center mb-14">
-          <span className="text-[#0F766E] font-bold text-sm uppercase tracking-wider">{t('faqEyebrow')}</span>
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('faqEyebrow')}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
             {t('faqTitle')}
           </h2>
@@ -728,7 +728,7 @@ function FAQ() {
                 >
                   <span className="font-semibold text-[#2C2C2C] pr-4">{faq.q}</span>
                   {isOpen ? (
-                    <ChevronUp size={20} className="text-[#0F766E] flex-shrink-0" />
+                    <ChevronUp size={20} className="text-[#0E7490] flex-shrink-0" />
                   ) : (
                     <ChevronDown size={20} className="text-gray-600 flex-shrink-0" />
                   )}

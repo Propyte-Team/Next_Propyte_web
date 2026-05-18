@@ -174,7 +174,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                       <Link
                         href={href}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-[#0F766E] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
+                        className="text-[#0E7490] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
                       >
                         {unit.typology || unit.unit_number || '—'}
                       </Link>

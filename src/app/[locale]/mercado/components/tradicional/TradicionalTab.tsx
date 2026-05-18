@@ -406,7 +406,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-8 h-8 animate-spin text-[#0F766E]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#0E7490]" />
       </div>
     );
   }
@@ -457,10 +457,10 @@ export function TradicionalTab({ locale }: { locale: string }) {
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 text-sm font-semibold text-gray-700"
           >
-            <SlidersHorizontal size={16} className="text-[#0F766E]" />
+            <SlidersHorizontal size={16} className="text-[#0E7490]" />
             {t('filters')}
             {activeFilterCount > 0 && (
-              <span className="px-1.5 py-0.5 bg-[#0F766E] text-white text-2xs font-bold rounded-full">
+              <span className="px-1.5 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded-full">
                 {activeFilterCount}
               </span>
             )}
@@ -599,7 +599,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
           <span className="font-semibold text-gray-700">{filtered.length.toLocaleString()}</span>
           {t('ofTotal', { total: data.comparables.length.toLocaleString() })}
           {activeFilterCount > 0 && (
-            <span className="text-[#0F766E] font-medium">
+            <span className="text-[#0E7490] font-medium">
               ({activeFilterCount} {activeFilterCount === 1 ? 'filtro' : 'filtros'})
             </span>
           )}
@@ -623,7 +623,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
             <div className="mt-3 text-center">
               <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-100 text-sm">
                 <span className="text-gray-600">{t('rentPerM2')}:</span>
-                <span className="font-bold text-[#0F766E]">${metrics.avgM2}/m&sup2;</span>
+                <span className="font-bold text-[#0E7490]">${metrics.avgM2}/m&sup2;</span>
               </span>
             </div>
           )}
@@ -724,7 +724,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                       </td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700">{dev.price_min ? formatPrice(dev.price_min) : '—'}</td>
                       <td className="px-5 py-4 text-right">
-                        <div className="text-sm font-semibold text-[#0F766E]">{dev.estimated_rent ? formatPrice(dev.estimated_rent) : '—'}</div>
+                        <div className="text-sm font-semibold text-[#0E7490]">{dev.estimated_rent ? formatPrice(dev.estimated_rent) : '—'}</div>
                       </td>
                       <td className="px-5 py-4 text-right text-sm font-semibold text-gray-700 hidden md:table-cell">{dev.rent_yield_gross != null ? formatPercentage(dev.rent_yield_gross) : '—'}</td>
                       <td className="px-5 py-4 text-right text-sm font-medium text-gray-700 hidden md:table-cell">{dev.cap_rate != null ? formatPercentage(dev.cap_rate) : '—'}</td>
@@ -733,7 +733,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
                         {dev.monthly_net_flow != null ? formatPrice(dev.monthly_net_flow) : '—'}
                       </td>
                       <td className="px-3 py-4">
-                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-propyte-cyan-100 text-gray-600 hover:text-[#0F766E] transition-colors">
+                        <Link href={`/${locale}/desarrollos/${dev.slug}`} className="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-propyte-cyan-100 text-gray-600 hover:text-[#0E7490] transition-colors">
                           <ArrowUpRight size={16} />
                         </Link>
                       </td>
@@ -806,7 +806,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
 function MetricCard({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 border ${highlight ? 'bg-[#1A2F3F] border-[#1A2F3F] text-white' : 'bg-white border-gray-100'}`}>
-      <div className={`text-2xs font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#0F766E]' : 'text-gray-600'}`}>{label}</div>
+      <div className={`text-2xs font-semibold uppercase tracking-wider mb-1 ${highlight ? 'text-[#0E7490]' : 'text-gray-600'}`}>{label}</div>
       <div className={`text-lg font-bold ${highlight ? 'text-white' : 'text-gray-900'}`}>{value}</div>
     </div>
   );

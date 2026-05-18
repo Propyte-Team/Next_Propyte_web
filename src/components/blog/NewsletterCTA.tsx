@@ -43,7 +43,7 @@ export default function NewsletterCTA() {
   return (
     <section className="py-14 bg-[#F4F6F8]">
       <div className="max-w-xl mx-auto px-4 md:px-6 text-center">
-        <Mail size={32} className="mx-auto text-[#0F766E] mb-4" aria-hidden="true" />
+        <Mail size={32} className="mx-auto text-[#0E7490] mb-4" aria-hidden="true" />
         <h2 className="text-2xl font-bold text-[#1A2F3F] mb-2">{t('newsletterTitle')}</h2>
         <p className="text-gray-600 text-sm mb-6">{t('newsletterDesc')}</p>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">

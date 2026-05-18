@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     color: '#1A2F3F',
     letterSpacing: 1,
   },
-  logoAccent: { color: '#0D9488' },
+  logoAccent: { color: '#0E7490' },
   docType: {
     fontSize: 9,
     color: '#6B7280',
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   metricValue: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#0D9488',
+    color: '#0E7490',
   },
   amenityList: {
     flexDirection: 'row',

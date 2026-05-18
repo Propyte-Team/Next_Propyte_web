@@ -188,7 +188,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                       <th key={p.id} className="text-left px-4 py-3 min-w-[180px]">
                         <Link
                           href={`/${locale}/${detailBase(p)}/${p.slug}`}
-                          className="block hover:text-[#0F766E]"
+                          className="block hover:text-[#0E7490]"
                         >
                           {p.images[0] && (
                             <div className="relative aspect-[16/10] w-full mb-2 rounded-lg overflow-hidden bg-gray-100">

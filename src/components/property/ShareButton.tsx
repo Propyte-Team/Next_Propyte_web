@@ -97,7 +97,7 @@ export default function ShareButton({
             : 'inline-flex items-center gap-1.5 min-h-[44px] px-4 bg-white border border-gray-200 hover:border-[#5CE0D2] text-gray-700 text-sm font-semibold rounded-lg transition-colors'
         }
       >
-        <Share2 size={16} className="text-[#0F766E]" />
+        <Share2 size={16} className="text-[#0E7490]" />
         {!compact && <span>{t('share')}</span>}
       </button>
 
@@ -155,7 +155,7 @@ export default function ShareButton({
                 onClick={() => setTimeout(() => setOpen(false), 300)}
                 className="flex items-center gap-3 min-h-[56px] px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors"
               >
-                <div className="w-10 h-10 rounded-lg bg-[#0D9488] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#0E7490] flex items-center justify-center shrink-0">
                   <Mail size={18} className="text-white" />
                 </div>
                 <div className="flex-1 min-w-0">

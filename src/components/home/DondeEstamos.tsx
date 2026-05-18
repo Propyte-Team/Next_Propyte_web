@@ -18,7 +18,7 @@ export default function DondeEstamos() {
     <section className="py-20 md:py-28 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12 max-w-2xl mx-auto">
-          <span className="inline-block text-[#0F766E] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
             {t('eyebrow')}
           </span>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1A2F3F] leading-snug mb-5">
@@ -33,7 +33,7 @@ export default function DondeEstamos() {
           {/* Real Estate Lab card */}
           <div className="propyte-card-glass-light p-8 md:p-10 flex flex-col">
             <div className="w-12 h-12 mb-5 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center">
-              <MapPin size={24} strokeWidth={1.75} className="text-[#0D9488]" />
+              <MapPin size={24} strokeWidth={1.75} className="text-[#0E7490]" />
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-[#1A2F3F] mb-3">
               {t('labTitle')}
@@ -42,7 +42,7 @@ export default function DondeEstamos() {
               {t('labAddress')}
             </p>
             <p className="text-sm text-gray-600 mb-6 flex items-center gap-2">
-              <Clock size={14} strokeWidth={1.75} className="text-[#0F766E]" />
+              <Clock size={14} strokeWidth={1.75} className="text-[#0E7490]" />
               {t('labHours')}
             </p>
             <div className="mt-auto">
@@ -68,12 +68,12 @@ export default function DondeEstamos() {
                     href={`/${locale}/propiedades?city=${encodeURIComponent(zone)}`}
                     className="flex items-center gap-2 min-h-[44px] px-4 rounded-lg bg-white/60 hover:bg-white border border-[#1A2F3F]/10 hover:border-[#A2F9FF] transition-all text-sm font-medium text-[#1A2F3F] group"
                   >
-                    <MapPin size={14} strokeWidth={1.75} className="text-[#0D9488]" />
+                    <MapPin size={14} strokeWidth={1.75} className="text-[#0E7490]" />
                     <span className="flex-1">{zone}</span>
                     <ArrowRight
                       size={14}
                       strokeWidth={2}
-                      className="text-[#0F766E] opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="text-[#0E7490] opacity-0 group-hover:opacity-100 transition-opacity"
                     />
                   </Link>
                 </li>

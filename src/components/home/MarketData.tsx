@@ -25,7 +25,7 @@ export default function MarketData() {
           ))}
         </div>
         <div className="text-center mt-8">
-          <Link href={`/${locale}/blog?category=analisis-mercado`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-[#0F766E] font-medium hover:underline">
+          <Link href={`/${locale}/blog?category=analisis-mercado`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-[#0E7490] font-medium hover:underline">
             {t('cta')} →
           </Link>
         </div>

@@ -80,7 +80,7 @@ export default function CaseStudies({
                   </div>
                 )}
                 <div className="p-6">
-                  <p className="text-xs font-semibold text-[#0F766E] uppercase tracking-wide mb-1">
+                  <p className="text-xs font-semibold text-[#0E7490] uppercase tracking-wide mb-1">
                     {s.client_name}
                   </p>
                   <h3 className="text-lg font-bold text-[#1A2F3F] mb-2 leading-snug">
@@ -98,7 +98,7 @@ export default function CaseStudies({
                           <dt className="text-2xs font-semibold text-gray-600 uppercase tracking-wide leading-tight">
                             {m.label}
                           </dt>
-                          <dd className="text-lg font-bold text-[#0F766E] tabular-nums mt-1">
+                          <dd className="text-lg font-bold text-[#0E7490] tabular-nums mt-1">
                             {m.value}
                           </dd>
                         </div>

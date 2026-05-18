@@ -214,7 +214,7 @@ function TemplateSquare({ data }: { data: ShareDownloadData }) {
         {amenities5.length > 0 && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {amenities5.map((a, i) => (
-              <span key={i} style={{ backgroundColor: '#F0FDFA', color: '#0D9488', fontSize: 10, padding: '2px 8px', borderRadius: 20, border: '1px solid #CCFBF1' }}>
+              <span key={i} style={{ backgroundColor: '#F0FDFA', color: '#0E7490', fontSize: 10, padding: '2px 8px', borderRadius: 20, border: '1px solid #CCFBF1' }}>
                 {a}
               </span>
             ))}
@@ -335,13 +335,13 @@ function TemplateLetter({ data }: { data: ShareDownloadData }) {
             {data.delivery && (
               <div style={{ flex: 1, backgroundColor: '#F0FDFA', borderRadius: 8, padding: '10px 14px', border: '1px solid #CCFBF1' }}>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 2 }}>Entrega estimada</div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: '#0D9488' }}>{data.delivery}</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: '#0E7490' }}>{data.delivery}</div>
               </div>
             )}
             {data.roi && (
               <div style={{ flex: 1, backgroundColor: '#F0FDFA', borderRadius: 8, padding: '10px 14px', border: '1px solid #CCFBF1' }}>
                 <div style={{ fontSize: 11, color: '#9CA3AF', marginBottom: 2 }}>ROI estimado</div>
-                <div style={{ fontWeight: 700, fontSize: 15, color: '#0D9488' }}>{data.roi}</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: '#0E7490' }}>{data.roi}</div>
               </div>
             )}
           </div>
@@ -475,7 +475,7 @@ export default function ShareDownloadModal({ data, locale: _locale, compact }: P
                 : 'inline-flex items-center gap-1.5 min-h-[44px] px-4 bg-white border border-gray-200 hover:border-[#5CE0D2] text-gray-700 text-sm font-semibold rounded-lg transition-colors'
             }
           >
-            <Share2 size={16} className="text-[#0F766E]" />
+            <Share2 size={16} className="text-[#0E7490]" />
             {!compact && (
               <>
                 <span>{t('share')}</span>
@@ -542,9 +542,9 @@ export default function ShareDownloadModal({ data, locale: _locale, compact }: P
             }
           >
             {loading ? (
-              <Loader2 size={16} className="text-[#0F766E] animate-spin" />
+              <Loader2 size={16} className="text-[#0E7490] animate-spin" />
             ) : (
-              <Download size={16} className="text-[#0F766E]" />
+              <Download size={16} className="text-[#0E7490]" />
             )}
             {!compact && (
               <>
@@ -561,7 +561,7 @@ export default function ShareDownloadModal({ data, locale: _locale, compact }: P
                 onClick={() => handleDownload('stories')}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                <FileImage size={15} className="text-[#0F766E] shrink-0" />
+                <FileImage size={15} className="text-[#0E7490] shrink-0" />
                 <div className="text-left">
                   <div className="font-semibold">{t('stories')}</div>
                   <div className="text-xs text-gray-600">360×640px PNG</div>
@@ -572,7 +572,7 @@ export default function ShareDownloadModal({ data, locale: _locale, compact }: P
                 onClick={() => handleDownload('square')}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                <FileImage size={15} className="text-[#0F766E] shrink-0" />
+                <FileImage size={15} className="text-[#0E7490] shrink-0" />
                 <div className="text-left">
                   <div className="font-semibold">{t('square')}</div>
                   <div className="text-xs text-gray-600">500×500px PNG</div>
@@ -584,7 +584,7 @@ export default function ShareDownloadModal({ data, locale: _locale, compact }: P
                 onClick={() => handleDownload('letter')}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 text-gray-700 transition-colors"
               >
-                <Download size={15} className="text-[#0F766E] shrink-0" />
+                <Download size={15} className="text-[#0E7490] shrink-0" />
                 <div className="text-left">
                   <div className="font-semibold">{t('letter')}</div>
                   <div className="text-xs text-gray-600">794×1056px PDF</div>

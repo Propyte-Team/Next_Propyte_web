@@ -18,7 +18,7 @@ export default function NosotrosTeaser() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           {/* Left: copy */}
           <div className="lg:col-span-7">
-            <span className="inline-block text-[#0F766E] text-xs font-bold tracking-widest uppercase mb-4">
+            <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
               {t('eyebrow')}
             </span>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1A2F3F] leading-snug mb-5">
@@ -49,7 +49,7 @@ export default function NosotrosTeaser() {
                   className="propyte-card-glass-light p-5 flex items-center gap-4"
                 >
                   <div className="w-11 h-11 shrink-0 bg-[#A2F9FF]/20 rounded-lg flex items-center justify-center">
-                    <Icon size={22} strokeWidth={1.75} className="text-[#0D9488]" />
+                    <Icon size={22} strokeWidth={1.75} className="text-[#0E7490]" />
                   </div>
                   <p className="text-sm md:text-base font-semibold text-[#1A2F3F] leading-snug">
                     {stat.label}

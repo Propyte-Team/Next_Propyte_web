@@ -124,7 +124,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
                 <Area
                   type="monotone"
                   dataKey="occupancy"
-                  stroke="#0D9488"
+                  stroke="#0E7490"
                   strokeWidth={2.5}
                   fill="url(#marketOcc)"
                 />
@@ -176,7 +176,7 @@ function KpiCard({
     <div className="bg-white border border-gray-100 rounded-xl p-3 md:p-4 shadow-sm">
       <div className="flex items-center justify-between mb-2">
         <span className="text-2xs uppercase tracking-wider font-semibold text-gray-600 truncate">{label}</span>
-        <span className="text-[#0F766E]">{icon}</span>
+        <span className="text-[#0E7490]">{icon}</span>
       </div>
       <div className="text-lg md:text-xl font-bold text-gray-900 truncate">{value}</div>
       {subtitle && <div className="text-2xs text-gray-600 mt-0.5 truncate">{subtitle}</div>}

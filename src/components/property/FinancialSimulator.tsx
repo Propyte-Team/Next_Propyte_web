@@ -257,11 +257,11 @@ export default function FinancialSimulator({
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-gray-50 rounded-xl p-4 text-center">
             <div className="text-xs text-gray-600 mb-1">TIR 5 años</div>
-            <div className="text-xl font-bold text-[#0F766E]">{results.irr5 != null ? formatPercentage(results.irr5) : '—'}</div>
+            <div className="text-xl font-bold text-[#0E7490]">{results.irr5 != null ? formatPercentage(results.irr5) : '—'}</div>
           </div>
           <div className="bg-gray-50 rounded-xl p-4 text-center">
             <div className="text-xs text-gray-600 mb-1">TIR 10 años</div>
-            <div className="text-xl font-bold text-[#0F766E]">{results.irr10 != null ? formatPercentage(results.irr10) : '—'}</div>
+            <div className="text-xl font-bold text-[#0E7490]">{results.irr10 != null ? formatPercentage(results.irr10) : '—'}</div>
           </div>
         </div>
         <div className="bg-gray-50 rounded-xl p-4">
@@ -311,7 +311,7 @@ export default function FinancialSimulator({
             <div>
               <div className="flex justify-between text-sm mb-1">
                 <label className="font-medium text-gray-700">
-                  Tasa de ocupación {hasAirdna && <span className="text-2xs text-[#0F766E] ml-1">mercado</span>}
+                  Tasa de ocupación {hasAirdna && <span className="text-2xs text-[#0E7490] ml-1">mercado</span>}
                 </label>
                 <span className="font-semibold">{occupancy.toFixed(0)}%</span>
               </div>
@@ -364,7 +364,7 @@ function MetricRow({ label, value, accent, color }: { label: string; value: stri
 function ProjectionBlock({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className={`rounded-xl p-4 text-center ${highlight ? 'bg-[#0F1923] text-white' : 'bg-gray-50'}`}>
-      <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#0F766E]'}`}>{value}</div>
+      <div className={`text-xl font-bold ${highlight ? 'text-[#5CE0D2]' : 'text-[#0E7490]'}`}>{value}</div>
       <div className={`text-xs mt-1 ${highlight ? 'text-gray-400' : 'text-gray-600'}`}>{label}</div>
     </div>
   );

@@ -231,7 +231,7 @@ export default async function InvestmentSummary({
         <h2 className="text-xl font-semibold text-[#2C2C2C]">
           {showDual ? t('residentialVsVacation') : t('investmentAnalysis')}
         </h2>
-        <span className="px-2 py-0.5 bg-[#0F766E]/15 text-[#0F766E] text-xs font-medium rounded-full">
+        <span className="px-2 py-0.5 bg-[#0E7490]/15 text-[#0E7490] text-xs font-medium rounded-full">
           {res ? t('comparablesBased') : t('mlEstimated')}
         </span>
       </div>
@@ -281,11 +281,11 @@ export default async function InvestmentSummary({
             {rows.map((row, i) => (
               <tr key={row.label} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                 <td className="px-4 py-2.5 text-gray-600">{row.label}</td>
-                <td className="px-4 py-2.5 text-right font-bold" style={row.resColor ? { color: row.resColor } : { color: '#0F766E' }}>
+                <td className="px-4 py-2.5 text-right font-bold" style={row.resColor ? { color: row.resColor } : { color: '#0E7490' }}>
                   {row.resValue}
                 </td>
                 {showDual && (
-                  <td className="px-4 py-2.5 text-right font-bold" style={row.vacColor ? { color: row.vacColor } : { color: '#0F766E' }}>
+                  <td className="px-4 py-2.5 text-right font-bold" style={row.vacColor ? { color: row.vacColor } : { color: '#0E7490' }}>
                     {row.vacValue || '—'}
                   </td>
                 )}
@@ -304,7 +304,7 @@ export default async function InvestmentSummary({
           {airdnaOccupancy != null && (
             <>
               <span>|</span>
-              <span className="text-[#0F766E]">Ocupación {Math.round(airdnaOccupancy)}% (mercado)</span>
+              <span className="text-[#0E7490]">Ocupación {Math.round(airdnaOccupancy)}% (mercado)</span>
             </>
           )}
         </div>

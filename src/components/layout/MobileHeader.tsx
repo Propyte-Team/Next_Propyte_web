@@ -95,7 +95,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
                   role="menuitem"
                   onClick={() => switchLocale('es')}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
-                    locale === 'es' ? 'text-[#0F766E] font-semibold' : 'text-[#2C2C2C]'
+                    locale === 'es' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
                   }`}
                 >
                   🇲🇽 Español
@@ -105,7 +105,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
                   role="menuitem"
                   onClick={() => switchLocale('en')}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
-                    locale === 'en' ? 'text-[#0F766E] font-semibold' : 'text-[#2C2C2C]'
+                    locale === 'en' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
                   }`}
                 >
                   🇺🇸 English

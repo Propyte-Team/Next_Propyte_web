@@ -136,7 +136,7 @@ export default function SearchBubble({
       <button
         type="submit"
         aria-label={t('search')}
-        className={`search-bubble-btn flex items-center justify-center ${btnSizeCls} rounded-full bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] shrink-0 transition-all hover:scale-105`}
+        className={`search-bubble-btn flex items-center justify-center ${btnSizeCls} rounded-full bg-[#A2F9FF] hover:bg-[#7DEAF2] text-[#0F1923] shrink-0 transition-all hover:scale-105`}
       >
         <Search size={isMobile ? 16 : 18} strokeWidth={2} />
       </button>

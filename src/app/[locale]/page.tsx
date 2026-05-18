@@ -56,7 +56,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // Stats reales sin pisos inventados (Bloque A — FLOORS eliminado 2026-05-11).
   // Si Supabase devuelve 0 en alguna métrica, Hero omite esa pill condicionalmente.
   let stats = { developments: 0, units: 0, cities: 0, zones: 0, typeCounts: {} as Record<string, number> };
-  let developers: Array<{ name: string; logo_url: string | null; slug: string }> = [];
+  let developers: Array<{ name: string; logo_url: string | null; slug: string; city: string | null; state: string | null }> = [];
   let featured: FeaturedDevelopment[] = [];
 
   const visibility = await getVisibility();
@@ -69,10 +69,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       getFeaturedDevelopments(supabase, 6),
     ]);
     stats = statsData;
-    type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string };
+    type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
     developers = ((devsRes.data || []) as DeveloperRow[])
       .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
-      .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug }));
+      .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
     featured = (featuredRes.data || []) as FeaturedDevelopment[];
   } catch (error) {
     console.error('[HomePage] Supabase fetch failed:', error);

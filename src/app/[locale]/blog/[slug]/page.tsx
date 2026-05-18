@@ -138,7 +138,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Back link */}
         <Link
           href={`/${locale}/blog`}
-          className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-[#0F766E] mb-6 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-[#0E7490] mb-6 transition-colors"
         >
           <ChevronLeft size={16} /> {t('backToListing')}
         </Link>
@@ -146,7 +146,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {/* Article header */}
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="px-3 py-1 text-xs font-semibold bg-[#0F766E] text-white rounded-full">
+            <span className="px-3 py-1 text-xs font-semibold bg-[#0E7490] text-white rounded-full">
               {post.category}
             </span>
             {post.tags.slice(0, 3).map((tag) => (
@@ -214,7 +214,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <div
             className="prose prose-lg prose-slate max-w-none
               prose-headings:text-[#1A2F3F] prose-headings:font-bold
-              prose-a:text-[#0F766E] prose-a:no-underline hover:prose-a:underline
+              prose-a:text-[#0E7490] prose-a:no-underline hover:prose-a:underline
               prose-strong:text-[#1A2F3F]
               prose-img:rounded-xl prose-img:shadow-card
               prose-blockquote:border-propyte-brand prose-blockquote:text-gray-600

@@ -23,7 +23,7 @@ export default function NotFound() {
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="text-center max-w-lg">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-[#5CE0D2]/10 rounded-2xl mb-6">
-            <Search size={36} strokeWidth={1.5} className="text-[#0F766E]" />
+            <Search size={36} strokeWidth={1.5} className="text-[#0E7490]" />
           </div>
 
           <h1 className="text-6xl font-bold text-[#1A2F3F] mb-3">404</h1>
@@ -50,7 +50,7 @@ export default function NotFound() {
                 href="/es/desarrollos"
                 className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-[#5CE0D2] hover:shadow-sm transition-all text-sm font-medium text-[#1A2F3F]"
               >
-                <Building2 size={16} className="text-[#0F766E]" />
+                <Building2 size={16} className="text-[#0E7490]" />
                 Desarrollos
                 <ArrowRight size={14} className="ml-auto text-gray-400" />
               </Link>
@@ -58,7 +58,7 @@ export default function NotFound() {
                 href="/es/propiedades"
                 className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-[#5CE0D2] hover:shadow-sm transition-all text-sm font-medium text-[#1A2F3F]"
               >
-                <Search size={16} className="text-[#0F766E]" />
+                <Search size={16} className="text-[#0E7490]" />
                 Propiedades
                 <ArrowRight size={14} className="ml-auto text-gray-400" />
               </Link>
@@ -66,7 +66,7 @@ export default function NotFound() {
                 href="/es/contacto"
                 className="flex items-center gap-2 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-[#5CE0D2] hover:shadow-sm transition-all text-sm font-medium text-[#1A2F3F]"
               >
-                <Home size={16} className="text-[#0F766E]" />
+                <Home size={16} className="text-[#0E7490]" />
                 Contacto
                 <ArrowRight size={14} className="ml-auto text-gray-400" />
               </Link>

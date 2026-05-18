@@ -90,11 +90,11 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
                   className="propyte-card-glass-light p-6 md:p-8 flex flex-col md:flex-row gap-5 md:gap-8"
                 >
                   <div className="flex md:flex-col items-center md:items-start gap-3 md:min-w-[80px]">
-                    <span className="text-[#0F766E] text-xs font-bold tracking-widest">
+                    <span className="text-[#0E7490] text-xs font-bold tracking-widest">
                       {c.num}
                     </span>
                     <div className="w-12 h-12 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center">
-                      <Icon size={24} strokeWidth={1.75} className="text-[#0D9488]" />
+                      <Icon size={24} strokeWidth={1.75} className="text-[#0E7490]" />
                     </div>
                   </div>
                   <div className="flex-1">

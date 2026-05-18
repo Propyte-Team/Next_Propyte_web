@@ -202,7 +202,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                           <span
                             className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
                               dev.stage === 'preventa'
-                                ? 'bg-[#0D9488] text-white'
+                                ? 'bg-[#0E7490] text-white'
                                 : dev.stage === 'construccion'
                                   ? 'bg-[#22C55E] text-white'
                                   : 'bg-propyte-brand text-[#0F1923]'
@@ -251,13 +251,13 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       </div>
 
                       {dev.roi_estimated != null && dev.roi_estimated > 0 && (
-                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-propyte-cyan-100 text-[#0F766E] text-xs font-bold rounded-full self-start">
+                        <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-propyte-cyan-100 text-[#0E7490] text-xs font-bold rounded-full self-start">
                           {t('roiBadge')} {dev.roi_estimated}%
                         </div>
                       )}
 
                       <div className="mt-auto pt-4">
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0F766E] group-hover:underline">
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0E7490] group-hover:underline">
                           {t('viewProperty')} <ArrowRight size={12} />
                         </span>
                       </div>

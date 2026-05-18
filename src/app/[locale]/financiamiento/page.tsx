@@ -142,7 +142,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                 <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow">
                   <div className="flex items-start gap-4 mb-4">
                     <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Icon size={24} className="text-[#0F766E]" />
+                      <Icon size={24} className="text-[#0E7490]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-[#1A2F3F]">{m.title}</h3>
@@ -208,7 +208,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                   <tr key={i} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{m.title}</td>
                     <td className="px-4 py-3 text-center text-gray-700">{m.downPayment}</td>
-                    <td className="px-4 py-3 text-center font-bold text-[#0F766E]">{m.rate}</td>
+                    <td className="px-4 py-3 text-center font-bold text-[#0E7490]">{m.rate}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{m.term}</td>
                     <td className="px-4 py-3 text-center">
                       {m.rate === '0%' ? '⚡⚡' : i === 1 ? '⚡⚡⚡' : '🕐'}
@@ -219,7 +219,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     <td className="px-4 py-3 text-right">
                       <Link
                         href={`/${locale}/contacto?asunto=financiamiento-m${i + 1}`}
-                        className="inline-flex items-center min-h-[44px] md:min-h-0 text-xs font-semibold text-[#0F766E] hover:underline whitespace-nowrap"
+                        className="inline-flex items-center min-h-[44px] md:min-h-0 text-xs font-semibold text-[#0E7490] hover:underline whitespace-nowrap"
                       >
                         {t('rowAdvisorCta')} →
                       </Link>

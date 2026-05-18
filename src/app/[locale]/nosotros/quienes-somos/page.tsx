@@ -235,7 +235,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="grid lg:grid-cols-5 gap-16 items-center">
             <div className="lg:col-span-3">
-              <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
+              <span className="text-[#0E7490] text-xs font-bold tracking-[0.2em] uppercase">
                 {t('label')}
               </span>
               <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F] mb-6 leading-tight">
@@ -262,7 +262,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="bg-white rounded-2xl p-10 md:p-12 border-l-4 border-propyte-brand mb-12 shadow-sm">
-            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0E7490] text-xs font-bold tracking-[0.2em] uppercase">
               {t('missionLabel')}
             </span>
             <p className="mt-5 text-xl md:text-2xl font-medium text-[#1A2F3F] leading-relaxed">
@@ -278,7 +278,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 <div
                   className={`w-11 h-11 ${large ? 'bg-propyte-brand/15 border border-propyte-brand/30' : 'bg-propyte-cyan-100'} rounded-xl flex items-center justify-center mb-5`}
                 >
-                  <Icon size={22} className={large ? 'text-propyte-brand' : 'text-[#0F766E]'} />
+                  <Icon size={22} className={large ? 'text-propyte-brand' : 'text-[#0E7490]'} />
                 </div>
                 <h3 className={`text-base font-bold ${large ? '' : 'text-[#1A2F3F]'} mb-2`}>
                   {title}
@@ -321,7 +321,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="text-center mb-14">
-            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0E7490] text-xs font-bold tracking-[0.2em] uppercase">
               {t('ecosystemLabel')}
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F]">
@@ -338,7 +338,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
                 className="flex-shrink-0 w-[75vw] sm:w-[45vw] lg:w-[calc(25%-0.75rem)] snap-center bg-white p-7 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
               >
                 <div className="w-11 h-11 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-5">
-                  <Icon size={22} className="text-[#0F766E]" />
+                  <Icon size={22} className="text-[#0E7490]" />
                 </div>
                 <h3 className="text-base font-bold text-[#1A2F3F] mb-2">{title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
@@ -352,7 +352,7 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
       <section className="py-20 md:py-24 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="mb-14">
-            <span className="text-[#0F766E] text-xs font-bold tracking-[0.2em] uppercase">
+            <span className="text-[#0E7490] text-xs font-bold tracking-[0.2em] uppercase">
               {t('cultureLabel')}
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold text-[#1A2F3F]">

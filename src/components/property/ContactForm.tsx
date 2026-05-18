@@ -80,7 +80,7 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
       </div>
 
       {!showPhone ? (
-        <button type="button" onClick={() => setShowPhone(true)} className="text-sm text-[#0F766E] hover:underline">
+        <button type="button" onClick={() => setShowPhone(true)} className="text-sm text-[#0E7490] hover:underline">
           + {tContact('formPhone') || 'Phone'}
         </button>
       ) : (

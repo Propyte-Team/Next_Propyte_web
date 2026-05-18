@@ -262,11 +262,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
         {/* Breadcrumbs */}
         <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-600 mb-4">
-          <Link href={`/${locale}`} className="hover:text-[#0F766E]">{tProp('breadcrumbHome')}</Link>
+          <Link href={`/${locale}`} className="hover:text-[#0E7490]">{tProp('breadcrumbHome')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/propiedades`} className="hover:text-[#0F766E]">{tProp('breadcrumbProperties')}</Link>
+          <Link href={`/${locale}/propiedades`} className="hover:text-[#0E7490]">{tProp('breadcrumbProperties')}</Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}`} className="hover:text-[#0F766E]">{property.location.city}</Link>
+          <Link href={`/${locale}/propiedades?city=${encodeURIComponent(property.location.city)}`} className="hover:text-[#0E7490]">{property.location.city}</Link>
           <ChevronRight size={12} />
           <span className="text-gray-700 font-medium truncate max-w-[240px]">{property.name}</span>
         </nav>
@@ -280,7 +280,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               alt={property.name}
               badgeTopLeft={
                 <>
-                  <span className="px-3 py-1.5 bg-[#0F766E] text-white text-xs font-bold rounded-full">{stageLabel}</span>
+                  <span className="px-3 py-1.5 bg-[#0E7490] text-white text-xs font-bold rounded-full">{stageLabel}</span>
                   {property.badge && <Badge type={property.badge} label={stageLabel} />}
                 </>
               }
@@ -288,14 +288,14 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
             {/* Title + Specs */}
             <div>
-              <div className="flex items-center gap-2 text-xs text-[#0F766E] font-semibold uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-xs text-[#0E7490] font-semibold uppercase tracking-wider mb-1">
                 <span>{typeLabel}</span>
                 {property.parentDevelopmentSlug && (
                   <>
                     <span>·</span>
                     <Link
                       href={`/${locale}/desarrollos/${property.parentDevelopmentSlug}`}
-                      className="inline-flex items-center gap-1 hover:text-[#0F766E] underline underline-offset-2"
+                      className="inline-flex items-center gap-1 hover:text-[#0E7490] underline underline-offset-2"
                     >
                       <ArrowLeft size={12} />
                       {tProp('viewDevelopment')}
@@ -400,7 +400,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                                 // eslint-disable-next-line @next/next/no-img-element
                                 <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
                               ) : (
-                                <span className="text-xl font-extrabold text-[#0F766E] tracking-tight">
+                                <span className="text-xl font-extrabold text-[#0E7490] tracking-tight">
                                   {developerDisplay.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
                                 </span>
                               )}
@@ -409,7 +409,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                               <div className="flex items-center gap-2">
                                 <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
                                 {developerDisplay.verified && (
-                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
+                                  <span className="px-2 py-0.5 text-2xs font-bold text-[#0E7490] bg-propyte-cyan-100 rounded-full uppercase tracking-wider">
                                     {tProp('verified')}
                                   </span>
                                 )}
@@ -600,7 +600,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 function SpecChip({ icon, label }: { icon: React.ReactNode; label: React.ReactNode }) {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
-      <span className="text-[#0F766E]">{icon}</span>
+      <span className="text-[#0E7490]">{icon}</span>
       {label}
     </div>
   );

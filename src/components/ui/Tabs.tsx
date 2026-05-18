@@ -99,7 +99,7 @@ export default function Tabs({
               {item.icon}
               {item.label}
               {item.badge != null && (
-                <span className="ml-1 px-1.5 py-0.5 text-2xs font-bold bg-[#5CE0D2]/15 text-[#0F766E] rounded-full">
+                <span className="ml-1 px-1.5 py-0.5 text-2xs font-bold bg-[#5CE0D2]/15 text-[#0E7490] rounded-full">
                   {item.badge}
                 </span>
               )}

@@ -35,7 +35,7 @@ function ConfidenceBar({ sampleSize }: { sampleSize: number }) {
           <div
             key={i}
             className={`h-1.5 w-3 rounded-full ${
-              i <= level ? 'bg-[#0F766E]' : 'bg-gray-200'
+              i <= level ? 'bg-[#0E7490]' : 'bg-gray-200'
             }`}
           />
         ))}
@@ -179,11 +179,11 @@ function InvestmentBreakdown({
       <div className="grid grid-cols-3 gap-2">
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
           <div className="text-xs text-gray-600">{strings.grossYield}</div>
-          <div className="text-sm font-bold text-[#0F766E]">{grossYield.toFixed(1)}%</div>
+          <div className="text-sm font-bold text-[#0E7490]">{grossYield.toFixed(1)}%</div>
         </div>
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
           <div className="text-xs text-gray-600">Cap Rate</div>
-          <div className="text-sm font-bold text-[#0F766E]">{capRate.toFixed(1)}%</div>
+          <div className="text-sm font-bold text-[#0E7490]">{capRate.toFixed(1)}%</div>
         </div>
         <div className="text-center p-2 bg-white rounded-lg border border-gray-100">
           <div className="text-xs text-gray-600">{strings.netFlow}</div>

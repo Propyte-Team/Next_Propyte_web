@@ -56,7 +56,7 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-[#0F766E] transition-colors">
+        <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-[#0E7490] transition-colors">
           {dev.name}
         </h3>
         {(dev.city || dev.zone) && (
@@ -66,7 +66,7 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
           </div>
         )}
         {priceFrom && (
-          <div className="mt-2 text-sm font-semibold text-[#0F766E]">
+          <div className="mt-2 text-sm font-semibold text-[#0E7490]">
             Desde {formatPrice(priceFrom)} MXN
           </div>
         )}
@@ -138,7 +138,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
         {/* Back link */}
         <Link
           href={`/${locale}/desarrolladores`}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0F766E] transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0E7490] transition-colors"
         >
           <ArrowLeft size={15} />
           {locale === 'es' ? 'Todos los desarrolladores' : 'All developers'}
@@ -153,7 +153,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={developer.logoUrl} alt={developer.name} className="w-full h-full object-contain p-2" />
               ) : (
-                <span className="text-2xl font-extrabold text-[#0F766E] tracking-tight">{initials}</span>
+                <span className="text-2xl font-extrabold text-[#0E7490] tracking-tight">{initials}</span>
               )}
             </div>
 
@@ -175,7 +175,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
                     href={safeDevWebsite}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-[#0F766E] hover:underline"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-[#0E7490] hover:underline"
                   >
                     <Globe size={13} />
                     {safeDevWebsite.replace(/^https?:\/\//, '').replace(/\/$/, '')}
