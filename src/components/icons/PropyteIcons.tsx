@@ -16,18 +16,28 @@ import { forwardRef, type SVGProps } from 'react';
 export interface PropyteIconProps extends Omit<SVGProps<SVGSVGElement>, 'ref' | 'width' | 'height'> {
   /** Tamaño en px (cuadrado). Default: 24, matching lucide. */
   size?: number | string;
-  /** Stroke width en unidades del viewBox (394). Default: 24 (≈8% — match visual de lucide a 2/24). */
+  /**
+   * Stroke width en unidades del viewBox cropped (294). Default: 32 (~10.9% del
+   * viewBox visible — peso comparable o ligeramente superior a lucide para
+   * compensar la geometría más simple/delicada de los SVGs originales).
+   */
   strokeWidth?: number | string;
 }
 
+// viewBox croppeado: los SVGs originales (394x394) tienen ~50px de padding por
+// lado donde no hay contenido. Recortamos a 50,50,294,294 para que el icono
+// visible ocupe ~95% del bounding box (similar a lucide), sin tener que reescribir
+// los paths.
+const VIEW_BOX = '50 50 294 294';
+
 function makeIcon(name: string, render: (props: { strokeWidth: number | string }) => React.ReactNode) {
   const Icon = forwardRef<SVGSVGElement, PropyteIconProps>(
-    ({ size = 24, strokeWidth = 24, className, ...rest }, ref) => (
+    ({ size = 24, strokeWidth = 32, className, ...rest }, ref) => (
       <svg
         ref={ref}
         width={size}
         height={size}
-        viewBox="0 0 394 394"
+        viewBox={VIEW_BOX}
         fill="none"
         stroke="currentColor"
         strokeWidth={strokeWidth}
