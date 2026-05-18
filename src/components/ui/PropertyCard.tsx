@@ -81,7 +81,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {property.roi.projected > 0 && (
-              <span className="text-sm font-medium text-[#0F766E]">
+              <span className="text-sm font-medium text-[#0E7490]">
                 ROI {property.roi.projected}%
               </span>
             )}

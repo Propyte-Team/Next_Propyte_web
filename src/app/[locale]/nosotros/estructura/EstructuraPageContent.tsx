@@ -124,7 +124,7 @@ function DeptAccordion({ dept }: { dept: DeptView }) {
             <div key={m.id} className="flex justify-between text-sm py-1">
               <span className="text-gray-600">{m.role}</span>
               {m.is_vacant ? (
-                <span className="text-[#0D9488] text-xs font-medium">{t('hiring')}</span>
+                <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
               ) : (
                 <span className="font-medium text-gray-900">
                   {m.name}

@@ -40,7 +40,7 @@ export default function ExpandableText({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="mt-2 text-sm font-semibold text-[#0F766E] hover:underline"
+          className="mt-2 text-sm font-semibold text-[#0E7490] hover:underline"
         >
           {expanded ? lessLabel : moreLabel}
         </button>

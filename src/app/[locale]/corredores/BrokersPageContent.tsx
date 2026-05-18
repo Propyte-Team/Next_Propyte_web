@@ -87,14 +87,14 @@ function ValueProposition() {
     <section className="bg-white py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12">
-          <span className="text-[#0F766E] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('valueSubtitle')}</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-propyte-brand/20 hover:shadow-lg transition-all group">
               <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-propyte-cyan-100 transition-colors">
-                <Icon size={24} className="text-[#0F766E]" />
+                <Icon size={24} className="text-[#0E7490]" />
               </div>
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
@@ -131,7 +131,7 @@ function HowItWorks() {
               <div className="w-10 h-10 mx-auto mb-4 bg-[#1A2F3F] rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">{num}</span>
               </div>
-              <Icon size={32} className="mx-auto mb-3 text-[#0F766E]" />
+              <Icon size={32} className="mx-auto mb-3 text-[#0E7490]" />
               <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
             </div>
@@ -239,7 +239,7 @@ function FAQ() {
                 >
                   <span className="font-semibold text-[#1A2F3F] pr-4">{q}</span>
                   {isOpen
-                    ? <ChevronUp size={20} className="text-[#0F766E] flex-shrink-0" />
+                    ? <ChevronUp size={20} className="text-[#0E7490] flex-shrink-0" />
                     : <ChevronDown size={20} className="text-gray-600 flex-shrink-0" />
                   }
                 </button>
@@ -465,7 +465,7 @@ function FinalCTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <a
             href="#registro"
-            className="h-14 px-8 bg-white text-[#0F766E] font-bold text-base rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
+            className="h-14 px-8 bg-white text-[#0E7490] font-bold text-base rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2"
           >
             {t('finalCtaButton')} <ArrowRight size={18} />
           </a>

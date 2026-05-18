@@ -65,7 +65,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
     construccion: 'bg-[#1A2F3F] text-white',
     entrega_inmediata: 'bg-[var(--propyte-brand)] text-[var(--propyte-dark-900)]',
     proximamente: 'bg-[#6366F1] text-white',
-    reservado: 'bg-[#0D9488]/80 text-white',
+    reservado: 'bg-[#0E7490]/80 text-white',
     vendido: 'bg-gray-500 text-white',
   };
 
@@ -276,7 +276,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Promo banner — overlays bottom strip when active */}
           {showPromo && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#0D9488] to-[#0B7A6E] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#0E7490] to-[#0B7A6E] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
               {promoText}
             </div>
           )}
@@ -292,7 +292,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 <span className="text-xs text-gray-500 line-through tabular-nums">
                   {formattedOriginal}
                 </span>
-                <span className="text-2xs font-bold text-[#0F766E] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
+                <span className="text-2xs font-bold text-[#0E7490] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
                   -{discountPct}%
                 </span>
               </>
@@ -372,7 +372,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           {/* Investment metrics row */}
           <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
             {property.roi.projected > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0F766E] text-2xs font-bold rounded-full tabular-nums">
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
                 ROI {property.roi.projected}%
               </span>
             )}

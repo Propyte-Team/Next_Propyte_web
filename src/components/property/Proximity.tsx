@@ -71,7 +71,7 @@ export default function Proximity({ city, zone }: ProximityProps) {
         {items.map((item, i) => (
           <div key={i} className="flex items-center gap-3 p-3 bg-white border border-gray-100 rounded-xl">
             <div className="w-9 h-9 bg-[#5CE0D2]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-              <item.icon size={18} className="text-[#0F766E]" />
+              <item.icon size={18} className="text-[#0E7490]" />
             </div>
             <div>
               <div className="text-xs text-gray-600">{item.label}</div>

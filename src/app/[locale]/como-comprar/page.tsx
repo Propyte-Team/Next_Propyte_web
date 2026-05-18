@@ -125,7 +125,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
                     </div>
                     <div>
                       <div className="w-10 h-10 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-3">
-                        <Icon size={20} className="text-[#0F766E]" />
+                        <Icon size={20} className="text-[#0E7490]" />
                       </div>
                       <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{step.title}</h3>
                       <p className="text-sm text-gray-600 leading-relaxed">{step.desc}</p>

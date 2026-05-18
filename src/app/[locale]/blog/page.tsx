@@ -80,7 +80,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
         <section className="bg-white py-10">
           <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div className="flex items-center gap-3 mb-8">
-            <Link href={`/${locale}/blog`} className="text-sm text-gray-600 hover:text-[#0F766E] transition-colors">
+            <Link href={`/${locale}/blog`} className="text-sm text-gray-600 hover:text-[#0E7490] transition-colors">
               Blog
             </Link>
             <span className="text-gray-600">/</span>
@@ -175,7 +175,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colAsesores')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
-                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
+                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0E7490] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
@@ -190,8 +190,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   {asesorResult.posts.slice(1).map((post) => (
                     <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#0F766E] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0F766E] transition-colors">{post.title}</p>
+                        <span className="text-xs text-[#0E7490] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0E7490] transition-colors">{post.title}</p>
                         <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
                       </div>
                     </Link>
@@ -206,7 +206,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colInversionistas')}</h2>
                 <Link
                   href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
-                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0F766E] font-medium hover:underline whitespace-nowrap"
+                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0E7490] font-medium hover:underline whitespace-nowrap"
                 >
                   {t('viewAllCol')} <ArrowRight size={14} />
                 </Link>
@@ -219,8 +219,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   {invResult.posts.slice(1).map((post) => (
                     <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
                       <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#0F766E] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0F766E] transition-colors">{post.title}</p>
+                        <span className="text-xs text-[#0E7490] font-medium">{post.category}</span>
+                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0E7490] transition-colors">{post.title}</p>
                         <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
                       </div>
                     </Link>

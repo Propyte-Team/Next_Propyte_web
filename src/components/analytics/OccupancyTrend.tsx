@@ -101,7 +101,7 @@ export function OccupancyTrend({
           <Line
             type="monotone"
             dataKey="actual"
-            stroke="#0D9488"
+            stroke="#0E7490"
             strokeWidth={2}
             dot={{ r: 3 }}
             connectNulls={false}
@@ -111,7 +111,7 @@ export function OccupancyTrend({
             <Line
               type="monotone"
               dataKey="forecast"
-              stroke="#0D9488"
+              stroke="#0E7490"
               strokeWidth={2}
               strokeDasharray="6 3"
               dot={{ r: 3, strokeDasharray: '' }}

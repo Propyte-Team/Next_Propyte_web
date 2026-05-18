@@ -227,7 +227,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
               </div>
 
               {status === 'sent' ? (
-                <div className="mt-6 flex items-center gap-3 bg-propyte-cyan-100 border border-propyte-brand/30 text-[#0F766E] rounded-lg px-4 py-3">
+                <div className="mt-6 flex items-center gap-3 bg-propyte-cyan-100 border border-propyte-brand/30 text-[#0E7490] rounded-lg px-4 py-3">
                   <CheckCircle2 size={20} strokeWidth={2} />
                   <span className="text-sm font-medium">{tCommon('sent')}</span>
                 </div>
@@ -258,21 +258,21 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
               <div className="mt-8 pt-6 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
-                    <MapPin size={18} className="text-[#0F766E]" strokeWidth={2} />
+                    <MapPin size={18} className="text-[#0E7490]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.coverageTitle')}</p>
                   <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.coverageDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
-                    <Users size={18} className="text-[#0F766E]" strokeWidth={2} />
+                    <Users size={18} className="text-[#0E7490]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.teamTitle')}</p>
                   <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.teamDesc')}</p>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center mb-2">
-                    <ShieldCheck size={18} className="text-[#0F766E]" strokeWidth={2} />
+                    <ShieldCheck size={18} className="text-[#0E7490]" strokeWidth={2} />
                   </div>
                   <p className="text-xs font-bold text-[#1A2F3F] leading-tight">{t('socialProof.slaTitle')}</p>
                   <p className="text-2xs text-gray-600 mt-0.5 leading-tight">{t('socialProof.slaDesc')}</p>
@@ -287,7 +287,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0">
-                    <MapPin size={18} strokeWidth={2} className="text-[#0F766E]" />
+                    <MapPin size={18} strokeWidth={2} className="text-[#0E7490]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.address')}</p>
@@ -300,7 +300,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                   className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
-                    <Phone size={18} strokeWidth={2} className="text-[#0F766E]" />
+                    <Phone size={18} strokeWidth={2} className="text-[#0E7490]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.phone')}</p>
@@ -313,7 +313,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                   className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors group"
                 >
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
-                    <Mail size={18} strokeWidth={2} className="text-[#0F766E]" />
+                    <Mail size={18} strokeWidth={2} className="text-[#0E7490]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.email')}</p>
@@ -323,7 +323,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
 
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0">
-                    <Clock size={18} strokeWidth={2} className="text-[#0F766E]" />
+                    <Clock size={18} strokeWidth={2} className="text-[#0E7490]" />
                   </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.hours')}</p>

@@ -81,8 +81,8 @@ export default function TrendingMarket() {
 
   const statCards = [
     { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
-    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0F766E]' },
-    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#0D9488]' },
+    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0E7490]' },
+    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#0E7490]' },
     { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
   ];
 

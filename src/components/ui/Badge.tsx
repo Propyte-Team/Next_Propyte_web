@@ -7,12 +7,12 @@ interface BadgeProps {
 }
 
 const badgeStyles: Record<Exclude<PropertyBadge, null>, string> = {
-  preventa: 'bg-[#0D9488] text-white',
+  preventa: 'bg-[#0E7490] text-white',
   nuevo: 'bg-[#5CE0D2] text-[#0F1923]',
   entrega_inmediata: 'bg-[#22C55E] text-white',
   construccion: 'bg-[#1A2F3F] text-white',
   proximamente: 'bg-[#6366F1] text-white',
-  reservado: 'bg-[#0D9488]/80 text-white',
+  reservado: 'bg-[#0E7490]/80 text-white',
   vendido: 'bg-gray-500 text-white',
 };
 

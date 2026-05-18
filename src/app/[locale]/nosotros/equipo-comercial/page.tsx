@@ -50,7 +50,7 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
-const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0D9488', '#0F766E', '#134E4A'];
+const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0E7490', '#0E7490', '#134E4A'];
 
 function pickColor(name: string): string {
   let hash = 0;
@@ -121,7 +121,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
       {/* Hero */}
       <section className="bg-white pt-6 pb-12 md:pb-16">
         <div className="max-w-3xl mx-auto px-4 md:px-6">
-          <span className="inline-block text-[#0F766E] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
             {t('heroEyebrow')}
           </span>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A2F3F] leading-tight mb-5">
@@ -157,7 +157,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           {teamMembers.length === 0 ? (
             <div className="max-w-2xl mx-auto propyte-card-glass-light p-8 md:p-12 text-center border-2 border-dashed border-[#A2F9FF]/40 rounded-2xl">
               <div className="w-14 h-14 mx-auto mb-5 bg-[#A2F9FF]/20 rounded-2xl flex items-center justify-center">
-                <Users size={28} strokeWidth={1.5} className="text-[#0D9488]" />
+                <Users size={28} strokeWidth={1.5} className="text-[#0E7490]" />
               </div>
               <p className="text-base md:text-lg text-gray-700 leading-relaxed max-w-lg mx-auto">
                 {t('section2Placeholder')}

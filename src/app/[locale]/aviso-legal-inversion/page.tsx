@@ -62,9 +62,9 @@ export default async function AvisoLegalInversionPage({
       <section className="bg-white pt-6 pb-12 md:pb-16">
         <div className="max-w-3xl mx-auto px-4 md:px-6">
           <div className="w-12 h-12 mb-5 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center">
-            <FileText size={24} strokeWidth={1.75} className="text-[#0D9488]" />
+            <FileText size={24} strokeWidth={1.75} className="text-[#0E7490]" />
           </div>
-          <span className="inline-block text-[#0F766E] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
             {t('heroEyebrow')}
           </span>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A2F3F] leading-tight mb-5">

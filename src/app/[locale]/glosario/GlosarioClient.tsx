@@ -137,7 +137,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
           <div className="max-w-3xl mx-auto space-y-10">
             {letters.map((letter) => (
               <div key={letter} id={`letter-${letter}`}>
-                <h2 className="text-3xl font-bold text-[#0F766E] mb-4 border-b border-gray-100 pb-2">
+                <h2 className="text-3xl font-bold text-[#0E7490] mb-4 border-b border-gray-100 pb-2">
                   {letter}
                 </h2>
                 <dl className="space-y-4">
@@ -152,7 +152,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
                         {term.link && (
                           <Link
                             href={`/${locale}${term.link}`}
-                            className="ml-2 inline-flex items-center min-h-[44px] md:min-h-0 text-[#0F766E] hover:underline text-xs font-semibold"
+                            className="ml-2 inline-flex items-center min-h-[44px] md:min-h-0 text-[#0E7490] hover:underline text-xs font-semibold"
                           >
                             {labels.learnMore}
                           </Link>

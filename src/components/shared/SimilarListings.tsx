@@ -60,7 +60,7 @@ export default async function SimilarListings({ items, kind, locale, title }: Si
               )}
             </div>
             <div className="p-4">
-              <h3 className="font-bold text-[#2C2C2C] group-hover:text-[#0F766E] transition-colors text-base line-clamp-1">
+              <h3 className="font-bold text-[#2C2C2C] group-hover:text-[#0E7490] transition-colors text-base line-clamp-1">
                 {kind === 'unit' && item.developmentName
                   ? `${item.developmentName}${item.unitNumber ? ` · ${item.unitNumber}` : ''}`
                   : item.name}

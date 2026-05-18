@@ -47,7 +47,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
           </div>
           <Link
             href={`/${locale}/desarrollos`}
-            className="hidden md:flex items-center gap-1.5 text-[#0F766E] font-semibold hover:underline"
+            className="hidden md:flex items-center gap-1.5 text-[#0E7490] font-semibold hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>
@@ -83,7 +83,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                             ? 'bg-[#A2F9FF] text-[#0B1C1E]'
                             : dev.stage === 'construccion'
                             ? 'bg-[#22C55E] text-white'
-                            : 'bg-[#0F766E] text-white'
+                            : 'bg-[#0E7490] text-white'
                         }`}>
                           {safeStage(dev.stage)}
                         </span>
@@ -130,7 +130,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                     </div>
 
                     {dev.roi_estimated && dev.roi_estimated > 0 && (
-                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#A2F9FF]/20 text-[#0D9488] text-xs font-bold rounded-full">
+                      <div className="mt-3 inline-flex items-center gap-1 px-2.5 py-1 bg-[#A2F9FF]/20 text-[#0E7490] text-xs font-bold rounded-full">
                         {t('roiAnnual', { value: dev.roi_estimated })}
                       </div>
                     )}
@@ -144,7 +144,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         <div className="mt-8 text-center md:hidden">
           <Link
             href={`/${locale}/desarrollos`}
-            className="inline-flex items-center gap-1 min-h-[44px] text-[#0F766E] font-semibold"
+            className="inline-flex items-center gap-1 min-h-[44px] text-[#0E7490] font-semibold"
           >
             {t('viewAll')} <ArrowRight size={16} strokeWidth={2} />
           </Link>

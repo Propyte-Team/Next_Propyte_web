@@ -5,7 +5,9 @@
   /* Propyte Canonical Palette (from WP production) */
   --color-teal: #5CE0D2;
   --color-teal-dark: #4BCEC0;
-  --color-teal-a11y: #0D9488;
+  /* teal-a11y: cyan-700. Cambiado de #0E7490 (verde forestal) → #0E7490
+     (más cyan, más brand). Pasa WCAG AA sobre blanco (5.66:1). 2026-05-18. */
+  --color-teal-a11y: #0E7490;
   --color-aqua-bright: #A2F9FF;
   --color-navy: #1A2F3F;
   --color-aztec: #0F1923;
@@ -141,7 +143,7 @@
 @theme {
   --color-teal: #5CE0D2;
   --color-teal-dark: #4BCEC0;
-  --color-teal-a11y: #0D9488;
+  --color-teal-a11y: #0E7490;
   --color-aqua-bright: #A2F9FF;
   --color-navy: #1A2F3F;
   --color-aztec: #0F1923;
@@ -360,7 +362,7 @@ html {
 }
 
 .search-type-option[aria-selected="true"] {
-  color: #0D9488;
+  color: #0E7490;
   font-weight: 600;
   background: #f0fdfa;
 }
@@ -515,7 +517,7 @@ html {
   list-style-type: decimal;
 }
 .legal-prose a {
-  color: #0F766E;
+  color: #0E7490;
   text-decoration: underline;
   text-underline-offset: 2px;
 }

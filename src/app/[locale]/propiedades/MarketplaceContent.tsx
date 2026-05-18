@@ -159,13 +159,13 @@ export default function MarketplaceContent({
         {/* Cluster filter chip — visible cuando el user clickeó un "+N" */}
         {clusterFilter && clusterFilter.length > 0 && (
           <div className="bg-propyte-cyan-100 border-b border-propyte-brand/30 px-4 md:px-6 py-2 flex items-center gap-3">
-            <span className="text-sm font-semibold text-[#0F766E]">
+            <span className="text-sm font-semibold text-[#0E7490]">
               {t('clusterFilterActive', { count: displayed.length })}
             </span>
             <button
               type="button"
               onClick={() => setClusterFilter(null)}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-propyte-brand/40 hover:border-propyte-brand text-xs font-semibold text-[#0F766E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white border border-propyte-brand/40 hover:border-propyte-brand text-xs font-semibold text-[#0E7490] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
               aria-label={t('clusterFilterClear')}
             >
               {t('clusterFilterClear')} <X size={12} strokeWidth={2.5} />
@@ -178,13 +178,13 @@ export default function MarketplaceContent({
           <div className="flex border-b bg-white">
             <button
               onClick={() => setMobileView('map')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'map' ? 'text-[#0E7490] border-b-2 border-[#0E7490]' : 'text-gray-600'}`}
             >
               <Map size={16} /> {t('mapView')}
             </button>
             <button
               onClick={() => setMobileView('list')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#0F766E] border-b-2 border-[#0F766E]' : 'text-gray-600'}`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium ${mobileView === 'list' ? 'text-[#0E7490] border-b-2 border-[#0E7490]' : 'text-gray-600'}`}
             >
               <List size={16} /> {t('listView')}
             </button>

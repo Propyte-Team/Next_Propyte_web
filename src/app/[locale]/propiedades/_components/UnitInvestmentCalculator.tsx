@@ -188,7 +188,7 @@ export default function UnitInvestmentCalculator({
                     <label className="text-sm font-medium text-gray-700">
                       {t('occupancy')}
                       {airdnaOccupancy != null && (
-                        <span className="ml-2 text-2xs font-bold text-[#0F766E] bg-propyte-cyan-100 px-2 py-0.5 rounded-full">Data</span>
+                        <span className="ml-2 text-2xs font-bold text-[#0E7490] bg-propyte-cyan-100 px-2 py-0.5 rounded-full">Data</span>
                       )}
                     </label>
                     <span className="text-sm font-bold text-[#2C2C2C]">{occupancyVac.toFixed(0)}%</span>

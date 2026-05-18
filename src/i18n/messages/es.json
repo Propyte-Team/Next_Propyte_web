@@ -128,10 +128,72 @@
     "cta": "Ver metodología completa"
   },
   "processInfographic": {
-    "eyebrow": "Proceso de compra Propyte",
-    "title": "De la primera llamada a la escrituración",
-    "placeholderText": "Infografía en preparación — la próxima actualización incluirá los pasos del proceso documentado paso a paso, desde el primer contacto hasta la entrega de llaves.",
-    "placeholderHint": "Espacio reservado"
+    "eyebrow": "La inteligencia detrás de cada decisión inmobiliaria",
+    "title": "Inversión Inmobiliaria:",
+    "titleAccent": "¿Navegar Solo o Decidir con un Sistema?",
+    "startNode": {
+      "tag": "Todos inician igual",
+      "title": "Búsqueda en portales y redes.",
+      "desc": "Cualquier inversionista parte del mismo punto. La diferencia está en lo que pasa después: navegar sin guía, o decidir con un sistema."
+    },
+    "panelA": {
+      "badge": "A",
+      "name": "Sin Propyte",
+      "subtitle": "Navega solo",
+      "steps": [
+        { "n": "01", "title": "Se satura con decenas de opciones.", "desc": "La sobreoferta genera parálisis por análisis y confusión." },
+        { "n": "02", "title": "Lo bombardean varios asesores.", "desc": "Llamadas y mensajes de agentes con intereses dispersos." },
+        { "n": "03", "title": "Visita propiedades sin criterio.", "desc": "Recorridos aleatorios sin una métrica de comparación." },
+        { "n": "04", "title": "Compra por marketing, no por datos.", "desc": "Decisión basada en renders y frases, sin análisis financiero real." },
+        { "n": "05", "title": "Recibe la propiedad sin saber qué hacer.", "desc": "Solo para gestionar trámites, mobiliario o rentas." },
+        { "n": "06", "title": "Termina arrepentido.", "desc": "Sin acompañamiento experto ni visión de largo plazo." }
+      ],
+      "result": {
+        "label": "Resultado",
+        "title": "Decides solo, con lo que encuentras.",
+        "desc": "Un proceso reactivo donde el inversionista asume todo el riesgo sin herramientas de control."
+      },
+      "afterEnd": {
+        "title": "Se queda sin guía.",
+        "desc": "El proceso termina aquí. Sin acompañamiento post-firma."
+      }
+    },
+    "panelB": {
+      "badge": "B",
+      "name": "Con Propyte",
+      "subtitle": "Navega con un sistema",
+      "steps": [
+        { "n": "01", "title": "Entendemos tu perfil.", "desc": "Análisis inicial de tu situación, objetivos y perfil de inversionista.", "win": "Perfil claro" },
+        { "n": "02", "title": "Te explicamos el mercado.", "desc": "Primero el contexto, después el producto. Te mostramos solo en lo que nosotros invertiríamos.", "win": "Decisión informada" },
+        { "n": "03", "title": "Visitas + comparativo claro.", "desc": "Recorridos coordinados con análisis lado a lado para elegir con criterio.", "win": "Tiempo ahorrado" },
+        { "n": "04", "title": "Negociamos con datos.", "desc": "Números, comparables y evidencia real como argumento de compra — no intuición.", "key": true, "win": "Mejor precio cerrado" },
+        { "n": "05", "title": "Te acompañamos hasta la entrega.", "desc": "Firma, escrituración y entrega supervisada con checklist técnico en mano.", "win": "Sin sorpresas" },
+        { "n": "06", "title": "Partners de confianza.", "desc": "Red de interioristas y operadores para que tu inversión genere desde el primer día.", "win": "Renta desde día 1" },
+        { "n": "07", "title": "También te acompañamos a vender.", "desc": "Asesoría estratégica cuando convenga capitalizar la ganancia.", "win": "Capitalizas mejor" }
+      ],
+      "result": {
+        "label": "Resultado",
+        "title": "Decides con un sistema.",
+        "desc": "Una experiencia inteligente y eficiente donde la tecnología y los datos potencian cada decisión."
+      },
+      "keyTag": "Clave"
+    },
+    "tangibleDiff": {
+      "eyebrow": "Diferencia tangible",
+      "title": "Lo que ganas con Propyte",
+      "stats": [
+        { "value": "+25%", "label": "plusvalía promedio" },
+        { "value": "3 meses", "label": "tiempo ahorrado en búsqueda" },
+        { "value": "0", "label": "sorpresas en la entrega" },
+        { "value": "1:1", "label": "asesor dedicado" }
+      ]
+    },
+    "pillars": [
+      { "before": "", "strong": "Menos incertidumbre,", "after": " más claridad." },
+      { "before": "Decisiones basadas en ", "strong": "datos, no en suposiciones.", "after": "" },
+      { "before": "Ahorro de ", "strong": "tiempo, esfuerzo y dinero.", "after": "" },
+      { "before": "Mejores resultados, ", "strong": "inversión más rentable.", "after": "" }
+    ]
   },
   "dondeEstamos": {
     "eyebrow": "Dónde estamos",

@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   headerLogoAccent: {
-    color: '#0D9488',
+    color: '#0E7490',
   },
   headerMeta: {
     fontSize: 8,
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   letterHeading: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#0D9488',
+    color: '#0E7490',
     marginBottom: 8,
     paddingBottom: 4,
     borderBottom: 1,

@@ -50,8 +50,8 @@ export default function MortgageCalculator() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#5CE0D2]/10 rounded-full mb-3">
-            <Calculator size={14} className="text-[#0F766E]" />
-            <span className="text-[#0F766E] text-xs font-semibold uppercase tracking-wide">
+            <Calculator size={14} className="text-[#0E7490]" />
+            <span className="text-[#0E7490] text-xs font-semibold uppercase tracking-wide">
               {t('eyebrow')}
             </span>
           </div>
@@ -188,7 +188,7 @@ function Slider({
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-semibold text-[#1A2F3F]">{label}</label>
-        <span className="text-sm font-bold text-[#0F766E] tabular-nums">{format(value)}</span>
+        <span className="text-sm font-bold text-[#0E7490] tabular-nums">{format(value)}</span>
       </div>
       <input
         type="range"

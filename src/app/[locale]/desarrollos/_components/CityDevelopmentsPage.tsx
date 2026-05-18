@@ -88,11 +88,11 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       />
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4">
         <nav className="flex items-center gap-1 text-xs text-gray-600 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#0F766E]">
+          <Link href={`/${locale}`} className="hover:text-[#0E7490]">
             {t('breadcrumbHome')}
           </Link>
           <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0F766E]">
+          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">
             {t('breadcrumbDevelopments')}
           </Link>
           <ChevronRight size={12} />
@@ -109,16 +109,16 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         {count > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-[#0F766E]">{count}</div>
+              <div className="text-2xl font-bold text-[#0E7490]">{count}</div>
               <div className="text-xs text-gray-600">{t('stat_developments')}</div>
             </div>
             <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-[#0F766E]">{zones.length}</div>
+              <div className="text-2xl font-bold text-[#0E7490]">{zones.length}</div>
               <div className="text-xs text-gray-600">{t('stat_zones')}</div>
             </div>
             {minPrice > 0 && (
               <div className="bg-propyte-cyan-100/60 rounded-xl p-4 text-center col-span-2">
-                <div className="text-lg font-bold text-[#0F766E]">{formatPrice(minPrice)}</div>
+                <div className="text-lg font-bold text-[#0E7490]">{formatPrice(minPrice)}</div>
                 <div className="text-xs text-gray-600">{t('stat_startingFrom')}</div>
               </div>
             )}
@@ -177,7 +177,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
                 </div>
               </div>
               <div className="p-4">
-                <h3 className="font-bold text-gray-900 group-hover:text-[#0F766E] transition-colors line-clamp-1">
+                <h3 className="font-bold text-gray-900 group-hover:text-[#0E7490] transition-colors line-clamp-1">
                   {dev.name}
                 </h3>
                 <div className="flex items-center gap-1 mt-1 text-sm text-gray-600">
