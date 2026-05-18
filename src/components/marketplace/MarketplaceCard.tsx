@@ -84,8 +84,9 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           })
         }
       >
-        {/* Image with carousel */}
-        <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
+        {/* Image with carousel — aspect 9/4 (panorámico) para que el split
+            map+list /propiedades muestre 4 cards completas a 1920x900. */}
+        <div className="relative aspect-[9/4] overflow-hidden bg-gray-100">
           {property.images.map((src, i) => (
             <div
               key={i}
@@ -283,7 +284,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
         </div>
 
         {/* Info */}
-        <div className="p-4">
+        <div className="p-3">
           {/* Price + $/m² (+ strikethrough when discounted) */}
           <div className="flex items-baseline gap-2 flex-wrap">
             <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">{formattedPrice}</span>
@@ -359,14 +360,14 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           )}
 
           {/* Address */}
-          <div className="flex items-center gap-1.5 text-sm text-[var(--propyte-dark-700)] mt-1.5 line-clamp-1">
+          <div className="flex items-center gap-1.5 text-sm text-[var(--propyte-dark-700)] mt-1 line-clamp-1">
             <MapPin size={12} className="flex-shrink-0" />
             {property.location.zone}, {property.location.city}
           </div>
 
           {/* Developer attribution */}
           {property.developer && (
-            <div className="text-2xs text-gray-600 mt-1.5">{property.developer}</div>
+            <div className="text-2xs text-gray-600 mt-1">{property.developer}</div>
           )}
 
           {/* Investment metrics row */}

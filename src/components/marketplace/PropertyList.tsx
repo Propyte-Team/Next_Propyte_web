@@ -66,7 +66,7 @@ export default function PropertyList({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b bg-white">
+      <div className="flex items-center justify-between px-3 py-2 border-b bg-white">
         <span className="text-sm font-semibold text-[#2C2C2C]">
           {t('results', { count: properties.length })}
         </span>
@@ -94,7 +94,7 @@ export default function PropertyList({
             <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3">
             {properties.map((property, i) => (
               <MarketplaceCard key={property.id} property={property} priority={i < 6} />
             ))}
