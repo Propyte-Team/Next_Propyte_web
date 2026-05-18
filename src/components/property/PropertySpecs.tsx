@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
-import { Bed, Bath, Maximize, Home, Calendar, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import { PiBed, PiBath, PiArea, PiHome, PiCalendar } from '@/components/icons/PropyteIcons';
 import type { Property } from '@/types/property';
 
 interface PropertySpecsProps {
@@ -19,12 +20,12 @@ export default function PropertySpecs({ property }: PropertySpecsProps) {
   };
 
   const specs = [
-    property.specs.bedrooms > 0 && { icon: Bed, label: t('bedrooms'), value: property.specs.bedrooms },
-    property.specs.bathrooms > 0 && { icon: Bath, label: t('bathrooms'), value: property.specs.bathrooms },
-    { icon: Maximize, label: t('area'), value: `${property.specs.area.toLocaleString('es-MX')} m²` },
-    { icon: Home, label: t('type'), value: safeType(property.specs.type) },
-    { icon: Calendar, label: t('stage'), value: safeStage(property.stage) },
-  ].filter(Boolean) as { icon: typeof Bed; label: string; value: string | number }[];
+    property.specs.bedrooms > 0 && { icon: PiBed, label: t('bedrooms'), value: property.specs.bedrooms },
+    property.specs.bathrooms > 0 && { icon: PiBath, label: t('bathrooms'), value: property.specs.bathrooms },
+    { icon: PiArea, label: t('area'), value: `${property.specs.area.toLocaleString('es-MX')} m²` },
+    { icon: PiHome, label: t('type'), value: safeType(property.specs.type) },
+    { icon: PiCalendar, label: t('stage'), value: safeStage(property.stage) },
+  ].filter(Boolean) as { icon: typeof PiBed; label: string; value: string | number }[];
 
   return (
     <div>

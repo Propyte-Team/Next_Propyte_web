@@ -4,7 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { MapPin, Mail, Instagram, Facebook } from 'lucide-react';
+import { Mail, Instagram, Facebook } from 'lucide-react';
+import { PiMapPin } from '@/components/icons/PropyteIcons';
 import { reopenBanner } from '@/lib/cookies/consent';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
@@ -164,7 +165,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('contact')}</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-white/70">
-                <MapPin size={14} className="mt-0.5 flex-shrink-0" />
+                <PiMapPin size={14} className="mt-0.5 flex-shrink-0" />
                 <span>{address}</span>
               </li>
               <li className="flex items-center gap-2 text-sm text-white/70">

@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Heart, ChevronLeft, ChevronRight, MapPin, TrendingUp, Download, GitCompare } from 'lucide-react';
+import { Heart, ChevronLeft, ChevronRight, GitCompare } from 'lucide-react';
+import { PiMapPin, PiTrend, PiDownload } from '@/components/icons/PropyteIcons';
 import { motion } from 'framer-motion';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -209,7 +210,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 aria-label={tMkt('cardBrochure')}
                 title={tMkt('cardBrochure')}
               >
-                <Download size={14} strokeWidth={2.25} className="text-[#1A2F3F]" />
+                <PiDownload size={14} className="text-[#1A2F3F]" />
               </button>
             )}
             <button
@@ -361,7 +362,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Address */}
           <div className="flex items-center gap-1.5 text-sm text-[var(--propyte-dark-700)] mt-1 line-clamp-1">
-            <MapPin size={12} className="flex-shrink-0" />
+            <PiMapPin size={12} className="flex-shrink-0" />
             {property.location.zone}, {property.location.city}
           </div>
 
@@ -379,7 +380,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             )}
             {property.roi.appreciation > 0 && (
               <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
-                <TrendingUp size={10} />
+                <PiTrend size={10} />
                 +{property.roi.appreciation}% {tMkt('cardAppreciation')}
               </span>
             )}

@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, X } from 'lucide-react';
+import { PiSearch as Search } from '@/components/icons/PropyteIcons';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';

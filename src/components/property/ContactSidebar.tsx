@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { MessageCircle, Calendar, Clock, Phone, Shield, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
+import {
+  PiChat as MessageCircle,
+  PiCalendar as Calendar,
+  PiClock as Clock,
+  PiPhone as Phone,
+  PiShield as Shield,
+} from '@/components/icons/PropyteIcons';
 import type { Property } from '@/types/property';
 import { formatPrice } from '@/lib/formatters';
 import ContactForm from './ContactForm';

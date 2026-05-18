@@ -6,10 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
-  Home,
-  Building2,
   Key,
-  Globe,
   Store,
   Menu as MenuIcon,
   Award,
@@ -18,6 +15,11 @@ import {
   Zap,
   Layout as LayoutIcon,
 } from 'lucide-react';
+import {
+  PiHome as Home,
+  PiBuilding as Building2,
+  PiGlobe as Globe,
+} from '@/components/icons/PropyteIcons';
 import { isNavActive } from '@/lib/nav/isActive';
 import { useIsVisible } from '@/context/SiteVisibilityContext';
 import { VISIBILITY_KEYS } from '@/lib/visibility';

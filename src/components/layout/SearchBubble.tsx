@@ -3,7 +3,8 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { Building2, Key, ChevronDown, Search } from 'lucide-react';
+import { Key, ChevronDown } from 'lucide-react';
+import { PiBuilding, PiSearch } from '@/components/icons/PropyteIcons';
 import { useSearchType } from '@/context/SearchContext';
 
 interface SearchBubbleProps {
@@ -92,7 +93,7 @@ export default function SearchBubble({
               }}
               className="search-type-option flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-left text-[#2C2C2C] hover:bg-gray-50 transition-colors"
             >
-              <Building2 size={16} strokeWidth={1.75} className="shrink-0" />
+              <PiBuilding size={16} className="shrink-0" />
               {t('searchTypeDev')}
             </button>
             <button
@@ -138,7 +139,7 @@ export default function SearchBubble({
         aria-label={t('search')}
         className={`search-bubble-btn flex items-center justify-center ${btnSizeCls} rounded-full bg-[#A2F9FF] hover:bg-[#7DEAF2] text-[#0F1923] shrink-0 transition-all hover:scale-105`}
       >
-        <Search size={isMobile ? 16 : 18} strokeWidth={2} />
+        <PiSearch size={isMobile ? 16 : 18} />
       </button>
     </form>
   );
