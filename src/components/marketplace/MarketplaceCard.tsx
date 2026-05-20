@@ -273,11 +273,15 @@ export default function MarketplaceCard({
           )}
         </div>
 
-        {/* Info — padding y gaps reducidos en compact para máxima densidad. */}
-        <div className={variant === 'compact' ? 'p-2' : 'p-3'}>
-          {/* Price — "Desde" chiquito + monto grande + "MXN/USD" chiquito.
-              Currency dinámica desde toggle global (rate Banxico). */}
-          <div className="flex items-baseline gap-1.5 flex-wrap">
+        {/* Info — rhythm vertical consistente via flex gap, no mt-* dispersos.
+            UI/UX: cada cluster en su propia fila, separadores generosos,
+            sin información acumulada en una sola línea. */}
+        <div
+          className={`flex flex-col ${variant === 'compact' ? 'p-2.5 gap-1.5' : 'p-3 gap-1.5'}`}
+        >
+          {/* Row 1 — Precio destacado. "Desde" + monto + currency.
+              En compact el monto sigue prominente (text-lg) para jerarquía. */}
+          <div className="flex items-baseline gap-2 flex-wrap">
             {formattedPriceMin && (
               <>
                 <span className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -285,7 +289,7 @@ export default function MarketplaceCard({
                 </span>
                 <span
                   data-testid="marketplace-card-price"
-                  className={`font-bold text-[var(--propyte-dark-900)] tabular-nums ${variant === 'compact' ? 'text-base' : 'text-xl'}`}
+                  className={`font-bold text-[var(--propyte-dark-900)] tabular-nums leading-none ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
                 >
                   {formattedPriceMin}
                 </span>
@@ -311,31 +315,24 @@ export default function MarketplaceCard({
             )}
           </div>
 
-          {/* Tipo desarrollo — chip dedicado en info section. */}
-          {devTypeLabel && (
-            <div className={variant === 'compact' ? 'mt-0.5' : 'mt-1'}>
-              <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
-                {devTypeLabel}
-              </span>
-            </div>
-          )}
-
-          {/* Bedrooms range (developments) */}
+          {/* Row 2 — Bedrooms range (developments) */}
           {bedroomsLabel && (
-            <div className={`text-sm text-[var(--propyte-dark-700)] font-semibold tabular-nums ${variant === 'compact' ? 'mt-0.5' : 'mt-1'}`}>
+            <div className={`text-[var(--propyte-dark-700)] font-semibold tabular-nums ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
               {bedroomsLabel}
             </div>
           )}
 
-          {/* Specs (units): bedrooms | bathrooms | area */}
+          {/* Row 2 — Specs (units): rec | ba | m² con separadores generosos.
+              UI/UX: `mx-2` en pipes para visual breathing, items-center alinea
+              numéricos con labels. */}
           {(property.specs.bedrooms > 0 || property.specs.bathrooms > 0 || property.specs.area > 0) && (
-            <div className={`flex items-center gap-1 text-[var(--propyte-dark-700)] ${variant === 'compact' ? 'text-sm mt-0.5' : 'text-base mt-1'}`}>
+            <div className={`flex items-center text-[var(--propyte-dark-700)] tabular-nums ${variant === 'compact' ? 'text-xs gap-1' : 'text-base gap-1'}`}>
               {property.specs.bedrooms > 0 && (
                 <>
                   <span className="font-semibold">{property.specs.bedrooms}</span>
                   <span className="text-gray-600">{tMkt('cardBedShort')}</span>
                   {(property.specs.bathrooms > 0 || property.specs.area > 0) && (
-                    <span className="text-gray-300 mx-0.5">|</span>
+                    <span className="text-gray-300 mx-2" aria-hidden="true">|</span>
                   )}
                 </>
               )}
@@ -343,7 +340,7 @@ export default function MarketplaceCard({
                 <>
                   <span className="font-semibold">{property.specs.bathrooms}</span>
                   <span className="text-gray-600">{tMkt('cardBathShort')}</span>
-                  {property.specs.area > 0 && <span className="text-gray-300 mx-0.5">|</span>}
+                  {property.specs.area > 0 && <span className="text-gray-300 mx-2" aria-hidden="true">|</span>}
                 </>
               )}
               {property.specs.area > 0 && (
@@ -355,9 +352,18 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Development-only: inventory + delivery — solo grid (compact lo oculta) */}
+          {/* Row 3 — Tipo desarrollo (chip dedicado). Solo development. */}
+          {devTypeLabel && (
+            <div>
+              <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
+                {devTypeLabel}
+              </span>
+            </div>
+          )}
+
+          {/* Row 4 (grid only) — Inventory + delivery */}
           {variant !== 'compact' && property.kind === 'development' && (property.inventory || property.delivery) && (
-            <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
+            <div className="flex items-center gap-2 text-xs text-gray-600">
               {property.inventory && property.inventory.available !== undefined && (
                 <span>
                   {property.inventory.total
@@ -381,53 +387,52 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Address */}
-          <div className={`flex items-center gap-1.5 text-[var(--propyte-dark-700)] line-clamp-1 ${variant === 'compact' ? 'text-xs mt-0.5' : 'text-sm mt-1'}`}>
-            <MapPin size={12} className="flex-shrink-0" />
-            {property.location.zone}, {property.location.city}
+          {/* Row 5 — Ubicación + ROI en línea (justify-between).
+              UI/UX: agrupa contexto geográfico izquierda + métrica derecha.
+              Maximiza uso de ancho, alivia stack vertical. */}
+          <div className={`flex items-center justify-between gap-2 ${variant === 'compact' ? 'mt-auto pt-0.5' : ''}`}>
+            <div className={`flex items-center gap-1.5 text-[var(--propyte-dark-700)] line-clamp-1 min-w-0 ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
+              <MapPin size={12} className="flex-shrink-0" />
+              <span className="truncate">{property.location.zone}, {property.location.city}</span>
+            </div>
+            {variant === 'compact' && property.roi.projected > 0 && (
+              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0">
+                ROI {property.roi.projected}%
+              </span>
+            )}
           </div>
 
-          {/* Developer attribution — oculto en compact por densidad */}
+          {/* Developer attribution — solo grid (compact prioriza densidad) */}
           {variant !== 'compact' && property.developer && (
-            <div className="text-2xs text-gray-600 mt-1">{property.developer}</div>
+            <div className="text-2xs text-gray-600">{property.developer}</div>
           )}
 
-          {/* Investment metrics — compact muestra solo ROI proyectado (chip
-              más relevante para inversor); grid muestra ROI + apreciación
-              + cap rate + revenue. */}
-          {variant === 'compact'
-            ? property.roi.projected > 0 && (
-                <div className="mt-1">
-                  <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
-                    ROI {property.roi.projected}%
-                  </span>
-                </div>
-              )
-            : (
-              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                {property.roi.projected > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
-                    ROI {property.roi.projected}%
-                  </span>
-                )}
-                {property.roi.appreciation > 0 && (
-                  <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
-                    <TrendingUp size={10} />
-                    +{property.roi.appreciation}% {tMkt('cardAppreciation')}
-                  </span>
-                )}
-                {property.capRate != null && property.capRate > 0 && (
-                  <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-2xs font-bold rounded-full tabular-nums">
-                    Cap {property.capRate.toFixed(1)}%
-                  </span>
-                )}
-                {property.annualRevenue != null && property.annualRevenue > 0 && (
-                  <span className="text-2xs text-gray-600 font-medium tabular-nums">
-                    ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
-                  </span>
-                )}
-              </div>
-            )}
+          {/* Investment metrics row — solo grid; compact ya mostró ROI inline arriba */}
+          {variant !== 'compact' && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              {property.roi.projected > 0 && (
+                <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
+                  ROI {property.roi.projected}%
+                </span>
+              )}
+              {property.roi.appreciation > 0 && (
+                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
+                  <TrendingUp size={10} />
+                  +{property.roi.appreciation}% {tMkt('cardAppreciation')}
+                </span>
+              )}
+              {property.capRate != null && property.capRate > 0 && (
+                <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-2xs font-bold rounded-full tabular-nums">
+                  Cap {property.capRate.toFixed(1)}%
+                </span>
+              )}
+              {property.annualRevenue != null && property.annualRevenue > 0 && (
+                <span className="text-2xs text-gray-600 font-medium tabular-nums">
+                  ${(property.annualRevenue / 1000).toFixed(0)}K/{tMkt('cardYearSuffix')}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       </Link>
     </div>
