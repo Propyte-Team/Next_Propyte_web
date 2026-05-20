@@ -149,8 +149,13 @@ export function mapUnitToProperty(row: UnitRow): Property {
       address: row.address || '',
     },
     price: {
+      // `price.mxn` siempre lleva monto en MXN (para sorting/filtros homogéneos
+      // del marketplace). `currency` indica la moneda *de alta* original, y
+      // `usd` el monto en USD cuando aplica. Cards muestran el monto en la
+      // moneda original.
       mxn: row.price_mxn || 0,
-      currency: 'MXN',
+      currency: (row.currency || 'MXN').toUpperCase() === 'USD' ? 'USD' : 'MXN',
+      usd: typeof row.price_usd === 'number' && row.price_usd > 0 ? row.price_usd : undefined,
     },
     specs: {
       bedrooms: row.bedrooms || 0,

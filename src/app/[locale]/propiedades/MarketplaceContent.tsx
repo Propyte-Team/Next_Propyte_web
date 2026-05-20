@@ -87,6 +87,9 @@ export default function MarketplaceContent({
   const isMobile = useIsMobile();
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [mobileView, setMobileView] = useState<'map' | 'list'>('list');
+  // Hover sync map↔card. Solo split layout /propiedades. Card → set; pin → set.
+  // Reset al salir del card o del pin. No causa scroll ni selección.
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
   // guardamos los IDs de las unidades agrupadas y restringimos el listado.
   const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
@@ -216,11 +219,24 @@ export default function MarketplaceContent({
         <div className="flex-1 flex overflow-hidden">
           {!isMobile ? (
             <>
-              <div className="w-[60%] h-full">
-                <MapView properties={filtered} onClusterClick={setClusterFilter} />
+              {/* Split 40/60 (mapa angosto, cards prioritarias). Cambio 2026-05-20
+                  por solicitud Luis — antes era 60/40. */}
+              <div className="w-[40%] h-full">
+                <MapView
+                  properties={filtered}
+                  onClusterClick={setClusterFilter}
+                  hoveredId={hoveredId}
+                  onHover={setHoveredId}
+                />
               </div>
-              <div className="w-[40%] h-full border-l">
-                <PropertyList properties={displayed} sortBy={sortBy} onSortChange={setSortBy} />
+              <div className="w-[60%] h-full border-l">
+                <PropertyList
+                  properties={displayed}
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
+                  hoveredId={hoveredId}
+                  onHover={setHoveredId}
+                />
               </div>
             </>
           ) : (

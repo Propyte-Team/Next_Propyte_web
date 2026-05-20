@@ -505,7 +505,10 @@
     "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas",
     "cardM2Short": "m²",
     "cardAppreciation": "aprec./año",
-    "toggleCurrencyAriaLabel": "Cambiar moneda"
+    "toggleCurrencyAriaLabel": "Cambiar moneda",
+    "cardPriceFrom": "Desde",
+    "cardBedroomsRange": "{min} - {max} rec",
+    "cardBedroomsSingle": "{count} rec"
   },
   "property": {
     "bedrooms": "Recámaras",
@@ -635,6 +638,18 @@
     "townhouse": "Townhouse",
     "local_comercial": "Local",
     "departamentoShort": "Depto"
+  },
+  "developmentTypes": {
+    "residencial-vertical": "Residencial vertical",
+    "residencial-horizontal": "Residencial horizontal",
+    "mixto": "Mixto",
+    "comercial": "Comercial",
+    "hotelero": "Hotelero",
+    "torre-oficinas": "Torre de oficinas",
+    "condominio": "Condominio",
+    "townhouse": "Townhouse",
+    "lotes": "Lotes",
+    "macrolotes": "Macrolotes"
   },
   "availability": {
     "disponible": "Disponible",

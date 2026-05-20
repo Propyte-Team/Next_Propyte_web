@@ -48,6 +48,42 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
       const { data } = await getDevelopments(supabase, { limit: 100, orderBy: 'newest' });
       if (data) {
         rawDevs = data as DevelopmentRow[];
+
+        // Inyectar agregado bedrooms_min/max desde v_units para cada
+        // desarrollo. Una sola query bulk: lee bedrooms por development_id
+        // de las unidades aprobadas, luego MIN/MAX en JS.
+        const devIds = rawDevs.map((d) => d.id);
+        if (devIds.length > 0) {
+          try {
+            const { data: unitsData } = await supabase
+              .schema('real_estate_hub' as 'public')
+              .from('v_units')
+              .select('development_id, bedrooms')
+              .in('development_id', devIds)
+              .not('approved_at', 'is', null);
+            const bedroomsByDev = new Map<string, { min: number; max: number }>();
+            (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
+              if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;
+              const existing = bedroomsByDev.get(u.development_id);
+              if (!existing) {
+                bedroomsByDev.set(u.development_id, { min: u.bedrooms, max: u.bedrooms });
+              } else {
+                existing.min = Math.min(existing.min, u.bedrooms);
+                existing.max = Math.max(existing.max, u.bedrooms);
+              }
+            });
+            rawDevs.forEach((d) => {
+              const br = bedroomsByDev.get(d.id);
+              if (br) {
+                (d as DevelopmentRow & { bedrooms_min?: number; bedrooms_max?: number }).bedrooms_min = br.min;
+                (d as DevelopmentRow & { bedrooms_min?: number; bedrooms_max?: number }).bedrooms_max = br.max;
+              }
+            });
+          } catch (err) {
+            console.error('[DesarrollosPage] bedrooms aggregate failed:', err);
+          }
+        }
+
         properties = rawDevs.map(mapDevelopmentToProperty);
       }
     }

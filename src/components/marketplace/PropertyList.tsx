@@ -14,6 +14,9 @@ interface PropertyListProps {
    * sin altura fija, fluye con el viewport (caso /propiedades).
    */
   variant?: 'compact' | 'grid';
+  /** Hover sync map↔card (solo split /propiedades). */
+  hoveredId?: string | null;
+  onHover?: (id: string | null) => void;
 }
 
 export default function PropertyList({
@@ -21,6 +24,8 @@ export default function PropertyList({
   sortBy,
   onSortChange,
   variant = 'compact',
+  hoveredId,
+  onHover,
 }: PropertyListProps) {
   const t = useTranslations('marketplace');
 
@@ -56,7 +61,13 @@ export default function PropertyList({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-7">
             {properties.map((property, i) => (
-              <MarketplaceCard key={property.id} property={property} priority={i < 8} />
+              <MarketplaceCard
+                key={property.id}
+                property={property}
+                priority={i < 8}
+                hoveredId={hoveredId}
+                onHover={onHover}
+              />
             ))}
           </div>
         )}
@@ -96,7 +107,13 @@ export default function PropertyList({
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3">
             {properties.map((property, i) => (
-              <MarketplaceCard key={property.id} property={property} priority={i < 6} />
+              <MarketplaceCard
+                key={property.id}
+                property={property}
+                priority={i < 6}
+                hoveredId={hoveredId}
+                onHover={onHover}
+              />
             ))}
           </div>
         )}

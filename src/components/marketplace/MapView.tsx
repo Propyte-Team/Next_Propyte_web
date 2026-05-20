@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import { useTranslations } from 'next-intl';
-import { MapPin } from 'lucide-react';
+import { MapPin } from '@/lib/icons';
 import { formatPriceShort } from '@/lib/formatters';
 import type { Property, PropertyLocation } from '@/types/property';
 
@@ -20,6 +20,9 @@ interface MapViewProps {
    * pueda filtrar a solo esas unidades. (Decisión arquitectónica 2026-05-11.)
    */
   onClusterClick?: (propertyIds: string[]) => void;
+  /** Hover sync map↔card. Pin coincidente con `hoveredId` recibe scale+ring. */
+  hoveredId?: string | null;
+  onHover?: (id: string | null) => void;
 }
 
 const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
@@ -50,10 +53,14 @@ function MapContent({
   properties,
   onPropertyClick,
   onClusterClick,
+  hoveredId,
+  onHover,
 }: {
   properties: PropertyWithCoords[];
   onPropertyClick?: (property: Property) => void;
   onClusterClick?: (propertyIds: string[]) => void;
+  hoveredId?: string | null;
+  onHover?: (id: string | null) => void;
 }) {
   const [selected, setSelected] = useState<PropertyWithCoords | null>(null);
 
@@ -92,6 +99,7 @@ function MapContent({
         if (group.properties.length === 1) {
           // Single property → marker normal con precio
           const property = group.properties[0];
+          const isHovered = hoveredId === property.id;
           return (
             <AdvancedMarker
               key={property.id}
@@ -99,8 +107,12 @@ function MapContent({
               onClick={() => handleMarkerClick(property)}
             >
               <div
-                className="bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-colors"
-                style={{ boxShadow: '0 2px 6px rgba(0,0,0,0.2)' }}
+                className={`bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-all duration-150 ${
+                  isHovered ? 'scale-[1.2] ring-2 ring-propyte-brand ring-offset-1 z-10 relative' : ''
+                }`}
+                style={{ boxShadow: isHovered ? '0 4px 12px rgba(162, 249, 255, 0.5)' : '0 2px 6px rgba(0,0,0,0.2)' }}
+                onMouseEnter={onHover ? () => onHover(property.id) : undefined}
+                onMouseLeave={onHover ? () => onHover(null) : undefined}
               >
                 {formatPriceShort(property.price.mxn)}
               </div>
@@ -173,7 +185,7 @@ function MapContent({
 // ─────────────────────────────────────────────────────
 // Main MapView
 // ─────────────────────────────────────────────────────
-export default function MapView({ properties, onPropertyClick, onClusterClick }: MapViewProps) {
+export default function MapView({ properties, onPropertyClick, onClusterClick, hoveredId, onHover }: MapViewProps) {
   const t = useTranslations('marketplace');
   const [error, setError] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -183,7 +195,7 @@ export default function MapView({ properties, onPropertyClick, onClusterClick }:
       <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
         <div className="text-center p-8">
           <div className="w-16 h-16 mx-auto mb-4 bg-[#1A2F3F]/10 rounded-full flex items-center justify-center">
-            <MapPin size={24} strokeWidth={2} className="text-[#1A2F3F]" />
+            <MapPin size={24} className="text-[#1A2F3F]" />
           </div>
           <p className="text-gray-600 font-medium">{t('mapApiKeyMissing')}</p>
           <p className="text-sm text-gray-600 mt-1">{t('mapApiKeyHint')}</p>
@@ -235,6 +247,8 @@ export default function MapView({ properties, onPropertyClick, onClusterClick }:
           properties={validProperties}
           onPropertyClick={onPropertyClick}
           onClusterClick={onClusterClick}
+          hoveredId={hoveredId}
+          onHover={onHover}
         />
       </Map>
     </APIProvider>

@@ -9,7 +9,13 @@ export interface PropertyLocation {
 
 export interface PropertyPrice {
   mxn: number;
-  currency: 'MXN';
+  /** Moneda en la que el desarrollo/unidad está dada de alta. UI debe mostrarla
+   *  junto al monto: "$9,500,000 MXN" o "$450,000 USD". */
+  currency: 'MXN' | 'USD';
+  /** Cuando currency='USD', el monto original en USD (price.mxn igual lleva
+   *  el valor en MXN para sorting/filtering consistente).
+   *  Cuando currency='MXN', es undefined. */
+  usd?: number;
 }
 
 export interface PropertySpecs {
@@ -55,6 +61,19 @@ export interface PropertyMedia {
 
 export type PropertyKind = 'development' | 'unit';
 
+/** Tipos canónicos de desarrollo según Manual de Identidad Propyte + Hub form. */
+export type DevelopmentType =
+  | 'residencial-vertical'
+  | 'residencial-horizontal'
+  | 'mixto'
+  | 'comercial'
+  | 'hotelero'
+  | 'torre-oficinas'
+  | 'condominio'
+  | 'townhouse'
+  | 'lotes'
+  | 'macrolotes';
+
 export interface PropertyInventory {
   available?: number;
   total?: number;
@@ -91,8 +110,20 @@ export interface Property {
   developerSlug?: string;
   location: PropertyLocation;
   price: PropertyPrice;
-  priceMax?: number;  // price ceiling (v_developments.price_max_mxn)
+  priceMax?: number;  // price ceiling (v_developments.price_max_mxn) en MXN
+  priceMaxUsd?: number;  // price ceiling en USD cuando currency='USD'
   specs: PropertySpecs;
+  /**
+   * Catálogo canónico de tipo de desarrollo (Manual de Identidad Propyte +
+   * Hub form). Solo aplica a kind='development'. Valores: 'residencial-vertical',
+   * 'residencial-horizontal', 'mixto', 'comercial', 'hotelero', 'torre-oficinas',
+   * 'condominio', 'townhouse', 'lotes', 'macrolotes'. Mapeo se hace en
+   * `mapDevelopmentToProperty` para tolerar legacy/dirty values en BD.
+   */
+  developmentType?: DevelopmentType;
+  /** Rango de recámaras agregado desde v_units (kind='development' only). */
+  bedroomsMin?: number;
+  bedroomsMax?: number;
   stage: PropertyStage;
   usage: PropertyUsage[];
   amenities: string[];

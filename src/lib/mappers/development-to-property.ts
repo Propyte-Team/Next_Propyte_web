@@ -1,4 +1,11 @@
-import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo } from '@/types/property';
+import type {
+  Property,
+  PropertyStage,
+  PropertyUsage,
+  PropertyBadge,
+  PropertyPromo,
+  DevelopmentType,
+} from '@/types/property';
 
 /**
  * Raw row from `real_estate_hub.v_developments`.
@@ -31,6 +38,7 @@ export interface DevelopmentRow {
   currency: string | null;
   // Meta/classification
   stage: string | null;
+  development_type: string | null;
   property_types: string[] | null;
   usage: string[] | null;
   amenities: string[] | null;
@@ -95,6 +103,39 @@ function normalizeStage(raw: string | null | undefined): PropertyStage | null {
 }
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
+
+/**
+ * Normaliza `development_type` (texto sucio en BD: 'vertical', 'preventa',
+ * 'Residencial vertical', 'mixto', etc.) al catálogo canónico. Retorna
+ * `undefined` cuando no hay match → la card no muestra el chip de tipo.
+ *
+ * BD plan de limpieza (entregado al usuario 2026-05-20):
+ *   - vertical → residencial-vertical
+ *   - mixto → mixto
+ *   - preventa → null (legacy stage misplaced en columna type)
+ *   - Residencial vertical → residencial-vertical
+ */
+function normalizeDevelopmentType(raw: string | null | undefined): DevelopmentType | undefined {
+  if (!raw) return undefined;
+  const lower = raw.toLowerCase().trim();
+  // Direct canonical matches
+  if (lower === 'residencial-vertical' || lower === 'residencial vertical' || lower === 'vertical') {
+    return 'residencial-vertical';
+  }
+  if (lower === 'residencial-horizontal' || lower === 'residencial horizontal' || lower === 'horizontal') {
+    return 'residencial-horizontal';
+  }
+  if (lower === 'mixto') return 'mixto';
+  if (lower === 'comercial') return 'comercial';
+  if (lower === 'hotelero' || lower === 'hotel') return 'hotelero';
+  if (lower === 'torre-oficinas' || lower === 'torre de oficinas' || lower === 'oficinas') return 'torre-oficinas';
+  if (lower === 'condominio') return 'condominio';
+  if (lower === 'townhouse' || lower === 'town-house') return 'townhouse';
+  if (lower === 'lotes' || lower === 'lote') return 'lotes';
+  if (lower === 'macrolotes' || lower === 'macrolote') return 'macrolotes';
+  // Legacy stage misplaced in type column → ignore
+  return undefined;
+}
 
 /**
  * Maps a Supabase v_developments row to the UI Property type (kind='development').
@@ -182,9 +223,12 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
     },
     price: {
       mxn: row.price_min_mxn || 0,
-      currency: 'MXN',
+      currency: (row.currency || 'MXN').toUpperCase() === 'USD' ? 'USD' : 'MXN',
     },
     priceMax: row.price_max_mxn ?? undefined,
+    developmentType: normalizeDevelopmentType(row.development_type as string | null | undefined),
+    bedroomsMin: typeof row.bedrooms_min === 'number' && row.bedrooms_min > 0 ? row.bedrooms_min : undefined,
+    bedroomsMax: typeof row.bedrooms_max === 'number' && row.bedrooms_max > 0 ? row.bedrooms_max : undefined,
     specs: {
       // Developments have no single unit's specs — surfaced only for units
       bedrooms: 0,

@@ -4,41 +4,78 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Heart, ChevronLeft, ChevronRight, GitCompare } from 'lucide-react';
-import { PiMapPin, PiTrend, PiDownload } from '@/components/icons/PropyteIcons';
-import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, GitCompare, MapPin, TrendingUp } from '@/lib/icons';
 import type { Property, PropertyBadge } from '@/types/property';
-import { useCurrency } from '@/context/CurrencyContext';
-import { useFavorites } from '@/hooks/useFavorites';
 import { useCompare } from '@/hooks/useCompare';
 import { toast } from 'sonner';
-import { trackAddToWishlist, trackFileDownload, trackSelectContent } from '@/lib/analytics/track';
+import { trackSelectContent } from '@/lib/analytics/track';
 
 interface MarketplaceCardProps {
   property: Property;
   priority?: boolean;
+  /**
+   * Sync hover map↔card (solo split /propiedades). Cuando el id de esta card
+   * coincide con `hoveredId`, se aplica ring brand + lift. El padre maneja
+   * el state compartido entre MapView y PropertyList.
+   */
+  hoveredId?: string | null;
+  onHover?: (id: string | null) => void;
 }
 
-export default function MarketplaceCard({ property, priority = false }: MarketplaceCardProps) {
+/**
+ * Formatea un monto en su moneda *de alta* (sin convertir). Listados muestran
+ * la moneda original — el toggle global MXN/USD del CurrencyContext aplica
+ * a fichas detalle, no aquí. Decisión 2026-05-20 (Luis).
+ */
+function formatPriceOriginal(amount: number, currency: 'MXN' | 'USD', locale: string): string {
+  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
+  return new Intl.NumberFormat(intlLocale, {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
+
+export default function MarketplaceCard({
+  property,
+  priority = false,
+  hoveredId,
+  onHover,
+}: MarketplaceCardProps) {
   const locale = useLocale();
   const tStages = useTranslations('stages');
   const tMkt = useTranslations('marketplace');
   const tTypes = useTranslations('types');
-  const { format } = useCurrency();
+  const tDevTypes = useTranslations('developmentTypes');
   const safeStage = (s: string) => {
     try { return tStages(s as 'preventa'); } catch { return s; }
   };
   const safeType = (t: string) => {
     try { return tTypes(t as 'departamento'); } catch { return t; }
   };
+  const safeDevType = (t: string) => {
+    try { return tDevTypes(t as 'mixto'); } catch { return t; }
+  };
   const [currentImg, setCurrentImg] = useState(0);
-  const { isFavorite, toggle: toggleFavorite } = useFavorites();
-  const saved = isFavorite(property.id);
   const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
   const comparing = isComparing(property.id);
 
-  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
-  const formattedPrice = format(property.price.mxn);
+  // Currency original — para desarrollos venir 'MXN' siempre por ahora;
+  // para units puede ser USD cuando price_usd está presente.
+  const isUsd = property.price.currency === 'USD';
+  const priceMinAmount = isUsd && property.price.usd != null ? property.price.usd : property.price.mxn;
+  const priceMaxAmount = isUsd
+    ? property.priceMaxUsd ?? null
+    : property.priceMax ?? null;
+
+  const formattedPriceMin = priceMinAmount > 0
+    ? formatPriceOriginal(priceMinAmount, property.price.currency, locale)
+    : null;
+  const formattedPriceMax = priceMaxAmount != null && priceMaxAmount > priceMinAmount
+    ? formatPriceOriginal(priceMaxAmount, property.price.currency, locale)
+    : null;
+  const hasPriceRange = !!formattedPriceMax;
+
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
   // Price strikethrough — show pre-discount price when meaningfully higher than current.
@@ -46,7 +83,9 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
     typeof property.priceOriginal === 'number' &&
     property.priceOriginal > property.price.mxn &&
     property.price.mxn > 0;
-  const formattedOriginal = hasDiscount ? format(property.priceOriginal!) : null;
+  const formattedOriginal = hasDiscount
+    ? formatPriceOriginal(property.priceOriginal!, property.price.currency, locale)
+    : null;
   const discountPct = hasDiscount
     ? Math.round(((property.priceOriginal! - property.price.mxn) / property.priceOriginal!) * 100)
     : 0;
@@ -72,8 +111,31 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
   const detailBase = property.kind === 'unit' ? 'propiedades' : 'desarrollos';
 
+  // Hover sync ring + lift (split /propiedades only). Cuando hoveredId
+  // coincide: outline brand cyan visible + subtle translate-y.
+  const isHovered = hoveredId === property.id;
+  const hoverHighlightClass = isHovered
+    ? 'ring-2 ring-propyte-brand ring-offset-2 ring-offset-transparent -translate-y-0.5'
+    : '';
+
+  // Tipo desarrollo chip — solo para kind='development' con valor canónico.
+  const devTypeLabel = property.kind === 'development' && property.developmentType
+    ? safeDevType(property.developmentType)
+    : null;
+
+  // Rango bedrooms — solo desarrollos con datos agregados en page query.
+  const bedroomsLabel = property.kind === 'development' && property.bedroomsMin != null
+    ? (property.bedroomsMax != null && property.bedroomsMax > property.bedroomsMin
+        ? tMkt('cardBedroomsRange', { min: property.bedroomsMin, max: property.bedroomsMax })
+        : tMkt('cardBedroomsSingle', { count: property.bedroomsMin }))
+    : null;
+
   return (
-    <div className="propyte-card-glass-light propyte-card-hover-glow overflow-hidden group">
+    <div
+      className={`propyte-card-glass-light propyte-card-hover-glow overflow-hidden group transition-transform duration-150 ${hoverHighlightClass}`}
+      onMouseEnter={onHover ? () => onHover(property.id) : undefined}
+      onMouseLeave={onHover ? () => onHover(null) : undefined}
+    >
       <Link
         href={`/${locale}/${detailBase}/${property.slug}`}
         className="block"
@@ -85,9 +147,9 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
           })
         }
       >
-        {/* Image with carousel — aspect 9/4 (panorámico) para que el split
-            map+list /propiedades muestre 4 cards completas a 1920x900. */}
-        <div className="relative aspect-[9/4] overflow-hidden bg-gray-100">
+        {/* Image carousel — aspect 16/9 (~1.78:1). Subido de 9/4 (2.25:1)
+            para evitar overlap entre flechas de galería y botón compare. */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
           {property.images.map((src, i) => (
             <div
               key={i}
@@ -151,68 +213,9 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             </div>
           )}
 
-          {/* Top-right action stack: Save heart + Brochure download.
-              Layout horizontal para evitar que la 3ra acción (compare) baje
-              hasta el área del carousel arrow centrado vertical (overlap). */}
+          {/* Top-right action stack — solo Compare (Heart y Brochure quitados
+              2026-05-20 por solicitud Luis). */}
           <div className="absolute top-2 right-2 flex flex-row gap-1.5">
-            <motion.button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const wasSaved = saved;
-                toggleFavorite(property.id);
-                // Fire only on the off→on transition; un-saving isn't a wishlist signal.
-                if (!wasSaved) {
-                  trackAddToWishlist({
-                    itemId: property.id,
-                    itemName: property.name,
-                    itemKind: property.kind ?? 'development',
-                    priceMxn: property.price.mxn || undefined,
-                  });
-                }
-              }}
-              whileTap={{ scale: 0.85 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 17 }}
-              className="w-11 h-11 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded-full"
-              aria-label={tMkt('cardSave')}
-              aria-pressed={saved}
-            >
-              <motion.span
-                key={String(saved)}
-                initial={{ scale: 0.6 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 12 }}
-                className="inline-flex"
-              >
-                <Heart
-                  size={20}
-                  className={`drop-shadow-md transition-colors ${saved ? 'fill-red-500 text-red-500' : 'fill-transparent text-white hover:text-red-300'}`}
-                  strokeWidth={2}
-                />
-              </motion.span>
-            </motion.button>
-            {property.assets?.brochure && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  trackFileDownload({
-                    fileType: 'brochure',
-                    fileUrl: property.assets!.brochure!,
-                    propertyId: property.id,
-                    propertySlug: property.slug,
-                  });
-                  window.open(property.assets!.brochure!, '_blank', 'noopener,noreferrer');
-                }}
-                className="w-11 h-11 flex items-center justify-center bg-white/85 hover:bg-white rounded-full shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
-                aria-label={tMkt('cardBrochure')}
-                title={tMkt('cardBrochure')}
-              >
-                <PiDownload size={14} className="text-[#1A2F3F]" />
-              </button>
-            )}
             <button
               type="button"
               onClick={(e) => {
@@ -262,6 +265,11 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
                 {safeType(property.specs.type)}
               </span>
             )}
+            {devTypeLabel && (
+              <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
+                {devTypeLabel}
+              </span>
+            )}
           </div>
 
           {/* Photo indicator dots */}
@@ -286,9 +294,16 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
         {/* Info */}
         <div className="p-3">
-          {/* Price + $/m² (+ strikethrough when discounted) */}
+          {/* Price — rango (min - max) en moneda original; o "Desde X" cuando no
+              hay max definido; o solo X si min=max. */}
           <div className="flex items-baseline gap-2 flex-wrap">
-            <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">{formattedPrice}</span>
+            {formattedPriceMin && (
+              <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">
+                {hasPriceRange
+                  ? `${formattedPriceMin} ${property.price.currency} - ${formattedPriceMax} ${property.price.currency}`
+                  : `${formattedPriceMin} ${property.price.currency}`}
+              </span>
+            )}
             {hasDiscount && (
               <>
                 <span className="text-xs text-gray-500 line-through tabular-nums">
@@ -301,10 +316,17 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             )}
             {pricePerM2 !== null && (
               <span className="text-xs text-gray-600 tabular-nums font-medium">
-                {format(pricePerM2, { decimals: 0 })}/{tMkt('cardM2Short')}
+                {formatPriceOriginal(pricePerM2, property.price.currency, locale)}/{tMkt('cardM2Short')}
               </span>
             )}
           </div>
+
+          {/* Bedrooms range (developments) — surface aggregated from v_units. */}
+          {bedroomsLabel && (
+            <div className="text-sm text-[var(--propyte-dark-700)] mt-1 font-semibold tabular-nums">
+              {bedroomsLabel}
+            </div>
+          )}
 
           {/* Specs: solo cuando haya algún valor real (units tienen, developments aggregate no) */}
           {(property.specs.bedrooms > 0 || property.specs.bathrooms > 0 || property.specs.area > 0) && (
@@ -327,7 +349,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
               )}
               {property.specs.area > 0 && (
                 <>
-                  <span className="font-semibold">{property.specs.area.toLocaleString(intlLocale)}</span>
+                  <span className="font-semibold">{property.specs.area.toLocaleString(locale === 'en' ? 'en-US' : 'es-MX')}</span>
                   <span className="text-gray-600">m²</span>
                 </>
               )}
@@ -362,7 +384,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
 
           {/* Address */}
           <div className="flex items-center gap-1.5 text-sm text-[var(--propyte-dark-700)] mt-1 line-clamp-1">
-            <PiMapPin size={12} className="flex-shrink-0" />
+            <MapPin size={12} className="flex-shrink-0" />
             {property.location.zone}, {property.location.city}
           </div>
 
@@ -380,7 +402,7 @@ export default function MarketplaceCard({ property, priority = false }: Marketpl
             )}
             {property.roi.appreciation > 0 && (
               <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
-                <PiTrend size={10} />
+                <TrendingUp size={10} />
                 +{property.roi.appreciation}% {tMkt('cardAppreciation')}
               </span>
             )}

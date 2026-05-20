@@ -505,7 +505,10 @@
     "mapNoCoordsHint": "Developments will appear on the map once their coordinates are loaded",
     "cardM2Short": "m²",
     "cardAppreciation": "apprec./yr",
-    "toggleCurrencyAriaLabel": "Toggle currency"
+    "toggleCurrencyAriaLabel": "Toggle currency",
+    "cardPriceFrom": "From",
+    "cardBedroomsRange": "{min} - {max} bed",
+    "cardBedroomsSingle": "{count} bed"
   },
   "property": {
     "bedrooms": "Bedrooms",
@@ -635,6 +638,18 @@
     "townhouse": "Townhouse",
     "local_comercial": "Commercial",
     "departamentoShort": "Apt"
+  },
+  "developmentTypes": {
+    "residencial-vertical": "Vertical residential",
+    "residencial-horizontal": "Horizontal residential",
+    "mixto": "Mixed-use",
+    "comercial": "Commercial",
+    "hotelero": "Hospitality",
+    "torre-oficinas": "Office tower",
+    "condominio": "Condominium",
+    "townhouse": "Townhouse",
+    "lotes": "Lots",
+    "macrolotes": "Macrolots"
   },
   "availability": {
     "disponible": "Available",
