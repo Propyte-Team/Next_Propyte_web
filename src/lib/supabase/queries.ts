@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { RENT_BOUNDS, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { cleanListingName } from '@/lib/formatters';
+import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -30,6 +31,29 @@ function normalizeNames<T extends { name?: string | null } | null>(rows: T[] | n
     if (typeof n !== 'string') return row;
     return { ...(row as object), name: cleanListingName(n) } as T;
   });
+}
+
+// Rewrites every Supabase storage URL inside `images[]` to a proxy URL
+// (/propyte-media/<type>/<uuid>/<idx>.<ext>) so the browser never sees the
+// real host or filename. Non-Supabase URLs pass through. Applied at the
+// query boundary so every consumer (cards, gallery, OG images, PDF) gets
+// the masked URL without each call site needing to know about it.
+function maskRow<T extends { id?: string | null; images?: string[] | null } | null>(
+  row: T,
+  type: ResourceType,
+): T {
+  if (!row || typeof row !== 'object') return row;
+  const r = row as { id?: string | null; images?: string[] | null };
+  if (!r.id || !Array.isArray(r.images)) return row;
+  return { ...(row as object), images: toProxyImages(r.images, type, r.id) } as T;
+}
+
+function maskRows<T extends { id?: string | null; images?: string[] | null } | null>(
+  rows: T[] | null | undefined,
+  type: ResourceType,
+): T[] | null {
+  if (!rows) return rows ?? null;
+  return rows.map((r) => maskRow(r, type));
 }
 
 /**
@@ -136,7 +160,7 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   query = query.range(offset, offset + limit - 1);
 
   const res = await query;
-  return { ...res, data: normalizeNames(res.data) };
+  return { ...res, data: maskRows(normalizeNames(res.data), 'd') };
 }
 
 export async function getDevelopmentBySlug(client: Client, slug: string) {
@@ -151,7 +175,7 @@ export async function getDevelopmentBySlug(client: Client, slug: string) {
   const normalized = raw && typeof raw === 'object' && typeof raw.name === 'string'
     ? { ...raw, name: cleanListingName(raw.name) }
     : raw;
-  return { ...res, data: normalized };
+  return { ...res, data: maskRow(normalized, 'd') };
 }
 
 export async function getDevelopmentWithUnits(client: Client, slug: string) {
@@ -175,14 +199,15 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
     .is('deleted_at', null)
     .order('unit_number', { ascending: true });
 
-  const devRow = dev as { name?: string | null };
+  const devRow = dev as { id?: string | null; name?: string | null; images?: string[] | null };
   const normalizedDev = typeof devRow.name === 'string'
     ? { ...devRow, name: cleanListingName(devRow.name) }
     : devRow;
-  const normalizedUnits = normalizeNames(units) ?? [];
+  const maskedDev = maskRow(normalizedDev, 'd');
+  const normalizedUnits = maskRows(normalizeNames(units), 'u') ?? [];
 
   return {
-    data: { ...normalizedDev, units: normalizedUnits },
+    data: { ...maskedDev, units: normalizedUnits },
     error: unitsError,
   };
 }
@@ -211,21 +236,21 @@ export async function getSimilarDevelopments(
 
   if (seed.zone && seed.property_type) {
     const r = await base().eq('zone', seed.zone).contains('property_types', [seed.property_type]);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
   }
   if (seed.zone) {
     const r = await base().eq('zone', seed.zone);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
   }
   if (seed.city) {
     const r = await base().eq('city', seed.city);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
   }
   const featured = await base().eq('featured', true).order('created_at', { ascending: false });
-  if (featured.data && featured.data.length > 0) return featured.data;
+  if (featured.data && featured.data.length > 0) return maskRows(featured.data, 'd') ?? [];
 
   const any = await base().order('created_at', { ascending: false });
-  return any.data || [];
+  return maskRows(any.data, 'd') || [];
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
@@ -247,7 +272,7 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
 
   // Si featured llenó la grid, devolver tal cual (normalizado).
   if (featuredRows.length >= limit) {
-    return { ...featured, data: normalizeNames(featured.data) };
+    return { ...featured, data: maskRows(normalizeNames(featured.data), 'd') };
   }
 
   // Llenar el resto con los más recientes aprobados no-featured (calca WP featured-properties.php).
@@ -268,14 +293,14 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
   const recent = await recentQuery;
   const merged = [...featuredRows, ...((recent.data || []) as typeof featuredRows)];
   return {
-    data: normalizeNames(merged),
+    data: maskRows(normalizeNames(merged), 'd'),
     error: featured.error || recent.error,
     count: featuredRows.length + (recent.data?.length || 0),
   };
 }
 
 export async function getDevelopmentsByCity(client: Client, city: string) {
-  return client
+  const res = await client
     .schema('real_estate_hub' as 'public')
     .from('v_developments')
     .select('*', { count: 'exact' })
@@ -283,6 +308,7 @@ export async function getDevelopmentsByCity(client: Client, city: string) {
     .is('deleted_at', null)
     .eq('city', city)
     .order('created_at', { ascending: false });
+  return { ...res, data: maskRows(res.data, 'd') };
 }
 
 export async function getCityCounts(client: Client) {
@@ -347,12 +373,13 @@ export async function getBatchFinancials(client: Client, developmentIds: string[
 // ============================================================
 
 export async function getUnitBySlug(client: Client, slug: string) {
-  return client
+  const res = await client
     .schema('real_estate_hub' as 'public')
     .from('v_units')
     .select('*')
     .eq('slug', slug)
     .single();
+  return { ...res, data: maskRow(res.data as { id?: string | null; images?: string[] | null } | null, 'u') };
 }
 
 export interface UnitFilters {
@@ -411,7 +438,8 @@ export async function getUnits(client: Client, filters: UnitFilters = {}) {
   const offset = filters.offset || 0;
   query = query.range(offset, offset + limit - 1);
 
-  return query;
+  const res = await query;
+  return { ...res, data: maskRows(res.data, 'u') };
 }
 
 export async function getAvailableUnits(client: Client, developmentId: string) {
@@ -451,18 +479,18 @@ export async function getSimilarUnits(
 
   if (seed.zone && seed.unit_type) {
     const r = await base().eq('zone', seed.zone).eq('unit_type', seed.unit_type);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'u') ?? [];
   }
   if (seed.zone) {
     const r = await base().eq('zone', seed.zone);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'u') ?? [];
   }
   if (seed.city) {
     const r = await base().eq('city', seed.city);
-    if (r.data && r.data.length > 0) return r.data;
+    if (r.data && r.data.length > 0) return maskRows(r.data, 'u') ?? [];
   }
   const r = await base().order('created_at', { ascending: false });
-  return r.data || [];
+  return maskRows(r.data, 'u') || [];
 }
 
 // ============================================================
@@ -649,7 +677,7 @@ export async function getDeveloperDevelopments(
       .is('deleted_at', null)
       .order('name');
     if (error) { console.error('[getDeveloperDevelopments]', error.message); return []; }
-    return (data ?? []) as unknown as DeveloperDevelopment[];
+    return (maskRows(data ?? [], 'd') ?? []) as unknown as DeveloperDevelopment[];
   } catch {
     return [];
   }
