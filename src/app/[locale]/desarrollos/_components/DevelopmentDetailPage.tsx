@@ -675,14 +675,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 )}
                               </div>
                             </div>
-                            {developerDisplay.slug && (
-                              <Link
-                                href={`/${locale}/desarrolladores/${developerDisplay.slug}`}
-                                className="px-4 py-2 bg-white border border-gray-200 hover:border-propyte-brand text-sm font-semibold text-gray-700 rounded-lg transition-colors shrink-0"
-                              >
-                                {tProp('viewProfile')}
-                              </Link>
-                            )}
                           </div>
                           {developerDisplay.description && (
                             <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
