@@ -106,7 +106,7 @@ export default function PropertyList({
             <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 p-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-2">
             {properties.map((property, i) => (
               <MarketplaceCard
                 key={property.id}
