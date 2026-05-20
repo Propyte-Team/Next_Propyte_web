@@ -60,7 +60,8 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
               .from('v_units')
               .select('development_id, bedrooms')
               .in('development_id', devIds)
-              .not('approved_at', 'is', null);
+              .not('approved_at', 'is', null)
+              .is('deleted_at', null);
             const bedroomsByDev = new Map<string, { min: number; max: number }>();
             (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
               if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;

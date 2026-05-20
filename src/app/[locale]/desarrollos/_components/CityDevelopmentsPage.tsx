@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronRight, MapPin, Building2 } from 'lucide-react';
+import { ChevronRight, MapPin, Building2 } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { pickLang } from '@/lib/i18n/pickLang';
@@ -48,6 +48,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         { count: 'exact' }
       )
       .not('approved_at', 'is', null)
+      .is('deleted_at', null)
       .ilike('city', `%${cityInfo.matchTerm}%`)
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);

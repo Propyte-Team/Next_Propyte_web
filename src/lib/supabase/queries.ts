@@ -93,7 +93,8 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   let query = hub
     .from('v_developments')
     .select('*', { count: 'exact' })
-    .not('approved_at', 'is', null);
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null);
 
   if (filters.city) query = query.eq('city', filters.city);
   if (filters.zone) query = query.eq('zone', filters.zone);
@@ -171,6 +172,7 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
     .select('*')
     .eq('development_id', (dev as { id: string }).id)
     .not('approved_at', 'is', null)
+    .is('deleted_at', null)
     .order('unit_number', { ascending: true });
 
   const devRow = dev as { name?: string | null };
@@ -203,6 +205,7 @@ export async function getSimilarDevelopments(
       .from('v_developments')
       .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name')
       .not('approved_at', 'is', null)
+      .is('deleted_at', null)
       .neq('id', seed.id)
       .limit(limit);
 
@@ -235,6 +238,7 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .from('v_developments')
     .select('*')
     .not('approved_at', 'is', null)
+    .is('deleted_at', null)
     .eq('featured', true)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -253,6 +257,7 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
     .from('v_developments')
     .select('*')
     .not('approved_at', 'is', null)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(fillLimit);
 
@@ -275,6 +280,7 @@ export async function getDevelopmentsByCity(client: Client, city: string) {
     .from('v_developments')
     .select('*', { count: 'exact' })
     .not('approved_at', 'is', null)
+    .is('deleted_at', null)
     .eq('city', city)
     .order('created_at', { ascending: false });
 }
@@ -285,7 +291,8 @@ export async function getCityCounts(client: Client) {
     .schema('real_estate_hub' as 'public')
     .from('v_developments')
     .select('city', { count: 'exact', head: false })
-    .not('approved_at', 'is', null);
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null);
 }
 
 export async function getGlobalStats(client: Client) {
@@ -294,11 +301,13 @@ export async function getGlobalStats(client: Client) {
     hub
       .from('v_developments')
       .select('*', { count: 'exact' })
-      .not('approved_at', 'is', null),
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null),
     hub
       .from('v_units')
       .select('id', { count: 'exact', head: true })
-      .not('approved_at', 'is', null),
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null),
   ]);
 
   const devs = (devsRes.data || []) as Array<Record<string, unknown>>;
@@ -365,7 +374,8 @@ export async function getUnits(client: Client, filters: UnitFilters = {}) {
   let query = hub(client)
     .from('v_units')
     .select('*', { count: 'exact' })
-    .not('approved_at', 'is', null);
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null);
 
   if (filters.city) query = query.eq('city', filters.city);
   if (filters.zone) query = query.eq('zone', filters.zone);
@@ -435,6 +445,7 @@ export async function getSimilarUnits(
       .from('v_units')
       .select('id, slug, name, unit_number, development_name, city, zone, images, price_mxn, bedrooms, bathrooms, area_m2, unit_type')
       .not('approved_at', 'is', null)
+      .is('deleted_at', null)
       .neq('id', seed.id)
       .limit(limit);
 
@@ -595,7 +606,8 @@ export async function getDeveloperProjectCount(client: Client, developerId: stri
       .from('v_developments')
       .select('id', { count: 'exact', head: true })
       .eq('developer_id', developerId)
-      .not('approved_at', 'is', null);
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null);
     return count || 0;
   } catch {
     return 0;
@@ -634,6 +646,7 @@ export async function getDeveloperDevelopments(
       .select('id, slug, name, images, min_price_mxn, price_mxn, stage, city, zone')
       .eq('developer_id', developerId)
       .not('approved_at', 'is', null)
+      .is('deleted_at', null)
       .order('name');
     if (error) { console.error('[getDeveloperDevelopments]', error.message); return []; }
     return (data ?? []) as unknown as DeveloperDevelopment[];

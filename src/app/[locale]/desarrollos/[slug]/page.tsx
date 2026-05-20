@@ -15,6 +15,7 @@ export async function generateStaticParams() {
       .from('v_developments')
       .select('slug')
       .not('approved_at', 'is', null)
+      .is('deleted_at', null)
       .limit(1000);
     // Exclude city slugs — those have their own literal pages
     return (data || [])
