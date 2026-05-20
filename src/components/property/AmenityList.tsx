@@ -1,9 +1,10 @@
 import {
-  Waves, Dumbbell, Shield, Car, TreePine, Users, Wifi, Coffee,
-  ChefHat, Flower2, Wind, Sun, Building, Bike, Heart, Gamepad2,
+  Waves, Dumbbell, Shield, Car, Users, Wifi, Coffee,
+  ChefHat, Wind, Sun, Building, Bike, Heart, Gamepad2,
   ParkingCircle, UtensilsCrossed, Flame, PawPrint, CheckCircle2,
+  Spa, Plant,
   type LucideIcon,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 
 interface AmenityListProps {
@@ -25,12 +26,12 @@ const AMENITIES: AmenityDef[] = [
   { key: 'gym', es: 'Gimnasio', en: 'Gym', icon: Dumbbell, match: /gym|gimnasio|fitness/i },
   { key: 'seguridad', es: 'Seguridad 24/7', en: '24/7 Security', icon: Shield, match: /seguridad|security|vigilancia/i },
   { key: 'estacionamiento', es: 'Estacionamiento', en: 'Parking', icon: Car, match: /estacionamiento|parking|garage/i },
-  { key: 'jardin', es: 'Jardín / Áreas verdes', en: 'Gardens', icon: TreePine, match: /jardin|jardín|garden|green|areas verdes/i },
+  { key: 'jardin', es: 'Jardín / Áreas verdes', en: 'Gardens', icon: Plant, match: /jardin|jardín|garden|green|areas verdes/i },
   { key: 'salon_eventos', es: 'Salón de eventos', en: 'Event Room', icon: Users, match: /salon|salón|event|social/i },
   { key: 'wifi', es: 'WiFi común', en: 'Common WiFi', icon: Wifi, match: /wifi|wi-fi|internet/i },
   { key: 'lounge', es: 'Lounge / Coworking', en: 'Lounge / Coworking', icon: Coffee, match: /lounge|coworking|business center/i },
   { key: 'cocina_equipada', es: 'Cocina equipada', en: 'Equipped Kitchen', icon: ChefHat, match: /cocina|kitchen/i },
-  { key: 'spa', es: 'Spa', en: 'Spa', icon: Flower2, match: /spa|sauna|jacuzzi/i },
+  { key: 'spa', es: 'Spa', en: 'Spa', icon: Spa, match: /spa|sauna|jacuzzi/i },
   { key: 'aire_acondicionado', es: 'Aire acondicionado', en: 'Air Conditioning', icon: Wind, match: /aire|ac|a\/c|air cond|minisplit/i },
   { key: 'terraza', es: 'Terraza / Roof garden', en: 'Terrace / Roof Garden', icon: Sun, match: /terraza|terrace|roof|azotea/i },
   { key: 'elevador', es: 'Elevador', en: 'Elevator', icon: Building, match: /elevador|elevator|ascensor/i },
