@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-15 (Hero atmosphere + parallax + Q11 migrations deployadas a dev.propyte.com. SEO 100/100 en 4 rutas. Esperando feedback estético de Luis antes del merge develop→main.)
+> Última actualización: 2026-05-20 noche-2 (Listados refactor + Banxico FX + 11 iconos custom + SAMPLE delete + soft-delete gate fix. Deploy actual: `dpl_2qmSyY1WbRSDQrZG3UB2zEGhLNrr`)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,11 +8,35 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
+### PDF de la diseñadora — bloque ajustes visuales (NO iconos, sesión 2026-05-20 noche-2)
+
+> Pendientes pasados como PDF "NOTAS ICONOS.pdf" tras integrar los 11 iconos del zip. Son ajustes de color/contraste/tipografía. Empezar por los quick wins.
+
+- [ ] **Burbuja search en listados — quitar** pero mantener submenu contacto/idioma/tipo cambio en esquina superior derecha. Tanto `/desarrollos` como `/propiedades`, móvil + escritorio. Decisión visual reciterada por Luis varias veces.
+- [ ] **WhatsApp button contraste** — diseñadora pide brand cyan `#A2F9FF` en lugar del verde actual. Aplica en home, listados, fichas. Componente: `src/components/shared/WhatsAppButton.tsx` + posibles instancias inline.
+- [ ] **Color titulares editoriales** — "TECNOLOGÍA", "PROCESO", "PREGUNTAS FRECUENTES" deben tener color diferente (parece estar el mismo navy/teal). Diseñadora marcó ejemplo: palabra "tecnología" en color de acento separado del resto del título.
+- [ ] **Logo Propyte contraste en infografía** "Sin Propyte / Con Propyte" — el logo se pierde sobre fondo claro. Solución: cambiar color logo o agregar contenedor con contraste.
+- [ ] **Brochure icon en sección Documentos** no se ve (ficha desarrollo/unidad). Probablemente el SVG es muy claro o background blanco sobre blanco.
+- [ ] **Tipografía números 01-04 en pasos** — verificar si usa tipografía de marca (Reclutamiento "Modelo de comisiones", Brokers "Cómo funciona", Metodología pasos).
+
+### Continuación previa (siguen pendientes)
+
 - [ ] **`feat/dynamic-content-a1-pulido`** — 2 commits ahead de develop (`78896e0` hub-content tags + `f54597f` A.1 banners home). Workstream Hub consumer.
+- [ ] **Decidir merge develop→main** — la deuda creció en esta sesión: iconos v3 + rich content + listados refactor + Banxico + filtros + soft-delete gate. Requiere autorización explícita de Luis. Dispara Hostinger pull-on-main → producción.
+- [ ] **Reemplazar stats placeholders en `tangibleDiff`** — `+25%`, `3 meses`, `0`, `1:1` con labels editoriales placeholder. Esperan números reales de Luis. Editar `processInfographic.tangibleDiff.stats` en `src/i18n/messages/{es,en}.json`.
+- [ ] **Mostrar `source_url` (IG link) en `Testimonials.tsx`** — campo ya en BD (`nativa_tulum.testimonials` + `Propyte_testimonials`), frontend pendiente. Cambio chico ~15 líneas: icon Instagram + link.
+- [ ] **Expandir copy editorial → 900 palabras por unidad** — DIFERIDO 2026-05-20 (costo IA). Edición manual `descripcion_larga_unidad` en Hub (gratis, top-traffic primero) o batch AI script one-off.
+- [ ] **231 desarrollos sin `tipo_desarrollo`** (NULL en BD post-migración 2026-05-20) — Luis o equipo de data deben categorizar manualmente en Hub. La mayoría son scraper legacy.
 
 ---
 
 ## Pendientes
+
+### Workstream PropyteIcons — pendientes futuros
+
+> Nueva arquitectura (2026-05-20): `src/lib/icons.tsx` registro central con 62 Propyte (de `propyte-icons.tsx` auto-generado) + lucide-react wrappeado con `strokeWidth=1.5` default. Librería legacy `src/components/icons/PropyteIcons.tsx` ELIMINADA. Para más SVGs: drop en `public/img/icons/propyte/` + `node scripts/build-propyte-icons.js` + mover nombre del bloque "Lucide fallback" al bloque "Propyte direct-match" en `src/lib/icons.tsx`.
+
+- [ ] **Cuando diseñadora entregue más iconos:** seguir el flujo descrito arriba. Top prioritarios (alta frecuencia, aún en lucide fallback): `BarChart3` (16 archivos), `Sparkles` (8), `ShieldCheck` (7), `Loader2` (4), `Truck` (4), `Award` (4), `Info` (4), `SlidersHorizontal` (4), `Calculator` (3). Sociales: `Instagram`, `Facebook`, `Youtube`, `Linkedin`, `Twitter` (5 archivos).
 
 ### Workstream Zoho — QA + pulido post-merge
 
@@ -164,16 +188,17 @@ _Ninguna._
 
 ## Completadas recientes
 
-- [x] **Hero atmosphere + parallax mouse sutil** (2026-05-15) — Nuevo `HeroAtmosphere.tsx` con grid blueprint + 3 glow orbs + watermark Home icon + coordenadas editoriales. Springs framer-motion `{stiffness:70, damping:22}`. Hero.tsx usa `.propyte-hero-canvas`. Fix gotcha: listener en parent `<section>` (no en div con `pointer-events-none`). Commit `7524c2b`. Memorias `feedback_pointer_events_none_listener.md` + `feedback_parallax_blur_magnitudes.md`.
-- [x] **Q11 migrations** (2026-05-15) — ExploreCategories → `/propiedades` (post-breadcrumb), LeadMagnet → `/blog` (reemplaza NewsletterCTA condicionalmente), AppDownloadBanner → cierre `/propiedades` + `/desarrollos`. Home limpio. Hub connections preservadas. Commit `7524c2b`.
-- [x] **F3/F4/F5/F10 QA manual** (2026-05-15) — Luis validó 8 leads manualmente en Zoho UI. Tipo_de_Contacto + Nombre_anuncio + Account correctos. Workstream Zoho 22/22 funcional.
-- [x] **Validación SEO end-to-end** (2026-05-15) — 8/8 schemas C1 detectados en dev.propyte.com (Organization, WebSite+SearchAction, RealEstateListing, BreadcrumbList, FAQPage, LocalBusiness, BlogPosting, CollectionPage+ItemList). Lighthouse SEO **100/100** en `/es`, `/es/propiedades/[slug]`, `/es/desarrolladores`, `/es/nosotros/equipo-comercial`.
-- [x] **Deploy 2026-05-15** — `dpl_7ctuQhFEEhorQ6srqvgC1vfsFjVn` desde branch `prueba-liquid-glass` (NO pushed a origin). Custom domain `dev.propyte.com` aliased. Rollback chain: `6QJzhfWMwoAdXxbMFSssDQkGV6b5` (Tier 1).
-- [x] **Zoho web-forms integration cerrado + merged a develop** (2026-05-14) — 16 commits del workstream merged a `develop` (`00eb513`).
-- [x] **Build fix `@swc/helpers` standalone** (2026-05-14) — `outputFileTracingIncludes` en `next.config.ts`. Commit `5fb7f67`.
-- [x] **Tags `[XXX] (YYY)` en Nombre_de_Campa_a + doble llamada Lead+Account F3/F4/F6/F7** (2026-05-13/14) — Commit `63fb057`.
-- [x] **UnitModelsTable subtype fix + CookieBanner compacto + Drive auto-embed** (2026-05-11 PM) — Commits `97354bc`, `6e1fbf0`.
-- [x] **Fix 500 SSR cadena en /propiedades/[slug] + detail pages UX** (2026-05-11 PM) — Commits `2cba646`, `f4c7632`, `07f07ae`.
+- [x] **Listados refactor profundo + Banxico FX + filtros nuevos + UI/UX iter 4** (2026-05-20 noche-2) — /desarrollos y /propiedades: heroHidden=true (H1 sr-only), loader fullscreen lg:left-[72px], scroll defensivo, min-h grid canvas. Cards: rango precio "Desde X" + currency, chip tipo desarrollo, rango bedrooms agregado v_units, Heart+Brochure removidos, aspect 16/9 (grid) y 5/2 (compact). Split mapa 60/40 → 40/60 (mapa angosto). Hover sync card↔pin (ring cyan brand + scale). Banxico SF43718 FX rate auto (cache 12h). Filtros: Ciudad+Zona dinámicas, Recámaras 1/2/3/4+, Etapa, Tipo desarrollo. Fix bug PREVENTA en mapper unit (`status`+`is_presale` en lugar de `row.stage`). Home FeaturedProperties paridad. UI rhythm `flex flex-col gap-1.5`. Deploy final `dpl_2qmSyY1WbRSDQrZG3UB2zEGhLNrr`.
+- [x] **Migración SQL `tipo_desarrollo` unificado** (2026-05-20 noche-2, autorizado MCP) — vertical/Residencial vertical (404) → 'Residencial vertical', mixto (1) → 'Mixto', preventa misplaced (227) → NULL. Backup `Propyte_desarrollos_backup_tipo_desarrollo_20260520`. 231 rows quedaron sin clasificar (legacy scraper).
+- [x] **[SAMPLE] AZUL VIVO Residences borrado + soft-delete gate fix** (2026-05-20 noche-2) — Hard delete 6 unidades + 1 desarrollo. Bug subyacente: view `v_developments` expone soft-deleted rows; queries solo filtraban `approved_at`. Fix global: 13 queries en lib/supabase/queries.ts + 5 inline pages ahora filtran `deleted_at IS NULL`. Backups en `*_backup_sample_azulvivo_20260520`.
+- [x] **11 iconos custom nuevos + stroke 1.5 fix** (2026-05-20 noche-2) — svgs_mas.zip: bike, car, cook, ghost (refresh), headset, parking, plant, spa, sun, utensils, wifi. Registry actualizado en `lib/icons.tsx`. AmenityList: jardín ahora Plant (era TreePine), spa ahora Spa (era Flower2). **Fix crítico**: generator `build-propyte-icons.js` strippea ahora `strokeWidth="[\d.]+"` generalizado (antes solo `="1"`). Los nuevos SVGs traían `="2"` hardcoded que pisaba el default 1.5 del wrapper. Net: 72 iconos a stroke 1.5 uniforme.
+- [x] **Botón "Ver perfil" removido** (2026-05-20) — DevelopmentDetailPage line 678-685. Card Desarrolladora ya no tiene CTA al perfil. `viewProfile` i18n key sigue en uso por UnitDetailPage.
+- [x] **Iconografía Propyte v3 + lucide unificadas a strokeWidth=1.5** (2026-05-20 noche) — 61 SVGs custom Propyte v3 + generador `scripts/build-propyte-icons.js` → `src/lib/propyte-icons.tsx` auto-gen (62 componentes incl. ChevronRight flip). `src/lib/icons.tsx` (renamed de .ts) con `withDefaultStroke()` HOC envolviendo cada lucide. Codemod en 127 archivos `from 'lucide-react'` → `from '@/lib/icons'`. Librería legacy `src/components/icons/PropyteIcons.tsx` (47 iconos viewBox custom) ELIMINADA + 7 consumers migrados. Removidos 46 `strokeWidth={2}` heredados. Deploy chain final `dpl_cdmxpp9ps`.
+- [x] **"| MPgenesis" cleanup BD + view fixes** (2026-05-20 noche) — 2 migrations: `v_units.title` y `v_developments.publication_title` COALESCE invertido (campo editable Hub gana sobre JSON legacy). UPDATE masivo: 59 unidades + 37 desarrollos limpiados. Bug: Hub edits no se reflejaban porque view priorizaba JSON `ext_content_es.metaTitle` sobre `titulo_unidad`/`ext_meta_title_desarrollo`. Feedback memory: [[supabase-view-coalesce-json-priority]].
+- [x] **Rich content JSON surfaced en detail pages** (2026-05-20 noche) — Property type + mappers extendidos con `richContent?: { features, location, lifestyle, faqs }` (8 campos JSON + 2 arrays FAQ ES+EN). Nuevo `RichContentSections.tsx` renderiza Características/Ubicación/Estilo de Vida en Description tab. `UnitFAQs` ahora lee de BD con fallback hardcoded. ~440 palabras adicionales visibles por unidad. Feedback memory: [[propyte-rich-content-json-pipeline]].
+- [x] **Mocks unit-fixtures.ts eliminados** (2026-05-20) — Borrado `src/lib/mocks/unit-fixtures.ts` + carpeta. 5 consumers limpiados (UnitDetailPage data+similares fallback, buildPropertyMetadata, opengraph-image, generate-pdf, generateStaticParams). URLs sample (Akora A-301, Nativa Jungla T-12, Playacar Residencias B-205, etc.) ahora 404. Feedback: [[mock-fixtures-indexed-prod]].
+- [x] **UI detail-page mejorada (Propiedades + Desarrollos)** (2026-05-20) — FloatingKeyData + DevelopmentKeyData icons 13→18, labels text-2xs→sm, values sm→md. ContactForm sin "Tipo de inversión", Enviar+WhatsApp `grid-cols-2`. UnitDetailPage H1 smaller en flex con Share/Ficha; SpecChips bigger; Highlights+Proximity en Description. Bug badge `STAGES.X` literal arreglado (next-intl path-fallback). WhatsApp en desarrollos siempre presente (fallback global).
+- [x] **Home swap Infografía ↔ Destacados** (2026-05-20) — `src/app/[locale]/page.tsx` orden: Hero → FeaturedProperties → LeadMagnet → ProcessInfographic → DeveloperBanner → resto.
 
 ---
 
