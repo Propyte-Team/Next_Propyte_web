@@ -17,8 +17,11 @@ interface PropyteLoaderProps {
 }
 
 export default function PropyteLoader({ fullscreen = true, label = 'Cargando…' }: PropyteLoaderProps) {
+  // fullscreen: cubre el viewport entero menos el sidebar (lg:left-[72px]).
+  // z-[55] queda arriba del sidebar (z-40) pero debajo del mobile header (z-50)
+  // — así el header sigue navegable durante el loading.
   const containerClass = fullscreen
-    ? 'fixed inset-0 z-[60] flex items-center justify-center bg-white/96 backdrop-blur-sm'
+    ? 'fixed inset-y-0 left-0 right-0 lg:left-[72px] z-[55] flex items-center justify-center bg-white/96 backdrop-blur-sm'
     : 'flex items-center justify-center w-full min-h-[400px] bg-white';
 
   return (

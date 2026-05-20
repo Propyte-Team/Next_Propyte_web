@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Map, List, X, Sparkles } from 'lucide-react';
+import { Map, List, X, Sparkles } from '@/lib/icons';
 import { useFilters } from '@/hooks/useFilters';
 import type { Property } from '@/types/property';
 import { useIsMobile } from '@/hooks/useMediaQuery';
@@ -66,6 +66,12 @@ interface MarketplaceContentProps {
    * /desarrollos + taxonomies → showMap=false (grid Ficha 02 full-width).
    */
   showMap?: boolean;
+  /**
+   * Oculta visualmente el bloque hero (eyebrow + título + subtítulo) pero
+   * preserva el H1 con `sr-only` para SEO/a11y. Usado en /desarrollos y
+   * /propiedades para subir el grid/mapa al fold inicial.
+   */
+  heroHidden?: boolean;
 }
 
 export default function MarketplaceContent({
@@ -75,6 +81,7 @@ export default function MarketplaceContent({
   customTitle,
   customSubtitle,
   showMap = false,
+  heroHidden = false,
 }: MarketplaceContentProps) {
   const t = useTranslations('marketplace');
   const isMobile = useIsMobile();
@@ -89,6 +96,14 @@ export default function MarketplaceContent({
   const subheading = customSubtitle ?? t(subtitleKey);
   // Eyebrow pill: canonical Propyte tagline para todas las listadas (ES/EN).
   const eyebrowLabel = t('heroEyebrow');
+
+  // Scroll-to-top defensivo al montar la página de listados — evita que el
+  // navegador restaure una posición previa que dejaría el pre-footer CTA
+  // visible al abrir (viewports altos + Lenis interceptando wheel pueden
+  // confundir la restauración nativa).
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }, []);
 
   // Cualquier cambio en los filtros normales invalida el cluster filter
   // (sino quedaría "pegado" mostrando IDs que ya no califican).
@@ -149,7 +164,11 @@ export default function MarketplaceContent({
       // para que el split map+list quepa entero en el viewport y muestre 4 cards
       // completas sin scroll del listado.
       <div className="flex flex-col h-[calc(100dvh-96px)] lg:h-[calc(100dvh-100px)]">
-        <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
+        {heroHidden ? (
+          <h1 className="sr-only">{heading}</h1>
+        ) : (
+          <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
+        )}
 
         <FilterBar
           filters={filters}
@@ -236,7 +255,11 @@ export default function MarketplaceContent({
   // Grid full-width — /desarrollos + taxonomies sin mapa (estilo Ficha 02).
   return (
     <div className="propyte-marketplace-grid-canvas">
-      <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
+      {heroHidden ? (
+        <h1 className="sr-only">{heading}</h1>
+      ) : (
+        <MarketplaceHero heading={heading} subheading={subheading} eyebrow={eyebrowLabel} />
+      )}
 
       <FilterBar
         filters={filters}
