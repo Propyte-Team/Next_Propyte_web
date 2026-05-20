@@ -74,6 +74,42 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
       .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
     featured = (featuredRes.data || []) as FeaturedDevelopment[];
+
+    // Inyectar bedrooms_min/max agregado desde v_units por development_id —
+    // misma lógica que /desarrollos/page.tsx. Una query bulk para los 6
+    // featured. Sin esto el chip de rango bedrooms en FeaturedProperties
+    // queda vacío (v_developments no expone bedroom aggregates).
+    const featuredIds = featured.map((d) => d.id).filter(Boolean);
+    if (featuredIds.length > 0) {
+      try {
+        const { data: unitsData } = await supabase
+          .schema('real_estate_hub' as 'public')
+          .from('v_units')
+          .select('development_id, bedrooms')
+          .in('development_id', featuredIds)
+          .not('approved_at', 'is', null);
+        const bedroomsByDev = new Map<string, { min: number; max: number }>();
+        (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
+          if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;
+          const existing = bedroomsByDev.get(u.development_id);
+          if (!existing) {
+            bedroomsByDev.set(u.development_id, { min: u.bedrooms, max: u.bedrooms });
+          } else {
+            existing.min = Math.min(existing.min, u.bedrooms);
+            existing.max = Math.max(existing.max, u.bedrooms);
+          }
+        });
+        featured.forEach((d) => {
+          const br = bedroomsByDev.get(d.id);
+          if (br) {
+            d.bedrooms_min = br.min;
+            d.bedrooms_max = br.max;
+          }
+        });
+      } catch (err) {
+        console.error('[HomePage] bedrooms aggregate failed:', err);
+      }
+    }
   } catch (error) {
     console.error('[HomePage] Supabase fetch failed:', error);
   }
@@ -112,9 +148,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       }
     : null;
 
-  // Orden Home — Ajuste 2026-05-16 (decisión Luis):
-  // Fijo top: Hero → ProcessInfographic → LeadMagnet(Hub) → FeaturedProperties →
-  // DeveloperBanner → NosotrosTeaser
+  // Orden Home — Ajuste 2026-05-20 (decisión Luis):
+  // Swap Infografía ↔ Destacados. Nuevo top: Hero → FeaturedProperties →
+  // LeadMagnet(Hub) → ProcessInfographic → DeveloperBanner → NosotrosTeaser.
   // Resto reordenado para flujo CTA progresivo + SEO (E-E-A-T, FAQ schema,
   // freshness, internal linking):
   // ExploreCategories(Hub) → WhyPropyte → Metodología → HowItWorks →
@@ -125,9 +161,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <SchemaMarkup type="organization" />
       {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <Hero stats={stats} />}
 
-      <ScrollReveal delay={0.05}>
-        <ProcessInfographic />
-      </ScrollReveal>
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
+        <ScrollReveal delay={0.05}>
+          <FeaturedProperties developments={featured} />
+        </ScrollReveal>
+      )}
 
       {leadMagnetProps && (
         <ScrollReveal>
@@ -135,11 +173,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </ScrollReveal>
       )}
 
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
-        <ScrollReveal delay={0.05}>
-          <FeaturedProperties developments={featured} />
-        </ScrollReveal>
-      )}
+      <ScrollReveal delay={0.05}>
+        <ProcessInfographic />
+      </ScrollReveal>
 
       <ScrollReveal>
         <DeveloperBanner />
