@@ -17,6 +17,7 @@ import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
 import { UnitsProvider } from '@/lib/units-context';
 import { getVisibility } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
+import { fetchUsdMxnRate } from '@/lib/banxico/fetchUsdMxnRate';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
@@ -37,17 +38,18 @@ export default async function LocaleLayout({
   // Enable static rendering — opts pages out of cookies()-based locale resolution
   setRequestLocale(locale);
 
-  const [messages, tA11y, visibilityFlags, siteConfig] = await Promise.all([
+  const [messages, tA11y, visibilityFlags, siteConfig, usdMxnRate] = await Promise.all([
     getMessages({ locale }),
     getTranslations({ locale, namespace: 'a11y' }),
     getVisibility(),
     getSiteConfig(),
+    fetchUsdMxnRate(),
   ]);
 
   return (
     <NextIntlClientProvider messages={messages}>
       <SiteVisibilityProvider flags={visibilityFlags}>
-      <CurrencyProvider>
+      <CurrencyProvider initialRate={usdMxnRate.rate} initialRateDate={usdMxnRate.date}>
       <UnitsProvider>
       <SearchProvider>
       <MotionConfig reducedMotion="user">

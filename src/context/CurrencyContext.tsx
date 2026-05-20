@@ -4,8 +4,9 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 
 export type Currency = 'MXN' | 'USD';
 
-const EXCHANGE_RATE = 17.24; // MXN per USD — update monthly
-const EXCHANGE_RATE_UPDATED_AT = '2026-04-01'; // ISO date — sync con EXCHANGE_RATE arriba
+/** Fallback hardcoded — usado solo si el layout no inyecta initialRate. */
+const FALLBACK_RATE = 17.24;
+const FALLBACK_RATE_DATE = '2026-04-01';
 
 interface CurrencyContextValue {
   currency: Currency;
@@ -18,32 +19,43 @@ interface CurrencyContextValue {
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
-export function CurrencyProvider({ children }: { children: ReactNode }) {
+interface CurrencyProviderProps {
+  children: ReactNode;
+  /** Tipo de cambio MXN por 1 USD inyectado desde server (Banxico SF43718). */
+  initialRate?: number;
+  /** Fecha ISO del rate (YYYY-MM-DD). Se muestra junto al toggle. */
+  initialRateDate?: string;
+}
+
+export function CurrencyProvider({ children, initialRate, initialRateDate }: CurrencyProviderProps) {
   const [currency, setCurrency] = useState<Currency>('MXN');
+
+  const rate = initialRate && initialRate > 0 ? initialRate : FALLBACK_RATE;
+  const rateUpdatedAt = initialRateDate || FALLBACK_RATE_DATE;
 
   const toggleCurrency = useCallback(() => {
     setCurrency((c) => (c === 'MXN' ? 'USD' : 'MXN'));
   }, []);
 
   const convert = useCallback(
-    (mxn: number) => (currency === 'MXN' ? mxn : Math.round(mxn / EXCHANGE_RATE)),
-    [currency]
+    (mxn: number) => (currency === 'MXN' ? mxn : Math.round(mxn / rate)),
+    [currency, rate],
   );
 
   const format = useCallback(
     (amount: number, opts?: { decimals?: number }) => {
-      const converted = currency === 'MXN' ? amount : Math.round(amount / EXCHANGE_RATE);
+      const converted = currency === 'MXN' ? amount : Math.round(amount / rate);
       return new Intl.NumberFormat(currency === 'MXN' ? 'es-MX' : 'en-US', {
         style: 'currency',
         currency,
         maximumFractionDigits: opts?.decimals ?? 0,
       }).format(converted);
     },
-    [currency]
+    [currency, rate],
   );
 
   return (
-    <CurrencyContext.Provider value={{ currency, toggleCurrency, convert, format, rate: EXCHANGE_RATE, rateUpdatedAt: EXCHANGE_RATE_UPDATED_AT }}>
+    <CurrencyContext.Provider value={{ currency, toggleCurrency, convert, format, rate, rateUpdatedAt }}>
       {children}
     </CurrencyContext.Provider>
   );

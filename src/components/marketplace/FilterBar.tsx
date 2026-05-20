@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { SlidersHorizontal, ChevronDown, X } from 'lucide-react';
-import { PiSearch as Search } from '@/components/icons/PropyteIcons';
+import { SlidersHorizontal, ChevronDown, X, Search } from '@/lib/icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
@@ -15,6 +14,13 @@ interface FilterBarProps {
   onOpenAdvanced: () => void;
   advancedOpen: boolean;
   resultCount: number;
+  /** Lista dinámica de ciudades disponibles en el listado actual. Si vacía,
+   *  cae al hardcoded ['Playa del Carmen', 'Tulum']. */
+  availableCities?: string[];
+  /** Lista dinámica de zonas — se filtra por ciudad seleccionada en el padre. */
+  availableZones?: string[];
+  /** Mostrar pill de tipo desarrollo (solo /desarrollos). */
+  showDevTypeFilter?: boolean;
 }
 
 function PillDropdown({
@@ -72,11 +78,21 @@ function PillDropdown({
   );
 }
 
-export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, advancedOpen, resultCount }: FilterBarProps) {
+export default function FilterBar({
+  filters,
+  onFilterChange,
+  onOpenAdvanced,
+  advancedOpen,
+  resultCount,
+  availableCities,
+  availableZones,
+  showDevTypeFilter = false,
+}: FilterBarProps) {
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
   const tStages = useTranslations('stages');
   const tUsages = useTranslations('usages');
+  const tDevTypes = useTranslations('developmentTypes');
 
   const safeType = (type: string) => {
     try { return tTypes(type as 'departamento'); } catch { return type; }
@@ -87,6 +103,15 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
   const safeUsage = (u: string) => {
     try { return tUsages(u as 'residencial'); } catch { return u; }
   };
+  const safeDevType = (k: string) => {
+    try { return tDevTypes(k as 'mixto'); } catch { return k; }
+  };
+
+  // Fallback cities cuando el padre no pasa lista dinámica.
+  const cityOptions = (availableCities && availableCities.length > 0)
+    ? availableCities
+    : ['Playa del Carmen', 'Tulum'];
+  const zoneOptions = availableZones || [];
 
   const priceActive = filters.priceMin > 0 || filters.priceMax < MAX_PRICE;
   const priceLabel = priceActive
@@ -103,8 +128,12 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
 
   const activeCount =
     (filters.city ? 1 : 0) +
+    (filters.zone ? 1 : 0) +
     (priceActive ? 1 : 0) +
     (filters.type ? 1 : 0) +
+    (filters.bedroomsMin > 0 ? 1 : 0) +
+    (filters.stage ? 1 : 0) +
+    (filters.developmentType ? 1 : 0) +
     (filters.roiMin ? 1 : 0) +
     (filters.search ? 1 : 0);
 
@@ -120,7 +149,28 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
     activeChips.push({
       key: 'city',
       label: filters.city,
-      clear: () => onFilterChange('city', ''),
+      clear: () => { onFilterChange('city', ''); onFilterChange('zone', ''); },
+    });
+  }
+  if (filters.zone) {
+    activeChips.push({
+      key: 'zone',
+      label: filters.zone,
+      clear: () => onFilterChange('zone', ''),
+    });
+  }
+  if (filters.bedroomsMin > 0) {
+    activeChips.push({
+      key: 'bedrooms',
+      label: filters.bedroomsMin >= 4 ? '4+ rec' : `${filters.bedroomsMin} rec`,
+      clear: () => onFilterChange('bedroomsMin', 0),
+    });
+  }
+  if (filters.developmentType) {
+    activeChips.push({
+      key: 'devType',
+      label: safeDevType(filters.developmentType),
+      clear: () => onFilterChange('developmentType', ''),
     });
   }
   if (priceActive && priceLabel) {
@@ -165,11 +215,14 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
   const handleClearAll = () => {
     if (filters.search) onFilterChange('search', '');
     if (filters.city) onFilterChange('city', '');
+    if (filters.zone) onFilterChange('zone', '');
     if (priceActive) {
       onFilterChange('priceMin', 0);
       onFilterChange('priceMax', MAX_PRICE);
     }
     if (filters.type) onFilterChange('type', '');
+    if (filters.bedroomsMin > 0) onFilterChange('bedroomsMin', 0);
+    if (filters.developmentType) onFilterChange('developmentType', '');
     if (filters.roiMin) onFilterChange('roiMin', 0);
     if (filters.stage) onFilterChange('stage', '');
     if (filters.usage) onFilterChange('usage', '');
@@ -217,26 +270,70 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
           />
         </div>
 
-        {/* Location pill */}
+        {/* Ciudad pill (dinámica) */}
         <PillDropdown
           label={t('filterLocation')}
           activeLabel={filters.city || undefined}
           isActive={!!filters.city}
         >
-          <div className="space-y-1">
-            {['', 'Playa del Carmen', 'Tulum'].map(city => (
+          <div className="space-y-1 max-h-72 overflow-y-auto">
+            <button
+              onClick={() => { onFilterChange('city', ''); onFilterChange('zone', ''); }}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                !filters.city ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+              }`}
+            >
+              {t('filterAll')}
+            </button>
+            {cityOptions.map((city) => (
               <button
                 key={city}
-                onClick={() => onFilterChange('city', city)}
+                onClick={() => {
+                  // Al cambiar ciudad reseteamos zona — si la zona seleccionada
+                  // no pertenece a la nueva ciudad, quedaría 0 resultados.
+                  onFilterChange('city', filters.city === city ? '' : city);
+                  onFilterChange('zone', '');
+                }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                   filters.city === city ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
-                {city || t('filterAll')}
+                {city}
               </button>
             ))}
           </div>
         </PillDropdown>
+
+        {/* Zona pill (visible solo cuando hay ciudad seleccionada y zonas) */}
+        {filters.city && zoneOptions.length > 0 && (
+          <PillDropdown
+            label={t('filterZone')}
+            activeLabel={filters.zone || undefined}
+            isActive={!!filters.zone}
+          >
+            <div className="space-y-1 max-h-72 overflow-y-auto">
+              <button
+                onClick={() => onFilterChange('zone', '')}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  !filters.zone ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                }`}
+              >
+                {t('filterAll')}
+              </button>
+              {zoneOptions.map((zone) => (
+                <button
+                  key={zone}
+                  onClick={() => onFilterChange('zone', filters.zone === zone ? '' : zone)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    filters.zone === zone ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {zone}
+                </button>
+              ))}
+            </div>
+          </PillDropdown>
+        )}
 
         {/* Price pill */}
         <PillDropdown label={t('filterPrice')} activeLabel={priceLabel} isActive={priceActive}>
@@ -306,6 +403,100 @@ export default function FilterBar({ filters, onFilterChange, onOpenAdvanced, adv
             ))}
           </div>
         </PillDropdown>
+
+        {/* Recámaras pill */}
+        <PillDropdown
+          label={t('filterBedrooms')}
+          activeLabel={filters.bedroomsMin > 0
+            ? (filters.bedroomsMin >= 4 ? '4+ rec' : `${filters.bedroomsMin} rec`)
+            : undefined}
+          isActive={filters.bedroomsMin > 0}
+        >
+          <div className="space-y-1">
+            {[0, 1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                onClick={() => onFilterChange('bedroomsMin', filters.bedroomsMin === n ? 0 : n)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  filters.bedroomsMin === n ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                }`}
+              >
+                {n === 0 ? t('filterAll') : n >= 4 ? '4+ rec' : `${n} rec`}
+              </button>
+            ))}
+          </div>
+        </PillDropdown>
+
+        {/* Etapa pill */}
+        <PillDropdown
+          label={t('filterStage')}
+          activeLabel={filters.stage ? safeStage(filters.stage) : undefined}
+          isActive={!!filters.stage}
+        >
+          <div className="space-y-1">
+            <button
+              onClick={() => onFilterChange('stage', '')}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                !filters.stage ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+              }`}
+            >
+              {t('filterAll')}
+            </button>
+            {(['preventa', 'construccion', 'entrega_inmediata'] as const).map((s) => (
+              <button
+                key={s}
+                onClick={() => onFilterChange('stage', filters.stage === s ? '' : s)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  filters.stage === s ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                }`}
+              >
+                {safeStage(s)}
+              </button>
+            ))}
+          </div>
+        </PillDropdown>
+
+        {/* Tipo desarrollo pill — solo /desarrollos */}
+        {showDevTypeFilter && (
+          <PillDropdown
+            label={t('filterDevType')}
+            activeLabel={filters.developmentType ? safeDevType(filters.developmentType) : undefined}
+            isActive={!!filters.developmentType}
+          >
+            <div className="space-y-1 max-h-72 overflow-y-auto">
+              <button
+                onClick={() => onFilterChange('developmentType', '')}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  !filters.developmentType ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                }`}
+              >
+                {t('filterAll')}
+              </button>
+              {[
+                'residencial-vertical',
+                'residencial-horizontal',
+                'mixto',
+                'comercial',
+                'hotelero',
+                'torre-oficinas',
+                'condominio',
+                'townhouse',
+                'lotes',
+                'macrolotes',
+              ].map((dt) => (
+                <button
+                  key={dt}
+                  onClick={() => onFilterChange('developmentType', filters.developmentType === dt ? '' : dt)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    filters.developmentType === dt ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {safeDevType(dt)}
+                </button>
+              ))}
+            </div>
+          </PillDropdown>
+        )}
 
         {/* ROI pill */}
         <PillDropdown

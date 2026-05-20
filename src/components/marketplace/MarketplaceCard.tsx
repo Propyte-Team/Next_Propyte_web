@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { ChevronLeft, ChevronRight, GitCompare, MapPin, TrendingUp } from '@/lib/icons';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCompare } from '@/hooks/useCompare';
+import { useCurrency } from '@/context/CurrencyContext';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
 
@@ -20,20 +21,9 @@ interface MarketplaceCardProps {
    */
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
-}
-
-/**
- * Formatea un monto en su moneda *de alta* (sin convertir). Listados muestran
- * la moneda original — el toggle global MXN/USD del CurrencyContext aplica
- * a fichas detalle, no aquí. Decisión 2026-05-20 (Luis).
- */
-function formatPriceOriginal(amount: number, currency: 'MXN' | 'USD', locale: string): string {
-  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
-  return new Intl.NumberFormat(intlLocale, {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  /** Layout variant — pasa desde PropertyList. Compact (split map+list) usa
+   *  aspect ratio más corto vertical para que quepan 2x2 en el viewport. */
+  variant?: 'compact' | 'grid';
 }
 
 export default function MarketplaceCard({
@@ -41,6 +31,7 @@ export default function MarketplaceCard({
   priority = false,
   hoveredId,
   onHover,
+  variant = 'grid',
 }: MarketplaceCardProps) {
   const locale = useLocale();
   const tStages = useTranslations('stages');
@@ -59,22 +50,13 @@ export default function MarketplaceCard({
   const [currentImg, setCurrentImg] = useState(0);
   const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
   const comparing = isComparing(property.id);
+  // Currency dinámica desde CurrencyContext — responde al toggle MXN↔USD
+  // global (rate auto desde Banxico SF43718, ver lib/banxico/fetchUsdMxnRate.ts).
+  const { format, currency: displayCurrency } = useCurrency();
 
-  // Currency original — para desarrollos venir 'MXN' siempre por ahora;
-  // para units puede ser USD cuando price_usd está presente.
-  const isUsd = property.price.currency === 'USD';
-  const priceMinAmount = isUsd && property.price.usd != null ? property.price.usd : property.price.mxn;
-  const priceMaxAmount = isUsd
-    ? property.priceMaxUsd ?? null
-    : property.priceMax ?? null;
-
-  const formattedPriceMin = priceMinAmount > 0
-    ? formatPriceOriginal(priceMinAmount, property.price.currency, locale)
-    : null;
-  const formattedPriceMax = priceMaxAmount != null && priceMaxAmount > priceMinAmount
-    ? formatPriceOriginal(priceMaxAmount, property.price.currency, locale)
-    : null;
-  const hasPriceRange = !!formattedPriceMax;
+  // Precio mínimo "Desde X" — el rango max se removió por feedback Luis
+  // 2026-05-20 (los dos precios se veían atascados en cards densas).
+  const formattedPriceMin = property.price.mxn > 0 ? format(property.price.mxn) : null;
 
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
@@ -83,9 +65,7 @@ export default function MarketplaceCard({
     typeof property.priceOriginal === 'number' &&
     property.priceOriginal > property.price.mxn &&
     property.price.mxn > 0;
-  const formattedOriginal = hasDiscount
-    ? formatPriceOriginal(property.priceOriginal!, property.price.currency, locale)
-    : null;
+  const formattedOriginal = hasDiscount ? format(property.priceOriginal!) : null;
   const discountPct = hasDiscount
     ? Math.round(((property.priceOriginal! - property.price.mxn) / property.priceOriginal!) * 100)
     : 0;
@@ -147,9 +127,12 @@ export default function MarketplaceCard({
           })
         }
       >
-        {/* Image carousel — aspect 16/9 (~1.78:1). Subido de 9/4 (2.25:1)
-            para evitar overlap entre flechas de galería y botón compare. */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+        {/* Image carousel — aspect dinámico por variant.
+            grid (full-width /desarrollos + taxonomies): 16/9 (~1.78:1) →
+              cards más altas, más respiro para flechas+compare.
+            compact (split /propiedades): 2/1 (~2:1) → más corto vertical
+              para que quepan 2×2 en el viewport sin scroll del listado. */}
+        <div className={`relative ${variant === 'compact' ? 'aspect-[2/1]' : 'aspect-[16/9]'} overflow-hidden bg-gray-100`}>
           {property.images.map((src, i) => (
             <div
               key={i}
@@ -249,8 +232,10 @@ export default function MarketplaceCard({
             </button>
           </div>
 
-          {/* Badges: stage (priority property.badge → fallback to stage) + type (units only) */}
-          <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
+          {/* Badge stage (overlay imagen). El chip de tipo desarrollo se movió
+              al info section abajo (feedback Luis 2026-05-20: badges encimados
+              al overlay se veían apilados). */}
+          <div className="absolute top-2 left-2 flex flex-col items-start gap-1.5">
             {(property.badge || property.stage) && (
               <span
                 className={`px-2 py-0.5 text-2xs font-bold uppercase rounded ${
@@ -263,11 +248,6 @@ export default function MarketplaceCard({
             {property.kind === 'unit' && property.specs.type && (
               <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
                 {safeType(property.specs.type)}
-              </span>
-            )}
-            {devTypeLabel && (
-              <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
-                {devTypeLabel}
               </span>
             )}
           </div>
@@ -294,15 +274,21 @@ export default function MarketplaceCard({
 
         {/* Info */}
         <div className="p-3">
-          {/* Price — rango (min - max) en moneda original; o "Desde X" cuando no
-              hay max definido; o solo X si min=max. */}
-          <div className="flex items-baseline gap-2 flex-wrap">
+          {/* Price — "Desde" chiquito + monto grande + "MXN/USD" chiquito.
+              Currency dinámica desde toggle global (rate Banxico). */}
+          <div className="flex items-baseline gap-1.5 flex-wrap">
             {formattedPriceMin && (
-              <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">
-                {hasPriceRange
-                  ? `${formattedPriceMin} ${property.price.currency} - ${formattedPriceMax} ${property.price.currency}`
-                  : `${formattedPriceMin} ${property.price.currency}`}
-              </span>
+              <>
+                <span className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">
+                  {tMkt('cardPriceFrom')}
+                </span>
+                <span data-testid="marketplace-card-price" className="text-xl font-bold text-[var(--propyte-dark-900)] tabular-nums">
+                  {formattedPriceMin}
+                </span>
+                <span className="text-2xs font-semibold text-gray-500 tabular-nums">
+                  {displayCurrency}
+                </span>
+              </>
             )}
             {hasDiscount && (
               <>
@@ -316,10 +302,20 @@ export default function MarketplaceCard({
             )}
             {pricePerM2 !== null && (
               <span className="text-xs text-gray-600 tabular-nums font-medium">
-                {formatPriceOriginal(pricePerM2, property.price.currency, locale)}/{tMkt('cardM2Short')}
+                {format(pricePerM2)}/{tMkt('cardM2Short')}
               </span>
             )}
           </div>
+
+          {/* Tipo desarrollo — chip dedicado en info section (no overlay).
+              Solo kind='development' con valor canónico. */}
+          {devTypeLabel && (
+            <div className="mt-1">
+              <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
+                {devTypeLabel}
+              </span>
+            </div>
+          )}
 
           {/* Bedrooms range (developments) — surface aggregated from v_units. */}
           {bedroomsLabel && (

@@ -8,23 +8,31 @@ import { MAX_PRICE } from '@/shared/constants/marketplace';
 export interface Filters {
   search: string;
   city: string;
+  zone: string;
   type: string;
   priceMin: number;
   priceMax: number;
   roiMin: number;
   stage: PropertyStage | '';
   usage: PropertyUsage | '';
+  /** Filtro recámaras: 0 = sin filtro; 1/2/3 = exactamente N; 4 = 4 o más. */
+  bedroomsMin: number;
+  /** Solo /desarrollos. Tipo de desarrollo canónico (Manual de Identidad). */
+  developmentType: string;
 }
 
 const defaultFilters: Filters = {
   search: '',
   city: '',
+  zone: '',
   type: '',
   priceMin: 0,
   priceMax: MAX_PRICE,
   roiMin: 0,
   stage: '',
   usage: '',
+  bedroomsMin: 0,
+  developmentType: '',
 };
 
 const VALID_STAGES: PropertyStage[] = ['preventa', 'construccion', 'entrega_inmediata'];
@@ -39,8 +47,17 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const city = params.get('city');
   if (city) parsed.city = city;
 
+  const zone = params.get('zone');
+  if (zone) parsed.zone = zone;
+
   const type = params.get('type');
   if (type) parsed.type = type;
+
+  const bedrooms = params.get('bedrooms');
+  if (bedrooms) { const n = Number(bedrooms); if (n > 0) parsed.bedroomsMin = n; }
+
+  const devType = params.get('devType');
+  if (devType) parsed.developmentType = devType;
 
   const priceMin = params.get('priceMin');
   if (priceMin) { const n = Number(priceMin); if (n > 0) parsed.priceMin = n; }
@@ -93,12 +110,15 @@ export function useFilters(properties: Property[]) {
     let count = 0;
     if (filters.search) count++;
     if (filters.city) count++;
+    if (filters.zone) count++;
     if (filters.type) count++;
     if (filters.priceMin > 0) count++;
     if (filters.priceMax < MAX_PRICE) count++;
     if (filters.roiMin > 0) count++;
     if (filters.stage) count++;
     if (filters.usage) count++;
+    if (filters.bedroomsMin > 0) count++;
+    if (filters.developmentType) count++;
     return count;
   }, [filters]);
 
@@ -114,12 +134,36 @@ export function useFilters(properties: Property[]) {
         if (!match) return false;
       }
       if (filters.city && p.location.city !== filters.city) return false;
+      if (filters.zone && p.location.zone !== filters.zone) return false;
       if (filters.type && p.specs.type !== filters.type) return false;
       if (p.price.mxn < filters.priceMin) return false;
       if (p.price.mxn > filters.priceMax) return false;
       if (filters.roiMin && p.roi.projected < filters.roiMin) return false;
       if (filters.stage && p.stage !== filters.stage) return false;
       if (filters.usage && !p.usage.includes(filters.usage)) return false;
+      if (filters.developmentType && p.developmentType !== filters.developmentType) return false;
+      if (filters.bedroomsMin > 0) {
+        // Para developments: usar el rango agregado bedroomsMin/Max desde
+        // v_units. Para units: el campo directo specs.bedrooms.
+        // bedroomsMin = 4 significa "4 o más" → matchea cualquier >= 4.
+        const targetMin = filters.bedroomsMin;
+        if (p.kind === 'development') {
+          const min = p.bedroomsMin ?? 0;
+          const max = p.bedroomsMax ?? min;
+          if (targetMin === 4) {
+            if (max < 4) return false;
+          } else if (min > targetMin || max < targetMin) {
+            return false;
+          }
+        } else {
+          const b = p.specs.bedrooms;
+          if (targetMin === 4) {
+            if (b < 4) return false;
+          } else if (b !== targetMin) {
+            return false;
+          }
+        }
+      }
       return true;
     });
 

@@ -67,6 +67,7 @@ export default function PropertyList({
                 priority={i < 8}
                 hoveredId={hoveredId}
                 onHover={onHover}
+                variant="grid"
               />
             ))}
           </div>
@@ -113,6 +114,7 @@ export default function PropertyList({
                 priority={i < 6}
                 hoveredId={hoveredId}
                 onHover={onHover}
+                variant="compact"
               />
             ))}
           </div>

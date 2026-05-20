@@ -38,9 +38,16 @@ export interface UnitRow {
   floor: number | null;
   // Classification
   unit_type: string | null;       // departamento, penthouse, casa, terreno
-  stage: string | null;
+  /** v_units column real: 'preventa' | 'disponible' | 'construccion' | etc.
+   *  Reemplaza el `stage` y `availability_status` legacy. */
+  status: string | null;
+  /** Flag explícito de pre-venta. Cuando true forza stage='preventa'. */
+  is_presale: boolean | null;
   usage: string[] | null;
-  availability_status: string | null;  // disponible, reservado, vendido
+  /** @deprecated v_units ya no expone esta columna — usar `status` */
+  availability_status?: string | null;
+  /** @deprecated v_units ya no expone esta columna — usar `status` */
+  stage?: string | null;
   // Media
   images: string[] | null;
   virtual_tour_url: string | null;
@@ -83,9 +90,16 @@ const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
  * development via parentDevelopmentSlug for the "View development" CTA.
  */
 export function mapUnitToProperty(row: UnitRow): Property {
-  const stage: PropertyStage = VALID_STAGES.includes(row.stage as PropertyStage)
-    ? (row.stage as PropertyStage)
-    : 'preventa';
+  // v_units NO expone `stage` ni `availability_status` — usar `status` +
+  // `is_presale`. Fix bug 2026-05-20: el mapper antiguo caía a 'preventa'
+  // como fallback cuando row.stage venía undefined → TODAS las unidades
+  // mostraban badge "PREVENTA" aunque status fuera 'disponible'.
+  const statusRaw = (row.status || '').toLowerCase().trim();
+  const stage: PropertyStage = row.is_presale === true || statusRaw === 'preventa'
+    ? 'preventa'
+    : statusRaw === 'construccion' || statusRaw === 'construcción'
+      ? 'construccion'
+      : 'entrega_inmediata';
 
   const usage: PropertyUsage[] = (row.usage || [])
     .filter((u): u is string => typeof u === 'string')
@@ -97,9 +111,10 @@ export function mapUnitToProperty(row: UnitRow): Property {
     ? (row.unit_type as Property['specs']['type'])
     : 'departamento';
 
-  // Availability → badge
-  const statusKey = (row.availability_status || '').toLowerCase();
-  const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusKey] ?? null;
+  // Availability → badge. AVAILABILITY_TO_BADGE solo aplica para 'reservado'/
+  // 'vendido' (visualización). 'disponible' no necesita badge — el stage ya
+  // comunica el estado de la unidad.
+  const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusRaw] ?? null;
 
   // Promo / discount fields are optional in v_units — read defensively.
   const priceOriginalRaw = row.price_original_mxn;

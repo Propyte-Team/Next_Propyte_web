@@ -100,6 +100,26 @@ export default function MarketplaceContent({
   // Eyebrow pill: canonical Propyte tagline para todas las listadas (ES/EN).
   const eyebrowLabel = t('heroEyebrow');
 
+  // Listas dinámicas para filtros — calculadas del set actual de properties.
+  // Cities: todas las ciudades distintas que aparecen.
+  // Zones: zonas pertenecientes a la ciudad seleccionada (o todas si no hay).
+  const availableCities = useMemo(() => {
+    const s = new Set<string>();
+    properties.forEach((p) => { if (p.location.city) s.add(p.location.city); });
+    return Array.from(s).sort();
+  }, [properties]);
+  const availableZones = useMemo(() => {
+    const s = new Set<string>();
+    properties.forEach((p) => {
+      if (filters.city && p.location.city !== filters.city) return;
+      if (p.location.zone) s.add(p.location.zone);
+    });
+    return Array.from(s).sort();
+  }, [properties, filters.city]);
+  // showDevTypeFilter: solo en /desarrollos (showMap=false → grid full-width).
+  // En /propiedades (units) no aplica, el filtro de tipo unidad ya existe.
+  const showDevTypeFilter = !showMap;
+
   // Scroll-to-top defensivo al montar la página de listados — evita que el
   // navegador restaure una posición previa que dejaría el pre-footer CTA
   // visible al abrir (viewports altos + Lenis interceptando wheel pueden
@@ -179,6 +199,9 @@ export default function MarketplaceContent({
           onOpenAdvanced={() => setShowAdvanced(true)}
           advancedOpen={showAdvanced}
           resultCount={displayed.length}
+          availableCities={availableCities}
+          availableZones={availableZones}
+          showDevTypeFilter={showDevTypeFilter}
         />
 
         {/* Cluster filter chip — visible cuando el user clickeó un "+N" */}
@@ -283,6 +306,9 @@ export default function MarketplaceContent({
         onOpenAdvanced={() => setShowAdvanced(true)}
         advancedOpen={showAdvanced}
         resultCount={filtered.length}
+        availableCities={availableCities}
+        availableZones={availableZones}
+        showDevTypeFilter={showDevTypeFilter}
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-8">
