@@ -182,12 +182,14 @@ export function mapUnitToProperty(row: UnitRow): Property {
   return {
     id: row.id,
     slug: row.slug,
-    // v_units expone `title` (no `name`). Fallback chain defensive: title → name →
-    // development_name → slug → 'Propiedad'. Evita property.name=undefined que
-    // crashea .replace() en ShareDownloadModal, MobileContactBar y tracking.
+    // v_units expone `title` (no `name`). Si Marketing llenó titulo_unidad en Hub,
+    // ese es el título editorial y gana. Solo si no hay título personalizado caemos al
+    // fallback "<development_name> — <unit_number>".
     name: (() => {
-      const base = (row.title as string | null) || (row.name as string | null) || row.development_name || row.slug || 'Propiedad';
-      return row.unit_number ? `${row.development_name || base} — ${row.unit_number}` : base;
+      const editorial = (row.title as string | null) || (row.name as string | null);
+      if (editorial) return editorial;
+      const fallbackBase = row.development_name || row.slug || 'Propiedad';
+      return row.unit_number ? `${fallbackBase} — ${row.unit_number}` : fallbackBase;
     })(),
     developer: row.developer_name || '',
     kind: 'unit',
