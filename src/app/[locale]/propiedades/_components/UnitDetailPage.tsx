@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Bed, Bath, Square, Car, Building2, ArrowLeft,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
@@ -18,7 +18,6 @@ import {
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
-import { getMockUnit, getSimilarMockUnits } from '@/lib/mocks/unit-fixtures';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_MARKET_CODE, VAC } from '@/lib/calculator';
@@ -40,6 +39,9 @@ import UnitInvestmentCalculator from './UnitInvestmentCalculator';
 import MarketIndicator from './MarketIndicator';
 import AmenityList from '@/components/property/AmenityList';
 import FloatingKeyData from '@/components/property/FloatingKeyData';
+import Highlights from '@/components/property/Highlights';
+import Proximity from '@/components/property/Proximity';
+import RichContentSections from '@/components/property/RichContentSections';
 import UnitFAQs from './UnitFAQs';
 import { slugify } from '@/lib/utils';
 
@@ -55,7 +57,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     getVisibility(),
   ]);
 
-  // ── Fetch unit row — Supabase first, mock fallback ──
+  // ── Fetch unit row — Supabase only, 404 si no existe ──
   let row: UnitRow | null = null;
   try {
     if (supabase) {
@@ -66,7 +68,6 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     console.error('Unit query failed:', err);
   }
 
-  if (!row) row = getMockUnit(slug);
   if (!row) notFound();
 
   const property = mapUnitToProperty(row);
@@ -149,15 +150,6 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     }
   } catch (err) {
     console.error('Similar units fetch failed:', err);
-  }
-
-  if (similar.length === 0) {
-    similar = getSimilarMockUnits(slug, property.location.city, 4).map((u) => ({
-      id: u.id, slug: u.slug, name: u.development_name || u.name,
-      city: u.city, zone: u.zone, images: u.images, price_mxn: u.price_mxn,
-      bedrooms: u.bedrooms, bathrooms: u.bathrooms, area_m2: u.area_m2,
-      unit_number: u.unit_number, development_name: u.development_name,
-    }));
   }
 
   const stageLabel =
@@ -304,7 +296,15 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   </>
                 )}
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-[#2C2C2C]">{property.name}</h1>
+              {/* Título + Share/Ficha en la misma fila — libera espacio vertical
+                  para el bloque de precio (original + referencial + TC). */}
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <h1 className="text-lg md:text-3xl font-bold text-[#2C2C2C] flex-1 min-w-0 leading-tight tracking-tight">
+                  {property.name}
+                </h1>
+                <ShareDownloadModal data={shareData} locale={locale} />
+              </div>
+
               <div className="flex items-center gap-2 mt-2 text-gray-600">
                 <MapPin size={18} />
                 <span className="text-base">
@@ -312,53 +312,49 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 </span>
               </div>
 
-              {/* Price + Share */}
-              <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
-                {property.price.mxn > 0 && (
-                  <div className="flex items-baseline gap-4 flex-wrap">
-                    {/* Precio principal: MXN grande, USD chico abajo (toggle global MXN/USD).
-                        Incluye nota "TC ref. Banxico" debajo. */}
-                    <PriceDisplay
-                      mxn={property.price.mxn}
-                      variant="dual"
-                      size="xl"
-                      showRateNote
-                      originalCurrency={originalCurrency}
-                    />
-                    {property.specs.area > 0 && (
-                      <div className="text-sm text-gray-600">
-                        <PriceDisplay
-                          mxn={Math.round(property.price.mxn / property.specs.area)}
-                          variant="single"
-                          size="sm"
-                          suffix="/m²"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-                <ShareDownloadModal data={shareData} locale={locale} />
-              </div>
+              {/* Precio (full width) — sin Share aquí, el título lo lleva arriba */}
+              {property.price.mxn > 0 && (
+                <div className="mt-4 flex items-baseline gap-4 flex-wrap">
+                  <PriceDisplay
+                    mxn={property.price.mxn}
+                    variant="dual"
+                    size="xl"
+                    showRateNote
+                    originalCurrency={originalCurrency}
+                  />
+                  {property.specs.area > 0 && (
+                    <div className="text-sm text-gray-600">
+                      <PriceDisplay
+                        mxn={Math.round(property.price.mxn / property.specs.area)}
+                        variant="single"
+                        size="sm"
+                        suffix="/m²"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
 
-              {/* Specs chips */}
-              <div className="flex flex-wrap gap-2 mt-4">
+              {/* Specs chips — bumped: iconos + texto más grandes para
+                  jerarquía visual. Padding aumentado para que respiren. */}
+              <div className="flex flex-wrap gap-2.5 mt-5">
                 {property.specs.bedrooms > 0 && (
-                  <SpecChip icon={<Bed size={16} />} label={`${property.specs.bedrooms} ${tProp('bedShort', { count: property.specs.bedrooms })}`} />
+                  <SpecChip icon={<Bed size={20} />} label={`${property.specs.bedrooms} ${tProp('bedShort', { count: property.specs.bedrooms })}`} />
                 )}
                 {property.specs.bathrooms > 0 && (
-                  <SpecChip icon={<Bath size={16} />} label={`${property.specs.bathrooms} ${tProp('bathShort', { count: property.specs.bathrooms })}`} />
+                  <SpecChip icon={<Bath size={20} />} label={`${property.specs.bathrooms} ${tProp('bathShort', { count: property.specs.bathrooms })}`} />
                 )}
                 {property.specs.area > 0 && (
                   <SpecChip
-                    icon={<Square size={16} />}
+                    icon={<Square size={20} />}
                     label={<AreaDisplay m2={property.specs.area} variant="dual" size="sm" />}
                   />
                 )}
                 {row.parking && row.parking > 0 && (
-                  <SpecChip icon={<Car size={16} />} label={`${row.parking} ${tProp('parkingShort')}`} />
+                  <SpecChip icon={<Car size={20} />} label={`${row.parking} ${tProp('parkingShort')}`} />
                 )}
                 {row.floor != null && (
-                  <SpecChip icon={<Building2 size={16} />} label={tProp('floorLabel', { n: row.floor })} />
+                  <SpecChip icon={<Building2 size={20} />} label={tProp('floorLabel', { n: row.floor })} />
                 )}
               </div>
             </div>
@@ -372,6 +368,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   label: tProp('tabDescripcion'),
                   panel: (
                     <div className="space-y-6">
+                      <Highlights property={property} />
+
                       <div>
                         <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{tProp('aboutUnitTitle')}</h2>
                         {description ? (
@@ -387,7 +385,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                           <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
                         )}
                       </div>
+                      {property.richContent && (
+                        <RichContentSections richContent={property.richContent} locale={locale} />
+                      )}
                       <AmenityList locale={locale} amenities={devAmenities.length > 0 ? devAmenities : property.amenities} />
+                      <Proximity city={property.location.city} zone={property.location.zone} />
 
                       {developerDisplay?.name && (
                         <div className="propyte-card-glass-light p-6">
@@ -518,6 +520,9 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               city={property.location.city}
               price={property.price.mxn}
               downPaymentMin={property.financing.downPaymentMin}
+              customFaqs={(locale === 'en'
+                ? property.richContent?.faqs?.en
+                : property.richContent?.faqs?.es) ?? undefined}
             />
           </div>
 
@@ -547,17 +552,13 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 <p className="text-sm text-gray-600 mb-4">
                   {tProp('responseUnder5min')}
                 </p>
-                <ContactForm propertyId={property.id} propertyName={property.name} />
-                <a
-                  href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=${encodeURIComponent(
+                <ContactForm
+                  propertyId={property.id}
+                  propertyName={property.name}
+                  whatsappUrl={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=${encodeURIComponent(
                     tProp('whatsappInterestText', { name: property.name })
                   )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full h-12 mt-3 propyte-cta-whatsapp font-semibold rounded-lg transition-colors"
-                >
-                  WhatsApp
-                </a>
+                />
               </div>
             </div>
           </div>
@@ -599,7 +600,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
 function SpecChip({ icon, label }: { icon: React.ReactNode; label: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 rounded-full text-xs font-medium text-gray-700">
+    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm font-semibold text-gray-700">
       <span className="text-[#0E7490]">{icon}</span>
       {label}
     </div>

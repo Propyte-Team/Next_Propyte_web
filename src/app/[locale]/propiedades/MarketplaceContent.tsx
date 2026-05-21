@@ -37,7 +37,7 @@ function MarketplaceHero({ heading, subheading, eyebrow }: { heading: string; su
           <Sparkles size={12} strokeWidth={2.25} className="text-[var(--propyte-dark-700)]" />
           <span className="text-[var(--propyte-dark-700)] text-2xs font-bold tracking-[0.18em] uppercase">{eyebrow}</span>
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-[var(--propyte-dark-900)] leading-tight tracking-tight">
+        <h1 className="text-lg md:text-3xl font-bold text-[var(--propyte-dark-900)] leading-tight tracking-tight">
           {restOfHeading}
           {lastWord && (
             <>
