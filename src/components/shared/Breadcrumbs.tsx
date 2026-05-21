@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight, Home } from '@/lib/icons';
 import { isDarkHeroRoute } from '@/shared/constants/dark-hero-routes';
 
 export interface BreadcrumbItem {
@@ -86,14 +86,14 @@ export default function Breadcrumbs({
               return (
                 <li key={`${item.label}-${i}`} className="flex items-center gap-1.5">
                   {i > 0 && (
-                    <ChevronRight size={14} strokeWidth={2} className={`${sepColor} flex-shrink-0`} aria-hidden="true" />
+                    <ChevronRight size={14} className={`${sepColor} flex-shrink-0`} aria-hidden="true" />
                   )}
                   {isLast || !item.href ? (
                     <span
                       className={`${currentText} truncate max-w-[220px] md:max-w-none`}
                       aria-current="page"
                     >
-                      {isFirst ? <Home size={14} strokeWidth={2} className="inline-block -mt-0.5" aria-hidden="true" /> : item.label}
+                      {isFirst ? <Home size={14} className="inline-block -mt-0.5" aria-hidden="true" /> : item.label}
                     </span>
                   ) : (
                     <Link
@@ -101,7 +101,7 @@ export default function Breadcrumbs({
                       className={`${linkHover} inline-flex items-center justify-center min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 px-1 -mx-1 transition-colors truncate max-w-[140px] md:max-w-[220px]`}
                     >
                       {isFirst ? (
-                        <Home size={14} strokeWidth={2} aria-hidden="true" />
+                        <Home size={14} aria-hidden="true" />
                       ) : (
                         item.label
                       )}

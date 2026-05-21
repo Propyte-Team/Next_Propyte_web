@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Clock, Calendar, ArrowRight } from 'lucide-react';
+import { Clock, Calendar, ArrowRight } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDate } from '@/lib/helpers/format-date';
 

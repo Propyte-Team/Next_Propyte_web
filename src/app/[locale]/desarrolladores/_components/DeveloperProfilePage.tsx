@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from 'lucide-react';
+import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {

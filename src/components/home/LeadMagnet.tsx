@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { FileDown, CheckCircle } from 'lucide-react';
+import { FileDown, CheckCircle } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 
 export interface LeadMagnetCta {

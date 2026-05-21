@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Building2, MapPin } from 'lucide-react';
+import { Building2, MapPin } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 

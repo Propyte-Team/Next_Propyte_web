@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import {
+  Home,
+  Building2,
+  Globe,
   Key,
   Store,
   Menu as MenuIcon,
@@ -14,12 +17,7 @@ import {
   Truck,
   Zap,
   Layout as LayoutIcon,
-} from 'lucide-react';
-import {
-  PiHome as Home,
-  PiBuilding as Building2,
-  PiGlobe as Globe,
-} from '@/components/icons/PropyteIcons';
+} from '@/lib/icons';
 import { isNavActive } from '@/lib/nav/isActive';
 import { useIsVisible } from '@/context/SiteVisibilityContext';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
@@ -117,7 +115,7 @@ export default function Sidebar() {
                 active ? 'bg-white/10 text-propyte-brand' : 'text-white/75 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Icon size={20} strokeWidth={1.75} />
+              <Icon size={20} />
               <span className="text-2xs font-medium leading-tight text-center px-1">
                 {t(item.labelKey)}
               </span>
@@ -138,7 +136,7 @@ export default function Sidebar() {
             hasActiveChild ? 'bg-white/10 text-propyte-brand' : 'text-white/65 hover:text-white hover:bg-white/5'
           }`}
         >
-          <MenuIcon size={18} strokeWidth={1.75} />
+          <MenuIcon size={18} />
           <span className="text-2xs font-medium">{t('more')}</span>
         </button>
 
@@ -162,7 +160,7 @@ export default function Sidebar() {
                     active ? 'text-propyte-brand bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <Icon size={16} strokeWidth={1.75} className="shrink-0" />
+                  <Icon size={16} className="shrink-0" />
                   {t(item.labelKey)}
                 </Link>
               );

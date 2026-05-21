@@ -10,7 +10,7 @@ import {
   ChevronDown, ChevronUp, CheckCircle, ArrowRight,
   MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield, ShieldCheck,
   Search, MapPin, BadgeCheck,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 import type { DeveloperRow } from '@/lib/supabase/types';

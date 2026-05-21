@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
 } from 'recharts';
-import { TrendingUp, ArrowRight } from 'lucide-react';
+import { TrendingUp, ArrowRight } from '@/lib/icons';
 import Link from 'next/link';
 import { useCurrency } from '@/context/CurrencyContext';
 

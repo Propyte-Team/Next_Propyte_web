@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Share2, X, FileDown, Mail, MessageCircle, Link2, Check, Loader2,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 interface ShareButtonProps {
   propertyName: string;

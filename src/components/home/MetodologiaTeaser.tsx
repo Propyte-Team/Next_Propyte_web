@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowRight, ScrollText, Calendar, Tag, Hammer, TrendingUp } from 'lucide-react';
+import { ArrowRight, ScrollText, Calendar, Tag, Hammer, TrendingUp } from '@/lib/icons';
 
 export default function MetodologiaTeaser() {
   const t = useTranslations('metodologiaTeaser');
@@ -59,7 +59,7 @@ export default function MetodologiaTeaser() {
             className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors text-sm"
           >
             {t('cta')}
-            <ArrowRight size={16} strokeWidth={2} />
+            <ArrowRight size={16} />
           </Link>
         </div>
       </div>

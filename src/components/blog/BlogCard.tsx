@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Clock, Calendar } from 'lucide-react';
+import { Clock, Calendar } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDateShort } from '@/lib/helpers/format-date';
 

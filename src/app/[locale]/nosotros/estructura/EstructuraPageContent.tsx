@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronUp,
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
   HelpCircle, type LucideIcon,
-} from 'lucide-react';
+} from '@/lib/icons';
 import type { OrgNodeRow } from '@/lib/supabase/queries';
 
 const ICON_MAP: Record<string, LucideIcon> = {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { MapPin, Clock, ArrowRight } from 'lucide-react';
+import { MapPin, Clock, ArrowRight } from '@/lib/icons';
 
 export default function DondeEstamos() {
   const t = useTranslations('dondeEstamos');
@@ -51,7 +51,7 @@ export default function DondeEstamos() {
                 className="inline-flex items-center gap-2 min-h-[44px] px-6 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
               >
                 {t('labCta')}
-                <ArrowRight size={16} strokeWidth={2} />
+                <ArrowRight size={16} />
               </Link>
             </div>
           </div>
@@ -72,7 +72,6 @@ export default function DondeEstamos() {
                     <span className="flex-1">{zone}</span>
                     <ArrowRight
                       size={14}
-                      strokeWidth={2}
                       className="text-[#0E7490] opacity-0 group-hover:opacity-100 transition-opacity"
                     />
                   </Link>

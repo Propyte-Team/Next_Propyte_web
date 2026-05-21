@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
-import { Play, X, Maximize2, Volume2 } from 'lucide-react';
+import { Play, X, Maximize2, Volume2 } from '@/lib/icons';
 import Image from 'next/image';
 
 interface VideoPlayerProps {

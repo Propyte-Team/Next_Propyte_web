@@ -1,5 +1,5 @@
 import { useLocale } from 'next-intl';
-import { Waves, Plane, ShoppingCart, Cross, GraduationCap, UtensilsCrossed } from 'lucide-react';
+import { Waves, Plane, ShoppingCart, Cross, GraduationCap, UtensilsCrossed } from '@/lib/icons';
 
 interface ProximityItem {
   icon: typeof Waves;

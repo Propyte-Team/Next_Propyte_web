@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid } from '@/lib/icons';
 import { useLocale } from 'next-intl';
 
 interface BlogHeroProps {

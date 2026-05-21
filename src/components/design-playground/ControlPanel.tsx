@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ChevronDown, Search } from 'lucide-react';
+import { ChevronDown, Search } from '@/lib/icons';
 import ColorSection from './sections/ColorSection';
 import TypographySection from './sections/TypographySection';
 import SpacingSection from './sections/SpacingSection';

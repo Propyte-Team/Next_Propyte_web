@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
-import { Mail } from 'lucide-react';
+import { Mail } from '@/lib/icons';
 import { toast } from 'sonner';
 import { submitForm } from '@/lib/submitForm';
 

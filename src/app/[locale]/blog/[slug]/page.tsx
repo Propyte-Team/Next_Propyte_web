@@ -9,7 +9,7 @@ import BlogShareBar from '@/components/blog/BlogShareBar';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { formatDate } from '@/lib/helpers/format-date';
 import { sanitizeRichHtml } from '@/lib/security/sanitizeHtml';
-import { Calendar, Clock, Tag, ChevronLeft } from 'lucide-react';
+import { Calendar, Clock, Tag, ChevronLeft } from '@/lib/icons';
 
 export const revalidate = 3600;
 

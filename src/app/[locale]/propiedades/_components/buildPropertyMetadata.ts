@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnitBySlug } from '@/lib/supabase/queries';
-import { getMockUnit } from '@/lib/mocks/unit-fixtures';
 import { formatPrice } from '@/lib/formatters';
 import type { UnitRow } from '@/lib/mappers/unit-to-property';
 
@@ -15,10 +14,9 @@ export async function buildPropertyMetadata(slug: string, locale: string): Promi
       if (data) row = data as UnitRow;
     }
   } catch {
-    // fall through to mock
+    // fall through to empty metadata
   }
 
-  if (!row) row = getMockUnit(slug);
   if (!row) return {};
 
   const description = (locale === 'en' ? row.description_en : row.description_es) || '';

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { Menu, ChevronDown } from 'lucide-react';
+import { Menu, ChevronDown } from '@/lib/icons';
 import SearchBubble from './SearchBubble';
 
 interface MobileHeaderProps {
@@ -86,7 +86,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               className="inline-flex items-center gap-1 min-h-[44px] px-3 text-xs font-medium bg-white/80 backdrop-blur-sm rounded-full border border-gray-200/60 text-[#2C2C2C] transition-colors"
             >
               <span>{locale === 'en' ? '🇺🇸 EN' : '🇲🇽 ES'}</span>
-              <ChevronDown size={10} strokeWidth={2} />
+              <ChevronDown size={10} />
             </button>
             {langOpen && (
               <div id="mh-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">

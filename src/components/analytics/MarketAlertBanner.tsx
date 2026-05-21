@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle, TrendingDown, TrendingUp, Info, X } from 'lucide-react';
+import { AlertTriangle, TrendingDown, TrendingUp, Info, X } from '@/lib/icons';
 import type { MarketAlert } from '@/lib/supabase/queries';
 
 interface MarketAlertBannerProps {

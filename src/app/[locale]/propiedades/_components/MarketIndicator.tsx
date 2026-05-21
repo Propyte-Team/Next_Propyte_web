@@ -1,4 +1,4 @@
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { CITY_TO_MARKET_CODE, calculatePriceToRentRatio } from '@/lib/calculator';
 

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/icons';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { ZoneScore } from '@/lib/supabase/queries';
 

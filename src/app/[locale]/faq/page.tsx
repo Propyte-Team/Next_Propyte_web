@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/icons';
 import FAQContent from './FAQContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getFaqs } from '@/lib/hub-content';
@@ -126,7 +126,7 @@ export default async function FAQPage({ params }: { params: Promise<{ locale: st
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <Sparkles size={14} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
             </span>

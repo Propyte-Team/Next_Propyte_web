@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ArrowRight, Users, MapPin, MessageCircle, Home } from 'lucide-react';
+import { ArrowRight, Users, MapPin, MessageCircle, Home } from '@/lib/icons';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -258,7 +258,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
             className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors text-sm"
           >
             {t('ctaButton')}
-            <ArrowRight size={16} strokeWidth={2} />
+            <ArrowRight size={16} />
           </Link>
         </div>
       </section>

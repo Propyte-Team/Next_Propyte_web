@@ -1,6 +1,6 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { TrendingUp, Building2, Users } from 'lucide-react';
+import { TrendingUp, Building2, Users } from '@/lib/icons';
 
 export default function ValueProposition() {
   const t = useTranslations('valueProp');

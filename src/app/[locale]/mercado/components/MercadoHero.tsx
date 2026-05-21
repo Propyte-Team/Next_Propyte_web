@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Activity } from 'lucide-react';
+import { Activity } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface MercadoHeroProps {

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Search, Download } from 'lucide-react';
+import { Search, Download } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import GlossaryLeadGateModal from '@/components/glosario/GlossaryLeadGateModal';
 

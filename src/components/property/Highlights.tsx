@@ -2,7 +2,7 @@ import { useLocale } from 'next-intl';
 import {
   Waves, PawPrint, Building2, TrendingUp, Sun, Shield,
   Dumbbell, Car, Trees, Coffee, Lock, Palmtree
-} from 'lucide-react';
+} from '@/lib/icons';
 import type { Property } from '@/types/property';
 
 const HIGHLIGHT_ICONS: Record<string, typeof Waves> = {

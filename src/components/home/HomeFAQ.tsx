@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown } from '@/lib/icons';
 
 export default function HomeFAQ() {
   const t = useTranslations('homeFAQ');
@@ -60,7 +60,6 @@ export default function HomeFAQ() {
                   </span>
                   <ChevronDown
                     size={20}
-                    strokeWidth={2}
                     className={`shrink-0 text-[#0E7490] transition-transform ${
                       isOpen ? 'rotate-180' : ''
                     }`}

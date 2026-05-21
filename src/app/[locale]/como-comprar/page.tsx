@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import {
   Search, FileText, CreditCard, Home, Key, ClipboardCheck,
   CheckCircle, ArrowRight, Sparkles,
-} from 'lucide-react';
+} from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -94,7 +94,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <Sparkles size={14} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('heroEyebrow')}
             </span>

@@ -7,7 +7,7 @@ import {
   Building2, Palette, HardHat, TreePine, Hammer, Leaf,
   CheckCircle, ArrowRight, MessageCircle, Shield, Users,
   Compass, Pencil, FileCheck, Wrench, KeyRound
-} from 'lucide-react';
+} from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 
 interface BuiltStatOverride {

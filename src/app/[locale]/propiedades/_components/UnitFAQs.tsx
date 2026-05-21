@@ -1,5 +1,5 @@
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle } from '@/lib/icons';
 
 interface UnitFAQsProps {
   locale: string;
@@ -7,13 +7,16 @@ interface UnitFAQsProps {
   city: string;
   price: number;
   downPaymentMin: number;
+  /** FAQs editoriales desde Hub (BD). Cuando vienen ≥3 items, sustituyen
+   *  el set genérico hardcoded. */
+  customFaqs?: Array<{ q: string; a: string }>;
 }
 
-export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin }: UnitFAQsProps) {
+export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin, customFaqs }: UnitFAQsProps) {
   const isEn = locale === 'en';
   const formattedDown = downPaymentMin > 0 ? downPaymentMin : 20;
 
-  const faqs = isEn
+  const fallbackFaqs = isEn
     ? [
         { q: `What is the minimum down payment for ${unitName}?`, a: `The typical down payment for units in ${city} starts at ${formattedDown}% of the sale price. Financing plans are available through Propyte's partner banks and directly with the developer.` },
         { q: 'Can I use this unit as a vacation rental (Airbnb)?', a: `Yes. ${city} is one of Mexico's top short-term rental markets. Units in this development are licensed for vacation rental and typically achieve 65-85% occupancy with market data-backed ADR estimates.` },
@@ -30,6 +33,8 @@ export default function UnitFAQs({ locale, unitName, city, price, downPaymentMin
         { q: '¿Qué incluye el mantenimiento mensual?', a: 'El mantenimiento típicamente cubre el cuidado de amenidades comunes (alberca, gym, seguridad, jardines), personal de lobby y vigilancia 24/7. El monto exacto se especifica en el brochure detallado.' },
         { q: '¿El ROI proyectado es garantizado?', a: 'No. Las proyecciones de ROI son estimaciones basadas en datos históricos, benchmarks de mercado y análisis de comparables de renta. Los rendimientos reales varían con la ocupación, mantenimiento y condiciones de mercado. La calculadora arriba te permite ajustar los supuestos.' },
       ];
+
+  const faqs = customFaqs && customFaqs.length >= 3 ? customFaqs : fallbackFaqs;
 
   return (
     <div>

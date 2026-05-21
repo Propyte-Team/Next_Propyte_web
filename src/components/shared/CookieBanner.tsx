@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown, X, ShieldCheck } from 'lucide-react';
+import { ChevronDown, X, ShieldCheck } from '@/lib/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { readConsent, writeConsent, REOPEN_EVENT } from '@/lib/cookies/consent';
 

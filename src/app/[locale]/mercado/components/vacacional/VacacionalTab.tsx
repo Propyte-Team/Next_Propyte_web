@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { VacacionalKPIs } from './VacacionalKPIs';

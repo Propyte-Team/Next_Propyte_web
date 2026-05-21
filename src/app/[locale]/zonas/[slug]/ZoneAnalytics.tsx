@@ -9,7 +9,7 @@ import { RevPARChart } from '@/components/analytics/RevPARChart';
 import { SupplyDemandIndicator } from '@/components/analytics/SupplyDemandIndicator';
 import { MarketAlertBanner } from '@/components/analytics/MarketAlertBanner';
 import type { ZoneScore, MetricForecast, SeasonalIndex } from '@/lib/supabase/queries';
-import { TrendingUp, Building2, DollarSign, BarChart3 } from 'lucide-react';
+import { TrendingUp, Building2, DollarSign, BarChart3 } from '@/lib/icons';
 
 interface Development {
   id: string;

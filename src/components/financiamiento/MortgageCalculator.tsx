@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Calculator, ArrowRight } from 'lucide-react';
+import { Calculator, ArrowRight } from '@/lib/icons';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { useCurrency } from '@/context/CurrencyContext';

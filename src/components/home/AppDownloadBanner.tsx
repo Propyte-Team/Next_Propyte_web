@@ -1,6 +1,6 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Calculator, BarChart3 } from 'lucide-react';
+import { Calculator, BarChart3 } from '@/lib/icons';
 
 export default function AppDownloadBanner() {
   const t = useTranslations('roiSimulator');

@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { MapPin, Building2, Tag, ArrowRight } from 'lucide-react';
+import { MapPin, Building2, Tag, ArrowRight } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
 import { getCta } from '@/lib/hub-content';
@@ -160,7 +160,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
             style={{ backgroundColor: `${heroAccent}33` }}
           >
-            <Tag size={14} strokeWidth={2} style={{ color: heroAccent }} />
+            <Tag size={14} style={{ color: heroAccent }} />
             <span className="text-sm font-semibold tracking-wide uppercase" style={{ color: heroAccent }}>
               {heroEyebrow}
             </span>

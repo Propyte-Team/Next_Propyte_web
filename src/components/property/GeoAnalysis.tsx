@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
-import { MapPin, TrendingUp, Activity, Building2, Gauge } from 'lucide-react';
+import { MapPin, TrendingUp, Activity, Building2, Gauge } from '@/lib/icons';
 import type { ZoneScore } from '@/lib/supabase/queries';
 
 interface GeoAnalysisProps {

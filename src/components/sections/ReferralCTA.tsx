@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@/lib/icons';
 
 export default function ReferralCTA() {
   const t = useTranslations('referralCta');

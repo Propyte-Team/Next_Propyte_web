@@ -6,7 +6,7 @@
  * Cambia tokens directamente con un click — sin sliders ni inputs.
  */
 
-import { X } from 'lucide-react';
+import { X } from '@/lib/icons';
 import { useTokensStore } from '@/components/playground/store/useTokensStore';
 import { DEFAULT_TOKENS } from '@/components/playground/lib/defaults';
 

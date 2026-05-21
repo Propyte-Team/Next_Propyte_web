@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { GitCompare, X, ChevronUp } from 'lucide-react';
+import { GitCompare, X, ChevronUp } from '@/lib/icons';
 import { useCompare, MAX_COMPARE } from '@/hooks/useCompare';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { Property } from '@/types/property';

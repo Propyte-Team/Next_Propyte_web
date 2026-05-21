@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowRight, Languages, ShieldCheck, Clock } from 'lucide-react';
+import { ArrowRight, Languages, ShieldCheck, Clock } from '@/lib/icons';
 
 export default function NosotrosTeaser() {
   const t = useTranslations('nosotrosTeaser');
@@ -35,7 +35,7 @@ export default function NosotrosTeaser() {
               className="inline-flex items-center gap-2 min-h-[44px] px-6 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
             >
               {t('cta')}
-              <ArrowRight size={16} strokeWidth={2} />
+              <ArrowRight size={16} />
             </Link>
           </div>
 

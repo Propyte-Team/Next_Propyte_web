@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/icons';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');

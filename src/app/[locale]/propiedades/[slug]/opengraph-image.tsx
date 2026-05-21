@@ -3,7 +3,6 @@ import { loadOGFonts } from '@/lib/og/fonts';
 import OGFrame from '@/lib/og/OGFrame';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnitBySlug } from '@/lib/supabase/queries';
-import { getMockUnit } from '@/lib/mocks/unit-fixtures';
 import { formatPrice } from '@/lib/formatters';
 import type { UnitRow } from '@/lib/mappers/unit-to-property';
 
@@ -34,8 +33,7 @@ export default async function Image({
         const { data } = await getUnitBySlug(supabase, slug);
         if (data) row = data as UnitRow;
       }
-    } catch { /* fallback to mock */ }
-    if (!row) row = getMockUnit(slug);
+    } catch { /* no fallback */ }
 
     if (row) {
       title = row.development_name || row.name;

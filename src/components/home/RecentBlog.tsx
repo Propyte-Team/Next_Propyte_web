@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Clock, FileText, Mail } from 'lucide-react';
+import { ArrowRight, Clock, FileText, Mail } from '@/lib/icons';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts } from '@/lib/supabase/queries';
 

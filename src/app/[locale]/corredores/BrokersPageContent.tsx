@@ -11,7 +11,7 @@ import {
   Users, ChevronDown, ChevronUp,
   CheckCircle, ArrowRight, MessageCircle, Zap,
   ClipboardCheck, Rocket, Handshake, Shield
-} from 'lucide-react';
+} from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 

@@ -1,12 +1,24 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-20 noche-2 (Listados refactor + Banxico FX + 11 iconos custom + SAMPLE delete + soft-delete gate fix. Deploy actual: `dpl_2qmSyY1WbRSDQrZG3UB2zEGhLNrr`)
+> Última actualización: 2026-05-20 noche-3 (Image Proxy /propyte-media commit `7bae658` — oculta host Supabase + filename con city/typology. Sigue sin deployar.)
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
 ---
 
 ## En progreso
+
+### Image Proxy /propyte-media (sesión 2026-05-20 noche-3)
+
+> Commit `7bae658` local en develop, NO deployado aún. URLs antes exponían host Supabase + city/typology en filename; ahora `propyte.com/propyte-media/u/<32-hex>/<idx>.webp`. Typecheck + build + 4/4 unit tests pasan; smoke local OK.
+
+- [ ] **Deploy `7bae658` a Vercel preview** — validar imágenes cargan via proxy en dev.propyte.com; abrir foto en nueva pestaña → URL debe ser `dev.propyte.com/propyte-media/u/...`. Check Vercel logs: cache HIT rate (warmup → >90%).
+- [ ] **Decidir extender proxy a otros buckets** (esperar decisión Luis) — candidatos: `developer-logos` (logos en home, 1 hit residual), `v_team_members.photo_url`, blog `featured_image`, case studies `image_url`. Patrón en `src/app/propyte-media/[type]/[id]/[idx]/route.ts`. Añadir type='l' (logo), type='t' (team) etc.
+- [ ] **Auditar seguridad real Supabase** (lo más importante; el proxy es solo cosmético):
+  - Ejecutar `mcp__claude_ai_Supabase__get_advisors type=security` → lista tablas sin RLS
+  - Verificar bucket policies de `property-images` (SELECT público, INSERT/UPDATE/DELETE auth)
+  - Grep repo para confirmar `service_role` NO está en bundle cliente
+  - O simplemente correr `/cyber-neo`
 
 ### PDF de la diseñadora — bloque ajustes visuales (NO iconos, sesión 2026-05-20 noche-2)
 
@@ -22,7 +34,7 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ### Continuación previa (siguen pendientes)
 
 - [ ] **`feat/dynamic-content-a1-pulido`** — 2 commits ahead de develop (`78896e0` hub-content tags + `f54597f` A.1 banners home). Workstream Hub consumer.
-- [ ] **Decidir merge develop→main** — la deuda creció en esta sesión: iconos v3 + rich content + listados refactor + Banxico + filtros + soft-delete gate. Requiere autorización explícita de Luis. Dispara Hostinger pull-on-main → producción.
+- [ ] **Decidir merge develop→main** — la deuda creció: iconos v3 + rich content + listados refactor + Banxico + filtros + soft-delete gate + **image proxy `/propyte-media`** (commit 7bae658). Requiere autorización explícita de Luis. Dispara Hostinger pull-on-main → producción.
 - [ ] **Reemplazar stats placeholders en `tangibleDiff`** — `+25%`, `3 meses`, `0`, `1:1` con labels editoriales placeholder. Esperan números reales de Luis. Editar `processInfographic.tangibleDiff.stats` en `src/i18n/messages/{es,en}.json`.
 - [ ] **Mostrar `source_url` (IG link) en `Testimonials.tsx`** — campo ya en BD (`nativa_tulum.testimonials` + `Propyte_testimonials`), frontend pendiente. Cambio chico ~15 líneas: icon Instagram + link.
 - [ ] **Expandir copy editorial → 900 palabras por unidad** — DIFERIDO 2026-05-20 (costo IA). Edición manual `descripcion_larga_unidad` en Hub (gratis, top-traffic primero) o batch AI script one-off.

@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@/lib/icons';
 
 interface InvestmentDisclaimerProps {
   variant: 'subtle' | 'prominent';

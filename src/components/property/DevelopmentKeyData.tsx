@@ -1,6 +1,6 @@
 'use client';
 
-import { DollarSign, Square, Layers, Tag, MapPin } from 'lucide-react';
+import { DollarSign, Square, Layers, Tag, MapPin } from '@/lib/icons';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
 import type { Currency } from '@/context/CurrencyContext';
@@ -64,7 +64,7 @@ export default function DevelopmentKeyData({
         <PriceDisplay
           mxn={priceMxn}
           variant="dual"
-          size="sm"
+          size="md"
           originalCurrency={originalCurrency}
           className="text-white"
         />
@@ -76,7 +76,7 @@ export default function DevelopmentKeyData({
     items.push({
       icon: Square,
       label: labels.area,
-      value: <AreaDisplay m2={areaM2} variant="dual" size="sm" className="text-white" />,
+      value: <AreaDisplay m2={areaM2} variant="dual" size="md" className="text-white" />,
       key: 'area',
     });
   }
@@ -84,7 +84,7 @@ export default function DevelopmentKeyData({
     items.push({
       icon: Layers,
       label: labels.units,
-      value: <span className="text-sm font-bold text-white">{totalUnits}</span>,
+      value: <span className="text-base font-bold text-white">{totalUnits}</span>,
       key: 'units',
     });
   }
@@ -93,7 +93,7 @@ export default function DevelopmentKeyData({
       icon: Tag,
       label: labels.type,
       value: (
-        <span className="text-sm font-bold text-white capitalize">
+        <span className="text-base font-bold text-white capitalize">
           {mainType!.replace(/_/g, ' ')}
         </span>
       ),
@@ -104,7 +104,7 @@ export default function DevelopmentKeyData({
     items.push({
       icon: MapPin,
       label: labels.location,
-      value: <span className="text-sm font-bold text-white truncate">{location}</span>,
+      value: <span className="text-base font-bold text-white truncate">{location}</span>,
       key: 'location',
     });
   }
@@ -114,17 +114,17 @@ export default function DevelopmentKeyData({
   return (
     <div className="hidden md:block">
       <div className="bg-[#1A2F3F] text-white rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-white/10">
-          <span className="text-2xs font-bold uppercase tracking-wider text-propyte-brand">
+        <div className="px-5 py-3 border-b border-white/10">
+          <span className="text-xs font-bold uppercase tracking-wider text-propyte-brand">
             {labels.title}
           </span>
         </div>
-        <div className="px-4 py-3 space-y-2.5">
+        <div className="px-5 py-4 space-y-3.5">
           {items.map(({ icon: Icon, label, value, key }) => (
-            <div key={key} className="flex items-center gap-2">
-              <Icon size={13} className="text-propyte-brand shrink-0" />
+            <div key={key} className="flex items-center gap-3">
+              <Icon size={18} className="text-propyte-brand shrink-0" />
               <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
-                <span className="text-2xs text-white/75 shrink-0">{label}</span>
+                <span className="text-sm text-white/85 shrink-0">{label}</span>
                 <span className="text-right">{value}</span>
               </div>
             </div>

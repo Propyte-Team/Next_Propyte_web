@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Users, Target, BarChart3, TrendingUp } from 'lucide-react';
+import { Users, Target, BarChart3, TrendingUp } from '@/lib/icons';
 
 export default function B2BValueProp() {
   const t = useTranslations('developers');

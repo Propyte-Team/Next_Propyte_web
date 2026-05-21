@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Search, BarChart3, CheckCircle } from 'lucide-react';
+import { Search, BarChart3, CheckCircle } from '@/lib/icons';
 
 export default function HowItWorks() {
   const t = useTranslations('howItWorks');

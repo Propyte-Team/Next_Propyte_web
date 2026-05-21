@@ -11,7 +11,6 @@ const schema = z.object({
   name: z.string().min(1, 'required'),
   email: z.string().email('invalidEmail'),
   phone: z.string().optional(),
-  investmentType: z.string().optional(),
   website: z.string().optional(), // honeypot (REQ-F-02)
 });
 
@@ -20,9 +19,12 @@ type FormData = z.infer<typeof schema>;
 interface ContactFormProps {
   propertyId: string;
   propertyName: string;
+  /** Si se pasa, se renderiza un botón WhatsApp pegado al "Enviar" en una sola fila. */
+  whatsappUrl?: string;
+  whatsappLabel?: string;
 }
 
-export default function ContactForm({ propertyId, propertyName }: ContactFormProps) {
+export default function ContactForm({ propertyId, propertyName, whatsappUrl, whatsappLabel }: ContactFormProps) {
   const t = useTranslations('common');
   const tContact = useTranslations('contact');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -95,30 +97,25 @@ export default function ContactForm({ propertyId, propertyName }: ContactFormPro
         </div>
       )}
 
-      <div>
-        <label htmlFor="contact-investmentType" className="block text-sm font-medium text-gray-700 mb-1">
-          {tContact('formInvestmentType') || 'Tipo de inversión'}
-        </label>
-        <select
-          id="contact-investmentType"
-          {...register('investmentType')}
-          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm text-gray-700 focus:border-propyte-brand focus:outline-none bg-white"
+      <div className={whatsappUrl ? 'grid grid-cols-2 gap-2' : ''}>
+        <button
+          type="submit"
+          disabled={status === 'sending'}
+          className="h-12 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
         >
-          <option value="">—</option>
-          <option value="residencial">Residencial</option>
-          <option value="vacacional">Vacacional</option>
-          <option value="plusvalia">{tContact('formPlusvalia') || 'Plusvalía'}</option>
-          <option value="mixto">Mixto</option>
-        </select>
+          {status === 'sending' ? t('sending') : status === 'sent' ? t('sent') : t('send')}
+        </button>
+        {whatsappUrl && (
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 h-12 propyte-cta-whatsapp font-semibold rounded-lg transition-colors"
+          >
+            {whatsappLabel || 'WhatsApp'}
+          </a>
+        )}
       </div>
-
-      <button
-        type="submit"
-        disabled={status === 'sending'}
-        className="w-full h-12 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
-      >
-        {status === 'sending' ? t('sending') : status === 'sent' ? t('sent') : t('send')}
-      </button>
 
       {status === 'error' && <p className="text-sm text-red-500 text-center">{t('error')}</p>}
     </form>

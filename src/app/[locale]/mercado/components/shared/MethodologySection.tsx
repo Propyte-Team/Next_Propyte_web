@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronRight, Info } from 'lucide-react';
+import { ChevronRight, Info } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface MethodologySectionProps {

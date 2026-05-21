@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useLocale } from 'next-intl';
-import { X, Maximize2, RotateCcw, Move3D } from 'lucide-react';
+import { X, Maximize2, RotateCcw, Move3D } from '@/lib/icons';
 
 interface VirtualTourProps {
   url: string;

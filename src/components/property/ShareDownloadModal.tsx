@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import {
   Share2, Download, Copy, Check, Loader2, Facebook, Twitter,
   MessageCircle, ChevronDown, FileImage,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 export interface ShareDownloadData {
   title: string;

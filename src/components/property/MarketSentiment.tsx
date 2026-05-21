@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Minus, type LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, type LucideIcon } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 
 export type SentimentDirection = 'bullish' | 'neutral' | 'bearish';

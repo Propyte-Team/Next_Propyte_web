@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Plane, Building2 } from 'lucide-react';
+import { Plane, Building2 } from '@/lib/icons';
 import { pickLang } from '@/lib/i18n/pickLang';
 import type { TabId } from '@/lib/rental-data/types';
 

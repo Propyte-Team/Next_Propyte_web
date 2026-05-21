@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 
 interface RelatedPostsProps {

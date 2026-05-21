@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/lib/icons';
 import { useLocale } from 'next-intl';
 import { useCompare } from '@/hooks/useCompare';
 import { trackWhatsAppClick } from '@/lib/analytics/track';

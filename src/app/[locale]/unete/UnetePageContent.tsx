@@ -29,7 +29,7 @@ import {
   Phone,
   Mail,
   Send,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 // ============================================================
 // HUB CONTENT CONTEXT (Hub-driven editorial overrides)

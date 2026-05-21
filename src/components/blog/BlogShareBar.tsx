@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Link2, Check, MessageCircle } from 'lucide-react';
+import { Link2, Check, MessageCircle } from '@/lib/icons';
 
 interface BlogShareBarProps {
   title: string;

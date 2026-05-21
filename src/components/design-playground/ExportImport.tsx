@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Download, Upload, FileCode, Save, Trash2, ChevronDown } from 'lucide-react';
+import { Download, Upload, FileCode, Save, Trash2, ChevronDown } from '@/lib/icons';
 import { useTokensStore, type Preset } from '@/components/playground/store/useTokensStore';
 import { themeToCssVars } from '@/components/playground/lib/applyTokens';
 import type { DesignTokens } from '@/types/design-tokens';

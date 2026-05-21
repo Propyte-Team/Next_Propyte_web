@@ -11,7 +11,6 @@ import {
   getDevelopmentFinancials,
   getRentalEstimate,
 } from '@/lib/supabase/queries';
-import { getMockUnit } from '@/lib/mocks/unit-fixtures';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import {
   CITY_TO_MARKET_CODE,
@@ -123,8 +122,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
   try {
     const { data } = await getUnitBySlug(supabase, slug);
     if (data) row = data as UnitRow;
-  } catch { /* fall through to mock */ }
-  if (!row) row = getMockUnit(slug);
+  } catch { /* no fallback */ }
   if (!row) return null;
 
   const property = mapUnitToProperty(row);

@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, TrendingUp, Home, MapPin } from 'lucide-react';
+import { BarChart3, TrendingUp, Home, MapPin } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 interface VacacionalKPIsProps {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { X } from 'lucide-react';
+import { X } from '@/lib/icons';
 import type { Filters } from '@/hooks/useFilters';
 import type { PropertyStage, PropertyUsage } from '@/types/property';
 

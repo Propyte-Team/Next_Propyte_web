@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-import { Clock } from 'lucide-react';
+import { Clock } from '@/lib/icons';
 
 interface BlogPostCardProps {
   title: string;

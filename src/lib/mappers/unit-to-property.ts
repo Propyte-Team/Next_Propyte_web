@@ -76,6 +76,49 @@ export interface UnitRow {
 
 const VALID_STAGES: ReadonlyArray<PropertyStage> = ['preventa', 'construccion', 'entrega_inmediata'];
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
+
+/**
+ * Construye richContent leyendo los campos JSON expuestos por v_units:
+ * content_features_es/en, content_location_es/en, content_lifestyle_es/en, faq_es/en.
+ * Solo retorna undefined si NO existe ninguno (evita objetos vacíos).
+ */
+type FaqRaw = { q?: string; a?: string; question?: string; answer?: string };
+function buildRichContent(row: Record<string, unknown>): Property['richContent'] {
+  const pickStr = (k: string): string | undefined => {
+    const v = row[k];
+    return typeof v === 'string' && v.trim().length > 0 ? v : undefined;
+  };
+  const pickFaq = (k: string): Array<{ q: string; a: string }> | undefined => {
+    const raw = row[k];
+    if (!Array.isArray(raw)) return undefined;
+    const items = (raw as FaqRaw[])
+      .map((f) => ({
+        q: f.q || f.question || '',
+        a: f.a || f.answer || '',
+      }))
+      .filter((f) => f.q && f.a);
+    return items.length > 0 ? items : undefined;
+  };
+
+  const features_es = pickStr('content_features_es');
+  const features_en = pickStr('content_features_en');
+  const location_es = pickStr('content_location_es');
+  const location_en = pickStr('content_location_en');
+  const lifestyle_es = pickStr('content_lifestyle_es');
+  const lifestyle_en = pickStr('content_lifestyle_en');
+  const faqs_es = pickFaq('faq_es');
+  const faqs_en = pickFaq('faq_en');
+
+  const hasAny = features_es || features_en || location_es || location_en || lifestyle_es || lifestyle_en || faqs_es || faqs_en;
+  if (!hasAny) return undefined;
+
+  return {
+    features: features_es || features_en ? { es: features_es, en: features_en } : undefined,
+    location: location_es || location_en ? { es: location_es, en: location_en } : undefined,
+    lifestyle: lifestyle_es || lifestyle_en ? { es: lifestyle_es, en: lifestyle_en } : undefined,
+    faqs: faqs_es || faqs_en ? { es: faqs_es, en: faqs_en } : undefined,
+  };
+}
 const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
   disponible: 'nuevo',
   reservado: 'reservado',
@@ -200,6 +243,7 @@ export function mapUnitToProperty(row: UnitRow): Property {
       es: row.description_es || '',
       en: row.description_en || '',
     },
+    richContent: buildRichContent(row),
     badge,
     featured: false,
     createdAt: row.created_at || new Date().toISOString(),

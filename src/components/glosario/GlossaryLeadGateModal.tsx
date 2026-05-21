@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { X, Download, Loader2 } from 'lucide-react';
+import { X, Download, Loader2 } from '@/lib/icons';
 import { toast } from 'sonner';
 import { trackFileDownload } from '@/lib/analytics/track';
 import { submitLead } from '@/lib/leads/submit-lead';

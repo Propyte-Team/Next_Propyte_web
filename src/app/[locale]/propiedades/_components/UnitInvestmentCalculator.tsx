@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { Home, Plane, Calculator, TrendingUp } from 'lucide-react';
+import { Home, Plane, Calculator, TrendingUp } from '@/lib/icons';
 import {
   calculateMonthlyPayment,
   calculateClosingCosts,

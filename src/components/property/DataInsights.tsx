@@ -2,7 +2,7 @@
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslations } from 'next-intl';
-import { TrendingUp, DollarSign, Home, BarChart3 } from 'lucide-react';
+import { TrendingUp, DollarSign, Home, BarChart3 } from '@/lib/icons';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 
 interface DataInsightsProps {

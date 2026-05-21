@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ArrowRight, MapPin, Bed, Bath, Maximize, Sparkles } from 'lucide-react';
+import { ArrowRight, MapPin, Bed, Bath, Maximize, Sparkles } from '@/lib/icons';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getCta } from '@/lib/hub-content';
+import { getDisplayTitle, getStageLabel, normalizeStage } from '@/lib/development-display';
 
 export const revalidate = 600;
 
@@ -42,6 +43,8 @@ interface FeaturedDev {
   id: string;
   slug: string;
   name: string;
+  publication_title?: string | null;
+  meta_title?: string | null;
   city: string | null;
   zone?: string | null;
   stage?: string | null;
@@ -95,7 +98,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
         position: i + 1,
         item: {
           '@type': 'RealEstateListing',
-          name: dev.name,
+          name: getDisplayTitle(dev),
           url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
           address: {
             '@type': 'PostalAddress',
@@ -142,7 +145,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
             style={{ backgroundColor: `${heroAccent}26` }}
           >
-            <Sparkles size={14} strokeWidth={2} style={{ color: heroAccent }} />
+            <Sparkles size={14} style={{ color: heroAccent }} />
             <span className="text-sm font-semibold tracking-wide uppercase" style={{ color: heroAccent }}>
               {heroEyebrow}
             </span>
@@ -178,7 +181,11 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {items.map((dev) => (
+              {items.map((dev) => {
+                const displayTitle = getDisplayTitle(dev);
+                const stageKey = normalizeStage(dev.stage);
+                const stageLabel = getStageLabel(dev.stage, (k) => tStages(k as 'preventa'));
+                return (
                 <Link
                   key={dev.id}
                   href={`/${locale}/desarrollos/${dev.slug}`}
@@ -189,7 +196,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       {dev.images?.[0] ? (
                         <Image
                           src={dev.images[0]}
-                          alt={`${dev.name} — ${dev.city ?? ''}`}
+                          alt={`${displayTitle} — ${dev.city ?? ''}`}
                           fill
                           sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -197,18 +204,18 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
                       )}
-                      {dev.stage && (
+                      {stageLabel && (
                         <div className="absolute top-3 left-3">
                           <span
                             className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
-                              dev.stage === 'preventa'
+                              stageKey === 'preventa'
                                 ? 'bg-[#0E7490] text-white'
-                                : dev.stage === 'construccion'
+                                : stageKey === 'construccion'
                                   ? 'bg-[#22C55E] text-white'
                                   : 'bg-propyte-brand text-[#0F1923]'
                             }`}
                           >
-                            {(() => { try { return tStages(dev.stage as 'preventa'); } catch { return dev.stage; } })()}
+                            {stageLabel}
                           </span>
                         </div>
                       )}
@@ -240,7 +247,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                       </div>
 
                       <h3 className="font-semibold text-[#1A2F3F] text-base mb-1 line-clamp-1">
-                        {dev.name}
+                        {displayTitle}
                       </h3>
                       <div className="flex items-center gap-1 text-xs text-gray-600">
                         <MapPin size={12} />
@@ -264,7 +271,8 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
                     </div>
                   </article>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

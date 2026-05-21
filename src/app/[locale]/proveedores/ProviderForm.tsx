@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2 } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
 
 const CATEGORIES = [

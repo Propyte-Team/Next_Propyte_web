@@ -9,7 +9,7 @@ import {
   useTransform,
   type MotionValue,
 } from 'framer-motion';
-import { Home } from 'lucide-react';
+import { Home } from '@/lib/icons';
 
 // Multiplicador máximo en píxeles para cada capa de profundidad.
 // La capa más "lejana" (orb1) se mueve menos para sugerir distancia.

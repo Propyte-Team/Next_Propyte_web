@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Star, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, ShieldCheck } from '@/lib/icons';
 
 interface TestimonialItem {
   name: string;
@@ -48,7 +48,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               aria-label={t('prev')}
               className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
-              <ChevronLeft size={18} strokeWidth={2} />
+              <ChevronLeft size={18} />
             </button>
             <button
               type="button"
@@ -57,7 +57,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               aria-label={t('next')}
               className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
-              <ChevronRight size={18} strokeWidth={2} />
+              <ChevronRight size={18} />
             </button>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
                   <div className="text-xs text-white/60">{item.city}</div>
                 </div>
                 <div className="flex items-center gap-1 text-2xs font-semibold text-[#A2F9FF]">
-                  <ShieldCheck size={12} strokeWidth={2} />
+                  <ShieldCheck size={12} />
                   {t('verified')}
                 </div>
               </div>

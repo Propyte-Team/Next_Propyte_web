@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { RefreshCw, Crosshair } from 'lucide-react';
+import { RefreshCw, Crosshair } from '@/lib/icons';
 import { useTokensStore } from '@/components/playground/store/useTokensStore';
 import { themeToCssVars } from '@/components/playground/lib/applyTokens';
 

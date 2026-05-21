@@ -8,7 +8,7 @@ import {
   Building2, MapPin, BarChart3, ArrowUpRight,
   ChevronDown, Loader2, X, SlidersHorizontal,
   Database, Clock, ChevronRight, Info,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
 

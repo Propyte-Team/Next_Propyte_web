@@ -1,6 +1,6 @@
 'use client';
 
-import { Calculator } from 'lucide-react';
+import { Calculator } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 interface ROICalculatorCTAProps {

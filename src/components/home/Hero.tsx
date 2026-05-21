@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Search, MapPin, Building2, Home } from 'lucide-react';
+import { Search, MapPin, Building2, Home } from '@/lib/icons';
 import StatCounter from '@/components/shared/StatCounter';
 import HeroAtmosphere from './HeroAtmosphere';
 
@@ -162,7 +162,7 @@ export default function Hero({ stats }: HeroProps) {
             className="propyte-search-bubble flex items-center w-full h-14 md:h-[60px] rounded-full pl-5 pr-1.5 md:pr-2 gap-2 mx-auto max-w-xl"
             role="search"
           >
-            <Search size={20} strokeWidth={2} className="text-gray-600 shrink-0" />
+            <Search size={20} className="text-gray-600 shrink-0" />
             <label htmlFor="hero-search-input" className="sr-only">
               {tNav('search')}
             </label>
@@ -180,7 +180,7 @@ export default function Hero({ stats }: HeroProps) {
               aria-label={tNav('search')}
               className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] rounded-full shrink-0 transition-all hover:scale-105"
             >
-              <Search size={18} strokeWidth={2} />
+              <Search size={18} />
             </button>
           </form>
         </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { SortAsc, SortDesc, BarChart3, ChevronDown } from 'lucide-react';
+import { SortAsc, SortDesc, BarChart3, ChevronDown } from '@/lib/icons';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import type { ZoneScore } from '@/lib/supabase/queries';
 

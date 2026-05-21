@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Undo2, Redo2, RotateCcw } from 'lucide-react';
+import { Undo2, Redo2, RotateCcw } from '@/lib/icons';
 import { useTokensStore } from '@/components/playground/store/useTokensStore';
 import { useApplyDesignTokens } from '@/hooks/useApplyDesignTokens';
 import ControlPanel from './ControlPanel';

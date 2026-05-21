@@ -4,7 +4,7 @@ import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
   Users, CheckCircle, Zap, DollarSign, Download,
-} from 'lucide-react';
+} from '@/lib/icons';
 import ExpandableText from '@/components/ui/ExpandableText';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -45,6 +45,7 @@ import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
 import AmenityList from '@/components/property/AmenityList';
+import RichContentSections from '@/components/property/RichContentSections';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
@@ -508,6 +509,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         </div>
                       )}
 
+                      {property.richContent && (
+                        <RichContentSections richContent={property.richContent} locale={locale} />
+                      )}
+
                       {/* ── Unit type chips (individual units) ── */}
                       <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
 
@@ -810,20 +815,16 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <p className="text-sm text-gray-600 mb-4">
                 {tProp('getPricingDescription')}
               </p>
-              <ContactForm propertyId={property.id} propertyName={property.name} />
-
-              {property.contact_phone && (
-                <a
-                  href={`https://wa.me/${property.contact_phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                    tProp('whatsappInterestText', { name: property.name })
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full h-12 mt-3 propyte-cta-whatsapp font-semibold rounded-lg transition-colors"
-                >
-                  WhatsApp {property.contact_name ? `· ${property.contact_name.split(' ')[0]}` : ''}
-                </a>
-              )}
+              <ContactForm
+                propertyId={property.id}
+                propertyName={property.name}
+                whatsappUrl={`https://wa.me/${(property.contact_phone || process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354').replace(/\D/g, '')}?text=${encodeURIComponent(
+                  tProp('whatsappInterestText', { name: property.name })
+                )}`}
+                whatsappLabel={property.contact_name
+                  ? `WhatsApp · ${property.contact_name.split(' ')[0]}`
+                  : 'WhatsApp'}
+              />
             </div>
             </div>
           </div>

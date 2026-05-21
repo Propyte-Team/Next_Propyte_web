@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/icons';
 import EstructuraPageContent from './EstructuraPageContent';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
@@ -107,7 +107,7 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
 
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <Sparkles size={14} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('label')}
             </span>

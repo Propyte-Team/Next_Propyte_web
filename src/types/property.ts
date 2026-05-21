@@ -132,6 +132,17 @@ export interface Property {
   roi: PropertyROI;
   financing: PropertyFinancing;
   description: PropertyDescription;
+  /**
+   * Contenido editorial extendido (bodies de features/location/lifestyle + FAQs).
+   * Vienen del JSON ext_content_{es,en} en BD. Cuando existen, agregan
+   * 500-3000 chars de copy estructurado al tab Descripción.
+   */
+  richContent?: {
+    features?: { es?: string; en?: string };
+    location?: { es?: string; en?: string };
+    lifestyle?: { es?: string; en?: string };
+    faqs?: { es?: Array<{ q: string; a: string }>; en?: Array<{ q: string; a: string }> };
+  };
   badge: PropertyBadge;
   featured: boolean;
   createdAt: string;

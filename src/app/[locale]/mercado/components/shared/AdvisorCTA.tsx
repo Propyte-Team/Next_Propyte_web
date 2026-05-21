@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { TabId } from '@/lib/rental-data/types';
 

@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { TrendingUp, BarChart3, DollarSign, Building2, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, BarChart3, DollarSign, Building2, ArrowUpRight } from '@/lib/icons';
 import type { ZoneScore } from '@/lib/supabase/queries';
 
 interface TrendingZone {

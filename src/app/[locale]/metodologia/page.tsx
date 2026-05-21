@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ScrollText, Calendar, Tag, Hammer, TrendingUp, ArrowRight, ShieldCheck } from 'lucide-react';
+import { ScrollText, Calendar, Tag, Hammer, TrendingUp, ArrowRight, ShieldCheck } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -154,7 +154,7 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
             className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
           >
             {t('ctaButton')}
-            <ArrowRight size={16} strokeWidth={2} />
+            <ArrowRight size={16} />
           </Link>
         </div>
       </section>

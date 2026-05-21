@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Home, Search, Building2, ArrowRight } from 'lucide-react';
+import { Home, Search, Building2, ArrowRight } from '@/lib/icons';
 
 export default function NotFound() {
   return (

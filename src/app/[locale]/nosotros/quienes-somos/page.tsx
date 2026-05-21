@@ -15,7 +15,7 @@ import {
   Landmark,
   Handshake,
   Home,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

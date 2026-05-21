@@ -8,7 +8,7 @@ import {
   Building2,
   Users,
   ArrowRight,
-} from 'lucide-react';
+} from '@/lib/icons';
 
 export default function WhyPropyte() {
   const t = useTranslations('whyPropyte');
@@ -69,7 +69,7 @@ export default function WhyPropyte() {
                   className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0E7490] font-medium hover:underline"
                 >
                   {t(aud.ctaKey)}
-                  <ArrowRight size={14} strokeWidth={2} />
+                  <ArrowRight size={14} />
                 </Link>
               </div>
             );
@@ -100,7 +100,7 @@ export default function WhyPropyte() {
                   className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0E7490] font-medium text-sm hover:underline mt-auto"
                 >
                   {feat.cta}
-                  <ArrowRight size={14} strokeWidth={2} />
+                  <ArrowRight size={14} />
                 </Link>
               </div>
             );

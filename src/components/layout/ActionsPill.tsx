@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { Building2, ChevronDown, Mail } from 'lucide-react';
+import { Building2, ChevronDown, Mail } from '@/lib/icons';
 import AreaToggle from '@/components/ui/AreaToggle';
 
 export default function ActionsPill() {
@@ -66,7 +66,7 @@ export default function ActionsPill() {
           className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-[#2C2C2C] hover:text-[#0E7490] rounded-lg transition-colors"
         >
           <span>{locale === 'en' ? '🇺🇸 EN' : '🇲🇽 ES'}</span>
-          <ChevronDown size={11} strokeWidth={2} />
+          <ChevronDown size={11} />
         </button>
         {langOpen && (
           <div id="ap-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
@@ -98,7 +98,7 @@ export default function ActionsPill() {
         href={`/${locale}/contacto`}
         className="inline-flex items-center gap-1.5 h-8 px-3.5 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-semibold rounded-full transition-colors"
       >
-        <Mail size={13} strokeWidth={2} />
+        <Mail size={13} />
         {t('contact')}
       </Link>
     </div>

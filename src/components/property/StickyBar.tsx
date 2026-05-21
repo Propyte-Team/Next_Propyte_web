@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { MessageCircle, Calendar, Bed, Bath, Maximize } from 'lucide-react';
+import { MessageCircle, Calendar, Bed, Bath, Maximize } from '@/lib/icons';
 import { formatPrice } from '@/lib/formatters';
 import type { Property } from '@/types/property';
 

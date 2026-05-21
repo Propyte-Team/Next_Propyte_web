@@ -20,7 +20,7 @@ import {
   Mail,
   MessageCircle,
   Megaphone,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { isNavActive } from '@/lib/nav/isActive';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
@@ -208,7 +208,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full h-12 propyte-cta-whatsapp font-semibold rounded-lg transition-colors"
                 >
-                  <MessageCircle size={18} strokeWidth={2} />
+                  <MessageCircle size={18} />
                   WhatsApp
                 </a>
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import { MessageCircle, ArrowDown } from 'lucide-react';
+import { MessageCircle, ArrowDown } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 

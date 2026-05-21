@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { DollarSign, ShieldCheck, FileCheck } from 'lucide-react';
+import { DollarSign, ShieldCheck, FileCheck } from '@/lib/icons';
 
 export default function TransparencySection() {
   const t = useTranslations('transparency');

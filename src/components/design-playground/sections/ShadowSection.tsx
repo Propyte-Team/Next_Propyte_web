@@ -1,6 +1,6 @@
 'use client';
 
-import { RotateCcw, Plus, Trash2 } from 'lucide-react';
+import { RotateCcw, Plus, Trash2 } from '@/lib/icons';
 import { useTokensStore } from '@/components/playground/store/useTokensStore';
 import { DEFAULT_TOKENS } from '@/components/playground/lib/defaults';
 import type { ShadowLayer, ShadowsTokens } from '@/types/design-tokens';

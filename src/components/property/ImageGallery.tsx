@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, X, Camera } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Camera } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 interface ImageGalleryProps {

@@ -1,4 +1,4 @@
-import { Landmark, Banknote, Sparkles } from 'lucide-react';
+import { Landmark, Banknote, Sparkles } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { formatPrice } from '@/lib/formatters';
 

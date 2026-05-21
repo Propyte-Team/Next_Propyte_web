@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from '@/lib/icons';
 import ProviderForm from './ProviderForm';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -38,7 +38,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
         {/* Hero */}
         <div className="text-center max-w-[760px] mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-propyte-brand/15 border border-propyte-brand/30 rounded-full mb-6">
-            <Sparkles size={14} strokeWidth={2} className="text-propyte-brand" />
+            <Sparkles size={14} className="text-propyte-brand" />
             <span className="text-propyte-brand text-sm font-semibold tracking-wide uppercase">
               {t('comingSoon')}
             </span>

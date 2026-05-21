@@ -46,7 +46,7 @@ test.describe('@smoke Lenis SmoothScrollProvider', () => {
 });
 
 test.describe('@smoke Lenis a11y — prefers-reduced-motion', () => {
-  test.use({ reducedMotion: 'reduce' });
+  test.use({ reducedMotion: 'reduce' } as Parameters<typeof test.use>[0]);
 
   test('NO aplica clases lenis si reducedMotion=reduce', async ({ page }) => {
     await page.goto('/es');
