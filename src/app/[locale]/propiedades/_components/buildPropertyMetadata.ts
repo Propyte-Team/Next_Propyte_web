@@ -21,12 +21,14 @@ export async function buildPropertyMetadata(slug: string, locale: string): Promi
 
   const description = (locale === 'en' ? row.description_en : row.description_es) || '';
   const price = row.price_mxn || 0;
-  // v_units expone `title` (no `name`). Mismo fallback que mapUnitToProperty para
-  // evitar `undefined` en <title> HTML (que afecta SEO).
-  const rowTitle = (row.title as string | null) ?? row.name ?? null;
-  const base = row.unit_number
-    ? `${row.development_name || rowTitle || row.slug || 'Propiedad'} — ${row.unit_number}`
-    : (rowTitle || row.development_name || row.slug || 'Propiedad');
+  // v_units expone `title` (no `name`). Si Marketing llenó titulo_unidad / meta_title,
+  // gana sobre el fallback "<development_name> — <unit_number>". meta_title prioritario
+  // para SEO; title como segunda opción.
+  const seoTitle = (row.meta_title as string | null) ?? (row.title as string | null) ?? row.name ?? null;
+  const fallbackBase = row.unit_number
+    ? `${row.development_name || row.slug || 'Propiedad'} — ${row.unit_number}`
+    : (row.development_name || row.slug || 'Propiedad');
+  const base = seoTitle || fallbackBase;
   const fullTitle = price > 0 ? `${base} — ${formatPrice(price)}` : base;
 
   return {
