@@ -141,12 +141,36 @@
       "name": "Sin Propyte",
       "subtitle": "Navega solo",
       "steps": [
-        { "n": "01", "title": "Se satura con decenas de opciones.", "desc": "La sobreoferta genera parálisis por análisis y confusión." },
-        { "n": "02", "title": "Lo bombardean varios asesores.", "desc": "Llamadas y mensajes de agentes con intereses dispersos." },
-        { "n": "03", "title": "Visita propiedades sin criterio.", "desc": "Recorridos aleatorios sin una métrica de comparación." },
-        { "n": "04", "title": "Compra por marketing, no por datos.", "desc": "Decisión basada en renders y frases, sin análisis financiero real." },
-        { "n": "05", "title": "Recibe la propiedad sin saber qué hacer.", "desc": "Solo para gestionar trámites, mobiliario o rentas." },
-        { "n": "06", "title": "Termina arrepentido.", "desc": "Sin acompañamiento experto ni visión de largo plazo." }
+        {
+          "n": "01",
+          "title": "Se satura con decenas de opciones.",
+          "desc": "La sobreoferta genera parálisis por análisis y confusión."
+        },
+        {
+          "n": "02",
+          "title": "Lo bombardean varios asesores.",
+          "desc": "Llamadas y mensajes de agentes con intereses dispersos."
+        },
+        {
+          "n": "03",
+          "title": "Visita propiedades sin criterio.",
+          "desc": "Recorridos aleatorios sin una métrica de comparación."
+        },
+        {
+          "n": "04",
+          "title": "Compra por marketing, no por datos.",
+          "desc": "Decisión basada en renders y frases, sin análisis financiero real."
+        },
+        {
+          "n": "05",
+          "title": "Recibe la propiedad sin saber qué hacer.",
+          "desc": "Solo para gestionar trámites, mobiliario o rentas."
+        },
+        {
+          "n": "06",
+          "title": "Termina arrepentido.",
+          "desc": "Sin acompañamiento experto ni visión de largo plazo."
+        }
       ],
       "result": {
         "label": "Resultado",
@@ -163,13 +187,49 @@
       "name": "Con Propyte",
       "subtitle": "Navega con un sistema",
       "steps": [
-        { "n": "01", "title": "Entendemos tu perfil.", "desc": "Análisis inicial de tu situación, objetivos y perfil de inversionista.", "win": "Perfil claro" },
-        { "n": "02", "title": "Te explicamos el mercado.", "desc": "Primero el contexto, después el producto. Te mostramos solo en lo que nosotros invertiríamos.", "win": "Decisión informada" },
-        { "n": "03", "title": "Visitas + comparativo claro.", "desc": "Recorridos coordinados con análisis lado a lado para elegir con criterio.", "win": "Tiempo ahorrado" },
-        { "n": "04", "title": "Negociamos con datos.", "desc": "Números, comparables y evidencia real como argumento de compra — no intuición.", "key": true, "win": "Mejor precio cerrado" },
-        { "n": "05", "title": "Te acompañamos hasta la entrega.", "desc": "Firma, escrituración y entrega supervisada con checklist técnico en mano.", "win": "Sin sorpresas" },
-        { "n": "06", "title": "Partners de confianza.", "desc": "Red de interioristas y operadores para que tu inversión genere desde el primer día.", "win": "Renta desde día 1" },
-        { "n": "07", "title": "También te acompañamos a vender.", "desc": "Asesoría estratégica cuando convenga capitalizar la ganancia.", "win": "Capitalizas mejor" }
+        {
+          "n": "01",
+          "title": "Entendemos tu perfil.",
+          "desc": "Análisis inicial de tu situación, objetivos y perfil de inversionista.",
+          "win": "Perfil claro"
+        },
+        {
+          "n": "02",
+          "title": "Te explicamos el mercado.",
+          "desc": "Primero el contexto, después el producto. Te mostramos solo en lo que nosotros invertiríamos.",
+          "win": "Decisión informada"
+        },
+        {
+          "n": "03",
+          "title": "Visitas + comparativo claro.",
+          "desc": "Recorridos coordinados con análisis lado a lado para elegir con criterio.",
+          "win": "Tiempo ahorrado"
+        },
+        {
+          "n": "04",
+          "title": "Negociamos con datos.",
+          "desc": "Números, comparables y evidencia real como argumento de compra — no intuición.",
+          "key": true,
+          "win": "Mejor precio cerrado"
+        },
+        {
+          "n": "05",
+          "title": "Te acompañamos hasta la entrega.",
+          "desc": "Firma, escrituración y entrega supervisada con checklist técnico en mano.",
+          "win": "Sin sorpresas"
+        },
+        {
+          "n": "06",
+          "title": "Partners de confianza.",
+          "desc": "Red de interioristas y operadores para que tu inversión genere desde el primer día.",
+          "win": "Renta desde día 1"
+        },
+        {
+          "n": "07",
+          "title": "También te acompañamos a vender.",
+          "desc": "Asesoría estratégica cuando convenga capitalizar la ganancia.",
+          "win": "Capitalizas mejor"
+        }
       ],
       "result": {
         "label": "Resultado",
@@ -182,17 +242,45 @@
       "eyebrow": "Diferencia tangible",
       "title": "Lo que ganas con Propyte",
       "stats": [
-        { "value": "+25%", "label": "plusvalía promedio" },
-        { "value": "3 meses", "label": "tiempo ahorrado en búsqueda" },
-        { "value": "0", "label": "sorpresas en la entrega" },
-        { "value": "1:1", "label": "asesor dedicado" }
+        {
+          "value": "+25%",
+          "label": "plusvalía promedio"
+        },
+        {
+          "value": "3 meses",
+          "label": "tiempo ahorrado en búsqueda"
+        },
+        {
+          "value": "0",
+          "label": "sorpresas en la entrega"
+        },
+        {
+          "value": "1:1",
+          "label": "asesor dedicado"
+        }
       ]
     },
     "pillars": [
-      { "before": "", "strong": "Menos incertidumbre,", "after": " más claridad." },
-      { "before": "Decisiones basadas en ", "strong": "datos, no en suposiciones.", "after": "" },
-      { "before": "Ahorro de ", "strong": "tiempo, esfuerzo y dinero.", "after": "" },
-      { "before": "Mejores resultados, ", "strong": "inversión más rentable.", "after": "" }
+      {
+        "before": "",
+        "strong": "Menos incertidumbre,",
+        "after": " más claridad."
+      },
+      {
+        "before": "Decisiones basadas en ",
+        "strong": "datos, no en suposiciones.",
+        "after": ""
+      },
+      {
+        "before": "Ahorro de ",
+        "strong": "tiempo, esfuerzo y dinero.",
+        "after": ""
+      },
+      {
+        "before": "Mejores resultados, ",
+        "strong": "inversión más rentable.",
+        "after": ""
+      }
     ]
   },
   "dondeEstamos": {
@@ -765,9 +853,9 @@
     "archiveTitle": "Desarrolladores en Propyte",
     "archiveSubtitle": "Empresas desarrolladoras con proyectos activos en la Riviera Maya y Yucatán",
     "heroBadgeVerified": "Desarrolladores Verificados",
-    "heroTitle": "Desarrolladores",
+    "heroTitle": "Vende tu desarrollo más rápido",
     "heroTitleAccent": "Verificados",
-    "heroSubtitle": "Empresas desarrolladoras que han pasado nuestro proceso de verificación. Proyectos auditados, documentación al día y trayectoria comprobada.",
+    "heroSubtitle": "Equipo comercial dedicado, tecnología y estrategia de datos para maximizar la velocidad de venta de tu proyecto inmobiliario.",
     "heroVerifiedCount": "{count, plural, one {# desarrollador verificado} other {# desarrolladores verificados}}",
     "archiveCount": "{count, plural, one {# empresa} other {# empresas}}",
     "searchPlaceholder": "Buscar empresa...",
@@ -779,8 +867,6 @@
     "joinBannerTitle": "¿Eres desarrollador?",
     "joinBannerDesc": "Comercializa tus proyectos con nuestro equipo comercial dedicado y tecnología de datos.",
     "joinBannerCta": "Registrar mi empresa",
-    "heroTitle": "Vende tu desarrollo más rápido",
-    "heroSubtitle": "Equipo comercial dedicado, tecnología y estrategia de datos para maximizar la velocidad de venta de tu proyecto inmobiliario.",
     "heroDescriptive": "Equipo comercial dedicado, tecnología y estrategia de datos para maximizar la velocidad de venta de tu proyecto inmobiliario.",
     "heroCta": "Solicitar propuesta",
     "heroWhatsapp": "Hablar por WhatsApp",
@@ -2468,5 +2554,16 @@
     "acceptAllCta": "Aceptar todo",
     "rejectCta": "Rechazar opcionales",
     "saveCta": "Guardar elección"
+  },
+  "blogSidebar": {
+    "investorEyebrow": "Recurso gratis",
+    "investorTitle": "Análisis del mercado inmobiliario premium",
+    "investorSubtitle": "Descarga nuestra guía con datos de ROI, plusvalía y ciudades emergentes en México.",
+    "investorCta": "Descargar guía",
+    "brokerEyebrow": "Únete a Propyte",
+    "brokerTitle": "¿Eres asesor inmobiliario?",
+    "brokerSubtitle": "Trabaja con la red de asesores que cierra más operaciones en preventa de México.",
+    "brokerCta": "Quiero aplicar",
+    "errorRetry": "No se pudo enviar. Intenta de nuevo."
   }
 }
