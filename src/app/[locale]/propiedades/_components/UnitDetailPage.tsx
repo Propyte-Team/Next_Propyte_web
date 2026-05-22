@@ -299,7 +299,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               {/* Título + Share/Ficha en la misma fila — libera espacio vertical
                   para el bloque de precio (original + referencial + TC). */}
               <div className="flex items-start justify-between gap-4 flex-wrap">
-                <h1 className="text-lg md:text-3xl font-bold text-[#2C2C2C] flex-1 min-w-0 leading-tight tracking-tight">
+                <h1 className="text-base md:text-2xl font-bold text-[#2C2C2C] flex-1 min-w-0 leading-tight tracking-tight">
                   {property.name}
                 </h1>
                 <ShareDownloadModal data={shareData} locale={locale} />

@@ -76,7 +76,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-lg md:text-2xl font-bold text-[#2C2C2C] leading-tight tracking-tight">{t('title')}</h2>
+            <h2 className="text-base md:text-xl font-bold text-[#2C2C2C] leading-tight tracking-tight">{t('title')}</h2>
             <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           <Link
