@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-05-20 noche-3 (Image Proxy /propyte-media commit `7bae658` — oculta host Supabase + filename con city/typology. Sigue sin deployar.)
+> Última actualización: 2026-05-22 (sesión ajustes estéticos + auditoría). Cards Home título sin truncar + "Desde" arriba del precio + "(Original)" removido de PriceDisplay. Image proxy `/propyte-media` validado en `dev.propyte.com` (440 URLs proxied, 0 leaks Supabase). PDF "NOTAS ICONOS" de diseñadora cerrado vía revisión manual del usuario. **Pendiente**: deploy del fix `PriceDisclaimer` (referencia a "(Original)" eliminada) + decidir merge develop→main.
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -8,28 +8,30 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-### Image Proxy /propyte-media (sesión 2026-05-20 noche-3)
+### Image Proxy /propyte-media — auditoría seguridad residual (sesión 2026-05-22)
 
-> Commit `7bae658` local en develop, NO deployado aún. URLs antes exponían host Supabase + city/typology en filename; ahora `propyte.com/propyte-media/u/<32-hex>/<idx>.webp`. Typecheck + build + 4/4 unit tests pasan; smoke local OK.
+> Commit `7bae658` deployado y validado en `dev.propyte.com` (audit Playwright 2026-05-22: 440 URLs via proxy, 0 leaks Supabase). Lo único que queda es la auditoría de seguridad real (el proxy es solo cosmético).
 
-- [ ] **Deploy `7bae658` a Vercel preview** — validar imágenes cargan via proxy en dev.propyte.com; abrir foto en nueva pestaña → URL debe ser `dev.propyte.com/propyte-media/u/...`. Check Vercel logs: cache HIT rate (warmup → >90%).
-- [ ] **Decidir extender proxy a otros buckets** (esperar decisión Luis) — candidatos: `developer-logos` (logos en home, 1 hit residual), `v_team_members.photo_url`, blog `featured_image`, case studies `image_url`. Patrón en `src/app/propyte-media/[type]/[id]/[idx]/route.ts`. Añadir type='l' (logo), type='t' (team) etc.
 - [ ] **Auditar seguridad real Supabase** (lo más importante; el proxy es solo cosmético):
   - Ejecutar `mcp__claude_ai_Supabase__get_advisors type=security` → lista tablas sin RLS
   - Verificar bucket policies de `property-images` (SELECT público, INSERT/UPDATE/DELETE auth)
   - Grep repo para confirmar `service_role` NO está en bundle cliente
   - O simplemente correr `/cyber-neo`
+- [ ] **Decidir extender proxy a otros buckets** (esperar decisión Luis) — candidatos: `developer-logos` (logos en home, 1 hit residual), `v_team_members.photo_url`, blog `featured_image`, case studies `image_url`. Patrón en `src/app/propyte-media/[type]/[id]/[idx]/route.ts`. Añadir type='l' (logo), type='t' (team) etc.
 
-### PDF de la diseñadora — bloque ajustes visuales (NO iconos, sesión 2026-05-20 noche-2)
+### Auditoría de mappers — lección 2026-05-21
 
-> Pendientes pasados como PDF "NOTAS ICONOS.pdf" tras integrar los 11 iconos del zip. Son ajustes de color/contraste/tipografía. Empezar por los quick wins.
+> El fix CORASOL reveló un patrón de bug: mappers que sobreescriben campos editoriales con concat fallback. Hay que auditar el resto antes de declarar otros casos como "cache stale".
 
-- [ ] **Burbuja search en listados — quitar** pero mantener submenu contacto/idioma/tipo cambio en esquina superior derecha. Tanto `/desarrollos` como `/propiedades`, móvil + escritorio. Decisión visual reciterada por Luis varias veces.
-- [ ] **WhatsApp button contraste** — diseñadora pide brand cyan `#A2F9FF` en lugar del verde actual. Aplica en home, listados, fichas. Componente: `src/components/shared/WhatsAppButton.tsx` + posibles instancias inline.
-- [ ] **Color titulares editoriales** — "TECNOLOGÍA", "PROCESO", "PREGUNTAS FRECUENTES" deben tener color diferente (parece estar el mismo navy/teal). Diseñadora marcó ejemplo: palabra "tecnología" en color de acento separado del resto del título.
-- [ ] **Logo Propyte contraste en infografía** "Sin Propyte / Con Propyte" — el logo se pierde sobre fondo claro. Solución: cambiar color logo o agregar contenedor con contraste.
-- [ ] **Brochure icon en sección Documentos** no se ve (ficha desarrollo/unidad). Probablemente el SVG es muy claro o background blanco sobre blanco.
-- [ ] **Tipografía números 01-04 en pasos** — verificar si usa tipografía de marca (Reclutamiento "Modelo de comisiones", Brokers "Cómo funciona", Metodología pasos).
+- [ ] **Auditar mappers restantes** por el mismo patrón `field ? \`${a} — ${b}\` : title`:
+  - `src/lib/mappers/development-to-property.ts` (líneas con `publication_title`) — revisar si hay concat similar
+  - `src/lib/schema/*.ts` (SchemaMarkup builders) — JSON-LD puede tener su propia lógica
+  - `src/app/[locale]/desarrollos/_components/buildDetailMetadata.ts`
+  - `src/app/[locale]/propiedades/page.tsx` (listings) — qué campo muestra en card title
+  - `src/components/property/UnitDetailPage.tsx` h1
+  - Componentes de listings (SimilarListings, etc.)
+- [ ] **Verificar 8 columnas Migration 022 NO se pisan** en consumers: `content_features_es/en`, `content_location_es/en`, `content_lifestyle_es/en`, `faq_es/en` deben ganar sobre el fallback al JSONB `ext_content_es -> features ->> body`. Mapper de richContent ya debería respetarlo (Property.richContent) pero confirmar.
+- [ ] **Mergear fix mapper a `main`** si decides promover producción — actualmente solo en `develop` + `dev.propyte.com`.
 
 ### Continuación previa (siguen pendientes)
 
@@ -200,6 +202,8 @@ _Ninguna._
 
 ## Completadas recientes
 
+- [x] **Ajustes estéticos cards Home + ficha precio** (2026-05-22) — Cards `FeaturedProperties` Home: título `text-sm line-clamp-1` → `text-xs leading-snug line-clamp-2 break-words` (nunca se corta, fluye a 2ª línea). Ficha desarrollo: label "Desde" pasa a block uppercase encima del precio (no rompe alineación con Share/Ficha). `PriceDisplay` dual: sufijo "(Original)" eliminado de arriba (basta "(Referencial)" abajo). Deploys `dpl_8YksvDBWaMz...` + `dpl_8FSpq2pcKuJk...`. Pendiente commit/deploy: PriceDisclaimer.tsx también limpiado para no mencionar el label "(Original)" que ya no existe.
+- [x] **Audit Playwright PDF "NOTAS ICONOS" + image proxy** (2026-05-22) — Script `tests/audit-pdf-items.mjs` corrido contra `dev.propyte.com`. 6 PASS confirmados: image proxy (440 URLs, 0 leaks Supabase), logo Propyte infografía visible, brochure icon en Ficha, cards Home título no truncado, (Original) removido en home, Desde label block. 4 items que el audit flag-eó como FAIL (burbuja search, WhatsApp color, titulares acento) confirmados como **OK por revisión manual del usuario** — el script tenía falsos positivos por selectores demasiado genéricos. Cierre del bloque PDF visual completo.
 - [x] **Listados refactor profundo + Banxico FX + filtros nuevos + UI/UX iter 4** (2026-05-20 noche-2) — /desarrollos y /propiedades: heroHidden=true (H1 sr-only), loader fullscreen lg:left-[72px], scroll defensivo, min-h grid canvas. Cards: rango precio "Desde X" + currency, chip tipo desarrollo, rango bedrooms agregado v_units, Heart+Brochure removidos, aspect 16/9 (grid) y 5/2 (compact). Split mapa 60/40 → 40/60 (mapa angosto). Hover sync card↔pin (ring cyan brand + scale). Banxico SF43718 FX rate auto (cache 12h). Filtros: Ciudad+Zona dinámicas, Recámaras 1/2/3/4+, Etapa, Tipo desarrollo. Fix bug PREVENTA en mapper unit (`status`+`is_presale` en lugar de `row.stage`). Home FeaturedProperties paridad. UI rhythm `flex flex-col gap-1.5`. Deploy final `dpl_2qmSyY1WbRSDQrZG3UB2zEGhLNrr`.
 - [x] **Migración SQL `tipo_desarrollo` unificado** (2026-05-20 noche-2, autorizado MCP) — vertical/Residencial vertical (404) → 'Residencial vertical', mixto (1) → 'Mixto', preventa misplaced (227) → NULL. Backup `Propyte_desarrollos_backup_tipo_desarrollo_20260520`. 231 rows quedaron sin clasificar (legacy scraper).
 - [x] **[SAMPLE] AZUL VIVO Residences borrado + soft-delete gate fix** (2026-05-20 noche-2) — Hard delete 6 unidades + 1 desarrollo. Bug subyacente: view `v_developments` expone soft-deleted rows; queries solo filtraban `approved_at`. Fix global: 13 queries en lib/supabase/queries.ts + 5 inline pages ahora filtran `deleted_at IS NULL`. Backups en `*_backup_sample_azulvivo_20260520`.

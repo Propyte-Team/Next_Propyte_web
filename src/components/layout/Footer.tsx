@@ -191,7 +191,12 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               </button>
               <p className="text-white/60">
                 {t('developedBy')}{' '}
-                <a href="https://webkoistudio.com" target="_blank" rel="noopener noreferrer" className="inline-block py-3 -my-3 md:py-0 md:my-0 text-propyte-brand hover:text-white transition-colors">
+                <a
+                  href="https://webkoistudio.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-2 py-2 -mx-2 -my-2 rounded text-propyte-brand underline underline-offset-4 decoration-propyte-brand/40 hover:decoration-white hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
+                >
                   Web Koi Studio
                 </a>
               </p>
