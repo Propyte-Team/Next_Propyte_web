@@ -1,7 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
-import { MessageCircle, ArrowDown } from '@/lib/icons';
+import { MessageCircle } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 
@@ -17,31 +16,20 @@ interface MobileContactBarProps {
 
 /**
  * Fixed floating bar shown below md breakpoint on detail pages.
- * Price left + WhatsApp + "Contactar" (scrolls smoothly to contact form).
- * Parent must add pb-20 md:pb-0 to avoid overlap.
+ * Price left + WhatsApp CTA (decisión 2026-05-22: simplificar a un solo
+ * CTA — el botón "Contactar" se eliminó porque WhatsApp es el canal
+ * directo y reduce fricción mobile). Parent debe agregar pb-20 md:pb-0.
  */
 export default function MobileContactBar({
-  price, propertyName, propertyUrl, contactTargetId = 'contact-form', roiPct,
+  price, propertyName, propertyUrl, roiPct,
 }: MobileContactBarProps) {
   const tProp = useTranslations('property');
-  const tNav = useTranslations('nav');
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
 
   const msg = `${tProp('whatsappInterestText', { name: propertyName })} ${propertyUrl}`;
   const whatsappUrl = phone
     ? `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`
     : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-  const onContactClick = useCallback(() => {
-    const el = document.getElementById(contactTargetId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const firstInput = el.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
-      if (firstInput) {
-        setTimeout(() => firstInput.focus({ preventScroll: true }), 500);
-      }
-    }
-  }, [contactTargetId]);
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] md:hidden">
@@ -62,26 +50,16 @@ export default function MobileContactBar({
           </div>
         </div>
 
-        <div className="flex-1 flex gap-2">
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] propyte-cta-whatsapp font-bold rounded-xl transition-colors text-sm"
-            aria-label={tProp('whatsappContact')}
-          >
-            <MessageCircle size={16} />
-            WhatsApp
-          </a>
-          <button
-            type="button"
-            onClick={onContactClick}
-            className="flex-1 flex items-center justify-center gap-1.5 min-h-[44px] bg-[#0E7490] hover:bg-[#0B7F75] text-white font-bold rounded-xl transition-colors text-sm"
-          >
-            <ArrowDown size={16} />
-            {tNav('contact')}
-          </button>
-        </div>
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center justify-center gap-2 min-h-[44px] propyte-cta-whatsapp font-bold rounded-xl transition-colors text-sm"
+          aria-label={tProp('whatsappContact')}
+        >
+          <MessageCircle size={18} />
+          WhatsApp
+        </a>
       </div>
     </div>
   );
