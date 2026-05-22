@@ -163,6 +163,19 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   return { ...res, data: maskRows(normalizeNames(res.data), 'd') };
 }
 
+// Aplica la prioridad de display name del Hub editorial:
+//   publication_title (editable Identidad) → meta_title (SEO) → nombre_desarrollo limpio.
+// Nunca expone nombre_desarrollo crudo si hay editorial disponible.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function applyDisplayName<T extends { name?: string | null; publication_title?: string | null; meta_title?: string | null } | null>(row: T): T {
+  if (!row || typeof row !== 'object') return row;
+  const r = row as { name?: string | null; publication_title?: string | null; meta_title?: string | null };
+  const displayName = r.publication_title
+    || r.meta_title
+    || (typeof r.name === 'string' ? cleanListingName(r.name) : r.name ?? null);
+  return { ...(row as object), name: displayName } as T;
+}
+
 export async function getDevelopmentBySlug(client: Client, slug: string) {
   const res = await client
     .schema('real_estate_hub' as 'public')
@@ -172,10 +185,7 @@ export async function getDevelopmentBySlug(client: Client, slug: string) {
     .single();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = res.data as any;
-  const normalized = raw && typeof raw === 'object' && typeof raw.name === 'string'
-    ? { ...raw, name: cleanListingName(raw.name) }
-    : raw;
-  return { ...res, data: maskRow(normalized, 'd') };
+  return { ...res, data: maskRow(applyDisplayName(raw), 'd') };
 }
 
 export async function getDevelopmentWithUnits(client: Client, slug: string) {
@@ -199,11 +209,8 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
     .is('deleted_at', null)
     .order('unit_number', { ascending: true });
 
-  const devRow = dev as { id?: string | null; name?: string | null; images?: string[] | null };
-  const normalizedDev = typeof devRow.name === 'string'
-    ? { ...devRow, name: cleanListingName(devRow.name) }
-    : devRow;
-  const maskedDev = maskRow(normalizedDev, 'd');
+  const devRow = dev as { id?: string | null; name?: string | null; publication_title?: string | null; meta_title?: string | null; images?: string[] | null };
+  const maskedDev = maskRow(applyDisplayName(devRow), 'd');
   const normalizedUnits = maskRows(normalizeNames(units), 'u') ?? [];
 
   return {
