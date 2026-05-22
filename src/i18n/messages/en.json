@@ -587,6 +587,7 @@
     "cardYearSuffix": "yr",
     "cardAvailableOfTotal": "{available} of {total} available",
     "cardAvailableOnly": "{available} available",
+    "cardTotalUnits": "{total} units",
     "cardDeliveryLabel": "Delivery",
     "mapApiKeyMissing": "Configure your Google Maps API Key",
     "mapApiKeyHint": "Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to .env.local",
@@ -748,7 +749,11 @@
     "reservado": "Reserved",
     "vendida": "Sold",
     "vendido": "Sold",
-    "no_disponible": "Unavailable"
+    "no_disponible": "Unavailable",
+    "preventa": "Pre-sale",
+    "construccion": "Under construction",
+    "construcción": "Under construction",
+    "entrega_inmediata": "Move-in ready"
   },
   "unitModels": {
     "title": "Unit Models",

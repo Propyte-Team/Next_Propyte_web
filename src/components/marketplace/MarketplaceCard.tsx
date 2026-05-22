@@ -361,22 +361,18 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Row 4 (grid only) — Inventory + delivery */}
-          {variant !== 'compact' && property.kind === 'development' && (property.inventory || property.delivery) && (
+          {/* Row 4 (grid only) — Inventory + delivery. Frontend-only:
+              mostramos sólo total de unidades (oculta "X disponibles"). */}
+          {variant !== 'compact' && property.kind === 'development' && (property.inventory?.total || property.delivery) && (
             <div className="flex items-center gap-2 text-xs text-gray-600">
-              {property.inventory && property.inventory.available !== undefined && (
+              {property.inventory?.total !== undefined && property.inventory.total > 0 && (
                 <span>
-                  {property.inventory.total
-                    ? tMkt('cardAvailableOfTotal', {
-                        available: property.inventory.available,
-                        total: property.inventory.total,
-                      })
-                    : tMkt('cardAvailableOnly', { available: property.inventory.available })}
+                  {tMkt('cardTotalUnits', { total: property.inventory.total })}
                 </span>
               )}
               {property.delivery && (property.delivery.text || property.delivery.estimated) && (
                 <>
-                  {property.inventory?.available !== undefined && (
+                  {property.inventory?.total !== undefined && property.inventory.total > 0 && (
                     <span className="text-gray-300">·</span>
                   )}
                   <span>

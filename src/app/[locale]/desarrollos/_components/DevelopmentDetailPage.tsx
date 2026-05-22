@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
-  Users, CheckCircle, Zap, DollarSign, Download,
+  Users, Zap, DollarSign, Download,
 } from '@/lib/icons';
 import ExpandableText from '@/components/ui/ExpandableText';
 import { getTranslations } from 'next-intl/server';
@@ -216,7 +216,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     bathrooms: number | null;
     area_m2: number | null;
     price_mxn: number | null;
-    availability_status: string | null;
   }
   const unitList = units as UnitLite[];
   const rangeOf = (key: keyof UnitLite) => {
@@ -230,9 +229,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const bathRange = rangeOf('bathrooms');
   const areaRange = rangeOf('area_m2');
   const _priceRange = rangeOf('price_mxn'); void _priceRange;
-  const availableCount = unitList.filter((u) => u.availability_status === 'disponible').length;
   const totalUnits = property.total_units || unitList.length || null;
-  const derivedAvailable = property.available_units ?? (availableCount > 0 ? availableCount : null);
 
   // ── Delivery display ──
   const deliveryDisplay = property.delivery_text
@@ -542,19 +539,15 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         />
                       </div>
 
-                      {/* ── Metrics row: total / available / delivery / progress / commission ── */}
-                      {(totalUnits || derivedAvailable != null || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0) || ((property as any).commission_rate != null && (property as any).commission_rate > 0)) && (
+                      {/* ── Metrics row: total / delivery / progress / commission ──
+                          Frontend-only: ocultamos el badge "X disponibles"
+                          (derivedAvailable). Sólo se muestra total de unidades. */}
+                      {(totalUnits || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0) || ((property as any).commission_rate != null && (property as any).commission_rate > 0)) && (
                         <div className="flex flex-wrap gap-3">
                           {totalUnits && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
                               <Users size={16} className="text-gray-600" />
                               <span className="text-gray-600">{totalUnits} {tProp('totalProperties')}</span>
-                            </div>
-                          )}
-                          {derivedAvailable != null && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-propyte-cyan-100 rounded-xl text-sm">
-                              <CheckCircle size={16} className="text-[#0E7490]" />
-                              <span className="text-[#0E7490] font-semibold">{derivedAvailable} {tProp('available')}</span>
                             </div>
                           )}
                           {deliveryDisplay && (

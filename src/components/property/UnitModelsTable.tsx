@@ -102,12 +102,20 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
     return label;
   };
 
+  // next-intl no lanza cuando la key no existe; retorna el path literal
+  // ("availability.preventa"). El try/catch nunca atrapa. Detectar el
+  // fallback comparándolo y caer a un humanize del raw status.
+  // Ver feedback_next_intl_path_fallback.
+  const humanize = (s: string) =>
+    s.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   const statusLabel = (status: string) => {
-    try {
-      return tAvail(status as 'disponible');
-    } catch {
-      return status;
+    const key = (status || '').toLowerCase().trim();
+    if (!key) return '—';
+    const label = tAvail(key as 'disponible');
+    if (label === key || label === `availability.${key}` || label.startsWith('availability.')) {
+      return humanize(key);
     }
+    return label;
   };
 
   const unitHref = (unit: Unit) =>
