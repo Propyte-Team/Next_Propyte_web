@@ -467,7 +467,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
                 {(property.price_min_mxn || property.price_mxn) > 0 ? (
                   <div>
-                    <span className="text-sm text-gray-600">{tProp('startingFrom')}</span>
+                    {/* "Desde" como label arriba del precio para no desalinear
+                        los componentes adyacentes (feedback Luis 2026-05-22). */}
+                    <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{tProp('startingFrom')}</span>
                     {/* Precio dual MXN/USD con TC ref Banxico debajo.
                         Desarrollos cotizan en MXN por default (no exponen
                         moneda_principal a nivel agregado). */}

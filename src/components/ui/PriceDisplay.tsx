@@ -88,14 +88,13 @@ export default function PriceDisplay({
 
   // variant === 'dual' — estático: original SIEMPRE arriba, referencial SIEMPRE
   // abajo. No clickeable, no responde al toggle global de currency. Se muestran
-  // ambos al mismo tiempo para claridad sin ambigüedad.
+  // ambos al mismo tiempo para claridad sin ambigüedad. El "(Original)" de
+  // arriba se omite (feedback Luis 2026-05-22): basta con "(Referencial)" abajo
+  // para desambiguar — el precio principal es por defecto el cotizado.
   return (
     <div className={`inline-flex flex-col items-baseline ${className}`}>
       <span className={SIZE_PRIMARY[size]}>
         {originalLabel}
-        <span className="ml-1.5 text-[10px] font-medium opacity-60 uppercase tracking-wide">
-          (Original)
-        </span>
       </span>
       <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>
         {referencialLabel}
