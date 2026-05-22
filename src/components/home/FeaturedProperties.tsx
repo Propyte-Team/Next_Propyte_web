@@ -200,8 +200,9 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                       </div>
                     )}
 
-                    {/* Row 5 — Título (line-clamp-1) */}
-                    <h3 className="font-semibold text-[#2C2C2C] text-sm line-clamp-1">
+                    {/* Row 5 — Título (text-xs + line-clamp-2 para que nunca se corte;
+                        fluye a una segunda línea cuando el título es largo). */}
+                    <h3 className="font-semibold text-[#2C2C2C] text-xs leading-snug line-clamp-2 break-words">
                       {displayTitle}
                     </h3>
 
