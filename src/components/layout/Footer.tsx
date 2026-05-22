@@ -189,17 +189,19 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               >
                 {t('cookieSettings')}
               </button>
-              <p className="text-white/60">
-                {t('developedBy')}{' '}
-                <a
-                  href="https://webkoistudio.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block px-2 py-2 -mx-2 -my-2 rounded text-propyte-brand underline underline-offset-4 decoration-propyte-brand/40 hover:decoration-white hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
-                >
-                  Web Koi Studio
-                </a>
-              </p>
+              <a
+                href="https://webkoistudio.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center min-h-[44px] px-3 -mx-3 rounded text-white/60 hover:text-white hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
+              >
+                <span>
+                  {t('developedBy')}{' '}
+                  <span className="text-propyte-brand underline underline-offset-4 decoration-propyte-brand/40 group-hover:decoration-white">
+                    Web Koi Studio
+                  </span>
+                </span>
+              </a>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-white/5">
