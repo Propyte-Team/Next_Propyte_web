@@ -205,12 +205,15 @@ export function mapUnitToProperty(row: UnitRow): Property {
   // priceOriginal: cuando hay descuento, el "precio de lista" (precio_mxn) es
   // el precio original tachado. Sin descuento, se respeta el legacy `priceOriginal`
   // (siempre undefined porque la columna no existe — defensive).
-  const priceListMxn = typeof row.price_mxn === 'number' ? row.price_mxn : null;
-  const priceOriginalRaw = row.price_original_mxn;
+  // IMPORTANTE: Supabase NUMERIC se serializa como STRING (memoria
+  // feedback_v_units_idiosyncrasies). `typeof === 'number'` falla → Number() defensive.
+  const priceListMxnNum = Number(row.price_mxn);
+  const priceListMxn = Number.isFinite(priceListMxnNum) && priceListMxnNum > 0 ? priceListMxnNum : null;
+  const priceOriginalNum = Number(row.price_original_mxn);
   const priceOriginal = discount && priceListMxn
     ? priceListMxn
-    : typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
-      ? priceOriginalRaw
+    : Number.isFinite(priceOriginalNum) && priceOriginalNum > 0
+      ? priceOriginalNum
       : undefined;
 
   return {
@@ -245,10 +248,11 @@ export function mapUnitToProperty(row: UnitRow): Property {
     price: {
       // Con discount activo: price.mxn = precio post-descuento (lo que paga el
       // cliente). priceOriginal abajo lleva el precio_mxn de lista para tachado.
-      // Sin discount: price.mxn = precio_mxn directo.
-      mxn: discount ? discount.priceMxn : (row.price_mxn || 0),
+      // Sin discount: price.mxn = precio_mxn directo. Number() defensive por
+      // NUMERIC-as-string de Supabase.
+      mxn: discount ? discount.priceMxn : (Number(row.price_mxn) || 0),
       currency: (row.currency || 'MXN').toUpperCase() === 'USD' ? 'USD' : 'MXN',
-      usd: typeof row.price_usd === 'number' && row.price_usd > 0 ? row.price_usd : undefined,
+      usd: Number(row.price_usd) > 0 ? Number(row.price_usd) : undefined,
     },
     specs: {
       bedrooms: row.bedrooms || 0,

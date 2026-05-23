@@ -222,9 +222,10 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
 
   // Promo / discount fields are optional in v_developments — read defensively.
   // When Supabase doesn't have these columns, the card simply doesn't render them.
-  const priceOriginalRaw = row.price_original_mxn;
-  const priceOriginal = typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
-    ? priceOriginalRaw
+  // Number() defensive: Supabase NUMERIC se serializa como string.
+  const priceOriginalNum = Number(row.price_original_mxn);
+  const priceOriginal = Number.isFinite(priceOriginalNum) && priceOriginalNum > 0
+    ? priceOriginalNum
     : undefined;
 
   const promoTextEs = typeof row.promo_text_es === 'string' ? row.promo_text_es.trim() : '';
