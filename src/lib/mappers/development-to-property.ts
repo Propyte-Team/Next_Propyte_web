@@ -109,15 +109,21 @@ function buildRichContent(row: Record<string, unknown>): Property['richContent']
   const location_en = pickStr('content_location_en');
   const lifestyle_es = pickStr('content_lifestyle_es');
   const lifestyle_en = pickStr('content_lifestyle_en');
+  const editorial_es = pickStr('descripcion_editorial_es_md');
+  const editorial_en = pickStr('descripcion_editorial_en_md');
   const faqs_es = pickFaq('faq_es');
   const faqs_en = pickFaq('faq_en');
 
-  const hasAny = features_es || features_en || location_es || location_en || lifestyle_es || lifestyle_en || faqs_es || faqs_en;
+  const hasAny =
+    features_es || features_en || location_es || location_en ||
+    lifestyle_es || lifestyle_en || editorial_es || editorial_en ||
+    faqs_es || faqs_en;
   if (!hasAny) return undefined;
   return {
     features: features_es || features_en ? { es: features_es, en: features_en } : undefined,
     location: location_es || location_en ? { es: location_es, en: location_en } : undefined,
     lifestyle: lifestyle_es || lifestyle_en ? { es: lifestyle_es, en: lifestyle_en } : undefined,
+    editorial: editorial_es || editorial_en ? { es: editorial_es, en: editorial_en } : undefined,
     faqs: faqs_es || faqs_en ? { es: faqs_es, en: faqs_en } : undefined,
   };
 }

@@ -158,6 +158,8 @@ export interface Property {
     features?: { es?: string; en?: string };
     location?: { es?: string; en?: string };
     lifestyle?: { es?: string; en?: string };
+    /** Consolidated long-form editorial content as Markdown (replaces features/location/lifestyle). */
+    editorial?: { es?: string; en?: string };
     faqs?: { es?: Array<{ q: string; a: string }>; en?: Array<{ q: string; a: string }> };
   };
   badge: PropertyBadge;
