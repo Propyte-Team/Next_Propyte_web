@@ -102,6 +102,23 @@ export interface PropertyPromo {
   validUntil?: string;
 }
 
+/**
+ * Descuento activo sobre una unidad. Source: real_estate_hub.v_units.discount_*.
+ * Server-side filtra vigencia (descuento_valid_until ≥ today). El cliente sólo
+ * decide cómo render (badge %, line-through brand cyan).
+ *
+ * Para kind='development', `discount` no se setea; en su lugar
+ * `discountedUnitsCount` indica cuántas unidades hijas tienen descuento activo.
+ */
+export interface PropertyDiscount {
+  /** Precio post-descuento en MXN (lo que paga el cliente). */
+  priceMxn: number;
+  /** % descuento, redondeado a 1 decimal. Calculado en BD vía GENERATED column. */
+  pct: number;
+  /** ISO date. Undefined = sin expiración. */
+  validUntil?: string;
+}
+
 export interface Property {
   id: string;
   slug: string;
@@ -163,4 +180,15 @@ export interface Property {
   priceOriginal?: number;
   /** Promotional banner shown over the card image. */
   promo?: PropertyPromo;
+  /**
+   * Sistema de descuentos (2026-05-22). Unit-only: cuando está set,
+   * `price.mxn` ya es el precio post-descuento y `priceOriginal` viene del
+   * mapper como precio de lista (precio_mxn). Solo aplica a kind='unit'.
+   */
+  discount?: PropertyDiscount;
+  /**
+   * Development-only rollup: cuántas unidades hijas tienen descuento activo.
+   * Usado para mostrar badge "Propiedades con descuento" en card de desarrollo.
+   */
+  discountedUnitsCount?: number;
 }

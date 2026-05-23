@@ -9,6 +9,8 @@ interface ImageGalleryProps {
   images: string[];
   alt: string;
   badgeTopLeft?: React.ReactNode;
+  /** Esquina superior derecha — usado para badge de descuento. */
+  badgeTopRight?: React.ReactNode;
 }
 
 /**
@@ -20,7 +22,7 @@ interface ImageGalleryProps {
  * - Photo count overlay "N / M"
  * - Tap targets ≥ 44×44 on thumbnails
  */
-export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGalleryProps) {
+export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight }: ImageGalleryProps) {
   const t = useTranslations('a11y');
   const [current, setCurrent] = useState(0);
   const [modal, setModal] = useState(false);
@@ -106,6 +108,11 @@ export default function ImageGallery({ images, alt, badgeTopLeft }: ImageGallery
         {badgeTopLeft && (
           <div className="absolute top-4 left-4 flex gap-2 pointer-events-none">
             {badgeTopLeft}
+          </div>
+        )}
+        {badgeTopRight && (
+          <div className="absolute top-4 right-4 flex gap-2 pointer-events-none">
+            {badgeTopRight}
           </div>
         )}
         <div className="absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 bg-black/55 text-white text-xs font-semibold rounded-full backdrop-blur-sm">

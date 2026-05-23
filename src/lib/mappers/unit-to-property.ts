@@ -1,4 +1,4 @@
-import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo } from '@/types/property';
+import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo, PropertyDiscount } from '@/types/property';
 
 /**
  * Raw row from `real_estate_hub.v_units`.
@@ -28,6 +28,11 @@ export interface UnitRow {
   price_mxn: number | null;
   price_usd: number | null;
   currency: string | null;
+  // Discount (v_units columns 2026-05-22)
+  discount_price_mxn?: number | string | null;
+  discount_pct?: number | string | null;
+  discount_valid_until?: string | null;
+  is_discount_active?: boolean | null;
   // Unit-specific specs (THIS is the key difference vs v_developments)
   bedrooms: number | null;
   bathrooms: number | null;
@@ -159,12 +164,7 @@ export function mapUnitToProperty(row: UnitRow): Property {
   // comunica el estado de la unidad.
   const badge: PropertyBadge = AVAILABILITY_TO_BADGE[statusRaw] ?? null;
 
-  // Promo / discount fields are optional in v_units — read defensively.
-  const priceOriginalRaw = row.price_original_mxn;
-  const priceOriginal = typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
-    ? priceOriginalRaw
-    : undefined;
-
+  // Promo (banner) — legacy, sigue funcionando si Hub llena los campos.
   const promoTextEs = typeof row.promo_text_es === 'string' ? row.promo_text_es.trim() : '';
   const promoTextEn = typeof row.promo_text_en === 'string' ? row.promo_text_en.trim() : '';
   const promoValidUntil = typeof row.promo_valid_until === 'string' ? row.promo_valid_until : undefined;
@@ -178,6 +178,40 @@ export function mapUnitToProperty(row: UnitRow): Property {
         validUntil: promoValidUntil,
       }
     : undefined;
+
+  // ─── Sistema de descuentos (2026-05-22) ────────────────────────────────
+  // Source: v_units columns discount_price_mxn + discount_pct + discount_valid_until.
+  // v_units.is_discount_active ya filtra vigencia + monto válido. Si está activo,
+  // exponemos `discount` y reescribimos price.mxn al precio post-descuento +
+  // priceOriginal al precio de lista — así el render (strikethrough + badge)
+  // funciona en un único componente sin condicionales en cards.
+  const discountPriceRaw = row.discount_price_mxn;
+  const discountPctRaw = row.discount_pct;
+  const isDiscountActive = row.is_discount_active === true;
+  const discountPrice = typeof discountPriceRaw === 'number' && discountPriceRaw > 0
+    ? discountPriceRaw
+    : Number(discountPriceRaw) > 0 ? Number(discountPriceRaw) : null;
+  const discountPct = typeof discountPctRaw === 'number' && discountPctRaw > 0
+    ? discountPctRaw
+    : Number(discountPctRaw) > 0 ? Number(discountPctRaw) : null;
+  const discount: PropertyDiscount | undefined = isDiscountActive && discountPrice && discountPct
+    ? {
+        priceMxn: discountPrice,
+        pct: discountPct,
+        validUntil: typeof row.discount_valid_until === 'string' ? row.discount_valid_until : undefined,
+      }
+    : undefined;
+
+  // priceOriginal: cuando hay descuento, el "precio de lista" (precio_mxn) es
+  // el precio original tachado. Sin descuento, se respeta el legacy `priceOriginal`
+  // (siempre undefined porque la columna no existe — defensive).
+  const priceListMxn = typeof row.price_mxn === 'number' ? row.price_mxn : null;
+  const priceOriginalRaw = row.price_original_mxn;
+  const priceOriginal = discount && priceListMxn
+    ? priceListMxn
+    : typeof priceOriginalRaw === 'number' && priceOriginalRaw > 0
+      ? priceOriginalRaw
+      : undefined;
 
   return {
     id: row.id,
@@ -209,11 +243,10 @@ export function mapUnitToProperty(row: UnitRow): Property {
       address: row.address || '',
     },
     price: {
-      // `price.mxn` siempre lleva monto en MXN (para sorting/filtros homogéneos
-      // del marketplace). `currency` indica la moneda *de alta* original, y
-      // `usd` el monto en USD cuando aplica. Cards muestran el monto en la
-      // moneda original.
-      mxn: row.price_mxn || 0,
+      // Con discount activo: price.mxn = precio post-descuento (lo que paga el
+      // cliente). priceOriginal abajo lleva el precio_mxn de lista para tachado.
+      // Sin discount: price.mxn = precio_mxn directo.
+      mxn: discount ? discount.priceMxn : (row.price_mxn || 0),
       currency: (row.currency || 'MXN').toUpperCase() === 'USD' ? 'USD' : 'MXN',
       usd: typeof row.price_usd === 'number' && row.price_usd > 0 ? row.price_usd : undefined,
     },
@@ -253,5 +286,6 @@ export function mapUnitToProperty(row: UnitRow): Property {
     annualRevenue: row.annual_revenue ?? undefined,
     priceOriginal,
     promo,
+    discount,
   };
 }

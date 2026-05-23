@@ -1,9 +1,12 @@
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getGlobalStats, getDevelopers, getFeaturedDevelopments } from '@/lib/supabase/queries';
+import { getGlobalStats, getDevelopers, getFeaturedDevelopments, getDiscountedUnits } from '@/lib/supabase/queries';
+import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import type { Property } from '@/types/property';
 import Hero from '@/components/home/Hero';
 import NosotrosTeaser from '@/components/home/NosotrosTeaser';
 import FeaturedProperties, { type FeaturedDevelopment } from '@/components/home/FeaturedProperties';
+import DiscountedUnitsSection from '@/components/home/DiscountedUnitsSection';
 import ExploreCategories from '@/components/home/ExploreCategories';
 import MetodologiaTeaser from '@/components/home/MetodologiaTeaser';
 import ProcessInfographic from '@/components/home/ProcessInfographic';
@@ -58,17 +61,20 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   let stats = { developments: 0, units: 0, cities: 0, zones: 0, typeCounts: {} as Record<string, number> };
   let developers: Array<{ name: string; logo_url: string | null; slug: string; city: string | null; state: string | null }> = [];
   let featured: FeaturedDevelopment[] = [];
+  let discountedUnits: Property[] = [];
 
   const visibility = await getVisibility();
 
   try {
     const supabase = await createServerSupabaseClient();
-    const [statsData, devsRes, featuredRes] = await Promise.all([
+    const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
       getGlobalStats(supabase),
       getDevelopers(supabase),
       getFeaturedDevelopments(supabase, 6),
+      getDiscountedUnits(supabase, 6),
     ]);
     stats = statsData;
+    discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow));
     type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
     developers = ((devsRes.data || []) as DeveloperRow[])
       .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
@@ -167,6 +173,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <FeaturedProperties developments={featured} />
         </ScrollReveal>
       )}
+
+      {/* Sección Unidades con descuento — solo render si ≥3 unidades activas.
+          Source: v_units.is_discount_active filtrado server-side. */}
+      <ScrollReveal delay={0.05}>
+        <DiscountedUnitsSection units={discountedUnits} />
+      </ScrollReveal>
 
       {leadMagnetProps && (
         <ScrollReveal>

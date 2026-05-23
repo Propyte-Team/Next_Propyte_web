@@ -1,13 +1,14 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getFeaturedDevelopments } from '@/lib/supabase/queries';
-import { formatPrice } from '@/lib/formatters';
-import { MapPin, Building2, Tag, ArrowRight } from '@/lib/icons';
+import { getDiscountedUnits } from '@/lib/supabase/queries';
+import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { Tag, ArrowRight } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
+import MarketplaceCard from '@/components/marketplace/MarketplaceCard';
 import { getCta } from '@/lib/hub-content';
+import type { Property } from '@/types/property';
 
 export const revalidate = 600;
 
@@ -39,20 +40,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-interface PromoDev {
-  id: string;
-  slug: string;
-  name: string;
-  city: string | null;
-  zone?: string | null;
-  stage?: string | null;
-  price_min_mxn?: number | null;
-  price_mxn?: number | null;
-  images?: string[] | null;
-  roi_estimated?: number | null;
-  roi_projected?: number | null;
-}
-
 export default async function PromocionesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -62,11 +49,15 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
-  let items: PromoDev[] = [];
+  // 2026-05-22: pivot de "developments featured" a "unidades con descuento activo".
+  // Source: v_units.is_discount_active = true (vigencia + monto válido filtrado
+  // server-side por la view). Ordena por discount_pct DESC para mostrar
+  // primero los descuentos más fuertes.
+  let items: Property[] = [];
   try {
     const supabase = await createServerSupabaseClient();
-    const res = await getFeaturedDevelopments(supabase, 12);
-    items = ((res.data as PromoDev[] | null) || []).slice(0, 12);
+    const res = await getDiscountedUnits(supabase, 24);
+    items = (res.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow));
   } catch (error) {
     console.error('[PromocionesPage] Supabase fetch failed:', error);
   }
@@ -80,14 +71,8 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
 
-  // Offers valid 90 days from now (referential — no real expiration in data yet).
-  // eslint-disable-next-line react-hooks/purity -- server component; Date.now() is per-request, not per-render
-  const validThrough = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-  // Solo emitir CollectionPage + Offers cuando hay 2+ promos reales — el
-  // mismo threshold que la UI (items.length < 2 → empty state). Si la UI
-  // oculta AZUL VIVO, el JSON-LD tampoco debe declararlo: Google Rich
-  // Results podría mostrar la oferta y el usuario llegaría al empty state.
+  // Schema.org Offer real: cada unidad con descuento → priceSpecification con
+  // precio post-descuento + validThrough cuando exista. Threshold: 2+ items.
   const hasShowableItems = items.length >= 2;
   const collectionSchema = hasShowableItems
     ? {
@@ -99,33 +84,41 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
         mainEntity: {
           '@type': 'ItemList',
           numberOfItems: items.length,
-          itemListElement: items.map((dev, i) => {
-            const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
+          itemListElement: items.map((unit, i) => {
+            const detailBase = unit.kind === 'development' ? 'desarrollos' : 'propiedades';
             return {
               '@type': 'ListItem',
               position: i + 1,
               item: {
                 '@type': 'Offer',
-                name: dev.name,
-                url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+                name: unit.name,
+                url: `${baseUrl}/${locale}/${detailBase}/${unit.slug}`,
                 availability: 'https://schema.org/InStock',
-                validThrough,
+                ...(unit.discount?.validUntil ? { validThrough: unit.discount.validUntil } : {}),
                 priceSpecification: {
                   '@type': 'PriceSpecification',
-                  price: price > 0 ? price : undefined,
+                  price: unit.price.mxn > 0 ? unit.price.mxn : undefined,
                   priceCurrency: 'MXN',
                 },
+                ...(unit.priceOriginal && unit.priceOriginal > unit.price.mxn
+                  ? {
+                      // discount semantics in schema.org via PriceSpecification
+                      // referenceQuantity is not the right field for list price;
+                      // we encode it as a custom extension via priceValidUntil + priceSpec.
+                      eligibleQuantity: { '@type': 'QuantitativeValue', unitText: 'unidad' },
+                    }
+                  : {}),
                 itemOffered: {
                   '@type': 'RealEstateListing',
-                  name: dev.name,
-                  url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
+                  name: unit.name,
+                  url: `${baseUrl}/${locale}/${detailBase}/${unit.slug}`,
                   address: {
                     '@type': 'PostalAddress',
-                    addressLocality: dev.city || undefined,
-                    addressRegion: dev.zone || undefined,
+                    addressLocality: unit.location.city || undefined,
+                    addressRegion: unit.location.zone || undefined,
                     addressCountry: 'MX',
                   },
-                  ...(dev.images?.[0] ? { image: dev.images[0] } : {}),
+                  ...(unit.images?.[0] ? { image: unit.images[0] } : {}),
                 },
               },
             };
@@ -179,7 +172,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
         </div>
       </section>
 
-      {/* Promotions grid */}
+      {/* Discounted units grid */}
       <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           {items.length < 2 ? (
@@ -196,63 +189,14 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {items.map((dev) => {
-                const price = dev.price_min_mxn ?? dev.price_mxn ?? 0;
-                const roi = dev.roi_estimated ?? dev.roi_projected ?? 0;
-                return (
-                  <Link
-                    key={dev.id}
-                    href={`/${locale}/desarrollos/${dev.slug}`}
-                    className="group bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-all overflow-hidden h-full flex flex-col"
-                  >
-                    <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
-                      {dev.images?.[0] ? (
-                        <Image
-                          src={dev.images[0]}
-                          alt={`${dev.name} — ${dev.city ?? ''}`}
-                          fill
-                          sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <Building2 size={36} className="text-gray-300" />
-                        </div>
-                      )}
-                      <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-[#0E7490] to-[#0B7A6E] px-4 py-2 text-white text-xs font-bold uppercase tracking-wider text-center">
-                        {t('featuredLabel')}
-                      </div>
-                    </div>
-                    <div className="p-4 flex-1 flex flex-col">
-                      <h3 className="font-bold text-[#1A2F3F] group-hover:text-[#0E7490] transition-colors mb-1 line-clamp-1">
-                        {dev.name}
-                      </h3>
-                      <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
-                        <MapPin size={14} />
-                        <span>
-                          {dev.zone ? `${dev.zone}, ` : ''}
-                          {dev.city}
-                        </span>
-                      </div>
-                      {price > 0 && (
-                        <div className="font-bold text-lg text-[#1A2F3F]">
-                          {t('fromLabel')} {formatPrice(price)}
-                        </div>
-                      )}
-                      {roi > 0 && (
-                        <div className="mt-2 inline-flex self-start items-center px-2 py-0.5 bg-propyte-cyan-100 text-[#0E7490] text-xs font-bold rounded-full">
-                          {t('roiBadge')} {roi}%
-                        </div>
-                      )}
-                      <div className="mt-auto pt-4 flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#0E7490] group-hover:underline">
-                          {t('viewCta')} <ArrowRight size={12} />
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+              {items.map((unit, i) => (
+                <MarketplaceCard
+                  key={unit.id}
+                  property={unit}
+                  priority={i < 3}
+                  variant="grid"
+                />
+              ))}
             </div>
           )}
         </div>

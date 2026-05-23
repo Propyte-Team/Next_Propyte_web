@@ -169,6 +169,16 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
   const representativeArea = property.area_m2 || property.area_min || null;
 
+  // ── Discount rollup desde units ─────────────────────────────────────────
+  // v_units.is_discount_active y v_units.discount_pct vienen filtrados por
+  // vigencia + monto válido. Calculamos el max pct para el badge "hasta -N%".
+  const unitsWithDiscount = (units as Array<{ is_discount_active?: boolean | null; discount_pct?: number | string | null }>)
+    .filter((u) => u.is_discount_active === true);
+  const hasUnitsWithDiscount = unitsWithDiscount.length > 0;
+  const maxDiscountPct = hasUnitsWithDiscount
+    ? Math.round(Math.max(...unitsWithDiscount.map((u) => Number(u.discount_pct) || 0)))
+    : 0;
+
   // ── Developer: project count + fallback record (ISR, amortized) ──
   // The v_developments view often returns developer_name/slug as null even
   // when developer_id is set. We fetch the row directly from
@@ -449,6 +459,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               badgeTopLeft={
                 <span className="px-3 py-1.5 bg-propyte-brand text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
               }
+              badgeTopRight={hasUnitsWithDiscount ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0E7490] text-white text-sm font-bold rounded-full shadow-md tabular-nums">
+                  {tProp('discountUpTo', { pct: maxDiscountPct })}
+                </span>
+              ) : null}
             />
 
             {/* Title & Location */}
@@ -466,7 +481,14 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   <div>
                     {/* "Desde" como label arriba del precio para no desalinear
                         los componentes adyacentes (feedback Luis 2026-05-22). */}
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{tProp('startingFrom')}</span>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">{tProp('startingFrom')}</span>
+                      {hasUnitsWithDiscount && (
+                        <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded uppercase tracking-wider tabular-nums">
+                          −{maxDiscountPct}% {tProp('discountInUnits')}
+                        </span>
+                      )}
+                    </div>
                     {/* Precio dual MXN/USD con TC ref Banxico debajo.
                         Desarrollos cotizan en MXN por default (no exponen
                         moneda_principal a nivel agregado). */}

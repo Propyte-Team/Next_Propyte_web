@@ -60,15 +60,28 @@ export default function MarketplaceCard({
 
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
-  // Price strikethrough — show pre-discount price when meaningfully higher than current.
+  // Sistema de descuentos (2026-05-22):
+  //  - Unit con descuento → property.discount está set y `priceOriginal` ya viene
+  //    con el precio de lista del mapper. Render: tachado brand cyan + badge %.
+  //  - Development con unidades hijas con descuento → property.discountedUnitsCount
+  //    > 0; corner badge "Propiedades con descuento" sobre la imagen.
+  //  - Legacy: cuando hay priceOriginal pero no discount (no debería pasar tras
+  //    el mapper), igual rendea el patrón para no regresar.
   const hasDiscount =
-    typeof property.priceOriginal === 'number' &&
-    property.priceOriginal > property.price.mxn &&
-    property.price.mxn > 0;
-  const formattedOriginal = hasDiscount ? format(property.priceOriginal!) : null;
-  const discountPct = hasDiscount
-    ? Math.round(((property.priceOriginal! - property.price.mxn) / property.priceOriginal!) * 100)
-    : 0;
+    !!property.discount ||
+    (typeof property.priceOriginal === 'number' &&
+      property.priceOriginal > property.price.mxn &&
+      property.price.mxn > 0);
+  const formattedOriginal = hasDiscount && property.priceOriginal ? format(property.priceOriginal) : null;
+  const discountPct = property.discount
+    ? Math.round(property.discount.pct)
+    : hasDiscount && property.priceOriginal
+      ? Math.round(((property.priceOriginal - property.price.mxn) / property.priceOriginal) * 100)
+      : 0;
+  const hasDiscountedUnitsRollup =
+    property.kind === 'development' &&
+    typeof property.discountedUnitsCount === 'number' &&
+    property.discountedUnitsCount > 0;
 
   // Promo banner — `validUntil` filtering is done server-side by the mapper.
   const promoText = property.promo
@@ -251,6 +264,19 @@ export default function MarketplaceCard({
                 {safeType(property.specs.type)}
               </span>
             )}
+            {/* Rollup descuento desarrollo — solo kind='development' con ≥1
+                unidad con descuento activo (v_developments.discounted_units_count). */}
+            {hasDiscountedUnitsRollup && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-[#0E7490] text-white shadow-sm">
+                {tMkt('cardWithDiscounts')}
+              </span>
+            )}
+            {/* Badge descuento directo en unidad — kind='unit' con discount activo */}
+            {property.kind === 'unit' && property.discount && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-[#0E7490] text-white shadow-sm tabular-nums">
+                −{Math.round(property.discount.pct)}% {tMkt('cardDiscountLabel')}
+              </span>
+            )}
           </div>
 
           {/* Photo indicator dots */}
@@ -300,11 +326,13 @@ export default function MarketplaceCard({
             )}
             {hasDiscount && (
               <>
-                <span className="text-xs text-gray-500 line-through tabular-nums">
+                {/* Strikethrough en brand cyan (#0E7490 teal-700, a11y) — la línea
+                    azul sobre el precio de lista pedida por Luis 2026-05-22. */}
+                <span className="text-xs text-gray-600 line-through decoration-[#0E7490] decoration-2 tabular-nums">
                   {formattedOriginal}
                 </span>
-                <span className="text-2xs font-bold text-[#0E7490] bg-[#5CE0D2]/15 px-1.5 py-0.5 rounded tabular-nums">
-                  -{discountPct}%
+                <span className="inline-flex items-center text-2xs font-bold text-white bg-[#0E7490] px-1.5 py-0.5 rounded tabular-nums">
+                  −{discountPct}%
                 </span>
               </>
             )}

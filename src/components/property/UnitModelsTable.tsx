@@ -21,6 +21,11 @@ interface Unit {
   status: string;
   floor?: number;
   has_pool?: boolean;
+  // Discount fields (v_units 2026-05-22). Opcionales — sólo render cuando
+  // is_discount_active = true; el resto de unidades muestra la celda en blanco.
+  discount_price_mxn?: number | string | null;
+  discount_pct?: number | string | null;
+  is_discount_active?: boolean | null;
 }
 
 interface MlEstimate {
@@ -75,6 +80,10 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
   const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
 
   if (units.length === 0) return null;
+
+  // Columna "Descuento" solo aparece si AL MENOS UNA unidad la tiene activa.
+  // Evita columna vacía + ruido visual en desarrollos sin descuentos.
+  const anyDiscount = units.some((u) => u.is_discount_active === true);
 
   // Label de "Tipo" en la tabla de modelos:
   // 1. Si la unidad tiene `unit_subtype` poblado (Penthouse, Pentgarden,
@@ -141,6 +150,9 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               <th className="px-4 py-3 text-center">{t('baths')}</th>
               <th className="px-4 py-3 text-right">m²</th>
               <th className="px-4 py-3 text-right">{t('price')}</th>
+              {anyDiscount && (
+                <th className="px-4 py-3 text-right text-[#0E7490]">{t('discount')}</th>
+              )}
               <th className="px-4 py-3 text-right">
                 {locale === 'en' ? 'Ref. price' : 'Precio Ref.'}
               </th>
@@ -154,6 +166,9 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               const href = unitHref(unit);
               const isClickable = !!href;
               const rowLabel = unit.unit_number || unit.typology || t('model');
+              const isDiscounted = unit.is_discount_active === true;
+              const discountPrice = Number(unit.discount_price_mxn);
+              const discountPctNum = Math.round(Number(unit.discount_pct) || 0);
               return (
                 <tr
                   key={unit.id}
@@ -172,9 +187,11 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                       : undefined
                   }
                   className={`transition-colors ${
-                    isClickable
-                      ? 'hover:bg-[#5CE0D2]/5 cursor-pointer focus:bg-[#5CE0D2]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]/40'
-                      : 'hover:bg-gray-50/50'
+                    isDiscounted
+                      ? 'bg-[#0E7490]/8 hover:bg-[#0E7490]/14 ' + (isClickable ? 'cursor-pointer focus:bg-[#0E7490]/14 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0E7490]/40' : '')
+                      : isClickable
+                        ? 'hover:bg-[#5CE0D2]/5 cursor-pointer focus:bg-[#5CE0D2]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]/40'
+                        : 'hover:bg-gray-50/50'
                   }`}
                 >
                   <td className="px-4 py-3 font-semibold text-gray-900">
@@ -194,9 +211,29 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bedrooms}</td>
                   <td className="px-4 py-3 text-center text-gray-700">{unit.bathrooms}</td>
                   <td className="px-4 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
-                  <td className="px-4 py-3 text-right font-semibold text-gray-900">
-                    {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                    {unit.price_mxn > 0 ? (
+                      isDiscounted && discountPrice > 0 ? (
+                        <>
+                          <span className="block text-xs text-gray-500 line-through decoration-[#0E7490] decoration-2">
+                            {formatPrice(unit.price_mxn)}
+                          </span>
+                          <span className="block text-[#0E7490]">{formatPrice(discountPrice)}</span>
+                        </>
+                      ) : (
+                        <span className="text-gray-900">{formatPrice(unit.price_mxn)}</span>
+                      )
+                    ) : '—'}
                   </td>
+                  {anyDiscount && (
+                    <td className="px-4 py-3 text-right tabular-nums">
+                      {isDiscounted && discountPctNum > 0 ? (
+                        <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded">
+                          −{discountPctNum}%
+                        </span>
+                      ) : <span className="text-gray-300">—</span>}
+                    </td>
+                  )}
                   <td className="px-4 py-3 text-right text-gray-500 font-medium">
                     {referencial}
                   </td>
@@ -218,6 +255,9 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
           const referencial = formatReferencialUsd(unit, rate);
           const status = unit.status || 'disponible';
           const href = unitHref(unit);
+          const isDiscounted = unit.is_discount_active === true;
+          const discountPrice = Number(unit.discount_price_mxn);
+          const discountPctNum = Math.round(Number(unit.discount_pct) || 0);
 
           const cardBody = (
             <>
@@ -237,9 +277,28 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                 <div className="text-gray-600">m²</div>
                 <div className="text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</div>
                 <div className="text-gray-600">{t('price')}</div>
-                <div className="text-right font-bold text-gray-900">
-                  {unit.price_mxn > 0 ? formatPrice(unit.price_mxn) : '—'}
+                <div className="text-right font-bold text-gray-900 tabular-nums">
+                  {unit.price_mxn > 0 ? (
+                    isDiscounted && discountPrice > 0 ? (
+                      <>
+                        <span className="block text-xs text-gray-500 line-through decoration-[#0E7490] decoration-2 font-normal">
+                          {formatPrice(unit.price_mxn)}
+                        </span>
+                        <span className="text-[#0E7490]">{formatPrice(discountPrice)}</span>
+                      </>
+                    ) : formatPrice(unit.price_mxn)
+                  ) : '—'}
                 </div>
+                {isDiscounted && discountPctNum > 0 && (
+                  <>
+                    <div className="text-gray-600">{t('discount')}</div>
+                    <div className="text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded tabular-nums">
+                        −{discountPctNum}%
+                      </span>
+                    </div>
+                  </>
+                )}
                 {referencial !== '—' && (
                   <>
                     <div className="text-gray-600">
@@ -252,19 +311,17 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
             </>
           );
 
+          // Mobile card también resalta en cyan brand cuando hay descuento.
+          const containerCls = isDiscounted
+            ? 'block bg-[#0E7490]/8 border border-[#0E7490]/30 rounded-xl p-4 hover:border-[#0E7490]/60 hover:shadow-sm transition-all active:scale-[0.99]'
+            : 'block bg-white border border-gray-100 rounded-xl p-4 hover:border-[#5CE0D2] hover:shadow-sm transition-all active:scale-[0.99]';
+
           return href ? (
-            <Link
-              key={unit.id}
-              href={href}
-              className="block bg-white border border-gray-100 rounded-xl p-4 hover:border-[#5CE0D2] hover:shadow-sm transition-all active:scale-[0.99]"
-            >
+            <Link key={unit.id} href={href} className={containerCls}>
               {cardBody}
             </Link>
           ) : (
-            <div
-              key={unit.id}
-              className="bg-white border border-gray-100 rounded-xl p-4"
-            >
+            <div key={unit.id} className={containerCls}>
               {cardBody}
             </div>
           );

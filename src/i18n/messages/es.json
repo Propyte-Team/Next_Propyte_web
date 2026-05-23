@@ -585,6 +585,8 @@
     "compareStage": "Etapa",
     "compareDeveloper": "Desarrolladora",
     "cardYearSuffix": "año",
+    "cardDiscountLabel": "Descuento",
+    "cardWithDiscounts": "Con descuento",
     "cardAvailableOfTotal": "{available} de {total} disponibles",
     "cardAvailableOnly": "{available} disponibles",
     "cardTotalUnits": "{total} unidades",
@@ -648,6 +650,10 @@
     "breadcrumbProperties": "Propiedades",
     "breadcrumbAriaLabel": "Migas de pan",
     "startingFrom": "Desde",
+    "discount": "Descuento",
+    "listPriceLabel": "Precio de lista",
+    "discountUpTo": "Hasta −{pct}%",
+    "discountInUnits": "en unidades",
     "zone": "Zona",
     "stateLabel": "Estado",
     "units": "Unidades",
@@ -766,7 +772,14 @@
     "estRent": "Renta Est./mes",
     "status": "Estatus",
     "bedsBaths": "Rec/Baños",
-    "estRentShort": "Renta Est."
+    "estRentShort": "Renta Est.",
+    "discount": "Descuento"
+  },
+  "discountedSection": {
+    "eyebrow": "Oportunidades",
+    "title": "Unidades con descuento activo",
+    "subtitle": "Selección curada de unidades disponibles con precio promocional vigente.",
+    "viewAll": "Ver todas"
   },
   "usages": {
     "residencial": "Residencial",

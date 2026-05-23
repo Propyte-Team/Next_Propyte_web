@@ -81,6 +81,8 @@ export interface DevelopmentRow {
   developer_id: string | null;
   developer_name: string | null;
   developer_slug: string | null;
+  // Discount rollup (v_developments column 2026-05-22)
+  discounted_units_count?: number | null;
   [key: string]: unknown;
 }
 
@@ -301,5 +303,8 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
     assets: hasAssets ? assets : undefined,
     priceOriginal,
     promo,
+    discountedUnitsCount: typeof row.discounted_units_count === 'number' && row.discounted_units_count > 0
+      ? row.discounted_units_count
+      : undefined,
   };
 }

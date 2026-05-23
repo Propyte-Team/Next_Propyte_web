@@ -1,6 +1,6 @@
 'use client';
 
-import { DollarSign, Square, Bed, Bath, type LucideIcon } from '@/lib/icons';
+import { DollarSign, Square, Bed, Bath, Tag, type LucideIcon } from '@/lib/icons';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
 import type { Currency } from '@/context/CurrencyContext';
@@ -28,12 +28,23 @@ interface FloatingKeyDataProps {
    *  estado+zona). Se renderean DESPUÉS de price/area. Si esto se provee y
    *  bedrooms/bathrooms es null, esos no aparecen. */
   extraItems?: ExtraKeyDataItem[];
+  /** Cuando hay descuento activo: muestra precio lista (tachado encima) +
+   *  el `priceMxn` ya es el precio post-descuento + chip −%.
+   *  Si null/0/undefined, la card render sin tratamiento de descuento. */
+  discount?: {
+    listPriceMxn: number;
+    pct: number;
+  };
   labels: {
     title: string;
     price: string;
     area: string;
     bedrooms: string;
     bathrooms: string;
+    /** "Descuento" para la fila opcional con el chip de %. Default i18n key. */
+    discount?: string;
+    /** "Precio de lista" para el strikethrough sobre el price principal. */
+    listPrice?: string;
   };
 }
 
@@ -44,25 +55,51 @@ export default function FloatingKeyData({
   bedrooms,
   bathrooms,
   extraItems,
+  discount,
   labels,
 }: FloatingKeyDataProps) {
   const hasPrice = priceMxn != null && priceMxn > 0;
   const hasArea = areaM2 != null && areaM2 > 0;
+  const hasDiscount = !!discount && discount.listPriceMxn > 0 && discount.pct > 0;
   const items: ExtraKeyDataItem[] = [];
   if (hasPrice) {
     items.push({
       icon: DollarSign,
       label: labels.price,
       value: (
-        <PriceDisplay
-          mxn={priceMxn}
-          variant="dual"
-          size="md"
-          originalCurrency={originalCurrency}
-          className="text-white"
-        />
+        <div className="flex flex-col items-end gap-0.5">
+          {hasDiscount && (
+            <span className="text-2xs text-white/60 line-through decoration-propyte-brand decoration-2 tabular-nums">
+              <PriceDisplay
+                mxn={discount!.listPriceMxn}
+                variant="single"
+                size="sm"
+                className="text-white/60"
+              />
+            </span>
+          )}
+          <PriceDisplay
+            mxn={priceMxn}
+            variant="dual"
+            size="md"
+            originalCurrency={originalCurrency}
+            className="text-white"
+          />
+        </div>
       ),
       key: 'price',
+    });
+  }
+  if (hasDiscount) {
+    items.push({
+      icon: Tag,
+      label: labels.discount ?? 'Descuento',
+      value: (
+        <span className="inline-flex items-center px-2 py-0.5 bg-propyte-brand text-[#0F1923] text-xs font-bold rounded-full tabular-nums">
+          −{Math.round(discount!.pct)}%
+        </span>
+      ),
+      key: 'discount',
     });
   }
   if (hasArea) {

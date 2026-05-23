@@ -585,6 +585,8 @@
     "compareStage": "Stage",
     "compareDeveloper": "Developer",
     "cardYearSuffix": "yr",
+    "cardDiscountLabel": "Off",
+    "cardWithDiscounts": "On sale",
     "cardAvailableOfTotal": "{available} of {total} available",
     "cardAvailableOnly": "{available} available",
     "cardTotalUnits": "{total} units",
@@ -648,6 +650,10 @@
     "breadcrumbProperties": "Properties",
     "breadcrumbAriaLabel": "Breadcrumb",
     "startingFrom": "Starting from",
+    "discount": "Discount",
+    "listPriceLabel": "List price",
+    "discountUpTo": "Up to −{pct}%",
+    "discountInUnits": "on units",
     "zone": "Zone",
     "stateLabel": "State",
     "units": "Units",
@@ -766,7 +772,14 @@
     "estRent": "Est. Rent/mo",
     "status": "Status",
     "bedsBaths": "Beds/Baths",
-    "estRentShort": "Est. Rent"
+    "estRentShort": "Est. Rent",
+    "discount": "Discount"
+  },
+  "discountedSection": {
+    "eyebrow": "Opportunities",
+    "title": "Units with active discount",
+    "subtitle": "Hand-picked available units with promotional pricing in effect.",
+    "viewAll": "View all"
   },
   "usages": {
     "residencial": "Residential",

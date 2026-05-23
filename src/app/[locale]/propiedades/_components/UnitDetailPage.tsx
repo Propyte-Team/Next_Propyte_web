@@ -276,6 +276,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   {property.badge && <Badge type={property.badge} label={stageLabel} />}
                 </>
               }
+              badgeTopRight={property.discount ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0E7490] text-white text-sm font-bold rounded-full shadow-md tabular-nums">
+                  −{Math.round(property.discount.pct)}% {tProp('discount')}
+                </span>
+              ) : null}
             />
 
             {/* Title + Specs */}
@@ -312,26 +317,46 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 </span>
               </div>
 
-              {/* Precio (full width) — sin Share aquí, el título lo lleva arriba */}
+              {/* Precio (full width) — sin Share aquí, el título lo lleva arriba.
+                  Con descuento: precio lista tachado encima, post-descuento abajo + badge %. */}
               {property.price.mxn > 0 && (
-                <div className="mt-4 flex items-baseline gap-4 flex-wrap">
-                  <PriceDisplay
-                    mxn={property.price.mxn}
-                    variant="dual"
-                    size="xl"
-                    showRateNote
-                    originalCurrency={originalCurrency}
-                  />
-                  {property.specs.area > 0 && (
-                    <div className="text-sm text-gray-600">
-                      <PriceDisplay
-                        mxn={Math.round(property.price.mxn / property.specs.area)}
-                        variant="single"
-                        size="sm"
-                        suffix="/m²"
-                      />
+                <div className="mt-4 space-y-1">
+                  {property.discount && property.priceOriginal && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="text-gray-600">{tProp('listPriceLabel')}:</span>
+                      <span className="line-through decoration-[#0E7490] decoration-2 text-gray-600 tabular-nums">
+                        <PriceDisplay
+                          mxn={property.priceOriginal}
+                          variant="single"
+                          size="sm"
+                        />
+                      </span>
                     </div>
                   )}
+                  <div className="flex items-baseline gap-4 flex-wrap">
+                    <PriceDisplay
+                      mxn={property.price.mxn}
+                      variant="dual"
+                      size="xl"
+                      showRateNote
+                      originalCurrency={originalCurrency}
+                    />
+                    {property.discount && (
+                      <span className="inline-flex items-center px-2.5 py-1 bg-[#0E7490] text-white text-sm font-bold rounded-full tabular-nums">
+                        −{Math.round(property.discount.pct)}%
+                      </span>
+                    )}
+                    {property.specs.area > 0 && (
+                      <div className="text-sm text-gray-600">
+                        <PriceDisplay
+                          mxn={Math.round(property.price.mxn / property.specs.area)}
+                          variant="single"
+                          size="sm"
+                          suffix="/m²"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -536,12 +561,18 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 areaM2={property.specs.area > 0 ? property.specs.area : null}
                 bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
                 bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}
+                discount={property.discount && property.priceOriginal ? {
+                  listPriceMxn: property.priceOriginal,
+                  pct: property.discount.pct,
+                } : undefined}
                 labels={{
                   title: locale === 'es' ? 'Datos clave' : 'Key data',
                   price: locale === 'es' ? 'Precio' : 'Price',
                   area: 'Área',
                   bedrooms: tProp('bedrooms'),
                   bathrooms: tProp('bathrooms'),
+                  discount: tProp('discount'),
+                  listPrice: tProp('listPriceLabel'),
                 }}
               />
 

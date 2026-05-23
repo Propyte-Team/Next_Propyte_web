@@ -235,7 +235,7 @@ export async function getSimilarDevelopments(
   const base = () =>
     hub(client)
       .from('v_developments')
-      .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name')
+      .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name, discounted_units_count')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
       .neq('id', seed.id)
@@ -446,6 +446,23 @@ export async function getUnits(client: Client, filters: UnitFilters = {}) {
   query = query.range(offset, offset + limit - 1);
 
   const res = await query;
+  return { ...res, data: maskRows(res.data, 'u') };
+}
+
+/**
+ * Unidades con descuento activo. Source: v_units.is_discount_active.
+ * Filtra approved + no eliminado + descuento vigente (server-side via view).
+ * Usado en /promociones y en la sección "Unidades con descuento" del home.
+ */
+export async function getDiscountedUnits(client: Client, limit = 12) {
+  const res = await hub(client)
+    .from('v_units')
+    .select('*')
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null)
+    .eq('is_discount_active', true)
+    .order('discount_pct', { ascending: false, nullsFirst: false })
+    .limit(limit);
   return { ...res, data: maskRows(res.data, 'u') };
 }
 
