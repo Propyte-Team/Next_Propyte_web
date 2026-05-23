@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
@@ -11,6 +11,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getDevelopmentBySlug,
   getDevelopmentWithUnits,
+  getSlugRedirect,
   getRentalEstimate,
   getDevelopmentFinancials,
   getMlRentalEstimates,
@@ -90,7 +91,15 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     }
   }
 
-  if (!property) notFound();
+  if (!property) {
+    if (supabase) {
+      const newSlug = await getSlugRedirect(supabase, 'development', slug);
+      if (newSlug && newSlug !== slug) {
+        permanentRedirect(`/${locale}/desarrollos/${newSlug}`);
+      }
+    }
+    notFound();
+  }
 
   const [tProp, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),

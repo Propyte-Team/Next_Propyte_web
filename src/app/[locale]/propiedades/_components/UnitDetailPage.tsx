@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
@@ -8,6 +8,7 @@ import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getUnitBySlug,
+  getSlugRedirect,
   getRentalEstimate,
   getAirdnaMarketSummary,
   getSimilarUnits,
@@ -68,7 +69,15 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     console.error('Unit query failed:', err);
   }
 
-  if (!row) notFound();
+  if (!row) {
+    if (supabase) {
+      const newSlug = await getSlugRedirect(supabase, 'unit', slug);
+      if (newSlug && newSlug !== slug) {
+        permanentRedirect(`/${locale}/propiedades/${newSlug}`);
+      }
+    }
+    notFound();
+  }
 
   const property = mapUnitToProperty(row);
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
