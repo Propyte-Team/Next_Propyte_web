@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
 import Script from 'next/script';
 import '@/styles/globals.css';
+import { shouldNoIndex } from '@/lib/seo/noindex';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA4_ID || 'G-H4VD5TVEKM';
 
@@ -69,6 +70,19 @@ export const metadata: Metadata = {
     alternateLocale: 'en_US',
   },
   twitter: { card: 'summary_large_image' },
+  // Bloquea indexación en staging (dev.propyte.com) o cualquier deploy donde
+  // NEXT_PUBLIC_NOINDEX=true. En producción (propyte.com) queda undefined y
+  // los crawlers usan su comportamiento default (indexable).
+  ...(shouldNoIndex()
+    ? {
+        robots: {
+          index: false,
+          follow: false,
+          nocache: true,
+          googleBot: { index: false, follow: false, noimageindex: true },
+        },
+      }
+    : {}),
 };
 
 export default function RootLayout({

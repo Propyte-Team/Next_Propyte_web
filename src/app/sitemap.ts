@@ -2,12 +2,17 @@ import type { MetadataRoute } from 'next';
 import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { TYPE_SLUGS } from '@/app/[locale]/desarrollos/_components/typeConfig';
 import { STAGE_SLUGS_URL } from '@/app/[locale]/desarrollos/_components/stageConfig';
+import { shouldNoIndex } from '@/lib/seo/noindex';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 const LOCALES = ['es', 'en'];
 const CITIES = ['cancun', 'playa-del-carmen', 'tulum', 'merida'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Staging: sitemap vacío. Evita que Google descubra URLs nuevas y
+  // refuerza la señal de desindexación junto con noindex meta/header.
+  if (shouldNoIndex()) return [];
+
   const entries: MetadataRoute.Sitemap = [];
 
   // ── Static pages ──────────────────────────────

@@ -88,17 +88,41 @@ const nextConfig: NextConfig = {
       "upgrade-insecure-requests",
     ].join('; ');
 
+    // Staging (dev.propyte.com) o cualquier deploy con NEXT_PUBLIC_NOINDEX=true:
+    // emitir X-Robots-Tag a nivel de respuesta HTTP. Es la señal más fuerte
+    // para Google (más que <meta>), y aplica también a respuestas no-HTML
+    // (sitemap.xml, JSON, etc.). Una vez desindexado, retirar la env var
+    // restaura el comportamiento de producción.
+    const isNoIndex =
+      process.env.NEXT_PUBLIC_NOINDEX === 'true' ||
+      (() => {
+        const u = process.env.NEXT_PUBLIC_SITE_URL;
+        if (!u) return false;
+        try {
+          const host = new URL(u).host.toLowerCase();
+          return host !== 'propyte.com' && host !== 'www.propyte.com';
+        } catch {
+          return false;
+        }
+      })();
+
+    const baseHeaders = [
+      { key: 'X-Frame-Options', value: xFrameOptions },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+      { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=()' },
+      { key: 'Content-Security-Policy-Report-Only', value: csp },
+    ];
+
+    if (isNoIndex) {
+      baseHeaders.push({ key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' });
+    }
+
     return [
       {
         source: '/:path*',
-        headers: [
-          { key: 'X-Frame-Options', value: xFrameOptions },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=()' },
-          { key: 'Content-Security-Policy-Report-Only', value: csp },
-        ],
+        headers: baseHeaders,
       },
     ];
   },
