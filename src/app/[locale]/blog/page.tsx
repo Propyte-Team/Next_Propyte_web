@@ -1,21 +1,20 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import Link from 'next/link';
-import { ArrowRight, BookOpen } from '@/lib/icons';
+import { BookOpen } from '@/lib/icons';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts } from '@/lib/supabase/queries';
+import { getBlogPosts, getBlogCategories } from '@/lib/supabase/queries';
 import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
-import { CAT_ASESORES, CAT_INVERSIONISTAS } from '@/components/blog/categories';
 import BlogPagination from '@/components/blog/BlogPagination';
+import CategoryFilter from '@/components/blog/CategoryFilter';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { Suspense } from 'react';
-import { getBlogFeatured } from '@/lib/hub-content';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 9;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -52,11 +51,27 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const { categoria, pagina } = await searchParams;
   setRequestLocale(locale);
 
-  const t = await getTranslations({ locale, namespace: 'blog' });
+  const [t, tb] = await Promise.all([
+    getTranslations({ locale, namespace: 'blog' }),
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+  ]);
+
   const activeCategory = categoria || null;
   const currentPage = Math.max(1, Number(pagina) || 1);
-
   const supabase = createPublicSupabaseClient();
+
+  // Single source of truth: grid completo de TODOS los posts (paginado y filtrado).
+  // Categorías se descubren automáticamente desde BD para mantener el filtro
+  // sincronizado sin hardcodear nombres como "Para Asesores".
+  const [{ posts, total }, categories] = supabase
+    ? await Promise.all([
+        getBlogPosts(supabase, { locale, category: activeCategory ?? undefined, limit: POSTS_PER_PAGE, page: currentPage }),
+        getBlogCategories(supabase, locale),
+      ])
+    : [{ posts: [], total: 0 }, []];
+
+  const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
+  const cardT = { minRead: t('minRead') };
 
   const heroT = {
     heroHeadLine1: t('heroHeadLine1'),
@@ -66,33 +81,60 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     ctaInversionistas: t('ctaInversionistas'),
   };
 
-  // If a specific category is filtered, show paginated grid for that category
-  if (activeCategory) {
-    const { posts, total } = supabase
-      ? await getBlogPosts(supabase, { locale, category: activeCategory, limit: POSTS_PER_PAGE, page: currentPage })
-      : { posts: [], total: 0 };
-    const totalPages = Math.ceil(total / POSTS_PER_PAGE);
-    const cardT = { minRead: t('minRead') };
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
+  const breadcrumbItems = activeCategory
+    ? [{ label: t('listingTitle'), href: `/${locale}/blog` }, { label: activeCategory }]
+    : [{ label: t('listingTitle') }];
 
-    return (
-      <>
-        <BlogHero t={heroT} activeCategory={activeCategory} />
-        <section className="bg-white py-10">
-          <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="flex items-center gap-3 mb-8">
-            <Link href={`/${locale}/blog`} className="text-sm text-gray-600 hover:text-[#0E7490] transition-colors">
-              Blog
-            </Link>
-            <span className="text-gray-600">/</span>
-            <span className="text-sm font-medium text-[#1A2F3F]">{activeCategory}</span>
+  return (
+    <>
+      <BlogHero t={heroT} activeCategory={activeCategory} />
+
+      <section className="bg-white py-10 md:py-14">
+        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+          <Breadcrumbs
+            items={breadcrumbItems}
+            locale={locale}
+            homeLabel={tb('home')}
+            ariaLabel={tb('ariaLabel')}
+            baseUrl={siteUrl}
+          />
+
+          <div className="mt-6 mb-8">
+            <Suspense fallback={null}>
+              <CategoryFilter
+                categories={categories}
+                active={activeCategory}
+                allLabel={t('allCategories') || 'Todos'}
+                locale={locale}
+              />
+            </Suspense>
           </div>
 
           {posts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post, i) => (
-                <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 3} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map((post, i) => (
+                  <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 3} />
+                ))}
+              </div>
+
+              {total > 0 && (
+                <p className="mt-6 text-xs text-gray-500 text-center">
+                  {total} {total === 1 ? (locale === 'en' ? 'article' : 'artículo') : (locale === 'en' ? 'articles' : 'artículos')}
+                </p>
+              )}
+
+              <Suspense>
+                <BlogPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  locale={locale}
+                  prevLabel={t('paginationPrev')}
+                  nextLabel={t('paginationNext')}
+                />
+              </Suspense>
+            </>
           ) : (
             <EmptyState
               icon={BookOpen}
@@ -104,132 +146,6 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
               ]}
             />
           )}
-
-          <Suspense>
-            <BlogPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              locale={locale}
-              prevLabel={t('paginationPrev')}
-              nextLabel={t('paginationNext')}
-            />
-          </Suspense>
-          </div>
-        </section>
-
-        <NewsletterCTA />
-      </>
-    );
-  }
-
-  // Default view: 2-column layout con "Para Asesores" + "Para Inversionistas".
-  // Fetch sin filtro de categoría y divide en JS — el doble .in() (status+
-  // category) puede tener edge cases con BLOG_INCLUDE_STAGED y un solo query
-  // ahorra ida y vuelta. CAT_* deben venir de categories.ts (módulo neutro)
-  // porque imports desde 'use client' se convierten en proxy functions en RSC.
-  let asesorResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
-  let invResult = { posts: [] as Awaited<ReturnType<typeof getBlogPosts>>['posts'], total: 0 };
-  if (supabase) {
-    // Si Hub tiene posts marcados como destacados para una categoría, usarlos
-    // (en el orden definido por sort_order). Si no, fallback a últimos 4.
-    const [hubAses, hubInv, all] = await Promise.all([
-      getBlogFeatured('asesores'),
-      getBlogFeatured('inversionistas'),
-      getBlogPosts(supabase, { locale, limit: 16, page: 1 }),
-    ]);
-    const pickFeatured = (
-      hubItems: Awaited<ReturnType<typeof getBlogFeatured>>,
-      defaultPick: typeof all.posts,
-    ) => {
-      if (hubItems.length === 0) return defaultPick;
-      const slugMap = new Map(all.posts.map((p) => [p.slug, p]));
-      return hubItems
-        .map((h) => slugMap.get(h.post_slug))
-        .filter((p): p is NonNullable<typeof p> => Boolean(p));
-    };
-    const ases = pickFeatured(
-      hubAses,
-      all.posts.filter((p) => p.category === CAT_ASESORES).slice(0, 4),
-    );
-    const inv = pickFeatured(
-      hubInv,
-      all.posts.filter((p) => p.category === CAT_INVERSIONISTAS).slice(0, 4),
-    );
-    asesorResult = { posts: ases, total: ases.length };
-    invResult = { posts: inv, total: inv.length };
-  }
-
-  const cardT = { minRead: t('minRead') };
-
-  return (
-    <>
-      <BlogHero t={heroT} activeCategory={null} />
-
-      <section className="bg-white py-12 md:py-16">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-
-            {/* Column: Para Asesores */}
-            <div>
-              <div className="flex items-end justify-between mb-1">
-                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colAsesores')}</h2>
-                <Link
-                  href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
-                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0E7490] font-medium hover:underline whitespace-nowrap"
-                >
-                  {t('viewAllCol')} <ArrowRight size={14} />
-                </Link>
-              </div>
-              <p className="text-sm text-gray-600 mb-6">{t('colAsesoresSubtitle')}</p>
-
-              {asesorResult.posts.length > 0 ? (
-                <div className="space-y-5">
-                  {/* Featured card first */}
-                  <BlogCard post={asesorResult.posts[0]} locale={locale} t={cardT} priority />
-                  {/* Compact list for remaining */}
-                  {asesorResult.posts.slice(1).map((post) => (
-                    <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#0E7490] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0E7490] transition-colors">{post.title}</p>
-                        <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-            {/* Column: Para Inversionistas */}
-            <div>
-              <div className="flex items-end justify-between mb-1">
-                <h2 className="text-xl md:text-2xl font-bold text-[#1A2F3F]">{t('colInversionistas')}</h2>
-                <Link
-                  href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
-                  className="inline-flex items-center gap-1 min-h-[44px] md:min-h-0 text-sm text-[#0E7490] font-medium hover:underline whitespace-nowrap"
-                >
-                  {t('viewAllCol')} <ArrowRight size={14} />
-                </Link>
-              </div>
-              <p className="text-sm text-gray-600 mb-6">{t('colInversionistasSubtitle')}</p>
-
-              {invResult.posts.length > 0 ? (
-                <div className="space-y-5">
-                  <BlogCard post={invResult.posts[0]} locale={locale} t={cardT} priority />
-                  {invResult.posts.slice(1).map((post) => (
-                    <Link key={post.id} href={`/${locale}/blog/${post.slug}`} className="group flex gap-3 items-start py-3 border-b border-gray-100 last:border-0">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-xs text-[#0E7490] font-medium">{post.category}</span>
-                        <p className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0E7490] transition-colors">{post.title}</p>
-                        <span className="text-xs text-gray-600 mt-1 block">{post.read_time_min} {t('minRead')}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-
-          </div>
         </div>
       </section>
 

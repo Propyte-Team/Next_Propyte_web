@@ -117,6 +117,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const jsonLd = buildJsonLd(post, locale, siteUrl);
   const breadcrumbs = [
     { label: t('listingTitle'), href: `/${locale}/blog` },
+    { label: post.category, href: `/${locale}/blog?categoria=${encodeURIComponent(post.category)}` },
     { label: post.title },
   ];
 
