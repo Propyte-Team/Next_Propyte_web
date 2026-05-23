@@ -773,7 +773,8 @@
     "status": "Status",
     "bedsBaths": "Beds/Baths",
     "estRentShort": "Est. Rent",
-    "discount": "Discount"
+    "discount": "Discount",
+    "discountShort": "Disc."
   },
   "discountedSection": {
     "eyebrow": "Opportunities",

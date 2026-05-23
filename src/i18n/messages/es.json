@@ -773,7 +773,8 @@
     "status": "Estatus",
     "bedsBaths": "Rec/Baños",
     "estRentShort": "Renta Est.",
-    "discount": "Descuento"
+    "discount": "Descuento",
+    "discountShort": "Desc."
   },
   "discountedSection": {
     "eyebrow": "Oportunidades",

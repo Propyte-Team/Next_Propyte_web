@@ -144,19 +144,19 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              <th className="px-4 py-3">{t('model')}</th>
-              <th className="px-4 py-3">{t('type')}</th>
-              <th className="px-4 py-3 text-center">{t('beds')}</th>
-              <th className="px-4 py-3 text-center">{t('baths')}</th>
-              <th className="px-4 py-3 text-right">m²</th>
-              <th className="px-4 py-3 text-right">{t('price')}</th>
+              <th className="px-3 py-3">{t('model')}</th>
+              <th className="px-3 py-3">{t('type')}</th>
+              <th className="px-2 py-3 text-center">{t('beds')}</th>
+              <th className="px-2 py-3 text-center">{t('baths')}</th>
+              <th className="px-2 py-3 text-right">m²</th>
+              <th className="px-3 py-3 text-right">{t('price')}</th>
               {anyDiscount && (
-                <th className="px-4 py-3 text-right text-[#0E7490]">{t('discount')}</th>
+                <th className="px-2 py-3 text-right text-[#0E7490]">{t('discountShort')}</th>
               )}
-              <th className="px-4 py-3 text-right">
-                {locale === 'en' ? 'Ref. price' : 'Precio Ref.'}
+              <th className="px-3 py-3 text-right">
+                {locale === 'en' ? 'Ref.' : 'Ref.'}
               </th>
-              <th className="px-4 py-3 text-center">{t('status')}</th>
+              <th className="px-3 py-3 text-center">{t('status')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -194,7 +194,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                         : 'hover:bg-gray-50/50'
                   }`}
                 >
-                  <td className="px-4 py-3 font-semibold text-gray-900">
+                  <td className="px-3 py-3 font-semibold text-gray-900">
                     {href ? (
                       <Link
                         href={href}
@@ -207,11 +207,11 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                       unit.typology || unit.unit_number || '—'
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{typeLabel(unit)}</td>
-                  <td className="px-4 py-3 text-center text-gray-700">{unit.bedrooms}</td>
-                  <td className="px-4 py-3 text-center text-gray-700">{unit.bathrooms}</td>
-                  <td className="px-4 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums">
+                  <td className="px-3 py-3 text-gray-600">{typeLabel(unit)}</td>
+                  <td className="px-2 py-3 text-center text-gray-700">{unit.bedrooms}</td>
+                  <td className="px-2 py-3 text-center text-gray-700">{unit.bathrooms}</td>
+                  <td className="px-2 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
+                  <td className="px-3 py-3 text-right font-semibold tabular-nums">
                     {unit.price_mxn > 0 ? (
                       isDiscounted && discountPrice > 0 ? (
                         <>
@@ -226,18 +226,18 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                     ) : '—'}
                   </td>
                   {anyDiscount && (
-                    <td className="px-4 py-3 text-right tabular-nums">
+                    <td className="px-2 py-3 text-right tabular-nums">
                       {isDiscounted && discountPctNum > 0 ? (
-                        <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded">
+                        <span className="inline-flex items-center px-1.5 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded">
                           −{discountPctNum}%
                         </span>
                       ) : <span className="text-gray-300">—</span>}
                     </td>
                   )}
-                  <td className="px-4 py-3 text-right text-gray-500 font-medium">
+                  <td className="px-3 py-3 text-right text-gray-500 font-medium">
                     {referencial}
                   </td>
-                  <td className="px-4 py-3 text-center">
+                  <td className="px-3 py-3 text-center">
                     <span className={`inline-block px-2 py-0.5 text-2xs font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                       {statusLabel(status)}
                     </span>
