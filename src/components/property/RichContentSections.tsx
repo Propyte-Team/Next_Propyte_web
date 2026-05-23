@@ -1,4 +1,5 @@
 import type { Property } from '@/types/property';
+import { MarkdownContent } from '@/components/common/MarkdownContent';
 
 interface RichContentSectionsProps {
   richContent: NonNullable<Property['richContent']>;
@@ -11,13 +12,19 @@ interface RichContentSectionsProps {
 }
 
 /**
- * Renderiza features/location/lifestyle bodies del JSON ext_content_{es,en}.
- * Cada sección sólo aparece si tiene contenido. Paragraphs separados por \n\n.
+ * Renders editorial content for property/development fichas. Prefers the
+ * consolidated markdown field (richContent.editorial); falls back to legacy
+ * 3-section layout (features/location/lifestyle) during migration.
  */
 export default function RichContentSections({ richContent, locale, labels }: RichContentSectionsProps) {
   const isEn = locale === 'en';
   const pick = (field: { es?: string; en?: string } | undefined) =>
     field ? (isEn ? field.en || field.es : field.es || field.en) : undefined;
+
+  const editorial = pick(richContent.editorial);
+  if (editorial) {
+    return <MarkdownContent markdown={editorial} />;
+  }
 
   const features = pick(richContent.features);
   const location = pick(richContent.location);
