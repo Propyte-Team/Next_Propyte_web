@@ -376,6 +376,34 @@ export async function getBatchFinancials(client: Client, developmentIds: string[
 }
 
 // ============================================================
+// SLUG REDIRECTS (SEO preservation)
+// ============================================================
+
+/**
+ * Lookup a permanent redirect for a slug that no longer exists.
+ * Returns the current slug to redirect to, or null if no redirect is registered.
+ */
+export async function getSlugRedirect(
+  client: Client,
+  entityType: 'development' | 'unit',
+  oldSlug: string,
+): Promise<string | null> {
+  const { data, error } = await client
+    .schema('real_estate_hub' as 'public')
+    .from('slug_redirects')
+    .select('new_slug')
+    .eq('entity_type', entityType)
+    .eq('old_slug', oldSlug)
+    .maybeSingle();
+
+  if (error) {
+    console.error('getSlugRedirect failed:', error);
+    return null;
+  }
+  return (data as { new_slug: string } | null)?.new_slug ?? null;
+}
+
+// ============================================================
 // UNIT QUERIES
 // ============================================================
 
