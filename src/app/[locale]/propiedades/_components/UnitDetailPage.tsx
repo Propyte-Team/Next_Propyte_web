@@ -281,8 +281,19 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
               alt={property.name}
               badgeTopLeft={
                 <>
+                  {/* Pill stage (entrega inmediata / preventa / construcción) —
+                      siempre presente. */}
                   <span className="px-3 py-1.5 bg-[#0E7490] text-white text-xs font-bold rounded-full">{stageLabel}</span>
-                  {property.badge && <Badge type={property.badge} label={stageLabel} />}
+                  {/* Badge complementario SOLO para estados que aportan info
+                      nueva respecto al stage: reservado / vendido. 'nuevo' es
+                      ruido visual (ya implícito en stage='entrega_inmediata')
+                      y duplicaba el label hasta 2026-05-23. */}
+                  {property.badge && property.badge !== 'nuevo' && (
+                    <Badge
+                      type={property.badge}
+                      label={tProp(`badge_${property.badge}` as 'badge_reservado')}
+                    />
+                  )}
                 </>
               }
               badgeTopRight={property.discount ? (
