@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ChevronDown, X, ShieldCheck } from '@/lib/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import { readConsent, writeConsent, REOPEN_EVENT } from '@/lib/cookies/consent';
+import { useCompare } from '@/hooks/useCompare';
 
 export default function CookieBanner() {
   const t = useTranslations('cookieBanner');
@@ -13,6 +14,11 @@ export default function CookieBanner() {
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [bootstrapped, setBootstrapped] = useState(false);
+  // Compare sticky bar es ~52px. Empuja el banner por encima cuando hay
+  // selección activa para no tapar el botón "Comparar" (mismo patrón que
+  // WhatsAppButton). Reportado en Mac 2026-05-22.
+  const { count: compareCount } = useCompare();
+  const bottomOffset = compareCount > 0 ? '5rem' : '1rem';
 
   // Mount-time bootstrap via setState-during-render pattern (avoids
   // react-hooks/set-state-in-effect; same approach used in useFilters).
@@ -63,8 +69,11 @@ export default function CookieBanner() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 24, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="fixed inset-x-3 sm:inset-x-auto sm:right-4 bottom-3 sm:bottom-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
-          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
+          style={{
+            paddingBottom: 'env(safe-area-inset-bottom)',
+            bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})`,
+          }}
         >
           <div className="p-3.5">
             <div className="flex items-start gap-2">

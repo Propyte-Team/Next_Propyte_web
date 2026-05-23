@@ -150,10 +150,12 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal — z-[60] para quedar por encima de WhatsAppButton y
+          CookieBanner (ambos z-50). Si todos están en z-50, el orden DOM
+          decide y WA/Cookie pintan sobre el modal. */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center"
+          className="fixed inset-0 z-[60] bg-black/60 flex items-end sm:items-center justify-center"
           role="dialog"
           aria-modal="true"
           aria-label={tMkt('compareModalLabel')}
@@ -179,13 +181,15 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
 
             <div className="flex-1 overflow-auto">
               <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-gray-50 z-10">
+                {/* Safari no respeta `position: sticky` en <thead>/<tr>;
+                    aplicarlo a cada <th> sí funciona en todos los browsers. */}
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-4 py-3 w-32">
+                    <th className="sticky top-0 bg-gray-50 z-10 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-4 py-3 w-32">
                       {tMkt('compareSpec')}
                     </th>
                     {selected.map((p) => (
-                      <th key={p.id} className="text-left px-4 py-3 min-w-[180px]">
+                      <th key={p.id} className="sticky top-0 bg-gray-50 z-10 text-left px-4 py-3 min-w-[180px]">
                         <Link
                           href={`/${locale}/${detailBase(p)}/${p.slug}`}
                           className="block hover:text-[#0E7490]"
