@@ -6,8 +6,9 @@ import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { GitCompare, X, ChevronUp } from '@/lib/icons';
 import { useCompare, MAX_COMPARE } from '@/hooks/useCompare';
-import { useCurrency } from '@/context/CurrencyContext';
+import PriceDisplay from '@/components/ui/PriceDisplay';
 import type { Property } from '@/types/property';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 
 interface ComparePanelProps {
   properties: Property[];
@@ -16,17 +17,16 @@ interface ComparePanelProps {
 export default function ComparePanel({ properties }: ComparePanelProps) {
   const locale = useLocale();
   const tMkt = useTranslations('marketplace');
-  const tStages = useTranslations('stages');
-  const { format } = useCurrency();
+  const tTypes = useTranslations('types');
+  const tDevTypes = useTranslations('developmentTypes');
   const { ids, remove, clear } = useCompare();
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
 
-  const safeStage = (s: string) => {
-    try { return tStages(s as 'preventa'); } catch { return s; }
-  };
+  const safeDevType = (t: string) => tDevTypes(normalizeI18nKey(t) as 'mixto');
+  const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
 
   const selected = useMemo(() => {
     const byId = new Map(properties.map((p) => [p.id, p]));
@@ -206,67 +206,110 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                     ))}
                   </tr>
                 </thead>
+                {/* Filas canónicas 2026-05-23:
+                    - Si hay al menos 1 development en la selección, se muestra
+                      la fila "Precio hasta" (units quedan con "—").
+                    - "Precio desde" para developments / "Precio" para units puros.
+                    - Tipo de desarrollo (developmentType) si el item es dev;
+                      tipo de propiedad (specs.type) si es unit. */}
                 <tbody className="divide-y divide-gray-100">
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('comparePrice')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
-                        {p.price.mxn > 0 ? format(p.price.mxn) : '—'}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('compareArea')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 text-gray-700 tabular-nums">
-                        {p.specs.area > 0 ? `${p.specs.area} m²` : '—'}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('compareRoi')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 text-gray-700 tabular-nums">
-                        {p.roi.projected > 0 ? `${p.roi.projected}%` : '—'}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('compareCapRate')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 text-gray-700 tabular-nums">
-                        {p.capRate != null && p.capRate > 0 ? `${p.capRate.toFixed(1)}%` : '—'}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('compareStage')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 text-gray-700">
-                        {safeStage(p.stage)}
-                      </td>
-                    ))}
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                      {tMkt('compareDeveloper')}
-                    </td>
-                    {selected.map((p) => (
-                      <td key={p.id} className="px-4 py-3 text-gray-700 text-xs">
-                        {p.developer || '—'}
-                      </td>
-                    ))}
-                  </tr>
+                  {(() => {
+                    const hasDevelopment = selected.some((p) => p.kind === 'development');
+                    const priceHeaderKey = hasDevelopment ? 'comparePriceFrom' : 'comparePrice';
+                    return (
+                      <>
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                            {tMkt(priceHeaderKey)}
+                          </td>
+                          {selected.map((p) => (
+                            <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
+                              {p.price.mxn > 0 ? (
+                                <PriceDisplay
+                                  mxn={p.price.mxn}
+                                  variant="dual"
+                                  size="sm"
+                                  originalCurrency={p.price.currency}
+                                />
+                              ) : (
+                                '—'
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+
+                        {hasDevelopment && (
+                          <tr>
+                            <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                              {tMkt('comparePriceTo')}
+                            </td>
+                            {selected.map((p) => (
+                              <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
+                                {p.kind === 'development' && p.priceMax && p.priceMax > p.price.mxn ? (
+                                  <PriceDisplay
+                                    mxn={p.priceMax}
+                                    variant="dual"
+                                    size="sm"
+                                    originalCurrency={p.price.currency}
+                                  />
+                                ) : (
+                                  '—'
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
+
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                            {tMkt('compareLocation')}
+                          </td>
+                          {selected.map((p) => {
+                            const city = p.location.city || '';
+                            const zone = p.location.zone && p.location.zone !== p.location.city ? p.location.zone : '';
+                            const label = [city, zone].filter(Boolean).join(' · ');
+                            return (
+                              <td key={p.id} className="px-4 py-3 text-gray-700 text-sm">
+                                {label || '—'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                            {tMkt('compareAmenities')}
+                          </td>
+                          {selected.map((p) => (
+                            <td key={p.id} className="px-4 py-3 text-gray-700 tabular-nums">
+                              {p.amenities?.length ?? 0}
+                            </td>
+                          ))}
+                        </tr>
+
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                            {hasDevelopment ? tMkt('compareDevelopmentType') : tMkt('compareType')}
+                          </td>
+                          {selected.map((p) => {
+                            const value =
+                              p.kind === 'development'
+                                ? p.developmentType
+                                  ? safeDevType(p.developmentType)
+                                  : '—'
+                                : p.specs.type
+                                  ? safeType(p.specs.type)
+                                  : '—';
+                            return (
+                              <td key={p.id} className="px-4 py-3 text-gray-700 text-sm capitalize">
+                                {value}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      </>
+                    );
+                  })()}
                 </tbody>
               </table>
             </div>

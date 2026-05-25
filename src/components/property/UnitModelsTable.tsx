@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 import { useCurrency } from '@/context/CurrencyContext';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 
 interface Unit {
   id: string;
@@ -88,43 +89,23 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
   // Label de "Tipo" en la tabla de modelos:
   // 1. Si la unidad tiene `unit_subtype` poblado (Penthouse, Pentgarden,
   //    Loft, etc.), úsalo crudo — esa es la info más específica.
-  // 2. Si no, traducir `unit_type` vía i18n. next-intl puede retornar
-  //    `types.X` como path-fallback cuando la key falta (no throw); si
-  //    detectamos ese fallback usamos el raw type capitalizado.
+  // 2. Si no, normalizar `unit_type` (BD trae "Departamento" Capitalized
+  //    desde Zoho) y traducir vía i18n. El getMessageFallback global en
+  //    request.ts humaniza si la key falta — no rompe SSR.
   const typeLabel = (unit: Unit) => {
     if (unit.unit_subtype && unit.unit_subtype.trim().length > 0) {
       return unit.unit_subtype;
     }
-    const type = unit.unit_type;
-    if (!type) return '—';
-    if (type === 'departamento') return tTypes('departamentoShort');
-    let label: string;
-    try {
-      label = tTypes(type as 'departamento');
-    } catch {
-      return type;
-    }
-    // next-intl fallback: si retorna path completo (`types.Estudio`), usar raw.
-    if (label === `types.${type}` || label.startsWith('types.')) {
-      return type;
-    }
-    return label;
+    const key = normalizeI18nKey(unit.unit_type);
+    if (!key) return '—';
+    if (key === 'departamento') return tTypes('departamentoShort');
+    return tTypes(key as 'departamento');
   };
 
-  // next-intl no lanza cuando la key no existe; retorna el path literal
-  // ("availability.preventa"). El try/catch nunca atrapa. Detectar el
-  // fallback comparándolo y caer a un humanize del raw status.
-  // Ver feedback_next_intl_path_fallback.
-  const humanize = (s: string) =>
-    s.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
   const statusLabel = (status: string) => {
-    const key = (status || '').toLowerCase().trim();
+    const key = normalizeI18nKey(status);
     if (!key) return '—';
-    const label = tAvail(key as 'disponible');
-    if (label === key || label === `availability.${key}` || label.startsWith('availability.')) {
-      return humanize(key);
-    }
-    return label;
+    return tAvail(key as 'disponible');
   };
 
   const unitHref = (unit: Unit) =>

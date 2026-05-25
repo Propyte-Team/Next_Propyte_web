@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { CheckCircle, Bed, Bath, Maximize, Home, Calendar } from '@/lib/icons';
 import type { Property } from '@/types/property';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 
 interface PropertySpecsProps {
   property: Property;
@@ -11,12 +12,11 @@ export default function PropertySpecs({ property }: PropertySpecsProps) {
   const tTypes = useTranslations('types');
   const tStages = useTranslations('stages');
 
-  const safeType = (type: string) => {
-    try { return tTypes(type as 'departamento'); } catch { return type; }
-  };
-  const safeStage = (stage: string) => {
-    try { return tStages(stage as 'preventa'); } catch { return stage; }
-  };
+  // BD canonical: Capitalized con espacios. Normalizamos a lowercase_snake
+  // antes de pasar a t() para matchear las keys del JSON. Si falla, el
+  // getMessageFallback global humaniza (ver request.ts).
+  const safeType = (type: string) => tTypes(normalizeI18nKey(type) as 'departamento');
+  const safeStage = (stage: string) => tStages(normalizeI18nKey(stage) as 'preventa');
 
   const specs = [
     property.specs.bedrooms > 0 && { icon: Bed, label: t('bedrooms'), value: property.specs.bedrooms },

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 import { SlidersHorizontal, ChevronDown, X, Search } from '@/lib/icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
-import CurrencyToggle from '@/components/ui/CurrencyToggle';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 
 interface FilterBarProps {
   filters: Filters;
@@ -35,31 +36,80 @@ function PillDropdown({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{ top: number; left: number; minWidth: number } | null>(null);
   const panelId = `fp-${label
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .replace(/[^a-z0-9]/gi, '-')
     .toLowerCase()}`;
 
+  // SSR-safe portal: solo render del panel después del mount client-side.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Posiciona el panel relativo al trigger antes del paint. Bug 2026-05-23:
+  // el wrapper `overflow-x-auto` del FilterBar fuerza overflow-y: clip por
+  // CSS spec, recortando el dropdown absolute. Solución: portal a body con
+  // posición fixed computada.
+  useLayoutEffect(() => {
+    if (!open || !triggerRef.current) return;
+    const updateCoords = () => {
+      if (!triggerRef.current) return;
+      const rect = triggerRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.bottom + 8,
+        left: rect.left,
+        minWidth: Math.max(rect.width, 260),
+      });
+    };
+    updateCoords();
+    // Cierra al scroll/resize del viewport — re-anclar al trigger sería
+    // complejo y la UX estándar es "cerrar para que el usuario vea el
+    // listado debajo". Ver Radix/Headless UI mismo patrón.
+    const onScrollResize = () => setOpen(false);
+    window.addEventListener('scroll', onScrollResize, { passive: true, capture: true });
+    window.addEventListener('resize', onScrollResize, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScrollResize, { capture: true });
+      window.removeEventListener('resize', onScrollResize);
+    };
+  }, [open]);
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (triggerRef.current?.contains(target)) return;
+      if (panelRef.current?.contains(target)) return;
+      setOpen(false);
     }
-    if (open) document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false);
+    }
+    if (open) {
+      document.addEventListener('mousedown', handleClick);
+      document.addEventListener('keydown', handleKey);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
   }, [open]);
 
   return (
-    <div ref={ref} className="relative flex-shrink-0">
+    <div className="relative flex-shrink-0">
       <button
+        ref={triggerRef}
         type="button"
         data-filter-pill={label}
         aria-label={label}
         aria-expanded={open}
         aria-haspopup="true"
         aria-controls={panelId}
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen((v) => !v)}
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive
             ? 'bg-propyte-cyan-100 border-propyte-brand text-[#0E7490]'
@@ -69,10 +119,22 @@ function PillDropdown({
         {activeLabel || label}
         <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && (
-        <div id={panelId} role="group" aria-label={label} className="absolute top-12 left-0 z-50 bg-white rounded-xl shadow-xl border border-gray-200 p-4 min-w-[260px]">
+      {open && mounted && coords && createPortal(
+        <div
+          ref={panelRef}
+          id={panelId}
+          role="group"
+          aria-label={label}
+          className="fixed z-[60] bg-white rounded-xl shadow-xl border border-gray-200 p-4 min-w-[260px]"
+          style={{
+            top: coords.top,
+            left: coords.left,
+            minWidth: coords.minWidth,
+          }}
+        >
           {children}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -94,18 +156,10 @@ export default function FilterBar({
   const tUsages = useTranslations('usages');
   const tDevTypes = useTranslations('developmentTypes');
 
-  const safeType = (type: string) => {
-    try { return tTypes(type as 'departamento'); } catch { return type; }
-  };
-  const safeStage = (stage: string) => {
-    try { return tStages(stage as 'preventa'); } catch { return stage; }
-  };
-  const safeUsage = (u: string) => {
-    try { return tUsages(u as 'residencial'); } catch { return u; }
-  };
-  const safeDevType = (k: string) => {
-    try { return tDevTypes(k as 'mixto'); } catch { return k; }
-  };
+  const safeType = (type: string) => tTypes(normalizeI18nKey(type) as 'departamento');
+  const safeStage = (stage: string) => tStages(normalizeI18nKey(stage) as 'preventa');
+  const safeUsage = (u: string) => tUsages(normalizeI18nKey(u) as 'residencial');
+  const safeDevType = (k: string) => tDevTypes(normalizeI18nKey(k) as 'mixto');
 
   // Fallback cities cuando el padre no pasa lista dinámica.
   const cityOptions = (availableCities && availableCities.length > 0)
@@ -534,10 +588,9 @@ export default function FilterBar({
         {/* Spacer */}
         <div className="flex-1" />
 
-        {/* MXN/USD toggle — desktop only; mobile has it in MobileHeader Row 1 */}
-        <div className="hidden lg:inline-flex">
-          <CurrencyToggle />
-        </div>
+        {/* Currency toggle eliminado 2026-05-23 (decisión canónica): precio
+            siempre muestra original + referencial sin toggle. Ver
+            feedback_propyte_currency_canonical_dual. */}
 
         {/* Result count */}
         <span className="text-sm text-gray-600 whitespace-nowrap flex-shrink-0">
