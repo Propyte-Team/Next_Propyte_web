@@ -47,9 +47,22 @@ export default async function middleware(request: NextRequest) {
           const data = await res.json();
           if (data.length > 0) {
             const { new_path, redirect_type } = data[0];
-            const url = request.nextUrl.clone();
-            url.pathname = new_path;
-            return NextResponse.redirect(url, redirect_type || 301);
+            // Defense: only follow rows that look like a safe internal redirect.
+            // Reject protocol-relative ('//evil.com'), absolute URLs, and non-path values
+            // — even if the Hub editor (or a compromised account) inserts hostile data.
+            const isSafePath =
+              typeof new_path === 'string' &&
+              new_path.startsWith('/') &&
+              !new_path.startsWith('//');
+            const ALLOWED_REDIRECT_STATUS = new Set([301, 302, 307, 308]);
+            const status = ALLOWED_REDIRECT_STATUS.has(redirect_type)
+              ? redirect_type
+              : 301;
+            if (isSafePath) {
+              const url = request.nextUrl.clone();
+              url.pathname = new_path;
+              return NextResponse.redirect(url, status);
+            }
           }
         }
       }

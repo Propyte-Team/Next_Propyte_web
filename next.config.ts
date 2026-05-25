@@ -61,27 +61,34 @@ const nextConfig: NextConfig = {
     ];
   },
   async headers() {
-    // SAMEORIGIN allows the Design Playground (same origin) to embed pages in
-    // its iframe. DENY would block it. In production the playground is gated
-    // behind NODE_ENV / NEXT_PUBLIC_ENABLE_PLAYGROUND, so SAMEORIGIN is fine.
-    const xFrameOptions = 'SAMEORIGIN';
+    const isProd = process.env.NODE_ENV === 'production';
+
+    // En prod DENY-amos framing (frame-ancestors 'self' en CSP ya lo cubre, pero
+    // XFO sigue siendo útil para clientes que no respetan CSP). En dev usamos
+    // SAMEORIGIN para que el Design Playground pueda embeber páginas en iframe.
+    const xFrameOptions = isProd ? 'DENY' : 'SAMEORIGIN';
 
     // CSP shipped as Report-Only first so violations surface in the browser
     // console without blocking. Flip the header key to 'Content-Security-Policy'
     // (drop "-Report-Only") once dev.propyte.com has been validated.
-    // 'unsafe-inline' on script-src is required for Next.js bootstrap + JSON-LD
-    // until we move to nonce-based scripts.
+    //
+    // Hardening 2026-05-25 (Cyber Neo audit):
+    //   - removed 'unsafe-eval' from script-src (Next.js 15+ prod builds no longer require it).
+    //   - tightened media-src from `https:` to explicit allowlist.
+    //   - frame-ancestors 'none' in prod for additional clickjacking defense.
+    // 'unsafe-inline' on script-src is still required until we migrate to
+    // nonce-based scripts via middleware (planned uplift).
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://*.hotjar.com https://connect.facebook.net https://maps.googleapis.com https://maps.gstatic.com",
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://*.hotjar.com https://connect.facebook.net https://maps.googleapis.com https://maps.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://www.facebook.com https://www.google-analytics.com https://*.hotjar.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.hotjar.com wss://*.hotjar.com https://stats.g.doubleclick.net https://maps.googleapis.com",
       "frame-src 'self' https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://calendly.com",
-      "media-src 'self' https: data: blob:",
+      "media-src 'self' https://*.supabase.co https://*.youtube.com https://*.youtube-nocookie.com https://drive.google.com data: blob:",
       "worker-src 'self' blob:",
-      "frame-ancestors 'self'",
+      isProd ? "frame-ancestors 'none'" : "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
       "object-src 'none'",
@@ -109,7 +116,7 @@ const nextConfig: NextConfig = {
     const baseHeaders = [
       { key: 'X-Frame-Options', value: xFrameOptions },
       { key: 'X-Content-Type-Options', value: 'nosniff' },
-      { key: 'Referrer-Policy', value: 'origin-when-cross-origin' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
       { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
       { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self), payment=(), usb=(), magnetometer=(), gyroscope=()' },
       { key: 'Content-Security-Policy-Report-Only', value: csp },
