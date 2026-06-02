@@ -13,7 +13,7 @@ interface StickyBarProps {
 export default function StickyBar({ property }: StickyBarProps) {
   const t = useTranslations('property');
   const [visible, setVisible] = useState(false);
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
 
   useEffect(() => {
     function handleScroll() {

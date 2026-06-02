@@ -193,7 +193,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     location: [property.location.zone, property.location.city, property.location.state].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/propiedades/${slug}`,
-    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032',
+    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032',
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
@@ -598,7 +598,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 <ContactForm
                   propertyId={property.id}
                   propertyName={property.name}
-                  whatsappUrl={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032'}?text=${encodeURIComponent(
+                  whatsappUrl={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032'}?text=${encodeURIComponent(
                     tProp('whatsappInterestText', { name: property.name })
                   )}`}
                 />

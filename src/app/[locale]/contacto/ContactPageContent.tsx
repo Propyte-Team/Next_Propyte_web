@@ -92,7 +92,7 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
   const phone =
     process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
     (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
-    '5219844638032';
+    '529844638032';
   const address = pickString(
     siteConfig,
     locale === 'en' ? 'contact.address_en' : 'contact.address_es',

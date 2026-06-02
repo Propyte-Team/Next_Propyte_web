@@ -420,7 +420,7 @@ function ConsultationForm() {
               </div>
               {/* WhatsApp (subtle) */}
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032'}?text=Hola%2C%20me%20interesa%20Propyte%20Built`}
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032'}?text=Hola%2C%20me%20interesa%20Propyte%20Built`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-8 text-sm text-white/65 hover:text-[#25D366] transition-colors"

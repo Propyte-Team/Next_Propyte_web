@@ -396,7 +396,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     location: [property.zone && property.zone !== property.city ? property.zone : null, property.city, propertyState].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/desarrollos/${slug}`,
-    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032',
+    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032',
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
@@ -840,7 +840,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <ContactForm
                 propertyId={property.id}
                 propertyName={property.name}
-                whatsappUrl={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032').replace(/\D/g, '')}?text=${encodeURIComponent(
+                whatsappUrl={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032').replace(/\D/g, '')}?text=${encodeURIComponent(
                   tProp('whatsappInterestText', { name: property.name })
                 )}`}
                 whatsappLabel="WhatsApp"

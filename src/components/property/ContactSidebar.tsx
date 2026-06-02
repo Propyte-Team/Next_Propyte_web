@@ -15,7 +15,7 @@ interface ContactSidebarProps {
 export default function ContactSidebar({ property, smartRentEstimate }: ContactSidebarProps) {
   const t = useTranslations('property');
   const [formOpen, setFormOpen] = useState(false);
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
 
   const msg = t('whatsappMessageWithSource', { name: property.name, id: property.id });
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;

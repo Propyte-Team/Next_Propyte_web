@@ -58,7 +58,7 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
     propPhone ||
     process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
     (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
-    '5219844638032';
+    '529844638032';
   const { count: compareCount } = useCompare();
   // ComparePanel sticky bar is ~64px tall when visible. Push WA up to clear it.
   const compareOffset = compareCount > 0 ? '5rem' : '1.25rem';

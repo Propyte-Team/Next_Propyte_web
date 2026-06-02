@@ -9,7 +9,7 @@ interface AdvisorCTAProps {
   locale: string;
 }
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032';
+const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
 
 export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
   const isEn = locale === 'en';
