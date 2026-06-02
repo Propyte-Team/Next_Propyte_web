@@ -65,8 +65,12 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
 
   useEffect(() => {
     function handleScroll() {
-      setVisible(window.scrollY > 300);
+      // Threshold 100px (decisión Luis 2026-05-23): el botón aparece más temprano
+      // en home + listings para descubrimiento. Antes 300.
+      setVisible(window.scrollY > 100);
     }
+    // Fire una vez al montar para no esperar el primer scroll del usuario.
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -97,7 +101,17 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackWhatsAppClick({ surface: propertyId ? 'detail-floating' : 'floating', propertyId })}
+      onClick={() => {
+        // Try/catch defensivo: si analytics falla no debe romper la navegación
+        // a wa.me. Diagnóstico 2026-05-23 — usuario reportó botón sin respuesta.
+        try {
+          trackWhatsAppClick({ surface: propertyId ? 'detail-floating' : 'floating', propertyId });
+        } catch (err) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn('[WhatsAppButton] trackWhatsAppClick failed:', err);
+          }
+        }
+      }}
       style={{
         bottom: `max(1.5rem, calc(env(safe-area-inset-bottom) + ${compareOffset}))`,
       }}

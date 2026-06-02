@@ -123,6 +123,38 @@ export function useFilters(properties: Property[]) {
   }, [filters]);
 
   const filtered = useMemo(() => {
+    // Diagnóstico Bloque A 2026-05-23 — Luis reportó "TODAS las pills fallan,
+    // no despliega lista". Para reproducir sin contaminar prod: en devtools
+    // ejecutar `localStorage.setItem('debug_filters','1')` y refrescar. El
+    // hook imprime motivo de descarte por propiedad. Quitar tras root-causear.
+    const debug =
+      typeof window !== 'undefined' &&
+      window.localStorage?.getItem('debug_filters') === '1';
+    if (debug) {
+      console.debug('[useFilters] input', {
+        propertiesCount: properties.length,
+        filters,
+        sample: properties[0]
+          ? {
+              id: properties[0].id,
+              kind: properties[0].kind,
+              city: properties[0].location.city,
+              zone: properties[0].location.zone,
+              type: properties[0].specs.type,
+              stage: properties[0].stage,
+              priceMxn: properties[0].price.mxn,
+              developmentType: properties[0].developmentType,
+              bedroomsMin: properties[0].bedroomsMin,
+              bedroomsMax: properties[0].bedroomsMax,
+            }
+          : null,
+      });
+    }
+    const reasons: Record<string, number> = {};
+    const fail = (reason: string) => {
+      if (debug) reasons[reason] = (reasons[reason] ?? 0) + 1;
+      return false;
+    };
     const result = properties.filter(p => {
       if (filters.search) {
         const q = filters.search.toLowerCase();
@@ -131,17 +163,18 @@ export function useFilters(properties: Property[]) {
           p.location.city.toLowerCase().includes(q) ||
           p.location.zone.toLowerCase().includes(q) ||
           p.developer.toLowerCase().includes(q);
-        if (!match) return false;
+        if (!match) return fail('search');
       }
-      if (filters.city && p.location.city !== filters.city) return false;
-      if (filters.zone && p.location.zone !== filters.zone) return false;
-      if (filters.type && p.specs.type !== filters.type) return false;
-      if (p.price.mxn < filters.priceMin) return false;
-      if (p.price.mxn > filters.priceMax) return false;
-      if (filters.roiMin && p.roi.projected < filters.roiMin) return false;
-      if (filters.stage && p.stage !== filters.stage) return false;
-      if (filters.usage && !p.usage.includes(filters.usage)) return false;
-      if (filters.developmentType && p.developmentType !== filters.developmentType) return false;
+      if (filters.city && p.location.city !== filters.city) return fail(`city:'${p.location.city}'≠'${filters.city}'`);
+      if (filters.zone && p.location.zone !== filters.zone) return fail(`zone:'${p.location.zone}'≠'${filters.zone}'`);
+      if (filters.type && p.specs.type !== filters.type) return fail(`type:'${p.specs.type}'≠'${filters.type}'`);
+      if (p.price.mxn < filters.priceMin) return fail('priceMin');
+      if (p.price.mxn > filters.priceMax) return fail('priceMax');
+      if (filters.roiMin && p.roi.projected < filters.roiMin) return fail('roiMin');
+      if (filters.stage && p.stage !== filters.stage) return fail(`stage:'${p.stage}'≠'${filters.stage}'`);
+      if (filters.usage && !p.usage.includes(filters.usage)) return fail('usage');
+      if (filters.developmentType && p.developmentType !== filters.developmentType)
+        return fail(`devType:'${p.developmentType}'≠'${filters.developmentType}'`);
       if (filters.bedroomsMin > 0) {
         // Para developments: usar el rango agregado bedroomsMin/Max desde
         // v_units. Para units: el campo directo specs.bedrooms.
@@ -151,21 +184,28 @@ export function useFilters(properties: Property[]) {
           const min = p.bedroomsMin ?? 0;
           const max = p.bedroomsMax ?? min;
           if (targetMin === 4) {
-            if (max < 4) return false;
+            if (max < 4) return fail('bedrooms(dev)4+');
           } else if (min > targetMin || max < targetMin) {
-            return false;
+            return fail(`bedrooms(dev):[${min},${max}]∌${targetMin}`);
           }
         } else {
           const b = p.specs.bedrooms;
           if (targetMin === 4) {
-            if (b < 4) return false;
+            if (b < 4) return fail('bedrooms(unit)4+');
           } else if (b !== targetMin) {
-            return false;
+            return fail(`bedrooms(unit):${b}≠${targetMin}`);
           }
         }
       }
       return true;
     });
+
+    if (debug) {
+      console.debug('[useFilters] output', {
+        filteredCount: result.length,
+        discardReasons: reasons,
+      });
+    }
 
     switch (sortBy) {
       case 'price_asc':

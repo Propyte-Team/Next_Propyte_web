@@ -32,6 +32,7 @@ import ShareDownloadModal, { type ShareDownloadData } from '@/components/propert
 import AreaDisplay from '@/components/ui/AreaDisplay';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import type { Currency } from '@/context/CurrencyContext';
 import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
@@ -297,9 +298,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 </>
               }
               badgeTopRight={property.discount ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0E7490] text-white text-sm font-bold rounded-full shadow-md tabular-nums">
-                  −{Math.round(property.discount.pct)}% {tProp('discount')}
-                </span>
+                <DiscountBadge variant="corner" size={56} ariaLabel={tProp('discount')} />
               ) : null}
             />
 
@@ -362,9 +361,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       originalCurrency={originalCurrency}
                     />
                     {property.discount && (
-                      <span className="inline-flex items-center px-2.5 py-1 bg-[#0E7490] text-white text-sm font-bold rounded-full tabular-nums">
-                        −{Math.round(property.discount.pct)}%
-                      </span>
+                      <DiscountBadge variant="inline" pct={property.discount.pct} />
                     )}
                     {property.specs.area > 0 && (
                       <div className="text-sm text-gray-600">

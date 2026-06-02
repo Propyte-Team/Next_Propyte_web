@@ -9,6 +9,7 @@ import type { Property, PropertyBadge } from '@/types/property';
 import { useCompare } from '@/hooks/useCompare';
 import { useCurrency } from '@/context/CurrencyContext';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
 import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
@@ -267,13 +268,21 @@ export default function MarketplaceCard({
                 {tMkt('cardWithDiscounts')}
               </span>
             )}
-            {/* Badge descuento directo en unidad — kind='unit' con discount activo */}
-            {property.kind === 'unit' && property.discount && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-[#0E7490] text-white shadow-sm tabular-nums">
-                −{Math.round(property.discount.pct)}% {tMkt('cardDiscountLabel')}
-              </span>
-            )}
           </div>
+
+          {/* Tag corner descuento — kind='unit' con discount activo. Icono solo
+              (sin número); el % real se lee en el chip junto al precio. Posicionado
+              en bottom-left para no chocar con stage/type pills (top-left) ni con
+              Compare (top-right). */}
+          {property.kind === 'unit' && property.discount && (
+            <div className="absolute bottom-2 left-2 pointer-events-none">
+              <DiscountBadge
+                variant="corner"
+                size={36}
+                ariaLabel={tMkt('cardDiscountLabel')}
+              />
+            </div>
+          )}
 
           {/* Photo indicator dots */}
           {property.images.length > 1 && (
@@ -329,9 +338,7 @@ export default function MarketplaceCard({
                 <span className="text-xs text-gray-600 line-through decoration-[#0E7490] decoration-2 tabular-nums">
                   {formattedOriginal}
                 </span>
-                <span className="inline-flex items-center text-2xs font-bold text-white bg-[#0E7490] px-1.5 py-0.5 rounded tabular-nums">
-                  −{discountPct}%
-                </span>
+                <DiscountBadge variant="inline" pct={discountPct} />
               </>
             )}
             {pricePerM2 !== null && variant !== 'compact' && (

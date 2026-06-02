@@ -175,7 +175,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
       {/* Discounted units grid */}
       <section className="py-16 md:py-20 bg-[#F4F6F8]">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          {items.length < 2 ? (
+          {items.length < 1 ? (
             <div className="max-w-xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm">
               <EmptyState
                 icon={Tag}

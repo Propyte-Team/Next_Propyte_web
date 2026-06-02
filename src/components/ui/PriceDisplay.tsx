@@ -17,6 +17,10 @@ interface PriceDisplayProps {
    *  grande, marcada como (Original). La otra moneda calculada va ABAJO chiquita
    *  marcada como (Referencial). Default: 'MXN'. */
   originalCurrency?: Currency;
+  /** Tono visual del contexto. 'light' (default) para fondos claros, 'dark'
+   *  para fondos oscuros como FloatingKeyData/DevelopmentKeyData (#1A2F3F).
+   *  En 'dark' sube el contraste del precio referencial a WCAG AA. */
+  tone?: 'light' | 'dark';
   className?: string;
 }
 
@@ -48,8 +52,17 @@ export default function PriceDisplay({
   showRateNote = false,
   suffix,
   originalCurrency = 'MXN',
+  tone = 'light',
   className = '',
 }: PriceDisplayProps) {
+  const isDark = tone === 'dark';
+  // text-gray-500 sobre #1A2F3F da ~3:1 (debajo WCAG AA). text-white/75 da ~6.5:1.
+  const secondaryColorCls = isDark ? 'text-white/75' : 'text-gray-500';
+  // (Referencial) muy chico: white/55 da ~4.6:1 sobre #1A2F3F. gray-500 igual base.
+  const refLabelCls = isDark ? 'text-white/55' : 'opacity-70';
+  // Nota TC Banxico: similar a referencial pero un punto más bajo.
+  const rateNoteCls = isDark ? 'text-white/60' : 'text-gray-400';
+  const inlineSecondaryCls = isDark ? 'text-white/70 text-xs' : 'text-gray-500 text-xs';
   const { rate, rateUpdatedAt } = useCurrency();
   if (mxn == null) return <span className={className}>—</span>;
   const n = typeof mxn === 'string' ? Number(mxn) : mxn;
@@ -77,7 +90,7 @@ export default function PriceDisplay({
     return (
       <span className={className}>
         {originalLabel}{' '}
-        <span className="text-gray-500 text-xs">({referencialLabel})</span>
+        <span className={inlineSecondaryCls}>({referencialLabel})</span>
       </span>
     );
   }
@@ -96,12 +109,12 @@ export default function PriceDisplay({
       <span className={SIZE_PRIMARY[size]}>
         {originalLabel}
       </span>
-      <span className={`${SIZE_SECONDARY[size]} text-gray-500 leading-tight`}>
+      <span className={`${SIZE_SECONDARY[size]} ${secondaryColorCls} leading-tight`}>
         {referencialLabel}
-        <span className="ml-1 opacity-70">(Referencial)</span>
+        <span className={`ml-1 ${refLabelCls}`}>(Referencial)</span>
       </span>
       {showRateNote && (
-        <span className="text-[10px] text-gray-400 mt-0.5 italic">{tcNote}</span>
+        <span className={`text-[10px] ${rateNoteCls} mt-0.5 italic`}>{tcNote}</span>
       )}
     </div>
   );

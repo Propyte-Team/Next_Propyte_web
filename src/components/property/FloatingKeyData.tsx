@@ -3,6 +3,7 @@
 import { DollarSign, Square, Bed, Bath, Tag, type LucideIcon } from '@/lib/icons';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import type { Currency } from '@/context/CurrencyContext';
 
 export interface ExtraKeyDataItem {
@@ -83,6 +84,7 @@ export default function FloatingKeyData({
             variant="dual"
             size="md"
             originalCurrency={originalCurrency}
+            tone="dark"
             className="text-white"
           />
         </div>
@@ -94,11 +96,7 @@ export default function FloatingKeyData({
     items.push({
       icon: Tag,
       label: labels.discount ?? 'Descuento',
-      value: (
-        <span className="inline-flex items-center px-2 py-0.5 bg-propyte-brand text-[#0F1923] text-xs font-bold rounded-full tabular-nums">
-          −{Math.round(discount!.pct)}%
-        </span>
-      ),
+      value: <DiscountBadge variant="inline" pct={discount!.pct} tone="dark" />,
       key: 'discount',
     });
   }
@@ -154,7 +152,7 @@ export default function FloatingKeyData({
         </div>
       </div>
       {hasPrice && (
-        <p className="mt-2 px-1 text-[10px] text-gray-500 leading-snug italic">
+        <p className="mt-2 px-1 text-[10px] text-gray-600 leading-snug italic">
           El precio referencial se calcula con TC Banxico. Precio final depende
           del tipo de cambio acordado en la negociación.
         </p>

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 import { useCurrency } from '@/context/CurrencyContext';
 import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 
 interface Unit {
   id: string;
@@ -209,9 +210,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                   {anyDiscount && (
                     <td className="px-2 py-3 text-right tabular-nums">
                       {isDiscounted && discountPctNum > 0 ? (
-                        <span className="inline-flex items-center px-1.5 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded">
-                          −{discountPctNum}%
-                        </span>
+                        <DiscountBadge variant="inline" pct={discountPctNum} />
                       ) : <span className="text-gray-300">—</span>}
                     </td>
                   )}
@@ -274,9 +273,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                   <>
                     <div className="text-gray-600">{t('discount')}</div>
                     <div className="text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded tabular-nums">
-                        −{discountPctNum}%
-                      </span>
+                      <DiscountBadge variant="inline" pct={discountPctNum} />
                     </div>
                   </>
                 )}
