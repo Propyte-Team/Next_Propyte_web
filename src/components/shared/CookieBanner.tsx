@@ -16,6 +16,9 @@ export default function CookieBanner() {
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [bootstrapped, setBootstrapped] = useState(false);
+  // Tras aceptar/rechazar desmontamos el banner por completo (no solo
+  // pointer-events:none) para garantizar que NADA quede tapando WhatsApp/CTAs.
+  const [hidden, setHidden] = useState(false);
   // Compare sticky bar es ~52px. Empuja el banner por encima cuando hay
   // selección activa para no tapar el botón "Comparar" (mismo patrón que
   // WhatsAppButton). Reportado en Mac 2026-05-22.
@@ -41,6 +44,7 @@ export default function CookieBanner() {
       setAnalytics(current?.analytics ?? false);
       setMarketing(current?.marketing ?? false);
       setExpanded(true);
+      setHidden(false);
       setOpen(true);
     };
     window.addEventListener(REOPEN_EVENT, onReopen);
@@ -68,6 +72,11 @@ export default function CookieBanner() {
   // `pointer-events` en el `style` que salta a 'none' inmediatamente cuando
   // open=false. La transición visual sigue siendo smooth porque framer anima
   // y/opacity, pero pointerEvents no es animable y cambia instantáneo.
+  // Desmontaje total tras el exit: la animación de salida corre con
+  // pointer-events:none y, al terminar (onAnimationComplete), sacamos el aside
+  // del DOM. Así no queda overlay invisible que tape WhatsApp/CTAs.
+  if (hidden) return null;
+
   return (
     <motion.aside
       role="dialog"
@@ -77,6 +86,7 @@ export default function CookieBanner() {
       initial={false}
       animate={open ? { y: 0, opacity: 1 } : { y: 24, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+      onAnimationComplete={() => { if (!open) setHidden(true); }}
       className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
