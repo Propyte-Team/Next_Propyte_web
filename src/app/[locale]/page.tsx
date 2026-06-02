@@ -123,9 +123,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   // Contenido editorial dinámico desde Hub. Auto-hide si Hub no devuelve data:
   // si Luis quiere ocultar la sección, basta con borrar/desactivar los datos en hub.propyte.com.
-  const [hubTestimonials, leadMagnetCta, hubExplore] = await Promise.all([
+  const [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore] = await Promise.all([
     getTestimonials('home'),
     getCta('home_lead_magnet'),
+    getCta('home_developer_banner'),
+    getCta('home_join_team'),
     getExploreCategories(),
   ]);
 
@@ -155,14 +157,29 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       }
     : null;
 
-  // Orden Home — Ajuste 2026-05-20 (decisión Luis):
-  // Swap Infografía ↔ Destacados. Nuevo top: Hero → FeaturedProperties →
-  // LeadMagnet(Hub) → ProcessInfographic → DeveloperBanner → NosotrosTeaser.
-  // Resto reordenado para flujo CTA progresivo + SEO (E-E-A-T, FAQ schema,
-  // freshness, internal linking):
-  // ExploreCategories(Hub) → WhyPropyte → Metodología → HowItWorks →
-  // Testimonials(Hub) → TrendingMarket → DondeEstamos → DeveloperLogos →
-  // RecentBlog → HomeFAQ → JoinTeamBanner
+  const developerBannerProps = developerBannerCta
+    ? {
+        title: (locale === 'en' ? developerBannerCta.title_en : developerBannerCta.title_es) || '',
+        buttonLabel: locale === 'en' ? developerBannerCta.button_label_en : developerBannerCta.button_label_es,
+        buttonHref: developerBannerCta.button_href,
+      }
+    : null;
+
+  const joinTeamBannerProps = joinTeamCta
+    ? {
+        title: (locale === 'en' ? joinTeamCta.title_en : joinTeamCta.title_es) || '',
+        buttonLabel: locale === 'en' ? joinTeamCta.button_label_en : joinTeamCta.button_label_es,
+        buttonHref: joinTeamCta.button_href,
+      }
+    : null;
+
+  // Orden Home — se conserva el de develop (decisión Luis 2026-05-20):
+  // Hero → Featured → DiscountedUnits → LeadMagnet(Hub) → ProcessInfographic →
+  // DeveloperBanner → Nosotros → ExploreCategories(Hub) → WhyPropyte →
+  // Metodología → HowItWorks → Testimonials(Hub) → TrendingMarket →
+  // DondeEstamos → DeveloperLogos → RecentBlog → HomeFAQ → JoinTeamBanner.
+  // Los banners consumen CTAs del Hub con fallback a i18n (merge
+  // feat/dynamic-content-a1-pulido 2026-06-02).
   return (
     <>
       <SchemaMarkup type="organization" />
@@ -191,7 +208,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </ScrollReveal>
 
       <ScrollReveal>
-        <DeveloperBanner />
+        <DeveloperBanner cta={developerBannerProps} />
       </ScrollReveal>
 
       <ScrollReveal>
@@ -248,7 +265,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
         <ScrollReveal delay={0.05}>
-          <JoinTeamBanner />
+          <JoinTeamBanner cta={joinTeamBannerProps} />
         </ScrollReveal>
       )}
     </>
