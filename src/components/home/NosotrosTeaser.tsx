@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { ArrowRight, Languages, ShieldCheck, Clock } from '@/lib/icons';
+import { ArrowRight, Languages, Laptop, Users } from '@/lib/icons';
 
 export default function NosotrosTeaser() {
   const t = useTranslations('nosotrosTeaser');
   const locale = useLocale();
 
+  // Icono acorde a cada badge: equipo/trayectoria (Users), metodología PropTech
+  // (Laptop) y bilingüe (Languages). Antes estaban cruzados (Clock/Languages/Shield).
   const stats = [
-    { icon: Clock, label: t('stat1') },
-    { icon: Languages, label: t('stat2') },
-    { icon: ShieldCheck, label: t('stat3') },
+    { icon: Users, label: t('stat1') },
+    { icon: Laptop, label: t('stat2') },
+    { icon: Languages, label: t('stat3') },
   ];
 
   return (

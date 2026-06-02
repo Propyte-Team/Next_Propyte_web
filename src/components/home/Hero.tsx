@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { Search, MapPin, Building2, Home } from '@/lib/icons';
+import { Search, MapPin, Building2, Home, WavesHorizontal, Tag } from '@/lib/icons';
 import StatCounter from '@/components/shared/StatCounter';
 import HeroAtmosphere from './HeroAtmosphere';
 
@@ -50,11 +50,13 @@ export default function Hero({ stats }: HeroProps) {
     router.push(`/${locale}/${path}${qs ? `?${qs}` : ''}`);
   }
 
+  // Cada chip lleva el icono que corresponde a su tipo de filtro: ubicación
+  // (MapPin), característica frente al mar (WavesHorizontal) y precio (Tag).
   const quickLinks = [
-    { label: t('quickPDC'), href: `/${locale}/propiedades?city=Playa+del+Carmen` },
-    { label: t('quickTulum'), href: `/${locale}/propiedades?city=Tulum` },
-    { label: t('quickBeachfront'), href: `/${locale}/propiedades?amenity=playa` },
-    { label: t('quickUnder3M'), href: `/${locale}/propiedades?priceMax=3000000` },
+    { label: t('quickPDC'), href: `/${locale}/propiedades?city=Playa+del+Carmen`, icon: MapPin },
+    { label: t('quickTulum'), href: `/${locale}/propiedades?city=Tulum`, icon: MapPin },
+    { label: t('quickBeachfront'), href: `/${locale}/propiedades?amenity=playa`, icon: WavesHorizontal },
+    { label: t('quickUnder3M'), href: `/${locale}/propiedades?priceMax=3000000`, icon: Tag },
   ];
 
   // Brand: el headline destaca "Riviera Maya" en cyan oficial #A2F9FF — mismo
@@ -204,16 +206,19 @@ export default function Hero({ stats }: HeroProps) {
         )}
 
         <div className="flex flex-wrap justify-center gap-3 mt-6">
-          {quickLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="propyte-glass-pill inline-flex items-center gap-1.5 min-h-[44px] px-5 py-2.5 text-sm font-medium text-white hover:-translate-y-0.5 rounded-full transition-all duration-200"
-            >
-              <MapPin size={14} strokeWidth={1.75} />
-              {link.label}
-            </Link>
-          ))}
+          {quickLinks.map((link) => {
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="propyte-glass-pill inline-flex items-center gap-1.5 min-h-[44px] px-5 py-2.5 text-sm font-medium text-white hover:-translate-y-0.5 rounded-full transition-all duration-200"
+              >
+                <Icon size={14} strokeWidth={1.75} />
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

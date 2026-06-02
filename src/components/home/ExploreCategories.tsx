@@ -85,6 +85,15 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
   const titleHead = splitMatch ? splitMatch[1] : titleRaw;
   const titleAccent = splitMatch ? splitMatch[2] : '';
 
+  // Columnas según el número real de cards para que la fila quede llena/centrada
+  // (antes md:grid-cols-5 dejaba una columna vacía cuando había 4 categorías).
+  const n = items.length;
+  const colsClass =
+    n >= 5 ? 'sm:grid-cols-3 md:grid-cols-5'
+    : n === 4 ? 'sm:grid-cols-2 md:grid-cols-4'
+    : n === 3 ? 'sm:grid-cols-3 md:grid-cols-3'
+    : 'sm:grid-cols-2 md:grid-cols-2';
+
   return (
     <section className="relative py-16 md:py-20 bg-[#0B1C1E] overflow-hidden">
       {/* Glow ambient — radial sutil del color brand para profundidad. */}
@@ -107,7 +116,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
           )}
         </h2>
         <p className="text-white/70 text-base md:text-lg mb-8 max-w-2xl">{t('subtitle')}</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className={`grid grid-cols-2 ${colsClass} gap-4`}>
           {items.map((cat) => (
             <Link
               key={cat.key}
