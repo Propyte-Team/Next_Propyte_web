@@ -12,7 +12,9 @@ import { getDisplayTitle, getStageLabel } from '@/lib/development-display';
  */
 function normalizeDevType(raw: string | null | undefined): string | null {
   if (!raw) return null;
-  const lower = raw.toLowerCase().trim();
+  // toLowerCase + trim + `_`→`-` para converger el enum crudo de Zoho
+  // (RESIDENCIAL_VERTICAL) con el catálogo canónico kebab-case.
+  const lower = raw.toLowerCase().trim().replace(/_/g, '-');
   if (lower === 'residencial-vertical' || lower === 'residencial vertical' || lower === 'vertical') return 'residencial-vertical';
   if (lower === 'residencial-horizontal' || lower === 'residencial horizontal' || lower === 'horizontal') return 'residencial-horizontal';
   if (lower === 'mixto') return 'mixto';

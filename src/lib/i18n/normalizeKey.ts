@@ -23,3 +23,23 @@ export function normalizeI18nKey(raw: string | null | undefined): string {
     .replace(/\s+/g, '_')
     .replace(/-+/g, '_');
 }
+
+/**
+ * Variante para el namespace `developmentTypes`, que usa kebab-case
+ * (`residencial-vertical`, `torre-oficinas`) — NO snake_case como el resto de
+ * namespaces (stages/types/usages). El catálogo canónico `DevelopmentType`
+ * (types/property.ts) y el mapper (`normalizeDevelopmentType`) ya producen
+ * kebab; pasar ese valor por `normalizeI18nKey` lo corrompía a
+ * `residencial_vertical` (guion bajo) → MISSING_MESSAGE → la card mostraba
+ * "DEVELOPMENTTYPES.RESIDENCIAL_VERTICAL".
+ *
+ * Produce kebab-case y acepta tanto el canónico (`residencial-vertical`) como
+ * el enum crudo de Zoho (`RESIDENCIAL_VERTICAL`).
+ */
+export function normalizeDevTypeKey(raw: string | null | undefined): string {
+  if (!raw) return '';
+  return String(raw)
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, '-');
+}

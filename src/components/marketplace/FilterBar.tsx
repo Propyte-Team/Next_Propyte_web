@@ -7,7 +7,7 @@ import { SlidersHorizontal, ChevronDown, X, Search } from '@/lib/icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
-import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
 
 interface FilterBarProps {
   filters: Filters;
@@ -159,7 +159,7 @@ export default function FilterBar({
   const safeType = (type: string) => tTypes(normalizeI18nKey(type) as 'departamento');
   const safeStage = (stage: string) => tStages(normalizeI18nKey(stage) as 'preventa');
   const safeUsage = (u: string) => tUsages(normalizeI18nKey(u) as 'residencial');
-  const safeDevType = (k: string) => tDevTypes(normalizeI18nKey(k) as 'mixto');
+  const safeDevType = (k: string) => tDevTypes(normalizeDevTypeKey(k) as 'mixto');
 
   // Fallback cities cuando el padre no pasa lista dinámica.
   const cityOptions = (availableCities && availableCities.length > 0)

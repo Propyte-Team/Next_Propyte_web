@@ -12,7 +12,7 @@ import PriceDisplay from '@/components/ui/PriceDisplay';
 import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
-import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -43,7 +43,7 @@ export default function MarketplaceCard({
   const tDevTypes = useTranslations('developmentTypes');
   const safeStage = (s: string) => tStages(normalizeI18nKey(s) as 'preventa');
   const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
-  const safeDevType = (t: string) => tDevTypes(normalizeI18nKey(t) as 'mixto');
+  const safeDevType = (t: string) => tDevTypes(normalizeDevTypeKey(t) as 'mixto');
   const [currentImg, setCurrentImg] = useState(0);
   const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
   const comparing = isComparing(property.id);

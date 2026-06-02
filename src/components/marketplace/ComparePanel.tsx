@@ -8,7 +8,7 @@ import { GitCompare, X, ChevronUp } from '@/lib/icons';
 import { useCompare, MAX_COMPARE } from '@/hooks/useCompare';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import type { Property } from '@/types/property';
-import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
 
 interface ComparePanelProps {
   properties: Property[];
@@ -25,7 +25,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
 
-  const safeDevType = (t: string) => tDevTypes(normalizeI18nKey(t) as 'mixto');
+  const safeDevType = (t: string) => tDevTypes(normalizeDevTypeKey(t) as 'mixto');
   const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
 
   const selected = useMemo(() => {
