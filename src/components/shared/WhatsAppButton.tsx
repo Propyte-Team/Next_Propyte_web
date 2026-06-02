@@ -115,7 +115,7 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
       style={{
         bottom: `max(1.5rem, calc(env(safe-area-inset-bottom) + ${compareOffset}))`,
       }}
-      className={`propyte-cta-whatsapp fixed right-6 z-50 w-[60px] h-[60px] rounded-full items-center justify-center shadow-lg hover:scale-110 transition-[bottom,opacity,transform] duration-200 ${
+      className={`propyte-cta-whatsapp fixed right-6 z-[55] w-[60px] h-[60px] rounded-full items-center justify-center shadow-lg hover:scale-110 transition-[bottom,opacity,transform] duration-200 ${
         isDetailPage ? 'hidden md:flex' : 'flex'
       } ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
