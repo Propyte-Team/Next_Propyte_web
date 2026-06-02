@@ -43,7 +43,7 @@ export default async function MarketplacePage({ params }: { params: Promise<{ lo
       const { data } = await getUnits(supabase, { limit: 100 });
       if (data) {
         rawUnits = data as UnitRow[];
-        properties = rawUnits.map(mapUnitToProperty);
+        properties = rawUnits.map((u) => mapUnitToProperty(u, locale));
       }
     }
   } catch (error) {

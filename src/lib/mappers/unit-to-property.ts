@@ -11,6 +11,9 @@ export interface UnitRow {
   id: string;
   slug: string;
   name: string;
+  /** v_units expone `title` (editorial ES) y `title_en` (editorial EN). */
+  title?: string | null;
+  title_en?: string | null;
   unit_number: string | null;
   // Parent development FK
   development_id: string | null;
@@ -143,7 +146,7 @@ const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
  * development aggregates which default to 0). Links back to parent
  * development via parentDevelopmentSlug for the "View development" CTA.
  */
-export function mapUnitToProperty(row: UnitRow): Property {
+export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
   // v_units NO expone `stage` ni `availability_status` — usar `status` +
   // `is_presale`. Fix bug 2026-05-20: el mapper antiguo caía a 'preventa'
   // como fallback cuando row.stage venía undefined → TODAS las unidades
@@ -229,7 +232,10 @@ export function mapUnitToProperty(row: UnitRow): Property {
     // ese es el título editorial y gana. Solo si no hay título personalizado caemos al
     // fallback "<development_name> — <unit_number>".
     name: (() => {
-      const editorial = (row.title as string | null) || (row.name as string | null);
+      // En inglés prefiere el título editorial EN (title_en), con fallback al
+      // editorial ES (title/name) si está vacío. Nunca rompe los listados ES.
+      const editorialEn = locale === 'en' ? (row.title_en as string | null) : null;
+      const editorial = editorialEn || (row.title as string | null) || (row.name as string | null);
       if (editorial) return editorial;
       const fallbackBase = row.development_name || row.slug || 'Propiedad';
       return row.unit_number ? `${fallbackBase} — ${row.unit_number}` : fallbackBase;

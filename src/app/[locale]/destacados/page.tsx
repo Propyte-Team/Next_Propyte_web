@@ -98,7 +98,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
         position: i + 1,
         item: {
           '@type': 'RealEstateListing',
-          name: getDisplayTitle(dev),
+          name: getDisplayTitle(dev, locale),
           url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
           address: {
             '@type': 'PostalAddress',
@@ -182,7 +182,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {items.map((dev) => {
-                const displayTitle = getDisplayTitle(dev);
+                const displayTitle = getDisplayTitle(dev, locale);
                 const stageKey = normalizeStage(dev.stage);
                 const stageLabel = getStageLabel(dev.stage, (k) => tStages(k as 'preventa'));
                 return (

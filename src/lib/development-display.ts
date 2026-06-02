@@ -10,10 +10,17 @@
 type DevRow = {
   name: string;
   publication_title?: string | null;
+  publication_title_en?: string | null;
   meta_title?: string | null;
 };
 
-export function getDisplayTitle(row: DevRow): string {
+/**
+ * Título público del desarrollo. En inglés prefiere `publication_title_en`
+ * (campo editorial EN del Hub / metaTitle EN del JSON, vía v_developments) y
+ * cae al título en español si está vacío. Sin locale → comportamiento ES previo.
+ */
+export function getDisplayTitle(row: DevRow, locale?: string): string {
+  if (locale === 'en' && row.publication_title_en) return row.publication_title_en;
   return row.publication_title || row.meta_title || row.name;
 }
 

@@ -16,6 +16,7 @@ export interface DevelopmentRow {
   slug: string;
   name: string;
   publication_title: string | null;
+  publication_title_en?: string | null;
   // Location
   city: string | null;
   zone: string | null;
@@ -193,7 +194,7 @@ function normalizeDevelopmentType(raw: string | null | undefined): DevelopmentTy
  * Note: bedrooms/bathrooms/area are 0 at the development level — those specs
  * live at the unit level (v_units). Cards hide them when 0.
  */
-export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
+export function mapDevelopmentToProperty(row: DevelopmentRow, locale?: string): Property {
   const stage: PropertyStage = normalizeStage(row.stage) ?? 'preventa';
 
   const badge: PropertyBadge = VALID_BADGES.includes(row.badge as Exclude<PropertyBadge, null>)
@@ -260,7 +261,7 @@ export function mapDevelopmentToProperty(row: DevelopmentRow): Property {
   return {
     id: row.id,
     slug: row.slug,
-    name: row.publication_title || row.name,
+    name: (locale === 'en' && row.publication_title_en) || row.publication_title || row.name,
     developer: row.developer_name || '',
     developerSlug: row.developer_slug || undefined,
     kind: 'development',

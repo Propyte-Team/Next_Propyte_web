@@ -184,6 +184,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     console.error('Rental/financial fetch failed:', err);
   }
 
+  // En inglés, prefiere el título de publicación EN (v_developments
+  // .publication_title_en) para H1, breadcrumb, schema y compartir. Aditivo:
+  // si no hay EN, conserva el título ES ya resuelto. No afecta el sitio ES.
+  if (locale === 'en' && property?.publication_title_en) {
+    property.name = property.publication_title_en;
+  }
+
   const propertyState = property.state || 'Quintana Roo';
   const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
   const representativeArea = property.area_m2 || property.area_min || null;

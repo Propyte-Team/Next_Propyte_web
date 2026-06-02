@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 import { useCurrency } from '@/context/CurrencyContext';
 import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import { translateTypology } from '@/lib/i18n/typology';
 import DiscountBadge from '@/components/ui/DiscountBadge';
 
 interface Unit {
@@ -147,7 +148,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               const status = unit.status || 'disponible';
               const href = unitHref(unit);
               const isClickable = !!href;
-              const rowLabel = unit.unit_number || unit.typology || t('model');
+              const rowLabel = unit.unit_number || translateTypology(unit.typology, locale) || t('model');
               const isDiscounted = unit.is_discount_active === true;
               const discountPrice = Number(unit.discount_price_mxn);
               const discountPctNum = Math.round(Number(unit.discount_pct) || 0);
@@ -183,10 +184,10 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                         onClick={(e) => e.stopPropagation()}
                         className="text-[#0E7490] hover:text-[#4BCEC0] underline-offset-2 hover:underline"
                       >
-                        {unit.typology || unit.unit_number || '—'}
+                        {translateTypology(unit.typology, locale) || unit.unit_number || '—'}
                       </Link>
                     ) : (
-                      unit.typology || unit.unit_number || '—'
+                      translateTypology(unit.typology, locale) || unit.unit_number || '—'
                     )}
                   </td>
                   <td className="px-3 py-3 text-gray-600">{typeLabel(unit)}</td>
@@ -243,7 +244,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
             <>
               <div className="flex items-center justify-between mb-2">
                 <span className="font-bold text-gray-900">
-                  {unit.typology || unit.unit_number || '—'}
+                  {translateTypology(unit.typology, locale) || unit.unit_number || '—'}
                 </span>
                 <span className={`px-2 py-0.5 text-2xs font-bold rounded-full uppercase ${statusStyles[status] || 'bg-gray-100 text-gray-600'}`}>
                   {statusLabel(status)}

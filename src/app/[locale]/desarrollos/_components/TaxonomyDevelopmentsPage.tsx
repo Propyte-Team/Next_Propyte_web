@@ -42,7 +42,7 @@ export default async function TaxonomyDevelopmentsPage({
       const { data } = await getDevelopments(supabase, { ...filter, limit: 100, orderBy: 'newest' });
       if (data) {
         rawDevs = data as DevelopmentRow[];
-        properties = rawDevs.map(mapDevelopmentToProperty);
+        properties = rawDevs.map((d) => mapDevelopmentToProperty(d, locale));
       }
     }
   } catch (error) {

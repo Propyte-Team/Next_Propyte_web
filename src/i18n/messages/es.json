@@ -748,6 +748,12 @@
     "macrolote": "Macrolote",
     "casa": "Casa",
     "studio": "Studio",
+    "estudio": "Estudio",
+    "loft": "Loft",
+    "villa": "Villa",
+    "condominio": "Condominio",
+    "lote": "Lote",
+    "oficina": "Oficina",
     "townhouse": "Townhouse",
     "local_comercial": "Local",
     "departamentoShort": "Depto"

@@ -33,6 +33,7 @@ export interface FeaturedDevelopment {
   slug: string;
   name: string;
   publication_title?: string | null;
+  publication_title_en?: string | null;
   meta_title?: string | null;
   city: string;
   zone?: string;
@@ -94,7 +95,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {items.map((dev) => {
-              const displayTitle = getDisplayTitle(dev);
+              const displayTitle = getDisplayTitle(dev, locale);
               const stageLabel = getStageLabel(dev.stage, (k) => tStages(k as 'preventa'));
               const stageKey = stageLabel ? (dev.stage || '').toLowerCase().trim() : null;
               const devTypeKey = normalizeDevType(dev.development_type);

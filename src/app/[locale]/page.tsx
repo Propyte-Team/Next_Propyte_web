@@ -74,7 +74,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       getDiscountedUnits(supabase, 6),
     ]);
     stats = statsData;
-    discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow));
+    discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
     type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
     developers = ((devsRes.data || []) as DeveloperRow[])
       .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))

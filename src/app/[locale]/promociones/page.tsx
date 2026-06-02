@@ -57,7 +57,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   try {
     const supabase = await createServerSupabaseClient();
     const res = await getDiscountedUnits(supabase, 24);
-    items = (res.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow));
+    items = (res.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
   } catch (error) {
     console.error('[PromocionesPage] Supabase fetch failed:', error);
   }

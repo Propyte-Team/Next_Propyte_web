@@ -85,7 +85,7 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
           }
         }
 
-        properties = rawDevs.map(mapDevelopmentToProperty);
+        properties = rawDevs.map((d) => mapDevelopmentToProperty(d, locale));
       }
     }
   } catch (error) {

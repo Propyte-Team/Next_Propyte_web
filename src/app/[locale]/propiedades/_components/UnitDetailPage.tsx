@@ -81,7 +81,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     notFound();
   }
 
-  const property = mapUnitToProperty(row);
+  const property = mapUnitToProperty(row, locale);
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
   // Moneda en que se cotizó originalmente (moneda_principal en BD). Default MXN.
   const originalCurrency: Currency = (row.currency || '').toUpperCase() === 'USD' ? 'USD' : 'MXN';
