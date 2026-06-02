@@ -156,10 +156,18 @@ const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', '
  *   - mixto → mixto
  *   - preventa → null (legacy stage misplaced en columna type)
  *   - Residencial vertical → residencial-vertical
+ *   - RESIDENCIAL_VERTICAL → residencial-vertical (enum Zoho mayúsculas + guion bajo)
+ *
+ * El catálogo canónico usa guion-medio (`residencial-vertical`), pero la BD
+ * trae el enum de Zoho en mayúsculas con guion bajo (`RESIDENCIAL_VERTICAL`).
+ * Normalizamos `_` → `-` para que ambos formatos converjan; sin esto el valor
+ * crudo llegaba a `t('developmentTypes.RESIDENCIAL_VERTICAL')`, clave inexistente
+ * que next-intl devuelve como ruta literal (no lanza), mostrando
+ * "DEVELOPMENTTYPES.RESIDENCIAL_VERTICAL" en la card.
  */
 function normalizeDevelopmentType(raw: string | null | undefined): DevelopmentType | undefined {
   if (!raw) return undefined;
-  const lower = raw.toLowerCase().trim();
+  const lower = raw.toLowerCase().trim().replace(/_/g, '-');
   // Direct canonical matches
   if (lower === 'residencial-vertical' || lower === 'residencial vertical' || lower === 'vertical') {
     return 'residencial-vertical';
