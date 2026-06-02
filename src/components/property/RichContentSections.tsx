@@ -19,9 +19,10 @@ interface RichContentSectionsProps {
  */
 export default function RichContentSections({ richContent, locale }: RichContentSectionsProps) {
   const isEn = locale === 'en';
-  const editorial = isEn
-    ? richContent.editorial?.en || richContent.editorial?.es
-    : richContent.editorial?.es || richContent.editorial?.en;
+  // Estricto por idioma: NO se hace fallback EN→ES (ni ES→EN). Si falta el
+  // editorial en el idioma de la página, no se renderiza nada — para no mezclar
+  // idiomas (un visitante EN nunca debe ver texto en español). Decisión 2026-06-02.
+  const editorial = isEn ? richContent.editorial?.en : richContent.editorial?.es;
 
   if (!editorial) return null;
   return <MarkdownContent markdown={editorial} />;
