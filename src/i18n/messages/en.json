@@ -48,6 +48,7 @@
   },
   "explore": {
     "title": "Explore by property type",
+    "subtitle": "Filter by what you're after. Every property has already passed our validation.",
     "apartments": "Apartments",
     "penthouses": "Penthouses",
     "houses": "Houses",
@@ -379,6 +380,7 @@
   },
   "joinTeam": {
     "title": "Want to join the Propyte team?",
+    "subtitle": "A tiered career path where promotions are earned with data, not seniority.",
     "cta": "See the Career Plan"
   },
   "roiSimulator": {
@@ -475,7 +477,9 @@
     "cta": "Read full analysis"
   },
   "developerBanner": {
+    "eyebrow": "For developers",
     "title": "Have a development to bring to market?",
+    "body": "We commercialize your project with absorption analysis, pricing strategy, and a network of advisors and investors who already know the zone. You build; we sell with data.",
     "cta": "Request Commercial Proposal"
   },
   "blog": {

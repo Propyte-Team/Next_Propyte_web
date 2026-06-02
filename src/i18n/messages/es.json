@@ -48,6 +48,7 @@
   },
   "explore": {
     "title": "Explora por tipo de propiedad",
+    "subtitle": "Filtra por lo que buscas. Cada propiedad ya pasó nuestra validación.",
     "apartments": "Departamentos",
     "penthouses": "Penthouses",
     "houses": "Casas",
@@ -379,6 +380,7 @@
   },
   "joinTeam": {
     "title": "¿Quieres ser parte del equipo Propyte?",
+    "subtitle": "Plan de carrera por niveles, con ascensos que se ganan con datos, no con antigüedad.",
     "cta": "Conoce el Plan de Carrera"
   },
   "roiSimulator": {
@@ -475,7 +477,9 @@
     "cta": "Leer análisis completo"
   },
   "developerBanner": {
+    "eyebrow": "Para desarrolladores",
     "title": "¿Tienes un desarrollo que comercializar?",
+    "body": "Comercializamos tu proyecto con análisis de absorción, estrategia de precios y una red de asesores e inversionistas que ya conocen la zona. Tú construyes; nosotros vendemos con datos.",
     "cta": "Solicitar Propuesta Comercial"
   },
   "blog": {

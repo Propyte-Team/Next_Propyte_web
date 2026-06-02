@@ -97,7 +97,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
         }}
       />
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-8">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
           {titleHead}
           {titleAccent && (
             <>
@@ -106,6 +106,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
             </>
           )}
         </h2>
+        <p className="text-white/70 text-base md:text-lg mb-8 max-w-2xl">{t('subtitle')}</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {items.map((cat) => (
             <Link

@@ -15,7 +15,7 @@ export default function WhyPropyte() {
   const locale = useLocale();
 
   const audience = [
-    { icon: TrendingUp, titleKey: 'aud1Title', descKey: 'aud1Desc', ctaKey: 'aud1Cta', href: `/${locale}/desarrollos` },
+    { icon: TrendingUp, titleKey: 'aud1Title', descKey: 'aud1Desc', ctaKey: 'aud1Cta', href: `/${locale}/propiedades` },
     { icon: Building2, titleKey: 'aud2Title', descKey: 'aud2Desc', ctaKey: 'aud2Cta', href: `/${locale}/desarrolladores` },
     { icon: Users, titleKey: 'aud3Title', descKey: 'aud3Desc', ctaKey: 'aud3Cta', href: `/${locale}/unete` },
   ];

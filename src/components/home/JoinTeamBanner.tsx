@@ -16,7 +16,10 @@ export default function JoinTeamBanner() {
         }}
       />
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-semibold text-white mb-6">{t('title')}</h2>
+        <h2 className="text-2xl md:text-3xl font-semibold text-white mb-4">{t('title')}</h2>
+        <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-2xl mx-auto mb-8">
+          {t('subtitle')}
+        </p>
         <Link
           href={`/${locale}/unete`}
           className="inline-flex items-center h-12 px-8 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-semibold rounded-[8px] transition-colors"
