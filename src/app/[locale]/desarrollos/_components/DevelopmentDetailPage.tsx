@@ -41,6 +41,7 @@ import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import DevelopmentKeyData from '@/components/property/DevelopmentKeyData';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
@@ -469,9 +470,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 <span className="px-3 py-1.5 bg-propyte-brand text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
               }
               badgeTopRight={hasUnitsWithDiscount ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0E7490] text-white text-sm font-bold rounded-full shadow-md tabular-nums">
-                  {tProp('discountUpTo', { pct: maxDiscountPct })}
-                </span>
+                <DiscountBadge variant="corner" size={56} ariaLabel={tProp('discountUpTo', { pct: maxDiscountPct })} />
               ) : null}
             />
 
@@ -490,23 +489,23 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   <div>
                     {/* "Desde" como label arriba del precio para no desalinear
                         los componentes adyacentes (feedback Luis 2026-05-22). */}
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500">{tProp('startingFrom')}</span>
+                    <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{tProp('startingFrom')}</span>
+                    {/* Precio dual MXN/USD con TC ref Banxico debajo + chip de
+                        descuento al lado del precio (no del label "desde"). */}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <PriceDisplay
+                        mxn={property.price_min_mxn || property.price_mxn}
+                        variant="dual"
+                        size="xl"
+                        showRateNote
+                      />
                       {hasUnitsWithDiscount && (
-                        <span className="inline-flex items-center px-2 py-0.5 bg-[#0E7490] text-white text-2xs font-bold rounded uppercase tracking-wider tabular-nums">
-                          −{maxDiscountPct}% {tProp('discountInUnits')}
+                        <span className="inline-flex items-center gap-1.5">
+                          <DiscountBadge variant="inline" pct={maxDiscountPct} />
+                          <span className="text-2xs font-semibold uppercase tracking-wider text-[#0E7490]">{tProp('discountInUnits')}</span>
                         </span>
                       )}
                     </div>
-                    {/* Precio dual MXN/USD con TC ref Banxico debajo.
-                        Desarrollos cotizan en MXN por default (no exponen
-                        moneda_principal a nivel agregado). */}
-                    <PriceDisplay
-                      mxn={property.price_min_mxn || property.price_mxn}
-                      variant="dual"
-                      size="xl"
-                      showRateNote
-                    />
                   </div>
                 ) : <div />}
                 <ShareDownloadModal data={shareData} locale={locale} />
@@ -812,6 +811,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               mainType={mainType}
               zone={property.zone}
               state={property.state}
+              discountPct={hasUnitsWithDiscount ? maxDiscountPct : null}
               labels={{
                 title: locale === 'es' ? 'Datos clave' : 'Key data',
                 price: locale === 'es' ? 'Precio desde' : 'Price from',
@@ -819,6 +819,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 units: locale === 'es' ? 'Unidades' : 'Units',
                 type: locale === 'es' ? 'Tipo' : 'Type',
                 location: locale === 'es' ? 'Ubicación' : 'Location',
+                discount: locale === 'es' ? 'Descuento' : 'Discount',
               }}
             />
 

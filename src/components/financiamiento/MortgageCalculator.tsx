@@ -14,7 +14,11 @@ const COLOR_INTEREST = '#1A2F3F';
 export default function MortgageCalculator() {
   const t = useTranslations('mortgageCalc');
   const locale = useLocale();
-  const { format, currency } = useCurrency();
+  // Calculadora hipoteca opera enteramente en MXN; no muestra precio de
+  // propiedad (no requiere conversión dual). Usamos formatMxn como helper puro.
+  const { formatMxn } = useCurrency();
+  const format = formatMxn;
+  const currency = 'MXN';
 
   // State (MXN values internamente; conversión a USD vía CurrencyContext)
   const [amount, setAmount] = useState(3_000_000);

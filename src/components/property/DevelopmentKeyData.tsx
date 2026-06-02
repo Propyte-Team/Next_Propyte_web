@@ -1,8 +1,9 @@
 'use client';
 
-import { DollarSign, Square, Layers, Tag, MapPin } from '@/lib/icons';
+import { DollarSign, Square, Layers, Tag, MapPin, Percent } from '@/lib/icons';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import type { Currency } from '@/context/CurrencyContext';
 
 interface DevelopmentKeyDataProps {
@@ -13,6 +14,8 @@ interface DevelopmentKeyDataProps {
   mainType?: string | null;
   zone?: string | null;
   state?: string | null;
+  /** % de descuento máx. entre las unidades del desarrollo. 0/null = sin fila. */
+  discountPct?: number | null;
   labels: {
     title: string;
     price: string;
@@ -20,6 +23,7 @@ interface DevelopmentKeyDataProps {
     units: string;
     type: string;
     location: string;
+    discount?: string;
   };
 }
 
@@ -40,9 +44,11 @@ export default function DevelopmentKeyData({
   mainType,
   zone,
   state,
+  discountPct,
   labels,
 }: DevelopmentKeyDataProps) {
   const hasPrice = priceMxn != null && priceMxn > 0;
+  const hasDiscount = discountPct != null && discountPct > 0;
   const hasArea = areaM2 != null && areaM2 > 0;
   const hasUnits = totalUnits != null && totalUnits > 0;
   const hasType = !!(mainType && mainType.trim().length > 0);
@@ -66,10 +72,19 @@ export default function DevelopmentKeyData({
           variant="dual"
           size="md"
           originalCurrency={originalCurrency}
+          tone="dark"
           className="text-white"
         />
       ),
       key: 'price',
+    });
+  }
+  if (hasDiscount) {
+    items.push({
+      icon: Percent,
+      label: labels.discount ?? 'Descuento',
+      value: <DiscountBadge variant="inline" pct={discountPct!} tone="dark" />,
+      key: 'discount',
     });
   }
   if (hasArea) {
@@ -132,7 +147,7 @@ export default function DevelopmentKeyData({
         </div>
       </div>
       {hasPrice && (
-        <p className="mt-2 px-1 text-[10px] text-gray-500 leading-snug italic">
+        <p className="mt-2 px-1 text-[10px] text-gray-600 leading-snug italic">
           El precio referencial se calcula con TC Banxico. Precio final depende
           del tipo de cambio acordado en la negociación.
         </p>

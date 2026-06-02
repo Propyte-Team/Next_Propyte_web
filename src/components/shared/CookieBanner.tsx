@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, X, ShieldCheck } from '@/lib/icons';
 import { motion, AnimatePresence } from 'framer-motion';
+// Nota: AnimatePresence se mantiene importado porque la sección "expanded"
+// interna lo usa para colapsar las opciones de cookies (analytics/marketing).
 import { readConsent, writeConsent, REOPEN_EVENT } from '@/lib/cookies/consent';
 import { useCompare } from '@/hooks/useCompare';
 
@@ -58,23 +60,30 @@ export default function CookieBanner() {
     setOpen(false);
   };
 
+  // Bug 2026-05-23: AnimatePresence con `{open && ...}` retenía el motion.aside
+  // en el DOM durante el exit animation. Aunque opacity caía a 0, el elemento
+  // seguía capturando pointer events en la esquina inferior derecha — bloqueaba
+  // clicks al WhatsApp button y al CTA "Comparar" del ComparePanel.
+  // Fix: motion.aside SIEMPRE montado (position:fixed, no afecta layout) con
+  // `pointer-events` en el `style` que salta a 'none' inmediatamente cuando
+  // open=false. La transición visual sigue siendo smooth porque framer anima
+  // y/opacity, pero pointerEvents no es animable y cambia instantáneo.
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.aside
-          role="dialog"
-          aria-modal="false"
-          aria-label={t('ariaLabel')}
-          initial={{ y: 24, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 24, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-          className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
-          style={{
-            paddingBottom: 'env(safe-area-inset-bottom)',
-            bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})`,
-          }}
-        >
+    <motion.aside
+      role="dialog"
+      aria-modal="false"
+      aria-hidden={!open}
+      aria-label={t('ariaLabel')}
+      initial={false}
+      animate={open ? { y: 0, opacity: 1 } : { y: 24, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+      className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
+      style={{
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})`,
+        pointerEvents: open ? 'auto' : 'none',
+      }}
+    >
           <div className="p-3.5">
             <div className="flex items-start gap-2">
               <div className="flex-1 min-w-0">
@@ -211,10 +220,8 @@ export default function CookieBanner() {
                 </>
               )}
             </div>
-          </div>
-        </motion.aside>
-      )}
-    </AnimatePresence>
+      </div>
+    </motion.aside>
   );
 }
 

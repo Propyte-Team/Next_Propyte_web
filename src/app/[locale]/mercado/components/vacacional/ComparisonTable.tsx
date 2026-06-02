@@ -30,7 +30,8 @@ function competitionSortValue(listings: number): number {
 
 export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProps) {
   const t = useTranslations('comparisonTable');
-  const { format } = useCurrency();
+  const { formatMxn } = useCurrency();
+  const format = formatMxn;
   const [sortField, setSortField] = useState<TableSortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 

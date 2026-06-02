@@ -8,8 +8,11 @@ import { ChevronLeft, ChevronRight, GitCompare, MapPin, TrendingUp } from '@/lib
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCompare } from '@/hooks/useCompare';
 import { useCurrency } from '@/context/CurrencyContext';
+import PriceDisplay from '@/components/ui/PriceDisplay';
+import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -38,26 +41,20 @@ export default function MarketplaceCard({
   const tMkt = useTranslations('marketplace');
   const tTypes = useTranslations('types');
   const tDevTypes = useTranslations('developmentTypes');
-  const safeStage = (s: string) => {
-    try { return tStages(s as 'preventa'); } catch { return s; }
-  };
-  const safeType = (t: string) => {
-    try { return tTypes(t as 'departamento'); } catch { return t; }
-  };
-  const safeDevType = (t: string) => {
-    try { return tDevTypes(t as 'mixto'); } catch { return t; }
-  };
+  const safeStage = (s: string) => tStages(normalizeI18nKey(s) as 'preventa');
+  const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
+  const safeDevType = (t: string) => tDevTypes(normalizeI18nKey(t) as 'mixto');
   const [currentImg, setCurrentImg] = useState(0);
   const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
   const comparing = isComparing(property.id);
-  // Currency dinámica desde CurrencyContext — responde al toggle MXN↔USD
-  // global (rate auto desde Banxico SF43718, ver lib/banxico/fetchUsdMxnRate.ts).
-  const { format, currency: displayCurrency } = useCurrency();
+  // Decisión canónica 2026-05-23 (Luis): el sitio no tiene toggle MXN/USD.
+  // Cada card muestra precio original (BD) + referencial (TC Banxico) via
+  // <PriceDisplay variant='dual'/>. useCurrency() sólo provee formatMxn para
+  // el price/m² (cálculo derivado en MXN).
+  const { formatMxn } = useCurrency();
 
-  // Precio mínimo "Desde X" — el rango max se removió por feedback Luis
-  // 2026-05-20 (los dos precios se veían atascados en cards densas).
-  const formattedPriceMin = property.price.mxn > 0 ? format(property.price.mxn) : null;
-
+  const hasPrice = property.price.mxn > 0;
+  const originalCurrency = property.price.currency;
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
   // Sistema de descuentos (2026-05-22):
@@ -72,7 +69,7 @@ export default function MarketplaceCard({
     (typeof property.priceOriginal === 'number' &&
       property.priceOriginal > property.price.mxn &&
       property.price.mxn > 0);
-  const formattedOriginal = hasDiscount && property.priceOriginal ? format(property.priceOriginal) : null;
+  const formattedOriginal = hasDiscount && property.priceOriginal ? formatMxn(property.priceOriginal) : null;
   const discountPct = property.discount
     ? Math.round(property.discount.pct)
     : hasDiscount && property.priceOriginal
@@ -271,13 +268,21 @@ export default function MarketplaceCard({
                 {tMkt('cardWithDiscounts')}
               </span>
             )}
-            {/* Badge descuento directo en unidad — kind='unit' con discount activo */}
-            {property.kind === 'unit' && property.discount && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-[#0E7490] text-white shadow-sm tabular-nums">
-                −{Math.round(property.discount.pct)}% {tMkt('cardDiscountLabel')}
-              </span>
-            )}
           </div>
+
+          {/* Tag corner descuento — kind='unit' con discount activo. Icono solo
+              (sin número); el % real se lee en el chip junto al precio. Posicionado
+              en bottom-left para no chocar con stage/type pills (top-left) ni con
+              Compare (top-right). */}
+          {property.kind === 'unit' && property.discount && (
+            <div className="absolute bottom-2 left-2 pointer-events-none">
+              <DiscountBadge
+                variant="corner"
+                size={36}
+                ariaLabel={tMkt('cardDiscountLabel')}
+              />
+            </div>
+          )}
 
           {/* Photo indicator dots */}
           {property.images.length > 1 && (
@@ -308,7 +313,7 @@ export default function MarketplaceCard({
           {/* Row 1 — Precio destacado. "Desde" + monto + currency.
               En compact el monto sigue prominente (text-lg) para jerarquía. */}
           <div className="flex items-baseline gap-2 flex-wrap">
-            {formattedPriceMin && (
+            {hasPrice && (
               <>
                 <span className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">
                   {tMkt('cardPriceFrom')}
@@ -317,10 +322,12 @@ export default function MarketplaceCard({
                   data-testid="marketplace-card-price"
                   className={`font-bold text-[var(--propyte-dark-900)] tabular-nums leading-none ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
                 >
-                  {formattedPriceMin}
-                </span>
-                <span className="text-2xs font-semibold text-gray-500 tabular-nums">
-                  {displayCurrency}
+                  <PriceDisplay
+                    mxn={property.price.mxn}
+                    variant="dual"
+                    size={variant === 'compact' ? 'sm' : 'md'}
+                    originalCurrency={originalCurrency}
+                  />
                 </span>
               </>
             )}
@@ -331,14 +338,12 @@ export default function MarketplaceCard({
                 <span className="text-xs text-gray-600 line-through decoration-[#0E7490] decoration-2 tabular-nums">
                   {formattedOriginal}
                 </span>
-                <span className="inline-flex items-center text-2xs font-bold text-white bg-[#0E7490] px-1.5 py-0.5 rounded tabular-nums">
-                  −{discountPct}%
-                </span>
+                <DiscountBadge variant="inline" pct={discountPct} />
               </>
             )}
             {pricePerM2 !== null && variant !== 'compact' && (
               <span className="text-xs text-gray-600 tabular-nums font-medium">
-                {format(pricePerM2)}/{tMkt('cardM2Short')}
+                {formatMxn(pricePerM2)}/{tMkt('cardM2Short')}
               </span>
             )}
           </div>

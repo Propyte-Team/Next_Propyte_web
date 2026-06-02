@@ -583,6 +583,12 @@
     "closeModal": "Cerrar",
     "compareSpec": "Característica",
     "comparePrice": "Precio",
+    "comparePriceFrom": "Precio desde",
+    "comparePriceTo": "Precio hasta",
+    "compareLocation": "Ubicación",
+    "compareAmenities": "Amenidades",
+    "compareDevelopmentType": "Tipo de desarrollo",
+    "compareType": "Tipo",
     "compareArea": "Superficie",
     "compareRoi": "ROI proyectado",
     "compareCapRate": "Cap rate",
@@ -2084,7 +2090,7 @@
     "heroTitle": "Promociones y ofertas especiales",
     "heroSubtitle": "Desarrollos con descuentos exclusivos, incentivos y planes de financiamiento especiales en Riviera Maya.",
     "metaDescription": "Descubre desarrollos inmobiliarios con promociones activas, descuentos por pronto pago y planes de financiamiento especiales en Riviera Maya.",
-    "countLabel": "{count} promociones activas",
+    "countLabel": "{count, plural, one {# promoción activa} other {# promociones activas}}",
     "featuredLabel": "Promoción destacada",
     "emptyTitle": "Estamos negociando descuentos exclusivos",
     "emptyDesc": "Trabajamos con desarrolladores para asegurar incentivos por pronto pago, planes de financiamiento especiales y descuentos limitados. Suscríbete o explora el catálogo mientras llegan nuevas promos.",
@@ -2307,7 +2313,8 @@
     "carouselLabel": "Galería de fotos",
     "carouselNextSlide": "Siguiente foto",
     "carouselPrevSlide": "Foto anterior",
-    "currencySelector": "Selector de moneda"
+    "currencySelector": "Selector de moneda",
+    "areaUnitSelector": "Selector de unidad de área"
   },
   "breadcrumbs": {
     "home": "Inicio",

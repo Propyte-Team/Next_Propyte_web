@@ -29,14 +29,8 @@ export default function AreaToggle({ tone = 'light' }: AreaToggleProps = {}) {
   const btnBase =
     'inline-flex items-center justify-center min-h-[44px] px-3 transition-colors tabular-nums focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] focus-visible:z-10';
 
-  // Etiqueta accesible (cae a literal si la key no existe en messages)
-  const ariaLabel = (() => {
-    try {
-      return t('areaUnitSelector');
-    } catch {
-      return 'Unidad de área';
-    }
-  })();
+  // getMessageFallback global humaniza si la key falta (ver request.ts).
+  const ariaLabel = t('areaUnitSelector');
 
   return (
     <div role="group" aria-label={ariaLabel} className={containerCls}>

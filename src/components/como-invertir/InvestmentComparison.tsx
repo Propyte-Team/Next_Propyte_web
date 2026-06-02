@@ -27,7 +27,11 @@ const INSTRUMENTS = [
 export default function InvestmentComparison() {
   const t = useTranslations('comparison');
   const locale = useLocale();
-  const { format, currency } = useCurrency();
+  // Comparativa de inversión es calculadora interna MXN — no muestra precio
+  // de propiedad. Usa formatMxn como helper puro.
+  const { formatMxn } = useCurrency();
+  const format = formatMxn;
+  const currency = 'MXN';
 
   const [capital, setCapital] = useState(1_000_000);
   const [years, setYears] = useState(10);

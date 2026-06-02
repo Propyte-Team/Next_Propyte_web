@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useCallback, type ReactNode } from 'react';
 
 export type Currency = 'MXN' | 'USD';
 
@@ -8,13 +8,20 @@ export type Currency = 'MXN' | 'USD';
 const FALLBACK_RATE = 17.24;
 const FALLBACK_RATE_DATE = '2026-04-01';
 
+/**
+ * Decisión canónica 2026-05-23 (Luis): el sitio público no tiene toggle MXN/USD.
+ * Cada precio se muestra en su moneda original (BD) + referencial (TC Banxico)
+ * vía <PriceDisplay variant='dual' originalCurrency={p.price.currency}/>.
+ *
+ * Este contexto sólo expone el TC Banxico (rate + fecha) y un helper puro
+ * `formatMxn` para uso en calculadoras (mortgage, ROI) — NUNCA para precios
+ * de propiedades, esos van por PriceDisplay.
+ */
 interface CurrencyContextValue {
-  currency: Currency;
-  toggleCurrency: () => void;
-  convert: (mxn: number) => number;
-  format: (amount: number, opts?: { decimals?: number }) => string;
   rate: number;
   rateUpdatedAt: string;
+  /** Formato puro MXN — para calculadoras/agregados. Para precios de propiedades usar <PriceDisplay/>. */
+  formatMxn: (amount: number, opts?: { decimals?: number }) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
@@ -23,39 +30,26 @@ interface CurrencyProviderProps {
   children: ReactNode;
   /** Tipo de cambio MXN por 1 USD inyectado desde server (Banxico SF43718). */
   initialRate?: number;
-  /** Fecha ISO del rate (YYYY-MM-DD). Se muestra junto al toggle. */
+  /** Fecha ISO del rate (YYYY-MM-DD). */
   initialRateDate?: string;
 }
 
 export function CurrencyProvider({ children, initialRate, initialRateDate }: CurrencyProviderProps) {
-  const [currency, setCurrency] = useState<Currency>('MXN');
-
   const rate = initialRate && initialRate > 0 ? initialRate : FALLBACK_RATE;
   const rateUpdatedAt = initialRateDate || FALLBACK_RATE_DATE;
 
-  const toggleCurrency = useCallback(() => {
-    setCurrency((c) => (c === 'MXN' ? 'USD' : 'MXN'));
-  }, []);
-
-  const convert = useCallback(
-    (mxn: number) => (currency === 'MXN' ? mxn : Math.round(mxn / rate)),
-    [currency, rate],
-  );
-
-  const format = useCallback(
-    (amount: number, opts?: { decimals?: number }) => {
-      const converted = currency === 'MXN' ? amount : Math.round(amount / rate);
-      return new Intl.NumberFormat(currency === 'MXN' ? 'es-MX' : 'en-US', {
+  const formatMxn = useCallback(
+    (amount: number, opts?: { decimals?: number }) =>
+      new Intl.NumberFormat('es-MX', {
         style: 'currency',
-        currency,
+        currency: 'MXN',
         maximumFractionDigits: opts?.decimals ?? 0,
-      }).format(converted);
-    },
-    [currency, rate],
+      }).format(amount),
+    [],
   );
 
   return (
-    <CurrencyContext.Provider value={{ currency, toggleCurrency, convert, format, rate, rateUpdatedAt }}>
+    <CurrencyContext.Provider value={{ rate, rateUpdatedAt, formatMxn }}>
       {children}
     </CurrencyContext.Provider>
   );

@@ -254,3 +254,16 @@ export const Zap = createIcon('zap', <><path d="M5 11.3333L12.1429 2V8.66667H20L
 
 // Synthetic: chevron-right is chevron-left mirrored on X axis
 export const ChevronRight = createIcon('chevron-right', <><path d="M17 2C12 7.625 7 11.6 7 11.6C10.9052 15.6615 13.0948 17.9385 17 22"  /></>, { flipX: true });
+
+// Discount tag (inclined, with two small circles and a hook) — used as corner overlay
+// on gallery hero and listing cards when a property has an active discount.
+// Source: MAS 4/tag_3.svg. stroke-width hardcoded en SVG fuente stripeado; wrapper
+// aplica strokeWidth=1.5 default. El círculo pequeño en (9,7) mantiene fill currentColor.
+export const DiscountTagInclined = createIcon('discount-tag-inclined', <>
+  <path d="M10.8467 16.2858L13.3668 10.4055" />
+  <circle cx="15.0473" cy="14.6056" r="0.930083" />
+  <circle cx="9.16739" cy="11.2455" r="0.930083" />
+  <path d="M20.2555 16.5545L11.1172 22L3.8465 9.79886L7.0164 4.72799L12.9848 4.35333L18.1936 13.0944" />
+  <circle cx="9" cy="7" r="1" fill="currentColor" stroke="none" />
+  <path d="M9 7L6.09461 2.281C5.60949 1.64885 4.6416 2.28096 4.08833 3.36724L4.92704 4.72952" />
+</>);
