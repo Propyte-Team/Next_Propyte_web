@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown, MessageCircle, Calendar, Clock, Phone, Shield } from '@/lib/icons';
+import { ChevronDown, MessageCircle, Calendar, Clock, Phone } from '@/lib/icons';
 import type { Property } from '@/types/property';
 import { formatPrice } from '@/lib/formatters';
 import ContactForm from './ContactForm';
@@ -41,10 +41,6 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
           </div>
           <div>
             <p className="font-bold text-[#2C2C2C]">{t('contactAdvisor')}</p>
-            <div className="flex items-center gap-1 text-xs text-gray-600">
-              <Shield size={10} className="text-[#22C55E]" />
-              <span>{t('verifiedAdvisor')}</span>
-            </div>
           </div>
         </div>
 

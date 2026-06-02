@@ -831,7 +831,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   </div>
                   <div>
                     <div className="font-bold text-gray-900 text-sm">{property.contact_name}</div>
-                    <div className="text-xs text-gray-600">{tProp('verifiedAdvisor')}</div>
                   </div>
                 </div>
               )}
