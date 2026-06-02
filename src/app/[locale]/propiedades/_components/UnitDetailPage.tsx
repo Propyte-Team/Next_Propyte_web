@@ -83,6 +83,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
   const property = mapUnitToProperty(row, locale);
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
+  // Editorial-first (estricto por idioma): si existe editorial en el locale
+  // actual, ocultamos el bloque SEO "Acerca de" y mostramos solo el editorial.
+  const hasEditorial = !!(locale === 'en'
+    ? property.richContent?.editorial?.en
+    : property.richContent?.editorial?.es);
   // Moneda en que se cotizó originalmente (moneda_principal en BD). Default MXN.
   const originalCurrency: Currency = (row.currency || '').toUpperCase() === 'USD' ? 'USD' : 'MXN';
   const _citySlug = slugify(property.location.city); void _citySlug;
@@ -413,22 +418,32 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                     <div className="space-y-6">
                       <Highlights property={property} />
 
-                      <div>
-                        <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{tProp('aboutUnitTitle')}</h2>
-                        {description ? (
-                          <ExpandableText
-                            maxHeight={120}
-                            moreLabel={tProp('readMore')}
-                            lessLabel={tProp('readLess')}
-                          >
-                            <MarkdownContent markdown={description} />
-                          </ExpandableText>
-                        ) : (
-                          <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
-                        )}
-                      </div>
+                      {/* Editorial-first: si hay editorial en el idioma de la
+                          página, se muestra SOLO ese y se oculta el bloque SEO
+                          "Acerca de". El SEO queda como fallback. 2026-06-02. */}
+                      {!hasEditorial && (
+                        <div>
+                          <h2 className="text-xl font-bold text-[#2C2C2C] mb-3">{tProp('aboutUnitTitle')}</h2>
+                          {description ? (
+                            <ExpandableText
+                              maxHeight={120}
+                              moreLabel={tProp('readMore')}
+                              lessLabel={tProp('readLess')}
+                            >
+                              <MarkdownContent markdown={description} />
+                            </ExpandableText>
+                          ) : (
+                            <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
+                          )}
+                        </div>
+                      )}
                       {property.richContent && (
-                        <RichContentSections richContent={property.richContent} locale={locale} />
+                        <RichContentSections
+                          richContent={property.richContent}
+                          locale={locale}
+                          moreLabel={tProp('readMore')}
+                          lessLabel={tProp('readLess')}
+                        />
                       )}
                       <AmenityList locale={locale} amenities={devAmenities.length > 0 ? devAmenities : property.amenities} />
                       <Proximity city={property.location.city} zone={property.location.zone} />

@@ -118,6 +118,11 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
   const citySlug = slugify(property.city);
   const description = pickLang(locale, property.description_en, property.description_es) || '';
+  // Editorial-first (estricto por idioma): si existe editorial en el locale
+  // actual, ocultamos el bloque SEO "Acerca de" y mostramos solo el editorial.
+  const hasEditorial = !!(locale === 'en'
+    ? property.richContent?.editorial?.en
+    : property.richContent?.editorial?.es);
 
   // ── Similar developments (4-level fallback) ──
   let similar: SimilarListingItem[] = [];
@@ -537,8 +542,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                   label: tProp('tabDescripcion'),
                   panel: (
                     <div className="space-y-8">
-                      {/* ── Descripción (expandable, max 120px) ── */}
-                      {description && (
+                      {/* ── Descripción (expandable, max 120px) ──
+                          Editorial-first: si hay editorial en el idioma de la
+                          página, se muestra SOLO ese (RichContentSections) y se
+                          oculta el bloque "Acerca de" (description SEO). El SEO
+                          queda como fallback cuando aún no hay editorial.
+                          Decisión 2026-06-02. */}
+                      {!hasEditorial && description && (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
                             {tProp('aboutTitle')}
@@ -554,7 +564,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       )}
 
                       {property.richContent && (
-                        <RichContentSections richContent={property.richContent} locale={locale} />
+                        <RichContentSections
+                          richContent={property.richContent}
+                          locale={locale}
+                          moreLabel={tProp('readMore')}
+                          lessLabel={tProp('readLess')}
+                        />
                       )}
 
                       {/* ── Unit type chips (individual units) ── */}
