@@ -31,7 +31,7 @@ interface SchemaMarkupProps {
 const ORG_NAME = 'Propyte';
 const ORG_URL = 'https://propyte.com';
 const ORG_LOGO = 'https://propyte.com/logo.png';
-const ORG_PHONE = '+529843235354';
+const ORG_PHONE = '+52 984 463 8032';
 const ORG_EMAIL = 'info@propyte.com';
 const ORG_DESCRIPTION =
   'Marketplace inmobiliario en la Riviera Maya con herramientas de análisis para inversionistas.';

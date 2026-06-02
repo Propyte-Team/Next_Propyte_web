@@ -51,7 +51,7 @@ function BrokerHero() {
               {t('heroCta')} <ArrowRight size={18} />
             </a>
             <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=Hola%2C%20me%20interesa%20el%20programa%20de%20corredores`}
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032'}?text=Hola%2C%20me%20interesa%20el%20programa%20de%20corredores`}
               target="_blank"
               rel="noopener noreferrer"
               className="propyte-cta-whatsapp h-14 px-8 font-bold text-base rounded-xl transition-all flex items-center justify-center gap-2"
@@ -470,7 +470,7 @@ function FinalCTA() {
             {t('finalCtaButton')} <ArrowRight size={18} />
           </a>
           <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354'}?text=Hola%2C%20me%20interesa%20el%20programa%20de%20corredores`}
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '5219844638032'}?text=Hola%2C%20me%20interesa%20el%20programa%20de%20corredores`}
             target="_blank"
             rel="noopener noreferrer"
             className="propyte-cta-whatsapp h-14 px-8 font-bold text-base rounded-xl transition-all flex items-center justify-center gap-2"
