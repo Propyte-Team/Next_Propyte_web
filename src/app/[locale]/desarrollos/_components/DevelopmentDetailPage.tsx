@@ -820,7 +820,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               priceMxn={propertyPrice > 0 ? propertyPrice : null}
               areaM2={areaRange ? areaRange.min : representativeArea ?? null}
               totalUnits={totalUnits ?? null}
-              mainType={mainType}
+              mainType={typeLabel}
               zone={property.zone}
               state={property.state}
               discountPct={hasUnitsWithDiscount ? maxDiscountPct : null}
