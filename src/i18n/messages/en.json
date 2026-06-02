@@ -29,9 +29,9 @@
     "changeCurrency": "Change currency"
   },
   "hero": {
-    "eyebrow": "Real Estate · Riviera Maya",
+    "eyebrow": "20.62°N · 87.07°W — Riviera Maya",
     "title": "Real estate, powered by intelligence.",
-    "subtitle": "Verifiable data, no-pressure advisory, and validated properties in Tulum, Playa del Carmen and Mérida.",
+    "subtitle": "In a market full of renders and optimistic projections, we work differently: verifiable data, properties vetted one by one, and advisors who guide without the pressure.",
     "tagline": "Invest with data. Decide with confidence.",
     "searchPlaceholder": "Search by neighborhood, development or zone...",
     "searchButton": "Search",
@@ -55,9 +55,9 @@
     "presale": "Pre-sale"
   },
   "featured": {
-    "title": "Featured developments in pre-sale · Tulum, Playa del Carmen and Mérida",
-    "subtitle": "Curated by the Propyte team with documented SOP-3.2 validation",
-    "viewAll": "View All Properties",
+    "title": "Featured pre-construction developments · Riviera Maya & Yucatán",
+    "subtitle": "Hand-picked by the Propyte team. Each one with its documented validation.",
+    "viewAll": "Browse all developments",
     "loading": "Loading featured developments…",
     "from": "From",
     "photos": "photos",
@@ -88,43 +88,43 @@
     "feature2Desc": "An advisor walks with you from first call to closing. No aggressive scripts, no empty promises — a consultative process.",
     "feature2Cta": "Meet the team",
     "feature3Title": "Transparency from day one",
-    "feature3Desc": "Visible disclaimers, cited sources, and published simulator terms. What you see is what you decide.",
+    "feature3Desc": "Visible disclaimers, cited sources, and published simulator terms. The sources are in plain view; you draw the conclusions.",
     "feature3Cta": "Investment legal notice",
     "aud1Title": "For Investors",
-    "aud1Desc": "Access the best real estate investment opportunities with ROI, appreciation and performance data.",
-    "aud1Cta": "Explore Properties",
+    "aud1Desc": "Properties vetted one by one, with appreciation and yield data so you decide on criteria, not renders.",
+    "aud1Cta": "Browse properties",
     "aud2Title": "For Developers",
-    "aud2Desc": "Market your projects with our network of specialized advisors and internationally-reaching platform.",
-    "aud2Cta": "Learn More",
+    "aud2Desc": "We commercialize your project with PropTech methodology: absorption analysis, pricing strategy, and remote sourcing of the right buyer.",
+    "aud2Cta": "Request a proposal",
     "aud3Title": "For Advisors",
-    "aud3Desc": "Join our commercial team and access exclusive inventory, tools and competitive commissions.",
-    "aud3Cta": "Join the Team",
+    "aud3Desc": "Vetted inventory, data tools, and transparent commissions from day one. Treated as a partner, not a headcount.",
+    "aud3Cta": "See the career path",
     "audienceHeading": "Who Propyte is for"
   },
   "nosotrosTeaser": {
     "eyebrow": "About us",
     "title": "We sell real estate with data — and without pressure",
-    "paragraph1": "Since 2017 we have walked alongside investors in Riviera Maya and Yucatán with a bilingual team that understands trust, appreciation and actual returns — not empty promises.",
-    "paragraph2": "Every development we list goes through a documented strategic validation (Scorecard SOP-3.2). What you see is what you decide.",
-    "stat1": "8+ years on the ground",
-    "stat2": "Bilingual ES/EN",
-    "stat3": "SOP-3.2 documented validation",
+    "paragraph1": "Propyte is built by a team with years commercializing property across the Riviera Maya and Yucatán. Bilingual, fluent in fideicomiso, appreciation, and real returns — with the methodology to explain them with evidence, not hunches.",
+    "paragraph2": "Every development we list goes through a documented strategic validation. What you see is what you decide.",
+    "stat1": "Experienced team in market",
+    "stat2": "PropTech methodology",
+    "stat3": "Bilingual ES/EN",
     "cta": "Meet the team"
   },
   "metodologiaTeaser": {
     "eyebrow": "Propyte methodology",
     "title": "Five criteria before listing any development",
-    "subtitle": "Every published property goes through the documented strategic validation of our SOP-3.2 Scorecard. If one criterion fails, the development does not enter the portfolio.",
+    "subtitle": "Every property goes through a documented validation. If one criterion fails, the development doesn't make the portfolio.",
     "criterion1Title": "Legal clarity",
-    "criterion1Desc": "Title, trust, anti-corruption checks and developer tax registration.",
-    "criterion2Title": "Schedule reliability",
-    "criterion2Desc": "Track record of previous deliveries, contracts and documented guarantees.",
+    "criterion1Desc": "Title, fideicomiso, AML status, and developer's tax ID.",
+    "criterion2Title": "Timeline reliability",
+    "criterion2Desc": "Track record of past deliveries, contracts, and documented guarantees.",
     "criterion3Title": "Comparable pricing",
-    "criterion3Desc": "Zone market analysis and comparable property benchmarks.",
+    "criterion3Desc": "Value against real zone comparables, not against the render.",
     "criterion4Title": "Build quality",
-    "criterion4Desc": "Site visits, specifications, materials and progress supervision.",
-    "criterion5Title": "Marketability",
-    "criterion5Desc": "Real demand analysis, expected occupancy and resale potential.",
+    "criterion4Desc": "Site visits, specs, materials, and progress supervision.",
+    "criterion5Title": "Sellability",
+    "criterion5Desc": "Real demand, expected occupancy, and resale liquidity.",
     "cta": "See full methodology"
   },
   "processInfographic": {
@@ -143,33 +143,33 @@
       "steps": [
         {
           "n": "01",
-          "title": "Gets overwhelmed by dozens of options.",
-          "desc": "Oversupply leads to analysis paralysis and confusion."
+          "title": "Drowns in options.",
+          "desc": "Dozens of developments that look equally good in the render. No way to tell which one survives real scrutiny."
         },
         {
           "n": "02",
-          "title": "Bombarded by multiple agents.",
-          "desc": "Calls and messages from agents with scattered interests."
+          "title": "Gets chased by multiple agents.",
+          "desc": "Calls and messages from agents defending their inventory, not your interest."
         },
         {
           "n": "03",
-          "title": "Visits properties with no criteria.",
-          "desc": "Random tours without a comparison metric."
+          "title": "Tours properties with no criteria.",
+          "desc": "Scattered visits, no metric to compare one against another."
         },
         {
           "n": "04",
-          "title": "Buys on marketing, not on data.",
-          "desc": "Decisions based on renders and slogans, with no real financial analysis."
+          "title": "Buys on marketing, not data.",
+          "desc": "Decides on renders and nice phrases, with no financial analysis behind it."
         },
         {
           "n": "05",
-          "title": "Receives the property not knowing what to do.",
-          "desc": "Stuck managing paperwork, furniture or rentals alone."
+          "title": "Gets the keys, then gets left alone.",
+          "desc": "No one to guide closing, furnishing, or getting it rent-ready."
         },
         {
           "n": "06",
-          "title": "Ends up regretting it.",
-          "desc": "Without expert support or long-term vision."
+          "title": "The numbers don't add up as expected.",
+          "desc": "Rented for less, appreciated less, or overspent — and finds out too late."
         }
       ],
       "result": {
@@ -178,8 +178,8 @@
         "desc": "A reactive process where the investor bears all the risk without any control tools."
       },
       "afterEnd": {
-        "title": "Left without guidance.",
-        "desc": "The journey ends here. No post-signing support."
+        "title": "Doesn't know when or how to exit.",
+        "desc": "When it's time to sell or cash out, there's no one to ask."
       }
     },
     "panelB": {
@@ -221,14 +221,14 @@
         {
           "n": "06",
           "title": "Trusted partners.",
-          "desc": "Network of interior designers and operators so your investment performs from day one.",
-          "win": "Rental from day 1"
+          "desc": "A network of interior designers and operators so your property is rent-ready, not sitting idle.",
+          "win": "Ready to operate"
         },
         {
           "n": "07",
           "title": "We support you when you sell.",
-          "desc": "Strategic advisory for when it's time to capitalize the gain.",
-          "win": "Better exit"
+          "desc": "When it's time to cash out, we tell you when and at what price — with data, not pressure.",
+          "win": "Cash out smarter"
         }
       ],
       "result": {
@@ -277,8 +277,8 @@
         "after": ""
       },
       {
-        "before": "Better results, ",
-        "strong": "a more profitable investment.",
+        "before": "",
+        "strong": "Decisions that hold up.",
         "after": ""
       }
     ]
@@ -286,7 +286,7 @@
   "dondeEstamos": {
     "eyebrow": "Where we operate",
     "title": "Coverage in Riviera Maya and Yucatán",
-    "subtitle": "We operate from Playa del Carmen and cover the main markets of the Caribbean coast and the peninsula.",
+    "subtitle": "We operate from Playa del Carmen and cover the main markets of the Caribbean coast and the Yucatán peninsula.",
     "labTitle": "Real Estate Lab",
     "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
     "labHours": "Monday to Friday, 9:00 – 18:00",
@@ -369,7 +369,7 @@
     "eyebrow": "Frequently asked",
     "title": "What investors ask us the most",
     "q1": "Can a foreigner buy property in Tulum or Playa del Carmen?",
-    "a1": "Yes. The Quintana Roo coastal area is in a federal restricted zone, so foreigners buy through a 50-year bank trust (renewable). The process is standard and a Propyte advisor walks you through every step.",
+    "a1": "Yes. Quintana Roo's coast sits in the federal restricted zone, so a foreigner buys through a 50-year bank trust (fideicomiso, renewable). It's a standard process and a Propyte advisor walks you through every step.",
     "q2": "How much does the legal closing of a property in Riviera Maya cost?",
     "a2": "Closing costs usually range from 6% to 8% of the property value and include acquisition tax, notary, trust (if applicable) and permits. Figures vary by state and property type — we ask the advisor for a personalized analysis.",
     "q3": "What is a realistic ROI for an Airbnb in Tulum?",
@@ -442,13 +442,13 @@
     "comingSoon": "Coming soon"
   },
   "howItWorks": {
-    "title": "How to invest with Propyte: Explore, analyze, decide",
+    "title": "How to invest with Propyte: explore, analyze, decide",
     "step1Title": "Explore",
     "step1Desc": "Browse the marketplace with an interactive map and filters by zone, type, budget and stage.",
     "step2Title": "Analyze",
-    "step2Desc": "Use the financial simulator with your own assumptions and compare the development against real benchmarks.",
+    "step2Desc": "Run the financial simulator with your own assumptions and compare each development against real zone benchmarks.",
     "step3Title": "Decide",
-    "step3Desc": "Schedule a call with a Propyte advisor. No pressure, with all SOP-3.2 Scorecard documents on hand."
+    "step3Desc": "Book a call with an advisor. You arrive with every validation document in hand and decide on criteria."
   },
   "valueProp": {
     "investorsTitle": "For Investors",
@@ -475,7 +475,7 @@
     "cta": "Read full analysis"
   },
   "developerBanner": {
-    "title": "Supercharge your development's sales",
+    "title": "Have a development to bring to market?",
     "cta": "Request Commercial Proposal"
   },
   "blog": {
@@ -516,9 +516,9 @@
     "newsletterCta": "Subscribe",
     "newsletterSuccess": "Done! You're subscribed.",
     "newsletterError": "Something went wrong. Try again.",
-    "homeEmptyTitle": "Coming soon: monthly market analysis and investment guides",
-    "homeEmptyBody": "We are preparing editorial content on real estate investment in Riviera Maya. Subscribe to the newsletter to get it directly in your inbox when it's published.",
-    "homeEmptyCta": "Subscribe to the newsletter"
+    "homeEmptyTitle": "Coming soon: market analysis and investment guides",
+    "homeEmptyBody": "We're building editorial content on Riviera Maya investing. Subscribe and get it the moment it's out.",
+    "homeEmptyCta": "Subscribe"
   },
   "marketplace": {
     "title": "Properties",
