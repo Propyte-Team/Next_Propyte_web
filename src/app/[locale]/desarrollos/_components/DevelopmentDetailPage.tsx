@@ -49,6 +49,7 @@ import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
 import AmenityList from '@/components/property/AmenityList';
 import RichContentSections from '@/components/property/RichContentSections';
+import { MarkdownContent } from '@/components/common/MarkdownContent';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
@@ -539,9 +540,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             maxHeight={120}
                             moreLabel={tProp('readMore')}
                             lessLabel={tProp('readLess')}
-                            className="text-gray-600 leading-relaxed text-sm md:text-base whitespace-pre-line"
                           >
-                            {description}
+                            <MarkdownContent markdown={description} />
                           </ExpandableText>
                         </div>
                       )}

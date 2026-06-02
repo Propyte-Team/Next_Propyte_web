@@ -44,6 +44,7 @@ import FloatingKeyData from '@/components/property/FloatingKeyData';
 import Highlights from '@/components/property/Highlights';
 import Proximity from '@/components/property/Proximity';
 import RichContentSections from '@/components/property/RichContentSections';
+import { MarkdownContent } from '@/components/common/MarkdownContent';
 import UnitFAQs from './UnitFAQs';
 import { slugify } from '@/lib/utils';
 
@@ -419,9 +420,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                             maxHeight={120}
                             moreLabel={tProp('readMore')}
                             lessLabel={tProp('readLess')}
-                            className="text-gray-600 leading-relaxed text-sm md:text-base"
                           >
-                            {description}
+                            <MarkdownContent markdown={description} />
                           </ExpandableText>
                         ) : (
                           <p className="text-gray-600 leading-relaxed">{tProp('descriptionComingSoon')}</p>
