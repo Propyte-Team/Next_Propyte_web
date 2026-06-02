@@ -639,7 +639,6 @@
     "whatsappMessage": "Hi, I'm interested in {name} (Ref: {id}).",
     "whatsappMessageWithSource": "Hi, I'm interested in {name} (Ref: {id}). I saw your website.",
     "estRent": "Est. rent",
-    "verifiedAdvisor": "Verified advisor",
     "callNow": "Call now",
     "financing": "Financing",
     "downPaymentFrom": "Down payment from",
