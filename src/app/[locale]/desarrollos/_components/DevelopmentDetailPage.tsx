@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
-  Users, Zap, DollarSign, Download,
+  Users, Zap, Download,
 } from '@/lib/icons';
 import ExpandableText from '@/components/ui/ExpandableText';
 import { getTranslations } from 'next-intl/server';
@@ -584,10 +584,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         />
                       </div>
 
-                      {/* ── Metrics row: total / delivery / progress / commission ──
+                      {/* ── Metrics row: total / delivery / progress ──
                           Frontend-only: ocultamos el badge "X disponibles"
-                          (derivedAvailable). Sólo se muestra total de unidades. */}
-                      {(totalUnits || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0) || ((property as any).commission_rate != null && (property as any).commission_rate > 0)) && (
+                          (derivedAvailable) y el de Comisión. Sólo total/delivery/progress. */}
+                      {(totalUnits || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0)) && (
                         <div className="flex flex-wrap gap-3">
                           {totalUnits && (
                             <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
@@ -607,12 +607,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                               <span className="text-gray-600">{tProp('progress')} {property.construction_progress}%</span>
                             </div>
                           )}
-                          {(property as any).commission_rate != null && (property as any).commission_rate > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <DollarSign size={16} className="text-gray-600" />
-                              <span className="text-gray-600">{tProp('commission')} {(property as any).commission_rate}%</span>
-                            </div>
-                          )}
+                          {/* Badge de Comisión eliminada del sitio (2026-06-02): el % de
+                              comisión NO debe verse públicamente. El dato sigue en BD
+                              (commission_rate); solo se quita del render. */}
                         </div>
                       )}
 
