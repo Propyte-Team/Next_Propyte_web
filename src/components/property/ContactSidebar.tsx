@@ -34,16 +34,6 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
           </p>
         )}
 
-        {/* Agent avatar + info */}
-        <div className="flex items-center gap-3 mb-5 pb-5 border-b border-gray-100">
-          <div className="w-12 h-12 bg-gradient-to-br from-[#1A2F3F] to-[#5CE0D2] rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
-            P
-          </div>
-          <div>
-            <p className="font-bold text-[#2C2C2C]">{t('contactAdvisor')}</p>
-          </div>
-        </div>
-
         {/* WhatsApp */}
         <a
           href={whatsappUrl}

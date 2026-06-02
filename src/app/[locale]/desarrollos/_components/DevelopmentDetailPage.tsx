@@ -824,17 +824,6 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
             />
 
             <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
-              {property.contact_name && (
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-propyte-brand to-[#1A2F3F] flex items-center justify-center text-white font-bold text-sm">
-                    {property.contact_name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900 text-sm">{property.contact_name}</div>
-                  </div>
-                </div>
-              )}
-
               <h3 className="text-lg font-bold text-gray-900 mb-4">
                 {tProp('interestedDevQuestion')}
               </h3>
@@ -844,12 +833,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <ContactForm
                 propertyId={property.id}
                 propertyName={property.name}
-                whatsappUrl={`https://wa.me/${(property.contact_phone || process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354').replace(/\D/g, '')}?text=${encodeURIComponent(
+                whatsappUrl={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529843235354').replace(/\D/g, '')}?text=${encodeURIComponent(
                   tProp('whatsappInterestText', { name: property.name })
                 )}`}
-                whatsappLabel={property.contact_name
-                  ? `WhatsApp · ${property.contact_name.split(' ')[0]}`
-                  : 'WhatsApp'}
+                whatsappLabel="WhatsApp"
               />
             </div>
             </div>
