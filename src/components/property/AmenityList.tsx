@@ -22,6 +22,11 @@ interface AmenityDef {
 }
 
 const AMENITIES: AmenityDef[] = [
+  // Alberca PRIVADA (de la unidad) — debe ir ANTES de la genérica porque el
+  // match es "primer canónico que coincide" (.find en orden). Sin esto,
+  // "Alberca Privada" caía en la genérica y se mostraba igual que la comunal.
+  { key: 'alberca_privada', es: 'Alberca privada', en: 'Private pool', icon: Waves, match: /alberca\s*privada|piscina\s*privada|private\s*pool/i },
+  // Genérica/comunal: "Alberca Comunitaria" y cualquier otra → "Alberca" / "Pool".
   { key: 'alberca', es: 'Alberca', en: 'Pool', icon: Waves, match: /alberca|pool|piscina/i },
   { key: 'gym', es: 'Gimnasio', en: 'Gym', icon: Dumbbell, match: /gym|gimnasio|fitness/i },
   { key: 'seguridad', es: 'Seguridad 24/7', en: '24/7 Security', icon: Shield, match: /seguridad|security|vigilancia/i },
