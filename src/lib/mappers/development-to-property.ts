@@ -89,7 +89,7 @@ export interface DevelopmentRow {
 const VALID_STAGES: ReadonlyArray<PropertyStage> = ['preventa', 'construccion', 'entrega_inmediata'];
 
 type FaqRaw = { q?: string; a?: string; question?: string; answer?: string };
-function buildRichContent(row: Record<string, unknown>): Property['richContent'] {
+export function buildRichContent(row: Record<string, unknown>): Property['richContent'] {
   const pickStr = (k: string): string | undefined => {
     const v = row[k];
     return typeof v === 'string' && v.trim().length > 0 ? v : undefined;

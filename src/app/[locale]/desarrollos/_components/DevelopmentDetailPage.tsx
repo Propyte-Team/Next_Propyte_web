@@ -21,6 +21,7 @@ import {
   getSimilarDevelopments,
   getZoneDetail,
 } from '@/lib/supabase/queries';
+import { buildRichContent } from '@/lib/mappers/development-to-property';
 import { formatPrice } from '@/lib/formatters';
 import { safeExternalUrl } from '@/lib/security/safeUrl';
 import {
@@ -101,6 +102,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     }
     notFound();
   }
+
+  // El detalle usa el row crudo de v_developments (no pasa por
+  // mapDevelopmentToProperty como sí lo hace UnitDetailPage), así que
+  // property.richContent venía siempre undefined y RichContentSections nunca
+  // renderizaba la descripción editorial (descripcion_editorial_*_md). La
+  // construimos aquí desde el row para que el editorial (prioridad) aparezca.
+  property.richContent = buildRichContent(property);
 
   const [tProp, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
