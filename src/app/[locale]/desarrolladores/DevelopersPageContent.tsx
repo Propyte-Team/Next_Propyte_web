@@ -11,6 +11,9 @@ import {
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
+import { Particles } from '@/components/magicui/particles';
+import { BorderBeam } from '@/components/magicui/border-beam';
+import ScrollReveal from '@/components/shared/ScrollReveal';
 
 // ─────────────────────────────────────────────────────
 // 1 · HERO — angled bottom edge (calca page-desarrolladores.php WP)
@@ -20,34 +23,60 @@ function DevelopersHero() {
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
+      {/* Partículas teal — profundidad/movimiento sutil que reacciona al cursor */}
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={90}
+        ease={70}
+        color="#5CE0D2"
+        staticity={40}
+        size={0.5}
+      />
+      {/* Glow radial brand para dar volumen al hero */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 55% 50% at 50% 18%, rgba(92,224,210,0.14), transparent 60%)',
+        }}
+      />
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
-        <span className="inline-block text-propyte-brand text-xs md:text-sm font-bold tracking-widest uppercase mb-5">
-          {t('heroEyebrow')}
-        </span>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 max-w-4xl mx-auto">
-          {t('heroTitle')}
-        </h1>
-        <p className="text-base md:text-xl text-white/85 max-w-3xl mx-auto mb-10 leading-relaxed">
-          {t('heroSubtitle')}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <a
-            href="#registro"
-            className="h-12 px-7 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
-          >
-            {t('heroCtaPrimary')} <ArrowRight size={16} />
-          </a>
-          {phone && (
+        <ScrollReveal y={16} duration={0.5}>
+          <span className="inline-block text-propyte-brand text-xs md:text-sm font-bold tracking-widest uppercase mb-5">
+            {t('heroEyebrow')}
+          </span>
+        </ScrollReveal>
+        <ScrollReveal y={20} delay={0.08} duration={0.6}>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 max-w-4xl mx-auto">
+            {t('heroTitle')}
+          </h1>
+        </ScrollReveal>
+        <ScrollReveal y={20} delay={0.16} duration={0.6}>
+          <p className="text-base md:text-xl text-white/85 max-w-3xl mx-auto mb-10 leading-relaxed">
+            {t('heroSubtitle')}
+          </p>
+        </ScrollReveal>
+        <ScrollReveal y={20} delay={0.24} duration={0.6}>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-12 px-7 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+              href="#registro"
+              className="h-12 px-7 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-xl transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
             >
-              <MessageCircle size={16} /> {t('heroCtaSecondary')}
+              {t('heroCtaPrimary')} <ArrowRight size={16} />
             </a>
-          )}
-        </div>
+            {phone && (
+              <a
+                href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 px-7 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={16} /> {t('heroCtaSecondary')}
+              </a>
+            )}
+          </div>
+        </ScrollReveal>
       </div>
       {/* Angled bottom edge — diagonal cut hacia el siguiente bg */}
       <div
@@ -80,16 +109,18 @@ function Problem() {
           <p className="mt-4 text-gray-600 text-lg leading-relaxed">{t('problemIntro')}</p>
         </div>
         <div className="grid md:grid-cols-2 gap-5">
-          {pains.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex gap-4 bg-[#F4F6F8] rounded-2xl p-6">
-              <div className="w-11 h-11 shrink-0 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                <Icon size={20} className="text-[#0E7490]" />
+          {pains.map(({ icon: Icon, title, desc }, i) => (
+            <ScrollReveal key={title} delay={i * 0.06} y={20}>
+              <div className="flex gap-4 bg-[#F4F6F8] rounded-2xl p-6 h-full transition-all hover:bg-white hover:shadow-md">
+                <div className="w-11 h-11 shrink-0 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                  <Icon size={20} className="text-[#0E7490]" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#1A2F3F] mb-1.5">{title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-[#1A2F3F] mb-1.5">{title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -117,17 +148,19 @@ function Cycle() {
           <p className="mt-4 text-white/70 text-lg leading-relaxed">{t('cycleIntro')}</p>
         </div>
         <div className="grid sm:grid-cols-2 gap-5">
-          {blocks.map(({ num, icon: Icon, tag, desc }) => (
-            <div key={num} className="relative bg-white/[0.04] border border-white/10 rounded-2xl p-6 hover:border-propyte-brand/40 transition-colors">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="text-propyte-brand/40 text-2xl font-extrabold tabular-nums">{num}</span>
-                <div className="w-10 h-10 bg-propyte-brand/15 rounded-xl flex items-center justify-center">
-                  <Icon size={20} className="text-propyte-brand" />
+          {blocks.map(({ num, icon: Icon, tag, desc }, i) => (
+            <ScrollReveal key={num} delay={i * 0.08} y={24}>
+              <div className="group relative bg-white/[0.04] border border-white/10 rounded-2xl p-6 h-full hover:border-propyte-brand/40 hover:bg-white/[0.07] transition-all duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-propyte-brand/40 text-2xl font-extrabold tabular-nums group-hover:text-propyte-brand/70 transition-colors">{num}</span>
+                  <div className="w-10 h-10 bg-propyte-brand/15 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Icon size={20} className="text-propyte-brand" />
+                  </div>
                 </div>
+                <h3 className="font-bold text-white uppercase text-sm tracking-wide mb-2">{tag}</h3>
+                <p className="text-white/65 text-sm leading-relaxed">{desc}</p>
               </div>
-              <h3 className="font-bold text-white uppercase text-sm tracking-wide mb-2">{tag}</h3>
-              <p className="text-white/65 text-sm leading-relaxed">{desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
         <div className="mt-8 bg-propyte-brand/10 border border-propyte-brand/25 rounded-2xl p-6 md:p-7">
@@ -159,27 +192,37 @@ function Products() {
           <p className="mt-4 text-gray-600 text-lg leading-relaxed">{t('productsIntro')}</p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {PRODUCTS.map(({ id, name, icon: Icon, taglineKey, descKey, recommended }) => (
-            <div
-              key={id}
-              className={`relative flex flex-col rounded-2xl p-6 transition-all ${
-                recommended
-                  ? 'bg-[#0F1923] border-2 border-propyte-brand shadow-lg lg:-mt-3 lg:mb-3'
-                  : 'bg-white border border-gray-200 hover:border-propyte-brand/40 hover:shadow-lg'
-              }`}
-            >
-              {recommended && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-2xs font-bold uppercase tracking-wider rounded-full">
-                  <Sparkles size={11} /> {t('productTurnkeyBadge')}
-                </span>
-              )}
-              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${recommended ? 'bg-propyte-brand/20' : 'bg-propyte-cyan-100'}`}>
-                <Icon size={20} className={recommended ? 'text-propyte-brand' : 'text-[#0E7490]'} />
+          {PRODUCTS.map(({ id, name, icon: Icon, taglineKey, descKey, recommended }, i) => (
+            <ScrollReveal key={id} delay={i * 0.08} y={24} className="h-full">
+              <div
+                className={`relative flex flex-col rounded-2xl p-6 h-full transition-all duration-300 hover:-translate-y-1 ${
+                  recommended
+                    ? 'bg-[#0F1923] border-2 border-propyte-brand shadow-lg lg:-mt-3 lg:mb-3'
+                    : 'bg-white border border-gray-200 hover:border-propyte-brand/40 hover:shadow-xl'
+                }`}
+              >
+                {recommended && (
+                  <>
+                    <BorderBeam
+                      size={70}
+                      duration={6}
+                      colorFrom="#5CE0D2"
+                      colorTo="#A2F9FF"
+                      borderWidth={2}
+                    />
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-2xs font-bold uppercase tracking-wider rounded-full">
+                      <Sparkles size={11} /> {t('productTurnkeyBadge')}
+                    </span>
+                  </>
+                )}
+                <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${recommended ? 'bg-propyte-brand/20' : 'bg-propyte-cyan-100'}`}>
+                  <Icon size={20} className={recommended ? 'text-propyte-brand' : 'text-[#0E7490]'} />
+                </div>
+                <h3 className={`font-extrabold text-lg tracking-tight mb-1.5 ${recommended ? 'text-white' : 'text-[#1A2F3F]'}`}>{name}</h3>
+                <p className={`text-sm font-semibold italic mb-3 ${recommended ? 'text-propyte-brand' : 'text-[#0E7490]'}`}>{t(taglineKey)}</p>
+                <p className={`text-sm leading-relaxed ${recommended ? 'text-white/70' : 'text-gray-600'}`}>{t(descKey)}</p>
               </div>
-              <h3 className={`font-extrabold text-lg tracking-tight mb-1.5 ${recommended ? 'text-white' : 'text-[#1A2F3F]'}`}>{name}</h3>
-              <p className={`text-sm font-semibold italic mb-3 ${recommended ? 'text-propyte-brand' : 'text-[#0E7490]'}`}>{t(taglineKey)}</p>
-              <p className={`text-sm leading-relaxed ${recommended ? 'text-white/70' : 'text-gray-600'}`}>{t(descKey)}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
         {/* Callout: cómo elegir */}
