@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 import { useCurrency } from '@/context/CurrencyContext';
+import { useUnits, m2ToSqft } from '@/lib/units-context';
 import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 import { translateTypology } from '@/lib/i18n/typology';
 import DiscountBadge from '@/components/ui/DiscountBadge';
@@ -77,6 +78,8 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
   const tAvail = useTranslations('availability');
   const tTypes = useTranslations('types');
   const { rate } = useCurrency();
+  // `unit` ya es la variable de cada fila en el map; aliaseo la unidad de área.
+  const { unit: areaUnit } = useUnits();
   // Aún silencio el lint del param `mlEstimates` por compat de signature externa;
   // el cálculo de renta queda preservado para futuros usos.
   void mlEstimates;
@@ -131,7 +134,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
               <th className="px-3 py-3">{t('type')}</th>
               <th className="px-2 py-3 text-center">{t('beds')}</th>
               <th className="px-2 py-3 text-center">{t('baths')}</th>
-              <th className="px-2 py-3 text-right">m²</th>
+              <th className="px-2 py-3 text-right">{areaUnit === 'm2' ? 'm²' : 'sqft'}</th>
               <th className="px-3 py-3 text-right">{t('price')}</th>
               {anyDiscount && (
                 <th className="px-2 py-3 text-right text-[#0E7490]">{t('discountShort')}</th>
@@ -193,7 +196,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                   <td className="px-3 py-3 text-gray-600">{typeLabel(unit)}</td>
                   <td className="px-2 py-3 text-center text-gray-700">{unit.bedrooms}</td>
                   <td className="px-2 py-3 text-center text-gray-700">{unit.bathrooms}</td>
-                  <td className="px-2 py-3 text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</td>
+                  <td className="px-2 py-3 text-right text-gray-700">{(areaUnit === 'm2' ? unit.area_m2 : m2ToSqft(unit.area_m2))?.toLocaleString(intlLocale)}</td>
                   <td className="px-3 py-3 text-right font-semibold tabular-nums">
                     {unit.price_mxn > 0 ? (
                       isDiscounted && discountPrice > 0 ? (
@@ -255,8 +258,8 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
                 <div className="text-right text-gray-700">{typeLabel(unit)}</div>
                 <div className="text-gray-600">{t('bedsBaths')}</div>
                 <div className="text-right text-gray-700">{unit.bedrooms} / {unit.bathrooms}</div>
-                <div className="text-gray-600">m²</div>
-                <div className="text-right text-gray-700">{unit.area_m2?.toLocaleString(intlLocale)}</div>
+                <div className="text-gray-600">{areaUnit === 'm2' ? 'm²' : 'sqft'}</div>
+                <div className="text-right text-gray-700">{(areaUnit === 'm2' ? unit.area_m2 : m2ToSqft(unit.area_m2))?.toLocaleString(intlLocale)}</div>
                 <div className="text-gray-600">{t('price')}</div>
                 <div className="text-right font-bold text-gray-900 tabular-nums">
                   {unit.price_mxn > 0 ? (
