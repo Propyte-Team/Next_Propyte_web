@@ -1,245 +1,94 @@
 'use client';
 
-import { useState, useMemo, Suspense } from 'react';
-import Link from 'next/link';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Image from 'next/image';
-import { useTranslations, useLocale } from 'next-intl';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
-  Building2, Users, Target, BarChart3, TrendingUp, Palette, GraduationCap,
+  Compass, MapPin, Megaphone, Layers, LockKeyhole,
+  Palette, TrendingUp, Handshake, Headset, Rocket, BarChart3, KeySquare,
+  FileChartColumnIncreasing, ClipboardCheck, FileText,
   ChevronDown, ChevronUp, CheckCircle, ArrowRight,
-  MessageCircle, Zap, ClipboardCheck, Rocket, FileText, Shield, ShieldCheck,
-  Search, MapPin, BadgeCheck,
+  MessageCircle, Zap, Shield, Users, Check, Minus, Sparkles,
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
-import type { DeveloperRow } from '@/lib/supabase/types';
 
 // ─────────────────────────────────────────────────────
-// DEVELOPER DIRECTORY (archive section)
+// 1 · HERO — angled bottom edge (calca page-desarrolladores.php WP)
 // ─────────────────────────────────────────────────────
-function DeveloperDirectory({ developers }: { developers: DeveloperRow[] }) {
-  const t = useTranslations('developers');
-  const locale = useLocale();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const [search, setSearch] = useState(searchParams.get('search') ?? '');
-  const [city, setCity] = useState(searchParams.get('city') ?? '');
-
-  function updateUrl(newSearch: string, newCity: string) {
-    const params = new URLSearchParams();
-    if (newSearch) params.set('search', newSearch);
-    if (newCity) params.set('city', newCity);
-    const qs = params.toString();
-    router.replace(pathname + (qs ? `?${qs}` : ''), { scroll: false });
-  }
-
-  const cities = useMemo(
-    () => [...new Set(developers.map((d) => d.city).filter(Boolean) as string[])].sort(),
-    [developers],
-  );
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return developers.filter((d) => {
-      const matchSearch = !q || d.name.toLowerCase().includes(q);
-      const matchCity = !city || d.city === city;
-      return matchSearch && matchCity;
-    });
-  }, [developers, search, city]);
-
-  return (
-    <section className="py-10 md:py-14 bg-[#F4F6F8]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        {/* Section header — h1 vive en Hero, aquí baja a h2 */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t('archiveTitle')}</h2>
-          <p className="mt-2 text-gray-600 text-base">{t('archiveSubtitle')}</p>
-        </div>
-
-        {/* FilterBar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6 bg-white rounded-2xl border border-gray-200 px-4 py-3 shadow-sm">
-          {/* Search */}
-          <div className="relative flex-shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={16} />
-            <label htmlFor="dev-search" className="sr-only">{t('searchPlaceholder')}</label>
-            <input
-              id="dev-search"
-              type="text"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); updateUrl(e.target.value, city); }}
-              placeholder={t('searchPlaceholder')}
-              className="h-10 w-52 pl-9 pr-3 rounded-full border border-gray-300 text-sm focus:border-propyte-brand focus:outline-none"
-            />
-          </div>
-
-          {/* City filter */}
-          <div className="relative flex-shrink-0">
-            <label htmlFor="dev-city" className="sr-only">{t('filterCity')}</label>
-            <select
-              id="dev-city"
-              value={city}
-              onChange={(e) => { setCity(e.target.value); updateUrl(search, e.target.value); }}
-              className="h-10 pl-4 pr-8 rounded-full border border-gray-300 text-sm bg-white focus:border-propyte-brand focus:outline-none appearance-none cursor-pointer"
-            >
-              <option value="">{t('filterCity')}: {t('filterAll')}</option>
-              {cities.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
-          </div>
-
-          <div className="flex-1" />
-          <span className="text-sm text-gray-600 whitespace-nowrap">
-            {t('archiveCount', { count: filtered.length })}
-          </span>
-        </div>
-
-        {/* Cards grid */}
-        {filtered.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((dev) => (
-              <DeveloperCard key={dev.id} dev={dev} locale={locale} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 text-gray-600">
-            <Building2 size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="text-lg font-medium">{t('noResults')}</p>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function DeveloperCard({ dev, locale }: { dev: DeveloperRow; locale: string }) {
-  const t = useTranslations('developers');
-  const initials = dev.name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase();
-
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all p-5 flex flex-col gap-3">
-      {/* Logo or initials */}
-      <div className="flex items-center gap-3">
-        {dev.logo_url ? (
-          <div className="w-12 h-12 rounded-xl border border-gray-100 overflow-hidden flex-shrink-0 bg-gray-50 flex items-center justify-center">
-            <Image
-              src={dev.logo_url}
-              alt={dev.name}
-              width={48}
-              height={48}
-              className="object-contain w-full h-full"
-            />
-          </div>
-        ) : (
-          <div className="w-12 h-12 rounded-xl bg-[#1A2F3F] flex items-center justify-center flex-shrink-0">
-            <span className="text-white text-sm font-bold">{initials}</span>
-          </div>
-        )}
-        <div className="min-w-0">
-          <p className="font-bold text-[#1A2F3F] text-sm leading-tight truncate">{dev.name}</p>
-          {dev.verified && (
-            <span className="inline-flex items-center gap-1 text-2xs font-semibold text-[var(--propyte-dark-900)] mt-0.5">
-              <BadgeCheck size={11} />
-              {t('verified')}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* City */}
-      {dev.city && (
-        <div className="flex items-center gap-1.5 text-xs text-gray-600">
-          <MapPin size={12} />
-          <span>{dev.city}</span>
-        </div>
-      )}
-
-      {/* CTA */}
-      <Link
-        href={`/${locale}/desarrollos?search=${encodeURIComponent(dev.name)}`}
-        className="mt-auto inline-flex items-center justify-center h-9 px-4 text-xs font-semibold bg-propyte-cyan-100 text-[#0E7490] rounded-xl hover:bg-propyte-cyan-100 transition-colors gap-1.5"
-      >
-        {t('viewProjects')} <ArrowRight size={12} />
-      </Link>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────
-// JOIN BANNER (condensed B2B pitch)
-// ─────────────────────────────────────────────────────
-function JoinBanner() {
+function DevelopersHero() {
   const t = useTranslations('developers');
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
   return (
-    <section className="py-12 md:py-16 bg-[#0F1923]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('joinBannerTitle')}</h2>
-            <p className="text-white/60 max-w-xl">{t('joinBannerDesc')}</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
+        <span className="inline-block text-propyte-brand text-xs md:text-sm font-bold tracking-widest uppercase mb-5">
+          {t('heroEyebrow')}
+        </span>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 max-w-4xl mx-auto">
+          {t('heroTitle')}
+        </h1>
+        <p className="text-base md:text-xl text-white/85 max-w-3xl mx-auto mb-10 leading-relaxed">
+          {t('heroSubtitle')}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href="#registro"
+            className="h-12 px-7 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+          >
+            {t('heroCtaPrimary')} <ArrowRight size={16} />
+          </a>
+          {phone && (
             <a
-              href="#registro"
-              className="h-12 px-6 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+              href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-12 px-7 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
             >
-              {t('joinBannerCta')} <ArrowRight size={16} />
+              <MessageCircle size={16} /> {t('heroCtaSecondary')}
             </a>
-            {phone && (
-              <a
-                href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="h-12 px-6 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all flex items-center justify-center gap-2"
-              >
-                <MessageCircle size={16} /> WhatsApp
-              </a>
-            )}
-          </div>
+          )}
         </div>
       </div>
+      {/* Angled bottom edge — diagonal cut hacia el siguiente bg */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+        style={{ background: 'linear-gradient(to top right, #ffffff 49.5%, transparent 50.5%)' }}
+        aria-hidden="true"
+      />
     </section>
   );
 }
 
 // ─────────────────────────────────────────────────────
-// VALUE PROPOSITION
+// 2 · EL PROBLEMA
 // ─────────────────────────────────────────────────────
-function ValueProposition() {
+function Problem() {
   const t = useTranslations('developers');
-  const cards = [
-    { icon: Users, title: t('value1Title'), desc: t('value1Desc') },
-    { icon: Target, title: t('value2Title'), desc: t('value2Desc') },
-    { icon: BarChart3, title: t('value3Title'), desc: t('value3Desc') },
-    { icon: TrendingUp, title: t('value4Title'), desc: t('value4Desc') },
-    { icon: Palette, title: t('value5Title'), desc: t('value5Desc') },
-    { icon: GraduationCap, title: t('value6Title'), desc: t('value6Desc') },
+  const pains = [
+    { icon: Compass, title: t('problem1Title'), desc: t('problem1Desc') },
+    { icon: MapPin, title: t('problem2Title'), desc: t('problem2Desc') },
+    { icon: Megaphone, title: t('problem3Title'), desc: t('problem3Desc') },
+    { icon: Layers, title: t('problem4Title'), desc: t('problem4Desc') },
+    { icon: LockKeyhole, title: t('problem5Title'), desc: t('problem5Desc') },
   ];
-
   return (
     <section className="bg-white py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="text-center mb-12">
-          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('valueTitle')}</span>
-          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('valueSubtitle')}</h2>
+        <div className="max-w-3xl mb-12">
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('problemEyebrow')}</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F] leading-tight">{t('problemTitle')}</h2>
+          <p className="mt-4 text-gray-600 text-lg leading-relaxed">{t('problemIntro')}</p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-propyte-brand/20 hover:shadow-lg transition-all group">
-              <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-propyte-cyan-100 transition-colors">
-                <Icon size={24} className="text-[#0E7490]" />
+        <div className="grid md:grid-cols-2 gap-5">
+          {pains.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="flex gap-4 bg-[#F4F6F8] rounded-2xl p-6">
+              <div className="w-11 h-11 shrink-0 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <Icon size={20} className="text-[#0E7490]" />
               </div>
-              <h3 className="text-lg font-bold text-[#1A2F3F] mb-2">{title}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+              <div>
+                <h3 className="font-bold text-[#1A2F3F] mb-1.5">{title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -249,7 +98,250 @@ function ValueProposition() {
 }
 
 // ─────────────────────────────────────────────────────
-// HOW IT WORKS
+// 3 · EL CICLO COMPLETO (4 bloques)
+// ─────────────────────────────────────────────────────
+function Cycle() {
+  const t = useTranslations('developers');
+  const blocks = [
+    { num: '01', icon: Compass, tag: t('cycle1Tag'), desc: t('cycle1Desc') },
+    { num: '02', icon: Palette, tag: t('cycle2Tag'), desc: t('cycle2Desc') },
+    { num: '03', icon: TrendingUp, tag: t('cycle3Tag'), desc: t('cycle3Desc') },
+    { num: '04', icon: Handshake, tag: t('cycle4Tag'), desc: t('cycle4Desc') },
+  ];
+  return (
+    <section className="py-16 md:py-20 bg-[#0F1923]">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        <div className="max-w-3xl mb-12">
+          <span className="text-propyte-brand text-sm font-bold tracking-widest uppercase">{t('cycleEyebrow')}</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white leading-tight">{t('cycleTitle')}</h2>
+          <p className="mt-4 text-white/70 text-lg leading-relaxed">{t('cycleIntro')}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-5">
+          {blocks.map(({ num, icon: Icon, tag, desc }) => (
+            <div key={num} className="relative bg-white/[0.04] border border-white/10 rounded-2xl p-6 hover:border-propyte-brand/40 transition-colors">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-propyte-brand/40 text-2xl font-extrabold tabular-nums">{num}</span>
+                <div className="w-10 h-10 bg-propyte-brand/15 rounded-xl flex items-center justify-center">
+                  <Icon size={20} className="text-propyte-brand" />
+                </div>
+              </div>
+              <h3 className="font-bold text-white uppercase text-sm tracking-wide mb-2">{tag}</h3>
+              <p className="text-white/65 text-sm leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 bg-propyte-brand/10 border border-propyte-brand/25 rounded-2xl p-6 md:p-7">
+          <p className="text-white/90 text-base md:text-lg leading-relaxed">{t('cycleCallout')}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// 4 · LOS 4 PRODUCTOS
+// ─────────────────────────────────────────────────────
+const PRODUCTS = [
+  { id: 'support', name: 'PROPYTE SUPPORT', icon: Headset, taglineKey: 'productSupportTagline', descKey: 'productSupportDesc', recommended: false },
+  { id: 'launch', name: 'PROPYTE LAUNCH', icon: Rocket, taglineKey: 'productLaunchTagline', descKey: 'productLaunchDesc', recommended: false },
+  { id: 'engine', name: 'PROPYTE ENGINE', icon: BarChart3, taglineKey: 'productEngineTagline', descKey: 'productEngineDesc', recommended: false },
+  { id: 'turnkey', name: 'PROPYTE TURNKEY', icon: KeySquare, taglineKey: 'productTurnkeyTagline', descKey: 'productTurnkeyDesc', recommended: true },
+] as const;
+
+function Products() {
+  const t = useTranslations('developers');
+  return (
+    <section className="bg-white py-16 md:py-20">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('productsEyebrow')}</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('productsTitle')}</h2>
+          <p className="mt-4 text-gray-600 text-lg leading-relaxed">{t('productsIntro')}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {PRODUCTS.map(({ id, name, icon: Icon, taglineKey, descKey, recommended }) => (
+            <div
+              key={id}
+              className={`relative flex flex-col rounded-2xl p-6 transition-all ${
+                recommended
+                  ? 'bg-[#0F1923] border-2 border-propyte-brand shadow-lg lg:-mt-3 lg:mb-3'
+                  : 'bg-white border border-gray-200 hover:border-propyte-brand/40 hover:shadow-lg'
+              }`}
+            >
+              {recommended && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-2xs font-bold uppercase tracking-wider rounded-full">
+                  <Sparkles size={11} /> {t('productTurnkeyBadge')}
+                </span>
+              )}
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${recommended ? 'bg-propyte-brand/20' : 'bg-propyte-cyan-100'}`}>
+                <Icon size={20} className={recommended ? 'text-propyte-brand' : 'text-[#0E7490]'} />
+              </div>
+              <h3 className={`font-extrabold text-lg tracking-tight mb-1.5 ${recommended ? 'text-white' : 'text-[#1A2F3F]'}`}>{name}</h3>
+              <p className={`text-sm font-semibold italic mb-3 ${recommended ? 'text-propyte-brand' : 'text-[#0E7490]'}`}>{t(taglineKey)}</p>
+              <p className={`text-sm leading-relaxed ${recommended ? 'text-white/70' : 'text-gray-600'}`}>{t(descKey)}</p>
+            </div>
+          ))}
+        </div>
+        {/* Callout: cómo elegir */}
+        <div className="mt-8 bg-[#F4F6F8] rounded-2xl p-6 md:p-7 max-w-4xl mx-auto">
+          <h3 className="font-bold text-[#1A2F3F] mb-2 flex items-center gap-2">
+            <Compass size={18} className="text-[#0E7490]" /> {t('productsChooseTitle')}
+          </h3>
+          <p className="text-gray-600 text-sm md:text-base leading-relaxed">{t('productsChooseBody')}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// 5 · TABLA COMPARATIVA DE ALCANCE
+// ─────────────────────────────────────────────────────
+type CellVal = 'yes' | 'no' | 'base' | 'plus' | 'plusplus' | 'max' | 'optional' | 'light' | 'full';
+
+const TABLE_ROWS: { key: string; vals: [CellVal, CellVal, CellVal, CellVal] }[] = [
+  { key: 'tableRowLeads', vals: ['yes', 'yes', 'yes', 'yes'] },
+  { key: 'tableRowCrm', vals: ['yes', 'yes', 'yes', 'yes'] },
+  { key: 'tableRowReporting', vals: ['yes', 'yes', 'yes', 'yes'] },
+  { key: 'tableRowSocial', vals: ['base', 'plus', 'plusplus', 'max'] },
+  { key: 'tableRowSalesForce', vals: ['no', 'no', 'yes', 'yes'] },
+  { key: 'tableRowBranding', vals: ['no', 'yes', 'yes', 'yes'] },
+  { key: 'tableRowWebsite', vals: ['no', 'yes', 'yes', 'yes'] },
+  { key: 'tableRowPricing', vals: ['no', 'no', 'yes', 'yes'] },
+  { key: 'tableRowCollections', vals: ['no', 'no', 'yes', 'yes'] },
+  { key: 'tableRowTitle', vals: ['no', 'no', 'no', 'yes'] },
+  { key: 'tableRowHandover', vals: ['no', 'no', 'no', 'yes'] },
+  { key: 'tableRowMonitoring', vals: ['no', 'no', 'no', 'yes'] },
+  { key: 'tableRowStudy', vals: ['optional', 'light', 'full', 'full'] },
+];
+
+function Cell({ val, t }: { val: CellVal; t: ReturnType<typeof useTranslations> }) {
+  if (val === 'yes') return <Check size={18} className="mx-auto text-[#0E7490]" aria-label="Incluido" />;
+  if (val === 'no') return <Minus size={16} className="mx-auto text-gray-300" aria-label="No incluido" />;
+  const label =
+    val === 'base' ? t('tableBase')
+    : val === 'plus' ? '+'
+    : val === 'plusplus' ? '++'
+    : val === 'max' ? t('tableMax')
+    : val === 'optional' ? t('tableOptional')
+    : val === 'light' ? t('tableLight')
+    : t('tableFull');
+  return <span className="text-xs font-semibold text-[#1A2F3F]">{label}</span>;
+}
+
+function ComparisonTable() {
+  const t = useTranslations('developers');
+  const [openProduct, setOpenProduct] = useState<number>(3); // Turnkey abierto por defecto
+  const cols = PRODUCTS.map((p) => p.name.replace('PROPYTE ', ''));
+
+  return (
+    <section className="bg-[#F4F6F8] py-16 md:py-20">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] text-center mb-2">{t('tableTitle')}</h2>
+        <p className="text-center text-sm text-[#0E7490] font-semibold mb-10">★ {t('tableRecommended')}</p>
+
+        {/* Desktop: tabla */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full bg-white rounded-2xl overflow-hidden shadow-sm border-separate border-spacing-0">
+            <thead>
+              <tr>
+                <th className="text-left text-sm font-bold text-[#1A2F3F] p-4 bg-white border-b border-gray-100">&nbsp;</th>
+                {cols.map((c, i) => (
+                  <th
+                    key={c}
+                    className={`text-center text-sm font-extrabold p-4 border-b border-gray-100 ${
+                      i === 3 ? 'bg-propyte-brand/10 text-[#0F1923]' : 'bg-white text-[#1A2F3F]'
+                    }`}
+                  >
+                    {c}
+                    {i === 3 && <Sparkles size={12} className="inline-block ml-1 text-propyte-brand" />}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {TABLE_ROWS.map((row, ri) => (
+                <tr key={row.key} className={ri % 2 ? 'bg-[#F9FAFB]' : 'bg-white'}>
+                  <td className="text-sm text-gray-700 p-4">{t(row.key)}</td>
+                  {row.vals.map((v, ci) => (
+                    <td key={ci} className={`text-center p-4 ${ci === 3 ? 'bg-propyte-brand/5' : ''}`}>
+                      <Cell val={v} t={t} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile: acordeón por producto */}
+        <div className="md:hidden space-y-3">
+          {PRODUCTS.map((p, pi) => {
+            const isOpen = openProduct === pi;
+            return (
+              <div key={p.id} className={`rounded-2xl overflow-hidden border ${p.recommended ? 'border-propyte-brand' : 'border-gray-200'} bg-white`}>
+                <button
+                  type="button"
+                  onClick={() => setOpenProduct(isOpen ? -1 : pi)}
+                  className="w-full flex items-center justify-between p-4 text-left"
+                  aria-expanded={isOpen}
+                >
+                  <span className="font-extrabold text-[#1A2F3F] flex items-center gap-1.5">
+                    {p.name.replace('PROPYTE ', '')}
+                    {p.recommended && <Sparkles size={13} className="text-propyte-brand" />}
+                  </span>
+                  {isOpen ? <ChevronUp size={18} className="text-[#0E7490]" /> : <ChevronDown size={18} className="text-gray-400" />}
+                </button>
+                {isOpen && (
+                  <ul className="px-4 pb-4 divide-y divide-gray-50">
+                    {TABLE_ROWS.map((row) => (
+                      <li key={row.key} className="flex items-center justify-between py-2.5 text-sm">
+                        <span className="text-gray-600 pr-3">{t(row.key)}</span>
+                        <span className="shrink-0"><Cell val={row.vals[pi]} t={t} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="mt-8 text-xs text-gray-500 leading-relaxed max-w-3xl mx-auto text-center">{t('tableFootnote')}</p>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// 6 · EL ESTUDIO COMO PUNTO DE PARTIDA
+// ─────────────────────────────────────────────────────
+function Study() {
+  const t = useTranslations('developers');
+  return (
+    <section className="bg-white py-16 md:py-20">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div>
+            <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('studyEyebrow')}</span>
+            <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F] leading-tight">{t('studyTitle')}</h2>
+            <p className="mt-5 text-gray-600 leading-relaxed">{t('studyBody1')}</p>
+            <p className="mt-4 text-gray-600 leading-relaxed">{t('studyBody2')}</p>
+          </div>
+          <div className="bg-[#0F1923] rounded-3xl p-8 md:p-10">
+            <div className="w-12 h-12 bg-propyte-brand/15 rounded-xl flex items-center justify-center mb-5">
+              <FileChartColumnIncreasing size={24} className="text-propyte-brand" />
+            </div>
+            <p className="text-white/90 text-lg leading-relaxed">{t('studyCallout')}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────
+// 7 · CÓMO TRABAJAMOS (4 pasos)
 // ─────────────────────────────────────────────────────
 function HowItWorks() {
   const t = useTranslations('developers');
@@ -257,15 +349,14 @@ function HowItWorks() {
     { num: '01', icon: ClipboardCheck, title: t('step1'), desc: t('step1Desc') },
     { num: '02', icon: FileText, title: t('step2'), desc: t('step2Desc') },
     { num: '03', icon: Rocket, title: t('step3'), desc: t('step3Desc') },
-    { num: '04', icon: BarChart3, title: t('step4'), desc: t('step4Desc') },
+    { num: '04', icon: Handshake, title: t('step4'), desc: t('step4Desc') },
   ];
-
   return (
     <section className="py-16 md:py-20 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('processTitle')}</h2>
-          <p className="mt-3 text-gray-600 text-lg">{t('processSubtitle')}</p>
+        <div className="text-center mb-12 max-w-2xl mx-auto">
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('processEyebrow')}</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('processTitle')}</h2>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map(({ num, icon: Icon, title, desc }) => (
@@ -285,7 +376,7 @@ function HowItWorks() {
 }
 
 // ─────────────────────────────────────────────────────
-// FAQ
+// 8 · FAQ
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('developers');
@@ -302,7 +393,10 @@ function FAQ() {
   return (
     <section className="bg-white py-16 md:py-20">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
-        <h2 className="text-3xl md:text-4xl font-bold text-[#1A2F3F] text-center mb-12">{t('faqTitle')}</h2>
+        <div className="text-center mb-12">
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">{t('faqEyebrow')}</span>
+          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('faqTitle')}</h2>
+        </div>
         <div className="space-y-3">
           {faqs.map(({ q, a }, i) => {
             const isOpen = open.has(i);
@@ -334,7 +428,7 @@ function FAQ() {
 }
 
 // ─────────────────────────────────────────────────────
-// DEVELOPER FORM
+// 9 · FORMULARIO
 // ─────────────────────────────────────────────────────
 function DeveloperForm() {
   const t = useTranslations('developers');
@@ -409,7 +503,8 @@ function DeveloperForm() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div className="text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('formTitle')}</h2>
+            <span className="text-propyte-brand text-sm font-bold tracking-widest uppercase">{t('formEyebrow')}</span>
+            <h2 className="mt-3 text-3xl md:text-4xl font-bold mb-4">{t('formTitle')}</h2>
             <p className="text-white/60 text-lg mb-8">{t('formSubtitle')}</p>
             <div className="space-y-4">
               {[
@@ -518,53 +613,17 @@ function DeveloperForm() {
 }
 
 // ─────────────────────────────────────────────────────
-// HERO — angled bottom edge (calca page-desarrolladores.php WP)
-// ─────────────────────────────────────────────────────
-function DevelopersHero({ verifiedCount }: { verifiedCount: number }) {
-  const t = useTranslations('developers');
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-20 md:py-28 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-propyte-brand/15 border border-propyte-brand/30">
-          <ShieldCheck size={18} className="text-propyte-brand" />
-          <span className="text-sm font-semibold text-propyte-brand">{t('heroBadgeVerified')}</span>
-        </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
-          {t('heroTitle')} <span className="text-propyte-brand">{t('heroTitleAccent')}</span>
-        </h1>
-        <p className="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10">
-          {t('heroSubtitle')}
-        </p>
-        {verifiedCount > 0 && (
-          <p className="text-white/75 text-sm">
-            <span className="text-white font-bold">{verifiedCount}</span>{' '}
-            {t('heroVerifiedCount', { count: verifiedCount }).replace(/^\d+\s/, '')}
-          </p>
-        )}
-      </div>
-      {/* Angled bottom edge — diagonal cut hacia el siguiente bg */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
-        style={{ background: 'linear-gradient(to top right, #F4F6F8 49.5%, transparent 50.5%)' }}
-        aria-hidden="true"
-      />
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
-export default function DevelopersPageContent({ developers }: { developers: DeveloperRow[] }) {
-  const verifiedCount = developers.filter((d) => d.verified).length;
+export default function DevelopersPageContent() {
   return (
     <div>
-      <DevelopersHero verifiedCount={verifiedCount} />
-      <Suspense fallback={null}>
-        <DeveloperDirectory developers={developers} />
-      </Suspense>
-      <JoinBanner />
-      <ValueProposition />
+      <DevelopersHero />
+      <Problem />
+      <Cycle />
+      <Products />
+      <ComparisonTable />
+      <Study />
       <HowItWorks />
       <FAQ />
       <DeveloperForm />

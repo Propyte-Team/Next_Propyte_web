@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title,
     description: locale === 'es'
-      ? `Conoce los proyectos inmobiliarios de ${name} en la Riviera Maya y Yucatán. Información verificada por Propyte.`
-      : `Explore ${name}'s real estate projects in Riviera Maya and Yucatán. Verified by Propyte.`,
+      ? `Conoce los proyectos inmobiliarios de ${name} en la Riviera Maya y Yucatán, comercializados por Propyte.`
+      : `Explore ${name}'s real estate projects in Riviera Maya and Yucatán, commercialized by Propyte.`,
     openGraph: {
       title: `${title} | Propyte`,
       type: 'profile',

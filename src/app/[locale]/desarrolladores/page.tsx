@@ -4,13 +4,11 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import DevelopersPageContent from './DevelopersPageContent';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
-  getDevelopers,
   getPartners,
   getCaseStudies,
   type PartnerRow,
   type CaseStudyRow,
 } from '@/lib/supabase/queries';
-import type { DeveloperRow } from '@/lib/supabase/types';
 import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
 
@@ -64,18 +62,15 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
     },
   }));
 
-  let developers: DeveloperRow[] = [];
   let partners: PartnerRow[] = [];
   let caseStudies: CaseStudyRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
     if (supabase) {
-      const [{ data }, partnerRows, caseRows] = await Promise.all([
-        getDevelopers(supabase),
+      const [partnerRows, caseRows] = await Promise.all([
         getPartners(supabase),
         getCaseStudies(supabase, 'developer'),
       ]);
-      if (data) developers = data as DeveloperRow[];
       partners = partnerRows;
       caseStudies = caseRows;
     }
@@ -104,7 +99,7 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: locale === 'es' ? 'Desarrolladores' : 'Developers' }]}
       />
-      <DevelopersPageContent developers={developers} />
+      <DevelopersPageContent />
       <CaseStudies
         studies={caseStudies}
         locale={locale}
