@@ -343,6 +343,12 @@
     "ctaBody": "Schedule a 20-minute no-commitment call to discuss your investment and meet the advisor who would walk alongside you.",
     "ctaButton": "Schedule a call"
   },
+  "teamBio": {
+    "viewProfile": "View profile",
+    "close": "Close",
+    "whatsapp": "WhatsApp",
+    "modalLabel": "Team profile"
+  },
   "avisoLegalPage": {
     "metaTitle": "Investment Legal Notice: disclaimer, simulator terms and sources",
     "metaDescription": "Full YMYL disclaimer from Propyte: scope of the financial simulator, assumptions, legal limitations and cited sources on propyte.com.",

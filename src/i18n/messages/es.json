@@ -343,6 +343,12 @@
     "ctaBody": "Agenda una llamada de 20 minutos sin compromiso para discutir tu inversión y conocer al asesor que te acompañaría.",
     "ctaButton": "Agendar llamada"
   },
+  "teamBio": {
+    "viewProfile": "Ver perfil",
+    "close": "Cerrar",
+    "whatsapp": "WhatsApp",
+    "modalLabel": "Perfil del equipo"
+  },
   "avisoLegalPage": {
     "metaTitle": "Aviso legal de inversión: disclaimer, términos del simulador y fuentes",
     "metaDescription": "Disclaimer YMYL completo de Propyte: alcance del simulador financiero, supuestos, limitaciones legales y fuentes citadas en propyte.com.",
