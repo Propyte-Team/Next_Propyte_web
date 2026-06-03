@@ -12,6 +12,7 @@ import {
 } from '@/lib/supabase/queries';
 import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 // Generate zone slugs for static generation
 const ZONE_CONFIGS = Object.entries(MARKET_SUBMARKET_TO_ZONE).map(([sub, zone]) => ({
@@ -159,6 +160,9 @@ export default async function ZonePage({
             {city} &middot; {tZonas('vacationMarketIntelligence')}
           </p>
         </div>
+
+        {/* TODO(media): foto real de la zona (gestión vía Hub) */}
+        <ImagePlaceholder label={`Foto de ${zone}, ${city}`} className="h-44 md:h-56 mb-8" />
 
         {/* Client-side analytics component */}
         <ZoneAnalytics

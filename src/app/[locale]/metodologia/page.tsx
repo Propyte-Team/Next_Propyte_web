@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ScrollText, Calendar, Tag, Hammer, TrendingUp, ArrowRight, ShieldCheck } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -66,6 +67,12 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
           <p className="text-base md:text-lg text-gray-700 leading-relaxed">
             {t('heroLead')}
           </p>
+          {/* TODO(media): screenshot del dashboard de datos / diagrama de metodología (gestión vía Hub) */}
+          <ImagePlaceholder
+            icon={TrendingUp}
+            label="Screenshot: dashboard de análisis de datos Propyte"
+            className="mt-8 aspect-[16/9]"
+          />
         </div>
       </section>
 

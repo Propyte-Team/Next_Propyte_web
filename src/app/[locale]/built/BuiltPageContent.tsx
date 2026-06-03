@@ -9,6 +9,7 @@ import {
   Compass, Pencil, FileCheck, Wrench, KeyRound
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 interface BuiltStatOverride {
   value: string;
@@ -142,6 +143,12 @@ function ServicesGrid() {
             </FadeIn>
           ))}
         </div>
+        {/* TODO(media): renders / fotos de proyectos Built (gestión vía Hub) */}
+        <FadeIn delay={0.2}>
+          <div className="mt-10">
+            <ImagePlaceholder tone="dark" icon={Building2} label="Renders / fotos de proyectos Propyte Built" className="aspect-[21/9]" />
+          </div>
+        </FadeIn>
       </div>
     </section>
   );

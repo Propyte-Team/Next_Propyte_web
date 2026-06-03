@@ -5,6 +5,7 @@ import {
   CheckCircle, ArrowRight, Sparkles,
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -105,6 +106,13 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
           <p className="text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
             {t('heroSubtitle')}
           </p>
+          {/* TODO(media): foto/render del proceso de compra (gestión vía Hub) */}
+          <ImagePlaceholder
+            tone="dark"
+            icon={Home}
+            label="Foto: comprador recibiendo llaves / proceso de compra"
+            className="mt-10 max-w-3xl mx-auto aspect-[21/9]"
+          />
         </div>
       </section>
 

@@ -8,6 +8,7 @@ import {
   HelpCircle, type LucideIcon,
 } from '@/lib/icons';
 import type { OrgNodeRow } from '@/lib/supabase/queries';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
@@ -268,6 +269,8 @@ export default function EstructuraPageContent({ nodes, content, fallback }: Page
           <div className="bg-[#F4F6F8] border-l-4 border-propyte-brand rounded-r-xl p-6">
             <p className="text-[#1A2F3F] font-medium italic">&ldquo;{philosophyHighlight}&rdquo;</p>
           </div>
+          {/* TODO(media): foto real del equipo/liderazgo (gestión vía Hub) */}
+          <ImagePlaceholder icon={Users} label="Foto: equipo de liderazgo Propyte" className="mt-8 aspect-[16/9]" />
         </div>
       </section>
     </>

@@ -10,6 +10,7 @@ import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, C
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 import type { HubSiteConfig } from '@/lib/hub-content';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 
 function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
   const v = config?.[key];
@@ -357,6 +358,9 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                   {t('calendlyCta')}
                 </a>
               ) : null}
+
+              {/* TODO(media): foto real de la oficina (gestión vía Hub) */}
+              <ImagePlaceholder icon={MapPin} label="Foto: oficina Propyte" className="aspect-[16/9]" />
 
               {/* Google Maps embed */}
               <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">

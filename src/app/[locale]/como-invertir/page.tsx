@@ -5,6 +5,7 @@ import {
   ShieldCheck, Clock, DollarSign, Sparkles,
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 import InvestmentComparison from '@/components/como-invertir/InvestmentComparison';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -117,6 +118,13 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
           <p className="text-lg md:text-xl text-white/75 max-w-2xl mx-auto leading-relaxed">
             {t('heroSubtitle')}
           </p>
+          {/* TODO(media): foto/render de inversión (gestión vía Hub) */}
+          <ImagePlaceholder
+            tone="dark"
+            icon={TrendingUp}
+            label="Foto/render: propiedad de inversión en la Riviera Maya"
+            className="mt-10 max-w-3xl mx-auto aspect-[21/9]"
+          />
         </div>
       </section>
 

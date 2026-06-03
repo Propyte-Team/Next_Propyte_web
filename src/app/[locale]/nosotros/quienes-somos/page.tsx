@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
@@ -245,14 +246,13 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               <p className="text-gray-600 leading-relaxed">{t('introP2')}</p>
             </div>
             <div className="lg:col-span-2">
-              <div className="aspect-[4/3] bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-propyte-cyan-100/60" />
-                <div className="relative text-center text-white/40 px-8">
-                  <Home size={56} strokeWidth={1} className="mx-auto mb-3 opacity-30" aria-hidden="true" />
-                  <p className="text-sm font-medium">Real Estate Lab</p>
-                  <p className="text-xs mt-1 opacity-60">5ta Avenida, Playa del Carmen</p>
-                </div>
-              </div>
+              {/* TODO(media): foto real de la oficina/equipo (gestión vía Hub) */}
+              <ImagePlaceholder
+                tone="dark"
+                icon={Home}
+                label="Foto: oficina Propyte · 5ta Avenida, Playa del Carmen"
+                className="aspect-[4/3]"
+              />
             </div>
           </div>
         </div>

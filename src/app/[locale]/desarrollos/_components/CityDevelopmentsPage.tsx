@@ -7,6 +7,7 @@ import { pickLang } from '@/lib/i18n/pickLang';
 import { formatPrice } from '@/lib/formatters';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import EmptyState from '@/components/ui/EmptyState';
+import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
 import { CITY_MAP } from './cityConfig';
 
 interface CityDevelopmentsPageProps {
@@ -100,12 +101,19 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
           <span className="text-gray-700 font-medium">{cityInfo.name}</span>
         </nav>
 
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             {t('h1', { city: cityInfo.name })}
           </h1>
           <p className="mt-2 text-lg text-gray-600">{pickLang(locale, cityInfo.descEn, cityInfo.descEs)}</p>
         </div>
+
+        {/* TODO(media): reemplazar por foto real de la ciudad (gestión vía Hub) */}
+        <ImagePlaceholder
+          icon={MapPin}
+          label={`Foto de ${cityInfo.name}`}
+          className="h-44 md:h-60 mb-8"
+        />
 
         {count > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
