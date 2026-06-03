@@ -346,8 +346,7 @@
   "teamBio": {
     "viewProfile": "Ver perfil",
     "close": "Cerrar",
-    "whatsapp": "WhatsApp",
-    "modalLabel": "Perfil del equipo"
+    "whatsapp": "WhatsApp"
   },
   "avisoLegalPage": {
     "metaTitle": "Aviso legal de inversión: disclaimer, términos del simulador y fuentes",
