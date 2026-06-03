@@ -38,11 +38,13 @@ const nextConfig: NextConfig = {
         destination: '/:locale/mercado?tab=tradicional',
         permanent: true,
       },
+      // Rename /corredores → /brokers (2026-06): 301 locale-aware + bare slug.
+      { source: '/:locale/corredores',      destination: '/:locale/brokers',           permanent: true },
+      { source: '/corredores',              destination: '/es/brokers',                permanent: true },
+      { source: '/corredores/',             destination: '/es/brokers',                permanent: true },
       // ── WP legacy slug → Next.js 301s (protege SEO y links viejos) ───────
       { source: '/unidades',                destination: '/es/propiedades',            permanent: true },
       { source: '/unidades/',               destination: '/es/propiedades',            permanent: true },
-      { source: '/brokers',                 destination: '/es/corredores',             permanent: true },
-      { source: '/brokers/',                destination: '/es/corredores',             permanent: true },
       { source: '/reclutamiento',           destination: '/es/unete',                  permanent: true },
       { source: '/reclutamiento/',          destination: '/es/unete',                  permanent: true },
       { source: '/faqs',                    destination: '/es/faq',                    permanent: true },

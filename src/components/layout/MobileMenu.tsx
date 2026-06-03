@@ -89,7 +89,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
     { id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store },
     { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },
-    { id: 'brokers', labelKey: 'brokers', href: `/${locale}/corredores`, icon: Users },
+    { id: 'brokers', labelKey: 'brokers', href: `/${locale}/brokers`, icon: Users },
     { id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck },
     { id: 'recruitment', labelKey: 'recruitment', href: `/${locale}/unete`, icon: Zap },
     { id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon },

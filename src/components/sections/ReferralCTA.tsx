@@ -17,7 +17,7 @@ export default function ReferralCTA() {
             <p className="text-sm text-gray-600">{t('subtitle')}</p>
           </div>
           <Link
-            href={`/${locale}/corredores`}
+            href={`/${locale}/brokers`}
             className="inline-flex items-center gap-2 h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold text-sm rounded-lg transition-colors whitespace-nowrap"
           >
             {t('cta')} <ArrowRight size={16} />

@@ -15,7 +15,7 @@
  */
 export const DARK_HERO_ROUTES = [
   '/unete',
-  '/corredores',
+  '/brokers',
   '/reclutamiento',
   '/built',
   '/nosotros',

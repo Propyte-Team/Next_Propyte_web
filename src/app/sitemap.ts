@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/desarrollos', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/blog', priority: 0.8, changeFrequency: 'daily' as const },
     { path: '/desarrolladores', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/corredores', priority: 0.7, changeFrequency: 'monthly' as const },
+    { path: '/brokers', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/built', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/nosotros/quienes-somos', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/nosotros/estructura', priority: 0.6, changeFrequency: 'monthly' as const },

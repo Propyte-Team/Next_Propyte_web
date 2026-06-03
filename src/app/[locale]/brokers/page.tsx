@@ -4,16 +4,13 @@ import BrokersPageContent from './BrokersPageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
-import BrokerCommissionsTable from '@/components/shared/BrokerCommissionsTable';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getFaqs } from '@/lib/hub-content';
 import {
   getPartners,
   getCaseStudies,
-  getBrokerCommissions,
   type PartnerRow,
   type CaseStudyRow,
-  type BrokerCommissionRow,
 } from '@/lib/supabase/queries';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -36,11 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
-      canonical: `/${locale}/corredores`,
+      canonical: `/${locale}/brokers`,
       languages: {
-        es: '/es/corredores',
-        en: '/en/corredores',
-        'x-default': '/es/corredores',
+        es: '/es/brokers',
+        en: '/en/brokers',
+        'x-default': '/es/brokers',
       },
     },
   };
@@ -62,7 +59,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         q: locale === 'en' ? f.question_en : f.question_es,
         a: locale === 'en' ? f.answer_en : f.answer_es,
       }))
-    : Array.from({ length: 8 }, (_, i) => ({
+    : Array.from({ length: 7 }, (_, i) => ({
         q: tBrokers(`faq${i + 1}Q`),
         a: tBrokers(`faq${i + 1}A`),
       }));
@@ -77,18 +74,15 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
 
   let partners: PartnerRow[] = [];
   let caseStudies: CaseStudyRow[] = [];
-  let commissions: BrokerCommissionRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
     if (supabase) {
-      const [partnerRows, caseRows, commissionRows] = await Promise.all([
+      const [partnerRows, caseRows] = await Promise.all([
         getPartners(supabase),
         getCaseStudies(supabase, 'broker'),
-        getBrokerCommissions(supabase),
       ]);
       partners = partnerRows;
       caseStudies = caseRows;
-      commissions = commissionRows;
     }
   } catch (error) {
     console.error('[BrokersPage] queries failed:', error);
@@ -100,7 +94,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         type="professionalService"
         data={{
           name: 'Propyte Broker Network',
-          description: 'Red de corredores inmobiliarios con acceso a +700 desarrollos en preventa en la Riviera Maya y Yucatán.',
+          description: 'Cartera de brokers aliados con acceso a desarrollos validados en preventa y entrega en la Riviera Maya y Yucatán.',
           areaServed: {
             '@type': 'GeoCircle',
             geoMidpoint: { '@type': 'GeoCoordinates', latitude: 20.63, longitude: -87.08 },
@@ -116,12 +110,6 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         items={[{ label: tBC('brokers') }]}
       />
       <BrokersPageContent hubData={{ faqs: brokerFaqs }} />
-      <BrokerCommissionsTable
-        commissions={commissions}
-        locale={locale}
-        title={locale === 'es' ? 'Tabla de comisiones' : 'Commission schedule'}
-        subtitle={locale === 'es' ? 'Transparencia comercial: lo que ganas por cada operación cerrada con Propyte' : 'Commercial transparency: what you earn per closed deal with Propyte'}
-      />
       <CaseStudies
         studies={caseStudies}
         locale={locale}

@@ -61,7 +61,7 @@ export default function Sidebar() {
 
   const moreItems: NavItem[] = [
     { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },
-    ...(showBrokers ? [{ id: 'brokers', labelKey: 'brokers', href: `/${locale}/corredores`, icon: Users } as NavItem] : []),
+    ...(showBrokers ? [{ id: 'brokers', labelKey: 'brokers', href: `/${locale}/brokers`, icon: Users } as NavItem] : []),
     ...(showProviders ? [{ id: 'providers', labelKey: 'providers', href: `/${locale}/proveedores`, icon: Truck } as NavItem] : []),
     { id: 'recruitment', labelKey: 'recruitment', href: `/${locale}/unete`, icon: Zap },
     ...(showBlog ? [{ id: 'blog', labelKey: 'blog', href: `/${locale}/blog`, icon: LayoutIcon } as NavItem] : []),

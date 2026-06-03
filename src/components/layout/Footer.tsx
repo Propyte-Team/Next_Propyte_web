@@ -13,7 +13,7 @@ const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
   built: { title: 'ctaTitleBuilt', subtitle: 'ctaSubtitleBuilt' },
   unete: { title: 'ctaTitleUnete', subtitle: 'ctaSubtitleUnete' },
   desarrolladores: { title: 'ctaTitleDesarrolladores', subtitle: 'ctaSubtitleDesarrolladores' },
-  corredores: { title: 'ctaTitleCorredores', subtitle: 'ctaSubtitleCorredores' },
+  brokers: { title: 'ctaTitleCorredores', subtitle: 'ctaSubtitleCorredores' },
   financiamiento: { title: 'ctaTitleFinanciamiento', subtitle: 'ctaSubtitleFinanciamiento' },
 };
 
@@ -130,7 +130,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               <li><Link href={`/${locale}/como-invertir`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('howToInvest')}</Link></li>
               <li><Link href={`/${locale}/financiamiento`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('financing')}</Link></li>
               <li><Link href={`/${locale}/desarrolladores`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('developersLink')}</Link></li>
-              <li><Link href={`/${locale}/corredores`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('brokersLink')}</Link></li>
+              <li><Link href={`/${locale}/brokers`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('brokersLink')}</Link></li>
               <li><Link href={`/${locale}/unete`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('careers')}</Link></li>
             </ul>
           </div>
