@@ -38,6 +38,23 @@ const defaultFilters: Filters = {
 const VALID_STAGES: PropertyStage[] = ['preventa', 'construccion', 'entrega_inmediata'];
 const VALID_USAGES: PropertyUsage[] = ['residencial', 'vacacional', 'renta', 'mixto'];
 
+/**
+ * Tope de precio dinámico para el filtro: el inmueble más caro del catálogo
+ * cargado, redondeado al millón superior, con piso en MAX_PRICE para conservar
+ * granularidad en catálogos baratos. Antes el default era fijo en MAX_PRICE
+ * (50M) y escondía silenciosamente cualquier desarrollo arriba de ese monto
+ * (p.ej. Dhamar a $75.1M no aparecía en /desarrollos). Caso 2026-06-03.
+ */
+export function computePriceCeiling(properties: Property[]): number {
+  let max = 0;
+  for (const p of properties) {
+    const hi = p.priceMax && p.priceMax > p.price.mxn ? p.priceMax : p.price.mxn;
+    if (typeof hi === 'number' && hi > max) max = hi;
+  }
+  if (max <= 0) return MAX_PRICE;
+  return Math.max(MAX_PRICE, Math.ceil(max / 1_000_000) * 1_000_000);
+}
+
 function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const parsed: Partial<Filters> = {};
 
@@ -63,7 +80,7 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   if (priceMin) { const n = Number(priceMin); if (n > 0) parsed.priceMin = n; }
 
   const priceMax = params.get('priceMax');
-  if (priceMax) { const n = Number(priceMax); if (n > 0 && n < MAX_PRICE) parsed.priceMax = n; }
+  if (priceMax) { const n = Number(priceMax); if (n > 0) parsed.priceMax = n; }
 
   const roiMin = params.get('roiMin');
   if (roiMin) { const n = Number(roiMin); if (n > 0) parsed.roiMin = n; }
@@ -80,8 +97,12 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
 export function useFilters(properties: Property[]) {
   const searchParams = useSearchParams();
 
+  // Tope dinámico según el catálogo cargado (estable por carga de página).
+  const priceCeiling = useMemo(() => computePriceCeiling(properties), [properties]);
+
   const [filters, setFilters] = useState<Filters>(() => ({
     ...defaultFilters,
+    priceMax: priceCeiling,
     ...parseFiltersFromParams(searchParams),
   }));
 
@@ -103,8 +124,8 @@ export function useFilters(properties: Property[]) {
   }, []);
 
   const clearFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
+    setFilters({ ...defaultFilters, priceMax: priceCeiling });
+  }, [priceCeiling]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -113,14 +134,14 @@ export function useFilters(properties: Property[]) {
     if (filters.zone) count++;
     if (filters.type) count++;
     if (filters.priceMin > 0) count++;
-    if (filters.priceMax < MAX_PRICE) count++;
+    if (filters.priceMax < priceCeiling) count++;
     if (filters.roiMin > 0) count++;
     if (filters.stage) count++;
     if (filters.usage) count++;
     if (filters.bedroomsMin > 0) count++;
     if (filters.developmentType) count++;
     return count;
-  }, [filters]);
+  }, [filters, priceCeiling]);
 
   const filtered = useMemo(() => {
     // Diagnóstico Bloque A 2026-05-23 — Luis reportó "TODAS las pills fallan,
@@ -225,5 +246,5 @@ export function useFilters(properties: Property[]) {
     return result;
   }, [properties, filters, sortBy]);
 
-  return { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy };
+  return { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling };
 }

@@ -22,6 +22,8 @@ interface FilterBarProps {
   availableZones?: string[];
   /** Mostrar pill de tipo desarrollo (solo /desarrollos). */
   showDevTypeFilter?: boolean;
+  /** Tope superior del filtro de precio (dinámico según catálogo). Default MAX_PRICE. */
+  priceCeiling?: number;
 }
 
 function PillDropdown({
@@ -149,6 +151,7 @@ export default function FilterBar({
   availableCities,
   availableZones,
   showDevTypeFilter = false,
+  priceCeiling = MAX_PRICE,
 }: FilterBarProps) {
   const t = useTranslations('marketplace');
   const tTypes = useTranslations('types');
@@ -167,9 +170,9 @@ export default function FilterBar({
     : ['Playa del Carmen', 'Tulum'];
   const zoneOptions = availableZones || [];
 
-  const priceActive = filters.priceMin > 0 || filters.priceMax < MAX_PRICE;
+  const priceActive = filters.priceMin > 0 || filters.priceMax < priceCeiling;
   const priceLabel = priceActive
-    ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= MAX_PRICE ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
+    ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= priceCeiling ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
     : undefined;
 
   const typeOptions = [
@@ -233,7 +236,7 @@ export default function FilterBar({
       label: priceLabel,
       clear: () => {
         onFilterChange('priceMin', 0);
-        onFilterChange('priceMax', MAX_PRICE);
+        onFilterChange('priceMax', priceCeiling);
       },
     });
   }
@@ -272,7 +275,7 @@ export default function FilterBar({
     if (filters.zone) onFilterChange('zone', '');
     if (priceActive) {
       onFilterChange('priceMin', 0);
-      onFilterChange('priceMax', MAX_PRICE);
+      onFilterChange('priceMax', priceCeiling);
     }
     if (filters.type) onFilterChange('type', '');
     if (filters.bedroomsMin > 0) onFilterChange('bedroomsMin', 0);
@@ -404,8 +407,8 @@ export default function FilterBar({
               <span className="text-gray-600 text-sm">—</span>
               <input
                 type="number"
-                value={filters.priceMax < MAX_PRICE ? filters.priceMax : ''}
-                onChange={e => onFilterChange('priceMax', Number(e.target.value) || MAX_PRICE)}
+                value={filters.priceMax < priceCeiling ? filters.priceMax : ''}
+                onChange={e => onFilterChange('priceMax', Number(e.target.value) || priceCeiling)}
                 placeholder="Max"
                 className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
               />
@@ -415,7 +418,7 @@ export default function FilterBar({
                 { label: '< $3M', min: 0, max: 3_000_000 },
                 { label: '$3M–$5M', min: 3_000_000, max: 5_000_000 },
                 { label: '$5M–$10M', min: 5_000_000, max: 10_000_000 },
-                { label: '$10M+', min: 10_000_000, max: MAX_PRICE },
+                { label: '$10M+', min: 10_000_000, max: priceCeiling },
               ].map(p => (
                 <button
                   key={p.label}

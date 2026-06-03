@@ -13,7 +13,6 @@ import MapView from '@/components/marketplace/MapView';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import ComparePanel from '@/components/marketplace/ComparePanel';
 import { trackSearch } from '@/lib/analytics/track';
-import { MAX_PRICE } from '@/shared/constants/marketplace';
 
 /**
  * Heading band con identidad Propyte: eyebrow pill brand + H1 con accent
@@ -93,7 +92,7 @@ export default function MarketplaceContent({
   // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
   // guardamos los IDs de las unidades agrupadas y restringimos el listado.
   const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
-  const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy } = useFilters(properties);
+  const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy, priceCeiling } = useFilters(properties);
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
@@ -155,7 +154,7 @@ export default function MarketplaceContent({
       !!filters.city ||
       !!filters.type ||
       filters.priceMin > 0 ||
-      filters.priceMax < MAX_PRICE ||
+      filters.priceMax < priceCeiling ||
       filters.roiMin > 0 ||
       !!filters.stage ||
       !!filters.usage;
@@ -170,7 +169,7 @@ export default function MarketplaceContent({
           stage: filters.stage || undefined,
           usage: filters.usage || undefined,
           priceMin: filters.priceMin || undefined,
-          priceMax: filters.priceMax < MAX_PRICE ? filters.priceMax : undefined,
+          priceMax: filters.priceMax < priceCeiling ? filters.priceMax : undefined,
           roiMin: filters.roiMin || undefined,
         },
         resultCount: filtered.length,
@@ -202,6 +201,7 @@ export default function MarketplaceContent({
           availableCities={availableCities}
           availableZones={availableZones}
           showDevTypeFilter={showDevTypeFilter}
+          priceCeiling={priceCeiling}
         />
 
         {/* Cluster filter chip — visible cuando el user clickeó un "+N" */}
@@ -309,6 +309,7 @@ export default function MarketplaceContent({
         availableCities={availableCities}
         availableZones={availableZones}
         showDevTypeFilter={showDevTypeFilter}
+        priceCeiling={priceCeiling}
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-8">
