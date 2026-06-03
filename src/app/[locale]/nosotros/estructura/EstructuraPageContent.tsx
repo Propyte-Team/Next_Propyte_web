@@ -188,14 +188,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
 
   const [selected, setSelected] = useState<TeamBioPerson | null>(null);
 
-  function leaderSelect(node: {
-    name: string;
-    role: string;
-    city: string | null;
-    photo_url: string | null;
-    bio_long: string | null;
-    bio_long_en: string | null;
-  }): (() => void) | undefined {
+  function leaderSelect(node: OrgNodeRow): (() => void) | undefined {
     const bio = pickBio(locale, node.bio_long, node.bio_long_en);
     if (!bio) return undefined; // sin bio → no clickable
     return () =>
