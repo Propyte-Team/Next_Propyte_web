@@ -788,6 +788,8 @@ export interface TeamMemberRow {
   whatsapp: string | null;
   photo_url: string | null;
   bio_short: string | null;
+  bio_long: string | null;
+  bio_long_en: string | null;
   sort_order: number;
   level: TeamLevel;
   department_name: string | null;
@@ -841,6 +843,10 @@ export interface OrgNodeRow {
   is_corporate: boolean;
   is_vacant: boolean;
   sort_order: number;
+  photo_url: string | null;
+  city: string | null;
+  bio_long: string | null;
+  bio_long_en: string | null;
 }
 
 /**
