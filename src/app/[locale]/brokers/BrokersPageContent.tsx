@@ -162,6 +162,12 @@ function WhyPropyte() {
 // ─────────────────────────────────────────────────────
 function TwoModels() {
   const t = useTranslations('brokers');
+  const model1Points = [
+    { icon: Rocket, title: t('model1Point1Title'), desc: t('model1Point1Desc') },
+    { icon: FileText, title: t('model1Point2Title'), desc: t('model1Point2Desc') },
+    { icon: Monitor, title: t('model1Point3Title'), desc: t('model1Point3Desc') },
+    { icon: Headset, title: t('model1Point4Title'), desc: t('model1Point4Desc') },
+  ];
   const points = [
     { icon: Shield, title: t('model2Point1Title'), desc: t('model2Point1Desc') },
     { icon: Users, title: t('model2Point2Title'), desc: t('model2Point2Desc') },
@@ -187,6 +193,21 @@ function TwoModels() {
               <h3 className="text-xl font-extrabold text-[#1A2F3F] tracking-tight mt-1">{t('model1Name')}</h3>
               <p className="text-sm font-semibold italic text-[#0E7490] mt-1 mb-3">{t('model1Sub')}</p>
               <p className="text-gray-600 text-sm leading-relaxed">{t('model1Desc')}</p>
+
+              <p className="text-[#1A2F3F]/80 text-sm mt-5 mb-4">{t('model1PointsIntro')}</p>
+              <ul className="space-y-4">
+                {model1Points.map(({ icon: Icon, title, desc }) => (
+                  <li key={title} className="flex gap-3">
+                    <div className="w-8 h-8 shrink-0 bg-propyte-cyan-100 rounded-lg flex items-center justify-center">
+                      <Icon size={16} className="text-[#0E7490]" />
+                    </div>
+                    <div>
+                      <p className="text-[#1A2F3F] font-semibold text-sm">{title}</p>
+                      <p className="text-gray-600 text-sm leading-relaxed mt-0.5">{desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           </ScrollReveal>
 
