@@ -27,6 +27,14 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
 
+  // Mantener onClose en un ref para que el efecto dependa solo de `open`.
+  // Si dependiera de onClose (callback inline del caller), re-correría en cada
+  // render del padre, recapturando activeElement y rompiendo la restauración de foco.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -38,7 +46,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== 'Tab') return;
@@ -70,7 +78,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
       window.removeEventListener('keydown', onKey);
       lastFocusedRef.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open || !person) return null;
 
@@ -95,7 +103,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
           aria-label={t('close')}
           className="absolute top-3 right-3 p-2 rounded-lg hover:bg-gray-100 text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]"
         >
-          <X size={20} strokeWidth={1.75} />
+          <X size={20} strokeWidth={1.75} aria-hidden="true" />
         </button>
 
         <div className="flex flex-col items-center text-center">
@@ -120,7 +128,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
           <p className="text-sm font-semibold text-[#0E7490] mt-1">{person.role}</p>
           {person.city && (
             <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
-              <MapPin size={12} /> {person.city}
+              <MapPin size={12} aria-hidden="true" /> {person.city}
             </p>
           )}
         </div>
@@ -137,7 +145,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 min-h-[44px] px-5 bg-[#25D366]/10 text-[#075E54] text-sm font-semibold rounded-full hover:bg-[#25D366]/20 transition-colors"
             >
-              <MessageCircle size={14} /> {t('whatsapp')}
+              <MessageCircle size={14} aria-hidden="true" /> {t('whatsapp')}
             </a>
           </div>
         )}
