@@ -10,6 +10,8 @@ import {
 import type { OrgNodeRow } from '@/lib/supabase/queries';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import type { SiteMediaMap } from '@/lib/hub-content';
+import { pickBio, type TeamBioPerson } from '@/lib/team-bio';
+import TeamBioModal from '@/components/shared/TeamBioModal';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
@@ -81,17 +83,47 @@ interface PageProps {
   siteMedia?: SiteMediaMap;
 }
 
-function OrgCard({ role, title, name, color }: { role: string; title: string; name: string; color: string }) {
-  return (
-    <div
-      className="bg-white rounded-xl shadow-md p-5 text-center min-w-[180px]"
-      style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}
-    >
+function OrgCard({
+  role,
+  title,
+  name,
+  color,
+  onSelect,
+}: {
+  role: string;
+  title: string;
+  name: string;
+  color: string;
+  onSelect?: () => void;
+}) {
+  const base = 'bg-white rounded-xl shadow-md p-5 text-center min-w-[180px]';
+  const content = (
+    <>
       <span className="text-xs font-bold uppercase tracking-wider" style={{ color }}>
         {role}
       </span>
       <p className="text-xs text-gray-600 mt-1">{title}</p>
       <p className="font-semibold text-gray-900 mt-1 text-sm">{name}</p>
+    </>
+  );
+  if (onSelect) {
+    return (
+      <button
+        type="button"
+        onClick={onSelect}
+        className={`${base} block w-full cursor-pointer transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]`}
+        style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}
+      >
+        {content}
+      </button>
+    );
+  }
+  return (
+    <div
+      className={base}
+      style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}
+    >
+      {content}
     </div>
   );
 }
@@ -154,6 +186,28 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
   const locale = useLocale();
   const { ceo, directors, depts } = buildView(nodes);
 
+  const [selected, setSelected] = useState<TeamBioPerson | null>(null);
+
+  function leaderSelect(node: {
+    name: string;
+    role: string;
+    city: string | null;
+    photo_url: string | null;
+    bio_long: string | null;
+    bio_long_en: string | null;
+  }): (() => void) | undefined {
+    const bio = pickBio(locale, node.bio_long, node.bio_long_en);
+    if (!bio) return undefined; // sin bio → no clickable
+    return () =>
+      setSelected({
+        name: node.name,
+        role: node.role,
+        city: node.city,
+        photoUrl: node.photo_url,
+        bio,
+      });
+  }
+
   const stats = [
     { value: pickStat(content, 'stat1_value', fallback.statValues[0] ?? ''), label: pickStat(content, 'stat1_label', fallback.statLabels[0] ?? '') },
     { value: pickStat(content, 'stat2_value', fallback.statValues[1] ?? ''), label: pickStat(content, 'stat2_label', fallback.statLabels[1] ?? '') },
@@ -185,6 +239,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={ceo.role}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
+                      onSelect={leaderSelect(ceo)}
                     />
                   </div>
                 )}
@@ -204,6 +259,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                           title={d.role}
                           name={d.name}
                           color={d.role_color ?? '#1A2F3F'}
+                          onSelect={leaderSelect(d)}
                         />
                       </div>
                     ))}
@@ -229,6 +285,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={ceo.role}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
+                      onSelect={leaderSelect(ceo)}
                     />
                   )}
                   {directors.map((d) => (
@@ -238,6 +295,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={d.role}
                       name={d.name}
                       color={d.role_color ?? '#1A2F3F'}
+                      onSelect={leaderSelect(d)}
                     />
                   ))}
                 </div>
@@ -276,6 +334,8 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
           <SiteMediaView entry={siteMedia?.['nosotros.equipo-liderazgo']} locale={locale} icon={Users} label="Foto: equipo de liderazgo Propyte" className="mt-8 aspect-[16/9]" sizes="(max-width: 768px) 100vw, 768px" />
         </div>
       </section>
+
+      <TeamBioModal open={selected !== null} onClose={() => setSelected(null)} person={selected} />
     </>
   );
 }
