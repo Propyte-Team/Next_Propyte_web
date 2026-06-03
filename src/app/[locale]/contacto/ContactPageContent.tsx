@@ -10,7 +10,8 @@ import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, C
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 import type { HubSiteConfig } from '@/lib/hub-content';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMediaView from '@/components/shared/SiteMediaView';
+import type { SiteMediaMap } from '@/lib/hub-content';
 
 function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
   const v = config?.[key];
@@ -21,7 +22,7 @@ function normalizePhone(raw: string): string {
   return raw.replace(/[^\d]/g, '');
 }
 
-export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSiteConfig }) {
+export default function ContactPageContent({ siteConfig, siteMedia }: { siteConfig?: HubSiteConfig; siteMedia?: SiteMediaMap }) {
   const locale = useLocale();
   const t = useTranslations('contact');
   const tCommon = useTranslations('common');
@@ -359,8 +360,8 @@ export default function ContactPageContent({ siteConfig }: { siteConfig?: HubSit
                 </a>
               ) : null}
 
-              {/* TODO(media): foto real de la oficina (gestión vía Hub) */}
-              <ImagePlaceholder icon={MapPin} label="Foto: oficina Propyte" className="aspect-[16/9]" />
+              {/* Foto oficina — Hub › Materiales (contacto.oficina); fallback a placeholder */}
+              <SiteMediaView entry={siteMedia?.['contacto.oficina']} locale={locale} icon={MapPin} label="Foto: oficina Propyte" className="aspect-[16/9]" sizes="(max-width: 1024px) 100vw, 480px" />
 
               {/* Google Maps embed */}
               <div className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">

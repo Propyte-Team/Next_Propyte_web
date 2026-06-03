@@ -7,7 +7,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getOrgStructure, getPageContent } from '@/lib/supabase/queries';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
-import { getCompanyStats, localizedStatLabel } from '@/lib/hub-content';
+import { getCompanyStats, localizedStatLabel, getSiteMedia } from '@/lib/hub-content';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
@@ -123,7 +123,7 @@ export default async function EstructuraPage({ params }: { params: Promise<{ loc
 
       <NosotrosTabs locale={locale} active="estructura" visibility={visibility} />
 
-      <EstructuraPageContent nodes={nodes} content={content} fallback={fallback} />
+      <EstructuraPageContent nodes={nodes} content={content} fallback={fallback} siteMedia={await getSiteMedia()} />
     </>
   );
 }

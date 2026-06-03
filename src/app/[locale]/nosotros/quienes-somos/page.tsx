@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMedia from '@/components/shared/SiteMedia';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
@@ -246,12 +246,15 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               <p className="text-gray-600 leading-relaxed">{t('introP2')}</p>
             </div>
             <div className="lg:col-span-2">
-              {/* TODO(media): foto real de la oficina/equipo (gestión vía Hub) */}
-              <ImagePlaceholder
+              {/* Foto oficina/equipo — Hub › Materiales (nosotros.oficina); fallback a placeholder */}
+              <SiteMedia
+                mediaKey="nosotros.oficina"
+                locale={locale}
                 tone="dark"
                 icon={Home}
                 label="Foto: oficina Propyte · 5ta Avenida, Playa del Carmen"
                 className="aspect-[4/3]"
+                sizes="(max-width: 1024px) 100vw, 500px"
               />
             </div>
           </div>

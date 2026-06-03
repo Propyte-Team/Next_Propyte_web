@@ -14,7 +14,8 @@ import { toast } from 'sonner';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMediaView from '@/components/shared/SiteMediaView';
+import type { SiteMediaMap } from '@/lib/hub-content';
 
 interface BrokerFaqItem { q: string; a: string }
 interface BrokersHubData { faqs: BrokerFaqItem[] }
@@ -26,7 +27,7 @@ const WA_TEXT = encodeURIComponent('Hola, me interesa el programa de brokers de 
 // ─────────────────────────────────────────────────────
 // 1. HERO
 // ─────────────────────────────────────────────────────
-function BrokerHero() {
+function BrokerHero({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');
   const locale = useLocale();
   return (
@@ -81,11 +82,14 @@ function BrokerHero() {
           </div>
           {/* Visual del hero — slot para foto real (broker / portafolio) */}
           <ScrollReveal y={24} delay={0.2} duration={0.7} className="hidden lg:block">
-            <ImagePlaceholder
+            <SiteMediaView
+              entry={siteMedia?.['brokers.hero']}
+              locale={locale}
               tone="dark"
               icon={Briefcase}
               label="Foto: broker con cliente / portafolio Propyte"
               className="aspect-[4/3]"
+              sizes="(max-width: 1024px) 100vw, 600px"
             />
           </ScrollReveal>
         </div>
@@ -394,9 +398,10 @@ function FAQ() {
 // ─────────────────────────────────────────────────────
 // 8. FORMULARIO — Solicita acceso
 // ─────────────────────────────────────────────────────
-function BrokerForm() {
+function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', company: '',
@@ -482,7 +487,7 @@ function BrokerForm() {
 
             {/* Slot para foto del equipo / Account Manager */}
             <div className="mt-8 hidden lg:block">
-              <ImagePlaceholder tone="dark" icon={Building2} label="Foto: equipo / Account Manager Propyte" className="aspect-[16/9]" />
+              <SiteMediaView entry={siteMedia?.['brokers.equipo']} locale={locale} tone="dark" icon={Building2} label="Foto: equipo / Account Manager Propyte" className="aspect-[16/9]" sizes="(max-width: 1024px) 100vw, 600px" />
             </div>
           </div>
 
@@ -589,19 +594,19 @@ function BrokerForm() {
 // ─────────────────────────────────────────────────────
 // PAGE COMPOSITION
 // ─────────────────────────────────────────────────────
-export default function BrokersPageContent({ hubData }: { hubData?: BrokersHubData }) {
+export default function BrokersPageContent({ hubData, siteMedia }: { hubData?: BrokersHubData; siteMedia?: SiteMediaMap }) {
   const value = hubData ?? { faqs: [] };
   return (
     <BrokersHubContext.Provider value={value}>
       <div>
-        <BrokerHero />
+        <BrokerHero siteMedia={siteMedia} />
         <BridgeNote />
         <WhyPropyte />
         <TwoModels />
         <HowItWorks />
         <PlatformPreview />
         <FAQ />
-        <BrokerForm />
+        <BrokerForm siteMedia={siteMedia} />
       </div>
     </BrokersHubContext.Provider>
   );

@@ -228,6 +228,23 @@ export function localizedStatSublabel(
 // Explore categories — Fase B.3
 // =============================================================================
 // Speckit: Propyte_hub/specs/dynamic-content/spec.md §Fase B.3
+// Endpoint: GET /api/public/site-media → { media: { [key]: SiteMediaEntry } }
+export interface SiteMediaEntry {
+  url: string;
+  kind: "image" | "video";
+  alt_es: string | null;
+  alt_en: string | null;
+}
+export type SiteMediaMap = Record<string, SiteMediaEntry>;
+
+export async function getSiteMedia(): Promise<SiteMediaMap> {
+  const r = await fetchJson<{ media: SiteMediaMap }>(
+    `/api/public/site-media`,
+    withTag("hub:site-media"),
+  );
+  return r?.media ?? {};
+}
+
 // Endpoint: GET /api/public/explore-categories → { items: HubExploreCategory[] }
 
 export interface HubExploreCategory {

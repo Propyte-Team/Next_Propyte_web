@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BuiltPageContent from './BuiltPageContent';
-import { getCompanyStats, localizedStatLabel } from '@/lib/hub-content';
+import { getCompanyStats, localizedStatLabel, getSiteMedia } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BuiltPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
-  const hubStats = await getCompanyStats('built');
+  const [hubStats, siteMedia] = await Promise.all([getCompanyStats('built'), getSiteMedia()]);
   const statsOverride = hubStats.length > 0
     ? hubStats.slice(0, 4).map((s) => ({ value: s.value, label: localizedStatLabel(s, locale) }))
     : null;
@@ -58,7 +58,7 @@ export default async function BuiltPage({ params }: { params: Promise<{ locale: 
           ],
         }}
       />
-      <BuiltPageContent statsOverride={statsOverride} />
+      <BuiltPageContent statsOverride={statsOverride} siteMedia={siteMedia} />
     </>
   );
 }

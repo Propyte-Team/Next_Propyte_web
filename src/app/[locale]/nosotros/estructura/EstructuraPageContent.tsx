@@ -1,14 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   ChevronDown, ChevronUp,
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
   HelpCircle, type LucideIcon,
 } from '@/lib/icons';
 import type { OrgNodeRow } from '@/lib/supabase/queries';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMediaView from '@/components/shared/SiteMediaView';
+import type { SiteMediaMap } from '@/lib/hub-content';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
@@ -77,6 +78,7 @@ interface PageProps {
     statValues: string[];
     statLabels: string[];
   };
+  siteMedia?: SiteMediaMap;
 }
 
 function OrgCard({ role, title, name, color }: { role: string; title: string; name: string; color: string }) {
@@ -148,7 +150,8 @@ function pickPhilosophy(content: Record<string, string>, key: string, fallback: 
   return content[`philosophy.${key}`] ?? fallback;
 }
 
-export default function EstructuraPageContent({ nodes, content, fallback }: PageProps) {
+export default function EstructuraPageContent({ nodes, content, fallback, siteMedia }: PageProps) {
+  const locale = useLocale();
   const { ceo, directors, depts } = buildView(nodes);
 
   const stats = [
@@ -269,8 +272,8 @@ export default function EstructuraPageContent({ nodes, content, fallback }: Page
           <div className="bg-[#F4F6F8] border-l-4 border-propyte-brand rounded-r-xl p-6">
             <p className="text-[#1A2F3F] font-medium italic">&ldquo;{philosophyHighlight}&rdquo;</p>
           </div>
-          {/* TODO(media): foto real del equipo/liderazgo (gestión vía Hub) */}
-          <ImagePlaceholder icon={Users} label="Foto: equipo de liderazgo Propyte" className="mt-8 aspect-[16/9]" />
+          {/* Foto equipo/liderazgo — Hub › Materiales (nosotros.equipo-liderazgo); fallback a placeholder */}
+          <SiteMediaView entry={siteMedia?.['nosotros.equipo-liderazgo']} locale={locale} icon={Users} label="Foto: equipo de liderazgo Propyte" className="mt-8 aspect-[16/9]" sizes="(max-width: 768px) 100vw, 768px" />
         </div>
       </section>
     </>

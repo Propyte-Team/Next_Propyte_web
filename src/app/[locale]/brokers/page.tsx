@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getFaqs } from '@/lib/hub-content';
+import { getFaqs, getSiteMedia } from '@/lib/hub-content';
 import {
   getPartners,
   getCaseStudies,
@@ -53,7 +53,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
   ]);
 
   // Hub-driven FAQs (con fallback a i18n)
-  const hubFaqs = await getFaqs('broker');
+  const [hubFaqs, siteMedia] = await Promise.all([getFaqs('broker'), getSiteMedia()]);
   const brokerFaqs = hubFaqs.length > 0
     ? hubFaqs.map((f) => ({
         q: locale === 'en' ? f.question_en : f.question_es,
@@ -109,7 +109,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: tBC('brokers') }]}
       />
-      <BrokersPageContent hubData={{ faqs: brokerFaqs }} />
+      <BrokersPageContent hubData={{ faqs: brokerFaqs }} siteMedia={siteMedia} />
       <CaseStudies
         studies={caseStudies}
         locale={locale}

@@ -5,7 +5,7 @@ import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { pickLang } from '@/lib/i18n/pickLang';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMedia from '@/components/shared/SiteMedia';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import type { Property } from '@/types/property';
@@ -83,8 +83,15 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
           <span className="text-gray-700 font-medium">{cityInfo.name}</span>
         </nav>
 
-        {/* TODO(media): reemplazar por foto real de la ciudad (gestión vía Hub) */}
-        <ImagePlaceholder icon={MapPin} label={`Foto de ${cityInfo.name}`} className="h-40 md:h-56" />
+        {/* Foto de la ciudad — gestionada en Hub › Materiales (slot city.<slug>); fallback a placeholder */}
+        <SiteMedia
+          mediaKey={`city.${citySlug}`}
+          locale={locale}
+          icon={MapPin}
+          label={`Foto de ${cityInfo.name}`}
+          className="h-40 md:h-56"
+          sizes="(max-width: 768px) 100vw, 1232px"
+        />
       </div>
 
       {/* Mismas cards + filtro que /desarrollos, pre-filtrado a la ciudad */}

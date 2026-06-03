@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
   Building2, Palette, HardHat, TreePine, Hammer, Leaf,
@@ -9,13 +9,15 @@ import {
   Compass, Pencil, FileCheck, Wrench, KeyRound
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
-import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import SiteMediaView from '@/components/shared/SiteMediaView';
+import type { SiteMediaMap } from '@/lib/hub-content';
 
 interface BuiltStatOverride {
   value: string;
   label: string;
 }
 const BuiltStatsContext = createContext<BuiltStatOverride[] | null>(null);
+const BuiltMediaContext = createContext<SiteMediaMap | null>(null);
 
 // ── Scroll-reveal wrapper ───────────────────────────
 function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
@@ -114,6 +116,8 @@ function PhilosophyStatement() {
 // ─────────────────────────────────────────────────────
 function ServicesGrid() {
   const t = useTranslations('built');
+  const locale = useLocale();
+  const media = useContext(BuiltMediaContext);
   const services = [
     { icon: Building2, title: t('service1Title'), desc: t('service1Desc') },
     { icon: Palette, title: t('service2Title'), desc: t('service2Desc') },
@@ -146,7 +150,7 @@ function ServicesGrid() {
         {/* TODO(media): renders / fotos de proyectos Built (gestión vía Hub) */}
         <FadeIn delay={0.2}>
           <div className="mt-10">
-            <ImagePlaceholder tone="dark" icon={Building2} label="Renders / fotos de proyectos Propyte Built" className="aspect-[21/9]" />
+            <SiteMediaView entry={media?.['built.renders']} locale={locale} tone="dark" icon={Building2} label="Renders / fotos de proyectos Propyte Built" className="aspect-[21/9]" sizes="(max-width: 1280px) 100vw, 1232px" />
           </div>
         </FadeIn>
       </div>
@@ -565,22 +569,26 @@ function FinalCTA() {
 // ─────────────────────────────────────────────────────
 export default function BuiltPageContent({
   statsOverride = null,
+  siteMedia = null,
 }: {
   statsOverride?: BuiltStatOverride[] | null;
+  siteMedia?: SiteMediaMap | null;
 } = {}) {
   return (
     <BuiltStatsContext.Provider value={statsOverride}>
-      <div className="bg-[#0F1923]">
-        <EditorialHero />
-        <PhilosophyStatement />
-        <ServicesGrid />
-        <ImpactStats />
-        <PortfolioShowcase />
-        <ProcessTimeline />
-        <TeamExpertise />
-        <ConsultationForm />
-        <FinalCTA />
-      </div>
+      <BuiltMediaContext.Provider value={siteMedia}>
+        <div className="bg-[#0F1923]">
+          <EditorialHero />
+          <PhilosophyStatement />
+          <ServicesGrid />
+          <ImpactStats />
+          <PortfolioShowcase />
+          <ProcessTimeline />
+          <TeamExpertise />
+          <ConsultationForm />
+          <FinalCTA />
+        </div>
+      </BuiltMediaContext.Provider>
     </BuiltStatsContext.Provider>
   );
 }
