@@ -3,22 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { X, MapPin, MessageCircle } from '@/lib/icons';
-import type { TeamBioPerson } from '@/lib/team-bio';
+import { getInitials, pickAvatarColor, type TeamBioPerson } from '@/lib/team-bio';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   person: TeamBioPerson | null;
-}
-
-function getInitials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
 }
 
 export default function TeamBioModal({ open, onClose, person }: Props) {
@@ -112,10 +102,15 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
             <img
               src={person.photoUrl}
               alt={person.name}
+              width={128}
+              height={128}
               className="w-32 h-32 rounded-full object-cover object-top mb-4"
             />
           ) : (
-            <div className="w-32 h-32 rounded-full bg-[#1A2F3F] flex items-center justify-center mb-4">
+            <div
+              className="w-32 h-32 rounded-full flex items-center justify-center mb-4"
+              style={{ backgroundColor: pickAvatarColor(person.name) }}
+            >
               <span className="text-white text-3xl font-bold" aria-hidden="true">
                 {getInitials(person.name)}
               </span>

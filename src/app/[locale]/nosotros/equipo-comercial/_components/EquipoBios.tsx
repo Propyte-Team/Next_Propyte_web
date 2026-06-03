@@ -4,26 +4,8 @@ import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Users, MapPin, MessageCircle } from '@/lib/icons';
 import type { TeamMemberRow } from '@/lib/supabase/queries';
-import { pickBio, type TeamBioPerson } from '@/lib/team-bio';
+import { pickBio, getInitials, pickAvatarColor, type TeamBioPerson } from '@/lib/team-bio';
 import TeamBioModal from '@/components/shared/TeamBioModal';
-
-const FALLBACK_COLORS = ['#1A2F3F', '#0F1923', '#0E7490', '#0E7490', '#134E4A'];
-
-function getInitials(name: string): string {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map((p) => p[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
-}
-
-function pickColor(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) & 0xffffffff;
-  return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length];
-}
 
 function buildWhatsappLink(member: TeamMemberRow): string | null {
   const phone = member.whatsapp || member.phone;
@@ -40,6 +22,8 @@ function Avatar({ photoUrl, name }: { photoUrl: string | null; name: string }) {
       <img
         src={photoUrl}
         alt={name}
+        width={144}
+        height={144}
         className="w-36 h-36 rounded-full object-cover object-top mx-auto mb-4 ring-4 ring-[#A2F9FF]/30 transition-transform duration-300 group-hover:scale-105"
         loading="lazy"
       />
@@ -48,9 +32,9 @@ function Avatar({ photoUrl, name }: { photoUrl: string | null; name: string }) {
   return (
     <div
       className="w-36 h-36 rounded-full flex items-center justify-center mx-auto mb-4 ring-4 ring-[#A2F9FF]/30 transition-transform duration-300 group-hover:scale-105"
-      style={{ backgroundColor: pickColor(name) }}
+      style={{ backgroundColor: pickAvatarColor(name) }}
     >
-      <span className="text-white text-3xl font-bold" aria-label={name}>
+      <span className="text-white text-3xl font-bold" aria-hidden="true">
         {getInitials(name)}
       </span>
     </div>
