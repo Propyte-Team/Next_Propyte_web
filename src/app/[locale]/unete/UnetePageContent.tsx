@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { createContext, useContext, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -13,20 +13,16 @@ import {
   Globe,
   Laptop,
   Users,
-  Award,
-  BarChart3,
   CheckCircle,
   ChevronDown,
   ChevronUp,
-  Star,
-  MapPin,
   Zap,
   Shield,
   Headphones,
   GraduationCap,
   Building2,
+  BarChart3,
   ArrowRight,
-  Phone,
   Mail,
   Send,
 } from '@/lib/icons';
@@ -34,50 +30,30 @@ import {
 // ============================================================
 // HUB CONTENT CONTEXT (Hub-driven editorial overrides)
 // ============================================================
-interface UneteTestimonialItem {
-  name: string;
-  role: string;
-  quote: string;
-  stats: string;
-}
 interface UneteFaqItem {
   q: string;
   a: string;
 }
-interface UneteStatOverride {
-  value: string;
-  label: string;
-}
 interface UneteHubData {
   videoUrl: string | null;
-  testimonials: UneteTestimonialItem[];
   faqs: UneteFaqItem[];
-  statsOverride: UneteStatOverride[] | null;
 }
 const UneteHubContext = createContext<UneteHubData>({
   videoUrl: null,
-  testimonials: [],
   faqs: [],
-  statsOverride: null,
 });
 
 // ============================================================
-// HERO SECTION
+// 1. HERO
 // ============================================================
 function HeroSection() {
   const hub = useContext(UneteHubContext);
   const t = useTranslations('unete');
   const [showVideo, setShowVideo] = useState(false);
-
-  const stats = [
-    { value: t('heroStat1Value'), label: t('heroStat1Label') },
-    { value: t('heroStat2Value'), label: t('heroStat2Label') },
-    { value: t('heroStat3Value'), label: t('heroStat3Label') },
-  ];
+  const hasVideo = Boolean(hub.videoUrl);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background */}
+    <section className="relative min-h-[88vh] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]" />
         <div
@@ -107,7 +83,7 @@ function HeroSection() {
               {t('heroSubtitle')}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row gap-4">
               <a
                 href="#aplicar"
                 className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-lg rounded-xl transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-propyte-brand/20"
@@ -115,31 +91,21 @@ function HeroSection() {
                 {t('heroCtaJoin')}
                 <ArrowRight size={20} />
               </a>
-              <button
-                type="button"
-                onClick={() => setShowVideo(true)}
+              <a
+                href="#plan-carrera"
                 className="inline-flex items-center justify-center gap-2 h-14 px-8 border-2 border-white/20 hover:border-white/40 text-white font-bold text-lg rounded-xl transition-all hover:bg-white/5"
               >
-                <Play size={20} className="fill-white" />
-                {t('heroCtaVideo')}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-3 gap-6">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-2xl md:text-3xl font-bold text-propyte-brand">{stat.value}</div>
-                  <div className="text-sm text-white/75">{stat.label}</div>
-                </div>
-              ))}
+                <TrendingUp size={20} />
+                {t('heroCtaCareer')}
+              </a>
             </div>
           </div>
 
           <div className="relative">
             <div className="relative bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
-              {showVideo ? (
+              {showVideo && hasVideo ? (
                 <iframe
-                  src={hub.videoUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0'}
+                  src={hub.videoUrl ?? ''}
                   className="absolute inset-0 w-full h-full"
                   allow="autoplay; encrypted-media"
                   allowFullScreen
@@ -152,8 +118,10 @@ function HeroSection() {
                     <div className="text-center">
                       <button
                         type="button"
-                        className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors group"
-                        onClick={() => setShowVideo(true)}
+                        disabled={!hasVideo}
+                        className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors group disabled:cursor-default disabled:hover:bg-white/10"
+                        onClick={() => hasVideo && setShowVideo(true)}
+                        aria-label={t('heroVideoLabel')}
                       >
                         <Play size={36} className="text-white fill-white ml-1 group-hover:scale-110 transition-transform" />
                       </button>
@@ -176,14 +144,14 @@ function HeroSection() {
         </div>
       </div>
 
-      {showVideo && (
+      {showVideo && hasVideo && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 lg:hidden"
           onClick={() => setShowVideo(false)}
         >
           <div className="w-full max-w-3xl aspect-video" onClick={e => e.stopPropagation()}>
             <iframe
-              src={hub.videoUrl ?? 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0'}
+              src={hub.videoUrl ?? ''}
               className="w-full h-full rounded-xl"
               allow="autoplay; encrypted-media"
               allowFullScreen
@@ -197,22 +165,25 @@ function HeroSection() {
 }
 
 // ============================================================
-// SOCIAL PROOF
+// 2. PRUEBA CUALITATIVA
 // ============================================================
-function SocialProofBar() {
+function QualitativeProof() {
   const t = useTranslations('unete');
-  const cityKeys = ['city1', 'city2', 'city3', 'city4', 'city5', 'city6', 'city7', 'city8'] as const;
+  const items = [1, 2, 3].map((n) => ({
+    title: t(`proof${n}Title` as 'proof1Title'),
+    sub: t(`proof${n}Sub` as 'proof1Sub'),
+  }));
   return (
     <section className="bg-white border-y border-gray-100 py-8">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <p className="text-center text-xs text-gray-600 uppercase tracking-wider font-semibold mb-6">
-          {t('socialProofLabel')}
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
-          {cityKeys.map((key) => (
-            <div key={key} className="flex items-center gap-2 text-gray-600 hover:text-[#1A2F3F] transition-colors">
-              <MapPin size={14} />
-              <span className="text-sm font-semibold">{t(key)}</span>
+        <div className="grid sm:grid-cols-3 gap-6 md:gap-10">
+          {items.map((it) => (
+            <div key={it.title} className="flex items-center justify-center gap-3 text-center sm:text-left">
+              <CheckCircle size={20} className="text-[#0E7490] flex-shrink-0" />
+              <div>
+                <div className="font-bold text-[#1A2F3F] leading-tight">{it.title}</div>
+                <div className="text-sm text-gray-600">{it.sub}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -222,18 +193,17 @@ function SocialProofBar() {
 }
 
 // ============================================================
-// WHY PROPYTE
+// 3. WHY PROPYTE
 // ============================================================
 function WhyPropyte() {
   const t = useTranslations('unete');
-  const ICONS = [DollarSign, Laptop, GraduationCap, Users, Globe, Shield] as const;
+  const ICONS = [Users, DollarSign, GraduationCap, Laptop, TrendingUp, Shield] as const;
   const benefits = ICONS.map((Icon, i) => {
     const n = i + 1;
     return {
       icon: Icon,
       title: t(`benefit${n}Title` as 'benefit1Title'),
       description: t(`benefit${n}Desc` as 'benefit1Desc'),
-      highlight: t(`benefit${n}Highlight` as 'benefit1Highlight'),
     };
   });
 
@@ -258,13 +228,8 @@ function WhyPropyte() {
                 key={b.title}
                 className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg transition-all group"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center group-hover:bg-propyte-cyan-100 transition-colors">
-                    <Icon size={24} className="propyte-amenity-icon" />
-                  </div>
-                  <span className="text-xs font-bold text-[var(--propyte-dark-700)] bg-propyte-cyan-100 px-2.5 py-1 rounded-full">
-                    {b.highlight}
-                  </span>
+                <div className="w-12 h-12 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                  <Icon size={24} className="text-[#0E7490]" />
                 </div>
                 <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{b.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{b.description}</p>
@@ -278,167 +243,58 @@ function WhyPropyte() {
 }
 
 // ============================================================
-// COMMISSION MODEL
+// 4. PLAN DE CARRERA (4 niveles)
 // ============================================================
-function CommissionModel() {
+function CareerPath() {
   const t = useTranslations('unete');
-  const tiers = [1, 2, 3].map((n) => ({
-    range: t(`tier${n}Range` as 'tier1Range'),
-    pct: t(`tier${n}Pct` as 'tier1Pct'),
-    you: t(`tier${n}You` as 'tier1You'),
-    propyte: t(`tier${n}Propyte` as 'tier1Propyte'),
-    bar: n === 1 ? 80 : n === 2 ? 85 : 100,
+  const levels = [1, 2, 3, 4].map((n) => ({
+    num: String(n).padStart(2, '0'),
+    name: t(`careerLevel${n}Name` as 'careerLevel1Name'),
+    desc: t(`careerLevel${n}Desc` as 'careerLevel1Desc'),
+    featured: n === 4,
   }));
-  const points = [1, 2, 3, 4, 5, 6].map((n) => t(`commissionPoint${n}` as 'commissionPoint1'));
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section id="plan-carrera" className="py-20 md:py-28 bg-white scroll-mt-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="relative">
-            <div className="bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl p-8 md:p-10">
-              <h3 className="text-white text-xl font-bold mb-8">{t('commissionPlanHeader')}</h3>
-
-              <div className="space-y-4">
-                {tiers.map((tier) => (
-                  <div key={tier.range} className="bg-white/5 rounded-xl p-4 border border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-white/60">{tier.range}</span>
-                      <span className="text-lg font-bold text-propyte-brand">{tier.pct}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-propyte-brand to-[#00D4EA] rounded-full transition-all"
-                        style={{ width: `${tier.bar}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between mt-2 text-xs">
-                      <span className="text-propyte-brand">{t('youLabel')}: {tier.you}</span>
-                      <span className="text-white/65">{t('propyteLabel')}: {tier.propyte}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 bg-[#A2F9FF]/10 border border-[#A2F9FF]/20 rounded-xl p-4 flex items-start gap-3">
-                <Award size={20} className="text-[#A2F9FF] flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-bold text-white">{t('capAnnualLabel')}</p>
-                  <p className="text-xs text-white/75 mt-1">
-                    {t('capAnnualDesc')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('commissionEyebrow')}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
-              {t('commissionTitlePart1')}{' '}
-              <span className="text-[#1A2F3F]">{t('commissionTitleHighlight')}</span>
-            </h2>
-            <p className="text-gray-600 leading-relaxed mb-8">
-              {t('commissionSubtitle')}
-            </p>
-
-            <ul className="space-y-4">
-              {points.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <CheckCircle size={20} className="text-[#0E7490] flex-shrink-0 mt-0.5" />
-                  <span className="text-[#2C2C2C] font-medium">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="text-center mb-14 max-w-3xl mx-auto">
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('careerEyebrow')}</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3">
+            {t('careerTitlePart1')} <span className="text-[#1A2F3F]">{t('careerTitleHighlight')}</span>
+          </h2>
+          <p className="text-gray-600 mt-4 leading-relaxed">{t('careerIntro')}</p>
         </div>
-      </div>
-    </section>
-  );
-}
 
-// ============================================================
-// REVENUE SHARING
-// ============================================================
-function RevenueSharing() {
-  const t = useTranslations('unete');
-  const levels = [
-    { level: 1, pct: '3.5%', whoKey: 'level1Who', color: '#0E7490' },
-    { level: 2, pct: '1.5%', whoKey: 'level2Who', color: '#0E7490' },
-    { level: 3, pct: '1.0%', whoKey: 'level3Who', color: '#0E7490' },
-    { level: 4, pct: '0.5%', whoKey: 'level4Who', color: '#1A2F3F' },
-    { level: 5, pct: '0.25%', whoKey: 'level5Who', color: '#0F1923' },
-  ] as const;
-
-  return (
-    <section className="py-20 md:py-28 bg-[#F4F6F8]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div>
-            <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('revenueEyebrow')}</span>
-            <h2 className="text-3xl md:text-4xl font-bold text-[#2C2C2C] mt-3 mb-6">
-              {t('revenueTitlePart1')}{' '}
-              <span className="text-[#1A2F3F]">{t('revenueTitleHighlight')}</span>
-            </h2>
-            <p className="text-gray-600 leading-relaxed mb-8">
-              {t('revenueSubtitle')}
-            </p>
-
-            <div className="bg-white rounded-2xl p-6 border border-gray-100">
-              <h4 className="font-bold text-[#2C2C2C] mb-4">{t('revenueExampleTitle')}</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#0E7490]">10</div>
-                  <div className="text-xs text-gray-600 mt-1">{t('revenueDirectAgents')}</div>
-                </div>
-                <div className="bg-[#F4F6F8] rounded-xl p-4 text-center">
-                  <div className="text-2xl font-bold text-[#0E7490]">$45K</div>
-                  <div className="text-xs text-gray-600 mt-1">{t('revenueMonthlyExtra')}</div>
-                </div>
-              </div>
-              <p className="text-xs text-gray-600 mt-3">
-                {t('revenueAssumption')}
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            {levels.map((l) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {levels.map((lvl) => (
+            <div
+              key={lvl.num}
+              className={`rounded-2xl p-6 border transition-all h-full ${
+                lvl.featured
+                  ? 'bg-[#0F1923] border-propyte-brand/60'
+                  : 'bg-[#F4F6F8] border-gray-100 hover:border-propyte-brand/30 hover:shadow-lg'
+              }`}
+            >
               <div
-                key={l.level}
-                className="flex items-center gap-4 bg-white rounded-xl p-4 border border-gray-100 hover:shadow-md transition-all"
+                className={`text-2xl font-extrabold tracking-tight ${
+                  lvl.featured ? 'text-propyte-brand' : 'text-propyte-brand/80'
+                }`}
               >
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
-                  style={{ backgroundColor: l.color }}
-                >
-                  {l.level}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#2C2C2C]">{t('levelPrefix')} {l.level}</span>
-                    <span className="text-lg font-bold text-[#0E7490]">{l.pct}</span>
-                  </div>
-                  <span className="text-sm text-gray-600">{t(l.whoKey)}</span>
-                </div>
-                <div className="h-2 flex-1 bg-gray-100 rounded-full overflow-hidden max-w-[120px]">
-                  <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${100 - (l.level - 1) * 18}%`,
-                      backgroundColor: l.color,
-                    }}
-                  />
-                </div>
+                {lvl.num}
               </div>
-            ))}
-
-            <div className="bg-propyte-cyan-100/60 border border-propyte-brand/20 rounded-xl p-4 mt-4">
-              <p className="text-sm text-[#2C2C2C] font-medium">
-                {t('revenueNote')}
+              <h3 className={`text-lg font-bold mt-2 mb-2 ${lvl.featured ? 'text-white' : 'text-[#2C2C2C]'}`}>
+                {lvl.name}
+              </h3>
+              <p className={`text-sm leading-relaxed ${lvl.featured ? 'text-white/70' : 'text-gray-600'}`}>
+                {lvl.desc}
               </p>
             </div>
-          </div>
+          ))}
+        </div>
+
+        <div className="mt-8 max-w-4xl mx-auto bg-propyte-cyan-100/60 border border-propyte-brand/20 rounded-2xl p-6 md:p-7 flex items-start gap-3">
+          <TrendingUp size={20} className="text-[#0E7490] flex-shrink-0 mt-0.5" />
+          <p className="text-[#1A2F3F] text-sm md:text-base leading-relaxed">{t('careerCallout')}</p>
         </div>
       </div>
     </section>
@@ -446,7 +302,7 @@ function RevenueSharing() {
 }
 
 // ============================================================
-// TECHNOLOGY PLATFORM
+// 5. TECNOLOGÍA
 // ============================================================
 function TechPlatform() {
   const t = useTranslations('unete');
@@ -459,12 +315,7 @@ function TechPlatform() {
       desc: t(`tool${n}Desc` as 'tool1Desc'),
     };
   });
-  const dashStats = [
-    { label: t('dashStat1Label'), value: t('dashStat1Value'), change: t('dashStat1Change') },
-    { label: t('dashStat2Label'), value: t('dashStat2Value'), change: t('dashStat2Change') },
-    { label: t('dashStat3Label'), value: t('dashStat3Value'), change: '' },
-    { label: t('dashStat4Label'), value: t('dashStat4Value'), change: t('dashStat4Change') },
-  ];
+  const dashLabels = [1, 2, 3, 4].map((n) => t(`dashStat${n}Label` as 'dashStat1Label'));
 
   return (
     <section className="py-20 md:py-28 bg-white relative overflow-hidden">
@@ -498,8 +349,12 @@ function TechPlatform() {
           })}
         </div>
 
+        {/* Dashboard preview — sin cifras (vista previa) */}
         <div className="mt-14 bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl p-1 mx-auto max-w-4xl">
-          <div className="bg-[#0F1923] rounded-xl overflow-hidden">
+          <div className="relative bg-[#0F1923] rounded-xl overflow-hidden">
+            <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-[11px] font-bold uppercase tracking-wider rounded-full">
+              {t('dashPreviewBadge')}
+            </span>
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-red-400/60" />
@@ -512,12 +367,12 @@ function TechPlatform() {
                 </div>
               </div>
             </div>
-            <div className="p-6 grid grid-cols-4 gap-4">
-              {dashStats.map((s) => (
-                <div key={s.label} className="bg-white/5 rounded-lg p-4">
-                  <div className="text-xs text-white/65">{s.label}</div>
-                  <div className="text-xl font-bold text-white mt-1">{s.value}</div>
-                  {s.change && <div className="text-xs text-green-400 mt-1">{s.change}</div>}
+            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              {dashLabels.map((label) => (
+                <div key={label} className="bg-white/5 rounded-lg p-4">
+                  <div className="text-xs text-white/65">{label}</div>
+                  <div className="mt-3 h-3 w-3/4 bg-white/15 rounded" />
+                  <div className="mt-2 h-2 w-1/2 bg-white/10 rounded" />
                 </div>
               ))}
             </div>
@@ -536,110 +391,7 @@ function TechPlatform() {
 }
 
 // ============================================================
-// TESTIMONIALS
-// ============================================================
-function Testimonials() {
-  const t = useTranslations('unete');
-  const hub = useContext(UneteHubContext);
-  const fallback = [1, 2, 3].map((n) => ({
-    name: t(`t${n}Name` as 't1Name'),
-    role: t(`t${n}Role` as 't1Role'),
-    quote: t(`t${n}Quote` as 't1Quote'),
-    stats: t(`t${n}Stats` as 't1Stats'),
-  }));
-  const source = hub.testimonials.length > 0 ? hub.testimonials : fallback;
-  const testimonials = source.map((tt) => ({
-    ...tt,
-    avatar: tt.name
-      .split(' ')
-      .slice(0, 2)
-      .map((s) => s[0])
-      .join(''),
-  }));
-
-  return (
-    <section className="py-20 md:py-28 bg-[#0F1923]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="text-center mb-14">
-          <span className="text-propyte-brand font-bold text-sm uppercase tracking-wider">{t('testimonialsEyebrow')}</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mt-3">
-            {t('testimonialsTitle')}
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((tt) => (
-            <div
-              key={tt.name}
-              className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10 hover:border-propyte-brand/30 transition-all"
-            >
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} size={16} className="text-[#A2F9FF] fill-[#A2F9FF]" />
-                ))}
-              </div>
-              <p className="text-white/80 leading-relaxed mb-6 text-sm">&ldquo;{tt.quote}&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-propyte-brand rounded-full flex items-center justify-center text-[#0F1923] font-bold text-sm">
-                  {tt.avatar}
-                </div>
-                <div>
-                  <div className="text-white font-semibold text-sm">{tt.name}</div>
-                  <div className="text-white/65 text-xs">{tt.role}</div>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <span className="text-propyte-brand font-bold text-sm">{tt.stats}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============================================================
-// STATS SECTION
-// ============================================================
-function StatsSection() {
-  const t = useTranslations('unete');
-  const hub = useContext(UneteHubContext);
-  const ICONS = [Users, DollarSign, MapPin, Building2, Award, Zap] as const;
-  const stats = ICONS.map((Icon, i) => {
-    const n = i + 1;
-    const override = hub.statsOverride?.[i];
-    return {
-      icon: Icon,
-      value: override?.value ?? t(`stat${n}Value` as 'stat1Value'),
-      label: override?.label ?? t(`stat${n}Label` as 'stat1Label'),
-    };
-  });
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-          {stats.map((s) => {
-            const Icon = s.icon;
-            return (
-              <div key={s.label} className="text-center">
-                <div className="w-12 h-12 mx-auto bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-3">
-                  <Icon size={24} className="text-[#0E7490]" />
-                </div>
-                <div className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{s.value}</div>
-                <div className="text-xs text-gray-600 mt-1">{s.label}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============================================================
-// JOIN PROCESS
+// 6. PROCESO
 // ============================================================
 function JoinProcess() {
   const t = useTranslations('unete');
@@ -681,7 +433,7 @@ function JoinProcess() {
 }
 
 // ============================================================
-// FAQ
+// 7. FAQ
 // ============================================================
 function FAQ() {
   const t = useTranslations('unete');
@@ -748,7 +500,36 @@ function FAQ() {
 }
 
 // ============================================================
-// APPLICATION FORM (CTA)
+// 8. OTROS PUESTOS
+// ============================================================
+function OtherRoles() {
+  const t = useTranslations('unete');
+  const email = t('otherEmail');
+  return (
+    <section className="py-16 md:py-20 bg-[#F4F6F8]">
+      <div className="max-w-3xl mx-auto px-4 md:px-6">
+        <div className="bg-white rounded-2xl border border-gray-100 p-8 md:p-10 text-center">
+          <div className="w-12 h-12 mx-auto bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-5">
+            <Building2 size={24} className="text-[#0E7490]" />
+          </div>
+          <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('otherEyebrow')}</span>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mt-3 mb-4">{t('otherTitle')}</h2>
+          <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto mb-7">{t('otherBody')}</p>
+          <a
+            href={`mailto:${email}?subject=${encodeURIComponent('CV — Otros puestos Propyte')}`}
+            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-7 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-bold rounded-xl transition-colors text-sm"
+          >
+            <Mail size={16} />
+            {t('otherCta')}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================
+// 9. APPLICATION FORM
 // ============================================================
 function ApplicationForm() {
   const t = useTranslations('unete');
@@ -805,7 +586,7 @@ function ApplicationForm() {
   }
 
   return (
-    <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden">
+    <section id="aplicar" className="py-20 md:py-28 bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] relative overflow-hidden scroll-mt-20">
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-propyte-brand/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl" />
 
@@ -814,25 +595,17 @@ function ApplicationForm() {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               {t('formTitlePart1')}{' '}
-              <span className="text-propyte-brand">{t('formTitleHighlight')}</span>?
+              <span className="text-propyte-brand">{t('formTitleHighlight')}</span>
             </h2>
             <p className="text-white/70 leading-relaxed mb-8 text-lg">
               {t('formSubtitle')}
             </p>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                  <Phone size={18} className="text-propyte-brand" />
-                </div>
-                <span className="text-white/80 font-medium">{t('formPhone')}</span>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                <Mail size={18} className="text-propyte-brand" />
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-                  <Mail size={18} className="text-propyte-brand" />
-                </div>
-                <span className="text-white/80 font-medium">{t('formEmail')}</span>
-              </div>
+              <span className="text-white/80 font-medium">{t('formEmail')}</span>
             </div>
           </div>
 
@@ -944,7 +717,7 @@ function ApplicationForm() {
 
                 {error && (
                   <p className="text-red-600 text-sm mt-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-                    {t('formError')}
+                    {t('formSubmittedDesc')}
                   </p>
                 )}
 
@@ -976,7 +749,7 @@ function ApplicationForm() {
 }
 
 // ============================================================
-// FINAL CTA BANNER
+// 10. FINAL CTA
 // ============================================================
 function FinalCTA() {
   const t = useTranslations('unete');
@@ -1005,25 +778,18 @@ function FinalCTA() {
 // MAIN PAGE
 // ============================================================
 export default function UnetePageContent({ hubData }: { hubData?: UneteHubData }) {
-  const value = hubData ?? {
-    videoUrl: null,
-    testimonials: [],
-    faqs: [],
-    statsOverride: null,
-  };
+  const value = hubData ?? { videoUrl: null, faqs: [] };
   return (
     <UneteHubContext.Provider value={value}>
       <div>
         <HeroSection />
-        <SocialProofBar />
+        <QualitativeProof />
         <WhyPropyte />
-        <CommissionModel />
-        <RevenueSharing />
+        <CareerPath />
         <TechPlatform />
-        <Testimonials />
-        <StatsSection />
         <JoinProcess />
         <FAQ />
+        <OtherRoles />
         <ApplicationForm />
         <FinalCTA />
       </div>
