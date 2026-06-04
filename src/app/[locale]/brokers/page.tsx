@@ -113,7 +113,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
       <CaseStudies
         studies={caseStudies}
         locale={locale}
-        title={locale === 'es' ? 'Corredores con resultados reales' : 'Brokers with real results'}
+        title={locale === 'es' ? 'Brokers con resultados reales' : 'Brokers with real results'}
         subtitle={locale === 'es' ? 'Casos de éxito de aliados de nuestra red' : 'Success stories from our broker network'}
       />
       <PartnersLogos
