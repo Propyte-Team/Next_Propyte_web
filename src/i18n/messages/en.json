@@ -1218,7 +1218,7 @@
     "previous": "Previous"
   },
   "footer": {
-    "description": "Real estate brokerage with data, technology and transparency. Playa del Carmen and Tulum.",
+    "description": "Real estate brokerage with data, technology and transparency. Riviera Maya and Yucatán.",
     "properties": "Properties",
     "allProperties": "All properties",
     "playaDelCarmen": "Playa del Carmen",
@@ -1267,16 +1267,17 @@
   },
   "providers": {
     "title": "Providers Program",
-    "subtitle": "Join our network of certified providers",
-    "description": "We connect specialized providers with active investors in the Riviera Maya. Notaries, lenders, architects, designers, movers, legal and more. Apply to be part of our official directory.",
-    "comingSoon": "Applications open",
-    "benefit1": "High-value clients — national and international investors actively buying in the Riviera Maya",
-    "benefit2": "Pre-qualified leads — all referrals pass through need and capacity filters",
-    "benefit3": "International reach — bilingual platform exposed to Mexico, USA and Canada markets",
-    "benefit4": "Featured in our official directory with profile, verified reviews and direct link",
+    "subtitle": "We're building our supplier base for the Riviera Maya and Yucatán.",
+    "description": "If you offer services for the real estate sector —legal, notary, architecture, interior design, construction, financial, and more— leave us your details and we'll consider you for the group's projects.",
+    "comingSoon": "Open call",
+    "benefitsTitle": "Why join our supplier base",
+    "benefit1": "One group, multiple projects — Propyte and the group's companies develop and commercialize projects across the Riviera Maya and Yucatán. Being in our base puts you on the radar when a need in your specialty comes up.",
+    "benefit2": "We consider you first — When a group project needs a supplier in your category, we turn to our base before looking elsewhere. Applying today means being ready for then.",
+    "benefit3": "A single application — Instead of knocking on doors and sending catalogs to each company separately, you register once and stay visible to the whole group.",
+    "benefit4": "Bilingual reach — We work with developers and investors from Mexico, the United States, and Canada. Your service can reach projects built to an international standard.",
     "ctaContact": "Register interest",
     "formHeading": "Apply as a provider",
-    "formIntro": "Complete your details and the Propyte team will contact you to evaluate your incorporation into the directory.",
+    "formIntro": "Fill in your details and the Propyte team will contact you to evaluate adding you to our supplier base.",
     "formCompany": "Company name",
     "formCompanyPlaceholder": "Ex. Public Notary 123",
     "formCategory": "Provider type",
@@ -1310,7 +1311,8 @@
     "formError": "There was a problem sending your application. Try again or email us at hello@propyte.com.",
     "formRequired": "Required field",
     "formInvalidEmail": "Invalid email",
-    "formInvalidUrl": "Invalid URL (include https://)"
+    "formInvalidUrl": "Invalid URL (include https://)",
+    "formMicro": "By submitting, you agree that Propyte and the group's companies may store your details to consider you for future projects."
   },
   "legal": {
     "privacyTitle": "Privacy Notice",

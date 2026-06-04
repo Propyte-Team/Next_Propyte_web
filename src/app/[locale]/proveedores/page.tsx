@@ -51,7 +51,8 @@ export default async function ProvidersPage({ params }: { params: Promise<{ loca
           <p className="text-base md:text-lg text-white/70 leading-relaxed">{t('description')}</p>
         </div>
 
-        {/* Benefits grid */}
+        {/* Benefits */}
+        <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">{t('benefitsTitle')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto mb-16">
           {benefits.map((key) => (
             <div
