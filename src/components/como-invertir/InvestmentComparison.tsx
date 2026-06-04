@@ -8,23 +8,23 @@ import {
 import { TrendingUp, ArrowRight } from '@/lib/icons';
 import Link from 'next/link';
 import { useCurrency } from '@/context/CurrencyContext';
+import type { ComparatorRates } from '@/lib/market-stats';
 
 /**
- * Tasas anuales nominales referenciales 2026. Compounding anual.
- * Real Estate Propyte = IRR promedio observado en desarrollos preventa
- * Riviera Maya (Opción B actuarial, ver SPECKIT-METAMORFOSIS sec 33.4).
- *
- * NO son recomendación financiera. Disclaimer en footer del componente.
+ * Metadatos de cada instrumento (id/label/estilo). Las TASAS llegan por prop
+ * `rates` desde el Hub (herramienta de mercado) — NO se hardcodean aquí.
+ * Este componente solo se monta cuando hay las 5 tasas reales (gate en la
+ * página). NO es recomendación financiera; disclaimer en el footer.
  */
 const INSTRUMENTS = [
-  { id: 'propyte', rate: 0.12, color: '#5CE0D2', highlight: true },
-  { id: 'fibras', rate: 0.085, color: '#1A2F3F' },
-  { id: 'bolsa', rate: 0.10, color: '#1A2F3F' },
-  { id: 'cetes', rate: 0.105, color: '#1A2F3F' },
-  { id: 'banco', rate: 0.05, color: '#1A2F3F' },
+  { id: 'propyte', key: 'inmobiliaria', color: '#5CE0D2', highlight: true },
+  { id: 'fibras', key: 'fibras', color: '#1A2F3F' },
+  { id: 'bolsa', key: 'bolsa', color: '#1A2F3F' },
+  { id: 'cetes', key: 'cetes', color: '#1A2F3F' },
+  { id: 'banco', key: 'banco', color: '#1A2F3F' },
 ] as const;
 
-export default function InvestmentComparison() {
+export default function InvestmentComparison({ rates }: { rates: ComparatorRates }) {
   const t = useTranslations('comparison');
   const locale = useLocale();
   // Comparativa de inversión es calculadora interna MXN — no muestra precio
@@ -39,19 +39,20 @@ export default function InvestmentComparison() {
   const data = useMemo(
     () =>
       INSTRUMENTS.map((inst) => {
-        const fv = capital * Math.pow(1 + inst.rate, years);
+        const rate = rates[inst.key];
+        const fv = capital * Math.pow(1 + rate, years);
         const profit = fv - capital;
         return {
           id: inst.id,
           name: t(`labels.${inst.id}`),
-          rate: inst.rate,
+          rate,
           fv: Math.round(fv),
           profit: Math.round(profit),
           color: inst.color,
           highlight: 'highlight' in inst && inst.highlight === true,
         };
       }).sort((a, b) => b.fv - a.fv),
-    [capital, years, t],
+    [capital, years, t, rates],
   );
 
   const winner = data[0];
@@ -149,6 +150,9 @@ export default function InvestmentComparison() {
                   <div className="text-2xs text-gray-600 uppercase tracking-wide">{d.name}</div>
                   <div className="text-sm font-bold text-[#1A2F3F] tabular-nums">
                     {(d.rate * 100).toFixed(1)}%
+                    {d.highlight && rates.reReferential && (
+                      <span className="text-[#0E7490] font-semibold" title={t('referentialNote')}> *</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -169,6 +173,11 @@ export default function InvestmentComparison() {
         <p className="text-xs text-gray-600 text-center mt-6 max-w-3xl mx-auto">
           {t('disclaimer', { currency })}
         </p>
+        {rates.reReferential && (
+          <p className="text-xs text-gray-500 text-center mt-2 max-w-3xl mx-auto">
+            {t('referentialNote')}
+          </p>
+        )}
       </div>
     </section>
   );
