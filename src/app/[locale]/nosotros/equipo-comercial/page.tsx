@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ArrowRight, Home } from '@/lib/icons';
+import { ArrowRight, Home, MessageCircle } from '@/lib/icons';
 import NosotrosTabs from '../_components/NosotrosTabs';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -10,6 +10,9 @@ import EquipoBios from './_components/EquipoBios';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate desde Hub al editar miembros
+
+const WA = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
+const WA_TEXT = encodeURIComponent('Hola, quiero agendar una llamada con un asesor de Propyte');
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -128,24 +131,37 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
 
       <NosotrosTabs locale={locale} active="equipo-comercial" visibility={visibility} />
 
-      {/* Section 1: cómo trabajamos */}
+      {/* Section 1: cómo trabajamos — proceso consultivo en 3 puntos */}
       <section className="bg-[#F4F6F8] py-16 md:py-20">
         <div className="max-w-3xl mx-auto px-4 md:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-4">
+          <span className="text-[#0E7490] text-sm font-bold tracking-widest uppercase">
+            {t('section1Eyebrow')}
+          </span>
+          <h2 className="mt-3 text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-8">
             {t('section1Title')}
           </h2>
-          <p className="text-base text-gray-700 leading-relaxed">
-            {t('section1Body')}
-          </p>
+          <div className="space-y-6">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="border-l-2 border-propyte-brand/60 pl-5">
+                <h3 className="font-bold text-[#1A2F3F]">{t(`section1Point${n}Title`)}</h3>
+                <p className="mt-1 text-base text-gray-700 leading-relaxed">
+                  {t(`section1Point${n}Body`)}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Section 2: bios — grid Hub-driven con fallback honesto */}
       <section className="bg-white py-16 md:py-20">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-8 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-3 text-center">
             {t('section2Title')}
           </h2>
+          <p className="text-base text-gray-600 leading-relaxed text-center max-w-2xl mx-auto mb-10">
+            {t('section2Sub')}
+          </p>
 
           <EquipoBios teamMembers={teamMembers} />
         </div>
@@ -161,13 +177,24 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
           <p className="text-base text-white/80 leading-relaxed mb-8">
             {t('ctaBody')}
           </p>
-          <Link
-            href={`/${locale}/contacto`}
-            className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors text-sm"
-          >
-            {t('ctaButton')}
-            <ArrowRight size={16} />
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href={`/${locale}/contacto`}
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors text-sm"
+            >
+              {t('ctaButton')}
+              <ArrowRight size={16} />
+            </Link>
+            <a
+              href={`https://wa.me/${WA}?text=${WA_TEXT}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] px-7 border border-white/25 text-white hover:bg-white/10 font-bold rounded-lg transition-colors text-sm"
+            >
+              <MessageCircle size={16} />
+              {t('ctaButtonSecondary')}
+            </a>
+          </div>
         </div>
       </section>
     </>
