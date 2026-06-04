@@ -7,6 +7,7 @@ import {
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
 import InvestmentComparison from '@/components/como-invertir/InvestmentComparison';
+import { MARKET_STATS, COMPARATOR_READY } from '@/lib/market-stats';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -49,18 +50,22 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
+  // ROI por estrategia = stats del backend (ocultos hasta que haya dato real).
+  const STRAT_ROI_KEYS = ['roi_plusvalia', 'roi_renta_residencial', 'roi_airbnb'] as const;
   const strategies = STRATEGY_ICONS.map((Icon, i) => ({
     icon: Icon,
     title: t(`strat${i + 1}Title` as 'strat1Title'),
     desc: t(`strat${i + 1}Desc` as 'strat1Desc'),
-    roi: t(`strat${i + 1}Roi` as 'strat1Roi'),
+    roi: MARKET_STATS[STRAT_ROI_KEYS[i]],
     horizon: t(`strat${i + 1}Horizon` as 'strat1Horizon'),
     risk: t(`strat${i + 1}Risk` as 'strat1Risk'),
   }));
 
+  // Descuento por etapa = stats del backend (placeholder "según proyecto" si no hay dato).
+  const STAGE_DESC_KEYS = ['desc_preventa', 'desc_construccion', 'desc_entrega'] as const;
   const stages = [1, 2, 3].map((i) => ({
     stage: t(`stage${i}Name` as 'stage1Name'),
-    discount: t(`stage${i}Discount` as 'stage1Discount'),
+    discount: MARKET_STATS[STAGE_DESC_KEYS[i - 1]],
     risk: STAGE_RISK[i - 1],
     delivery: t(`stage${i}Delivery` as 'stage1Delivery'),
     ideal: t(`stage${i}Ideal` as 'stage1Ideal'),
@@ -147,11 +152,13 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
                   </div>
                   <h3 className="text-lg font-bold text-[#1A2F3F] mb-3">{s.title}</h3>
                   <p className="text-sm text-gray-600 leading-relaxed mb-4">{s.desc}</p>
-                  <div className="grid grid-cols-3 gap-3 pt-4 border-t border-gray-100">
-                    <div>
-                      <div className="text-xs text-gray-600 uppercase">{t('roiLabel')}</div>
-                      <div className="text-sm font-bold text-[#0E7490]">{s.roi}</div>
-                    </div>
+                  <div className={`grid ${s.roi ? 'grid-cols-3' : 'grid-cols-2'} gap-3 pt-4 border-t border-gray-100`}>
+                    {s.roi && (
+                      <div>
+                        <div className="text-xs text-gray-600 uppercase">{t('roiLabel')}</div>
+                        <div className="text-sm font-bold text-[#0E7490]">{s.roi}</div>
+                      </div>
+                    )}
                     <div>
                       <div className="text-xs text-gray-600 uppercase">{t('horizonLabel')}</div>
                       <div className="text-sm font-bold text-gray-700">{s.horizon}</div>
@@ -165,6 +172,9 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
               );
             })}
           </div>
+          <p className="text-xs text-gray-500 leading-relaxed max-w-3xl mx-auto mt-8 text-center">
+            {t('strategiesFootnote')}
+          </p>
         </div>
       </section>
 
@@ -189,7 +199,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
                 {stages.map((row) => (
                   <tr key={row.stage} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{row.stage}</td>
-                    <td className="px-4 py-3 text-center font-bold text-[#0E7490]">{row.discount}</td>
+                    <td className="px-4 py-3 text-center font-bold text-[#0E7490]">{row.discount ?? <span className="font-medium text-gray-500">{t('stageDiscountPending')}</span>}</td>
                     <td className="px-4 py-3 text-center">{row.risk}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{row.delivery}</td>
                     <td className="px-4 py-3 text-gray-600">{row.ideal}</td>
@@ -198,11 +208,14 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
               </tbody>
             </table>
           </div>
+          <p className="text-xs text-gray-500 leading-relaxed max-w-3xl mx-auto mt-6 text-center">
+            {t('stageNote')}
+          </p>
         </div>
       </section>
 
-      {/* Comparison: Real Estate vs CETES vs Bolsa vs Fibras vs Banco */}
-      <InvestmentComparison />
+      {/* Comparador de inversión — solo cuando hay tasas reales (anti-humo). */}
+      {COMPARATOR_READY && <InvestmentComparison />}
 
       {/* Key Metrics */}
       <section className="bg-white py-16 md:py-20">
@@ -243,7 +256,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
               <ArrowRight size={18} />
             </Link>
             <Link
-              href={`/${locale}/mercado`}
+              href={`/${locale}/contacto?asunto=inversion`}
               className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition-colors"
             >
               {t('ctaRentals')}
