@@ -321,7 +321,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                     >
                       <ArrowLeft size={12} />
                       {tProp('viewDevelopment')}
-                      {property.parentDevelopmentName && `: ${property.parentDevelopmentName}`}
+                      {/* nombre_desarrollo es interno: nunca se expone en copy público.
+                          Solo el CTA genérico "Ver desarrollo" + link al slug. */}
                     </Link>
                   </>
                 )}
