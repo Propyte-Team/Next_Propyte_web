@@ -201,6 +201,8 @@ export default function ProviderForm({ locale }: { locale: string }) {
           t('formSubmit')
         )}
       </button>
+
+      <p className="text-white/50 text-xs mt-4 leading-relaxed">{t('formMicro')}</p>
     </form>
   );
 }

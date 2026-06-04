@@ -1104,7 +1104,7 @@
     "previous": "Anterior"
   },
   "footer": {
-    "description": "Comercializadora inmobiliaria con datos, tecnología y transparencia. Playa del Carmen y Tulum.",
+    "description": "Comercializadora inmobiliaria con datos, tecnología y transparencia. Riviera Maya y Yucatán.",
     "properties": "Propiedades",
     "allProperties": "Todas las propiedades",
     "playaDelCarmen": "Playa del Carmen",
@@ -1153,16 +1153,17 @@
   },
   "providers": {
     "title": "Programa de Proveedores",
-    "subtitle": "Únete a nuestra red de proveedores certificados",
-    "description": "Conectamos proveedores especializados con inversionistas activos en la Riviera Maya. Notarios, financieras, arquitectos, diseñadores, mudanzas, legal y más. Aplica para formar parte de nuestro directorio oficial.",
+    "subtitle": "Construimos nuestra base de proveedores para la Riviera Maya y Yucatán.",
+    "description": "Si ofreces servicios para el sector inmobiliario —legal, notaría, arquitectura, interiorismo, construcción, financiero y más— déjanos tus datos y te consideramos para los proyectos del grupo.",
     "comingSoon": "Convocatoria abierta",
-    "benefit1": "Clientes de alto valor adquisitivo — inversionistas nacionales e internacionales activamente comprando en la Riviera Maya",
-    "benefit2": "Leads pre-calificados — todos nuestros referidos pasan por filtros de necesidad y capacidad",
-    "benefit3": "Alcance internacional — plataforma bilingüe expuesta a mercado México, USA y Canadá",
-    "benefit4": "Aparición en nuestro directorio oficial con perfil, reseñas verificadas y enlace directo",
+    "benefitsTitle": "Por qué formar parte de nuestra base",
+    "benefit1": "Un grupo, varios proyectos — Propyte y las empresas del grupo desarrollamos y comercializamos proyectos en la Riviera Maya y Yucatán. Estar en nuestra base te pone en el radar cuando surge una necesidad de tu especialidad.",
+    "benefit2": "Te consideramos primero — Cuando un proyecto del grupo necesita un proveedor de tu categoría, acudimos a nuestra base antes de buscar afuera. Aplicar hoy es estar listo para entonces.",
+    "benefit3": "Una sola aplicación — En lugar de tocar puertas y mandar catálogos a cada empresa por separado, te registras una vez y quedas visible para todo el grupo.",
+    "benefit4": "Alcance bilingüe — Operamos con desarrolladores e inversionistas de México, Estados Unidos y Canadá. Tu servicio puede llegar a proyectos con estándar internacional.",
     "ctaContact": "Registrar interés",
     "formHeading": "Aplica como proveedor",
-    "formIntro": "Completa tus datos y el equipo de Propyte te contactará para evaluar tu incorporación al directorio.",
+    "formIntro": "Completa tus datos y el equipo de Propyte te contacta para evaluar tu incorporación a nuestra base de proveedores.",
     "formCompany": "Nombre de la empresa",
     "formCompanyPlaceholder": "Ej. Notaría Pública 123",
     "formCategory": "Tipo de proveedor",
@@ -1196,7 +1197,8 @@
     "formError": "Hubo un problema enviando tu aplicación. Inténtalo de nuevo o escríbenos a hola@propyte.com.",
     "formRequired": "Campo obligatorio",
     "formInvalidEmail": "Correo inválido",
-    "formInvalidUrl": "URL inválida (incluye https://)"
+    "formInvalidUrl": "URL inválida (incluye https://)",
+    "formMicro": "Al enviar, aceptas que Propyte y las empresas del grupo guarden tus datos para considerarte en futuros proyectos."
   },
   "legal": {
     "privacyTitle": "Aviso de Privacidad",
