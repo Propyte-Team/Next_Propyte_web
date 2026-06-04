@@ -1,13 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import UnetePageContent from './UnetePageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import {
-  getTestimonials,
-  getFaqs,
-  getCta,
-  getCompanyStats,
-  localizedStatLabel,
-} from '@/lib/hub-content';
+import { getFaqs, getCta } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -70,30 +64,17 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
   };
 
   // Hub-driven editorial overrides (con fallback a i18n)
-  const [hubTestimonials, hubFaqs, recruitVideoCta, hubStats] = await Promise.all([
-    getTestimonials('recruitment'),
+  const [hubFaqs, recruitVideoCta] = await Promise.all([
     getFaqs('recruitment'),
     getCta('unete_hero_video'),
-    getCompanyStats('unete'),
   ]);
 
-  const statsOverride = hubStats.length > 0
-    ? hubStats.slice(0, 6).map((s) => ({ value: s.value, label: localizedStatLabel(s, locale) }))
-    : null;
-  const testimonials = hubTestimonials.map((t) => ({
-    name: t.name,
-    role: (locale === 'en' ? t.role_en : t.role_es) ?? '',
-    quote: locale === 'en' ? t.quote_en : t.quote_es,
-    stats: (locale === 'en' ? t.stat1_label_en : t.stat1_label_es)
-      ? `${t.stat1_value ?? ''} ${(locale === 'en' ? t.stat1_label_en : t.stat1_label_es) ?? ''}`.trim()
-      : '',
-  }));
   const faqs = hubFaqs.map((f) => ({
     q: locale === 'en' ? f.question_en : f.question_es,
     a: locale === 'en' ? f.answer_en : f.answer_es,
   }));
   const videoUrl = recruitVideoCta?.button_href ?? null;
-  const hubData = { videoUrl, testimonials, faqs, statsOverride };
+  const hubData = { videoUrl, faqs };
 
   // FAQ schema usa Hub si tiene, si no fallback a i18n
   const faqSchemaSource = faqs.length > 0
