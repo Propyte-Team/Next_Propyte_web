@@ -946,7 +946,7 @@
     "productTurnkeyTagline": "From launch to handover. You steer the business; we run the whole cycle.",
     "productTurnkeyDesc": "For the developer of one to three towers who wants to delegate the entire commercial and closing operation. The highest level of delegation. Includes the full cycle: brand and demand, commercialization with a dedicated team, dynamic pricing, collections, title, handover, and continuous market monitoring throughout the mandate.",
     "productsChooseTitle": "How to choose?",
-    "productsChooseBody": "If your development is already selling and you just want to reinforce it, it’s Support. If you need Propyte to run the commercialization, you choose between Launch, Engine, and Turnkey based on how much of the cycle you’d rather delegate. In your development’s proposal we define together which one fits your project, your team, and your market.",
+    "productsChooseBody": "If your development is already selling and you just want to reinforce it, it’s Support. If you need Propyte to run the commercialization, you choose between Launch, Engine, and PRO·360 based on how much of the cycle you’d rather delegate. In your development’s proposal we define together which one fits your project, your team, and your market.",
     "tableTitle": "What each product includes",
     "tableRowLeads": "Lead generation",
     "tableRowCrm": "CRM and pipeline",
@@ -966,8 +966,122 @@
     "tableOptional": "Optional",
     "tableLight": "Light",
     "tableFull": "Full",
-    "tableRecommended": "Turnkey recommended",
+    "tableRecommended": "PRO·360 recommended",
     "tableFootnote": "Paid campaign spend, when it applies, is approved and billed separately. The commercialization commission is defined in your development’s specific proposal — it depends on your market and your project’s potential.",
+    "comp": {
+      "colHeader": "What we do for you",
+      "bannerA": "What you see isn’t what you pay — it’s ",
+      "bannerHi": "what the work is worth",
+      "bannerB": " that we do for your development. A single commission covers the whole package; these figures are the standalone reference for each piece.",
+      "totalLabel": "Value of the work ≈",
+      "totals": ["~$60k/mo + setup", "~$95k/mo + setup", "~$185k/mo + setup", "~$265k/mo + setup & per unit"],
+      "groups": [
+        {
+          "sep": "Across all plans — levels up",
+          "rows": [
+            { "label": "Lead generation", "cells": [
+              { "d": "Base campaigns", "v": "$12–18k/mo" },
+              { "d": "Multichannel + brand", "v": "$20–30k/mo" },
+              { "d": "Multichannel + retargeting", "v": "$30–45k/mo" },
+              { "d": "Full-funnel demand", "v": "$40–60k/mo" }
+            ]},
+            { "label": "CRM and pipeline", "cells": [
+              { "d": "CRM-Propyte", "v": "$6–10k/mo" },
+              { "d": "+ pipeline", "v": "$8–12k/mo" },
+              { "d": "+ automations", "v": "$12–18k/mo" },
+              { "d": "CRM full pipeline", "v": "$15–20k/mo" }
+            ]},
+            { "label": "Reporting", "cells": [
+              { "d": "Quarterly", "v": "$3–5k/mo" },
+              { "d": "+ Monthly", "v": "$5–8k/mo" },
+              { "d": "+ Weekly", "v": "$8–12k/mo" },
+              { "d": "+ Real-time", "v": "$12–15k/mo" }
+            ]},
+            { "label": "Social and content", "cells": [
+              { "d": "Base · calendar + community", "v": "$10–15k/mo" },
+              { "d": "+ brand content", "v": "$18–25k/mo" },
+              { "d": "+ production & campaigns", "v": "$28–40k/mo" },
+              { "d": "Max · continuous production", "v": "$40–55k/mo" }
+            ]},
+            { "label": "Sales force", "cells": [
+              { "d": "Closing support", "v": "$15–25k/mo" },
+              { "d": "General support", "v": "$25–35k/mo" },
+              { "d": "Assigned team", "v": "$40–55k/mo" },
+              { "d": "Dedicated team", "v": "$60–80k/mo" }
+            ]},
+            { "label": "Development website", "cells": [
+              { "d": "Microsite on Propyte.com", "v": "$15–25k" },
+              { "d": "Simple landing", "v": "$30–45k" },
+              { "d": "Dedicated landing", "v": "$50–70k" },
+              { "d": "Full website", "v": "$70–100k" }
+            ]},
+            { "label": "Entry market study", "cells": [
+              { "d": "Optional", "v": "from $40k" },
+              { "d": "Light study", "v": "$40–60k" },
+              { "d": "Full study", "v": "$80–120k" },
+              { "d": "Full study", "v": "$80–120k" }
+            ]}
+          ]
+        },
+        {
+          "sep": "From Launch",
+          "rows": [
+            { "label": "Development branding", "cells": [
+              { "d": "Not included", "muted": true },
+              { "d": "Identity + naming", "v": "$50–80k" },
+              { "d": "Full identity", "v": "$80–120k" },
+              { "d": "Full identity", "v": "$80–120k" }
+            ]}
+          ]
+        },
+        {
+          "sep": "From Engine",
+          "rows": [
+            { "label": "Dynamic pricing", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "By unit type", "v": "$15–25k/mo" },
+              { "d": "Continuous, full mandate", "v": "$15–25k/mo" }
+            ]},
+            { "label": "Collections and payment plan", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Collections + payment plan", "v": "$15–22k/mo" },
+              { "d": "End-to-end collections", "v": "$15–22k/mo" }
+            ]}
+          ]
+        },
+        {
+          "sep": "Exclusive to PRO·360 — the full cycle",
+          "rows": [
+            { "label": "Live dashboard", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Real-time dashboard", "v": "$10–15k/mo" }
+            ]},
+            { "label": "Title / closing", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Full notary management", "v": "$8–15k/unit" }
+            ]},
+            { "label": "Unit handover", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Turnkey handover", "v": "$5–10k/unit" }
+            ]},
+            { "label": "Continuous market monitoring", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Throughout the mandate", "v": "$12–20k/mo" }
+            ]}
+          ]
+        }
+      ]
+    },
     "studyEyebrow": "The starting point",
     "studyTitle": "We start with data, not promises",
     "studyBody1": "Every commercialization with Propyte starts with a market study of your development. It’s not a formality: it’s the document that defines what each unit type sells for, which product mix has the most demand, how your competition behaves, and what return your buyer can expect. It’s the foundation of the entire strategy — and the proof that when we propose something, we back it with data.",

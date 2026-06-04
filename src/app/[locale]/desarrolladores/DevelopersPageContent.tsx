@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Compass, MapPin, Megaphone, Layers, LockKeyhole,
   Palette, TrendingUp, Handshake, Headset, Rocket, BarChart3, KeySquare,
   FileChartColumnIncreasing, ClipboardCheck, FileText,
   ChevronDown, ChevronUp, CheckCircle, ArrowRight,
-  MessageCircle, Zap, Shield, Users, Check, Minus, Sparkles,
+  MessageCircle, Zap, Shield, Users, Sparkles,
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
-import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
+import HeroAtmosphere from '@/components/home/HeroAtmosphere';
 
 // ─────────────────────────────────────────────────────
 // 1 · HERO — angled bottom edge (calca page-desarrolladores.php WP)
@@ -23,15 +23,10 @@ function DevelopersHero() {
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
-      {/* Partículas teal — profundidad/movimiento sutil que reacciona al cursor */}
-      <Particles
-        className="absolute inset-0 z-0"
-        quantity={90}
-        ease={70}
-        color="#5CE0D2"
-        staticity={40}
-        size={0.5}
-      />
+      {/* Cuadrícula blueprint + parallax al cursor — misma atmósfera que el Hero
+          del Home (grid animado, orbs teal, watermark). Reemplaza las antiguas
+          partículas para unificar el lenguaje visual entre páginas. */}
+      <HeroAtmosphere />
       {/* Glow radial brand para dar volumen al hero */}
       <div
         aria-hidden="true"
@@ -178,7 +173,7 @@ const PRODUCTS = [
   { id: 'support', name: 'PROPYTE SUPPORT', icon: Headset, taglineKey: 'productSupportTagline', descKey: 'productSupportDesc', recommended: false },
   { id: 'launch', name: 'PROPYTE LAUNCH', icon: Rocket, taglineKey: 'productLaunchTagline', descKey: 'productLaunchDesc', recommended: false },
   { id: 'engine', name: 'PROPYTE ENGINE', icon: BarChart3, taglineKey: 'productEngineTagline', descKey: 'productEngineDesc', recommended: false },
-  { id: 'turnkey', name: 'PROPYTE TURNKEY', icon: KeySquare, taglineKey: 'productTurnkeyTagline', descKey: 'productTurnkeyDesc', recommended: true },
+  { id: 'turnkey', name: 'PROPYTE PRO·360', icon: KeySquare, taglineKey: 'productTurnkeyTagline', descKey: 'productTurnkeyDesc', recommended: true },
 ] as const;
 
 function Products() {
@@ -240,79 +235,110 @@ function Products() {
 // ─────────────────────────────────────────────────────
 // 5 · TABLA COMPARATIVA DE ALCANCE
 // ─────────────────────────────────────────────────────
-type CellVal = 'yes' | 'no' | 'base' | 'plus' | 'plusplus' | 'max' | 'optional' | 'light' | 'full';
-
-const TABLE_ROWS: { key: string; vals: [CellVal, CellVal, CellVal, CellVal] }[] = [
-  { key: 'tableRowLeads', vals: ['yes', 'yes', 'yes', 'yes'] },
-  { key: 'tableRowCrm', vals: ['yes', 'yes', 'yes', 'yes'] },
-  { key: 'tableRowReporting', vals: ['yes', 'yes', 'yes', 'yes'] },
-  { key: 'tableRowSocial', vals: ['base', 'plus', 'plusplus', 'max'] },
-  { key: 'tableRowSalesForce', vals: ['no', 'no', 'yes', 'yes'] },
-  { key: 'tableRowBranding', vals: ['no', 'yes', 'yes', 'yes'] },
-  { key: 'tableRowWebsite', vals: ['no', 'yes', 'yes', 'yes'] },
-  { key: 'tableRowPricing', vals: ['no', 'no', 'yes', 'yes'] },
-  { key: 'tableRowCollections', vals: ['no', 'no', 'yes', 'yes'] },
-  { key: 'tableRowTitle', vals: ['no', 'no', 'no', 'yes'] },
-  { key: 'tableRowHandover', vals: ['no', 'no', 'no', 'yes'] },
-  { key: 'tableRowMonitoring', vals: ['no', 'no', 'no', 'yes'] },
-  { key: 'tableRowStudy', vals: ['optional', 'light', 'full', 'full'] },
-];
-
-function Cell({ val, t }: { val: CellVal; t: ReturnType<typeof useTranslations> }) {
-  if (val === 'yes') return <Check size={18} className="mx-auto text-[#0E7490]" aria-label="Incluido" />;
-  if (val === 'no') return <Minus size={16} className="mx-auto text-gray-300" aria-label="No incluido" />;
-  const label =
-    val === 'base' ? t('tableBase')
-    : val === 'plus' ? '+'
-    : val === 'plusplus' ? '++'
-    : val === 'max' ? t('tableMax')
-    : val === 'optional' ? t('tableOptional')
-    : val === 'light' ? t('tableLight')
-    : t('tableFull');
-  return <span className="text-xs font-semibold text-[#1A2F3F]">{label}</span>;
-}
+// La tabla pasó de "palomita/—" a una matriz de valor: cada celda lleva una
+// micro-descripción del nivel + el valor de referencia de esa pieza por
+// separado. Los datos viven en i18n (developers.comp) y se leen con t.raw().
+type CompCell = { d: string; v?: string; muted?: boolean };
+type CompRow = { label: string; cells: CompCell[] };
+type CompGroup = { sep: string; rows: CompRow[] };
 
 function ComparisonTable() {
   const t = useTranslations('developers');
-  const [openProduct, setOpenProduct] = useState<number>(3); // Turnkey abierto por defecto
+  const groups = t.raw('comp.groups') as CompGroup[];
+  const totals = t.raw('comp.totals') as string[];
   const cols = PRODUCTS.map((p) => p.name.replace('PROPYTE ', ''));
+  const [openProduct, setOpenProduct] = useState<number>(3); // PRO·360 abierto por defecto
+  const flatRows = groups.flatMap((g) => g.rows);
 
   return (
-    <section className="bg-[#F4F6F8] py-16 md:py-20">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] text-center mb-2">{t('tableTitle')}</h2>
-        <p className="text-center text-sm text-[#0E7490] font-semibold mb-10">★ {t('tableRecommended')}</p>
+    <section className="relative overflow-hidden py-16 md:py-20 bg-gradient-to-br from-[#0B1C1E] via-[#0F1923] to-[#1A2F3F]">
+      {/* Glow radial + cuadrícula blueprint — misma atmósfera tech del Hero;
+          necesaria para que el glass de la tabla "esmerile" sobre el oscuro. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            'radial-gradient(ellipse 60% 50% at 20% 0%, rgba(92,224,210,0.14), transparent 60%), radial-gradient(ellipse 50% 50% at 90% 100%, rgba(162,249,255,0.10), transparent 60%)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_80%_70%_at_center,black_40%,transparent_100%)]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
+          backgroundSize: '64px 64px',
+        }}
+      />
 
-        {/* Desktop: tabla */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full bg-white rounded-2xl overflow-hidden shadow-sm border-separate border-spacing-0">
+      <div className="relative z-10 max-w-[1100px] mx-auto px-4 md:px-6">
+        <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-2">{t('tableTitle')}</h2>
+        <p className="text-center text-sm text-propyte-brand font-semibold mb-6">★ {t('tableRecommended')}</p>
+
+        {/* Encuadre: valor, no precio */}
+        <div className="max-w-[920px] mx-auto mb-7 rounded-2xl border border-propyte-brand/25 bg-propyte-brand/[0.08] backdrop-blur-md px-5 py-4 text-center text-sm md:text-[15px] leading-relaxed text-white/85">
+          {t('comp.bannerA')}
+          <span className="text-propyte-brand font-bold">{t('comp.bannerHi')}</span>
+          {t('comp.bannerB')}
+        </div>
+
+        {/* Desktop: tabla glass */}
+        <div className="hidden md:block rounded-2xl overflow-hidden border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
+          <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="text-left text-sm font-bold text-[#1A2F3F] p-4 bg-white border-b border-gray-100">&nbsp;</th>
+                <th className="text-left text-[11px] font-extrabold text-white p-3.5 border-b border-white/10">{t('comp.colHeader')}</th>
                 {cols.map((c, i) => (
                   <th
                     key={c}
-                    className={`text-center text-sm font-extrabold p-4 border-b border-gray-100 ${
-                      i === 3 ? 'bg-propyte-brand/10 text-[#0F1923]' : 'bg-white text-[#1A2F3F]'
+                    className={`text-center text-[11px] font-extrabold p-3.5 border-b ${
+                      i === 3 ? 'bg-propyte-brand/15 text-[#A2F9FF] border-propyte-brand/30' : 'text-white border-white/10'
                     }`}
                   >
                     {c}
-                    {i === 3 && <Sparkles size={12} className="inline-block ml-1 text-propyte-brand" />}
+                    {i === 3 && <Sparkles size={11} className="inline-block ml-1 text-propyte-brand" />}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {TABLE_ROWS.map((row, ri) => (
-                <tr key={row.key} className={ri % 2 ? 'bg-[#F9FAFB]' : 'bg-white'}>
-                  <td className="text-sm text-gray-700 p-4">{t(row.key)}</td>
-                  {row.vals.map((v, ci) => (
-                    <td key={ci} className={`text-center p-4 ${ci === 3 ? 'bg-propyte-brand/5' : ''}`}>
-                      <Cell val={v} t={t} />
+              {groups.map((group) => (
+                <Fragment key={group.sep}>
+                  <tr>
+                    <td colSpan={5} className="text-left text-[9px] font-extrabold uppercase tracking-[0.12em] text-[#A2F9FF]/55 bg-propyte-brand/[0.05] px-3.5 py-2">
+                      {group.sep}
                     </td>
+                  </tr>
+                  {group.rows.map((row) => (
+                    <tr key={row.label}>
+                      <td className="text-left text-[11.5px] font-bold text-white p-3.5 border-b border-white/[0.06] whitespace-nowrap">{row.label}</td>
+                      {row.cells.map((cell, ci) => (
+                        <td
+                          key={ci}
+                          className={`text-center align-top p-3.5 border-b border-white/[0.06] ${ci === 3 ? 'bg-propyte-brand/[0.08]' : ''}`}
+                        >
+                          <span className={`block text-[10.5px] leading-snug ${cell.muted ? 'text-white/30' : 'text-white/75'}`}>{cell.d}</span>
+                          {cell.v && <span className="block mt-1.5 text-[9.5px] font-extrabold text-propyte-brand">{cell.v}</span>}
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </tr>
+                </Fragment>
               ))}
+              <tr>
+                <td className="text-left text-[11px] font-extrabold text-white bg-black/30 p-3.5">{t('comp.totalLabel')}</td>
+                {totals.map((tot, i) => (
+                  <td
+                    key={i}
+                    className={`text-center font-extrabold p-3.5 leading-tight ${
+                      i === 3 ? 'bg-propyte-brand/[0.14] text-propyte-brand text-[13px]' : 'bg-black/30 text-white text-[11px]'
+                    }`}
+                  >
+                    {tot}
+                  </td>
+                ))}
+              </tr>
             </tbody>
           </table>
         </div>
@@ -322,27 +348,37 @@ function ComparisonTable() {
           {PRODUCTS.map((p, pi) => {
             const isOpen = openProduct === pi;
             return (
-              <div key={p.id} className={`rounded-2xl overflow-hidden border ${p.recommended ? 'border-propyte-brand' : 'border-gray-200'} bg-white`}>
+              <div key={p.id} className={`rounded-2xl overflow-hidden border ${p.recommended ? 'border-propyte-brand/60' : 'border-white/10'} bg-white/[0.06] backdrop-blur-xl`}>
                 <button
                   type="button"
                   onClick={() => setOpenProduct(isOpen ? -1 : pi)}
                   className="w-full flex items-center justify-between p-4 text-left"
                   aria-expanded={isOpen}
                 >
-                  <span className="font-extrabold text-[#1A2F3F] flex items-center gap-1.5">
+                  <span className="font-extrabold text-white flex items-center gap-1.5">
                     {p.name.replace('PROPYTE ', '')}
                     {p.recommended && <Sparkles size={13} className="text-propyte-brand" />}
                   </span>
-                  {isOpen ? <ChevronUp size={18} className="text-[#0E7490]" /> : <ChevronDown size={18} className="text-gray-400" />}
+                  {isOpen ? <ChevronUp size={18} className="text-propyte-brand" /> : <ChevronDown size={18} className="text-white/40" />}
                 </button>
                 {isOpen && (
-                  <ul className="px-4 pb-4 divide-y divide-gray-50">
-                    {TABLE_ROWS.map((row) => (
-                      <li key={row.key} className="flex items-center justify-between py-2.5 text-sm">
-                        <span className="text-gray-600 pr-3">{t(row.key)}</span>
-                        <span className="shrink-0"><Cell val={row.vals[pi]} t={t} /></span>
-                      </li>
-                    ))}
+                  <ul className="px-4 pb-4 divide-y divide-white/[0.06]">
+                    {flatRows.map((row) => {
+                      const cell = row.cells[pi];
+                      return (
+                        <li key={row.label} className="flex items-start justify-between gap-3 py-2.5">
+                          <span className="text-white/65 text-sm pr-3">{row.label}</span>
+                          <span className="shrink-0 text-right">
+                            <span className={`block text-[12px] ${cell.muted ? 'text-white/30' : 'text-white/90'}`}>{cell.d}</span>
+                            {cell.v && <span className="block text-[11px] font-bold text-propyte-brand">{cell.v}</span>}
+                          </span>
+                        </li>
+                      );
+                    })}
+                    <li className="flex items-center justify-between pt-3">
+                      <span className="text-white text-sm font-extrabold">{t('comp.totalLabel')}</span>
+                      <span className="text-propyte-brand text-sm font-extrabold text-right leading-tight">{totals[pi]}</span>
+                    </li>
                   </ul>
                 )}
               </div>
@@ -350,7 +386,7 @@ function ComparisonTable() {
           })}
         </div>
 
-        <p className="mt-8 text-xs text-gray-500 leading-relaxed max-w-3xl mx-auto text-center">{t('tableFootnote')}</p>
+        <p className="mt-8 text-xs text-white/45 leading-relaxed max-w-3xl mx-auto text-center">{t('tableFootnote')}</p>
       </div>
     </section>
   );

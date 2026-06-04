@@ -946,7 +946,7 @@
     "productTurnkeyTagline": "Del lanzamiento a la entrega. Tú diriges el negocio; nosotros, el ciclo entero.",
     "productTurnkeyDesc": "Para el desarrollador de una a tres torres que quiere delegar toda la operación comercial y de cierre. El nivel de mayor delegación. Incluye todo el ciclo: marca y demanda, comercialización con equipo dedicado, pricing dinámico, cobranza, escrituración, entrega y monitoreo de mercado continuo durante todo el mandato.",
     "productsChooseTitle": "¿Cómo elegir?",
-    "productsChooseBody": "Si tu desarrollo ya se vende y solo quieres reforzarlo, es Support. Si necesitas que Propyte lleve la comercialización, eliges entre Launch, Engine y Turnkey según cuánto del ciclo prefieras delegar. En la propuesta de tu desarrollo definimos juntos cuál se ajusta mejor a tu proyecto, tu equipo y tu destino.",
+    "productsChooseBody": "Si tu desarrollo ya se vende y solo quieres reforzarlo, es Support. Si necesitas que Propyte lleve la comercialización, eliges entre Launch, Engine y PRO·360 según cuánto del ciclo prefieras delegar. En la propuesta de tu desarrollo definimos juntos cuál se ajusta mejor a tu proyecto, tu equipo y tu destino.",
     "tableTitle": "Qué incluye cada producto",
     "tableRowLeads": "Generación de leads",
     "tableRowCrm": "CRM y pipeline",
@@ -966,8 +966,122 @@
     "tableOptional": "Opcional",
     "tableLight": "Light",
     "tableFull": "Completo",
-    "tableRecommended": "Turnkey recomendado",
+    "tableRecommended": "PRO·360 recomendado",
     "tableFootnote": "La inversión en campañas pagadas, cuando aplica, se aprueba y se factura por separado. La comisión de comercialización se define en la propuesta específica de tu desarrollo — depende de tu destino y del potencial de tu proyecto.",
+    "comp": {
+      "colHeader": "Lo que hacemos por ti",
+      "bannerA": "Lo que ves no es lo que pagas — es ",
+      "bannerHi": "lo que vale el trabajo",
+      "bannerB": " que hacemos por tu desarrollo. Una sola comisión cubre todo el paquete; estas cifras son la referencia de cada pieza por separado.",
+      "totalLabel": "Valor del trabajo ≈",
+      "totals": ["~$60k/mes + setup", "~$95k/mes + setup", "~$185k/mes + setup", "~$265k/mes + setup y por unidad"],
+      "groups": [
+        {
+          "sep": "En todos los planes — sube de nivel",
+          "rows": [
+            { "label": "Generación de leads", "cells": [
+              { "d": "Campañas base", "v": "$12–18k/mes" },
+              { "d": "Multicanal con marca", "v": "$20–30k/mes" },
+              { "d": "Multicanal + retargeting", "v": "$30–45k/mes" },
+              { "d": "Demanda full-funnel", "v": "$40–60k/mes" }
+            ]},
+            { "label": "CRM y pipeline", "cells": [
+              { "d": "CRM-Propyte", "v": "$6–10k/mes" },
+              { "d": "+ pipeline", "v": "$8–12k/mes" },
+              { "d": "+ automatizaciones", "v": "$12–18k/mes" },
+              { "d": "CRM full pipeline", "v": "$15–20k/mes" }
+            ]},
+            { "label": "Reportería", "cells": [
+              { "d": "Trimestral", "v": "$3–5k/mes" },
+              { "d": "+ Mensual", "v": "$5–8k/mes" },
+              { "d": "+ Semanal", "v": "$8–12k/mes" },
+              { "d": "+ En tiempo real", "v": "$12–15k/mes" }
+            ]},
+            { "label": "Redes y contenido", "cells": [
+              { "d": "Base · calendario + comunidad", "v": "$10–15k/mes" },
+              { "d": "+ contenido de marca", "v": "$18–25k/mes" },
+              { "d": "+ producción y campañas", "v": "$28–40k/mes" },
+              { "d": "Máx · producción continua", "v": "$40–55k/mes" }
+            ]},
+            { "label": "Fuerza de ventas", "cells": [
+              { "d": "Apoyo a cierres", "v": "$15–25k/mes" },
+              { "d": "Apoyo general", "v": "$25–35k/mes" },
+              { "d": "Equipo asignado", "v": "$40–55k/mes" },
+              { "d": "Equipo dedicado", "v": "$60–80k/mes" }
+            ]},
+            { "label": "Sitio web del desarrollo", "cells": [
+              { "d": "Micrositio en Propyte.com", "v": "$15–25k" },
+              { "d": "Landing simple", "v": "$30–45k" },
+              { "d": "Landing dedicada", "v": "$50–70k" },
+              { "d": "Sitio web completo", "v": "$70–100k" }
+            ]},
+            { "label": "Estudio de mercado de entrada", "cells": [
+              { "d": "Opcional", "v": "desde $40k" },
+              { "d": "Estudio light", "v": "$40–60k" },
+              { "d": "Estudio completo", "v": "$80–120k" },
+              { "d": "Estudio completo", "v": "$80–120k" }
+            ]}
+          ]
+        },
+        {
+          "sep": "Desde Launch",
+          "rows": [
+            { "label": "Branding del desarrollo", "cells": [
+              { "d": "No incluido", "muted": true },
+              { "d": "Identidad + naming", "v": "$50–80k" },
+              { "d": "Identidad completa", "v": "$80–120k" },
+              { "d": "Identidad completa", "v": "$80–120k" }
+            ]}
+          ]
+        },
+        {
+          "sep": "Desde Engine",
+          "rows": [
+            { "label": "Pricing dinámico", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Por tipología", "v": "$15–25k/mes" },
+              { "d": "Continuo todo el mandato", "v": "$15–25k/mes" }
+            ]},
+            { "label": "Cobranza y plan de pagos", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Cobranza + plan de pagos", "v": "$15–22k/mes" },
+              { "d": "Cobranza integral", "v": "$15–22k/mes" }
+            ]}
+          ]
+        },
+        {
+          "sep": "Exclusivo PRO·360 — el ciclo completo",
+          "rows": [
+            { "label": "Dashboard en vivo", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Tablero en tiempo real", "v": "$10–15k/mes" }
+            ]},
+            { "label": "Escrituración", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Gestión notarial completa", "v": "$8–15k/unidad" }
+            ]},
+            { "label": "Entrega de unidad", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Entrega llave en mano", "v": "$5–10k/unidad" }
+            ]},
+            { "label": "Monitoreo de mercado continuo", "cells": [
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "—", "muted": true },
+              { "d": "Durante todo el mandato", "v": "$12–20k/mes" }
+            ]}
+          ]
+        }
+      ]
+    },
     "studyEyebrow": "El punto de partida",
     "studyTitle": "Empezamos con datos, no con promesas",
     "studyBody1": "Toda comercialización con Propyte arranca con un estudio de mercado de tu desarrollo. No es un trámite: es el documento que define a qué precio se vende cada tipología, qué mezcla de producto tiene mayor demanda, cómo se comporta tu competencia y qué retorno puede esperar tu comprador. Es la base de toda la estrategia — y la prueba de que cuando te proponemos algo, lo sostenemos con datos.",
