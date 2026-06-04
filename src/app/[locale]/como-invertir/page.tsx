@@ -7,7 +7,7 @@ import {
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
 import InvestmentComparison from '@/components/como-invertir/InvestmentComparison';
-import { MARKET_STATS, COMPARATOR_READY } from '@/lib/market-stats';
+import { getMarketStats, getComparatorRates } from '@/lib/market-stats';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -45,31 +45,36 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: 'comoInvertir' });
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, market] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getMarketStats(),
   ]);
 
-  // ROI por estrategia = stats del backend (ocultos hasta que haya dato real).
+  // ROI por estrategia = stats del Hub (ocultos hasta que haya dato real).
   const STRAT_ROI_KEYS = ['roi_plusvalia', 'roi_renta_residencial', 'roi_airbnb'] as const;
   const strategies = STRATEGY_ICONS.map((Icon, i) => ({
     icon: Icon,
     title: t(`strat${i + 1}Title` as 'strat1Title'),
     desc: t(`strat${i + 1}Desc` as 'strat1Desc'),
-    roi: MARKET_STATS[STRAT_ROI_KEYS[i]],
+    roi: market[STRAT_ROI_KEYS[i]],
     horizon: t(`strat${i + 1}Horizon` as 'strat1Horizon'),
     risk: t(`strat${i + 1}Risk` as 'strat1Risk'),
   }));
 
-  // Descuento por etapa = stats del backend (placeholder "según proyecto" si no hay dato).
+  // Descuento por etapa = stats del Hub (placeholder "según proyecto" si no hay dato).
   const STAGE_DESC_KEYS = ['desc_preventa', 'desc_construccion', 'desc_entrega'] as const;
   const stages = [1, 2, 3].map((i) => ({
     stage: t(`stage${i}Name` as 'stage1Name'),
-    discount: MARKET_STATS[STAGE_DESC_KEYS[i - 1]],
+    discount: market[STAGE_DESC_KEYS[i - 1]],
     risk: STAGE_RISK[i - 1],
     delivery: t(`stage${i}Delivery` as 'stage1Delivery'),
     ideal: t(`stage${i}Ideal` as 'stage1Ideal'),
   }));
+
+  // Comparador (calculadora): siempre visible. Usa tasas del Hub si existen;
+  // si no, referencias de mercado con la tasa inmobiliaria marcada "ilustrativa".
+  const comparatorRates = getComparatorRates(market);
 
   const metrics = METRIC_ICONS.map((Icon, i) => ({
     icon: Icon,
@@ -214,8 +219,8 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
         </div>
       </section>
 
-      {/* Comparador de inversión — solo cuando hay tasas reales (anti-humo). */}
-      {COMPARATOR_READY && <InvestmentComparison />}
+      {/* Comparador de inversión (calculadora). Tasa inmobiliaria referencial/ilustrativa hasta dato del Hub. */}
+      <InvestmentComparison rates={comparatorRates} />
 
       {/* Key Metrics */}
       <section className="bg-white py-16 md:py-20">

@@ -1990,6 +1990,7 @@
     "winnerLabel": "Mejor rendimiento",
     "ctaAdvisor": "Hablar con un asesor",
     "disclaimer": "Tasas referenciales en {currency}, actualizadas con datos de mercado. Las comparaciones son ilustrativas y no constituyen recomendación de inversión ni asesoría financiera. Los rendimientos pasados no garantizan resultados futuros. Cada instrumento tiene un perfil de riesgo y liquidez distinto.",
+    "referentialNote": "* La tasa de bienes raíces es una referencia ilustrativa; se actualizará con datos de mercado verificables. CETES, Fibras, Bolsa y depósito bancario usan referencias públicas de mercado.",
     "labels": {
       "propyte": "Bienes raíces (preventa Riviera Maya)",
       "fibras": "Fibras (FIBRAUNO/FUNO)",
