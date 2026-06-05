@@ -160,7 +160,9 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   query = query.range(offset, offset + limit - 1);
 
   const res = await query;
-  return { ...res, data: maskRows(normalizeNames(res.data), 'd') };
+  // applyDisplayName subsume a normalizeNames (cae a cleanListingName(name)) y
+  // garantiza que las cards nunca expongan nombre_desarrollo crudo.
+  return { ...res, data: maskRows((res.data ?? []).map(applyDisplayName), 'd') };
 }
 
 // Aplica la prioridad de display name del Hub editorial:
@@ -235,29 +237,37 @@ export async function getSimilarDevelopments(
   const base = () =>
     hub(client)
       .from('v_developments')
-      .select('id, slug, name, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name, discounted_units_count')
+      // publication_title/meta_title se necesitan para applyDisplayName: las cards
+      // de "Más desarrollos" deben mostrar el título público, NUNCA nombre_desarrollo.
+      .select('id, slug, name, publication_title, meta_title, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name, discounted_units_count')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
       .neq('id', seed.id)
       .limit(limit);
 
+  // Enmascara imágenes + sustituye name por el display name público (nunca el
+  // nombre_desarrollo interno). Mismo contrato que el detail page.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const finish = (rows: any[] | null | undefined) =>
+    maskRows((rows ?? []).map(applyDisplayName), 'd') ?? [];
+
   if (seed.zone && seed.property_type) {
     const r = await base().eq('zone', seed.zone).contains('property_types', [seed.property_type]);
-    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
+    if (r.data && r.data.length > 0) return finish(r.data);
   }
   if (seed.zone) {
     const r = await base().eq('zone', seed.zone);
-    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
+    if (r.data && r.data.length > 0) return finish(r.data);
   }
   if (seed.city) {
     const r = await base().eq('city', seed.city);
-    if (r.data && r.data.length > 0) return maskRows(r.data, 'd') ?? [];
+    if (r.data && r.data.length > 0) return finish(r.data);
   }
   const featured = await base().eq('featured', true).order('created_at', { ascending: false });
-  if (featured.data && featured.data.length > 0) return maskRows(featured.data, 'd') ?? [];
+  if (featured.data && featured.data.length > 0) return finish(featured.data);
 
   const any = await base().order('created_at', { ascending: false });
-  return maskRows(any.data, 'd') || [];
+  return finish(any.data);
 }
 
 export async function getFeaturedDevelopments(client: Client, limit = 6) {
@@ -277,9 +287,10 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
 
   const featuredRows = (featured.data || []) as Array<{ id: string; name?: string | null }>;
 
-  // Si featured llenó la grid, devolver tal cual (normalizado).
+  // Si featured llenó la grid, devolver tal cual (display name público, nunca
+  // nombre_desarrollo crudo).
   if (featuredRows.length >= limit) {
-    return { ...featured, data: maskRows(normalizeNames(featured.data), 'd') };
+    return { ...featured, data: maskRows((featured.data ?? []).map(applyDisplayName), 'd') };
   }
 
   // Llenar el resto con los más recientes aprobados no-featured (calca WP featured-properties.php).
@@ -300,7 +311,7 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
   const recent = await recentQuery;
   const merged = [...featuredRows, ...((recent.data || []) as typeof featuredRows)];
   return {
-    data: maskRows(normalizeNames(merged), 'd'),
+    data: maskRows(merged.map(applyDisplayName), 'd'),
     error: featured.error || recent.error,
     count: featuredRows.length + (recent.data?.length || 0),
   };
