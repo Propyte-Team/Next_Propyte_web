@@ -317,6 +317,25 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
   };
 }
 
+/**
+ * Desarrollos EXCLUSIVOS — `badge ILIKE '%exclusiv%'`. Marcados a mano en el Hub
+ * (campo `badge` = "Exclusivo"). A diferencia del resto del sitio, la página
+ * /exclusivos SÍ expone el nombre real del desarrollo + desarrollador + brochure,
+ * por eso NO se aplica applyDisplayName (que ocultaría el nombre). Solo se limpia
+ * con normalizeNames (quita prefijos [SAMPLE]) y se enmascaran las imágenes.
+ */
+export async function getExclusiveDevelopments(client: Client, limit = 24) {
+  const res = await hub(client)
+    .from('v_developments')
+    .select('*')
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null)
+    .ilike('badge', '%exclusiv%')
+    .order('price_min_mxn', { ascending: false, nullsFirst: false })
+    .limit(limit);
+  return { ...res, data: maskRows(normalizeNames(res.data), 'd') };
+}
+
 export async function getDevelopmentsByCity(client: Client, city: string) {
   const res = await client
     .schema('real_estate_hub' as 'public')

@@ -16,6 +16,7 @@ import {
   Users,
   Truck,
   Zap,
+  Crown,
   Layout as LayoutIcon,
   Mail,
   MessageCircle,
@@ -86,6 +87,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
     { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
     { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
     { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
+    { id: 'exclusivos', labelKey: 'exclusivos', href: `/${locale}/exclusivos`, icon: Crown, accent: 'gold' },
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
     { id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store },
     { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },
@@ -145,6 +147,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
               {allItems.map((item) => {
                 const Icon = item.icon;
                 const active = isActive(item.id, item.href);
+                const isGold = 'accent' in item && item.accent === 'gold';
                 return (
                   <Link
                     key={item.id}
@@ -152,12 +155,20 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                     onClick={onClose}
                     aria-current={active ? 'page' : undefined}
                     className={`flex items-center gap-3 py-3 px-3 text-sm font-medium rounded-lg transition-colors ${
-                      active
-                        ? 'text-[#5CE0D2] bg-white/10 font-semibold'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                      isGold
+                        ? active
+                          ? 'text-[#FDE68A] bg-[#F5A623]/15 font-semibold ring-1 ring-[#F5A623]/30'
+                          : 'text-[#F5A623] hover:text-[#FDE68A] hover:bg-[#F5A623]/10 font-semibold'
+                        : active
+                          ? 'text-[#5CE0D2] bg-white/10 font-semibold'
+                          : 'text-white/70 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <Icon size={18} strokeWidth={1.75} className="shrink-0" />
+                    <Icon
+                      size={18}
+                      strokeWidth={1.75}
+                      className={isGold ? 'shrink-0 animate-crown-pulse' : 'shrink-0'}
+                    />
                     {t(item.labelKey)}
                   </Link>
                 );

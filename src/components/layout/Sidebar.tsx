@@ -16,6 +16,7 @@ import {
   Users,
   Truck,
   Zap,
+  Crown,
   Layout as LayoutIcon,
 } from '@/lib/icons';
 import { isNavActive } from '@/lib/nav/isActive';
@@ -27,6 +28,7 @@ type NavItem = {
   labelKey: string;
   href: string;
   icon: typeof Home;
+  accent?: 'gold';
 };
 
 export default function Sidebar() {
@@ -51,10 +53,12 @@ export default function Sidebar() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
+  // "Exclusivos" va al centro del menú con tratamiento dorado (corona).
   const mainItems: NavItem[] = [
     { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
     { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
     { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
+    { id: 'exclusivos', labelKey: 'exclusivos', href: `/${locale}/exclusivos`, icon: Crown, accent: 'gold' },
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
     ...(showMercado ? [{ id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store } as NavItem] : []),
   ];
@@ -105,6 +109,7 @@ export default function Sidebar() {
         {mainItems.map((item) => {
           const active = isActive(item.id, item.href);
           const Icon = item.icon;
+          const isGold = item.accent === 'gold';
           return (
             <Link
               key={item.id}
@@ -112,10 +117,16 @@ export default function Sidebar() {
               title={t(item.labelKey)}
               aria-current={active ? 'page' : undefined}
               className={`group flex flex-col items-center gap-1 w-full py-2.5 rounded-xl transition-colors ${
-                active ? 'bg-white/10 text-propyte-brand' : 'text-white/75 hover:text-white hover:bg-white/5'
+                isGold
+                  ? active
+                    ? 'bg-[#F5A623]/15 text-[#FDE68A] ring-1 ring-[#F5A623]/40'
+                    : 'text-[#F5A623] hover:text-[#FDE68A] hover:bg-[#F5A623]/10'
+                  : active
+                    ? 'bg-white/10 text-propyte-brand'
+                    : 'text-white/75 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Icon size={20} />
+              <Icon size={20} className={isGold ? 'animate-crown-pulse' : undefined} />
               <span className="text-2xs font-medium leading-tight text-center px-1">
                 {t(item.labelKey)}
               </span>
