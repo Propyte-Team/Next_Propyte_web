@@ -53,22 +53,24 @@ const AMENITIES: AmenityDef[] = [
  * Renders amenities with matching canonical icons when possible.
  * - With a real list: each entry is matched against 20 canonical regexes.
  *   Unmatched strings render as generic chips (CheckCircle2 icon).
- * - Without a list: falls back to showing all 20 canonical amenities as
- *   a typical-amenities hint.
+ * - Without a list: renders nothing (returns null). NO se hace fallback a
+ *   "todas las amenidades": mostrar las 20 canónicas cuando el desarrollo no
+ *   tiene amenidades definidas en el Hub publicitaba amenidades inexistentes.
  */
 export default async function AmenityList({ locale, amenities, title }: AmenityListProps) {
   const t = await getTranslations({ locale, namespace: 'property' });
   const pickAmenityLabel = (c: AmenityDef) => locale === 'en' ? c.en : c.es;
 
+  // Sin amenidades definidas → ocultar la sección por completo.
+  if (!amenities || amenities.length === 0) return null;
+
   const items: Array<{ key: string; label: string; icon: LucideIcon }> =
-    amenities && amenities.length > 0
-      ? amenities.map((raw, idx) => {
-          const canonical = AMENITIES.find((c) => c.match.test(raw));
-          return canonical
-            ? { key: `${canonical.key}-${idx}`, label: pickAmenityLabel(canonical), icon: canonical.icon }
-            : { key: `raw-${idx}`, label: raw, icon: CheckCircle2 };
-        })
-      : AMENITIES.map((c) => ({ key: c.key, label: pickAmenityLabel(c), icon: c.icon }));
+    amenities.map((raw, idx) => {
+      const canonical = AMENITIES.find((c) => c.match.test(raw));
+      return canonical
+        ? { key: `${canonical.key}-${idx}`, label: pickAmenityLabel(canonical), icon: canonical.icon }
+        : { key: `raw-${idx}`, label: raw, icon: CheckCircle2 };
+    });
 
   const resolvedTitle = title ?? t('amenities');
 
