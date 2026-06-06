@@ -178,6 +178,62 @@ function applyDisplayName<T extends { name?: string | null; publication_title?: 
   return { ...(row as object), name: displayName } as T;
 }
 
+/**
+ * Para desarrollos EXCLUSIVOS (`crm_relationship = 'Exclusivo'`), superpone los
+ * campos de media + desarrollador leídos crudos de la tabla base sobre la fila
+ * de `v_developments`, que el gate-exclusivo anula (brochure/lista/masterplan/
+ * tour/video + desarrollador). Mismo patrón que getExclusiveDevelopments pero
+ * para una sola fila (página de detalle del desarrollo). No-op si la fila no es
+ * exclusiva. RLS `select_published` permite leer la base (los exclusivos están
+ * publicados). NO toca el nombre: el detail page sigue usando el título público
+ * (applyDisplayName), nunca el nombre_desarrollo interno.
+ * Ver feedback_exclusivos_crm_relationship.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function applyExclusiveOverlay<T extends Record<string, any> | null>(client: Client, row: T): Promise<T> {
+  if (!row || typeof row !== 'object') return row;
+  const rel = (row as { crm_relationship?: string | null }).crm_relationship;
+  if (typeof rel !== 'string' || !/exclusiv/i.test(rel)) return row;
+  const id = (row as { id?: string | null }).id;
+  if (!id) return row;
+
+  // Media crudo (sin gate) desde la tabla base.
+  const { data: baseRows } = await hub(client)
+    .from('Propyte_desarrollos')
+    .select('id, brochure_pdf, lista_precios, masterplan, tour_virtual_desarrollo, video_desarrollo, id_desarrollador')
+    .eq('id', id)
+    .limit(1);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const b = ((baseRows ?? [])[0] as any) ?? {};
+
+  // Desarrollador crudo (el gate anula developer_id → restaurarlo permite que
+  // el detail page haga getDeveloperById y pinte la tarjeta completa).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let dev: any = null;
+  if (b.id_desarrollador) {
+    const { data: devs } = await hub(client)
+      .from('Propyte_desarrolladores')
+      .select('id, nombre_desarrollador, ext_slug_desarrollador')
+      .eq('id', b.id_desarrollador)
+      .limit(1);
+    dev = (devs ?? [])[0] ?? null;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const r = row as any;
+  return {
+    ...row,
+    brochure_url: r.brochure_url ?? b.brochure_pdf ?? null,
+    price_list_url: r.price_list_url ?? b.lista_precios ?? null,
+    masterplan: r.masterplan ?? b.masterplan ?? null,
+    virtual_tour_url: r.virtual_tour_url ?? b.tour_virtual_desarrollo ?? null,
+    video_url: r.video_url ?? b.video_desarrollo ?? null,
+    developer_id: r.developer_id ?? b.id_desarrollador ?? null,
+    developer_name: r.developer_name ?? dev?.nombre_desarrollador ?? null,
+    developer_slug: r.developer_slug ?? dev?.ext_slug_desarrollador ?? null,
+  } as T;
+}
+
 export async function getDevelopmentBySlug(client: Client, slug: string) {
   const res = await client
     .schema('real_estate_hub' as 'public')
@@ -186,7 +242,7 @@ export async function getDevelopmentBySlug(client: Client, slug: string) {
     .eq('slug', slug)
     .single();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const raw = res.data as any;
+  const raw = await applyExclusiveOverlay(client, res.data as any);
   return { ...res, data: maskRow(applyDisplayName(raw), 'd') };
 }
 
@@ -211,7 +267,8 @@ export async function getDevelopmentWithUnits(client: Client, slug: string) {
     .is('deleted_at', null)
     .order('unit_number', { ascending: true });
 
-  const devRow = dev as { id?: string | null; name?: string | null; publication_title?: string | null; meta_title?: string | null; images?: string[] | null };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const devRow = await applyExclusiveOverlay(client, dev as any);
   const maskedDev = maskRow(applyDisplayName(devRow), 'd');
   const normalizedUnits = maskRows(normalizeNames(units), 'u') ?? [];
 
