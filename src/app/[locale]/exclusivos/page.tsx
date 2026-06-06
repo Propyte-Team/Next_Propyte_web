@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getExclusiveDevelopments } from '@/lib/supabase/queries';
-import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import ExclusivosShowcase, { type ExclusiveDev } from '@/components/exclusivos/ExclusivosShowcase';
 
 export const revalidate = 600;
@@ -37,11 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ExclusivosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, tBC, tA11y] = await Promise.all([
-    getTranslations({ locale, namespace: 'exclusivos' }),
-    getTranslations({ locale, namespace: 'breadcrumbs' }),
-    getTranslations({ locale, namespace: 'a11y' }),
-  ]);
+  const t = await getTranslations({ locale, namespace: 'exclusivos' });
 
   let items: ExclusiveDev[] = [];
   try {
@@ -90,13 +85,6 @@ export default async function ExclusivosPage({ params }: { params: Promise<{ loc
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
-      />
-
-      <Breadcrumbs
-        locale={locale}
-        homeLabel={tBC('home')}
-        ariaLabel={tA11y('breadcrumbLabel')}
-        items={[{ label: t('breadcrumb') }]}
       />
 
       <ExclusivosShowcase items={items} locale={locale} />

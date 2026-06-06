@@ -86,8 +86,8 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
   const allItems = [
     { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
     { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
-    { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
     { id: 'exclusivos', labelKey: 'exclusivos', href: `/${locale}/exclusivos`, icon: Crown, accent: 'gold' },
+    { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
     { id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store },
     { id: 'developers', labelKey: 'developers', href: `/${locale}/desarrolladores`, icon: Award },

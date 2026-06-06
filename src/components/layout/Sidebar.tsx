@@ -53,12 +53,12 @@ export default function Sidebar() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
-  // "Exclusivos" va al centro del menú con tratamiento dorado (corona).
+  // "Exclusivos" va al centro del menú (arriba de Propiedades) con corona dorada.
   const mainItems: NavItem[] = [
     { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
     { id: 'developments', labelKey: 'developments', href: `/${locale}/desarrollos`, icon: Building2 },
-    { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
     { id: 'exclusivos', labelKey: 'exclusivos', href: `/${locale}/exclusivos`, icon: Crown, accent: 'gold' },
+    { id: 'properties', labelKey: 'properties', href: `/${locale}/propiedades`, icon: Key },
     { id: 'nosotros', labelKey: 'nosotros', href: `/${locale}/nosotros/quienes-somos`, icon: Globe },
     ...(showMercado ? [{ id: 'mercado', labelKey: 'mercado', href: `/${locale}/mercado`, icon: Store } as NavItem] : []),
   ];

@@ -12,6 +12,7 @@ import {
   FileDown,
   Play,
   Map as MapIcon,
+  LayoutGrid,
   Tag,
   TrendingUp,
   Building2,
@@ -199,6 +200,7 @@ function ExclusiveCard({
   const priceList = safeExternalUrl(dev.price_list_url);
   const tour = safeExternalUrl(dev.virtual_tour_url);
   const video = safeExternalUrl(dev.video_url);
+  const masterplan = safeExternalUrl(dev.masterplan);
   const detailHref = `/${locale}/desarrollos/${dev.slug}`;
 
   return (
@@ -309,14 +311,17 @@ function ExclusiveCard({
           )}
         </div>
 
-        {/* Recursos — brochure, lista, tour, video (todo visible en exclusivos) */}
-        {(brochure || priceList || tour || video) && (
+        {/* Recursos — brochure, lista, masterplan, tour, video (todo visible en exclusivos) */}
+        {(brochure || priceList || masterplan || tour || video) && (
           <div className="mt-4 flex flex-wrap gap-2">
             {brochure && (
               <ResourceLink href={brochure} primary icon={<FileDown size={14} />} label={t('brochure')} />
             )}
             {priceList && (
               <ResourceLink href={priceList} icon={<Tag size={14} />} label={t('priceList')} />
+            )}
+            {masterplan && (
+              <ResourceLink href={masterplan} icon={<LayoutGrid size={14} />} label={t('masterplan')} />
             )}
             {tour && <ResourceLink href={tour} icon={<MapIcon size={14} />} label={t('tour')} />}
             {video && <ResourceLink href={video} icon={<Play size={14} />} label={t('video')} />}

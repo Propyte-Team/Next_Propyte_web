@@ -318,11 +318,16 @@ export async function getFeaturedDevelopments(client: Client, limit = 6) {
 }
 
 /**
- * Desarrollos EXCLUSIVOS — `badge ILIKE '%exclusiv%'`. Marcados a mano en el Hub
- * (campo `badge` = "Exclusivo"). A diferencia del resto del sitio, la página
- * /exclusivos SÍ expone el nombre real del desarrollo + desarrollador + brochure,
- * por eso NO se aplica applyDisplayName (que ocultaría el nombre). Solo se limpia
- * con normalizeNames (quita prefijos [SAMPLE]) y se enmascaran las imágenes.
+ * Desarrollos EXCLUSIVOS — `crm_relationship = 'Exclusivo'` (campo "Relación CRM"
+ * del Hub, NO el badge — el badge se usa para etapa/destacado).
+ *
+ * Es la página más permisiva del sitio: SÍ expone el nombre real del desarrollo
+ * (por eso NO aplica applyDisplayName) y SÍ muestra brochure/desarrollador/recursos
+ * aunque el media-gate de `v_developments` (migración 032) los anule por falta de
+ * desarrollador publicado. Para lograrlo, la base de cada fila viene de la vista
+ * (imágenes proxy, precio agregado, slug, ubicación) y se SUPERPONEN los campos de
+ * media + desarrollador leídos crudos de la tabla base (ungated). El gate sigue
+ * intacto para el resto del sitio.
  */
 export async function getExclusiveDevelopments(client: Client, limit = 24) {
   const res = await hub(client)
@@ -330,10 +335,59 @@ export async function getExclusiveDevelopments(client: Client, limit = 24) {
     .select('*')
     .not('approved_at', 'is', null)
     .is('deleted_at', null)
-    .ilike('badge', '%exclusiv%')
+    .ilike('crm_relationship', '%exclusiv%')
     .order('price_min_mxn', { ascending: false, nullsFirst: false })
     .limit(limit);
-  return { ...res, data: maskRows(normalizeNames(res.data), 'd') };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows = (res.data as any[]) ?? [];
+  if (rows.length === 0) return { ...res, data: [] };
+
+  const ids = rows.map((r) => r.id).filter(Boolean);
+
+  // Media + desarrollador crudos (sin media-gate) desde la tabla base. RLS
+  // `select_published` permite estas filas (los exclusivos están publicados).
+  const { data: baseRows } = await hub(client)
+    .from('Propyte_desarrollos')
+    .select(
+      'id, brochure_pdf, lista_precios, masterplan, tour_virtual_desarrollo, video_desarrollo, id_desarrollador',
+    )
+    .in('id', ids);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const baseById = new Map<string, any>((baseRows ?? []).map((b: any) => [b.id, b]));
+
+  const devIds = [
+    ...new Set((baseRows ?? []).map((b: { id_desarrollador?: string | null }) => b.id_desarrollador).filter(Boolean)),
+  ] as string[];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const devById = new Map<string, any>();
+  if (devIds.length > 0) {
+    const { data: devs } = await hub(client)
+      .from('Propyte_desarrolladores')
+      .select('id, nombre_desarrollador, ext_slug_desarrollador')
+      .in('id', devIds);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (devs ?? []).forEach((d: any) => devById.set(d.id, d));
+  }
+
+  const merged = rows.map((r) => {
+    const b = baseById.get(r.id) ?? {};
+    const dev = b.id_desarrollador ? devById.get(b.id_desarrollador) : null;
+    return {
+      ...r,
+      brochure_url: r.brochure_url ?? b.brochure_pdf ?? null,
+      price_list_url: r.price_list_url ?? b.lista_precios ?? null,
+      masterplan: r.masterplan ?? b.masterplan ?? null,
+      virtual_tour_url: r.virtual_tour_url ?? b.tour_virtual_desarrollo ?? null,
+      video_url: r.video_url ?? b.video_desarrollo ?? null,
+      developer_name: r.developer_name ?? dev?.nombre_desarrollador ?? null,
+      developer_slug: r.developer_slug ?? dev?.ext_slug_desarrollador ?? null,
+    };
+  });
+
+  return { ...res, data: maskRows(normalizeNames(merged), 'd') };
 }
 
 export async function getDevelopmentsByCity(client: Client, city: string) {
