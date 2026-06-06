@@ -119,8 +119,8 @@ export default function Sidebar() {
               className={`group flex flex-col items-center gap-1 w-full py-2.5 rounded-xl transition-colors ${
                 isGold
                   ? active
-                    ? 'bg-[#F5A623]/15 text-[#FDE68A] ring-1 ring-[#F5A623]/40'
-                    : 'text-[#F5A623] hover:text-[#FDE68A] hover:bg-[#F5A623]/10'
+                    ? 'bg-[#F9A620]/15 text-[#FFCB73] ring-1 ring-[#F9A620]/40'
+                    : 'text-[#F9A620] hover:text-[#FFCB73] hover:bg-[#F9A620]/10'
                   : active
                     ? 'bg-white/10 text-propyte-brand'
                     : 'text-white/75 hover:text-white hover:bg-white/5'

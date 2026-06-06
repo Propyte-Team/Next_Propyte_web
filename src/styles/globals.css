@@ -1047,14 +1047,14 @@ html {
 .animate-meteor { animation: meteor 5s linear infinite; }
 
 @keyframes propyte-crown-pulse {
-  0%, 100% { filter: drop-shadow(0 0 0 rgba(245, 166, 35, 0)); }
-  50%      { filter: drop-shadow(0 0 7px rgba(245, 166, 35, 0.9)); }
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(249, 166, 32, 0)); }
+  50%      { filter: drop-shadow(0 0 7px rgba(249, 166, 32, 0.9)); }
 }
 .animate-crown-pulse { animation: propyte-crown-pulse 2.8s ease-in-out infinite; }
 
 @keyframes propyte-exclusive-glow {
-  0%, 100% { box-shadow: 0 0 26px -8px rgba(245, 166, 35, 0.30); }
-  50%      { box-shadow: 0 0 44px -4px rgba(245, 166, 35, 0.60); }
+  0%, 100% { box-shadow: 0 0 26px -8px rgba(249, 166, 32, 0.30); }
+  50%      { box-shadow: 0 0 44px -4px rgba(249, 166, 32, 0.60); }
 }
 .animate-exclusive-glow { animation: propyte-exclusive-glow 4.5s ease-in-out infinite; }
 

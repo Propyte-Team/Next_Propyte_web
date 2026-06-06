@@ -157,8 +157,8 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                     className={`flex items-center gap-3 py-3 px-3 text-sm font-medium rounded-lg transition-colors ${
                       isGold
                         ? active
-                          ? 'text-[#FDE68A] bg-[#F5A623]/15 font-semibold ring-1 ring-[#F5A623]/30'
-                          : 'text-[#F5A623] hover:text-[#FDE68A] hover:bg-[#F5A623]/10 font-semibold'
+                          ? 'text-[#FFCB73] bg-[#F9A620]/15 font-semibold ring-1 ring-[#F9A620]/30'
+                          : 'text-[#F9A620] hover:text-[#FFCB73] hover:bg-[#F9A620]/10 font-semibold'
                         : active
                           ? 'text-[#5CE0D2] bg-white/10 font-semibold'
                           : 'text-white/70 hover:text-white hover:bg-white/10'

@@ -8,30 +8,26 @@ import {
   Crown,
   MapPin,
   ArrowRight,
-  ArrowUpRight,
-  FileDown,
-  Play,
-  Map as MapIcon,
-  LayoutGrid,
   Tag,
-  TrendingUp,
+  CreditCard,
+  Sparkles,
   Building2,
 } from '@/lib/icons';
 import { formatPrice } from '@/lib/formatters';
-import { safeExternalUrl } from '@/lib/security/safeUrl';
 import { getStageLabel, normalizeStage } from '@/lib/development-display';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import { Meteors } from '@/components/ui/meteors';
 
-const GOLD = '#F5A623';
-const GOLD_LIGHT = '#FDE68A';
+const GOLD = '#F9A620';
+const GOLD_LIGHT = '#FFCB73';
 
 export interface ExclusiveDev {
   id: string;
   slug: string;
   name: string;
   publication_title?: string | null;
+  publication_title_en?: string | null;
   developer_name?: string | null;
   developer_slug?: string | null;
   city: string | null;
@@ -39,11 +35,10 @@ export interface ExclusiveDev {
   stage?: string | null;
   images?: string[] | null;
   price_min_mxn?: number | null;
-  roi_projected?: number | null;
+  price_max_mxn?: number | null;
+  financing_down_payment?: number | null;
   available_units?: number | null;
   amenities?: string[] | null;
-  description_short_es?: string | null;
-  description_short_en?: string | null;
   brochure_url?: string | null;
   price_list_url?: string | null;
   virtual_tour_url?: string | null;
@@ -100,7 +95,7 @@ export default function ExclusivosShowcase({ items, locale }: Props) {
             colors={{ first: GOLD, second: GOLD_LIGHT }}
             sparklesCount={14}
           >
-            <span className="bg-gradient-to-b from-white via-white to-[#FDE68A] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-b from-white via-white to-[#FFCB73] bg-clip-text text-transparent">
               {t('heroTitle')}
             </span>
           </SparklesText>
@@ -138,7 +133,7 @@ export default function ExclusivosShowcase({ items, locale }: Props) {
           className="pointer-events-none absolute inset-0 opacity-60"
           style={{
             background:
-              'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(245,166,35,0.06) 0%, transparent 60%)',
+              'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(249,166,32,0.06) 0%, transparent 60%)',
           }}
         />
         <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
@@ -195,13 +190,25 @@ function ExclusiveCard({
   t: ReturnType<typeof useTranslations>;
 }) {
   const stageKey = normalizeStage(dev.stage);
-  const desc = locale === 'en' ? dev.description_short_en : dev.description_short_es;
-  const brochure = safeExternalUrl(dev.brochure_url);
-  const priceList = safeExternalUrl(dev.price_list_url);
-  const tour = safeExternalUrl(dev.virtual_tour_url);
-  const video = safeExternalUrl(dev.video_url);
-  const masterplan = safeExternalUrl(dev.masterplan);
   const detailHref = `/${locale}/desarrollos/${dev.slug}`;
+
+  // Encabezado público: título de publicación (nunca el nombre interno).
+  const title =
+    (locale === 'en' ? dev.publication_title_en : dev.publication_title) ||
+    dev.publication_title ||
+    dev.name;
+
+  // Precio: rango min–max si hay máximo distinto; si no, "Desde min".
+  const hasMin = dev.price_min_mxn != null && dev.price_min_mxn > 0;
+  const hasRange =
+    hasMin && dev.price_max_mxn != null && dev.price_max_mxn > (dev.price_min_mxn as number);
+  const priceText = hasRange
+    ? `${formatPrice(dev.price_min_mxn as number).replace(/\sMXN$/, '')} – ${formatPrice(dev.price_max_mxn as number)}`
+    : hasMin
+      ? `${t('from')} ${formatPrice(dev.price_min_mxn as number)}`
+      : null;
+
+  const amenitiesCount = dev.amenities?.length ?? 0;
 
   return (
     <motion.article
@@ -209,7 +216,7 @@ function ExclusiveCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={{ duration: 0.5, delay: Math.min(index * 0.07, 0.4), ease: 'easeOut' }}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F5A623]/40"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-[#F9A620]/40"
     >
       <BorderBeam size={90} duration={7} delay={index * 1.4} colorFrom={GOLD} colorTo={GOLD_LIGHT} />
 
@@ -218,7 +225,7 @@ function ExclusiveCard({
         {dev.images?.[0] ? (
           <Image
             src={dev.images[0]}
-            alt={`${dev.name} — ${dev.city ?? ''}`}
+            alt={`${title} — ${dev.city ?? ''}`}
             fill
             sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
             className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -261,22 +268,22 @@ function ExclusiveCard({
           (dev.developer_slug ? (
             <Link
               href={`/${locale}/desarrolladores/${dev.developer_slug}`}
-              className="mb-2 inline-flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#FDE68A] transition-colors hover:text-white"
+              className="mb-2 inline-flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#FFCB73] transition-colors hover:text-white"
             >
               <Building2 size={12} />
               {dev.developer_name}
             </Link>
           ) : (
-            <span className="mb-2 inline-flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#FDE68A]">
+            <span className="mb-2 inline-flex w-fit items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#FFCB73]">
               <Building2 size={12} />
               {dev.developer_name}
             </span>
           ))}
 
-        {/* Nombre REAL del desarrollo */}
+        {/* Título de publicación (público) */}
         <Link href={detailHref}>
-          <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-[#FDE68A]">
-            {dev.name}
+          <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-[#FFCB73]">
+            {title}
           </h3>
         </Link>
 
@@ -288,20 +295,18 @@ function ExclusiveCard({
           </span>
         </div>
 
-        {desc && <p className="mt-3 line-clamp-2 text-sm text-white/65">{desc}</p>}
-
-        {/* Métricas */}
+        {/* Datos relevantes */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          {dev.price_min_mxn != null && dev.price_min_mxn > 0 && (
+          {priceText && (
             <span className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-sm font-bold text-white">
               <Tag size={13} style={{ color: GOLD }} />
-              {t('from')} {formatPrice(dev.price_min_mxn)}
+              {priceText}
             </span>
           )}
-          {dev.roi_projected != null && dev.roi_projected > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-lg border border-[#F5A623]/30 bg-[#F5A623]/10 px-2.5 py-1 text-sm font-bold text-[#FDE68A]">
-              <TrendingUp size={13} />
-              {t('roiBadge')} {dev.roi_projected}%
+          {dev.financing_down_payment != null && dev.financing_down_payment > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-lg border border-[#F9A620]/30 bg-[#F9A620]/10 px-2.5 py-1 text-sm font-bold text-[#FFCB73]">
+              <CreditCard size={13} />
+              {t('downPayment', { pct: dev.financing_down_payment })}
             </span>
           )}
           {dev.available_units != null && dev.available_units > 0 && (
@@ -309,29 +314,18 @@ function ExclusiveCard({
               {t('availableUnits', { count: dev.available_units })}
             </span>
           )}
+          {amenitiesCount > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-white/70">
+              <Sparkles size={12} style={{ color: GOLD }} />
+              {t('amenitiesCount', { count: amenitiesCount })}
+            </span>
+          )}
         </div>
-
-        {/* Recursos — brochure, lista, masterplan, tour, video (todo visible en exclusivos) */}
-        {(brochure || priceList || masterplan || tour || video) && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {brochure && (
-              <ResourceLink href={brochure} primary icon={<FileDown size={14} />} label={t('brochure')} />
-            )}
-            {priceList && (
-              <ResourceLink href={priceList} icon={<Tag size={14} />} label={t('priceList')} />
-            )}
-            {masterplan && (
-              <ResourceLink href={masterplan} icon={<LayoutGrid size={14} />} label={t('masterplan')} />
-            )}
-            {tour && <ResourceLink href={tour} icon={<MapIcon size={14} />} label={t('tour')} />}
-            {video && <ResourceLink href={video} icon={<Play size={14} />} label={t('video')} />}
-          </div>
-        )}
 
         <div className="mt-auto pt-5">
           <Link
             href={detailHref}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FDE68A] transition-all group-hover:gap-2.5"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#FFCB73] transition-all group-hover:gap-2.5"
           >
             {t('viewProperty')}
             <ArrowRight size={15} />
@@ -339,36 +333,6 @@ function ExclusiveCard({
         </div>
       </div>
     </motion.article>
-  );
-}
-
-function ResourceLink({
-  href,
-  label,
-  icon,
-  primary = false,
-}: {
-  href: string;
-  label: string;
-  icon: React.ReactNode;
-  primary?: boolean;
-}) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={
-        primary
-          ? 'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-[#0B1418] transition-transform hover:scale-[1.04]'
-          : 'inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/80 transition-colors hover:border-[#F5A623]/40 hover:text-white'
-      }
-      style={primary ? { background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD})` } : undefined}
-    >
-      {icon}
-      {label}
-      <ArrowUpRight size={12} />
-    </a>
   );
 }
 

@@ -26,6 +26,7 @@ export const DARK_HERO_ROUTES = [
   '/como-invertir',
   '/financiamiento',
   '/destacados',
+  '/exclusivos',
   '/faq',
   '/glosario',
   '/promociones',
