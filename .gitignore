@@ -103,3 +103,6 @@ tests/qa-phase4/_tmp_*
 tests/qa-phase55/_tmp_*
 tests/qa-phase55/screenshots-header/
 tests/screenshots/
+
+# QA visual screenshots (generados por pruebas)
+tests/qa-visual/screenshots/
