@@ -431,11 +431,6 @@ export default function MarketplaceCard({
             )}
           </div>
 
-          {/* Developer attribution — solo grid (compact prioriza densidad) */}
-          {variant !== 'compact' && property.developer && (
-            <div className="text-2xs text-gray-600">{property.developer}</div>
-          )}
-
           {/* Investment metrics row — solo grid; compact ya mostró ROI inline arriba */}
           {variant !== 'compact' && (
             <div className="flex flex-wrap items-center gap-1.5">

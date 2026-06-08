@@ -196,6 +196,27 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     property.name = property.publication_title_en;
   }
 
+  // ── Regla "Relación CRM = Exclusivo" ──────────────────────────────────────
+  // Solo los desarrollos exclusivos (crm_relationship ~ /exclusiv/i) muestran:
+  //   1. El nombre interno del desarrollo como H1 (property.exclusive_name,
+  //      preservado en applyExclusiveOverlay). En el resto del sitio el H1
+  //      SIEMPRE es el título público — nunca el nombre interno.
+  //   2. El título de publicación (property.name) como subtítulo bajo el H1.
+  //   3. La sección de Documentos (brochure).
+  //   4. La tarjeta de Desarrollador.
+  // v_developments expone brochure_url/developer para TODOS los desarrollos
+  // (no hay gate de datos), así que estos guards son la única cosa que los
+  // oculta en no-exclusivos. SEO/schema/breadcrumb/share NO cambian (siempre
+  // título público).
+  const isExclusive = typeof property.crm_relationship === 'string'
+    && /exclusiv/i.test(property.crm_relationship);
+  const h1Title = isExclusive && property.exclusive_name
+    ? property.exclusive_name
+    : property.name;
+  const publicationSubtitle = isExclusive && property.name && property.name !== h1Title
+    ? property.name
+    : null;
+
   const propertyState = property.state || 'Quintana Roo';
   const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
   const representativeArea = property.area_m2 || property.area_min || null;
@@ -497,7 +518,12 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
             {/* Title & Location */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{property.name}</h1>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{h1Title}</h1>
+              {publicationSubtitle && (
+                <p className="mt-1.5 text-lg md:text-xl font-medium leading-snug text-gray-600">
+                  {publicationSubtitle}
+                </p>
+              )}
               <div className="flex items-center gap-2 mt-2 text-gray-600">
                 <MapPin size={18} />
                 <span className="text-lg">
@@ -653,7 +679,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
 
                       {(() => {
                         const safeBrochureUrl = safeExternalUrl(property.brochure_url);
-                        if (!safeBrochureUrl) return null;
+                        // Regla 3: Documentos solo en exclusivos.
+                        if (!isExclusive || !safeBrochureUrl) return null;
                         return (
                         <div>
                           <h2 className="text-xl font-bold text-gray-900 mb-3">
@@ -685,7 +712,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         );
                       })()}
 
-                      {developerDisplay.name && (
+                      {/* Regla 4: Desarrollador solo en exclusivos. */}
+                      {isExclusive && developerDisplay.name && (
                         <div className="propyte-card-glass-light p-6">
                           <h2 className="text-lg font-bold text-gray-900 mb-4">
                             {tProp('developerTitle')}

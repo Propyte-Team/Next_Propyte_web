@@ -223,6 +223,11 @@ async function applyExclusiveOverlay<T extends Record<string, any> | null>(clien
   const r = row as any;
   return {
     ...row,
+    // Nombre interno crudo (nombre_desarrollo) preservado ANTES de que
+    // applyDisplayName pise `name` con el título público. Solo los exclusivos
+    // lo exponen: el detail page lo usa como H1 (el resto del sitio nunca
+    // muestra el nombre interno). Ver feedback_exclusivos_crm_relationship.
+    exclusive_name: r.name ?? null,
     brochure_url: r.brochure_url ?? b.brochure_pdf ?? null,
     price_list_url: r.price_list_url ?? b.lista_precios ?? null,
     masterplan: r.masterplan ?? b.masterplan ?? null,
