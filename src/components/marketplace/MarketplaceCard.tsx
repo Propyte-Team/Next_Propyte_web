@@ -13,6 +13,7 @@ import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
 import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
+import { useUnits, m2ToSqft } from '@/lib/units-context';
 
 interface MarketplaceCardProps {
   property: Property;
@@ -52,6 +53,8 @@ export default function MarketplaceCard({
   // <PriceDisplay variant='dual'/>. useCurrency() sólo provee formatMxn para
   // el price/m² (cálculo derivado en MXN).
   const { formatMxn } = useCurrency();
+  // Unidad de área global (m² ↔ sqft) — reactiva al toggle del header.
+  const { unit: areaUnit } = useUnits();
 
   const hasPrice = property.price.mxn > 0;
   const originalCurrency = property.price.currency;
@@ -378,8 +381,13 @@ export default function MarketplaceCard({
               )}
               {property.specs.area > 0 && (
                 <>
-                  <span className="font-semibold">{property.specs.area.toLocaleString(locale === 'en' ? 'en-US' : 'es-MX')}</span>
-                  <span className="text-gray-600">m²</span>
+                  <span className="font-semibold">
+                    {(areaUnit === 'm2'
+                      ? property.specs.area
+                      : (m2ToSqft(property.specs.area) ?? property.specs.area)
+                    ).toLocaleString(locale === 'en' ? 'en-US' : 'es-MX')}
+                  </span>
+                  <span className="text-gray-600">{areaUnit === 'm2' ? 'm²' : 'sqft'}</span>
                 </>
               )}
             </div>
