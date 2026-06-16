@@ -36,7 +36,10 @@ export function isVisible(map: VisibilityMap, key: string): boolean {
 }
 
 export async function getVisibility(): Promise<VisibilityMap> {
-  const hubUrl = process.env.PROPYTE_HUB_URL;
+  // PROPYTE_HUB_URL es el nombre canónico (Vercel). En Hostinger prod la var
+  // se llama HUB_API_URL — sin este fallback, getVisibility devolvía {} y el
+  // fail-open mostraba TODAS las pestañas (mismo patrón que hub-content.ts).
+  const hubUrl = process.env.PROPYTE_HUB_URL ?? process.env.HUB_API_URL;
   if (!hubUrl) return {};
 
   const env = process.env.VISIBILITY_ENV === "dev" ? "dev" : "prod";
