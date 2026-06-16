@@ -294,7 +294,7 @@ export default function FilterBar({
           onClick={onOpenAdvanced}
           aria-haspopup="dialog"
           aria-expanded={advancedOpen}
-          className="h-10 px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors flex-shrink-0"
+          className="min-h-[44px] px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors flex-shrink-0 touch-manipulation"
         >
           <SlidersHorizontal size={14} />
           {t('mobileFiltersButton')}

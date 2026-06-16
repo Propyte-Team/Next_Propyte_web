@@ -199,14 +199,14 @@ export default function CookieBanner() {
                   <button
                     type="button"
                     onClick={saveCustom}
-                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-3 rounded-lg touch-manipulation bg-[#1A2F3F] hover:bg-[#0F1923] text-white text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('saveCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-3 rounded-lg touch-manipulation bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>
@@ -216,14 +216,14 @@ export default function CookieBanner() {
                   <button
                     type="button"
                     onClick={rejectOptional}
-                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-3 rounded-lg touch-manipulation border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-[#1A2F3F] text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('rejectCta')}
                   </button>
                   <button
                     type="button"
                     onClick={acceptAll}
-                    className="inline-flex items-center justify-center flex-1 h-9 px-3 rounded-lg bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                    className="inline-flex items-center justify-center flex-1 min-h-[44px] px-3 rounded-lg touch-manipulation bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] text-xs font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
                   >
                     {t('acceptAllCta')}
                   </button>

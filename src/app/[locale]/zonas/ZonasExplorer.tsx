@@ -145,7 +145,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
-            className="text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
+            className="min-h-[44px] text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer touch-manipulation"
           >
             <option value="all">{t('allCities')}</option>
             {Object.entries(CITY_REGIONS).map(([region, regionCities]) => {
@@ -172,7 +172,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('searchZone')}
-            className="text-sm bg-transparent border-none outline-none w-full"
+            className="min-h-[44px] text-sm bg-transparent border-none outline-none w-full touch-manipulation"
           />
         </div>
 
@@ -181,7 +181,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
           <select
             value={clusterFilter}
             onChange={(e) => setClusterFilter(e.target.value)}
-            className="text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer"
+            className="min-h-[44px] text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 cursor-pointer touch-manipulation"
           >
             <option value="all">{t('allProfiles')}</option>
             {clusters.map((c) => (
@@ -204,7 +204,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
           <button
             key={field}
             onClick={() => toggleSort(field)}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-full border transition-colors ${
+            className={`flex items-center gap-1 min-h-[44px] px-3 py-1.5 text-xs rounded-full border transition-colors touch-manipulation ${
               sortField === field
                 ? 'bg-teal-50 border-teal-300 text-teal-800 font-semibold'
                 : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'

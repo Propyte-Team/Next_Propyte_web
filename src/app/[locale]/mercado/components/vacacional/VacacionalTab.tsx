@@ -156,7 +156,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
-            className="text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer"
+            className="min-h-[44px] text-sm font-medium text-gray-900 bg-transparent border-none outline-none cursor-pointer touch-manipulation"
           >
             <option value="all">{tMer('allCitiesOption')}</option>
             {Object.entries(CITY_REGIONS).map(([region, regionCities]) => {
@@ -183,7 +183,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={tMer('searchZonePlaceholder')}
-            className="text-sm bg-transparent border-none outline-none w-full"
+            className="min-h-[44px] text-sm bg-transparent border-none outline-none w-full touch-manipulation"
           />
         </div>
       </div>

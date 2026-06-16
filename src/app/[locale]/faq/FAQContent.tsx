@@ -40,7 +40,7 @@ export default function FAQContent({
               type="button"
               onClick={() => { setActiveCategory(cat); setOpen(new Set([0, 1, 2])); }}
               aria-pressed={activeCategory === cat}
-              className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
+              className={`inline-flex items-center min-h-[44px] px-4 py-2 text-sm font-semibold rounded-full transition-colors touch-manipulation ${
                 activeCategory === cat
                   ? 'bg-propyte-brand text-[#0F1923]'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

@@ -57,7 +57,7 @@ export default function NewsletterCTA() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('newsletterPlaceholder')}
-            className="flex-1 h-11 px-4 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 bg-white"
+            className="w-full sm:flex-1 min-h-[44px] px-4 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 bg-white"
             aria-label={t('newsletterPlaceholder')}
           />
           {/* Honeypot anti-spam */}

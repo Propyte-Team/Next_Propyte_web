@@ -32,7 +32,7 @@ export default function CategoryFilter({ categories, active, allLabel, locale }:
     <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
       <button
         onClick={() => setCategory(null)}
-        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+        className={`inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-full text-sm font-medium transition-colors touch-manipulation ${
           !active
             ? 'bg-[#1A2F3F] text-white'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -45,7 +45,7 @@ export default function CategoryFilter({ categories, active, allLabel, locale }:
         <button
           key={cat}
           onClick={() => setCategory(cat)}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+          className={`inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-full text-sm font-medium transition-colors touch-manipulation ${
             active === cat
               ? 'bg-[#5CE0D2] text-[#0F1923]'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

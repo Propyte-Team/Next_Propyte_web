@@ -192,11 +192,13 @@ function ExclusiveCard({
   const stageKey = normalizeStage(dev.stage);
   const detailHref = `/${locale}/desarrollos/${dev.slug}`;
 
-  // Encabezado público: título de publicación (nunca el nombre interno).
-  const title =
+  // En Exclusivos (colección privada) mostramos el nombre del desarrollo como
+  // título y el título de publicación como subtítulo.
+  const title = dev.name;
+  const publicationSubtitle =
     (locale === 'en' ? dev.publication_title_en : dev.publication_title) ||
     dev.publication_title ||
-    dev.name;
+    null;
 
   // Precio: rango min–max si hay máximo distinto; si no, "Desde min".
   const hasMin = dev.price_min_mxn != null && dev.price_min_mxn > 0;
@@ -221,14 +223,14 @@ function ExclusiveCard({
       <BorderBeam size={90} duration={7} delay={index * 1.4} colorFrom={GOLD} colorTo={GOLD_LIGHT} />
 
       {/* Imagen */}
-      <Link href={detailHref} className="relative block aspect-[16/10] overflow-hidden">
+      <Link href={detailHref} className="relative block aspect-[16/10] overflow-hidden transform-gpu [backface-visibility:hidden]">
         {dev.images?.[0] ? (
           <Image
             src={dev.images[0]}
             alt={`${title} — ${dev.city ?? ''}`}
             fill
             sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            className="object-cover transition-transform duration-700 group-hover:scale-110 transform-gpu [backface-visibility:hidden] [will-change:transform]"
           />
         ) : (
           <div className="h-full w-full bg-gradient-to-br from-[#1A2F3F] to-[#0B1418]" />
@@ -280,14 +282,19 @@ function ExclusiveCard({
             </span>
           ))}
 
-        {/* Título de publicación (público) */}
+        {/* Nombre del desarrollo (título) + título de publicación (subtítulo) */}
         <Link href={detailHref}>
           <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-[#FFCB73]">
             {title}
           </h3>
         </Link>
+        {publicationSubtitle && publicationSubtitle !== title && (
+          <p className="mt-1 text-sm font-medium leading-snug text-white/70">
+            {publicationSubtitle}
+          </p>
+        )}
 
-        <div className="mt-1.5 flex items-center gap-1 text-sm text-white/55">
+        <div className="mt-2.5 flex items-center gap-1 text-sm text-white/55">
           <MapPin size={13} />
           <span>
             {dev.zone ? `${dev.zone}, ` : ''}

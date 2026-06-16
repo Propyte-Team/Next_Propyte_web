@@ -116,7 +116,7 @@ export default function SearchBubble({
       <div className={`search-bubble-divider w-px ${isMobile ? 'h-5' : 'h-6'} mx-1 shrink-0`} />
 
       {/* Input */}
-      <div className="flex-1 flex items-center min-w-0 px-2">
+      <div className="flex-1 self-stretch flex items-center min-w-0 px-2">
         <label htmlFor={`search-input-${variant}`} className="sr-only">
           {t('search')}
         </label>
@@ -128,7 +128,7 @@ export default function SearchBubble({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           autoComplete="off"
-          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/70' : 'text-gray-700 placeholder:text-gray-600'} focus:outline-none min-w-0`}
+          className={`w-full h-full bg-transparent ${textSizeCls} ${dark ? 'text-white placeholder:text-white/70' : 'text-gray-700 placeholder:text-gray-600'} focus:outline-none min-w-0 touch-manipulation`}
         />
       </div>
 

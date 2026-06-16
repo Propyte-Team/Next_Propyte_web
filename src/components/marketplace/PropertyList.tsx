@@ -41,7 +41,7 @@ export default function PropertyList({
             <select
               value={sortBy}
               onChange={e => onSortChange(e.target.value as 'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date')}
-              className="text-sm font-semibold border-0 bg-transparent text-[#2C2C2C] focus:outline-none cursor-pointer"
+              className="min-h-[44px] py-2 text-sm font-semibold border-0 bg-transparent text-[#2C2C2C] focus:outline-none cursor-pointer touch-manipulation"
               aria-label={t('sortBy')}
             >
               <option value="relevance">{t('sortRelevance')}</option>
@@ -87,7 +87,7 @@ export default function PropertyList({
           <select
             value={sortBy}
             onChange={e => onSortChange(e.target.value as 'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date')}
-            className="text-sm font-semibold border-0 bg-transparent text-[#2C2C2C] focus:outline-none cursor-pointer"
+            className="min-h-[44px] py-2 text-sm font-semibold border-0 bg-transparent text-[#2C2C2C] focus:outline-none cursor-pointer touch-manipulation"
             aria-label={t('sortBy')}
           >
             <option value="relevance">{t('sortRelevance')}</option>
