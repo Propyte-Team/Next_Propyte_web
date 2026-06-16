@@ -24,8 +24,8 @@
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-// Cliente untyped (no generamos types del schema real_estate_hub) — se castea
-// a `any` en los .from() para evitar fricción de typing.
+// Cliente untyped (no generamos types del schema real_estate_hub) — tipamos
+// los rows esperados en cada maybeSingle<T>() en vez de castear a `any`.
 let cachedClient: SupabaseClient | null = null;
 
 function getRealEstateHubClient(): SupabaseClient | null {
@@ -65,11 +65,13 @@ export async function resolveProyectoDeInteres(
   if (!hub) return null;
 
   // Paso 1: unit → development_id
-  // Tipos del schema real_estate_hub no están generados — cast a any.
-  const { data: unit, error: unitErr } = await (hub.from("v_units") as any)
+  // Tipos del schema real_estate_hub no están generados — tipamos el row
+  // esperado vía maybeSingle<T>() en vez de castear el builder a any.
+  const { data: unit, error: unitErr } = await hub
+    .from("v_units")
     .select("development_id")
     .eq("id", unitId)
-    .maybeSingle();
+    .maybeSingle<{ development_id: string | null }>();
 
   if (unitErr || !unit?.development_id) {
     return null;
@@ -78,13 +80,12 @@ export async function resolveProyectoDeInteres(
   // Paso 2: development_id (uuid) → zoho_record_id (text) vía id_map
   const developmentIdAsText = String(unit.development_id);
 
-  const { data: mapping, error: mapErr } = await (hub.from(
-    "Propyte_zoho_id_map",
-  ) as any)
+  const { data: mapping, error: mapErr } = await hub
+    .from("Propyte_zoho_id_map")
     .select("zoho_record_id")
     .eq("supabase_id", developmentIdAsText)
     .eq("entity_type", "development")
-    .maybeSingle();
+    .maybeSingle<{ zoho_record_id: string | null }>();
 
   if (mapErr || !mapping?.zoho_record_id) {
     return null;
