@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   Landmark, Banknote, Building2, ArrowLeftRight, ArrowRight,
   CheckCircle, Sparkles,
@@ -43,6 +45,7 @@ const METHOD_ICONS = [Landmark, Banknote, Building2, ArrowLeftRight] as const;
 export default async function FinanciamientoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_FINANCIAMIENTO);
   const t = await getTranslations({ locale, namespace: 'financiamiento' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),

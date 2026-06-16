@@ -39,6 +39,16 @@ export const VISIBILITY_KEYS = {
   PAGE_BUILT: "page.built",
   PAGE_DESTACADOS: "page.destacados",
   PAGE_RENTAS: "page.rentas",
+  // Páginas agregadas al Hub 2026-06-16 (site_visibility, default visible=true).
+  PAGE_DESARROLLADORES: "page.desarrolladores",
+  PAGE_EXCLUSIVOS: "page.exclusivos",
+  PAGE_FAQ: "page.faq",
+  PAGE_FINANCIAMIENTO: "page.financiamiento",
+  PAGE_GLOSARIO: "page.glosario",
+  PAGE_METODOLOGIA: "page.metodologia",
+  PAGE_COMO_COMPRAR: "page.como-comprar",
+  PAGE_COMO_INVERTIR: "page.como-invertir",
+  PAGE_PROMOCIONES: "page.promociones",
 } as const;
 
 // fail-open: key not in map → visible

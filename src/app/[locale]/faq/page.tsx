@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { Sparkles } from '@/lib/icons';
 import FAQContent from './FAQContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
@@ -62,6 +64,7 @@ const FAQ_META: ReadonlyArray<{ q: string; a: string; cat: 'catBuying' | 'catInv
 export default async function FAQPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_FAQ);
   const t = await getTranslations({ locale, namespace: 'faq' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),

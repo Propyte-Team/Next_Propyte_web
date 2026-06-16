@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getExclusiveDevelopments } from '@/lib/supabase/queries';
 import ExclusivosShowcase, { type ExclusiveDev } from '@/components/exclusivos/ExclusivosShowcase';
@@ -36,6 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function ExclusivosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_EXCLUSIVOS);
   const t = await getTranslations({ locale, namespace: 'exclusivos' });
 
   let items: ExclusiveDev[] = [];

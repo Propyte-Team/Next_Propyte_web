@@ -1,4 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { Sparkles } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import GlosarioClient from './GlosarioClient';
@@ -43,6 +45,7 @@ const TERM_LINKS: Record<number, string> = {
 export default async function GlosarioPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_GLOSARIO);
   const t = await getTranslations({ locale, namespace: 'glosario' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),

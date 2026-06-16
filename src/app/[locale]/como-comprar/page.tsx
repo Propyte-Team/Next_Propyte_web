@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   Search, FileText, CreditCard, Home, Key, ClipboardCheck,
   CheckCircle, ArrowRight, Sparkles,
@@ -43,6 +45,7 @@ const DOC_KEYS = ['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6'] as const;
 export default async function ComoComprarPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_COMO_COMPRAR);
   const t = await getTranslations({ locale, namespace: 'comoComprar' });
 
   const [tBC, tA11y] = await Promise.all([

@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { ScrollText, Calendar, Tag, Hammer, TrendingUp, ArrowRight, ShieldCheck } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
@@ -36,6 +38,7 @@ const CRITERION_ICONS = [ScrollText, Calendar, Tag, Hammer, TrendingUp] as const
 export default async function MetodologiaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_METODOLOGIA);
   const t = await getTranslations({ locale, namespace: 'metodologiaPage' });
 
   const criteria = [

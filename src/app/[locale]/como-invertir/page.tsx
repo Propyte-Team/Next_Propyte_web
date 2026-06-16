@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   TrendingUp, Home, Palmtree, BarChart3, ArrowRight,
   ShieldCheck, Clock, DollarSign, Sparkles,
@@ -44,6 +46,7 @@ const STAGE_RISK = ['⬆️', '➡️', '⬇️'] as const;
 export default async function ComoInvertirPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_COMO_INVERTIR);
   const t = await getTranslations({ locale, namespace: 'comoInvertir' });
   const [tBC, tA11y, market] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
