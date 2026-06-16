@@ -205,11 +205,14 @@ export function mapDevelopmentToProperty(row: DevelopmentRow, locale?: string): 
     .filter((u): u is string => typeof u === 'string')
     .filter((u) => VALID_USAGES.includes(u as PropertyUsage)) as PropertyUsage[];
 
-  const firstType = (row.property_types && row.property_types[0]) || 'departamento';
-  const specType: Property['specs']['type'] = ['departamento', 'penthouse', 'terreno', 'macrolote', 'casa'].includes(
-    firstType
-  )
-    ? (firstType as Property['specs']['type'])
+  // Normaliza el texto sucio de BD ("Lotes", "Terrenos", "Lote comercial") al
+  // union canónico. Antes era case-sensitive → "Lotes" caía a 'departamento'.
+  const firstType = ((row.property_types && row.property_types[0]) || '').toLowerCase().trim();
+  const specType: Property['specs']['type'] =
+    firstType.startsWith('macrolote') || firstType.startsWith('megalote') ? 'macrolote'
+    : firstType.startsWith('terreno') || firstType.startsWith('lote') ? 'terreno'
+    : firstType.startsWith('penthouse') ? 'penthouse'
+    : firstType.startsWith('casa') || firstType.startsWith('villa') || firstType.startsWith('townhouse') ? 'casa'
     : 'departamento';
 
   const inventory = {

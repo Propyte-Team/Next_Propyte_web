@@ -86,6 +86,22 @@ const VALID_STAGES: ReadonlyArray<PropertyStage> = ['preventa', 'construccion', 
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 
 /**
+ * Normaliza `unit_type` (texto sucio de Zoho/BD: "Terreno", "Lote residencial",
+ * "Macrolote", "Departamento", etc.) al union canónico de `specs.type`.
+ * Bug 2026-06-16: el match anterior era `['terreno',...].includes(row.unit_type)`
+ * case-sensitive → "Terreno" caía a 'departamento' → lotes mostraban "Apartment".
+ */
+function normalizeUnitType(raw: string | null | undefined): Property['specs']['type'] {
+  const lower = (raw || '').toLowerCase().trim();
+  if (!lower) return 'departamento';
+  if (lower.startsWith('macrolote') || lower.startsWith('megalote')) return 'macrolote';
+  if (lower.startsWith('terreno') || lower.startsWith('lote')) return 'terreno';
+  if (lower.startsWith('penthouse')) return 'penthouse';
+  if (lower.startsWith('casa') || lower.startsWith('villa') || lower.startsWith('townhouse')) return 'casa';
+  return 'departamento';
+}
+
+/**
  * Construye richContent leyendo los campos JSON expuestos por v_units:
  * content_features_es/en, content_location_es/en, content_lifestyle_es/en, faq_es/en.
  * Solo retorna undefined si NO existe ninguno (evita objetos vacíos).
@@ -162,11 +178,7 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
     .filter((u): u is string => typeof u === 'string')
     .filter((u) => VALID_USAGES.includes(u as PropertyUsage)) as PropertyUsage[];
 
-  const specType: Property['specs']['type'] = ['departamento', 'penthouse', 'terreno', 'macrolote', 'casa'].includes(
-    row.unit_type || ''
-  )
-    ? (row.unit_type as Property['specs']['type'])
-    : 'departamento';
+  const specType: Property['specs']['type'] = normalizeUnitType(row.unit_type);
 
   // Availability → badge. AVAILABILITY_TO_BADGE solo aplica para 'reservado'/
   // 'vendido' (visualización). 'disponible' no necesita badge — el stage ya
