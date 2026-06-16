@@ -234,23 +234,29 @@ export default function MapView({ properties, onPropertyClick, onClusterClick, h
   }
 
   return (
-    <APIProvider apiKey={apiKey} onError={() => setError(true)}>
-      <Map
-        defaultCenter={RIVIERA_MAYA_CENTER}
-        defaultZoom={DEFAULT_ZOOM}
-        mapId="propyte-map"
-        gestureHandling="greedy"
-        disableDefaultUI={false}
-        className="w-full h-full"
-      >
-        <MapContent
-          properties={validProperties}
-          onPropertyClick={onPropertyClick}
-          onClusterClick={onClusterClick}
-          hoveredId={hoveredId}
-          onHover={onHover}
-        />
-      </Map>
-    </APIProvider>
+    // data-lenis-prevent: el smooth-scroll global (Lenis) intercepta el wheel en
+    // toda la página y le ganaba al mapa. Con este atributo Lenis ignora el wheel
+    // aquí dentro → Google Maps (gestureHandling="greedy") hace zoom y NO se
+    // scrollea la página mientras el mouse está sobre el mapa.
+    <div data-lenis-prevent className="w-full h-full">
+      <APIProvider apiKey={apiKey} onError={() => setError(true)}>
+        <Map
+          defaultCenter={RIVIERA_MAYA_CENTER}
+          defaultZoom={DEFAULT_ZOOM}
+          mapId="propyte-map"
+          gestureHandling="greedy"
+          disableDefaultUI={false}
+          className="w-full h-full"
+        >
+          <MapContent
+            properties={validProperties}
+            onPropertyClick={onPropertyClick}
+            onClusterClick={onClusterClick}
+            hoveredId={hoveredId}
+            onHover={onHover}
+          />
+        </Map>
+      </APIProvider>
+    </div>
   );
 }
