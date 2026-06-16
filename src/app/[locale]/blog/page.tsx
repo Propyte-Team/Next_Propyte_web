@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen } from '@/lib/icons';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts, getBlogCategories } from '@/lib/supabase/queries';
@@ -50,6 +52,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const { locale } = await params;
   const { categoria, pagina } = await searchParams;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_BLOG);
 
   const [t, tb] = await Promise.all([
     getTranslations({ locale, namespace: 'blog' }),

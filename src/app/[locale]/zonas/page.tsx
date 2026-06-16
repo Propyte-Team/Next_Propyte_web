@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
 import { ZonasExplorer } from './ZonasExplorer';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ZonasPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_ZONAS);
   const t = await getTranslations({ locale, namespace: 'zonas' });
 
   // Fetch ALL zone scores (no city filter)

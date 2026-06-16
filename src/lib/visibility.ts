@@ -28,6 +28,17 @@ export const VISIBILITY_KEYS = {
   NOSOTROS_QUIENES_SOMOS: "nosotros.quienes-somos",
   NOSOTROS_ESTRUCTURA: "nosotros.estructura",
   NOSOTROS_EQUIPO_COMERCIAL: "nosotros.equipo-comercial",
+  // Page-level toggles (el Hub ya los expone como page.*). Gatean la PÁGINA
+  // completa vía assertPageVisible() → notFound() si el Hub la marca false.
+  // Nota de naming: el Hub usa `page.corredores` para la ruta /brokers.
+  PAGE_ZONAS: "page.zonas",
+  PAGE_BLOG: "page.blog",
+  PAGE_BROKERS: "page.corredores",
+  PAGE_PROVEEDORES: "page.proveedores",
+  PAGE_UNETE: "page.unete",
+  PAGE_BUILT: "page.built",
+  PAGE_DESTACADOS: "page.destacados",
+  PAGE_RENTAS: "page.rentas",
 } as const;
 
 // fail-open: key not in map → visible

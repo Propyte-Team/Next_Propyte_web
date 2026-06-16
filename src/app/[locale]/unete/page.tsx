@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import UnetePageContent from './UnetePageContent';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getFaqs, getCta } from '@/lib/hub-content';
 
@@ -34,6 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function UnetePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_UNETE);
   const t = await getTranslations({ locale, namespace: 'unete' });
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),

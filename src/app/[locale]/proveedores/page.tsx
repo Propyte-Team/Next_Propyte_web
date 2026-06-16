@@ -1,6 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { Sparkles } from '@/lib/icons';
 import ProviderForm from './ProviderForm';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -25,6 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function ProvidersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_PROVEEDORES);
   const t = await getTranslations({ locale, namespace: 'providers' });
 
   const benefits = ['benefit1', 'benefit2', 'benefit3', 'benefit4'];

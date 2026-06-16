@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import BrokersPageContent from './BrokersPageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import PartnersLogos from '@/components/shared/PartnersLogos';
@@ -46,6 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BrokersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_BROKERS);
   const [tBC, tA11y, tBrokers] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),

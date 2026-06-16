@@ -2,6 +2,8 @@ import { getTranslations } from 'next-intl/server';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import BuiltPageContent from './BuiltPageContent';
 import { getCompanyStats, localizedStatLabel, getSiteMedia } from '@/lib/hub-content';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -29,6 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function BuiltPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_BUILT);
 
   const [hubStats, siteMedia] = await Promise.all([getCompanyStats('built'), getSiteMedia()]);
   const statsOverride = hubStats.length > 0

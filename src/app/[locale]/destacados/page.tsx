@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { assertPageVisible } from '@/lib/page-visibility';
+import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { ArrowRight, MapPin, Bed, Bath, Maximize, Sparkles } from '@/lib/icons';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getFeaturedDevelopments } from '@/lib/supabase/queries';
@@ -59,6 +61,7 @@ interface FeaturedDev {
 export default async function DestacadosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await assertPageVisible(VISIBILITY_KEYS.PAGE_DESTACADOS);
   const t = await getTranslations({ locale, namespace: 'destacados' });
   const tStages = await getTranslations({ locale, namespace: 'stages' });
   const [tBC, tA11y] = await Promise.all([
