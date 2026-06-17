@@ -16,6 +16,24 @@ export function slugify(text: string): string {
 }
 
 /**
+ * Slug de zona. Quita acentos (sin afectar el resto) y reemplaza espacios y "/"
+ * por guiones, preservando el patrón histórico de las URLs de zona ya indexadas.
+ * Única fuente de verdad para todos los puntos que generan el slug de zona.
+ */
+export function zoneSlug(zone: string): string {
+  return zone
+    .toLowerCase()
+    .replace(/[áàä]/g, 'a')
+    .replace(/[éèë]/g, 'e')
+    .replace(/[íìï]/g, 'i')
+    .replace(/[óòö]/g, 'o')
+    .replace(/[úùü]/g, 'u')
+    .replace(/ñ/g, 'n')
+    .replace(/\s+/g, '-')
+    .replace(/\//g, '-');
+}
+
+/**
  * Extract a human-readable filename from a URL. Strips query strings and
  * path, decodes URL encoding. Falls back to a generic name if the URL
  * is malformed.

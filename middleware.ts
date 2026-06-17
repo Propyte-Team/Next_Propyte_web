@@ -24,6 +24,33 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Normalización de slugs de zona con acento → sin acento (308).
+  // Solo quita diacríticos del segmento, preservando guiones (no reconstruye
+  // desde el nombre, para no romper slugs como "aqua---cumbres").
+  const zonaMatch = pathname.match(/^\/(es|en)\/zonas\/([^/]+)\/?$/);
+  if (zonaMatch) {
+    const [, loc, rawSeg] = zonaMatch;
+    let seg = rawSeg;
+    try {
+      seg = decodeURIComponent(rawSeg);
+    } catch {
+      /* segmento malformado: usar tal cual */
+    }
+    const deAccented = seg
+      .toLowerCase()
+      .replace(/[áàä]/g, 'a')
+      .replace(/[éèë]/g, 'e')
+      .replace(/[íìï]/g, 'i')
+      .replace(/[óòö]/g, 'o')
+      .replace(/[úùü]/g, 'u')
+      .replace(/ñ/g, 'n');
+    if (deAccented !== seg) {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${loc}/zonas/${deAccented}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
   // Check for slug redirects (old WP URLs → new Next.js paths)
   // Strips locale prefix to get the bare slug for lookup
   const bareSlug = pathname.replace(/^\/(es|en)\//, '').replace(/\/$/, '');

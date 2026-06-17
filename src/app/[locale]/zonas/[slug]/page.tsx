@@ -13,10 +13,11 @@ import {
 import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
 import SiteMedia from '@/components/shared/SiteMedia';
+import { zoneSlug } from '@/lib/utils';
 
 // Generate zone slugs for static generation
 const ZONE_CONFIGS = Object.entries(MARKET_SUBMARKET_TO_ZONE).map(([sub, zone]) => ({
-  slug: zone.toLowerCase().replace(/\s+/g, '-').replace(/[\/]/g, '-'),
+  slug: zoneSlug(zone),
   zone,
   city: 'Cancun', // Default to Cancun for now
   submarket: sub,
@@ -46,9 +47,10 @@ export async function generateMetadata({
   const cityName = zoneConfig?.city || 'Cancun';
   const isEn = locale === 'en';
 
+  // El template del root layout ('%s | Propyte') ya añade el sufijo de marca.
   const title = isEn
-    ? `${zoneName}, ${cityName} — Vacation Rental Market Analysis | Propyte`
-    : `${zoneName}, ${cityName} — Análisis de Mercado de Renta Vacacional | Propyte`;
+    ? `${zoneName}, ${cityName} — Vacation Rental Market Analysis`
+    : `${zoneName}, ${cityName} — Análisis de Mercado de Renta Vacacional`;
   const description = isEn
     ? `Investment analysis for ${zoneName}: occupancy rates, ADR trends, seasonal patterns, RevPAR, and zone intelligence score. Data-driven insights for real estate investors.`
     : `Análisis de inversión para ${zoneName}: ocupación, tendencias de ADR, estacionalidad, RevPAR y score de inteligencia de zona. Insights basados en datos para inversionistas inmobiliarios.`;
@@ -75,6 +77,9 @@ export default async function ZonePage({
   const { locale, slug } = await params;
   const zoneConfig = UNIQUE_ZONES.find((z) => z.slug === slug);
 
+  // La normalización de slugs con acento (puerto-cancún → puerto-cancun) se
+  // maneja en middleware.ts con un 308 (permanentRedirect en el render no corta
+  // bajo force-dynamic).
   if (!zoneConfig) notFound();
 
   const { zone, city, submarket } = zoneConfig;
@@ -83,7 +88,7 @@ export default async function ZonePage({
   const supabase = await createServerSupabaseClient();
 
   // Fetch all data in parallel — gracefully handle missing Supabase
-  let zoneDetail = { score: null, submarkets: [] as string[] };
+  let zoneDetail: Awaited<ReturnType<typeof getZoneDetail>> = { score: null, submarkets: [] };
   let occupancyTrend: Array<{ date: string; value: number }> = [];
   let adrTrend: Array<{ date: string; value: number }> = [];
   let forecasts: Awaited<ReturnType<typeof getForecasts>> = [];
@@ -119,23 +124,72 @@ export default async function ZonePage({
   const occupancySeasonal = seasonality.filter((s) => s.metric_name === 'occupancy');
   const adrSeasonal = seasonality.filter((s) => s.metric_name === 'daily_rate');
 
-  // Schema.org JSON-LD
-  const schema = {
+  const tProp = await getTranslations({ locale, namespace: 'property' });
+  const tZonas = await getTranslations({ locale, namespace: 'zonas' });
+
+  // Schema.org JSON-LD — Place + BreadcrumbList (coincide con el breadcrumb visible).
+  const isEn = locale === 'en';
+  const baseUrl = 'https://propyte.com';
+  const placeSchema = {
     '@context': 'https://schema.org',
     '@type': 'Place',
     name: `${zone}, ${city}`,
-    description: `Vacation rental market analysis for ${zone} in ${city}, Mexico`,
-    geo: { '@type': 'GeoCoordinates', latitude: 21.1619, longitude: -86.8515 },
+    description: isEn
+      ? `Vacation rental market analysis for ${zone}, ${city}, Mexico: occupancy, ADR, RevPAR and seasonality.`
+      : `Análisis de mercado de renta vacacional en ${zone}, ${city}: ocupación, ADR, RevPAR y estacionalidad.`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: city,
+      addressRegion: 'Quintana Roo',
+      addressCountry: 'MX',
+    },
+  };
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: tProp('breadcrumbHome'), item: `${baseUrl}/${locale}` },
+      { '@type': 'ListItem', position: 2, name: tZonas('breadcrumbZones'), item: `${baseUrl}/${locale}/zonas` },
+      { '@type': 'ListItem', position: 3, name: zone, item: `${baseUrl}/${locale}/zonas/${slug}` },
+    ],
   };
 
-  const tProp = await getTranslations({ locale, namespace: 'property' });
-  const tZonas = await getTranslations({ locale, namespace: 'zonas' });
+  // Resumen de mercado en texto plano (SSR) — cifras disponibles para Googlebot e IA
+  // sin ejecutar JS. Mismos campos/formato que los KPIs del chart (ZoneAnalytics).
+  const zs = zoneDetail.score;
+  const fmtMoney = (n: number | null | undefined) =>
+    n != null ? `$${Math.round(n).toLocaleString('en-US')}` : null;
+  const summaryStats = zs
+    ? [
+        {
+          label: isEn ? 'Median occupancy' : 'Ocupación media',
+          value: zs.median_occupancy != null ? `${Math.round(zs.median_occupancy)}%` : null,
+        },
+        { label: isEn ? 'Average daily rate (ADR)' : 'Tarifa diaria promedio (ADR)', value: fmtMoney(zs.median_adr) },
+        { label: 'RevPAR', value: fmtMoney(zs.revpar) },
+        {
+          label: isEn ? 'Active listings' : 'Propiedades activas',
+          value: zs.active_listings != null ? zs.active_listings.toLocaleString(isEn ? 'en-US' : 'es-MX') : null,
+        },
+        {
+          label: isEn ? 'Zone intelligence score' : 'Score de inteligencia de zona',
+          value: zs.score != null ? `${Math.round(zs.score)}/100` : null,
+        },
+      ].filter((x) => x.value != null)
+    : [];
+  const summaryUpdated = zs?.computed_at
+    ? new Date(zs.computed_at).toLocaleDateString(isEn ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' })
+    : null;
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumbs */}
@@ -160,6 +214,30 @@ export default async function ZonePage({
             {city} &middot; {tZonas('vacationMarketIntelligence')}
           </p>
         </div>
+
+        {/* Resumen de mercado en texto (SSR) — extraíble por Googlebot/IA sin JS */}
+        {summaryStats.length > 0 && (
+          <section className="mb-8 rounded-xl border border-gray-200 bg-white p-5">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">
+              {isEn
+                ? `Vacation rental market in ${zone}, ${city}`
+                : `Mercado de renta vacacional en ${zone}, ${city}`}
+            </h2>
+            <p className="text-gray-700 leading-relaxed">
+              {isEn
+                ? `Key short-term rental indicators for ${zone}, ${city}, Quintana Roo, based on AirDNA market data${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
+                : `Indicadores clave de renta vacacional en ${zone}, ${city}, Quintana Roo, con datos de mercado de AirDNA${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
+            </p>
+            <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
+              {summaryStats.map((stat) => (
+                <div key={stat.label} className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">{stat.label}</dt>
+                  <dd className="font-semibold text-gray-900">{stat.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        )}
 
         {/* Foto de la zona — Hub › Materiales (zona.generic); fallback a placeholder */}
         <SiteMedia mediaKey="zona.generic" locale={locale} label={`Foto de ${zone}, ${city}`} className="h-44 md:h-56 mb-8" sizes="(max-width: 1024px) 100vw, 1024px" />

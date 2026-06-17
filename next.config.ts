@@ -38,6 +38,8 @@ const nextConfig: NextConfig = {
         destination: '/:locale/mercado?tab=tradicional',
         permanent: true,
       },
+      // (Normalización de slugs de zona con acento → sin acento se maneja en
+      //  zonas/[slug]/page.tsx con permanentRedirect: next.config no matchea no-ASCII.)
       // Rename /corredores → /brokers (2026-06): 301 locale-aware + bare slug.
       { source: '/:locale/corredores',      destination: '/:locale/brokers',           permanent: true },
       { source: '/corredores',              destination: '/es/brokers',                permanent: true },

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { MapPin, Search, BarChart3, SortAsc, SortDesc } from '@/lib/icons';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { zoneSlug } from '@/lib/utils';
 
 interface ZonasExplorerProps {
   scores: ZoneScore[];
@@ -242,10 +243,7 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((score) => {
-            const slug = score.zone
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[\/]/g, '-');
+            const slug = zoneSlug(score.zone);
             return (
               <a key={score.id} href={`/${locale}/zonas/${slug}`} className="block">
                 <ZoneScoreCard score={score} locale={locale} />

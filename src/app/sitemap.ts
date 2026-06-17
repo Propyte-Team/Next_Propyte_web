@@ -85,9 +85,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // ── Zone pages ──────────────────────────────
   const zoneSlugs = [
-    'zona-hotelera', 'puerto-cancún', 'centro', 'supermanzana-11-17',
+    'zona-hotelera', 'puerto-cancun', 'centro', 'supermanzana-11-17',
     'arbolada', 'aqua---cumbres', 'lagos-del-sol', 'alfredo-v.-bonfil',
-    'las-torres', 'isla-dorada', 'residencial-río', 'selvamar', 'palmaris', 'campestre',
+    'las-torres', 'isla-dorada', 'residencial-rio', 'selvamar', 'palmaris', 'campestre',
   ];
   for (const slug of zoneSlugs) {
     for (const locale of LOCALES) {

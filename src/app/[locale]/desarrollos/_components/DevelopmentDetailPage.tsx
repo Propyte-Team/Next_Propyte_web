@@ -451,6 +451,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           url: `https://propyte.com/${locale}/desarrollos/${slug}`,
           image: property.images?.[0] || undefined,
           datePosted: property.created_at,
+          ...(developerDisplay.name && {
+            brand: { '@type': 'Organization', name: developerDisplay.name },
+          }),
           ...((property.price_min_mxn || property.price_mxn) > 0 && {
             offers: {
               '@type': 'Offer',

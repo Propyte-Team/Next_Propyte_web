@@ -2,13 +2,14 @@ import { ImageResponse } from 'next/og';
 import { loadOGFonts } from '@/lib/og/fonts';
 import OGFrame from '@/lib/og/OGFrame';
 import { MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { zoneSlug } from '@/lib/utils';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 // Misma fuente que page.tsx — mantener slug→zoneName en sync.
 const ZONE_CONFIGS = Object.entries(MARKET_SUBMARKET_TO_ZONE).map(([, zone]) => ({
-  slug: zone.toLowerCase().replace(/\s+/g, '-').replace(/[\/]/g, '-'),
+  slug: zoneSlug(zone),
   zone,
 }));
 

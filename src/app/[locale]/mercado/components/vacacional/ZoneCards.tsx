@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { SortAsc, SortDesc, BarChart3, ChevronDown } from '@/lib/icons';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { zoneSlug } from '@/lib/utils';
 
 type SortField = 'score' | 'occupancy' | 'adr' | 'listings' | 'zone';
 type SortDir = 'asc' | 'desc';
@@ -76,10 +77,7 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallba
       {/* Cards grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {visible.map((score) => {
-          const slug = score.zone
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[/]/g, '-');
+          const slug = zoneSlug(score.zone);
           return (
             <a key={score.id} href={`/${locale}/zonas/${slug}`} className="block">
               <ZoneScoreCard score={score} locale={locale} />
