@@ -2119,7 +2119,9 @@ export async function getBlogPost(c: Client, slug: string, locale: string): Prom
   if (includeStaged) {
     q = q.in('status', ['published', 'staged']);
   } else {
-    q = q.eq('status', 'published');
+    // Gate por fecha: un post programado (published con published_at futuro)
+    // no es accesible por URL hasta que llegue su fecha de publicación.
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
   }
 
   const { data, error } = await q.single();
