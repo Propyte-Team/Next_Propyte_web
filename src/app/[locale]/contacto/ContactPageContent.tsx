@@ -92,7 +92,6 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
   // Site config con fallback a i18n (red de seguridad)
   const configPhoneRaw = pickString(siteConfig, 'whatsapp.number', '');
   const phone =
-    process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
     (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
     '529844638032';
   const address = pickString(

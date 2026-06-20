@@ -22,6 +22,8 @@ import {
   getZoneDetail,
 } from '@/lib/supabase/queries';
 import { buildRichContent } from '@/lib/mappers/development-to-property';
+import { getSiteConfig } from '@/lib/hub-content';
+import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
 import { safeExternalUrl } from '@/lib/security/safeUrl';
 import {
@@ -416,13 +418,15 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   if (bathRange) shareSpecs.push({ label: tProp('bathrooms'), value: bathRange.min === bathRange.max ? String(bathRange.min) : `${bathRange.min}–${bathRange.max}` });
   if (areaRange) shareSpecs.push({ label: 'Área', value: areaRange.min === areaRange.max ? `${areaRange.min} m²` : `${areaRange.min}–${areaRange.max} m²` });
   if (totalUnits) shareSpecs.push({ label: tProp('units'), value: String(totalUnits) });
+  // Número de contacto desde el Hub (fuente única). getSiteConfig se dedupea por request.
+  const waNumber = resolveSiteContact(await getSiteConfig()).whatsapp;
   const shareData: ShareDownloadData = {
     title: property.name,
     price: propertyPrice > 0 ? formatPrice(propertyPrice) : '—',
     location: [property.zone && property.zone !== property.city ? property.zone : null, property.city, propertyState].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/desarrollos/${slug}`,
-    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032',
+    wa: waNumber,
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
@@ -886,7 +890,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               <ContactForm
                 propertyId={property.id}
                 propertyName={property.name}
-                whatsappUrl={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032').replace(/\D/g, '')}?text=${encodeURIComponent(
+                whatsappUrl={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                   tProp('whatsappInterestText', { name: property.name })
                 )}`}
                 whatsappLabel="WhatsApp"

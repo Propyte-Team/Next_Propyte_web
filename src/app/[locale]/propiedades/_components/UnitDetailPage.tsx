@@ -20,6 +20,8 @@ import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { getSiteConfig } from '@/lib/hub-content';
+import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
 import { CITY_TO_MARKET_CODE, VAC } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
@@ -185,6 +187,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   const _defaultOccupancy = airdnaOccupancy != null ? airdnaOccupancy : VAC.DEFAULT_OCCUPANCY * 100;
   void _defaultOccupancy;
 
+  // Número de contacto desde el Hub (fuente única). getSiteConfig se dedupea
+  // por request, así que esta llamada no agrega fetch extra al de layout.
+  const waNumber = resolveSiteContact(await getSiteConfig()).whatsapp;
+
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];
   if (property.specs.bedrooms > 0) shareSpecs.push({ label: tProp('bedrooms'), value: String(property.specs.bedrooms) });
@@ -198,7 +204,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     location: [property.location.zone, property.location.city, property.location.state].filter(Boolean).join(', '),
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/propiedades/${slug}`,
-    wa: process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032',
+    wa: waNumber,
     etapa: stageLabel,
     specs: shareSpecs,
     desc: description || undefined,
@@ -614,7 +620,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 <ContactForm
                   propertyId={property.id}
                   propertyName={property.name}
-                  whatsappUrl={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032'}?text=${encodeURIComponent(
+                  whatsappUrl={`https://wa.me/${waNumber}?text=${encodeURIComponent(
                     tProp('whatsappInterestText', { name: property.name })
                   )}`}
                 />

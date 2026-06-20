@@ -2,6 +2,7 @@
 
 import { MessageCircle } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
+import { useSiteContact } from '@/context/SiteConfigContext';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface AdvisorCTAProps {
@@ -9,11 +10,10 @@ interface AdvisorCTAProps {
   locale: string;
 }
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
-
 export function AdvisorCTA({ activeTab, locale }: AdvisorCTAProps) {
   const isEn = locale === 'en';
   const tMer = useTranslations('mercado');
+  const { whatsapp: WA_NUMBER } = useSiteContact();
 
   const waMessage = activeTab === 'vacacional'
     ? isEn

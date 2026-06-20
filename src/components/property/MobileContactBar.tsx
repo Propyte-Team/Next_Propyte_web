@@ -3,6 +3,7 @@
 import { MessageCircle } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
+import { useSiteContact } from '@/context/SiteConfigContext';
 
 interface MobileContactBarProps {
   price: number;
@@ -24,12 +25,10 @@ export default function MobileContactBar({
   price, propertyName, propertyUrl, roiPct,
 }: MobileContactBarProps) {
   const tProp = useTranslations('property');
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
+  const { whatsapp: phone } = useSiteContact();
 
   const msg = `${tProp('whatsappInterestText', { name: propertyName })} ${propertyUrl}`;
-  const whatsappUrl = phone
-    ? `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`
-    : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 
   return (
     <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] md:hidden">

@@ -14,6 +14,7 @@ import { MotionConfig } from 'framer-motion';
 import { SearchProvider } from '@/context/SearchContext';
 import { CurrencyProvider } from '@/context/CurrencyContext';
 import { SiteVisibilityProvider } from '@/context/SiteVisibilityContext';
+import { SiteConfigProvider } from '@/context/SiteConfigContext';
 import { UnitsProvider } from '@/lib/units-context';
 import { getVisibility } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
@@ -48,6 +49,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <SiteConfigProvider config={siteConfig}>
       <SiteVisibilityProvider flags={visibilityFlags}>
       <CurrencyProvider initialRate={usdMxnRate.rate} initialRateDate={usdMxnRate.date}>
       <UnitsProvider>
@@ -92,6 +94,7 @@ export default async function LocaleLayout({
       </UnitsProvider>
       </CurrencyProvider>
       </SiteVisibilityProvider>
+      </SiteConfigProvider>
     </NextIntlClientProvider>
   );
 }

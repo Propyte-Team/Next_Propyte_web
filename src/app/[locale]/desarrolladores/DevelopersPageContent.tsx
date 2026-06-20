@@ -14,13 +14,14 @@ import { toast } from 'sonner';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import HeroAtmosphere from '@/components/home/HeroAtmosphere';
+import { useSiteContact } from '@/context/SiteConfigContext';
 
 // ─────────────────────────────────────────────────────
 // 1 · HERO — angled bottom edge (calca page-desarrolladores.php WP)
 // ─────────────────────────────────────────────────────
 function DevelopersHero() {
   const t = useTranslations('developers');
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '';
+  const { whatsapp: phone } = useSiteContact();
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-[#0F1923] to-[#1A2F3F]">
       {/* Cuadrícula blueprint + parallax al cursor — misma atmósfera que el Hero

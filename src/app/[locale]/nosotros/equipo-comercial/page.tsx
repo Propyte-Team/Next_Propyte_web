@@ -8,10 +8,11 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getTeamMembers } from '@/lib/supabase/queries';
 import EquipoBios from './_components/EquipoBios';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
+import { getSiteConfig } from '@/lib/hub-content';
+import { resolveSiteContact } from '@/lib/site-contact';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate desde Hub al editar miembros
 
-const WA = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
 const WA_TEXT = encodeURIComponent('Hola, quiero agendar una llamada con un asesor de Propyte');
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -59,6 +60,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
 
   const supabase = createPublicSupabaseClient();
   const teamMembers = supabase ? await getTeamMembers(supabase) : [];
+  const { whatsapp: WA } = resolveSiteContact(await getSiteConfig());
 
   return (
     <>

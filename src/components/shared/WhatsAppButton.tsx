@@ -56,7 +56,6 @@ export default function WhatsAppButton({ propertyName, propertyId, phone: propPh
   const configPhoneRaw = pickString(siteConfig, 'whatsapp.number', '');
   const phone =
     propPhone ||
-    process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
     (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
     '529844638032';
   const { count: compareCount } = useCompare();

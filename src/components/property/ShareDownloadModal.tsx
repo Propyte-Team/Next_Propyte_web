@@ -36,7 +36,9 @@ interface Props {
   compact?: boolean;
 }
 
-const WA_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
+// Fallback de último recurso. El número real llega por data.wa (resuelto desde
+// el Hub por la página padre). NO usamos NEXT_PUBLIC_WHATSAPP_PHONE (stale).
+const WA_NUMBER = '529844638032';
 
 async function captureTemplate(el: HTMLElement): Promise<Blob> {
   const html2canvas = (await import('html2canvas')).default;

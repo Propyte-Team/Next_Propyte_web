@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { MessageCircle, Calendar, Bed, Bath, Maximize } from '@/lib/icons';
 import { formatPrice } from '@/lib/formatters';
+import { useSiteContact } from '@/context/SiteConfigContext';
 import type { Property } from '@/types/property';
 
 interface StickyBarProps {
@@ -13,7 +14,7 @@ interface StickyBarProps {
 export default function StickyBar({ property }: StickyBarProps) {
   const t = useTranslations('property');
   const [visible, setVisible] = useState(false);
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
+  const { whatsapp: phone } = useSiteContact();
 
   useEffect(() => {
     function handleScroll() {

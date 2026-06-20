@@ -10,6 +10,7 @@ import {
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import SiteMediaView from '@/components/shared/SiteMediaView';
+import { useSiteContact } from '@/context/SiteConfigContext';
 import type { SiteMediaMap } from '@/lib/hub-content';
 
 interface BuiltStatOverride {
@@ -404,6 +405,7 @@ function ConsultationForm() {
   const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors";
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = "block text-sm font-semibold text-[#1A2F3F] mb-1.5";
+  const { whatsapp: wa } = useSiteContact();
 
   return (
     <section id="contacto" className="py-16 md:py-24 bg-[#0F1923]">
@@ -431,7 +433,7 @@ function ConsultationForm() {
               </div>
               {/* WhatsApp (subtle) */}
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032'}?text=Hola%2C%20me%20interesa%20Propyte%20Built`}
+                href={`https://wa.me/${wa}?text=Hola%2C%20me%20interesa%20Propyte%20Built`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 mt-8 text-sm text-white/65 hover:text-[#25D366] transition-colors"

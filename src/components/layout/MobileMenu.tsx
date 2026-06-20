@@ -52,8 +52,8 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
 
   const configPhoneRaw = pickString(siteConfig, 'whatsapp.number', '');
   const phone =
-    process.env.NEXT_PUBLIC_WHATSAPP_PHONE ||
-    (configPhoneRaw ? normalizePhone(configPhoneRaw) : '');
+    (configPhoneRaw ? normalizePhone(configPhoneRaw) : '') ||
+    '529844638032';
   const presetEs = pickString(
     siteConfig,
     'whatsapp.preset_es',

@@ -15,13 +15,13 @@ import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import SiteMediaView from '@/components/shared/SiteMediaView';
+import { useSiteContact } from '@/context/SiteConfigContext';
 import type { SiteMediaMap } from '@/lib/hub-content';
 
 interface BrokerFaqItem { q: string; a: string }
 interface BrokersHubData { faqs: BrokerFaqItem[] }
 const BrokersHubContext = createContext<BrokersHubData>({ faqs: [] });
 
-const WA = (process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032');
 const WA_TEXT = encodeURIComponent('Hola, me interesa el programa de brokers de Propyte');
 
 // ─────────────────────────────────────────────────────
@@ -30,6 +30,7 @@ const WA_TEXT = encodeURIComponent('Hola, me interesa el programa de brokers de 
 function BrokerHero({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');
   const locale = useLocale();
+  const { whatsapp: WA } = useSiteContact();
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]">
       <Particles className="absolute inset-0 z-0" quantity={90} ease={70} color="#5CE0D2" staticity={40} size={0.5} />

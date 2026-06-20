@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ChevronDown, MessageCircle, Calendar, Clock, Phone } from '@/lib/icons';
 import type { Property } from '@/types/property';
 import { formatPrice } from '@/lib/formatters';
+import { useSiteContact } from '@/context/SiteConfigContext';
 import ContactForm from './ContactForm';
 
 interface ContactSidebarProps {
@@ -15,7 +16,7 @@ interface ContactSidebarProps {
 export default function ContactSidebar({ property, smartRentEstimate }: ContactSidebarProps) {
   const t = useTranslations('property');
   const [formOpen, setFormOpen] = useState(false);
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE || '529844638032';
+  const { whatsapp: phone } = useSiteContact();
 
   const msg = t('whatsappMessageWithSource', { name: property.name, id: property.id });
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
