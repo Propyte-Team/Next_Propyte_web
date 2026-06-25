@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { rateLimit } from '@/lib/rateLimit';
-import { verifyCronSecret } from '@/lib/security/cron-auth';
+import { verifyCronSecret, verifyCronSecretHeader } from '@/lib/security/cron-auth';
 import { sanitizeErrorMessage } from '@/lib/security/sanitize-error';
 import { getZohoClient } from '@/lib/zoho/client';
 import {
@@ -276,8 +276,13 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 2. Verify cron secret (timing-safe)
-  if (!verifyCronSecret(request.headers.get('authorization'))) {
+  // 2. Verify cron secret (timing-safe). Acepta Authorization: Bearer <secret>
+  //    o x-cron-secret: <secret> — el segundo sobrevive al strip de Bearer del
+  //    CDN de Hostinger (ver feedback_hostinger_cron_auth_header).
+  const authOk =
+    verifyCronSecret(request.headers.get('authorization')) ||
+    verifyCronSecretHeader(request.headers.get('x-cron-secret'));
+  if (!authOk) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

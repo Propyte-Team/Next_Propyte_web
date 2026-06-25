@@ -10,19 +10,25 @@
 //
 // Regla: en /api/cron/zoho-retry NUNCA usar `=== process.env.CRON_SECRET`.
 // Grep CI: 0 ocurrencias permitidas.
+//
+// Dos transportes aceptados (el llamador prueba ambos):
+//   1. `Authorization: Bearer <secret>` — verifyCronSecret()
+//   2. `x-cron-secret: <secret>`        — verifyCronSecretHeader()
+// El header `x-cron-secret` existe porque el CDN de Hostinger (hcdn) stripea
+// `Authorization: Bearer` en requests entrantes — un crontab que pega a
+// https://propyte.com/... perdería el Bearer y siempre daría 401. Un header
+// custom no se stripea. Ver feedback_hostinger_cron_auth_header.
 
 import { timingSafeEqual } from "node:crypto";
 
 /**
- * Verifica el header `Authorization: Bearer <secret>`.
+ * Núcleo timing-safe: compara el secret crudo provisto contra CRON_SECRET.
  *
  * - Fail-closed si `CRON_SECRET` env no está seteado (logueamos error).
  * - Fail-closed si el secret tiene < 32 chars (configuración débil).
  * - Comparación tiempo-constante con buffers de longitud igualada.
- *
- * @returns true si el header matchea exactamente; false en cualquier otro caso.
  */
-export function verifyCronSecret(authHeader: string | null | undefined): boolean {
+function compareToExpected(provided: string | null | undefined): boolean {
   const expected = process.env.CRON_SECRET;
 
   if (!expected) {
@@ -45,10 +51,6 @@ export function verifyCronSecret(authHeader: string | null | undefined): boolean
     return false;
   }
 
-  const prefix = "Bearer ";
-  if (!authHeader || !authHeader.startsWith(prefix)) return false;
-
-  const provided = authHeader.slice(prefix.length).trim();
   if (!provided) return false;
 
   const a = Buffer.from(provided, "utf8");
@@ -64,4 +66,26 @@ export function verifyCronSecret(authHeader: string | null | undefined): boolean
   b.copy(bPad);
 
   return a.length === b.length && timingSafeEqual(aPad, bPad);
+}
+
+/**
+ * Verifica el header `Authorization: Bearer <secret>`.
+ *
+ * @returns true si el header matchea exactamente; false en cualquier otro caso.
+ */
+export function verifyCronSecret(authHeader: string | null | undefined): boolean {
+  const prefix = "Bearer ";
+  if (!authHeader || !authHeader.startsWith(prefix)) return false;
+  return compareToExpected(authHeader.slice(prefix.length).trim());
+}
+
+/**
+ * Verifica el header custom `x-cron-secret: <secret>` (sin prefijo Bearer).
+ * Usado cuando el CDN stripea Authorization. El valor es el secret crudo.
+ *
+ * @returns true si el header matchea exactamente; false en cualquier otro caso.
+ */
+export function verifyCronSecretHeader(headerValue: string | null | undefined): boolean {
+  if (!headerValue) return false;
+  return compareToExpected(headerValue.trim());
 }
