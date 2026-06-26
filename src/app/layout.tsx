@@ -29,9 +29,15 @@ const dmSans = DM_Sans({
   weight: ['300', '400', '500', '700'],
 });
 
+// preload:false — fuentes de acento (eyebrows, italic editorial, mono de stats).
+// NO son el LCP (el H1 usa --font-display=Inter). Quitarles el preload libera
+// la ruta crítica en 4G: dejan de competir con Inter+DM Sans en el arranque y
+// se cargan al usarse. El diseño no cambia; el swap es gradual y adjustFontFallback
+// (default en next/font) evita CLS. PSI móvil 2026-06-26: bajar render-blocking del LCP.
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
+  preload: false,
   variable: '--font-space-grotesk',
   weight: ['300', '400', '500', '600', '700'],
 });
@@ -41,6 +47,7 @@ const spaceGrotesk = Space_Grotesk({
 const fraunces = Fraunces({
   subsets: ['latin'],
   display: 'swap',
+  preload: false,
   variable: '--font-fraunces',
   style: ['italic'],
   weight: ['400', '500'],
@@ -50,6 +57,7 @@ const fraunces = Fraunces({
 const jetBrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
+  preload: false,
   variable: '--font-mono',
   weight: ['400', '500', '700'],
 });

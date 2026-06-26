@@ -67,5 +67,13 @@
     "@typescript-eslint/typescript-estree": {
       "brace-expansion": "^5.0.6"
     }
-  }
+  },
+  "//browserslist": "Target moderno para que SWC no transpile/inyecte polyfills de Array.prototype.at/flat/flatMap, Object.fromEntries/hasOwn, String.trimStart/End (PSI 'JavaScript antiguo' 18 KiB, 2026-06-26). Safari 15.4 es el piso que soporta todas esas features de forma nativa.",
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 111",
+    "safari >= 15.4",
+    "ios_saf >= 15.4"
+  ]
 }
