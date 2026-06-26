@@ -34,13 +34,14 @@ const nextConfig: NextConfig = {
     // vida de caché eficientes" del PSI en las imágenes servidas por /_next/image).
     minimumCacheTTL: 2_678_400,
     remotePatterns: [
-      { protocol: 'https', hostname: '*.supabase.co' },
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
-      { protocol: 'https', hostname: 'drive.google.com' },
-      // YouTube thumbnails para VideoPlayer (componente property/VideoPlayer.tsx)
-      { protocol: 'https', hostname: 'img.youtube.com' },
-      { protocol: 'https', hostname: 'i.ytimg.com' },
+      // Comodín: las fichas pueden traer imágenes alojadas en el host del
+      // desarrollador (urbanhomes.mx, etc.). Sin esto, next/image devuelve 400
+      // para hosts no listados y la imagen sale rota (hero/thumbs). El comodín
+      // evita el whack-a-mole de whitelistear cada host nuevo del catálogo.
+      // Lo ideal es rehospedar a Supabase (van por /propyte-media), pero esto
+      // garantiza que ninguna imagen externa válida se rompa por config.
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
     ],
   },
   async redirects() {
