@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { Map, List, X, Sparkles } from '@/lib/icons';
 import { useFilters } from '@/hooks/useFilters';
@@ -9,7 +10,16 @@ import { useIsMobile } from '@/hooks/useMediaQuery';
 import FilterBar from '@/components/marketplace/FilterBar';
 import AdvancedFilters from '@/components/marketplace/AdvancedFilters';
 import PropertyList from '@/components/marketplace/PropertyList';
-import MapView from '@/components/marketplace/MapView';
+// MapView diferido: Google Maps (@vis.gl) es ~143 KiB de JS. El path grid
+// (/desarrollos + taxonomies) NUNCA renderiza mapa → con import estático su
+// JS se empaquetaba igual en esas rutas (PSI /desarrollos: "JS sin usar 401 KiB").
+// Diferido, solo se descarga cuando el mapa realmente se monta (/propiedades
+// desktop al instante; móvil al tocar el tab "Mapa"). ssr:false porque
+// Google Maps requiere window. El placeholder llena el contenedor → CLS estable.
+const MapView = dynamic(() => import('@/components/marketplace/MapView'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-[#0B1C1E]/[0.04] animate-pulse" aria-hidden />,
+});
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import ComparePanel from '@/components/marketplace/ComparePanel';
 import { trackSearch } from '@/lib/analytics/track';
