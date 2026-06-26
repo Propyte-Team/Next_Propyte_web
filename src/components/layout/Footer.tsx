@@ -82,8 +82,12 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
                 alt="Propyte"
                 width={2420}
                 height={452}
-                sizes="180px"
-                className="h-7 w-auto object-contain"
+                sizes="150px"
+                /* w-[150px] (= h-7 × aspecto 2420/452) reserva el box ANTES de
+                   que cargue el logo lazy. Con w-auto el ancho era 0 hasta la
+                   carga → reflow del footer = CLS 0.84 en páginas cortas como
+                   /desarrollos (PSI 2026-06-26, "Elemento de imagen sin tamaño"). */
+                className="h-7 w-[150px] object-contain"
               />
             </Link>
             <p className="text-sm text-white/70 leading-relaxed mb-4">{t('description')}</p>
