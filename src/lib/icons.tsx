@@ -213,6 +213,7 @@ export const Palmtree = withDefaultStroke(Lucide.Palmtree, 'Palmtree');
 export const Percent = withDefaultStroke(Lucide.Percent, 'Percent');
 export const Plane = withDefaultStroke(Lucide.Plane, 'Plane');
 export const Plus = withDefaultStroke(Lucide.Plus, 'Plus');
+export const QrCode = withDefaultStroke(Lucide.QrCode, 'QrCode');
 export const Redo2 = withDefaultStroke(Lucide.Redo2, 'Redo2');
 export const RefreshCw = withDefaultStroke(Lucide.RefreshCw, 'RefreshCw');
 export const Rocket = withDefaultStroke(Lucide.Rocket, 'Rocket');

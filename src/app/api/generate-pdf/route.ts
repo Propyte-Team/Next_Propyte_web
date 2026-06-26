@@ -24,6 +24,9 @@ import { PropertyPDFDocument, type PropertyPDFData, type PropertyPDFLabels } fro
 import { createElement, type ReactElement } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { pickLang } from '@/lib/i18n/pickLang';
+import { getSiteConfig } from '@/lib/hub-content';
+import { resolveSiteContact } from '@/lib/site-contact';
+import sharp from 'sharp';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -58,10 +61,15 @@ export async function GET(req: NextRequest) {
   const supabase = createPublicSupabaseClient();
   if (!supabase) return NextResponse.json({ error: 'no supabase' }, { status: 500 });
 
+  let whatsapp: string | null = null;
+  try {
+    whatsapp = resolveSiteContact(await getSiteConfig()).whatsapp;
+  } catch { /* footer WhatsApp es opcional */ }
+
   try {
     const data = kind === 'unit'
-      ? await buildUnitPdfData(supabase, slug, locale)
-      : await buildDevelopmentPdfData(supabase, slug, locale);
+      ? await buildUnitPdfData(supabase, slug, locale, whatsapp)
+      : await buildDevelopmentPdfData(supabase, slug, locale, whatsapp);
 
     if (!data) return NextResponse.json({ error: 'not found' }, { status: 404 });
 
@@ -92,6 +100,32 @@ export async function GET(req: NextRequest) {
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+// @react-pdf/renderer solo decodifica JPG/PNG. Las imágenes del catálogo llegan como
+// rutas proxy relativas (`/propyte-media/...`, normalmente WebP) → react-pdf las trata
+// como archivo local (ENOENT) y deja el hero en blanco. Resolvemos a URL absoluta
+// pública, pre-cargamos y normalizamos a JPEG con sharp; si algo falla devolvemos
+// null → el documento muestra el placeholder limpio.
+const PUBLIC_ORIGIN = 'https://propyte.com';
+
+async function fetchHeroAsDataUrl(raw: string | null | undefined): Promise<string | null> {
+  if (!raw) return null;
+  const url = raw.startsWith('http') ? raw : `${PUBLIC_ORIGIN}${raw.startsWith('/') ? '' : '/'}${raw}`;
+  if (!/^https?:\/\//.test(url)) return null;
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+    if (!res.ok) return null;
+    const input = Buffer.from(await res.arrayBuffer());
+    const jpeg = await sharp(input)
+      .rotate()
+      .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 78 })
+      .toBuffer();
+    return `data:image/jpeg;base64,${jpeg.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}
+
 async function buildPdfLabels(locale: 'es' | 'en', kind: 'development' | 'unit'): Promise<PropertyPDFLabels> {
   const t = await getTranslations({ locale, namespace: 'pdf' });
   return {
@@ -114,10 +148,12 @@ async function buildPdfLabels(locale: 'es' | 'en', kind: 'development' | 'unit')
     disclaimer: t('disclaimer'),
     generatedOn: t('generatedOn'),
     scan: t('scan'),
+    entregaEstimada: t('entregaEstimada'),
+    contact: t('contact'),
   };
 }
 
-async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'): Promise<PropertyPDFData | null> {
+async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en', whatsapp: string | null): Promise<PropertyPDFData | null> {
   let row: UnitRow | null = null;
   try {
     const { data } = await getUnitBySlug(supabase, slug);
@@ -186,7 +222,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     name: property.name,
     kind: 'unit',
     url: propertyUrl,
-    heroImage: property.images?.[0] || null,
+    heroImage: await fetchHeroAsDataUrl(property.images?.[0]),
     city: property.location.city,
     zone: property.location.zone,
     state: property.location.state,
@@ -198,6 +234,8 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     bathroomsRange: property.specs.bathrooms > 0 ? { min: property.specs.bathrooms, max: property.specs.bathrooms } : null,
     developer: property.developer || null,
     stageLabel,
+    deliveryLabel: property.delivery?.estimated || property.delivery?.text || null,
+    whatsapp,
     description: descText,
     roiProjected: property.roi.projected || null,
     capRate: property.capRate ?? null,
@@ -214,7 +252,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
   };
 }
 
-async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es' | 'en'): Promise<PropertyPDFData | null> {
+async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es' | 'en', whatsapp: string | null): Promise<PropertyPDFData | null> {
   const { data } = await getDevelopmentWithUnits(supabase, slug);
   if (!data) return null;
 
@@ -269,7 +307,7 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
     name: property.name,
     kind: 'development',
     url: propertyUrl,
-    heroImage: Array.isArray(property.images) && property.images[0] ? property.images[0] : null,
+    heroImage: await fetchHeroAsDataUrl(Array.isArray(property.images) ? property.images[0] : null),
     city: property.city || '',
     zone: property.zone || '',
     state: property.state || '',
@@ -281,6 +319,8 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
     bathroomsRange: rangeOf('bathrooms'),
     developer: developerName,
     stageLabel,
+    deliveryLabel: property.estimated_delivery || null,
+    whatsapp,
     description: descText,
     roiProjected: roiPct,
     capRate,

@@ -539,19 +539,6 @@ html {
   font-weight: 600;
 }
 
-/* Print: show only ShareDownloadModal Letter template */
-@page { margin: 0; }
-@media print {
-  body * { visibility: hidden !important; }
-  .print\:block,
-  .print\:block * { visibility: visible !important; }
-  .print\:block {
-    position: fixed;
-    top: 0;
-    left: 0;
-  }
-}
-
 /* ════════════════════════════════════════════════════════════════════════════
    HERO ATMOSPHERE — sistema reutilizable para todos los heros del sitio.
 
