@@ -24,7 +24,7 @@ Este bloque NO incluye Tier 2 (PostHog, Embla, TanStack Query, Magic UI), que se
 - **NO** se rediseña UI ni se cambia paleta. Lenis se aplica con `lerp` conservador para no alterar la sensación actual.
 - **NO** se reemplaza Framer Motion 12 por motion.dev (Tier 3 backlog).
 - **NO** se migra de Google Maps a MapLibre (Tier 3 backlog).
-- **NO** se cambia `images.unoptimized: true` en `next.config.ts` (decisión activa por Hostinger standalone — solo se documenta como nota).
+- ~~**NO** se cambia `images.unoptimized: true`~~ — **REVERTIDO 2026-06-26.** El `unoptimized:true` venía de evitar el límite del plan free de Vercel (commit e8e3609, abr-2026), no de Hostinger. Vercel staging se eliminó; prod es Hostinger standalone con `sharp 0.34` → el Image Optimizer funciona nativo. Re-activado: PSI móvil home 47→83, LCP 6.8s→4.4s, CLS 0.907→0.006. Kill-switch `NEXT_PUBLIC_DISABLE_IMAGE_OPT=true`. (commit d20e789).
 - **NO** se reemplaza GA4 + Hotjar + Meta Pixel por PostHog (Tier 2).
 - **NO** se tocan templates de email (Tier 2 considera React Email).
 - **NO** se modifican formularios Zoho (esa work-stream tiene branch propia `feat/zoho-forms-integration`).
@@ -36,7 +36,7 @@ Este bloque NO incluye Tier 2 (PostHog, Embla, TanStack Query, Magic UI), que se
 - **Branch base recomendada:** `develop` (limpia tras merge de SEO spec). Branch nueva propuesta: `feat/perf-optimization-tier-1`.
 - **Branch activa hoy:** `feat/zoho-forms-integration` (no tocar — work-stream paralela).
 - **next/og parcial:** existen `src/lib/og/{OGFrame.tsx, fonts.ts}` + `opengraph-image.tsx` en `/desarrollos/[slug]`, `/blog/[slug]`, `/built`, `/metodologia`, `/aviso-legal-inversion`. Falta cobertura en otras rutas (ver 6.4).
-- **`images.unoptimized: true`** en `next.config.ts` — desactiva el Image Optimizer de Next. Plaiceholder sigue funcionando (es server-side, usa Sharp directamente).
+- ~~**`images.unoptimized: true`**~~ — **ya NO** (revertido 2026-06-26, ver Non-Goals). El Image Optimizer de Next está activo en prod (Hostinger + sharp). Plaiceholder sigue siendo válido como complemento (blurDataURL).
 - **CSP en `next.config.ts`** está como `Content-Security-Policy-Report-Only`. Sentry necesita ampliar `connect-src` (`*.ingest.sentry.io`) y opcionalmente `script-src` (`browser.sentry-cdn.com`) si se usa CDN del SDK.
 - **GA4 + Hotjar + Meta Pixel + GTM** ya cargados (líneas 89-102 de `src/app/layout.tsx` + CSP). Sentry se suma sin reemplazarlos.
 - **Sharp 0.34** ya está instalado → plaiceholder lo aprovecha sin agregar dependencias nativas extra.
