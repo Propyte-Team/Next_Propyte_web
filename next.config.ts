@@ -19,7 +19,20 @@ const nextConfig: NextConfig = {
     '/*': ['./node_modules/@swc/helpers/esm/**/*'],
   },
   images: {
-    unoptimized: true,
+    // Optimizer RE-ACTIVADO 2026-06-26 (perf). `unoptimized:true` se puso en
+    // 2026-04-21 (commit e8e3609) SOLO para no consumir el límite de Image
+    // Optimization del plan free de Vercel cuando dev.propyte.com vivía ahí.
+    // Vercel staging se eliminó (2026-06-17); prod es Hostinger standalone con
+    // `sharp 0.34` instalado → el optimizer de Next funciona nativo. Tenerlo
+    // apagado servía cada foto a tamaño/peso completo (PSI móvil 2026-06-26:
+    // LCP 6.8s, -2.6MB de ahorro en imágenes, payload 4MB).
+    // Kill-switch: si el optimizer fallara en Hostinger, exportar
+    // NEXT_PUBLIC_DISABLE_IMAGE_OPT=true en el panel + rebuild para revertir.
+    unoptimized: process.env.NEXT_PUBLIC_DISABLE_IMAGE_OPT === 'true',
+    formats: ['image/avif', 'image/webp'],
+    // Cache de 31 días para los assets optimizados (atiende "Usar tiempos de
+    // vida de caché eficientes" del PSI en las imágenes servidas por /_next/image).
+    minimumCacheTTL: 2_678_400,
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
