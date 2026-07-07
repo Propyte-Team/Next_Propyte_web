@@ -94,6 +94,7 @@ const LeadSchema = z.object({
   utm_content: optionalUtm,
   utm_term: optionalUtm,
   gclid: optionalUtm,
+  fbclid: optionalUtm,
 });
 
 // Origin allowlist — extensible vía env (REQ-F-17).
@@ -322,6 +323,7 @@ export async function POST(request: NextRequest) {
         utm_content: data.utm_content || null,
         utm_term: data.utm_term || null,
         gclid: data.gclid || null,
+        fbclid: data.fbclid || null,
         zoho_sync_error: 'SKIPPED: unknown source',
       })
       .select('id')
@@ -398,6 +400,7 @@ export async function POST(request: NextRequest) {
     utm_content: data.utm_content || null,
     utm_term: data.utm_term || null,
     gclid: data.gclid || null,
+    fbclid: data.fbclid || null,
   };
 
   // Resolver Proyecto_de_Interes si form 2 (lookup unit → development → zoho_id)
@@ -436,6 +439,7 @@ export async function POST(request: NextRequest) {
       utm_content: utms.utm_content,
       utm_term: utms.utm_term,
       gclid: utms.gclid,
+      fbclid: utms.fbclid,
       nombre_campana: zohoPayload.lead.Nombre_de_Campa_a ?? null,
       nombre_formulario: zohoPayload.lead.Nombre_del_formulario ?? null,
       zoho_sync_error: 'PENDING_SYNC',

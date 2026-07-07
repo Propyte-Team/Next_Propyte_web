@@ -64,6 +64,7 @@ interface RetryLeadRow {
   utm_content: string | null;
   utm_term: string | null;
   gclid: string | null;
+  fbclid: string | null;
   zoho_lead_id: string | null;
   zoho_account_id: string | null;
   zoho_sync_error: string | null;
@@ -124,6 +125,7 @@ async function rebuildPayload(
     utm_content: row.utm_content,
     utm_term: row.utm_term,
     gclid: row.gclid,
+    fbclid: row.fbclid,
   };
 
   let zohoDevelopmentId: string | undefined;

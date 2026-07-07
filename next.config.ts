@@ -98,12 +98,13 @@ const nextConfig: NextConfig = {
     // nonce-based scripts via middleware (planned uplift).
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://*.hotjar.com https://connect.facebook.net https://maps.googleapis.com https://maps.gstatic.com",
+      // googleadservices/doubleclick: pings de conversión de Google Ads (tag AW).
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://static.hotjar.com https://*.hotjar.com https://connect.facebook.net https://maps.googleapis.com https://maps.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://www.facebook.com https://www.google-analytics.com https://*.hotjar.com",
+      "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://www.facebook.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.com.mx https://*.hotjar.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.hotjar.com wss://*.hotjar.com https://stats.g.doubleclick.net https://maps.googleapis.com",
-      "frame-src 'self' https://www.google.com https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://calendly.com",
+      "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.hotjar.com wss://*.hotjar.com https://stats.g.doubleclick.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://maps.googleapis.com",
+      "frame-src 'self' https://www.google.com https://td.doubleclick.net https://bid.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://calendly.com",
       "media-src 'self' https://*.supabase.co https://*.youtube.com https://*.youtube-nocookie.com https://drive.google.com data: blob:",
       "worker-src 'self' blob:",
       isProd ? "frame-ancestors 'none'" : "frame-ancestors 'self'",

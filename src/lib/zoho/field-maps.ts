@@ -56,6 +56,9 @@ export interface UtmData {
   utm_content?: string | null;
   utm_term?: string | null;
   gclid?: string | null;
+  /** Facebook Click ID — se persiste en Supabase para Meta CAPI; en Zoho solo
+      viaja dentro de la nota UTM (no hay campo custom fbclid todavía). */
+  fbclid?: string | null;
 }
 
 export type Locale = "es" | "en";
@@ -394,6 +397,7 @@ export function composeDuplicateNote(
   if (utms.utm_medium) utmParts.push(`medium=${utms.utm_medium}`);
   if (utms.utm_campaign) utmParts.push(`campaign=${utms.utm_campaign}`);
   if (utms.gclid) utmParts.push(`gclid=${utms.gclid}`);
+  if (utms.fbclid) utmParts.push(`fbclid=${utms.fbclid}`);
   if (utmParts.length > 0) {
     lines.push("");
     lines.push(`UTM: ${utmParts.join(" | ")}`);

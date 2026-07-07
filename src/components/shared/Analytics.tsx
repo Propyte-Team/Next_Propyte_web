@@ -2,6 +2,9 @@ import Script from 'next/script';
 
 export default function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA4_ID;
+  // Google Ads tag (AW-XXXXXXXXX) — comparte gtag.js con GA4; las conversiones
+  // se disparan en trackGenerateLead() con NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LEAD.
+  const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID;
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
   // Skip Meta Pixel when env var is missing or still set to the placeholder.
@@ -41,6 +44,7 @@ export default function Analytics() {
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', '${gaId}');
+              ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
             `}
           </Script>
         </>

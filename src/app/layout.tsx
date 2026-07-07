@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
-import Script from 'next/script';
 import '@/styles/globals.css';
 import { shouldNoIndex } from '@/lib/seo/noindex';
-
-const GA_ID = process.env.NEXT_PUBLIC_GA4_ID || 'G-H4VD5TVEKM';
 
 // Brand identity oficial (manual de marca PDF) replica la jerarquía de las
 // publicaciones de redes sociales:
@@ -106,23 +103,10 @@ export default function RootLayout({
       lang="es"
       className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
-      <body className="min-h-screen flex flex-col">
-        {children}
-        {GA_ID ? (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '${GA_ID}');`}
-            </Script>
-          </>
-        ) : null}
-      </body>
+      {/* gtag se carga únicamente en <Analytics /> ([locale]/layout) con
+          Consent Mode v2 — no duplicar aquí: una segunda config sin consent
+          infla pageviews e ignora el banner de cookies. */}
+      <body className="min-h-screen flex flex-col">{children}</body>
     </html>
   );
 }

@@ -129,6 +129,19 @@ export function trackGenerateLead(payload: {
     },
     { name: 'Lead', params: { content_name: payload.formType, value: payload.valueMxn, currency: 'MXN' } },
   );
+
+  // Google Ads conversion — acción "Lead formulario web" (send_to AW-XXX/label
+  // vía env). Evento separado de generate_lead: Ads solo registra conversiones
+  // etiquetadas con send_to, GA4 ignora este evento.
+  const sendTo = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LEAD;
+  const gtag = getGtag();
+  if (gtag && sendTo) {
+    gtag('event', 'conversion', {
+      send_to: sendTo,
+      value: payload.valueMxn ?? 0,
+      currency: 'MXN',
+    });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────
