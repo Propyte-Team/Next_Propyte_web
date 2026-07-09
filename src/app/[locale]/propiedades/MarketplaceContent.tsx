@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { Map, List, X, Sparkles } from '@/lib/icons';
 import { useFilters } from '@/hooks/useFilters';
@@ -9,10 +10,25 @@ import { useIsMobile } from '@/hooks/useMediaQuery';
 import FilterBar from '@/components/marketplace/FilterBar';
 import AdvancedFilters from '@/components/marketplace/AdvancedFilters';
 import PropertyList from '@/components/marketplace/PropertyList';
-import MapView from '@/components/marketplace/MapView';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import ComparePanel from '@/components/marketplace/ComparePanel';
 import { trackSearch } from '@/lib/analytics/track';
+
+// MapView envuelve @vis.gl/react-google-maps (~143KB) — solo se usa cuando
+// showMap=true y solo dentro del client boundary de esta página, así que se
+// difiere al cliente tras hidratación. MarketplaceContent ya es 'use client',
+// por lo que `ssr: false` es válido aquí (no hace falta un wrapper aparte).
+// El placeholder llena `w-full h-full` igual que MapView real — el alto real
+// lo reserva siempre el contenedor padre (`w-[40%] h-full` / `w-full h-full
+// relative`, ver render abajo), así que no hay CLS al intercambiar el chunk.
+// Contexto 2026: un intento previo de diferir MapView fue revertido, pero
+// según las notas del equipo esa reversión fue un misdiagnóstico — el CLS
+// real venía del footer, no de MapView. Con este placeholder que respeta el
+// alto del contenedor, diferir es seguro.
+const MapView = dynamic(() => import('@/components/marketplace/MapView'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-[#F4F6F8] animate-pulse" />,
+});
 
 /**
  * Heading band con identidad Propyte: eyebrow pill brand + H1 con accent

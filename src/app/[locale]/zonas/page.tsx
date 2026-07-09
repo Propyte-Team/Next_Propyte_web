@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getZoneScores } from '@/lib/supabase/queries';
 import { ZonasExplorer } from './ZonasExplorer';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -33,7 +33,7 @@ export default async function ZonasPage({ params }: { params: Promise<{ locale: 
   const tA11y = await getTranslations({ locale, namespace: 'a11y' });
 
   // Fetch ALL zone scores (no city filter)
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
   const allScores = supabase ? await getZoneScores(supabase) : [];
 
   // Get unique cities
