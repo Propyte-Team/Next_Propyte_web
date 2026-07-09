@@ -16,13 +16,33 @@ const ALLOWED_ATTR = [
   'cite',
 ];
 
+// CMS editors no siempre marcan sus <img> con loading="lazy". Sin eso, HTML
+// embebido (blog/[slug] vía dangerouslySetInnerHTML) carga todas las
+// imágenes eager, incluso las fuera de viewport. Post-procesamos con un
+// regex simple (no hay DOM disponible aquí de forma consistente entre
+// server/edge) que solo AGREGA atributos a <img> que no los tengan —
+// nunca toca ni quita atributos existentes.
+function addLazyLoadingToImages(html: string): string {
+  return html.replace(/<img\b([^>]*)>/gi, (match, attrs: string) => {
+    let result = attrs as string;
+    if (!/\sloading\s*=/i.test(result)) {
+      result += ' loading="lazy"';
+    }
+    if (!/\sdecoding\s*=/i.test(result)) {
+      result += ' decoding="async"';
+    }
+    return `<img${result}>`;
+  });
+}
+
 export function sanitizeRichHtml(input: string | null | undefined): string {
   if (!input) return '';
-  return DOMPurify.sanitize(input, {
+  const clean = DOMPurify.sanitize(input, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
     ALLOW_DATA_ATTR: false,
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form', 'input', 'link', 'meta'],
     FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'],
   });
+  return addLazyLoadingToImages(clean);
 }

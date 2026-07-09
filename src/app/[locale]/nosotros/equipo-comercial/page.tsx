@@ -57,8 +57,11 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
   ]);
 
   const supabase = createPublicSupabaseClient();
-  const teamMembers = supabase ? await getTeamMembers(supabase) : [];
-  const { whatsapp: WA } = resolveSiteContact(await getSiteConfig());
+  const [teamMembers, siteConfig] = await Promise.all([
+    supabase ? getTeamMembers(supabase) : Promise.resolve([]),
+    getSiteConfig(),
+  ]);
+  const { whatsapp: WA } = resolveSiteContact(siteConfig);
   const WA_TEXT = encodeURIComponent(t('waText'));
 
   return (

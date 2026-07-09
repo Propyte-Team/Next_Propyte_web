@@ -37,13 +37,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   } catch { /* use slug as fallback */ }
 
   const title = locale === 'es' ? `${name} — Desarrolladora` : `${name} — Developer`;
+  const description = locale === 'es'
+    ? `Conoce los proyectos inmobiliarios de ${name} en la Riviera Maya y Yucatán, comercializados por Propyte.`
+    : `Explore ${name}'s real estate projects in Riviera Maya and Yucatán, commercialized by Propyte.`;
   return {
     title,
-    description: locale === 'es'
-      ? `Conoce los proyectos inmobiliarios de ${name} en la Riviera Maya y Yucatán, comercializados por Propyte.`
-      : `Explore ${name}'s real estate projects in Riviera Maya and Yucatán, commercialized by Propyte.`,
+    description,
     openGraph: {
       title: `${title} | Propyte`,
+      description,
       type: 'profile',
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       images: [`/${locale}/opengraph-image`],

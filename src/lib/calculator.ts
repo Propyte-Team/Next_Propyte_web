@@ -116,6 +116,72 @@ export const MARKET_SUBMARKET_TO_ZONE: Record<string, string> = {
   'tulum_country_club': 'Tulum Country Club',
 };
 
+// Submarket → real city (mirrors the comment groupings above — this is the
+// source of truth for which city each submarket actually belongs to).
+// Used by /zonas/[slug] to resolve the correct `city` (and, via
+// CITY_TO_MARKET_CODE, the correct AirDNA `market`) instead of hardcoding
+// 'Cancun' for every zone. Values MUST match CITY_TO_MARKET_CODE keys exactly.
+//
+// NOTE (needs manual confirmation): 'tulum_country_club' is grouped under
+// Akumal here — same grouping already used independently in
+// src/lib/rental-data/zone-names.ts (STR_ZONE_NAME_MAP) — even though the
+// display name suggests Tulum. Likely AirDNA's "Akumal" market boundary
+// extends to include it, but flagging since the name is misleading.
+export const MARKET_SUBMARKET_TO_CITY: Record<string, string> = {
+  // Cancún
+  'smz_4': 'Cancun',
+  'sm_2a': 'Cancun',
+  'smz_16': 'Cancun',
+  'sm_2': 'Cancun',
+  'sm_23': 'Cancun',
+  'sm_24': 'Cancun',
+  'smz_25': 'Cancun',
+  'sm_27': 'Cancun',
+  'sm_28': 'Cancun',
+  'sm_32': 'Cancun',
+  'sm_63': 'Cancun',
+  'sm_69': 'Cancun',
+  'sm_72': 'Cancun',
+  'smz_35': 'Cancun',
+  'sm_64': 'Cancun',
+  // Playa del Carmen
+  'playacar': 'Playa del Carmen',
+  '28_junio': 'Playa del Carmen',
+  'ejidal': 'Playa del Carmen',
+  'los_olivos': 'Playa del Carmen',
+  'zazil_ha': 'Playa del Carmen',
+  // Tulum
+  'region_9': 'Tulum',
+  'region_15': 'Tulum',
+  // CDMX
+  'roma_norte': 'CDMX',
+  'roma_sur': 'CDMX',
+  'polanco': 'CDMX',
+  'condesa': 'CDMX',
+  'hipodromo': 'CDMX',
+  'coyoacan': 'CDMX',
+  'cuauhtemoc': 'CDMX',
+  'centro_historico': 'CDMX',
+  'juarez': 'CDMX',
+  'napoles': 'CDMX',
+  'tabacalera': 'CDMX',
+  'doctores': 'CDMX',
+  'escandon': 'CDMX',
+  'escandon_ii': 'CDMX',
+  'san_rafael': 'CDMX',
+  'narvarte': 'CDMX',
+  'del_valle_sur': 'CDMX',
+  'anzures': 'CDMX',
+  // Mérida
+  '97314': 'Merida',
+  // Akumal
+  'bay_area': 'Akumal',
+  'centro': 'Akumal',
+  'resorts': 'Akumal',
+  'bahia_principe': 'Akumal',
+  'tulum_country_club': 'Akumal', // needs manual confirmation — see note above
+};
+
 // Reverse: canonical zone → submarket codes
 export const ZONE_TO_MARKET_SUBMARKETS: Record<string, string[]> = {};
 for (const [sub, zone] of Object.entries(MARKET_SUBMARKET_TO_ZONE)) {

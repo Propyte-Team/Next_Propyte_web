@@ -55,8 +55,28 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
     getTranslations({ locale, namespace: 'brokers' }),
   ]);
 
-  // Hub-driven FAQs (con fallback a i18n)
-  const [hubFaqs, siteMedia] = await Promise.all([getFaqs('broker'), getSiteMedia()]);
+  // Hub-driven FAQs (con fallback a i18n) + partners/case studies — 4 fetches
+  // independientes entre sí, se lanzan todos en paralelo en un solo
+  // Promise.all en vez de dos etapas secuenciales. Partners/case studies
+  // conservan su aislamiento de error (.catch → []) para no tumbar la página
+  // completa si Supabase falla.
+  const supabase = createPublicSupabaseClient();
+  const [hubFaqs, siteMedia, partners, caseStudies] = await Promise.all([
+    getFaqs('broker'),
+    getSiteMedia(),
+    supabase
+      ? getPartners(supabase).catch((error) => {
+          console.error('[BrokersPage] getPartners failed:', error);
+          return [] as PartnerRow[];
+        })
+      : Promise.resolve([] as PartnerRow[]),
+    supabase
+      ? getCaseStudies(supabase, 'broker').catch((error) => {
+          console.error('[BrokersPage] getCaseStudies failed:', error);
+          return [] as CaseStudyRow[];
+        })
+      : Promise.resolve([] as CaseStudyRow[]),
+  ]);
   const brokerFaqs = hubFaqs.length > 0
     ? hubFaqs.map((f) => ({
         q: locale === 'en' ? f.question_en : f.question_es,
@@ -74,22 +94,6 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
       text: f.a,
     },
   }));
-
-  let partners: PartnerRow[] = [];
-  let caseStudies: CaseStudyRow[] = [];
-  try {
-    const supabase = createPublicSupabaseClient();
-    if (supabase) {
-      const [partnerRows, caseRows] = await Promise.all([
-        getPartners(supabase),
-        getCaseStudies(supabase, 'broker'),
-      ]);
-      partners = partnerRows;
-      caseStudies = caseRows;
-    }
-  } catch (error) {
-    console.error('[BrokersPage] queries failed:', error);
-  }
 
   return (
     <>

@@ -36,6 +36,7 @@ import {
   calculateRemainingBalanceActuarial,
 } from '@/lib/calculator';
 import { pickLang } from '@/lib/i18n/pickLang';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -113,8 +114,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   // construimos aquí desde el row para que el editorial (prioridad) aparezca.
   property.richContent = buildRichContent(property);
 
-  const [tProp, visibility] = await Promise.all([
+  const [tProp, tTypes, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
+    getTranslations({ locale, namespace: 'types' }),
     getVisibility(),
   ]);
 
@@ -405,12 +407,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         : tProp('stageReady');
 
   const mainType = property.property_types?.[0] || property.property_type || 'departamento';
-  const typeLabel =
-    mainType === 'departamento' ? tProp('typeApartments')
-      : mainType === 'terreno' ? tProp('typeLand')
-        : mainType === 'casa' ? tProp('typeHouses')
-          : mainType === 'penthouse' ? 'Penthouse'
-            : mainType;
+  const typeLabel = tTypes(normalizeI18nKey(mainType) as 'departamento');
 
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];

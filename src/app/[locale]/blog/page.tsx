@@ -147,7 +147,13 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
               description={t('emptyStateBody')}
               actions={[
                 { label: t('emptyStateCtaContact'), href: `/${locale}/contacto?asunto=blog` },
-                { label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' },
+                // "Volver al blog" solo tiene sentido cuando hay un filtro de
+                // categoría activo (limpia el filtro). Sin categoría, el
+                // grid ya está vacío sitewide y el CTA sería un loop al
+                // mismo estado vacío.
+                ...(activeCategory
+                  ? [{ label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' as const }]
+                  : []),
               ]}
             />
           )}

@@ -60,9 +60,7 @@ export default async function MercadoPage({
 
   // Pre-fetch STR data for vacacional tab
   const supabase = await createServerSupabaseClient();
-  if (!supabase) console.error('[MercadoPage] createServerSupabaseClient returned null — check env vars');
   const strScores = activeTab === 'vacacional' && supabase ? await getZoneScores(supabase) : [];
-  console.log(`[MercadoPage] strScores after filter: ${strScores.length} zones`);
 
   // STR stats for hero
   const strStats = strScores.length > 0

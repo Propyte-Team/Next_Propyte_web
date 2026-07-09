@@ -1926,7 +1926,7 @@
     "kpiSelectCity": "Selecciona una ciudad específica para ver métricas disponibles.",
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
-    "openFreeCalculator": "Abrir calculadora gratuita",
+    "openFinancingCalculator": "Abrir calculadora de financiamiento",
     "talkToAdvisor": "Hablar con un asesor Propyte"
   },
   "zoneAnalytics": {
@@ -2516,6 +2516,7 @@
     "zones": "Zonas",
     "developers": "Desarrolladoras",
     "providers": "Proveedores",
+    "rentas": "Rentas",
     "ariaLabel": "Ruta de navegación"
   },
   "mercadoMeta": {

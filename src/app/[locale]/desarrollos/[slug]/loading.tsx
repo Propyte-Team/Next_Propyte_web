@@ -1,5 +1,5 @@
-import PropyteLoader from '@/components/shared/PropyteLoader';
+import DetailSkeleton from '@/components/marketplace/DetailSkeleton';
 
 export default function Loading() {
-  return <PropyteLoader />;
+  return <DetailSkeleton />;
 }

@@ -10,16 +10,28 @@ import {
   getSeasonalIndices,
   getDevelopments,
 } from '@/lib/supabase/queries';
-import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE, MARKET_SUBMARKET_TO_CITY } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
 import SiteMedia from '@/components/shared/SiteMedia';
 import { zoneSlug } from '@/lib/utils';
+
+// City → state, for the ones present in MARKET_SUBMARKET_TO_CITY. Used for the
+// Place JSON-LD addressRegion and the SSR summary copy — previously hardcoded
+// to 'Quintana Roo' for every zone (wrong for CDMX/Mérida).
+const CITY_TO_STATE: Record<string, string> = {
+  'Cancun': 'Quintana Roo',
+  'Playa del Carmen': 'Quintana Roo',
+  'Tulum': 'Quintana Roo',
+  'Akumal': 'Quintana Roo',
+  'CDMX': 'Ciudad de México',
+  'Merida': 'Yucatán',
+};
 
 // Generate zone slugs for static generation
 const ZONE_CONFIGS = Object.entries(MARKET_SUBMARKET_TO_ZONE).map(([sub, zone]) => ({
   slug: zoneSlug(zone),
   zone,
-  city: 'Cancun', // Default to Cancun for now
+  city: MARKET_SUBMARKET_TO_CITY[sub] || 'Cancun', // real city per submarket; conservative fallback for any unmapped code
   submarket: sub,
 }));
 
@@ -84,6 +96,7 @@ export default async function ZonePage({
 
   const { zone, city, submarket } = zoneConfig;
   const market = CITY_TO_MARKET_CODE[city] || 'cancun';
+  const state = CITY_TO_STATE[city] || 'Quintana Roo';
 
   const supabase = await createServerSupabaseClient();
 
@@ -140,7 +153,7 @@ export default async function ZonePage({
     address: {
       '@type': 'PostalAddress',
       addressLocality: city,
-      addressRegion: 'Quintana Roo',
+      addressRegion: state,
       addressCountry: 'MX',
     },
   };
@@ -225,8 +238,8 @@ export default async function ZonePage({
             </h2>
             <p className="text-gray-700 leading-relaxed">
               {isEn
-                ? `Key short-term rental indicators for ${zone}, ${city}, Quintana Roo, based on AirDNA market data${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
-                : `Indicadores clave de renta vacacional en ${zone}, ${city}, Quintana Roo, con datos de mercado de AirDNA${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
+                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on AirDNA market data${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
+                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, con datos de mercado de AirDNA${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
             </p>
             <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
               {summaryStats.map((stat) => (

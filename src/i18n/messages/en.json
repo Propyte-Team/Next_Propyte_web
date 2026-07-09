@@ -1926,7 +1926,7 @@
     "kpiSelectCity": "Select a specific city to see available metrics.",
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",
-    "openFreeCalculator": "Open free calculator",
+    "openFinancingCalculator": "Open financing calculator",
     "talkToAdvisor": "Talk to a Propyte advisor"
   },
   "zoneAnalytics": {
@@ -2516,6 +2516,7 @@
     "zones": "Zones",
     "developers": "Developers",
     "providers": "Providers",
+    "rentas": "Rentals",
     "ariaLabel": "Breadcrumb"
   },
   "mercadoMeta": {

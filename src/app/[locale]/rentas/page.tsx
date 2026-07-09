@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import RentalAnalysisDashboard from '@/components/rentas/RentalAnalysisDashboard';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -38,7 +39,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function RentasPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   await assertPageVisible(VISIBILITY_KEYS.PAGE_RENTAS);
-  const t = await getTranslations({ locale, namespace: 'rentas' });
+  const [t, tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'rentas' }),
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   const schema = {
     '@context': 'https://schema.org',
@@ -58,6 +63,12 @@ export default async function RentasPage({ params }: { params: Promise<{ locale:
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: tBC('rentas') }]}
       />
       <RentalAnalysisDashboard locale={locale} />
     </>

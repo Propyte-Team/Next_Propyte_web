@@ -54,6 +54,14 @@ export function OccupancyTrend({
     })),
   ];
 
+  if (data.length === 0) {
+    return (
+      <div className="text-sm text-gray-600 text-center py-8">
+        No hay datos suficientes para calcular Ocupación
+      </div>
+    );
+  }
+
   return (
     <div>
       {title && (

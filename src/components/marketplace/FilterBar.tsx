@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
+import { CITY_MAP } from '@/app/[locale]/desarrollos/_components/cityConfig';
 
 interface FilterBarProps {
   filters: Filters;
@@ -16,7 +17,7 @@ interface FilterBarProps {
   advancedOpen: boolean;
   resultCount: number;
   /** Lista dinámica de ciudades disponibles en el listado actual. Si vacía,
-   *  cae al hardcoded ['Playa del Carmen', 'Tulum']. */
+   *  cae al catálogo canónico CITY_MAP (cancun/playa-del-carmen/tulum/merida). */
   availableCities?: string[];
   /** Lista dinámica de zonas — se filtra por ciudad seleccionada en el padre. */
   availableZones?: string[];
@@ -164,10 +165,12 @@ export default function FilterBar({
   const safeUsage = (u: string) => tUsages(normalizeI18nKey(u) as 'residencial');
   const safeDevType = (k: string) => tDevTypes(normalizeDevTypeKey(k) as 'mixto');
 
-  // Fallback cities cuando el padre no pasa lista dinámica.
+  // Fallback cities cuando el padre no pasa lista dinámica: usa el catálogo
+  // canónico CITY_MAP (Cancún/Playa del Carmen/Tulum/Mérida) en vez de un
+  // hardcode parcial que omitía Cancún y Mérida.
   const cityOptions = (availableCities && availableCities.length > 0)
     ? availableCities
-    : ['Playa del Carmen', 'Tulum'];
+    : Object.values(CITY_MAP).map((c) => c.name);
   const zoneOptions = availableZones || [];
 
   const priceActive = filters.priceMin > 0 || filters.priceMax < priceCeiling;

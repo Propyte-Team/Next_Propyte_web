@@ -17,22 +17,22 @@ export function ROICalculatorCTA({ locale }: ROICalculatorCTAProps) {
 
       <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
         {isEn
-          ? 'Calculate your vacation rental ROI'
-          : 'Calcula el ROI de tu renta vacacional'}
+          ? 'Simulate financing for your next investment'
+          : 'Simula el financiamiento de tu próxima inversión'}
       </h2>
 
       <p className="text-gray-300 max-w-xl mx-auto mb-6 text-sm sm:text-base">
         {isEn
-          ? 'Enter your property price, expected occupancy and nightly rate to estimate your annual return. Our calculator uses real market data from +2M records.'
-          : 'Ingresa el precio de tu propiedad, ocupación esperada y tarifa por noche para estimar tu retorno anual. Nuestra calculadora usa datos reales de +2M registros.'}
+          ? 'Enter the property price, down payment and term to estimate your monthly payment and compare bank financing options before you buy.'
+          : 'Ingresa el precio de la propiedad, tu enganche y plazo para estimar tu pago mensual y comparar opciones de financiamiento bancario antes de comprar.'}
       </p>
 
       <a
-        href={`/${locale}/contacto`}
+        href={`/${locale}/financiamiento`}
         className="inline-flex items-center gap-2 px-6 py-3 bg-propyte-brand text-[#1A2F3F] font-semibold rounded-lg hover:bg-propyte-cyan-200 transition-colors text-sm sm:text-base"
       >
         <Calculator className="w-4 h-4" />
-        {tMer('openFreeCalculator')}
+        {tMer('openFinancingCalculator')}
       </a>
     </div>
   );

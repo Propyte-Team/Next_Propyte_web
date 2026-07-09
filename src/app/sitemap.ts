@@ -3,10 +3,19 @@ import { createServerSupabaseClient, createServiceRoleClient } from '@/lib/supab
 import { TYPE_SLUGS } from '@/app/[locale]/desarrollos/_components/typeConfig';
 import { STAGE_SLUGS_URL } from '@/app/[locale]/desarrollos/_components/stageConfig';
 import { shouldNoIndex } from '@/lib/seo/noindex';
+import { MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
+import { zoneSlug } from '@/lib/utils';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 const LOCALES = ['es', 'en'];
 const CITIES = ['cancun', 'playa-del-carmen', 'tulum', 'merida'];
+
+// Fecha estable de build para páginas estáticas — `new Date()` en cada
+// invocación del sitemap hace que lastmod sea siempre "ahora" y por tanto
+// no aporta señal real a los crawlers. Se fija al build/deploy en vez de
+// recalcularse en cada request (route es dynamic pero el contenido de estas
+// páginas no cambia por request).
+const STATIC_LASTMOD = new Date('2026-07-01T00:00:00.000Z');
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Staging: sitemap vacío. Evita que Google descubra URLs nuevas y
@@ -49,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}${page.path}`,
-        lastModified: new Date(),
+        lastModified: STATIC_LASTMOD,
         changeFrequency: page.changeFrequency,
         priority: page.priority,
       });
@@ -61,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}/desarrollos/${city}`,
-        lastModified: new Date(),
+        lastModified: STATIC_LASTMOD,
         changeFrequency: 'daily',
         priority: 0.85,
       });
@@ -73,7 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}/desarrollos/tipo/${type}`,
-        lastModified: new Date(),
+        lastModified: STATIC_LASTMOD,
         changeFrequency: 'daily',
         priority: 0.8,
       });
@@ -85,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}/desarrollos/etapa/${stage}`,
-        lastModified: new Date(),
+        lastModified: STATIC_LASTMOD,
         changeFrequency: 'daily',
         priority: 0.8,
       });
@@ -93,16 +102,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ── Zone pages ──────────────────────────────
-  const zoneSlugs = [
-    'zona-hotelera', 'puerto-cancun', 'centro', 'supermanzana-11-17',
-    'arbolada', 'aqua---cumbres', 'lagos-del-sol', 'alfredo-v.-bonfil',
-    'las-torres', 'isla-dorada', 'residencial-rio', 'selvamar', 'palmaris', 'campestre',
-  ];
-  for (const slug of zoneSlugs) {
+  // Misma fuente canónica que zonas/[slug]/page.tsx (UNIQUE_ZONES): deriva los
+  // slugs de MARKET_SUBMARKET_TO_ZONE en vez de duplicar un array literal que
+  // se desincroniza (ese literal solo cubría Cancún y omitía Playa del Carmen,
+  // Tulum, CDMX y Mérida).
+  const zoneSlugsSet = new Set(Object.values(MARKET_SUBMARKET_TO_ZONE).map(zoneSlug));
+  for (const slug of zoneSlugsSet) {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}/zonas/${slug}`,
-        lastModified: new Date(),
+        lastModified: STATIC_LASTMOD,
         changeFrequency: 'weekly',
         priority: 0.8,
       });

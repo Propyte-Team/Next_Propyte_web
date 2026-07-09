@@ -5,6 +5,7 @@ import { getZoneScores } from '@/lib/supabase/queries';
 import { ZonasExplorer } from './ZonasExplorer';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,7 @@ export default async function ZonasPage({ params }: { params: Promise<{ locale: 
   const { locale } = await params;
   await assertPageVisible(VISIBILITY_KEYS.PAGE_ZONAS);
   const t = await getTranslations({ locale, namespace: 'zonas' });
+  const tA11y = await getTranslations({ locale, namespace: 'a11y' });
 
   // Fetch ALL zone scores (no city filter)
   const supabase = await createServerSupabaseClient();
@@ -49,15 +51,14 @@ export default async function ZonasPage({ params }: { params: Promise<{ locale: 
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <nav className="text-sm text-gray-600 mb-6">
-          <a href={`/${locale}`} className="hover:text-gray-700">
-            {t('breadcrumbHome')}
-          </a>
-          {' / '}
-          <span className="text-gray-900 font-medium">{t('breadcrumbZones')}</span>
-        </nav>
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={t('breadcrumbHome')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[{ label: t('breadcrumbZones') }]}
+      />
 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{t('h1')}</h1>
           <p className="text-lg text-gray-600 mt-1">{t('subtitle')}</p>
