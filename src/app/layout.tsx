@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
+import { getLocale } from 'next-intl/server';
 import '@/styles/globals.css';
 import { shouldNoIndex } from '@/lib/seo/noindex';
 
@@ -90,17 +91,21 @@ export const metadata: Metadata = {
     : {}),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // <html lang="es"> is the default; the locale-specific layout sets a
-  // dynamic lang via a client-side useEffect (Header component) so it
-  // updates when the user toggles ES↔EN without a full page reload.
+  // <html lang> resolved from the current request's locale (next-intl v4,
+  // plugin-injected request config in src/i18n/request.ts). Works here even
+  // though this layout sits above the [locale] segment: the withNextIntl
+  // plugin populates the request-scoped locale for the whole RSC tree, not
+  // just descendants of [locale]/layout.tsx.
+  const locale = await getLocale();
+
   return (
     <html
-      lang="es"
+      lang={locale}
       className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
       {/* gtag se carga únicamente en <Analytics /> ([locale]/layout) con

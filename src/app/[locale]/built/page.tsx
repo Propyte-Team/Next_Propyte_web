@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       images: [`/${locale}/built/opengraph-image`],
     },
     alternates: {
+      canonical: `/${locale}/built`,
       languages: {
         es: '/es/built',
         en: '/en/built',

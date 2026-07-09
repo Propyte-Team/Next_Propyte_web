@@ -8,7 +8,7 @@ import {
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
-import InvestmentComparison from '@/components/como-invertir/InvestmentComparison';
+import InvestmentComparison from '@/components/como-invertir/InvestmentComparisonLazy';
 import { getMarketStats, getComparatorRates } from '@/lib/market-stats';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 const STRATEGY_ICONS = [TrendingUp, Home, Palmtree] as const;
 const METRIC_ICONS = [BarChart3, DollarSign, Clock, ShieldCheck] as const;
 const STAGE_RISK = ['⬆️', '➡️', '⬇️'] as const;
+const STAGE_RISK_LABEL_KEYS = ['stageRiskHigh', 'stageRiskMedium', 'stageRiskLow'] as const;
 
 export default async function ComoInvertirPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -71,6 +72,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
     stage: t(`stage${i}Name` as 'stage1Name'),
     discount: market[STAGE_DESC_KEYS[i - 1]],
     risk: STAGE_RISK[i - 1],
+    riskLabel: t(STAGE_RISK_LABEL_KEYS[i - 1]),
     delivery: t(`stage${i}Delivery` as 'stage1Delivery'),
     ideal: t(`stage${i}Ideal` as 'stage1Ideal'),
   }));
@@ -140,6 +142,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
             label="Foto/render: propiedad de inversión en la Riviera Maya"
             className="mt-10 max-w-3xl mx-auto aspect-[21/9]"
             sizes="(max-width: 768px) 100vw, 768px"
+            priority
           />
         </div>
       </section>
@@ -208,7 +211,10 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
                   <tr key={row.stage} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{row.stage}</td>
                     <td className="px-4 py-3 text-center font-bold text-[#0E7490]">{row.discount ?? <span className="font-medium text-gray-500">{t('stageDiscountPending')}</span>}</td>
-                    <td className="px-4 py-3 text-center">{row.risk}</td>
+                    <td className="px-4 py-3 text-center">
+                      {row.risk}
+                      <span className="sr-only">{row.riskLabel}</span>
+                    </td>
                     <td className="px-4 py-3 text-center text-gray-600">{row.delivery}</td>
                     <td className="px-4 py-3 text-gray-600">{row.ideal}</td>
                   </tr>

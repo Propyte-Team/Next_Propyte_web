@@ -187,10 +187,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </div>
 
                 {post.published_at && (
-                  <span className="flex items-center gap-1">
+                  <time dateTime={post.published_at} className="flex items-center gap-1">
                     <Calendar size={14} />
                     {formatDate(post.published_at, locale)}
-                  </span>
+                  </time>
                 )}
 
                 <span className="flex items-center gap-1">

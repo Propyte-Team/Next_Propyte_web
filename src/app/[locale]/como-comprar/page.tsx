@@ -118,6 +118,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
             label="Foto: comprador recibiendo llaves / proceso de compra"
             className="mt-10 max-w-3xl mx-auto aspect-[21/9]"
             sizes="(max-width: 768px) 100vw, 768px"
+            priority
           />
         </div>
       </section>

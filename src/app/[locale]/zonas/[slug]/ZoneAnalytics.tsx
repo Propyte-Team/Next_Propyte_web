@@ -1,15 +1,38 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
-import { OccupancyTrend } from '@/components/analytics/OccupancyTrend';
-import { ADRTrend } from '@/components/analytics/ADRTrend';
-import { SeasonalPattern } from '@/components/analytics/SeasonalPattern';
-import { RevPARChart } from '@/components/analytics/RevPARChart';
 import { SupplyDemandIndicator } from '@/components/analytics/SupplyDemandIndicator';
 import { MarketAlertBanner } from '@/components/analytics/MarketAlertBanner';
 import type { ZoneScore, MetricForecast, SeasonalIndex } from '@/lib/supabase/queries';
 import { TrendingUp, Building2, DollarSign, BarChart3 } from '@/lib/icons';
+
+// ZonePage (zonas/[slug]/page.tsx) es un Server Component — no puede usar
+// `ssr: false` con next/dynamic. ZoneAnalytics ya es 'use client', así que el
+// boundary para lazy-loadear recharts (~340KB) va aquí, por cada chart.
+// El skeleton reserva la altura real (title ~28px + ResponsiveContainer
+// height) para no producir CLS cuando el chunk cargue.
+function ChartSkeleton({ height }: { height: number }) {
+  return <div style={{ height }} className="animate-pulse rounded-lg bg-gray-100" />;
+}
+
+const OccupancyTrend = dynamic(
+  () => import('@/components/analytics/OccupancyTrend').then((m) => m.OccupancyTrend),
+  { ssr: false, loading: () => <ChartSkeleton height={330} /> },
+);
+const ADRTrend = dynamic(
+  () => import('@/components/analytics/ADRTrend').then((m) => m.ADRTrend),
+  { ssr: false, loading: () => <ChartSkeleton height={330} /> },
+);
+const SeasonalPattern = dynamic(
+  () => import('@/components/analytics/SeasonalPattern').then((m) => m.SeasonalPattern),
+  { ssr: false, loading: () => <ChartSkeleton height={280} /> },
+);
+const RevPARChart = dynamic(
+  () => import('@/components/analytics/RevPARChart').then((m) => m.RevPARChart),
+  { ssr: false, loading: () => <ChartSkeleton height={330} /> },
+);
 
 interface Development {
   id: string;

@@ -402,6 +402,7 @@ export default function FilterBar({
                 value={filters.priceMin || ''}
                 onChange={e => onFilterChange('priceMin', Number(e.target.value) || 0)}
                 placeholder="Min"
+                aria-label={t('filterPriceMin')}
                 className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
               />
               <span className="text-gray-600 text-sm">—</span>
@@ -410,6 +411,7 @@ export default function FilterBar({
                 value={filters.priceMax < priceCeiling ? filters.priceMax : ''}
                 onChange={e => onFilterChange('priceMax', Number(e.target.value) || priceCeiling)}
                 placeholder="Max"
+                aria-label={t('filterPriceMax')}
                 className="w-full h-10 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
               />
             </div>

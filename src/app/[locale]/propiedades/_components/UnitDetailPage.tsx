@@ -1,5 +1,6 @@
 import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
   ChevronRight, MapPin, Bed, Bath, Square, Car, Building2, ArrowLeft,
@@ -195,7 +196,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   const shareSpecs: ShareDownloadData['specs'] = [];
   if (property.specs.bedrooms > 0) shareSpecs.push({ label: tProp('bedrooms'), value: String(property.specs.bedrooms) });
   if (property.specs.bathrooms > 0) shareSpecs.push({ label: tProp('bathrooms'), value: String(property.specs.bathrooms) });
-  if (property.specs.area > 0) shareSpecs.push({ label: 'Área', value: `${property.specs.area} m²` });
+  if (property.specs.area > 0) shareSpecs.push({ label: tProp('area'), value: `${property.specs.area} m²` });
   if (row.parking && row.parking > 0) shareSpecs.push({ label: tProp('parkingShort'), value: String(row.parking) });
   if (row.floor != null) shareSpecs.push({ label: tProp('floorLabel', { n: '' }).trim(), value: String(row.floor) });
   const shareData: ShareDownloadData = {
@@ -463,8 +464,13 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
                               {developerDisplay.logoUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
+                                <Image
+                                  src={developerDisplay.logoUrl}
+                                  alt={developerDisplay.name}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-contain"
+                                />
                               ) : (
                                 <span className="text-xl font-extrabold text-[#0E7490] tracking-tight">
                                   {developerDisplay.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()}
@@ -602,7 +608,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                 labels={{
                   title: locale === 'es' ? 'Datos clave' : 'Key data',
                   price: locale === 'es' ? 'Precio' : 'Price',
-                  area: 'Área',
+                  area: tProp('area'),
                   bedrooms: tProp('bedrooms'),
                   bathrooms: tProp('bathrooms'),
                   discount: tProp('discount'),

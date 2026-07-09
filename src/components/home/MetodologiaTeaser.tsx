@@ -41,7 +41,7 @@ export default function MetodologiaTeaser() {
                 className="bg-[#132B2E]/80 border border-white/10 rounded-2xl p-6 hover:border-[#A2F9FF]/40 transition-colors backdrop-blur-sm"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-[#A2F9FF]/50 text-xs font-bold tracking-widest">
+                  <span className="text-[#A2F9FF]/70 text-xs font-bold tracking-widest">
                     {c.num}
                   </span>
                   <Icon size={20} strokeWidth={1.75} className="text-[#A2F9FF]" />

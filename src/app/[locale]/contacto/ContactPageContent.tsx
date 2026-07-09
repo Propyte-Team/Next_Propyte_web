@@ -165,9 +165,12 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   <input
                     id="name"
                     {...register('name')}
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? 'name-error' : undefined}
+                    aria-required={true}
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
-                  {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                  {errors.name && <p id="name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                 </div>
 
                 <div>
@@ -178,9 +181,12 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     id="email"
                     type="email"
                     {...register('email')}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
+                    aria-required={true}
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
-                  {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+                  {errors.email && <p id="email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                 </div>
 
                 <div className="md:col-span-2">
@@ -191,6 +197,9 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     id="subject"
                     {...register('subject')}
                     defaultValue=""
+                    aria-invalid={!!errors.subject}
+                    aria-describedby={errors.subject ? 'subject-error' : undefined}
+                    aria-required={true}
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   >
                     <option value="" disabled>{t('formSubjectPlaceholder')}</option>
@@ -198,7 +207,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-                  {errors.subject && <p className="text-xs text-red-500 mt-1">{errors.subject.message}</p>}
+                  {errors.subject && <p id="subject-error" role="alert" className="text-xs text-red-500 mt-1">{errors.subject.message}</p>}
                 </div>
 
                 <div className="md:col-span-2">
@@ -209,9 +218,12 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     id="message"
                     rows={6}
                     {...register('message')}
+                    aria-invalid={!!errors.message}
+                    aria-describedby={errors.message ? 'message-error' : undefined}
+                    aria-required={true}
                     className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none resize-none transition-colors"
                   />
-                  {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
+                  {errors.message && <p id="message-error" role="alert" className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
                 </div>
 
                 {/* Honeypot anti-spam: hidden from humans, visible to bots. */}

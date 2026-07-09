@@ -36,7 +36,10 @@ export default async function Image({
     } catch { /* no fallback */ }
 
     if (row) {
-      title = row.development_name || row.name;
+      // Misma precedencia que buildPropertyMetadata.ts: meta_title (SEO) →
+      // title (editorial) → name — nunca el nombre interno del desarrollo
+      // padre (development_name) como fuente primaria.
+      title = (row.meta_title as string | null | undefined) ?? row.title ?? row.name;
       location = [row.zone, row.city].filter(Boolean).join(', ');
       if (row.price_mxn) price = formatPrice(row.price_mxn);
       if (row.unit_type) {

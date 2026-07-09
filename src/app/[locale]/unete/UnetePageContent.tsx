@@ -533,6 +533,7 @@ function OtherRoles() {
 // ============================================================
 function ApplicationForm() {
   const t = useTranslations('unete');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -549,10 +550,10 @@ function ApplicationForm() {
   ];
 
   const schema = z.object({
-    name: z.string().trim().min(2),
-    whatsapp: z.string().trim().min(8),
-    email: z.string().trim().email(),
-    city: z.string().min(1),
+    name: z.string().trim().min(2, tCommon('required')),
+    whatsapp: z.string().trim().min(8, tCommon('required')),
+    email: z.string().trim().email(tCommon('invalidEmail')),
+    city: z.string().min(1, tCommon('required')),
     experience: z.string().optional().or(z.literal('')),
     interest: z.string().max(2000).optional().or(z.literal('')),
     // Honeypot — bots lo llenan, el endpoint los detecta (REQ-F-02)
@@ -563,7 +564,7 @@ function ApplicationForm() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
   async function onSubmit(values: FormValues) {
@@ -644,8 +645,12 @@ function ApplicationForm() {
                         autoComplete="name"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formNamePlaceholder')}
+                        aria-invalid={!!errors.name}
+                        aria-describedby={errors.name ? 'unete-name-error' : undefined}
+                        aria-required={true}
                         {...register('name')}
                       />
+                      {errors.name && <p id="unete-name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
                     </div>
                     <div>
                       <label htmlFor="unete-whatsapp" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
@@ -655,8 +660,12 @@ function ApplicationForm() {
                         autoComplete="tel"
                         className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                         placeholder={t('formWhatsappPlaceholder')}
+                        aria-invalid={!!errors.whatsapp}
+                        aria-describedby={errors.whatsapp ? 'unete-whatsapp-error' : undefined}
+                        aria-required={true}
                         {...register('whatsapp')}
                       />
+                      {errors.whatsapp && <p id="unete-whatsapp-error" role="alert" className="text-xs text-red-500 mt-1">{errors.whatsapp.message}</p>}
                     </div>
                   </div>
 
@@ -668,8 +677,12 @@ function ApplicationForm() {
                       autoComplete="email"
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
                       placeholder={t('formEmailPlaceholder')}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'unete-email-error' : undefined}
+                      aria-required={true}
                       {...register('email')}
                     />
+                    {errors.email && <p id="unete-email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                   </div>
 
                   <div>
@@ -678,6 +691,9 @@ function ApplicationForm() {
                       id="unete-city"
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
+                      aria-invalid={!!errors.city}
+                      aria-describedby={errors.city ? 'unete-city-error' : undefined}
+                      aria-required={true}
                       {...register('city')}
                     >
                       <option value="" disabled>{t('formCityPlaceholder')}</option>
@@ -685,6 +701,7 @@ function ApplicationForm() {
                         <option key={opt.value} value={opt.value}>{t(opt.key)}</option>
                       ))}
                     </select>
+                    {errors.city && <p id="unete-city-error" role="alert" className="text-xs text-red-500 mt-1">{errors.city.message}</p>}
                   </div>
 
                   <div>

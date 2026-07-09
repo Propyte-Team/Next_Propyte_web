@@ -123,15 +123,19 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
               {columns.map(({ key, label, align }) => (
                 <th
                   key={key}
-                  onClick={() => toggleSort(key)}
-                  className={`px-4 py-3 font-medium text-gray-600 cursor-pointer hover:bg-gray-100 transition-colors whitespace-nowrap ${
+                  aria-sort={sortField === key ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                  className={`px-4 py-3 font-medium text-gray-600 transition-colors whitespace-nowrap ${
                     align === 'right' ? 'text-right' : 'text-left'
                   }`}
                 >
-                  <span className="inline-flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(key)}
+                    className="inline-flex items-center gap-1 hover:bg-gray-100 transition-colors rounded px-1 -mx-1"
+                  >
                     {label}
                     <SortIndicator field={key} />
-                  </span>
+                  </button>
                 </th>
               ))}
             </tr>
@@ -157,7 +161,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                         (score.score ?? 0) >= 70
                           ? 'text-emerald-600'
                           : (score.score ?? 0) >= 50
-                          ? 'text-amber-600'
+                          ? 'text-amber-700'
                           : 'text-gray-600'
                       }`}
                     >

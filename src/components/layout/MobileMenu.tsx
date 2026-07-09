@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -65,6 +65,10 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
     'Hi, I want info about properties in Riviera Maya',
   );
 
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -75,6 +79,62 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  // Focus management: capture the trigger on open, move focus into the
+  // drawer, and restore focus to the trigger when the drawer closes.
+  useEffect(() => {
+    if (isOpen) {
+      previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+      const raf = window.requestAnimationFrame(() => {
+        closeButtonRef.current?.focus({ preventScroll: true });
+      });
+      return () => window.cancelAnimationFrame(raf);
+    }
+    previouslyFocusedRef.current?.focus?.({ preventScroll: true });
+    previouslyFocusedRef.current = null;
+  }, [isOpen]);
+
+  // Escape closes the drawer; Tab is trapped within it while open.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function getFocusable(): HTMLElement[] {
+      const root = drawerRef.current;
+      if (!root) return [];
+      return Array.from(
+        root.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null);
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+        return;
+      }
+      if (e.key === 'Tab') {
+        const focusable = getFocusable();
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+        if (e.shiftKey) {
+          if (active === first || !drawerRef.current?.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (active === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   function switchLocale(newLocale: 'es' | 'en') {
     if (newLocale === locale) return;
@@ -116,11 +176,15 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
 
           {/* Drawer (left, dark) */}
           <motion.div
+            ref={drawerRef}
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 220 }}
             id="mobile-menu-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
             className="absolute left-0 top-0 h-full w-[280px] bg-[#0F1923] shadow-xl flex flex-col"
           >
             {/* Header */}
@@ -130,6 +194,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                 <span className="text-xl font-bold tracking-tight text-[#5CE0D2]">YTE</span>
               </div>
               <button
+                ref={closeButtonRef}
                 type="button"
                 onClick={onClose}
                 aria-label={t('closeMenu')}

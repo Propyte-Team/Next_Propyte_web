@@ -10,6 +10,7 @@ interface BlogPaginationProps {
   locale: string;
   prevLabel: string;
   nextLabel: string;
+  ariaLabel: string;
 }
 
 export default function BlogPagination({
@@ -18,6 +19,7 @@ export default function BlogPagination({
   locale,
   prevLabel,
   nextLabel,
+  ariaLabel,
 }: BlogPaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,7 +40,7 @@ export default function BlogPagination({
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="flex items-center justify-center gap-2 mt-10" aria-label="Paginación">
+    <nav className="flex items-center justify-center gap-2 mt-10" aria-label={ariaLabel}>
       <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage <= 1}
@@ -53,7 +55,7 @@ export default function BlogPagination({
           <button
             key={page}
             onClick={() => goToPage(page)}
-            className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
+            className={`w-9 h-9 min-h-[44px] min-w-[44px] rounded-lg text-sm font-medium transition-colors ${
               page === currentPage
                 ? 'bg-[#1A2F3F] text-white'
                 : 'text-gray-600 hover:bg-gray-100'

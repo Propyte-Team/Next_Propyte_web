@@ -7,10 +7,11 @@ interface CategoryFilterProps {
   categories: string[];
   active: string | null;
   allLabel: string;
+  filterAriaLabel: string;
   locale: string;
 }
 
-export default function CategoryFilter({ categories, active, allLabel, locale }: CategoryFilterProps) {
+export default function CategoryFilter({ categories, active, allLabel, filterAriaLabel, locale }: CategoryFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -29,7 +30,7 @@ export default function CategoryFilter({ categories, active, allLabel, locale }:
   );
 
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
+    <div className="flex flex-wrap gap-2" role="group" aria-label={filterAriaLabel}>
       <button
         onClick={() => setCategory(null)}
         className={`inline-flex items-center min-h-[44px] px-3 py-1.5 rounded-full text-sm font-medium transition-colors touch-manipulation ${

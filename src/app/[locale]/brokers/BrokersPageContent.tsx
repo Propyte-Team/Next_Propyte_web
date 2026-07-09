@@ -22,8 +22,6 @@ interface BrokerFaqItem { q: string; a: string }
 interface BrokersHubData { faqs: BrokerFaqItem[] }
 const BrokersHubContext = createContext<BrokersHubData>({ faqs: [] });
 
-const WA_TEXT = encodeURIComponent('Hola, me interesa el programa de brokers de Propyte');
-
 // ─────────────────────────────────────────────────────
 // 1. HERO
 // ─────────────────────────────────────────────────────
@@ -31,6 +29,7 @@ function BrokerHero({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');
   const locale = useLocale();
   const { whatsapp: WA } = useSiteContact();
+  const WA_TEXT = encodeURIComponent(t('heroWaText'));
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923]">
       <Particles className="absolute inset-0 z-0" quantity={90} ease={70} color="#5CE0D2" staticity={40} size={0.5} />
@@ -91,6 +90,7 @@ function BrokerHero({ siteMedia }: { siteMedia?: SiteMediaMap }) {
               label="Foto: broker con cliente / portafolio Propyte"
               className="aspect-[4/3]"
               sizes="(max-width: 1024px) 100vw, 600px"
+              priority
             />
           </ScrollReveal>
         </div>
@@ -190,7 +190,7 @@ function TwoModels() {
               <div className="w-11 h-11 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-4">
                 <Percent size={20} className="text-[#0E7490]" />
               </div>
-              <p className="text-2xs font-bold uppercase tracking-wider text-[#0E7490]">Modelo 1</p>
+              <p className="text-2xs font-bold uppercase tracking-wider text-[#0E7490]">{t('model1Label')}</p>
               <h3 className="text-xl font-extrabold text-[#1A2F3F] tracking-tight mt-1">{t('model1Name')}</h3>
               <p className="text-sm font-semibold italic text-[#0E7490] mt-1 mb-3">{t('model1Sub')}</p>
               <p className="text-gray-600 text-sm leading-relaxed">{t('model1Desc')}</p>
@@ -220,8 +220,8 @@ function TwoModels() {
                 <Handshake size={20} className="text-propyte-brand" />
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-2xs font-bold uppercase tracking-wider text-propyte-brand">Modelo 2</p>
-                <span className="text-2xs font-semibold uppercase tracking-wider text-white/50 bg-white/10 rounded-full px-2 py-0.5">
+                <p className="text-2xs font-bold uppercase tracking-wider text-propyte-brand">{t('model2Label')}</p>
+                <span className="text-2xs font-semibold uppercase tracking-wider text-white/60 bg-white/10 rounded-full px-2 py-0.5">
                   {t('model2Tag')}
                 </span>
               </div>
@@ -527,21 +527,21 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-name" className={labelClass}>{t('formName')} *</label>
-                    <input id="brk-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} className={inputClass} />
-                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+                    <input id="brk-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'brk-form-name-error' : undefined} aria-required={true} className={inputClass} />
+                    {errors.name && <p id="brk-form-name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="brk-form-email" className={labelClass}>{t('formEmail')} *</label>
-                    <input id="brk-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} className={inputClass} />
-                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                    <input id="brk-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'brk-form-email-error' : undefined} aria-required={true} className={inputClass} />
+                    {errors.email && <p id="brk-form-email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} />
-                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'brk-form-phone-error' : undefined} aria-required={true} className={inputClass} />
+                    {errors.phone && <p id="brk-form-phone-error" role="alert" className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                   <div>
                     <label htmlFor="brk-form-company" className={labelClass}>{t('formCompany')}</label>
@@ -557,7 +557,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="brk-form-type" className={labelClass}>{t('formBrokerType')} *</label>
+                    <label htmlFor="brk-form-type" className={labelClass}>{t('formBrokerType')}</label>
                     <select id="brk-form-type" name="brokerType" value={formData.brokerType} onChange={handleChange} className={selectClass}>
                       <option value="">--</option>
                       <option value="independent">{t('formBrokerTypeOptions.independent')}</option>
@@ -567,7 +567,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="brk-form-exp" className={labelClass}>{t('formExperience')} *</label>
+                    <label htmlFor="brk-form-exp" className={labelClass}>{t('formExperience')}</label>
                     <select id="brk-form-exp" name="experience" value={formData.experience} onChange={handleChange} className={selectClass}>
                       <option value="">--</option>
                       <option value="0-1">{t('formExperienceOptions.0-1')}</option>
@@ -579,7 +579,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 </div>
 
                 <div>
-                  <label htmlFor="brk-form-focus" className={labelClass}>{t('formFocusArea')} *</label>
+                  <label htmlFor="brk-form-focus" className={labelClass}>{t('formFocusArea')}</label>
                   <select id="brk-form-focus" name="focusArea" value={formData.focusArea} onChange={handleChange} className={selectClass}>
                     <option value="">--</option>
                     <option value="rivieraMaya">{t('formFocusAreaOptions.rivieraMaya')}</option>

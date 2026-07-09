@@ -109,6 +109,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 categories={categories}
                 active={activeCategory}
                 allLabel={t('allCategories') || 'Todos'}
+                filterAriaLabel={t('categoryFilterAriaLabel')}
                 locale={locale}
               />
             </Suspense>
@@ -118,7 +119,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map((post, i) => (
-                  <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 3} />
+                  <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 1} />
                 ))}
               </div>
 
@@ -135,6 +136,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   locale={locale}
                   prevLabel={t('paginationPrev')}
                   nextLabel={t('paginationNext')}
+                  ariaLabel={t('paginationAriaLabel')}
                 />
               </Suspense>
             </>

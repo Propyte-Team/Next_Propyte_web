@@ -24,6 +24,8 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
 
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const langButtonRef = useRef<HTMLButtonElement>(null);
+  const langPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onOutside(e: MouseEvent) {
@@ -34,6 +36,27 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
     document.addEventListener('mousedown', onOutside);
     return () => document.removeEventListener('mousedown', onOutside);
   }, []);
+
+  // Escape closes the language dropdown and returns focus to its trigger.
+  useEffect(() => {
+    if (!langOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setLangOpen(false);
+        langButtonRef.current?.focus({ preventScroll: true });
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [langOpen]);
+
+  // Move focus into the panel when it opens.
+  useEffect(() => {
+    if (!langOpen) return;
+    const firstItem = langPanelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
+    firstItem?.focus({ preventScroll: true });
+  }, [langOpen]);
 
   function switchLocale(newLocale: 'es' | 'en') {
     if (newLocale === locale) {
@@ -77,6 +100,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               Original/Referencial sin selector activo. */}
           <div ref={langRef} className="relative flex items-center">
             <button
+              ref={langButtonRef}
               type="button"
               onClick={() => setLangOpen((v) => !v)}
               aria-expanded={langOpen}
@@ -89,7 +113,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
               <ChevronDown size={10} />
             </button>
             {langOpen && (
-              <div id="mh-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+              <div ref={langPanelRef} id="mh-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
                 <button
                   type="button"
                   role="menuitem"

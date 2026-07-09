@@ -63,7 +63,7 @@ export default function BlogSidebarLeadForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('namePlaceholder')}
             />
           </div>
@@ -74,7 +74,7 @@ export default function BlogSidebarLeadForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('emailPlaceholder')}
             />
           </div>

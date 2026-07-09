@@ -82,7 +82,7 @@ export default function BlogSidebarBrokerForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formNamePlaceholder')}
             />
           </div>
@@ -93,7 +93,7 @@ export default function BlogSidebarBrokerForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formEmailPlaceholder')}
             />
           </div>
@@ -104,7 +104,7 @@ export default function BlogSidebarBrokerForm() {
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formWhatsappPlaceholder')}
             />
           </div>
@@ -114,7 +114,7 @@ export default function BlogSidebarBrokerForm() {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               required
-              className="w-full h-10 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:border-propyte-brand focus:outline-none"
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:border-propyte-brand focus:outline-none"
             >
               <option value="" className="text-slate-900">{tu('formCityPlaceholder')}</option>
               {CITY_OPTIONS.map(({ value, key }) => (

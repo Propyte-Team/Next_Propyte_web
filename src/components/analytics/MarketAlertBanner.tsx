@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { AlertTriangle, TrendingDown, TrendingUp, Info, X } from '@/lib/icons';
 import type { MarketAlert } from '@/lib/supabase/queries';
 
@@ -28,6 +29,7 @@ const SEVERITY_STYLES = {
 } as const;
 
 export function MarketAlertBanner({ city, maxAlerts = 3 }: MarketAlertBannerProps) {
+  const t = useTranslations('zoneAnalytics');
   const [alerts, setAlerts] = useState<MarketAlert[]>([]);
   const [dismissed, setDismissed] = useState<Set<number>>(new Set());
 
@@ -68,6 +70,7 @@ export function MarketAlertBanner({ city, maxAlerts = 3 }: MarketAlertBannerProp
             <button
               onClick={() => setDismissed((prev) => new Set(prev).add(alert.id))}
               className="p-0.5 hover:bg-white/50 rounded"
+              aria-label={t('dismissAlert')}
             >
               <X className="w-3.5 h-3.5 text-gray-600" />
             </button>

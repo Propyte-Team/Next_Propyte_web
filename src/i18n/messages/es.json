@@ -350,7 +350,8 @@
     "ctaTitle": "Habla con un asesor, sin compromiso",
     "ctaBody": "Una llamada de 20 minutos para entender tu objetivo y mostrarte cómo trabajamos. Conoce al asesor que te acompañaría — antes de decidir nada.",
     "ctaButton": "Agendar llamada",
-    "ctaButtonSecondary": "WhatsApp"
+    "ctaButtonSecondary": "WhatsApp",
+    "waText": "Hola, quiero agendar una llamada con un asesor de Propyte"
   },
   "teamBio": {
     "viewProfile": "Ver perfil",
@@ -494,12 +495,14 @@
     "eyebrow": "Para desarrolladores",
     "title": "¿Tienes un desarrollo que comercializar?",
     "body": "Comercializamos tu proyecto con análisis de absorción, estrategia de precios y una red de asesores e inversionistas que ya conocen la zona. Tú construyes; nosotros vendemos con datos.",
-    "cta": "Solicitar Propuesta Comercial"
+    "cta": "Solicitar Propuesta Comercial",
+    "logosTitle": "Nuestros socios desarrolladores"
   },
   "blog": {
     "listingTitle": "Blog",
     "listingDescription": "Artículos, guías y análisis del mercado inmobiliario en la Riviera Maya y Yucatán.",
     "allCategories": "Todos",
+    "categoryFilterAriaLabel": "Filtrar por categoría",
     "featuredLabel": "Destacado",
     "readMore": "Leer más",
     "emptyState": "No hay artículos publicados aún.",
@@ -511,6 +514,7 @@
     "relatedTitle": "Artículos relacionados",
     "paginationPrev": "Anterior",
     "paginationNext": "Siguiente",
+    "paginationAriaLabel": "Paginación",
     "title": "Análisis y guías de inversión inmobiliaria · Riviera Maya",
     "viewAll": "Ver todos los artículos",
     "share": "Compartir:",
@@ -564,6 +568,8 @@
     "filterZone": "Zona",
     "filterType": "Tipo",
     "filterPrice": "Precio",
+    "filterPriceMin": "Precio mínimo",
+    "filterPriceMax": "Precio máximo",
     "filterRoi": "ROI proyectado",
     "filterStage": "Etapa",
     "filterUsage": "Uso",
@@ -744,7 +750,8 @@
     "marketSentimentSubtitle": "Señales direccionales de fundamentales.",
     "bullish": "Alcista",
     "bearish": "Bajista",
-    "neutral": "Neutral"
+    "neutral": "Neutral",
+    "priceDisclaimer": "El precio referencial se calcula con TC Banxico. Precio final depende del tipo de cambio acordado en la negociación."
   },
   "stages": {
     "preventa": "Preventa",
@@ -1352,6 +1359,7 @@
     "heroCtaSecondary": "WhatsApp",
     "heroMicroLine": "¿Buscas crecer dentro de Propyte como asesor de carrera? Eso es otra cosa →",
     "heroMicroLineLink": "conoce el plan de carrera",
+    "heroWaText": "Hola, me interesa el programa de brokers de Propyte",
     "bridgeTitle": "Cómo trabajamos, claro desde el principio:",
     "bridgeBody": "tú aportas tu cartera de clientes; nosotros ponemos el producto validado, el respaldo y el cierre. No generamos leads por ti — potenciamos lo que ya traes. Si tienes clientes que confían en ti, esto es para ti.",
     "whyEyebrow": "Por qué Propyte",
@@ -1371,6 +1379,7 @@
     "modelsEyebrow": "Cómo ganas",
     "modelsTitle": "Dos formas de trabajar con nuestro inventario",
     "modelsIntro": "Según el desarrollo, trabajamos contigo en uno de dos modelos. En ambos, tu comisión queda por convenio escrito antes de empezar.",
+    "model1Label": "Modelo 1",
     "model1Name": "Desarrollos en exclusiva",
     "model1Sub": "Comisión sobre la venta.",
     "model1Desc": "En los desarrollos que comercializamos como MasterBroker exclusivo, ganas un porcentaje de la venta que cierras. Definido por desarrollo, claro y por escrito. Abierto a todos nuestros brokers aliados.",
@@ -1383,6 +1392,7 @@
     "model1Point3Desc": "La lista oficial y la disponibilidad actualizada del desarrollo en exclusiva, para que nunca cotices mal ni ofrezcas algo ya vendido.",
     "model1Point4Title": "Línea directa al experto del proyecto.",
     "model1Point4Desc": "Te conectamos con el asesor Propyte que conoce ese desarrollo a fondo, para resolver las dudas de tu cliente sin intermediarios.",
+    "model2Label": "Modelo 2",
     "model2Name": "Desarrollos en corretaje",
     "model2Tag": "para brokers foráneos",
     "model2Sub": "Comisión compartida 50/50.",
@@ -1654,6 +1664,7 @@
     "structurePhilosophyTitle": "Cómo está diseñada nuestra estructura",
     "structurePhilosophyText": "Propyte opera como unidad comercial bajo una estructura corporativa que maneja HR, finanzas, TI y back-office. Esto nos permite enfocarnos 100% en lo comercial: ventas, marketing y relación con desarrolladores, mientras el soporte operativo escala de forma independiente.",
     "structurePhilosophyHighlight": "Cada decisión organizacional pasa por un filtro: ¿un Team Leader nuevo podría replicar esta estructura en otra ciudad con solo el manual?",
+    "loadingOrgChart": "Cargando organigrama…",
     "stat1Value": "6",
     "stat1Label": "Departamentos operativos",
     "stat2Value": "3",
@@ -1936,7 +1947,8 @@
     "stage": "Etapa",
     "stagePresale": "Preventa",
     "stageConstruction": "Construcción",
-    "stageReady": "Entrega"
+    "stageReady": "Entrega",
+    "dismissAlert": "Descartar alerta"
   },
   "methodology": {
     "title": "Metodología",
@@ -2081,6 +2093,9 @@
     "stage3Ideal": "Renta inmediata, bajo riesgo",
     "stageDiscountPending": "Según proyecto",
     "stageNote": "El descuento por etapa depende del desarrollo y del desarrollador; se confirma en cada proyecto.",
+    "stageRiskHigh": "Riesgo alto",
+    "stageRiskMedium": "Riesgo medio",
+    "stageRiskLow": "Riesgo bajo",
     "metricsTitle": "Métricas clave para evaluar",
     "metric1Title": "ROI",
     "metric1Desc": "Retorno sobre Inversión — rendimiento total relativo al monto invertido",
@@ -2173,7 +2188,10 @@
     "ctaButton": "Contactar un asesor",
     "disclaimer": "Las tasas y condiciones son referenciales y pueden variar según la institución financiera, tu perfil crediticio y las políticas vigentes al momento de la solicitud.",
     "banksTitle": "Bancos aliados",
-    "banksDisclaimer": "Tasas y plazos referenciales actualizados al {date}. Verifica con la institución antes de solicitar."
+    "banksDisclaimer": "Tasas y plazos referenciales actualizados al {date}. Verifica con la institución antes de solicitar.",
+    "speedFast": "Rápido",
+    "speedFastest": "Muy rápido",
+    "speedSlow": "Más lento"
   },
   "mortgageCalc": {
     "eyebrow": "Calculadora hipotecaria",
@@ -2205,6 +2223,7 @@
     "searchAriaLabel": "Buscar en el glosario",
     "noResults": "No se encontraron términos para tu búsqueda.",
     "resultsCount": "{count, plural, =0 {Sin resultados} =1 {1 término} other {# términos}}",
+    "lettersAriaLabel": "Letras del glosario",
     "downloadPdf": "Descargar glosario en PDF",
     "downloadPdfShort": "Descargar PDF",
     "gateTitle": "Descarga el glosario en PDF",

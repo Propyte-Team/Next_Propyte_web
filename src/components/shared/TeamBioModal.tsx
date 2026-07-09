@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { X, MapPin, MessageCircle } from '@/lib/icons';
 import { getInitials, pickAvatarColor, type TeamBioPerson } from '@/lib/team-bio';
@@ -98,8 +99,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
 
         <div className="flex flex-col items-center text-center">
           {person.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={person.photoUrl}
               alt={person.name}
               width={128}

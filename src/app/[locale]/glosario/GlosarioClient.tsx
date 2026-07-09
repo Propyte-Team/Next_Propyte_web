@@ -104,7 +104,7 @@ export default function GlosarioClient({ terms, locale, labels }: GlosarioClient
           )}
 
           {/* Letter navigation with counts */}
-          <nav aria-label="Glossary letters">
+          <nav aria-label={tG('lettersAriaLabel')}>
             <div className="flex flex-wrap gap-2 justify-center">
               {hasResults ? (
                 letters.map((letter) => (

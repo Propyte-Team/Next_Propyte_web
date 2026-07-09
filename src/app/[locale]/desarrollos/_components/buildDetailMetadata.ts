@@ -42,6 +42,7 @@ export async function buildDetailMetadata(slug: string, locale: string): Promise
         description,
       },
       alternates: {
+        canonical: `/${locale}/desarrollos/${slug}`,
         languages: {
           es: `/es/desarrollos/${slug}`,
           en: `/en/desarrollos/${slug}`,

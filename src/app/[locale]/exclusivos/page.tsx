@@ -4,6 +4,7 @@ import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getExclusiveDevelopments } from '@/lib/supabase/queries';
 import ExclusivosShowcase, { type ExclusiveDev } from '@/components/exclusivos/ExclusivosShowcase';
+import { getDisplayTitle } from '@/lib/development-display';
 
 export const revalidate = 600;
 
@@ -66,7 +67,7 @@ export default async function ExclusivosPage({ params }: { params: Promise<{ loc
         position: i + 1,
         item: {
           '@type': 'RealEstateListing',
-          name: dev.name,
+          name: getDisplayTitle(dev, locale),
           url: `${baseUrl}/${locale}/desarrollos/${dev.slug}`,
           address: {
             '@type': 'PostalAddress',

@@ -13,8 +13,6 @@ import { resolveSiteContact } from '@/lib/site-contact';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate desde Hub al editar miembros
 
-const WA_TEXT = encodeURIComponent('Hola, quiero agendar una llamada con un asesor de Propyte');
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'equipoPage' });
@@ -61,6 +59,7 @@ export default async function EquipoComercialPage({ params }: { params: Promise<
   const supabase = createPublicSupabaseClient();
   const teamMembers = supabase ? await getTeamMembers(supabase) : [];
   const { whatsapp: WA } = resolveSiteContact(await getSiteConfig());
+  const WA_TEXT = encodeURIComponent(t('waText'));
 
   return (
     <>

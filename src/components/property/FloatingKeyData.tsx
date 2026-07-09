@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { DollarSign, Square, Bed, Bath, Tag, type LucideIcon } from '@/lib/icons';
 import PriceDisplay from '@/components/ui/PriceDisplay';
 import AreaDisplay from '@/components/ui/AreaDisplay';
@@ -59,6 +60,7 @@ export default function FloatingKeyData({
   discount,
   labels,
 }: FloatingKeyDataProps) {
+  const t = useTranslations('property');
   const hasPrice = priceMxn != null && priceMxn > 0;
   const hasArea = areaM2 != null && areaM2 > 0;
   const hasDiscount = !!discount && discount.listPriceMxn > 0 && discount.pct > 0;
@@ -153,8 +155,7 @@ export default function FloatingKeyData({
       </div>
       {hasPrice && (
         <p className="mt-2 px-1 text-[10px] text-gray-600 leading-snug italic">
-          El precio referencial se calcula con TC Banxico. Precio final depende
-          del tipo de cambio acordado en la negociación.
+          {t('priceDisclaimer')}
         </p>
       )}
     </div>

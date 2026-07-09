@@ -350,7 +350,8 @@
     "ctaTitle": "Talk to an advisor, no commitment",
     "ctaBody": "A 20-minute call to understand your goal and show you how we work. Meet the advisor who'd be with you — before deciding anything.",
     "ctaButton": "Book a call",
-    "ctaButtonSecondary": "WhatsApp"
+    "ctaButtonSecondary": "WhatsApp",
+    "waText": "Hi, I'd like to schedule a call with a Propyte advisor"
   },
   "teamBio": {
     "viewProfile": "View profile",
@@ -494,12 +495,14 @@
     "eyebrow": "For developers",
     "title": "Have a development to bring to market?",
     "body": "We commercialize your project with absorption analysis, pricing strategy, and a network of advisors and investors who already know the zone. You build; we sell with data.",
-    "cta": "Request Commercial Proposal"
+    "cta": "Request Commercial Proposal",
+    "logosTitle": "Our developer partners"
   },
   "blog": {
     "listingTitle": "Blog",
     "listingDescription": "Articles, guides and real estate market analysis in the Riviera Maya and Yucatán.",
     "allCategories": "All",
+    "categoryFilterAriaLabel": "Filter by category",
     "featuredLabel": "Featured",
     "readMore": "Read more",
     "emptyState": "No articles published yet.",
@@ -511,6 +514,7 @@
     "relatedTitle": "Related articles",
     "paginationPrev": "Previous",
     "paginationNext": "Next",
+    "paginationAriaLabel": "Pagination",
     "title": "Real estate investment analysis and guides · Riviera Maya",
     "viewAll": "View all articles",
     "share": "Share:",
@@ -564,6 +568,8 @@
     "filterZone": "Zone",
     "filterType": "Type",
     "filterPrice": "Price",
+    "filterPriceMin": "Minimum price",
+    "filterPriceMax": "Maximum price",
     "filterRoi": "Projected ROI",
     "filterStage": "Stage",
     "filterUsage": "Usage",
@@ -744,7 +750,8 @@
     "marketSentimentSubtitle": "Directional signals from market fundamentals.",
     "bullish": "Bullish",
     "bearish": "Bearish",
-    "neutral": "Neutral"
+    "neutral": "Neutral",
+    "priceDisclaimer": "The reference price is calculated using the Banxico exchange rate. The final price depends on the exchange rate agreed upon in the negotiation."
   },
   "stages": {
     "preventa": "Pre-sale",
@@ -1352,6 +1359,7 @@
     "heroCtaSecondary": "WhatsApp",
     "heroMicroLine": "Looking to grow inside Propyte as a career advisor? That’s something else →",
     "heroMicroLineLink": "see the career path",
+    "heroWaText": "Hi, I'm interested in Propyte's broker program",
     "bridgeTitle": "How we work, clear from the start:",
     "bridgeBody": "you bring your client base; we bring the vetted product, the support, and the closing. We don't generate leads for you — we amplify what you already bring. If you have clients who trust you, this is for you.",
     "whyEyebrow": "Why Propyte",
@@ -1371,6 +1379,7 @@
     "modelsEyebrow": "How you earn",
     "modelsTitle": "Two ways to work with our inventory",
     "modelsIntro": "Depending on the development, we work with you under one of two models. In both, your commission is set in a written agreement before you start.",
+    "model1Label": "Model 1",
     "model1Name": "Exclusive developments",
     "model1Sub": "Commission on the sale.",
     "model1Desc": "On developments we commercialize as exclusive MasterBroker, you earn a percentage of the sale you close. Defined per development, clear and in writing. Open to all our allied brokers.",
@@ -1383,6 +1392,7 @@
     "model1Point3Desc": "The official price list and up-to-date availability from the exclusive development, so you never misquote or offer something already sold.",
     "model1Point4Title": "A direct line to the project expert.",
     "model1Point4Desc": "We connect you with the Propyte advisor who knows that development inside out, to resolve your client's questions with no middlemen.",
+    "model2Label": "Model 2",
     "model2Name": "Brokerage developments",
     "model2Tag": "for out-of-town brokers",
     "model2Sub": "Shared commission, 50/50.",
@@ -1654,6 +1664,7 @@
     "structurePhilosophyTitle": "How our structure is designed",
     "structurePhilosophyText": "Propyte operates as a commercial unit under a corporate structure that handles HR, finance, IT and back-office. This allows us to focus 100% on commercial: sales, marketing and developer relations, while operational support scales independently.",
     "structurePhilosophyHighlight": "Every organizational decision passes through a filter: could a new Team Leader replicate this structure in another city with just the manual?",
+    "loadingOrgChart": "Loading org chart…",
     "stat1Value": "6",
     "stat1Label": "Operating departments",
     "stat2Value": "3",
@@ -1936,7 +1947,8 @@
     "stage": "Stage",
     "stagePresale": "Presale",
     "stageConstruction": "Under Construction",
-    "stageReady": "Ready"
+    "stageReady": "Ready",
+    "dismissAlert": "Dismiss alert"
   },
   "methodology": {
     "title": "Methodology",
@@ -2081,6 +2093,9 @@
     "stage3Ideal": "Immediate rental, low risk",
     "stageDiscountPending": "Per project",
     "stageNote": "The discount by stage depends on the development and the developer; it's confirmed per project.",
+    "stageRiskHigh": "High risk",
+    "stageRiskMedium": "Medium risk",
+    "stageRiskLow": "Low risk",
     "metricsTitle": "Key metrics to evaluate",
     "metric1Title": "ROI",
     "metric1Desc": "Return on Investment — total return relative to amount invested",
@@ -2173,7 +2188,10 @@
     "ctaButton": "Contact an advisor",
     "disclaimer": "Rates and conditions are referential and may vary depending on the financial institution, your credit profile, and policies in effect at the time of application.",
     "banksTitle": "Allied banks",
-    "banksDisclaimer": "Referential rates and terms updated on {date}. Verify with the institution before applying."
+    "banksDisclaimer": "Referential rates and terms updated on {date}. Verify with the institution before applying.",
+    "speedFast": "Fast",
+    "speedFastest": "Fastest",
+    "speedSlow": "Slower"
   },
   "mortgageCalc": {
     "eyebrow": "Mortgage calculator",
@@ -2205,6 +2223,7 @@
     "searchAriaLabel": "Search the glossary",
     "noResults": "No terms matched your search.",
     "resultsCount": "{count, plural, =0 {No results} =1 {1 term} other {# terms}}",
+    "lettersAriaLabel": "Glossary letters",
     "downloadPdf": "Download glossary as PDF",
     "downloadPdfShort": "Download PDF",
     "gateTitle": "Download the PDF glossary",

@@ -46,7 +46,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canPrev && setStartIndex(startIndex - 1)}
               disabled={!canPrev}
               aria-label={t('prev')}
-              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
               <ChevronLeft size={18} />
             </button>
@@ -55,7 +55,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canNext && setStartIndex(startIndex + 1)}
               disabled={!canNext}
               aria-label={t('next')}
-              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
             >
               <ChevronRight size={18} />
             </button>

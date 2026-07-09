@@ -184,6 +184,7 @@ function pickPhilosophy(content: Record<string, string>, key: string, fallback: 
 
 export default function EstructuraPageContent({ nodes, content, fallback, siteMedia }: PageProps) {
   const locale = useLocale();
+  const t = useTranslations('about');
   const { ceo, directors, depts } = buildView(nodes);
 
   const [selected, setSelected] = useState<TeamBioPerson | null>(null);
@@ -220,7 +221,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
       <section className="py-16 md:py-20 bg-white">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           {nodes.length === 0 ? (
-            <p className="text-center text-gray-500 italic">Cargando organigrama…</p>
+            <p className="text-center text-gray-500 italic">{t('loadingOrgChart')}</p>
           ) : (
             <>
               {/* Desktop: visual org chart */}

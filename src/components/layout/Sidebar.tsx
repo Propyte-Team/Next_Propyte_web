@@ -37,6 +37,8 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
+  const morePanelRef = useRef<HTMLDivElement>(null);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
 
   const showMercado = useIsVisible(VISIBILITY_KEYS.NAV_MERCADO);
   const showBrokers = useIsVisible(VISIBILITY_KEYS.NAV_BROKERS);
@@ -52,6 +54,27 @@ export default function Sidebar() {
     document.addEventListener('mousedown', handleOutside);
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
+
+  // Escape closes the "Más" popup and returns focus to its trigger.
+  useEffect(() => {
+    if (!moreOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setMoreOpen(false);
+        moreButtonRef.current?.focus({ preventScroll: true });
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [moreOpen]);
+
+  // Move focus into the panel when it opens.
+  useEffect(() => {
+    if (!moreOpen) return;
+    const firstItem = morePanelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
+    firstItem?.focus({ preventScroll: true });
+  }, [moreOpen]);
 
   // "Exclusivos" va al centro del menú (arriba de Propiedades) con corona dorada.
   const mainItems: NavItem[] = [
@@ -138,6 +161,7 @@ export default function Sidebar() {
       {/* "Más" popup */}
       <div ref={moreRef} className="relative flex flex-col items-center pb-4">
         <button
+          ref={moreButtonRef}
           onClick={() => setMoreOpen((v) => !v)}
           aria-expanded={moreOpen}
           aria-haspopup="menu"
@@ -153,6 +177,7 @@ export default function Sidebar() {
 
         {moreOpen && (
           <div
+            ref={morePanelRef}
             id="sidebar-more-panel"
             role="menu"
             className="absolute left-[72px] bottom-0 w-56 bg-[#0F1923] border border-white/10 rounded-xl shadow-2xl py-2 z-50"

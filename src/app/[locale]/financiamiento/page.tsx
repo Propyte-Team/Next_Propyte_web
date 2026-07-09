@@ -7,7 +7,7 @@ import {
   CheckCircle, Sparkles,
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import MortgageCalculator from '@/components/financiamiento/MortgageCalculator';
+import MortgageCalculator from '@/components/financiamiento/MortgageCalculatorLazy';
 import BankLogos from '@/components/financiamiento/BankLogos';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -215,6 +215,9 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                     <td className="px-4 py-3 text-center text-gray-600">{m.term}</td>
                     <td className="px-4 py-3 text-center">
                       {m.rate === '0%' ? '⚡⚡' : i === 1 ? '⚡⚡⚡' : '🕐'}
+                      <span className="sr-only">
+                        {m.rate === '0%' ? t('speedFast') : i === 1 ? t('speedFastest') : t('speedSlow')}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-600 leading-snug max-w-[220px]">
                       {m.ideal}

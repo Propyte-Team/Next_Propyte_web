@@ -78,6 +78,7 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
             label="Screenshot/video: dashboard de análisis de datos Propyte"
             className="mt-8 aspect-[16/9]"
             sizes="(max-width: 768px) 100vw, 768px"
+            priority
           />
         </div>
       </section>

@@ -416,7 +416,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const shareSpecs: ShareDownloadData['specs'] = [];
   if (bedRange) shareSpecs.push({ label: tProp('bedrooms'), value: bedRange.min === bedRange.max ? String(bedRange.min) : `${bedRange.min}–${bedRange.max}` });
   if (bathRange) shareSpecs.push({ label: tProp('bathrooms'), value: bathRange.min === bathRange.max ? String(bathRange.min) : `${bathRange.min}–${bathRange.max}` });
-  if (areaRange) shareSpecs.push({ label: 'Área', value: areaRange.min === areaRange.max ? `${areaRange.min} m²` : `${areaRange.min}–${areaRange.max} m²` });
+  if (areaRange) shareSpecs.push({ label: tProp('area'), value: areaRange.min === areaRange.max ? `${areaRange.min} m²` : `${areaRange.min}–${areaRange.max} m²` });
   if (totalUnits) shareSpecs.push({ label: tProp('units'), value: String(totalUnits) });
   // Número de contacto desde el Hub (fuente única). getSiteConfig se dedupea por request.
   const waNumber = resolveSiteContact(await getSiteConfig()).whatsapp;
@@ -872,7 +872,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               labels={{
                 title: locale === 'es' ? 'Datos clave' : 'Key data',
                 price: locale === 'es' ? 'Precio desde' : 'Price from',
-                area: 'Área',
+                area: locale === 'es' ? 'Área' : 'Area',
                 units: locale === 'es' ? 'Unidades' : 'Units',
                 type: locale === 'es' ? 'Tipo' : 'Type',
                 location: locale === 'es' ? 'Ubicación' : 'Location',

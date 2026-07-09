@@ -25,9 +25,14 @@ export default function MobileBottomSheet({ properties }: MobileBottomSheetProps
 
   return (
     <div className={`fixed bottom-0 left-0 right-0 bg-white/92 backdrop-blur-md rounded-t-3xl shadow-xl border-t border-[rgba(11,28,30,0.06)] z-20 transition-all duration-300 ${heights[state]}`}>
-      <div className="flex justify-center py-3 cursor-pointer" onClick={handleToggle}>
-        <div className="w-10 h-1 bg-propyte-brand/40 rounded-full" />
-      </div>
+      <button
+        type="button"
+        onClick={handleToggle}
+        aria-label="Expandir o contraer la lista de propiedades"
+        className="flex justify-center items-center w-full min-h-[44px] py-3 cursor-pointer"
+      >
+        <span className="w-10 h-1 bg-propyte-brand/40 rounded-full" />
+      </button>
       <div className="overflow-y-auto px-4 pb-4" style={{ height: 'calc(100% - 28px)' }}>
         <div className="space-y-4">
           {properties.map(property => (

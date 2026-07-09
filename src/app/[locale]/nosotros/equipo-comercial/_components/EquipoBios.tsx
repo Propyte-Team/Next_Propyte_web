@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { Users, MapPin, MessageCircle } from '@/lib/icons';
 import type { TeamMemberRow } from '@/lib/supabase/queries';
@@ -18,14 +19,12 @@ function buildWhatsappLink(member: TeamMemberRow): string | null {
 function Avatar({ photoUrl, name }: { photoUrl: string | null; name: string }) {
   if (photoUrl) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={photoUrl}
         alt={name}
         width={144}
         height={144}
         className="w-36 h-36 rounded-full object-cover object-top mx-auto mb-4 ring-4 ring-[#A2F9FF]/30 transition-transform duration-300 group-hover:scale-105"
-        loading="lazy"
       />
     );
   }

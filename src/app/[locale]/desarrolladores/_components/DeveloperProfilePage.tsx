@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -38,11 +39,12 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
     >
       <div className="relative aspect-[16/9] bg-gray-100 overflow-hidden">
         {img ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={img}
             alt={dev.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -150,8 +152,13 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
             {/* Logo */}
             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
               {developer.logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={developer.logoUrl} alt={developer.name} className="w-full h-full object-contain p-2" />
+                <Image
+                  src={developer.logoUrl}
+                  alt={developer.name}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-contain p-2"
+                />
               ) : (
                 <span className="text-2xl font-extrabold text-[#0E7490] tracking-tight">{initials}</span>
               )}

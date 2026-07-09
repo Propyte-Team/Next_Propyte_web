@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { MapPin } from '@/lib/icons';
 
 interface DeveloperLogosProps {
@@ -17,13 +18,14 @@ function formatLocation(city: string | null, state: string | null): string | nul
 }
 
 export default function DeveloperLogos({ developers }: DeveloperLogosProps) {
+  const t = useTranslations('developerBanner');
   if (developers.length === 0) return null;
 
   return (
     <section className="py-16 md:py-20 bg-[#F4F6F8]">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <h2 className="text-center text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-10">
-          Nuestros socios desarrolladores
+          {t('logosTitle')}
         </h2>
         <div className="flex flex-wrap items-stretch justify-center gap-6 md:gap-8">
           {developers.map((dev) => (

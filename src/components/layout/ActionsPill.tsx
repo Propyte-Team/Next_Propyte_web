@@ -15,6 +15,8 @@ export default function ActionsPill() {
 
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
+  const langButtonRef = useRef<HTMLButtonElement>(null);
+  const langPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onOutside(e: MouseEvent) {
@@ -25,6 +27,27 @@ export default function ActionsPill() {
     document.addEventListener('mousedown', onOutside);
     return () => document.removeEventListener('mousedown', onOutside);
   }, []);
+
+  // Escape closes the language dropdown and returns focus to its trigger.
+  useEffect(() => {
+    if (!langOpen) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setLangOpen(false);
+        langButtonRef.current?.focus({ preventScroll: true });
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [langOpen]);
+
+  // Move focus into the panel when it opens.
+  useEffect(() => {
+    if (!langOpen) return;
+    const firstItem = langPanelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
+    firstItem?.focus({ preventScroll: true });
+  }, [langOpen]);
 
   function switchLocale(newLocale: 'es' | 'en') {
     if (newLocale === locale) {
@@ -40,7 +63,7 @@ export default function ActionsPill() {
     <div className="propyte-actions-pill-inner flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-gray-100/80">
       <Link
         href={`/${locale}/desarrolladores`}
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-[#2C2C2C] hover:text-[#0E7490] whitespace-nowrap transition-colors"
+        className="inline-flex items-center gap-1.5 py-2 text-xs font-medium text-[#2C2C2C] hover:text-[#0E7490] whitespace-nowrap transition-colors"
       >
         <Building2 size={13} strokeWidth={1.75} />
         {t('advertise')}
@@ -57,6 +80,7 @@ export default function ActionsPill() {
 
       <div ref={langRef} className="relative">
         <button
+          ref={langButtonRef}
           type="button"
           onClick={() => setLangOpen((v) => !v)}
           aria-expanded={langOpen}
@@ -69,7 +93,7 @@ export default function ActionsPill() {
           <ChevronDown size={11} />
         </button>
         {langOpen && (
-          <div id="ap-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
+          <div ref={langPanelRef} id="ap-lang-panel" role="menu" className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
             <button
               type="button"
               role="menuitem"

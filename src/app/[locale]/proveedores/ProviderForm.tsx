@@ -116,8 +116,17 @@ export default function ProviderForm({ locale }: { locale: string }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label htmlFor="company" className={labelBase}>{t('formCompany')}</label>
-          <input id="company" type="text" placeholder={t('formCompanyPlaceholder')} className={inputBase} {...register('company')} />
-          {errors.company && <p className={errorBase}>{errors.company.message}</p>}
+          <input
+            id="company"
+            type="text"
+            placeholder={t('formCompanyPlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.company}
+            aria-describedby={errors.company ? 'company-error' : undefined}
+            aria-required={true}
+            {...register('company')}
+          />
+          {errors.company && <p id="company-error" role="alert" className={errorBase}>{errors.company.message}</p>}
         </div>
 
         <div>
@@ -126,6 +135,9 @@ export default function ProviderForm({ locale }: { locale: string }) {
             id="category"
             className={`${inputBase} appearance-none`}
             defaultValue=""
+            aria-invalid={!!errors.category}
+            aria-describedby={errors.category ? 'category-error' : undefined}
+            aria-required={true}
             {...register('category')}
           >
             <option value="" disabled>{t('formCategorySelect')}</option>
@@ -135,37 +147,81 @@ export default function ProviderForm({ locale }: { locale: string }) {
               </option>
             ))}
           </select>
-          {errors.category && <p className={errorBase}>{errors.category.message}</p>}
+          {errors.category && <p id="category-error" role="alert" className={errorBase}>{errors.category.message}</p>}
         </div>
 
         <div>
           <label htmlFor="city" className={labelBase}>{t('formCity')}</label>
-          <input id="city" type="text" placeholder={t('formCityPlaceholder')} className={inputBase} {...register('city')} />
-          {errors.city && <p className={errorBase}>{errors.city.message}</p>}
+          <input
+            id="city"
+            type="text"
+            placeholder={t('formCityPlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.city}
+            aria-describedby={errors.city ? 'city-error' : undefined}
+            aria-required={true}
+            {...register('city')}
+          />
+          {errors.city && <p id="city-error" role="alert" className={errorBase}>{errors.city.message}</p>}
         </div>
 
         <div>
           <label htmlFor="companyWebsite" className={labelBase}>{t('formWebsite')}</label>
-          <input id="companyWebsite" type="url" placeholder={t('formWebsitePlaceholder')} className={inputBase} {...register('companyWebsite')} />
-          {errors.companyWebsite && <p className={errorBase}>{errors.companyWebsite.message}</p>}
+          <input
+            id="companyWebsite"
+            type="url"
+            placeholder={t('formWebsitePlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.companyWebsite}
+            aria-describedby={errors.companyWebsite ? 'companyWebsite-error' : undefined}
+            {...register('companyWebsite')}
+          />
+          {errors.companyWebsite && <p id="companyWebsite-error" role="alert" className={errorBase}>{errors.companyWebsite.message}</p>}
         </div>
 
         <div>
           <label htmlFor="contactName" className={labelBase}>{t('formContactName')}</label>
-          <input id="contactName" type="text" placeholder={t('formContactNamePlaceholder')} className={inputBase} {...register('contactName')} />
-          {errors.contactName && <p className={errorBase}>{errors.contactName.message}</p>}
+          <input
+            id="contactName"
+            type="text"
+            placeholder={t('formContactNamePlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.contactName}
+            aria-describedby={errors.contactName ? 'contactName-error' : undefined}
+            aria-required={true}
+            {...register('contactName')}
+          />
+          {errors.contactName && <p id="contactName-error" role="alert" className={errorBase}>{errors.contactName.message}</p>}
         </div>
 
         <div>
           <label htmlFor="phone" className={labelBase}>{t('formPhone')}</label>
-          <input id="phone" type="tel" placeholder={t('formPhonePlaceholder')} className={inputBase} {...register('phone')} />
-          {errors.phone && <p className={errorBase}>{errors.phone.message}</p>}
+          <input
+            id="phone"
+            type="tel"
+            placeholder={t('formPhonePlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.phone}
+            aria-describedby={errors.phone ? 'phone-error' : undefined}
+            aria-required={true}
+            {...register('phone')}
+          />
+          {errors.phone && <p id="phone-error" role="alert" className={errorBase}>{errors.phone.message}</p>}
         </div>
 
         <div className="md:col-span-2">
           <label htmlFor="email" className={labelBase}>{t('formEmail')}</label>
-          <input id="email" type="email" placeholder={t('formEmailPlaceholder')} className={inputBase} {...register('email')} />
-          {errors.email && <p className={errorBase}>{errors.email.message}</p>}
+          <input
+            id="email"
+            type="email"
+            placeholder={t('formEmailPlaceholder')}
+            className={inputBase}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? 'email-error' : undefined}
+            aria-required={true}
+            {...register('email')}
+          />
+          {errors.email && <p id="email-error" role="alert" className={errorBase}>{errors.email.message}</p>}
         </div>
 
         <div className="md:col-span-2">
@@ -175,9 +231,12 @@ export default function ProviderForm({ locale }: { locale: string }) {
             rows={4}
             placeholder={t('formMessagePlaceholder')}
             className={`${inputBase} h-auto py-3 resize-none`}
+            aria-invalid={!!errors.message}
+            aria-describedby={errors.message ? 'message-error' : undefined}
+            aria-required={true}
             {...register('message')}
           />
-          {errors.message && <p className={errorBase}>{errors.message.message}</p>}
+          {errors.message && <p id="message-error" role="alert" className={errorBase}>{errors.message.message}</p>}
         </div>
       </div>
 
@@ -202,7 +261,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
         )}
       </button>
 
-      <p className="text-white/50 text-xs mt-4 leading-relaxed">{t('formMicro')}</p>
+      <p className="text-white/60 text-xs mt-4 leading-relaxed">{t('formMicro')}</p>
     </form>
   );
 }

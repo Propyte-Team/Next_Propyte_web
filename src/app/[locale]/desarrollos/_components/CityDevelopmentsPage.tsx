@@ -91,6 +91,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
           label={`Foto de ${cityInfo.name}`}
           className="h-40 md:h-56"
           sizes="(max-width: 768px) 100vw, 1232px"
+          priority
         />
       </div>
 
