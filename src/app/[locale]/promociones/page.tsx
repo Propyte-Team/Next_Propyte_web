@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
-import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getDiscountedUnits } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { Tag, ArrowRight } from '@/lib/icons';
@@ -58,7 +58,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   // primero los descuentos más fuertes.
   let items: Property[] = [];
   try {
-    const supabase = createPublicSupabaseClient();
+    const supabase = await createServerSupabaseClient();
     const res = await getDiscountedUnits(supabase, 24);
     items = (res.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
   } catch (error) {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import {
   getZoneDetail,
   getOccupancyTrend,
@@ -41,9 +41,8 @@ const UNIQUE_ZONES = ZONE_CONFIGS.reduce((acc, z) => {
   return acc;
 }, [] as typeof ZONE_CONFIGS);
 
-// ISR — cookieless public client (createPublicSupabaseClient) lets this
-// prerender + revalidate instead of forcing per-request dynamic rendering.
-export const revalidate = 3600;
+// Force dynamic rendering — SSG can't access cookies() needed by Supabase client
+export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
   return UNIQUE_ZONES.map((z) => ({ slug: z.slug }));
@@ -99,7 +98,7 @@ export default async function ZonePage({
   const market = CITY_TO_MARKET_CODE[city] || 'cancun';
   const state = CITY_TO_STATE[city] || 'Quintana Roo';
 
-  const supabase = createPublicSupabaseClient();
+  const supabase = await createServerSupabaseClient();
 
   // Fetch all data in parallel — gracefully handle missing Supabase
   let zoneDetail: Awaited<ReturnType<typeof getZoneDetail>> = { score: null, submarkets: [] };

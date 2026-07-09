@@ -160,17 +160,6 @@ export default function MarketplaceCard({
                 sizes="(max-width: 1023px) 100vw, 25vw"
                 className="object-cover"
                 priority={priority && i === 0}
-                // Perf audit 2026-07: todos los slides quedan montados para que
-                // la animación translateX del carrusel no se rompa (no se puede
-                // renderizar solo la imagen activa). next/image ya aplica
-                // loading="lazy" por default a cualquier <Image> sin `priority`
-                // (ver next/dist/shared/lib/get-img-props.js), así que esto es
-                // explícito por claridad, no un cambio de comportamiento. Lo que
-                // sí es nuevo: fetchPriority="low" en los slides no visibles
-                // para que no compitan por ancho de banda con el primero (LCP)
-                // cuando el navegador decide precargar slides cercanos.
-                loading={i === 0 ? undefined : 'lazy'}
-                fetchPriority={i === 0 ? undefined : 'low'}
               />
             </div>
           ))}
