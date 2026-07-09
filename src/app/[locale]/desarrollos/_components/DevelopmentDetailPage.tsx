@@ -867,13 +867,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               state={property.state}
               discountPct={hasUnitsWithDiscount ? maxDiscountPct : null}
               labels={{
-                title: locale === 'es' ? 'Datos clave' : 'Key data',
-                price: locale === 'es' ? 'Precio desde' : 'Price from',
-                area: locale === 'es' ? 'Área' : 'Area',
-                units: locale === 'es' ? 'Unidades' : 'Units',
-                type: locale === 'es' ? 'Tipo' : 'Type',
-                location: locale === 'es' ? 'Ubicación' : 'Location',
-                discount: locale === 'es' ? 'Descuento' : 'Discount',
+                title: tProp('keyDataTitle'),
+                price: tProp('keyDataPrice'),
+                area: tProp('keyDataArea'),
+                units: tProp('units'),
+                type: tProp('type'),
+                location: tProp('location'),
+                discount: tProp('discount'),
               }}
             />
 

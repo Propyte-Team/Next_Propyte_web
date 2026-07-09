@@ -15,6 +15,7 @@ export interface LeadMagnetCta {
 // `cta` se pasa desde server con copy desde Hub. Si null/undefined, cae a i18n.
 export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   const t = useTranslations('leadMagnet');
+  const tCommon = useTranslations('common');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // honeypot (REQ-F-02)
@@ -99,6 +100,9 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : ctaLabel}
                 </button>
+                {status === 'error' && (
+                  <p className="text-sm text-red-400 text-center">{tCommon('error')}</p>
+                )}
                 <p className="text-2xs text-white/65 text-center">{t('consent')}</p>
               </form>
             )}

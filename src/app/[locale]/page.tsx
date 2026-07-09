@@ -63,73 +63,86 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   let featured: FeaturedDevelopment[] = [];
   let discountedUnits: Property[] = [];
 
-  const visibility = await getVisibility();
+  // Perf: los 3 bloques (visibility Hub, Supabase, contenido editorial Hub)
+  // son independientes entre sí — ninguno depende del resultado de otro —
+  // así que se lanzan en paralelo en vez de esperarse secuencialmente. Cada
+  // bloque conserva su propio manejo de errores (fail-open) para que el
+  // rechazo de uno no tumbe a los demás.
+  const visibilityPromise = getVisibility();
 
-  try {
-    const supabase = await createServerSupabaseClient();
-    const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
-      getGlobalStats(supabase),
-      getDevelopers(supabase),
-      getFeaturedDevelopments(supabase, 6),
-      getDiscountedUnits(supabase, 6),
-    ]);
-    stats = statsData;
-    discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
-    type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
-    developers = ((devsRes.data || []) as DeveloperRow[])
-      .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
-      .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
-    featured = (featuredRes.data || []) as FeaturedDevelopment[];
+  const supabasePromise = (async () => {
+    try {
+      const supabase = await createServerSupabaseClient();
+      const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
+        getGlobalStats(supabase),
+        getDevelopers(supabase),
+        getFeaturedDevelopments(supabase, 6),
+        getDiscountedUnits(supabase, 6),
+      ]);
+      stats = statsData;
+      discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
+      type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
+      developers = ((devsRes.data || []) as DeveloperRow[])
+        .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
+        .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
+      featured = (featuredRes.data || []) as FeaturedDevelopment[];
 
-    // Inyectar bedrooms_min/max agregado desde v_units por development_id —
-    // misma lógica que /desarrollos/page.tsx. Una query bulk para los 6
-    // featured. Sin esto el chip de rango bedrooms en FeaturedProperties
-    // queda vacío (v_developments no expone bedroom aggregates).
-    const featuredIds = featured.map((d) => d.id).filter(Boolean);
-    if (featuredIds.length > 0) {
-      try {
-        const { data: unitsData } = await supabase
-          .schema('real_estate_hub' as 'public')
-          .from('v_units')
-          .select('development_id, bedrooms')
-          .in('development_id', featuredIds)
-          .not('approved_at', 'is', null)
-          .is('deleted_at', null);
-        const bedroomsByDev = new Map<string, { min: number; max: number }>();
-        (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
-          if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;
-          const existing = bedroomsByDev.get(u.development_id);
-          if (!existing) {
-            bedroomsByDev.set(u.development_id, { min: u.bedrooms, max: u.bedrooms });
-          } else {
-            existing.min = Math.min(existing.min, u.bedrooms);
-            existing.max = Math.max(existing.max, u.bedrooms);
-          }
-        });
-        featured.forEach((d) => {
-          const br = bedroomsByDev.get(d.id);
-          if (br) {
-            d.bedrooms_min = br.min;
-            d.bedrooms_max = br.max;
-          }
-        });
-      } catch (err) {
-        console.error('[HomePage] bedrooms aggregate failed:', err);
+      // Inyectar bedrooms_min/max agregado desde v_units por development_id —
+      // misma lógica que /desarrollos/page.tsx. Una query bulk para los 6
+      // featured. Sin esto el chip de rango bedrooms en FeaturedProperties
+      // queda vacío (v_developments no expone bedroom aggregates).
+      const featuredIds = featured.map((d) => d.id).filter(Boolean);
+      if (featuredIds.length > 0) {
+        try {
+          const { data: unitsData } = await supabase
+            .schema('real_estate_hub' as 'public')
+            .from('v_units')
+            .select('development_id, bedrooms')
+            .in('development_id', featuredIds)
+            .not('approved_at', 'is', null)
+            .is('deleted_at', null);
+          const bedroomsByDev = new Map<string, { min: number; max: number }>();
+          (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
+            if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;
+            const existing = bedroomsByDev.get(u.development_id);
+            if (!existing) {
+              bedroomsByDev.set(u.development_id, { min: u.bedrooms, max: u.bedrooms });
+            } else {
+              existing.min = Math.min(existing.min, u.bedrooms);
+              existing.max = Math.max(existing.max, u.bedrooms);
+            }
+          });
+          featured.forEach((d) => {
+            const br = bedroomsByDev.get(d.id);
+            if (br) {
+              d.bedrooms_min = br.min;
+              d.bedrooms_max = br.max;
+            }
+          });
+        } catch (err) {
+          console.error('[HomePage] bedrooms aggregate failed:', err);
+        }
       }
+    } catch (error) {
+      console.error('[HomePage] Supabase fetch failed:', error);
     }
-  } catch (error) {
-    console.error('[HomePage] Supabase fetch failed:', error);
-  }
+  })();
 
   // Contenido editorial dinámico desde Hub. Auto-hide si Hub no devuelve data:
   // si Luis quiere ocultar la sección, basta con borrar/desactivar los datos en hub.propyte.com.
-  const [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore] = await Promise.all([
+  // getTestimonials/getCta/getExploreCategories ya son fail-open (fetchJson
+  // interno con try/catch → null/[] en vez de throw), así que no necesitan
+  // un try/catch adicional aquí.
+  const hubContentPromise = Promise.all([
     getTestimonials('home'),
     getCta('home_lead_magnet'),
     getCta('home_developer_banner'),
     getCta('home_join_team'),
     getExploreCategories(),
   ]);
+
+  const [visibility, , [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore]] =
+    await Promise.all([visibilityPromise, supabasePromise, hubContentPromise]);
 
   const homeTestimonials = hubTestimonials.map((t) => ({
     name: t.name,

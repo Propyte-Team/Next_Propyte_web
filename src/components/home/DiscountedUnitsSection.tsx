@@ -51,8 +51,8 @@ export default async function DiscountedUnitsSection({ units }: Props) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((unit, i) => (
-            <MarketplaceCard key={unit.id} property={unit} priority={i < 3} variant="grid" />
+          {items.map((unit) => (
+            <MarketplaceCard key={unit.id} property={unit} variant="grid" />
           ))}
         </div>
 

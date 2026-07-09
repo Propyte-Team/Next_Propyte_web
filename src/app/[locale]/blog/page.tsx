@@ -125,7 +125,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
               {total > 0 && (
                 <p className="mt-6 text-xs text-gray-500 text-center">
-                  {total} {total === 1 ? (locale === 'en' ? 'article' : 'artículo') : (locale === 'en' ? 'articles' : 'artículos')}
+                  {t('articleCount', { count: total })}
                 </p>
               )}
 
