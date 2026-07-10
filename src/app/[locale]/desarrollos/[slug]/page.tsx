@@ -4,7 +4,10 @@ import DevelopmentDetailPage from '../_components/DevelopmentDetailPage';
 import { buildDetailMetadata } from '../_components/buildDetailMetadata';
 import { CITY_SLUGS } from '../_components/cityConfig';
 
-export const revalidate = 3600;
+// Force dynamic rendering — el árbol de render del detalle de desarrollo accede
+// a datos en request-time (mismo motivo que zonas/[slug]); bajo ISR (revalidate)
+// eso lanza DYNAMIC_SERVER_USAGE → 500 en prod. force-dynamic lo evita.
+export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
   try {
