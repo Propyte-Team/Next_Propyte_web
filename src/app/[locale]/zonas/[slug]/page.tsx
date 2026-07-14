@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getZoneDetail,
   getOccupancyTrend,
@@ -41,8 +41,10 @@ const UNIQUE_ZONES = ZONE_CONFIGS.reduce((acc, z) => {
   return acc;
 }, [] as typeof ZONE_CONFIGS);
 
-// Force dynamic rendering — SSG can't access cookies() needed by Supabase client
-export const dynamic = 'force-dynamic';
+// ISR — seguro desde que el root layout no usa getLocale() (headers), [locale]/
+// layout enumera locales (fix 366e163) y el cliente Supabase es el público
+// (sin cookies) — objetivo original de B2 (33e2eb6), ahora viable.
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return UNIQUE_ZONES.map((z) => ({ slug: z.slug }));
@@ -87,6 +89,7 @@ export default async function ZonePage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const zoneConfig = UNIQUE_ZONES.find((z) => z.slug === slug);
 
   // La normalización de slugs con acento (puerto-cancún → puerto-cancun) se
@@ -98,7 +101,7 @@ export default async function ZonePage({
   const market = CITY_TO_MARKET_CODE[city] || 'cancun';
   const state = CITY_TO_STATE[city] || 'Quintana Roo';
 
-  const supabase = await createServerSupabaseClient();
+  const supabase = createPublicSupabaseClient();
 
   // Fetch all data in parallel — gracefully handle missing Supabase
   let zoneDetail: Awaited<ReturnType<typeof getZoneDetail>> = { score: null, submarkets: [] };

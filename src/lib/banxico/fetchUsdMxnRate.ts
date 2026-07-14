@@ -5,8 +5,10 @@
  * moneda extranjera pagaderas en la República Mexicana" (FIX rate, banco
  * central de referencia).
  *
- * Endpoint público sin token: 50 req/día por IP. Llamamos desde server con
- * cache `revalidate=43200` (12h) → ~2 req/día. Suficiente.
+ * ⚠ La API EXIGE `Bmx-Token` (sin token responde 400 — verificado 2026-07-14;
+ * la nota previa "público sin token" era falsa). Sin BANXICO_TOKEN en env, el
+ * sitio queda clavado en el FALLBACK. Token gratuito en banxico.org.mx/SieAPIRest.
+ * Cache `revalidate=43200` (12h) → ~2 req/día.
  *
  * Fallback hardcoded: si el fetch falla, usamos el último rate conocido para
  * no romper la UI. Se actualiza manualmente con cada deploy si Banxico cambia
