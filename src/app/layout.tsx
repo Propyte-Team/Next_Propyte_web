@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
-import { getLocale } from 'next-intl/server';
 import '@/styles/globals.css';
 import { shouldNoIndex } from '@/lib/seo/noindex';
 
@@ -101,11 +100,18 @@ export default async function RootLayout({
   // though this layout sits above the [locale] segment: the withNextIntl
   // plugin populates the request-scoped locale for the whole RSC tree, not
   // just descendants of [locale]/layout.tsx.
-  const locale = await getLocale();
-
+  // <html lang> estático: getLocale() aquí lee headers() → convierte TODO el
+  // sitio en dinámico (mata prerender/ISR; causó los 500 DYNAMIC_SERVER_USAGE
+  // en detalle de zonas/desarrollos/propiedades jul-2026). next/root-params no
+  // aplica (el root layout está arriba de [locale]). El lang correcto por
+  // locale lo fija un <script> inline en [locale]/layout.tsx antes de la
+  // hidratación; suppressHydrationWarning cubre el atributo mutado.
+  // Follow-up definitivo: mover <html>/<body> a [locale]/layout (root layout
+  // canónico de next-intl) y usar el param directo.
   return (
     <html
-      lang={locale}
+      lang="es"
+      suppressHydrationWarning
       className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
       {/* gtag se carga únicamente en <Analytics /> ([locale]/layout) con

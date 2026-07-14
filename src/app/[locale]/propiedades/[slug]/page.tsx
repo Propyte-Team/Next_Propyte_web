@@ -3,10 +3,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import UnitDetailPage from '../_components/UnitDetailPage';
 import { buildPropertyMetadata } from '../_components/buildPropertyMetadata';
 
-// Force dynamic rendering — el árbol de render del detalle de unidad accede
-// a datos en request-time (misma clase que desarrollos/[slug] y zonas/[slug]);
-// bajo ISR (revalidate) eso lanza DYNAMIC_SERVER_USAGE → 500 en prod.
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   try {

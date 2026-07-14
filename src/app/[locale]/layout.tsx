@@ -23,6 +23,13 @@ import TokenSyncListener from '@/components/shared/TokenSyncListener';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
 
+// Enumerar locales para prerender — sin esto Next no puede construir rutas
+// completas /{locale}/... y NINGUNA página hija se prerenderiza aunque su
+// generateStaticParams devuelva slugs (todo cae a render on-demand).
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
 export default async function LocaleLayout({
   children,
   params,
@@ -49,6 +56,14 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      {/* Corrige <html lang> por locale ANTES de la hidratación. El root layout
+          lo deja estático en "es" (leerlo con getLocale() ahí usa headers() y
+          mata prerender/ISR de todo el sitio — incidentes 500 jul-2026). */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `document.documentElement.lang=${JSON.stringify(locale)}`,
+        }}
+      />
       <SiteConfigProvider config={siteConfig}>
       <SiteVisibilityProvider flags={visibilityFlags}>
       <CurrencyProvider initialRate={usdMxnRate.rate} initialRateDate={usdMxnRate.date}>
