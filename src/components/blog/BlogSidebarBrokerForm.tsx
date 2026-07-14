@@ -64,10 +64,15 @@ export default function BlogSidebarBrokerForm() {
           <p className="text-white/75 text-xs">{tu('formSubmittedDesc')}</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3"
+          toolname="registrar_broker_blog"
+          tooldescription="Registra a un asesor inmobiliario desde el blog de Propyte."
+        >
+          {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"
-            name="website"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             tabIndex={-1}
@@ -79,42 +84,50 @@ export default function BlogSidebarBrokerForm() {
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formNameLabel')}</label>
             <input
               type="text"
+              name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formNamePlaceholder')}
+              toolparamdescription="Nombre completo del asesor inmobiliario."
             />
           </div>
           <div>
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formEmailLabel')}</label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formEmailPlaceholder')}
+              toolparamdescription="Correo electrónico del asesor inmobiliario."
             />
           </div>
           <div>
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formWhatsappLabel')}</label>
             <input
               type="tel"
+              name="whatsapp"
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formWhatsappPlaceholder')}
+              toolparamdescription="Número de WhatsApp del asesor inmobiliario."
             />
           </div>
           <div>
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formCityLabel')}</label>
             <select
+              name="city"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:border-propyte-brand focus:outline-none"
+              toolparamdescription="Ciudad donde opera el asesor inmobiliario."
             >
               <option value="" className="text-slate-900">{tu('formCityPlaceholder')}</option>
               {CITY_OPTIONS.map(({ value, key }) => (

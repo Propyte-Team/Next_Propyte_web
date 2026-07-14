@@ -57,11 +57,17 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                 <p className="text-white/75 text-sm">{t('checkEmailDesc')}</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-4"
+                toolname="descargar_guia_inversion"
+                tooldescription="Solicita la guía de inversión de Propyte a cambio de nombre y correo."
+              >
+                {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02).
+                    Sin `name` a propósito: se captura por estado (no por name), así
+                    WebMCP no lo sintetiza como parámetro; la detección no cambia. */}
                 <input
                   type="text"
-                  name="website"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                   tabIndex={-1}
@@ -74,22 +80,26 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                   <label className="block text-xs font-medium text-white/75 mb-1">{t('name')}</label>
                   <input
                     type="text"
+                    name="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                     className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
                     placeholder={t('namePlaceholder')}
+                    toolparamdescription="Nombre completo del interesado."
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-white/75 mb-1">Email</label>
                   <input
                     type="email"
+                    name="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
                     placeholder={t('emailPlaceholder')}
+                    toolparamdescription="Correo electrónico del interesado."
                   />
                 </div>
                 <button

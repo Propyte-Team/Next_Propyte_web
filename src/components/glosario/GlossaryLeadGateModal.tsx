@@ -147,7 +147,13 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
           <p className="text-sm text-gray-600">{t('gateSubtitle')}</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="space-y-4"
+          toolname="descargar_glosario_pdf"
+          tooldescription="Solicita el PDF del glosario inmobiliario de Propyte a cambio de datos de contacto."
+        >
           <div>
             <label
               htmlFor="gate-name"
@@ -162,6 +168,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
               aria-invalid={Boolean(errors.name)}
               placeholder={t('gateNamePlaceholder')}
               {...register('name')}
+              toolparamdescription="Nombre completo de la persona que solicita el glosario."
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
             />
             {errors.name && (
@@ -183,6 +190,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
               aria-invalid={Boolean(errors.email)}
               placeholder={t('gateEmailPlaceholder')}
               {...register('email')}
+              toolparamdescription="Correo electrónico donde se enviará acceso al glosario."
               className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/30 focus:outline-none"
             />
             {errors.email && (
@@ -214,6 +222,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             <input
               type="checkbox"
               {...register('consent')}
+              toolparamdescription="Consentimiento para el uso de datos personales y contacto."
               className="mt-0.5 rounded border-gray-300 text-[#0E7490] focus:ring-[#5CE0D2]"
             />
             <span>{t('gateConsent')}</span>

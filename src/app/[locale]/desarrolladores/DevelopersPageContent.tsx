@@ -613,34 +613,34 @@ function DeveloperForm() {
                 <p className="text-gray-600">{t('formSuccessDesc')}</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" toolname="registrar_desarrollador" tooldescription="Registra una desarrolladora inmobiliaria para publicar proyectos con Propyte.">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="dev-form-name" className={labelClass}>{t('formName')} *</label>
-                    <input id="dev-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} className={inputClass} />
+                    <input id="dev-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} className={inputClass} toolparamdescription="Nombre completo de la persona de contacto." />
                     {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="dev-form-company" className={labelClass}>{t('formCompany')} *</label>
-                    <input id="dev-form-company" type="text" name="company" value={formData.company} onChange={handleChange} aria-invalid={!!errors.company} className={inputClass} />
+                    <input id="dev-form-company" type="text" name="company" value={formData.company} onChange={handleChange} aria-invalid={!!errors.company} className={inputClass} toolparamdescription="Nombre de la desarrolladora inmobiliaria." />
                     {errors.company && <p className="text-xs text-red-500 mt-1">{errors.company}</p>}
                   </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="dev-form-email" className={labelClass}>{t('formEmail')} *</label>
-                    <input id="dev-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} className={inputClass} />
+                    <input id="dev-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} className={inputClass} toolparamdescription="Correo electrónico de contacto." />
                     {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                   <div>
                     <label htmlFor="dev-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} />
+                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} toolparamdescription="Teléfono de contacto en México." />
                     {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                 </div>
                 <div>
                   <label htmlFor="dev-form-location" className={labelClass}>{t('formLocation')} *</label>
-                  <input id="dev-form-location" type="text" name="location" value={formData.location} onChange={handleChange} aria-invalid={!!errors.location} className={inputClass} />
+                  <input id="dev-form-location" type="text" name="location" value={formData.location} onChange={handleChange} aria-invalid={!!errors.location} className={inputClass} toolparamdescription="Ubicación del desarrollo o proyecto." />
                   {errors.location && <p className="text-xs text-red-500 mt-1">{errors.location}</p>}
                 </div>
 
@@ -652,7 +652,7 @@ function DeveloperForm() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="dev-form-project-type" className={labelClass}>{t('formProjectType')}</label>
-                    <select id="dev-form-project-type" name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass}>
+                    <select id="dev-form-project-type" name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass} toolparamdescription="Tipo de proyecto: vertical, horizontal, mixto o terreno.">
                       <option value="">--</option>
                       <option value="vertical">{t('formProjectTypeOptions.vertical')}</option>
                       <option value="horizontal">{t('formProjectTypeOptions.horizontal')}</option>
@@ -662,7 +662,7 @@ function DeveloperForm() {
                   </div>
                   <div>
                     <label htmlFor="dev-form-unit-count" className={labelClass}>{t('formUnitCount')}</label>
-                    <select id="dev-form-unit-count" name="unitCount" value={formData.unitCount} onChange={handleChange} className={selectClass}>
+                    <select id="dev-form-unit-count" name="unitCount" value={formData.unitCount} onChange={handleChange} className={selectClass} toolparamdescription="Número aproximado de unidades del proyecto.">
                       <option value="">--</option>
                       <option value="small">{t('formUnitCountOptions.small')}</option>
                       <option value="medium">{t('formUnitCountOptions.medium')}</option>
@@ -672,7 +672,7 @@ function DeveloperForm() {
                 </div>
                 <div>
                   <label htmlFor="dev-form-message" className={labelClass}>{t('formMessage')}</label>
-                  <textarea id="dev-form-message" name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} />
+                  <textarea id="dev-form-message" name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} toolparamdescription="Mensaje adicional o comentarios (opcional)." />
                 </div>
                 <button
                   type="submit"

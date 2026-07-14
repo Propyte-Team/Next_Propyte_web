@@ -46,12 +46,18 @@ export default function NewsletterCTA() {
         <Mail size={32} className="mx-auto text-[#0E7490] mb-4" aria-hidden="true" />
         <h2 className="text-2xl font-bold text-[#1A2F3F] mb-2">{t('newsletterTitle')}</h2>
         <p className="text-gray-600 text-sm mb-6">{t('newsletterDesc')}</p>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
+          toolname="suscribir_newsletter"
+          tooldescription="Suscribe un correo al newsletter de Propyte."
+        >
           <label htmlFor="newsletter-email" className="sr-only">
             {t('newsletterPlaceholder')}
           </label>
           <input
             id="newsletter-email"
+            name="email"
             type="email"
             required
             value={email}
@@ -59,6 +65,7 @@ export default function NewsletterCTA() {
             placeholder={t('newsletterPlaceholder')}
             className="w-full sm:flex-1 min-h-[44px] px-4 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 bg-white"
             aria-label={t('newsletterPlaceholder')}
+            toolparamdescription="Correo electrónico a suscribir."
           />
           {/* Honeypot anti-spam */}
           <div aria-hidden="true" className="hidden">

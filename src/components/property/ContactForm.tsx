@@ -49,7 +49,15 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4"
+      // WebMCP (API declarativa): expone el form como herramienta a agentes IA.
+      // El honeypot `website` queda SIN toolparamdescription a propósito → no se
+      // describe al agente. Sin toolautosubmit: el usuario confirma antes de enviar.
+      toolname="contactar_sobre_propiedad"
+      tooldescription="Envía una solicitud de contacto a un asesor de Propyte sobre una propiedad específica."
+    >
       {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
       <input
         type="text"
@@ -65,6 +73,7 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
         <input
           id="contact-name"
           {...register('name')}
+          toolparamdescription="Nombre completo del interesado."
           className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
         />
         {errors.name && <p className="text-xs text-red-500 mt-1">{t('required')}</p>}
@@ -76,6 +85,7 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
           id="contact-email"
           type="email"
           {...register('email')}
+          toolparamdescription="Correo electrónico del interesado."
           className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
         />
         {errors.email && <p className="text-xs text-red-500 mt-1">{t('invalidEmail')}</p>}
@@ -92,6 +102,7 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
             id="contact-phone"
             type="tel"
             {...register('phone')}
+            toolparamdescription="Teléfono de contacto a 10 dígitos (opcional)."
             className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
           />
         </div>

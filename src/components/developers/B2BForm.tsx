@@ -40,11 +40,11 @@ export default function B2BForm() {
   }
 
   const fields = [
-    { name: 'name' as const, label: t('formName'), type: 'text' },
-    { name: 'company' as const, label: t('formCompany'), type: 'text' },
-    { name: 'email' as const, label: t('formEmail'), type: 'email' },
-    { name: 'phone' as const, label: t('formPhone'), type: 'tel' },
-    { name: 'location' as const, label: t('formLocation'), type: 'text' },
+    { name: 'name' as const, label: t('formName'), type: 'text', toolparamdescription: 'Nombre completo de la persona que solicita la alianza.' },
+    { name: 'company' as const, label: t('formCompany'), type: 'text', toolparamdescription: 'Nombre de la empresa interesada en la alianza B2B.' },
+    { name: 'email' as const, label: t('formEmail'), type: 'email', toolparamdescription: 'Correo electrónico de contacto.' },
+    { name: 'phone' as const, label: t('formPhone'), type: 'tel', toolparamdescription: 'Teléfono de contacto.' },
+    { name: 'location' as const, label: t('formLocation'), type: 'text', toolparamdescription: 'Ubicación o ciudad de la empresa.' },
   ];
 
   return (
@@ -52,7 +52,12 @@ export default function B2BForm() {
       <div className="max-w-[640px] mx-auto px-4 md:px-6">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#2C2C2C] mb-8">{t('formTitle')}</h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+          toolname="solicitar_alianza_b2b"
+          tooldescription="Solicita una alianza comercial B2B con Propyte."
+        >
           {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
           <input
             type="text"
@@ -72,6 +77,7 @@ export default function B2BForm() {
                 id={`b2b-${field.name}`}
                 type={field.type}
                 {...register(field.name)}
+                toolparamdescription={field.toolparamdescription}
                 className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
               />
               {errors[field.name] && (
@@ -86,6 +92,7 @@ export default function B2BForm() {
               id="b2b-message"
               {...register('message')}
               rows={4}
+              toolparamdescription="Mensaje opcional describiendo la propuesta de alianza."
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none resize-none"
             />
           </div>

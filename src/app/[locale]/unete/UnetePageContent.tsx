@@ -622,7 +622,7 @@ function ApplicationForm() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} noValidate>
+              <form onSubmit={handleSubmit(onSubmit)} noValidate toolname="aplicar_afiliado" tooldescription="Aplica al programa de afiliados de Propyte.">
                 {/* Honeypot — invisible para humanos; bots lo llenan y el endpoint los detecta (REQ-F-02). */}
                 <input
                   type="text"
@@ -648,6 +648,7 @@ function ApplicationForm() {
                         aria-invalid={!!errors.name}
                         aria-describedby={errors.name ? 'unete-name-error' : undefined}
                         aria-required={true}
+                        toolparamdescription="Nombre completo del aplicante."
                         {...register('name')}
                       />
                       {errors.name && <p id="unete-name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
@@ -663,6 +664,7 @@ function ApplicationForm() {
                         aria-invalid={!!errors.whatsapp}
                         aria-describedby={errors.whatsapp ? 'unete-whatsapp-error' : undefined}
                         aria-required={true}
+                        toolparamdescription="Número de WhatsApp de contacto."
                         {...register('whatsapp')}
                       />
                       {errors.whatsapp && <p id="unete-whatsapp-error" role="alert" className="text-xs text-red-500 mt-1">{errors.whatsapp.message}</p>}
@@ -680,6 +682,7 @@ function ApplicationForm() {
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? 'unete-email-error' : undefined}
                       aria-required={true}
+                      toolparamdescription="Correo electrónico de contacto."
                       {...register('email')}
                     />
                     {errors.email && <p id="unete-email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
@@ -694,6 +697,7 @@ function ApplicationForm() {
                       aria-invalid={!!errors.city}
                       aria-describedby={errors.city ? 'unete-city-error' : undefined}
                       aria-required={true}
+                      toolparamdescription="Ciudad donde desea trabajar el afiliado."
                       {...register('city')}
                     >
                       <option value="" disabled>{t('formCityPlaceholder')}</option>
@@ -710,6 +714,7 @@ function ApplicationForm() {
                       id="unete-experience"
                       defaultValue=""
                       className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand bg-white"
+                      toolparamdescription="Años de experiencia como asesor inmobiliario (opcional)."
                       {...register('experience')}
                     >
                       <option value="" disabled>{t('formExpPlaceholder')}</option>
@@ -727,6 +732,7 @@ function ApplicationForm() {
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand resize-none"
                       placeholder={t('formInterestPlaceholder')}
+                      toolparamdescription="Motivo de interés en el programa de afiliados (opcional)."
                       {...register('interest')}
                     />
                   </div>

@@ -99,6 +99,8 @@ export default function ProviderForm({ locale }: { locale: string }) {
       onSubmit={handleSubmit(onSubmit)}
       className="propyte-card-glass-sm p-6 md:p-8 text-left"
       noValidate
+      toolname="registrar_proveedor"
+      tooldescription="Registra una empresa como proveedor de servicios inmobiliarios de Propyte."
     >
       {/* Honeypot — invisible para humanos; bots lo llenan y el endpoint los detecta (REQ-F-02). */}
       <input
@@ -124,6 +126,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.company}
             aria-describedby={errors.company ? 'company-error' : undefined}
             aria-required={true}
+            toolparamdescription="Nombre de la empresa proveedora."
             {...register('company')}
           />
           {errors.company && <p id="company-error" role="alert" className={errorBase}>{errors.company.message}</p>}
@@ -138,6 +141,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.category}
             aria-describedby={errors.category ? 'category-error' : undefined}
             aria-required={true}
+            toolparamdescription="Categoría de servicio que ofrece el proveedor."
             {...register('category')}
           >
             <option value="" disabled>{t('formCategorySelect')}</option>
@@ -160,6 +164,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.city}
             aria-describedby={errors.city ? 'city-error' : undefined}
             aria-required={true}
+            toolparamdescription="Ciudad donde opera el proveedor."
             {...register('city')}
           />
           {errors.city && <p id="city-error" role="alert" className={errorBase}>{errors.city.message}</p>}
@@ -174,6 +179,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             className={inputBase}
             aria-invalid={!!errors.companyWebsite}
             aria-describedby={errors.companyWebsite ? 'companyWebsite-error' : undefined}
+            toolparamdescription="Sitio web de la empresa proveedora."
             {...register('companyWebsite')}
           />
           {errors.companyWebsite && <p id="companyWebsite-error" role="alert" className={errorBase}>{errors.companyWebsite.message}</p>}
@@ -189,6 +195,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.contactName}
             aria-describedby={errors.contactName ? 'contactName-error' : undefined}
             aria-required={true}
+            toolparamdescription="Nombre de la persona de contacto en la empresa."
             {...register('contactName')}
           />
           {errors.contactName && <p id="contactName-error" role="alert" className={errorBase}>{errors.contactName.message}</p>}
@@ -204,6 +211,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? 'phone-error' : undefined}
             aria-required={true}
+            toolparamdescription="Teléfono de contacto del proveedor."
             {...register('phone')}
           />
           {errors.phone && <p id="phone-error" role="alert" className={errorBase}>{errors.phone.message}</p>}
@@ -219,6 +227,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
             aria-required={true}
+            toolparamdescription="Correo electrónico de contacto del proveedor."
             {...register('email')}
           />
           {errors.email && <p id="email-error" role="alert" className={errorBase}>{errors.email.message}</p>}
@@ -234,6 +243,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
             aria-invalid={!!errors.message}
             aria-describedby={errors.message ? 'message-error' : undefined}
             aria-required={true}
+            toolparamdescription="Mensaje describiendo los servicios que ofrece el proveedor."
             {...register('message')}
           />
           {errors.message && <p id="message-error" role="alert" className={errorBase}>{errors.message.message}</p>}

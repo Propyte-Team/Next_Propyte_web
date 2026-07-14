@@ -455,7 +455,7 @@ function ConsultationForm() {
                   <p className="text-gray-600">{t('formSuccessDesc')}</p>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" toolname="solicitar_consulta_construccion" tooldescription="Solicita una consulta con Propyte Built sobre un proyecto de construcción.">
                   {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02). */}
                   <input
                     type="text"
@@ -471,27 +471,27 @@ function ConsultationForm() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>{t('formName')} *</label>
-                      <input type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} />
+                      <input type="text" name="name" value={formData.name} onChange={handleChange} required className={inputClass} toolparamdescription="Nombre completo de la persona de contacto." />
                     </div>
                     <div>
                       <label className={labelClass}>{t('formEmail')} *</label>
-                      <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} />
+                      <input type="email" name="email" value={formData.email} onChange={handleChange} required className={inputClass} toolparamdescription="Correo electrónico de contacto." />
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>{t('formPhone')} *</label>
-                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} />
+                      <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required className={inputClass} toolparamdescription="Teléfono de contacto." />
                     </div>
                     <div>
                       <label className={labelClass}>{t('formCompany')}</label>
-                      <input type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} />
+                      <input type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} toolparamdescription="Nombre de la empresa (opcional)." />
                     </div>
                   </div>
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className={labelClass}>{t('formProjectType')}</label>
-                      <select name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass}>
+                      <select name="projectType" value={formData.projectType} onChange={handleChange} className={selectClass} toolparamdescription="Tipo de proyecto de construcción.">
                         <option value="">--</option>
                         <option value="residential">{t('formProjectTypeOptions.residential')}</option>
                         <option value="commercial">{t('formProjectTypeOptions.commercial')}</option>
@@ -501,7 +501,7 @@ function ConsultationForm() {
                     </div>
                     <div>
                       <label className={labelClass}>{t('formBudget')}</label>
-                      <select name="budget" value={formData.budget} onChange={handleChange} className={selectClass}>
+                      <select name="budget" value={formData.budget} onChange={handleChange} className={selectClass} toolparamdescription="Presupuesto estimado del proyecto.">
                         <option value="">--</option>
                         <option value="under5m">{t('formBudgetOptions.under5m')}</option>
                         <option value="5to15m">{t('formBudgetOptions.5to15m')}</option>
@@ -512,7 +512,7 @@ function ConsultationForm() {
                   </div>
                   <div>
                     <label className={labelClass}>{t('formLocation')}</label>
-                    <select name="location" value={formData.location} onChange={handleChange} className={selectClass}>
+                    <select name="location" value={formData.location} onChange={handleChange} className={selectClass} toolparamdescription="Ubicación del proyecto de construcción.">
                       <option value="">--</option>
                       <option value="rivieraMaya">{t('formLocationOptions.rivieraMaya')}</option>
                       <option value="yucatan">{t('formLocationOptions.yucatan')}</option>
@@ -521,7 +521,7 @@ function ConsultationForm() {
                   </div>
                   <div>
                     <label className={labelClass}>{t('formMessage')}</label>
-                    <textarea name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} />
+                    <textarea name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} toolparamdescription="Mensaje adicional o comentarios (opcional)." />
                   </div>
                   <button
                     type="submit"

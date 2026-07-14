@@ -114,6 +114,16 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
+      <head>
+        {/* WebMCP origin trial (propyte.com + subdominios). Habilita
+            document.modelContext en Chrome sin flag para usuarios reales.
+            Token PÚBLICO (no secreto). Vence 16-nov-2026 / Chrome ≤156 →
+            renovar en developer.chrome.com/origintrials antes de esa fecha. */}
+        <meta
+          httpEquiv="origin-trial"
+          content="AqdaYPcrqwtNCugX/MOjAYDWrtQClCxlDzbPI006D4avRnuzVeh4lDLB0xo56RDleP/KBhashWYw59ztzxZLywsAAABeeyJvcmlnaW4iOiJodHRwczovL3Byb3B5dGUuY29tOjQ0MyIsImZlYXR1cmUiOiJXZWJNQ1AiLCJleHBpcnkiOjE3OTQ4NzM2MDAsImlzU3ViZG9tYWluIjp0cnVlfQ=="
+        />
+      </head>
       {/* gtag se carga únicamente en <Analytics /> ([locale]/layout) con
           Consent Mode v2 — no duplicar aquí: una segunda config sin consent
           infla pageviews e ignora el banner de cookies. */}

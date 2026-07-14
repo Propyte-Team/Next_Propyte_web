@@ -22,6 +22,7 @@ import { fetchUsdMxnRate } from '@/lib/banxico/fetchUsdMxnRate';
 import TokenSyncListener from '@/components/shared/TokenSyncListener';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SmoothScrollProvider from '@/components/providers/SmoothScrollProvider';
+import AgentTools from '@/components/agent/AgentTools';
 
 // Enumerar locales para prerender — sin esto Next no puede construir rutas
 // completas /{locale}/... y NINGUNA página hija se prerenderiza aunque su
@@ -89,6 +90,8 @@ export default async function LocaleLayout({
           <Footer siteConfig={siteConfig} />
         </div>
         <TokenSyncListener />
+        {/* WebMCP — registra herramientas para agentes de IA en el navegador (no-op fuera de Chrome origin trial). */}
+        <AgentTools />
         <WhatsAppButton siteConfig={siteConfig} />
         <Analytics />
         <UTMCapture />

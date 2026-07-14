@@ -523,16 +523,16 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 <p className="text-gray-600">{t('formSuccessDesc')}</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" toolname="registrar_broker" tooldescription="Registra a un asesor o broker inmobiliario en el programa de Propyte.">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-name" className={labelClass}>{t('formName')} *</label>
-                    <input id="brk-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'brk-form-name-error' : undefined} aria-required={true} className={inputClass} />
+                    <input id="brk-form-name" type="text" name="name" value={formData.name} onChange={handleChange} aria-invalid={!!errors.name} aria-describedby={errors.name ? 'brk-form-name-error' : undefined} aria-required={true} className={inputClass} toolparamdescription="Nombre completo del asesor o broker." />
                     {errors.name && <p id="brk-form-name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="brk-form-email" className={labelClass}>{t('formEmail')} *</label>
-                    <input id="brk-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'brk-form-email-error' : undefined} aria-required={true} className={inputClass} />
+                    <input id="brk-form-email" type="email" name="email" value={formData.email} onChange={handleChange} aria-invalid={!!errors.email} aria-describedby={errors.email ? 'brk-form-email-error' : undefined} aria-required={true} className={inputClass} toolparamdescription="Correo electrónico de contacto." />
                     {errors.email && <p id="brk-form-email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email}</p>}
                   </div>
                 </div>
@@ -540,12 +540,12 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'brk-form-phone-error' : undefined} aria-required={true} className={inputClass} />
+                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'brk-form-phone-error' : undefined} aria-required={true} className={inputClass} toolparamdescription="Teléfono de contacto en México." />
                     {errors.phone && <p id="brk-form-phone-error" role="alert" className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                   <div>
                     <label htmlFor="brk-form-company" className={labelClass}>{t('formCompany')}</label>
-                    <input id="brk-form-company" type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} />
+                    <input id="brk-form-company" type="text" name="company" value={formData.company} onChange={handleChange} className={inputClass} toolparamdescription="Nombre de la agencia o empresa (opcional)." />
                   </div>
                 </div>
 
@@ -558,7 +558,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-type" className={labelClass}>{t('formBrokerType')}</label>
-                    <select id="brk-form-type" name="brokerType" value={formData.brokerType} onChange={handleChange} className={selectClass}>
+                    <select id="brk-form-type" name="brokerType" value={formData.brokerType} onChange={handleChange} className={selectClass} toolparamdescription="Tipo de broker: independiente, agencia pequeña, agencia grande o internacional.">
                       <option value="">--</option>
                       <option value="independent">{t('formBrokerTypeOptions.independent')}</option>
                       <option value="smallAgency">{t('formBrokerTypeOptions.smallAgency')}</option>
@@ -568,7 +568,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                   </div>
                   <div>
                     <label htmlFor="brk-form-exp" className={labelClass}>{t('formExperience')}</label>
-                    <select id="brk-form-exp" name="experience" value={formData.experience} onChange={handleChange} className={selectClass}>
+                    <select id="brk-form-exp" name="experience" value={formData.experience} onChange={handleChange} className={selectClass} toolparamdescription="Años de experiencia como asesor inmobiliario.">
                       <option value="">--</option>
                       <option value="0-1">{t('formExperienceOptions.0-1')}</option>
                       <option value="1-3">{t('formExperienceOptions.1-3')}</option>
@@ -580,7 +580,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
 
                 <div>
                   <label htmlFor="brk-form-focus" className={labelClass}>{t('formFocusArea')}</label>
-                  <select id="brk-form-focus" name="focusArea" value={formData.focusArea} onChange={handleChange} className={selectClass}>
+                  <select id="brk-form-focus" name="focusArea" value={formData.focusArea} onChange={handleChange} className={selectClass} toolparamdescription="Zona geográfica de enfoque del broker.">
                     <option value="">--</option>
                     <option value="rivieraMaya">{t('formFocusAreaOptions.rivieraMaya')}</option>
                     <option value="yucatan">{t('formFocusAreaOptions.yucatan')}</option>
@@ -592,7 +592,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
 
                 <div>
                   <label htmlFor="brk-form-msg" className={labelClass}>{t('formMessage')}</label>
-                  <textarea id="brk-form-msg" name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} />
+                  <textarea id="brk-form-msg" name="message" value={formData.message} onChange={handleChange} rows={3} className={`${inputClass} h-auto py-3`} toolparamdescription="Mensaje adicional o comentarios (opcional)." />
                 </div>
 
                 <button

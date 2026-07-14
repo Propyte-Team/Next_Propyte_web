@@ -1,0 +1,30 @@
+# Propyte
+
+> Propyte es una plataforma de inversión inmobiliaria en México (Riviera Maya, Tulum, Cancún, Playa del Carmen, Mérida y CDMX). Ofrece desarrollos y unidades en venta y preventa con datos de mercado, estimaciones de ROI y análisis de rentabilidad vacacional (ocupación, ADR, RevPAR) orientados a inversionistas.
+
+## Principales
+
+- [Propiedades](https://propyte.com/es/propiedades): Catálogo de inmuebles en venta y preventa, filtrable por ciudad, zona, precio, recámaras, etapa y uso.
+- [Desarrollos](https://propyte.com/es/desarrollos): Desarrollos inmobiliarios organizados por ciudad y zona.
+- [Zonas](https://propyte.com/es/zonas): Análisis por zona con ocupación, ADR, RevPAR y score de inversión.
+- [Cómo invertir](https://propyte.com/es/como-invertir): Guía del proceso de inversión inmobiliaria en el Caribe mexicano.
+- [Cómo comprar](https://propyte.com/es/como-comprar): Pasos para comprar una propiedad.
+- [Financiamiento](https://propyte.com/es/financiamiento): Opciones de financiamiento y calculadora hipotecaria.
+- [Metodología](https://propyte.com/es/metodologia): Cómo Propyte selecciona y evalúa oportunidades.
+- [Blog](https://propyte.com/es/blog): Guías y análisis de mercado inmobiliario.
+- [Contacto](https://propyte.com/es/contacto): Contacto con asesores de inversión.
+
+## Para socios
+
+- [Desarrolladores](https://propyte.com/es/desarrolladores): Alianzas comerciales con desarrolladoras.
+- [Brokers / Asesores](https://propyte.com/es/brokers): Programa para asesores inmobiliarios.
+- [Proveedores](https://propyte.com/es/proveedores): Registro de proveedores de servicios inmobiliarios.
+- [Únete](https://propyte.com/es/unete): Programa de afiliados.
+
+## English
+
+- [Properties](https://propyte.com/en/propiedades)
+- [Developments](https://propyte.com/en/desarrollos)
+- [Zones](https://propyte.com/en/zonas)
+- [How to invest](https://propyte.com/en/como-invertir)
+- [Contact](https://propyte.com/en/contacto)

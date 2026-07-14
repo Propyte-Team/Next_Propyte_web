@@ -151,7 +151,12 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12">
             {/* Form — 3 cols */}
-            <form onSubmit={handleSubmit(onSubmit)} className="lg:col-span-3 bg-white">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="lg:col-span-3 bg-white"
+              toolname="enviar_mensaje_contacto"
+              tooldescription="Envía un mensaje de contacto general a Propyte."
+            >
               <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-2">
                 {t('formHeading')}
               </h2>
@@ -168,6 +173,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     aria-invalid={!!errors.name}
                     aria-describedby={errors.name ? 'name-error' : undefined}
                     aria-required={true}
+                    toolparamdescription="Nombre completo de la persona que contacta."
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
                   {errors.name && <p id="name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
@@ -184,6 +190,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     aria-invalid={!!errors.email}
                     aria-describedby={errors.email ? 'email-error' : undefined}
                     aria-required={true}
+                    toolparamdescription="Correo electrónico de contacto."
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   />
                   {errors.email && <p id="email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
@@ -200,6 +207,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     aria-invalid={!!errors.subject}
                     aria-describedby={errors.subject ? 'subject-error' : undefined}
                     aria-required={true}
+                    toolparamdescription="Asunto del mensaje: general, propiedad, inversión, desarrollador o carrera."
                     className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
                   >
                     <option value="" disabled>{t('formSubjectPlaceholder')}</option>
@@ -221,6 +229,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     aria-invalid={!!errors.message}
                     aria-describedby={errors.message ? 'message-error' : undefined}
                     aria-required={true}
+                    toolparamdescription="Mensaje o consulta detallada de la persona."
                     className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none resize-none transition-colors"
                   />
                   {errors.message && <p id="message-error" role="alert" className="text-xs text-red-500 mt-1">{errors.message.message}</p>}

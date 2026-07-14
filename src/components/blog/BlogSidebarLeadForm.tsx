@@ -45,10 +45,15 @@ export default function BlogSidebarLeadForm() {
           <p className="text-white/75 text-xs">{tlm('checkEmailDesc')}</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-3"
+          toolname="suscribir_blog"
+          tooldescription="Suscribe al usuario a los contenidos del blog de Propyte."
+        >
+          {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"
-            name="website"
             value={website}
             onChange={(e) => setWebsite(e.target.value)}
             tabIndex={-1}
@@ -60,22 +65,26 @@ export default function BlogSidebarLeadForm() {
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tlm('name')}</label>
             <input
               type="text"
+              name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('namePlaceholder')}
+              toolparamdescription="Nombre completo del interesado."
             />
           </div>
           <div>
             <label className="block text-[11px] font-medium text-white/75 mb-1">Email</label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('emailPlaceholder')}
+              toolparamdescription="Correo electrónico del interesado."
             />
           </div>
           <button
