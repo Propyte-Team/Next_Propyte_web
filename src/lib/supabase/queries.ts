@@ -464,6 +464,30 @@ export async function getDevelopmentsByCity(client: Client, city: string) {
   return { ...res, data: maskRows(res.data, 'd') };
 }
 
+/**
+ * Fetch specific developments by id (comparador de desarrollos/unidades —
+ * `useCompare` guarda `row.id`, nunca slugs). Mismo gate público canónico
+ * que `getDevelopments` (approved_at IS NOT NULL + deleted_at IS NULL) y
+ * mismo display-name policy (applyDisplayName): nunca expone
+ * nombre_desarrollo crudo. Nunca lanza — devuelve [] en error.
+ */
+export async function getDevelopmentsByIds(client: Client, ids: string[]) {
+  if (ids.length === 0) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_developments')
+      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn')
+      .in('id', ids)
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null);
+    if (error) { console.error('[getDevelopmentsByIds]', error.message); return []; }
+    return (data ?? []).map(applyDisplayName);
+  } catch (e) {
+    console.error('[getDevelopmentsByIds] exception:', e);
+    return [];
+  }
+}
+
 export async function getCityCounts(client: Client) {
   // Returns count of developments per city
   return client
@@ -561,6 +585,29 @@ export async function getUnitBySlug(client: Client, slug: string) {
     .eq('slug', slug)
     .single();
   return { ...res, data: maskRow(res.data as { id?: string | null; images?: string[] | null } | null, 'u') };
+}
+
+/**
+ * Fetch specific units by id (comparador de desarrollos/unidades —
+ * `useCompare` guarda `row.id`, nunca slugs). Mismo gate público canónico
+ * que `getUnits` (approved_at IS NOT NULL + deleted_at IS NULL). Nunca
+ * lanza — devuelve [] en error.
+ */
+export async function getUnitsByIds(client: Client, ids: string[]) {
+  if (ids.length === 0) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_units')
+      .select('id, slug, name, title, unit_number, development_name, city, zone, price_mxn, area_m2')
+      .in('id', ids)
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null);
+    if (error) { console.error('[getUnitsByIds]', error.message); return []; }
+    return data ?? [];
+  } catch (e) {
+    console.error('[getUnitsByIds] exception:', e);
+    return [];
+  }
 }
 
 export interface UnitFilters {
