@@ -54,25 +54,35 @@ type MarketSummary = {
 
 type AirdnaResolver = (city: string | null) => Promise<MarketSummary>;
 
-/** Trae y cachea el resumen AirDNA por market dentro de una sola llamada a buildComparison. */
+/**
+ * Trae y cachea el resumen AirDNA por market dentro de una sola llamada a
+ * buildComparison. Cachea la PROMESA en vuelo (no el valor resuelto) de forma
+ * síncrona: como los items corren en `Promise.all`, varios de la misma ciudad
+ * chocan contra `cache.has(market)` antes de que el primero resuelva. Guardar
+ * la promesa antes del `await` garantiza que todos reusen la misma consulta
+ * (getAirdnaMarketSummary son 5 sub-queries) en vez de dispararla N veces.
+ */
 function makeAirdnaResolver(client: SupabaseClient): AirdnaResolver {
-  const cache = new Map<string, MarketSummary>();
-  return async (city: string | null): Promise<MarketSummary> => {
-    if (!city) return null;
+  const cache = new Map<string, Promise<MarketSummary>>();
+  return (city: string | null): Promise<MarketSummary> => {
+    if (!city) return Promise.resolve(null);
     const market = CITY_TO_MARKET_CODE[city];
-    if (!market) return null;
-    if (cache.has(market)) return cache.get(market)!;
-    let summary: MarketSummary = null;
-    try {
-      const raw = await getAirdnaMarketSummary(client, market);
-      summary = raw
-        ? { current_occupancy: raw.current_occupancy, current_adr: raw.current_adr, zones: raw.zones ?? [] }
-        : null;
-    } catch {
-      summary = null;
-    }
-    cache.set(market, summary);
-    return summary;
+    if (!market) return Promise.resolve(null);
+    const cached = cache.get(market);
+    if (cached) return cached;
+    const promise = (async (): Promise<MarketSummary> => {
+      try {
+        const raw = await getAirdnaMarketSummary(client, market);
+        return raw
+          ? { current_occupancy: raw.current_occupancy, current_adr: raw.current_adr, zones: raw.zones ?? [] }
+          : null;
+      } catch (e) {
+        console.error(`[buildComparison] getAirdnaMarketSummary('${market}') failed`, e);
+        return null;
+      }
+    })();
+    cache.set(market, promise);
+    return promise;
   };
 }
 
@@ -84,7 +94,9 @@ function makeAirdnaResolver(client: SupabaseClient): AirdnaResolver {
 function resolveUnitName(row: RawUnitRow): string {
   const editorial = row.title || row.name;
   if (editorial) return editorial;
-  const base = row.development_name || row.slug || row.id;
+  // Mismo literal de fallback que mapUnitToProperty (unit-to-property.ts):
+  // nunca exponer el UUID como nombre de unidad.
+  const base = row.development_name || row.slug || 'Propiedad';
   return row.unit_number ? `${base} — ${row.unit_number}` : base;
 }
 
@@ -160,7 +172,8 @@ export async function buildComparison(
         try {
           const res = await getUnits(client, { developmentId: d.id, limit: MAX_UNITS_FOR_PRICE_PER_M2 });
           units = (res.data ?? []) as RawUnitRow[];
-        } catch {
+        } catch (e) {
+          console.error(`[buildComparison] getUnits(developmentId='${d.id}') failed`, e);
           units = [];
         }
         const pricePerM2 = developmentPricePerM2(
