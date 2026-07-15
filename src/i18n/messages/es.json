@@ -2643,7 +2643,8 @@
     "contextBusinesses": "Unidades económicas (DENUE)",
     "contextCredits": "Créditos a la vivienda ({year})",
     "contextCreditsAmount": "Monto financiado ({year})",
-    "contextUpdated": "Actualizado {date}"
+    "contextUpdated": "Actualizado {date}",
+    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"
   },
   "geoAnalysis": {
     "location": "Ubicación",
@@ -2760,8 +2761,7 @@
     "noZonesFound": "No se encontraron zonas con los filtros actuales.",
     "noResultsFallback": "Sin coincidencias para tu filtro. Mostrando Top 10 nacional.",
     "viewAllZones": "Ver todas las {count} zonas",
-    "showingOf": "Mostrando {visible} de {total} zonas",
-    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"
+    "showingOf": "Mostrando {visible} de {total} zonas"
   },
   "zoneScoreCard": {
     "occupancy": "Ocupación",

@@ -2643,7 +2643,8 @@
     "contextBusinesses": "Economic units (DENUE)",
     "contextCredits": "Housing loans ({year})",
     "contextCreditsAmount": "Financed amount ({year})",
-    "contextUpdated": "Updated {date}"
+    "contextUpdated": "Updated {date}",
+    "vacationMarketIntelligence": "Vacation Rental Market Intelligence"
   },
   "geoAnalysis": {
     "location": "Location",
@@ -2760,8 +2761,7 @@
     "noZonesFound": "No zones found with the current filters.",
     "noResultsFallback": "No matches for your filter. Showing top 10 nationwide.",
     "viewAllZones": "View all {count} zones",
-    "showingOf": "Showing {visible} of {total} zones",
-    "vacationMarketIntelligence": "Vacation Rental Market Intelligence"
+    "showingOf": "Showing {visible} of {total} zones"
   },
   "zoneScoreCard": {
     "occupancy": "Occupancy",
