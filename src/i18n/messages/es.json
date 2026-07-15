@@ -2634,7 +2634,16 @@
     "h1": "Mapa de Rentabilidad",
     "subtitle": "Compara ocupación, ingreso por noche y competencia entre zonas antes de invertir",
     "methodology": "Metodología",
-    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente."
+    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente.",
+    "contextTitle": "Contexto del municipio",
+    "contextIntro": "Datos oficiales del municipio de {municipio}, {state} (INEGI · SNIIV). La granularidad es municipal, no por colonia.",
+    "contextPopulation": "Población (censo {year})",
+    "contextHouseholds": "Viviendas habitadas",
+    "contextRealEstate": "Inmobiliarias registradas (DENUE)",
+    "contextBusinesses": "Unidades económicas (DENUE)",
+    "contextCredits": "Créditos a la vivienda ({year})",
+    "contextCreditsAmount": "Monto financiado ({year})",
+    "contextUpdated": "Actualizado {date}"
   },
   "geoAnalysis": {
     "location": "Ubicación",

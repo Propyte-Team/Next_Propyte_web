@@ -1828,6 +1828,36 @@ export async function getZoneDetail(client: Client, city: string, zone: string) 
   return { score, submarkets: zoneSubmarkets };
 }
 
+export interface ZoneEnrichment {
+  zone_slug: string;
+  city: string;
+  municipio_name: string;
+  poblacion_total: number | null;
+  viviendas_habitadas: number | null;
+  census_year: number | null;
+  negocios_denue: number | null;
+  negocios_scope: 'real_estate' | 'all' | null;
+  sniiv_creditos: number | null;
+  sniiv_monto: number | null;
+  sniiv_anio: number | null;
+  computed_at: string | null;
+}
+
+/** Enriquecimiento por municipio (INEGI/DENUE/SNIIV) para /zonas/[slug].
+ * Devuelve null si no hay fila (fail-closed → la sección no se renderiza). */
+export async function getZoneEnrichment(
+  client: Client,
+  slug: string,
+): Promise<ZoneEnrichment | null> {
+  const { data, error } = await client
+    .from('zone_enrichment')
+    .select('*')
+    .eq('zone_slug', slug)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as ZoneEnrichment;
+}
+
 // ============================================================
 // ANALYTICS: FORECASTS
 // ============================================================

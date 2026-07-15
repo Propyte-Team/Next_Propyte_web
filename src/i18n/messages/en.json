@@ -2634,7 +2634,16 @@
     "h1": "Profitability Map",
     "subtitle": "Compare occupancy, nightly rates and competition across zones before investing",
     "methodology": "Methodology",
-    "methodologyText": "Zone Intelligence Scores (0-100) combine five weighted components: rental yield (30%), occupancy rate (25%), ADR growth (20%), supply pressure (15%), and market liquidity (10%). Data sources include 140K+ public rental comparables from 8+ real estate portals. Scores are updated weekly."
+    "methodologyText": "Zone Intelligence Scores (0-100) combine five weighted components: rental yield (30%), occupancy rate (25%), ADR growth (20%), supply pressure (15%), and market liquidity (10%). Data sources include 140K+ public rental comparables from 8+ real estate portals. Scores are updated weekly.",
+    "contextTitle": "Municipality context",
+    "contextIntro": "Official data for the municipality of {municipio}, {state} (INEGI · SNIIV). Granularity is municipal, not by neighborhood.",
+    "contextPopulation": "Population (census {year})",
+    "contextHouseholds": "Occupied dwellings",
+    "contextRealEstate": "Registered real-estate businesses (DENUE)",
+    "contextBusinesses": "Economic units (DENUE)",
+    "contextCredits": "Housing loans ({year})",
+    "contextCreditsAmount": "Financed amount ({year})",
+    "contextUpdated": "Updated {date}"
   },
   "geoAnalysis": {
     "location": "Location",

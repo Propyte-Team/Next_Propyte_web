@@ -9,6 +9,8 @@ import {
   getForecasts,
   getSeasonalIndices,
   getDevelopments,
+  getZoneEnrichment,
+  type ZoneEnrichment,
 } from '@/lib/supabase/queries';
 import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE, MARKET_SUBMARKET_TO_CITY } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
@@ -111,6 +113,7 @@ export default async function ZonePage({
   let seasonality: Awaited<ReturnType<typeof getSeasonalIndices>> = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let developments: any[] = [];
+  let enrichment: ZoneEnrichment | null = null;
 
   if (supabase) {
     try {
@@ -121,6 +124,7 @@ export default async function ZonePage({
         getForecasts(supabase, market, submarket),
         getSeasonalIndices(supabase, market, submarket),
         getDevelopments(supabase, { city, zone, orderBy: 'roi', limit: 10 }),
+        getZoneEnrichment(supabase, slug),
       ]);
 
       if (results[0].status === 'fulfilled') zoneDetail = results[0].value;
@@ -129,6 +133,7 @@ export default async function ZonePage({
       if (results[3].status === 'fulfilled') forecasts = results[3].value;
       if (results[4].status === 'fulfilled') seasonality = results[4].value;
       if (results[5].status === 'fulfilled') developments = results[5].value?.data || [];
+      if (results[6].status === 'fulfilled') enrichment = results[6].value;
     } catch (e) {
       console.error('Zone page data fetch error:', e);
     }
@@ -251,6 +256,68 @@ export default async function ZonePage({
                   <dd className="font-semibold text-gray-900">{stat.value}</dd>
                 </div>
               ))}
+            </dl>
+          </section>
+        )}
+
+        {/* Contexto del municipio (INEGI/DENUE/SNIIV) — fail-closed: sin fila, no aparece */}
+        {enrichment && (
+          <section className="mb-8 rounded-xl border border-gray-200 bg-white p-5">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">{tZonas('contextTitle')}</h2>
+            <p className="text-gray-700 leading-relaxed">
+              {tZonas('contextIntro', { municipio: enrichment.municipio_name, state })}
+            </p>
+            <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
+              {enrichment.poblacion_total != null && (
+                <div className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">
+                    {tZonas('contextPopulation', { year: enrichment.census_year ?? '' })}
+                  </dt>
+                  <dd className="font-semibold text-gray-900">
+                    {Math.round(enrichment.poblacion_total).toLocaleString(isEn ? 'en-US' : 'es-MX')}
+                  </dd>
+                </div>
+              )}
+              {enrichment.viviendas_habitadas != null && (
+                <div className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">{tZonas('contextHouseholds')}</dt>
+                  <dd className="font-semibold text-gray-900">
+                    {Math.round(enrichment.viviendas_habitadas).toLocaleString(isEn ? 'en-US' : 'es-MX')}
+                  </dd>
+                </div>
+              )}
+              {enrichment.negocios_denue != null && (
+                <div className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">
+                    {enrichment.negocios_scope === 'real_estate'
+                      ? tZonas('contextRealEstate')
+                      : tZonas('contextBusinesses')}
+                  </dt>
+                  <dd className="font-semibold text-gray-900">
+                    {enrichment.negocios_denue.toLocaleString(isEn ? 'en-US' : 'es-MX')}
+                  </dd>
+                </div>
+              )}
+              {enrichment.sniiv_creditos != null && (
+                <div className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">
+                    {tZonas('contextCredits', { year: enrichment.sniiv_anio ?? '' })}
+                  </dt>
+                  <dd className="font-semibold text-gray-900">
+                    {enrichment.sniiv_creditos.toLocaleString(isEn ? 'en-US' : 'es-MX')}
+                  </dd>
+                </div>
+              )}
+              {enrichment.sniiv_monto != null && (
+                <div className="flex justify-between border-b border-gray-100 py-1">
+                  <dt className="text-gray-600">
+                    {tZonas('contextCreditsAmount', { year: enrichment.sniiv_anio ?? '' })}
+                  </dt>
+                  <dd className="font-semibold text-gray-900">
+                    ${Math.round(enrichment.sniiv_monto).toLocaleString('en-US')}
+                  </dd>
+                </div>
+              )}
             </dl>
           </section>
         )}
