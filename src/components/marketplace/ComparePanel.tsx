@@ -159,7 +159,10 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
 
   const detailBase = (p: Property) => (p.kind === 'unit' ? 'propiedades' : 'desarrollos');
   const metricUnavailable = tMkt('compareMetricUnavailable');
-  const showMetricsSkeleton = metricsStatus === 'idle' || metricsStatus === 'loading';
+  // Skeleton SOLO mientras hay un request realmente en vuelo. En 'idle'
+  // (requestKey null, p. ej. si un sync cross-tab dejó <2 seleccionados con el
+  // modal abierto) las celdas caen a "—" en vez de quedar en skeleton perpetuo.
+  const showMetricsSkeleton = metricsStatus === 'loading';
 
   return (
     <>
@@ -381,9 +384,9 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                             de las filas locales de arriba. */}
                         {metricsStatus === 'error' ? (
                           <tr>
-                            <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
-                              {tMkt('comparePricePerM2')}
-                            </td>
+                            {/* Label vacío a propósito: es un error genérico de
+                                las 4 métricas, no específico de precio/m². */}
+                            <td className="px-4 py-3" />
                             <td colSpan={selected.length} className="px-4 py-3">
                               <div className="flex items-center gap-3">
                                 <span className="text-sm text-red-600">{tMkt('compareError')}</span>
