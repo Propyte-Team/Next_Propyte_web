@@ -4,6 +4,7 @@ export interface ComparisonMetrics {
   pricePerM2: number | null;      // MXN por m²
   zoneOccupancy: number | null;   // 0-100
   zoneAdr: number | null;         // MXN
+  zoneDataLevel: 'zone' | 'city' | null; // 'zone'=match por zona, 'city'=fallback market, null=sin dato AirDNA
   roiNetYieldPct: number | null;  // % anual, all-cash vacacional
 }
 

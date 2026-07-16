@@ -139,11 +139,14 @@ async function finishItem(
   },
 ): Promise<ComparisonItem> {
   const summary = await getAirdna(base.city);
-  const { occupancy, adr } = resolveZoneAirdna(
+  const { occupancy, adr, level } = resolveZoneAirdna(
     base.zone,
     summary?.zones ?? [],
     { occupancy: summary?.current_occupancy ?? null, adr: summary?.current_adr ?? null },
   );
+  // Sin dato AirDNA (occupancy y adr ambos null) → null, para que el footnote
+  // no reclame "nivel ciudad" cuando en realidad no hay dato alguno.
+  const zoneDataLevel = occupancy === null && adr === null ? null : level;
 
   // Terrenos/lotes: se suprime el ROI vacacional (no rentable como hospedaje) →
   // el modal lo muestra como "—". Ocupación/ADR/precio-m² se conservan.
@@ -163,6 +166,7 @@ async function finishItem(
       pricePerM2: base.pricePerM2,
       zoneOccupancy: occupancy,
       zoneAdr: adr,
+      zoneDataLevel,
       roiNetYieldPct,
     },
   };

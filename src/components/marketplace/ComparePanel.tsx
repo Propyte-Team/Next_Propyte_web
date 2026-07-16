@@ -286,6 +286,11 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                   {(() => {
                     const hasDevelopment = selected.some((p) => p.kind === 'development');
                     const priceHeaderKey = hasDevelopment ? 'comparePriceFrom' : 'comparePrice';
+                    // Honestidad de dato: si algún item comparado usa el fallback
+                    // a nivel ciudad (sin desglose AirDNA por zona), lo decimos.
+                    const hasCityLevelData = selected.some(
+                      (p) => metricsById.get(p.id)?.metrics.zoneDataLevel === 'city',
+                    );
                     return (
                       <>
                         <tr>
@@ -487,6 +492,15 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                                 <td className="px-4 py-2" />
                                 <td colSpan={selected.length} className="px-4 py-2 text-xs text-gray-400 italic">
                                   {tMkt('compareAllCashNote')}
+                                </td>
+                              </tr>
+                            )}
+
+                            {metricsStatus === 'ok' && hasCityLevelData && (
+                              <tr>
+                                <td className="px-4 py-2" />
+                                <td colSpan={selected.length} className="px-4 py-2 text-xs text-gray-400 italic">
+                                  {tMkt('compareCityLevelNote')}
                                 </td>
                               </tr>
                             )}

@@ -38,15 +38,15 @@ export function resolveZoneAirdna(
   itemZone: string | null,
   zones: ZoneAirdnaRow[],
   marketFallback: { occupancy: number | null; adr: number | null }
-): { occupancy: number | null; adr: number | null } {
+): { occupancy: number | null; adr: number | null; level: 'zone' | 'city' } {
   if (itemZone) {
     const normItemZone = normalizeZone(itemZone);
     const match = zones.find((z) => normalizeZone(z.zone) === normItemZone);
     if (match && (match.occupancy !== null || match.adr !== null)) {
-      return { occupancy: match.occupancy, adr: match.adr };
+      return { occupancy: match.occupancy, adr: match.adr, level: 'zone' };
     }
   }
-  return marketFallback;
+  return { ...marketFallback, level: 'city' };
 }
 
 /**

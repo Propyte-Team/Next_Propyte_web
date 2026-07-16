@@ -623,6 +623,7 @@
     "compareRetry": "Reintentar",
     "compareMetricUnavailable": "—",
     "compareAllCashNote": "ROI vacacional estimado, sin apalancamiento, con ocupación y ADR reales de la zona.",
+    "compareCityLevelNote": "* Ocupación y ADR a nivel ciudad cuando no hay desglose por zona.",
     "cardYearSuffix": "año",
     "cardDiscountLabel": "Descuento",
     "cardWithDiscounts": "Con descuento",

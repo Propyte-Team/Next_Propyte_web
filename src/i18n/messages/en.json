@@ -623,6 +623,7 @@
     "compareRetry": "Retry",
     "compareMetricUnavailable": "—",
     "compareAllCashNote": "Estimated all-cash vacation ROI, using the zone's real occupancy and ADR.",
+    "compareCityLevelNote": "* Occupancy and ADR shown at city level when zone-level data isn't available.",
     "cardYearSuffix": "yr",
     "cardDiscountLabel": "Off",
     "cardWithDiscounts": "On sale",
