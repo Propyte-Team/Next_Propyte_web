@@ -20,6 +20,14 @@ import type { CompareKind, ComparisonItem, ComparisonPayload } from '@/types/com
 // catálogo actual se acerca a esta cifra, así que en la práctica trae todas.
 const MAX_UNITS_FOR_PRICE_PER_M2 = 500;
 
+// Supabase serializa columnas NUMERIC como string (memoria
+// feedback_v_units_idiosyncrasies) → `typeof === 'number'` falla. Coerción
+// defensiva antes de pasar cualquier valor de precio/área a las funciones puras.
+function num(v: unknown): number | null {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
 // Fila cruda de v_developments tal como la devuelve getDevelopmentsByIds
 // (ya pasó por applyDisplayName — `name` es el título público, nunca
 // nombre_desarrollo crudo).
@@ -29,10 +37,11 @@ interface RawDevelopmentRow {
   name: string | null;
   city: string | null;
   zone: string | null;
-  price_min_mxn: number | null;
+  price_min_mxn: number | string | null;
 }
 
-// Fila cruda de v_units tal como la devuelve getUnitsByIds.
+// Fila cruda de v_units tal como la devuelve getUnitsByIds. Los NUMERIC pueden
+// llegar como string desde Supabase — se coercionan con num() antes de usarse.
 interface RawUnitRow {
   id: string;
   slug: string | null;
@@ -42,8 +51,12 @@ interface RawUnitRow {
   development_name: string | null;
   city: string | null;
   zone: string | null;
-  price_mxn: number | null;
-  area_m2: number | null;
+  price_mxn: number | string | null;
+  area_m2: number | string | null;
+  // Descuento (v_units) — mismas columnas que consume mapUnitToProperty.
+  discount_price_mxn: number | string | null;
+  discount_pct: number | string | null;
+  is_discount_active: boolean | null;
 }
 
 type MarketSummary = {
@@ -177,7 +190,7 @@ export async function buildComparison(
           units = [];
         }
         const pricePerM2 = developmentPricePerM2(
-          units.map((u) => ({ priceMxn: u.price_mxn ?? null, areaM2: u.area_m2 ?? null })),
+          units.map((u) => ({ priceMxn: num(u.price_mxn), areaM2: num(u.area_m2) })),
         );
 
         return finishItem(getAirdna, {
@@ -187,7 +200,7 @@ export async function buildComparison(
           slug: d.slug ?? null,
           city: d.city ?? null,
           zone: d.zone ?? null,
-          priceBaseMxn: d.price_min_mxn ?? null,
+          priceBaseMxn: num(d.price_min_mxn),
           pricePerM2,
         });
       }),
@@ -204,6 +217,20 @@ export async function buildComparison(
       const u = byId.get(id);
       if (!u) return null;
 
+      // Precio efectivo = MISMA lógica que mapUnitToProperty (unit-to-property.ts):
+      // con descuento vigente (is_discount_active + monto + pct válidos) el cliente
+      // paga el precio con descuento; la fila "Precio" del modal ya muestra ese valor.
+      // Usar el mismo precio para priceBaseMxn/Precio-por-m²/ROI evita que dentro de
+      // la misma tabla "Precio" (con descuento) no cuadre con "Precio/m²" y "ROI".
+      const listPrice = num(u.price_mxn);
+      const discountPrice = num(u.discount_price_mxn);
+      const discountPct = num(u.discount_pct);
+      const hasDiscount =
+        u.is_discount_active === true &&
+        discountPrice !== null && discountPrice > 0 &&
+        discountPct !== null && discountPct > 0;
+      const effectivePrice = hasDiscount ? discountPrice : listPrice;
+
       return finishItem(getAirdna, {
         id,
         kind,
@@ -211,8 +238,8 @@ export async function buildComparison(
         slug: u.slug ?? null,
         city: u.city ?? null,
         zone: u.zone ?? null,
-        priceBaseMxn: u.price_mxn ?? null,
-        pricePerM2: unitPricePerM2(u.price_mxn ?? null, u.area_m2 ?? null),
+        priceBaseMxn: effectivePrice,
+        pricePerM2: unitPricePerM2(effectivePrice, num(u.area_m2)),
       });
     }),
   );
