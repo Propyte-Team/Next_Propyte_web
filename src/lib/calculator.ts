@@ -456,3 +456,61 @@ export function calculateIRR(cashFlows: number[]): number | null {
 
   return null;
 }
+
+// ── Amortización (corrida financiera, sistema francés) ──
+export function engancheMxn(price: number, downPaymentPct: number): number {
+  return Math.round(price * (downPaymentPct / 100));
+}
+
+export interface AmortRow {
+  mes: number;
+  cuota: number;
+  interes: number;
+  capital: number;
+  saldo: number;
+}
+export interface AmortSchedule {
+  rows: AmortRow[];
+  cuota: number;
+  totalIntereses: number;
+  totalPagado: number;
+  tieneInteres: boolean;
+  principal: number;
+}
+
+/**
+ * Cuadro de amortización de un principal a `months` con `annualRatePct` anual.
+ * Sistema francés (cuota fija): interés = saldo·i, capital = cuota − interés.
+ * Interés alto al inicio, capital alto al final. Tasa 0% → cuotas iguales de
+ * puro capital (interes=0). El último período fuerza el saldo a 0 (redondeo).
+ */
+export function buildAmortizationSchedule(
+  principal: number,
+  annualRatePct: number,
+  months: number,
+): AmortSchedule {
+  const n = Math.max(1, Math.round(months || 0));
+  const p = Math.max(0, principal || 0);
+  const i = annualRatePct > 0 ? annualRatePct / 100 / 12 : 0;
+  const cuota = i === 0 ? p / n : (p * i) / (1 - Math.pow(1 + i, -n));
+
+  const rows: AmortRow[] = [];
+  let saldo = p;
+  let totalIntereses = 0;
+  for (let m = 1; m <= n; m++) {
+    const interes = i === 0 ? 0 : saldo * i;
+    let capital = cuota - interes;
+    if (m === n) capital = saldo;
+    saldo = Math.max(0, saldo - capital);
+    totalIntereses += interes;
+    rows.push({ mes: m, cuota: interes + capital, interes, capital, saldo });
+  }
+  return {
+    rows,
+    cuota,
+    totalIntereses,
+    totalPagado: p + totalIntereses,
+    tieneInteres: i > 0,
+    principal: p,
+  };
+}
