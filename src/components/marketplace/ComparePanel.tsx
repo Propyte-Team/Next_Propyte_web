@@ -7,8 +7,12 @@ import { useLocale, useTranslations } from 'next-intl';
 import { GitCompare, X, ChevronUp } from '@/lib/icons';
 import { useCompare, MAX_COMPARE } from '@/hooks/useCompare';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import Skeleton from '@/components/ui/Skeleton';
 import type { Property } from '@/types/property';
+import type { ComparisonPayload, ComparisonItem } from '@/types/compare';
 import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
+
+type FetchStatus = 'idle' | 'loading' | 'error' | 'ok';
 
 interface ComparePanelProps {
   properties: Property[];
@@ -19,11 +23,27 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   const tMkt = useTranslations('marketplace');
   const tTypes = useTranslations('types');
   const tDevTypes = useTranslations('developmentTypes');
-  const { ids, remove, clear } = useCompare();
+  const { ids, kind, remove, clear } = useCompare();
   const [open, setOpen] = useState(false);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Datos enriquecidos de /api/compare (precio/m², ocupación, ADR, ROI).
+  // Las filas existentes (precio, ubicación, amenidades…) vienen de `selected`
+  // (local, instantáneo); estas 4 filas nuevas dependen del server y por eso
+  // llevan su propio ciclo loading/error/ok independiente.
+  //
+  // metricsStatus se DERIVA (no es setState en el efecto): comparamos la
+  // "requestKey" de lo que debería estar cargado ahora contra la
+  // "resolvedKey" de lo último que terminó de resolver (ok o error). Mientras
+  // no coincidan, estamos loading. Esto evita el warning de
+  // react-hooks/set-state-in-effect (llamar setState al inicio del efecto,
+  // fuera de un callback async) y de paso simplifica el estado.
+  const [metricsPayload, setMetricsPayload] = useState<ComparisonPayload | null>(null);
+  const [metricsError, setMetricsError] = useState(false);
+  const [resolvedKey, setResolvedKey] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   const safeDevType = (t: string) => tDevTypes(normalizeDevTypeKey(t) as 'mixto');
   const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
@@ -90,9 +110,56 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
     };
   }, [modalOpen]);
 
+  // Se re-dispara si cambia el set de ids mientras está abierto, o si el
+  // usuario pulsa "Reintentar" (retryKey). idsKey es la firma comparable por
+  // valor de `ids` (evita listar un array literal en las deps del efecto).
+  const idsKey = ids.join(',');
+  const requestKey = modalOpen && kind && ids.length >= 2 ? `${kind}:${idsKey}:${retryKey}` : null;
+
+  useEffect(() => {
+    // Guard defensivo: en la práctica el modal solo abre con selected.length>=2
+    // (botón deshabilitado si no), así que requestKey===null casi nunca ocurre
+    // estando el modal visible.
+    if (!requestKey || !kind) return;
+    const controller = new AbortController();
+    fetch(`/api/compare?kind=${kind}&ids=${idsKey}`, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`compare fetch failed: ${res.status}`);
+        return res.json() as Promise<ComparisonPayload>;
+      })
+      .then((data) => {
+        setMetricsPayload(data);
+        setMetricsError(false);
+        setResolvedKey(requestKey);
+      })
+      .catch((err) => {
+        if (controller.signal.aborted) return;
+        console.error('compare metrics fetch failed:', err);
+        setMetricsError(true);
+        setResolvedKey(requestKey);
+      });
+    return () => controller.abort();
+  }, [requestKey, kind, idsKey]);
+
+  const metricsStatus: FetchStatus = !requestKey
+    ? 'idle'
+    : resolvedKey === requestKey
+      ? metricsError
+        ? 'error'
+        : 'ok'
+      : 'loading';
+
+  const metricsById = useMemo(() => {
+    const map = new Map<string, ComparisonItem>();
+    for (const item of metricsPayload?.items ?? []) map.set(item.id, item);
+    return map;
+  }, [metricsPayload]);
+
   if (selected.length === 0) return null;
 
   const detailBase = (p: Property) => (p.kind === 'unit' ? 'propiedades' : 'desarrollos');
+  const metricUnavailable = tMkt('compareMetricUnavailable');
+  const showMetricsSkeleton = metricsStatus === 'idle' || metricsStatus === 'loading';
 
   return (
     <>
@@ -307,6 +374,121 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                             );
                           })}
                         </tr>
+
+                        {/* Filas server-derived (2026-07): precio/m², ocupación de
+                            zona, ADR y ROI proyectado — vienen de /api/compare y
+                            tienen su propio ciclo loading/error/ok, independiente
+                            de las filas locales de arriba. */}
+                        {metricsStatus === 'error' ? (
+                          <tr>
+                            <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                              {tMkt('comparePricePerM2')}
+                            </td>
+                            <td colSpan={selected.length} className="px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                <span className="text-sm text-red-600">{tMkt('compareError')}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => setRetryKey((k) => k + 1)}
+                                  className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-[#0E7490] bg-[#0E7490]/10 hover:bg-[#0E7490]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
+                                >
+                                  {tMkt('compareRetry')}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : (
+                          <>
+                            <tr>
+                              <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                                {tMkt('comparePricePerM2')}
+                              </td>
+                              {selected.map((p) => {
+                                const value = metricsById.get(p.id)?.metrics.pricePerM2 ?? null;
+                                return (
+                                  <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
+                                    {showMetricsSkeleton ? (
+                                      <Skeleton className="h-4 w-20" />
+                                    ) : value != null ? (
+                                      <PriceDisplay mxn={value} variant="dual" size="sm" suffix="/m²" />
+                                    ) : (
+                                      metricUnavailable
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+
+                            <tr>
+                              <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                                {tMkt('compareOccupancy')}
+                              </td>
+                              {selected.map((p) => {
+                                const value = metricsById.get(p.id)?.metrics.zoneOccupancy ?? null;
+                                return (
+                                  <td key={p.id} className="px-4 py-3 text-gray-700 tabular-nums">
+                                    {showMetricsSkeleton ? (
+                                      <Skeleton className="h-4 w-12" />
+                                    ) : value != null ? (
+                                      `${Math.round(value)}%`
+                                    ) : (
+                                      metricUnavailable
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+
+                            <tr>
+                              <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                                {tMkt('compareAdr')}
+                              </td>
+                              {selected.map((p) => {
+                                const value = metricsById.get(p.id)?.metrics.zoneAdr ?? null;
+                                return (
+                                  <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
+                                    {showMetricsSkeleton ? (
+                                      <Skeleton className="h-4 w-20" />
+                                    ) : value != null ? (
+                                      <PriceDisplay mxn={value} variant="dual" size="sm" />
+                                    ) : (
+                                      metricUnavailable
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+
+                            <tr>
+                              <td className="px-4 py-3 font-semibold text-gray-600 text-xs uppercase">
+                                {tMkt('compareRoi')}
+                              </td>
+                              {selected.map((p) => {
+                                const value = metricsById.get(p.id)?.metrics.roiNetYieldPct ?? null;
+                                return (
+                                  <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
+                                    {showMetricsSkeleton ? (
+                                      <Skeleton className="h-4 w-14" />
+                                    ) : value != null ? (
+                                      `${value.toFixed(1)}%`
+                                    ) : (
+                                      metricUnavailable
+                                    )}
+                                  </td>
+                                );
+                              })}
+                            </tr>
+
+                            {metricsStatus === 'ok' && (
+                              <tr>
+                                <td className="px-4 py-2" />
+                                <td colSpan={selected.length} className="px-4 py-2 text-xs text-gray-400 italic">
+                                  {tMkt('compareAllCashNote')}
+                                </td>
+                              </tr>
+                            )}
+                          </>
+                        )}
                       </>
                     );
                   })()}
