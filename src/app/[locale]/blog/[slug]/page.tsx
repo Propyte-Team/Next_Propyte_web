@@ -226,9 +226,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               />
             )}
 
-            {/* Mobile: sidebar form appears here (between content and footer) */}
+            {/* Mobile: sidebar form appears here (between content and footer).
+                registerTool={false} → no emite toolname WebMCP: la copia
+                desktop de abajo es la única que registra la tool (dos formularios
+                con el mismo toolname tumban el renderer de Chrome). */}
             <div className="mt-10 lg:hidden">
-              <BlogSidebarForm category={post.category} />
+              <BlogSidebarForm category={post.category} registerTool={false} />
             </div>
 
             <div className="mt-8 pt-6 border-t border-slate-200">

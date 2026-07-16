@@ -23,7 +23,7 @@ const CITY_OPTIONS: Array<{ value: string; key: 'city2' | 'city3' | 'city4' | 'c
   { value: 'otra', key: 'formCityOther' },
 ];
 
-export default function BlogSidebarBrokerForm() {
+export default function BlogSidebarBrokerForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tu = useTranslations('unete');
   const locale = useLocale();
@@ -49,6 +49,16 @@ export default function BlogSidebarBrokerForm() {
     setStatus(result.ok ? 'success' : 'error');
   }
 
+  // WebMCP: solo la instancia con registerTool=true emite el toolname. El
+  // artículo renderiza este form 2 veces (móvil + desktop); dos <form> con el
+  // mismo toolname tumban el renderer de Chrome (RESULT_CODE_KILLED_BAD_MESSAGE).
+  const agentToolAttrs = registerTool
+    ? {
+        toolname: 'registrar_broker_blog',
+        tooldescription: 'Registra a un asesor inmobiliario desde el blog de Propyte.',
+      }
+    : {};
+
   return (
     <aside className="bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] rounded-2xl p-6 border border-slate-200 shadow-sm">
       <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 text-propyte-brand border border-propyte-brand/30 rounded-full text-[11px] font-bold mb-3">
@@ -64,12 +74,7 @@ export default function BlogSidebarBrokerForm() {
           <p className="text-white/75 text-xs">{tu('formSubmittedDesc')}</p>
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3"
-          toolname="registrar_broker_blog"
-          tooldescription="Registra a un asesor inmobiliario desde el blog de Propyte."
-        >
+        <form onSubmit={handleSubmit} className="space-y-3" {...agentToolAttrs}>
           {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"

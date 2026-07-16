@@ -13,7 +13,7 @@ import { submitLead } from '@/lib/leads/submit-lead';
  * Reusa el endpoint /api/leads con source='lead_magnet' (mismo que el
  * LeadMagnet del home — los leads quedan unificados en Zoho).
  */
-export default function BlogSidebarLeadForm() {
+export default function BlogSidebarLeadForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tlm = useTranslations('leadMagnet');
   const [name, setName] = useState('');
@@ -28,6 +28,16 @@ export default function BlogSidebarLeadForm() {
     const result = await submitLead('lead_magnet', { name, email, website });
     setStatus(result.ok ? 'success' : 'error');
   }
+
+  // WebMCP: solo la instancia con registerTool=true emite el toolname. El
+  // artículo renderiza este form 2 veces (móvil + desktop); dos <form> con el
+  // mismo toolname tumban el renderer de Chrome (RESULT_CODE_KILLED_BAD_MESSAGE).
+  const agentToolAttrs = registerTool
+    ? {
+        toolname: 'suscribir_blog',
+        tooldescription: 'Suscribe al usuario a los contenidos del blog de Propyte.',
+      }
+    : {};
 
   return (
     <aside className="bg-[#0B1C1E] rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -45,12 +55,7 @@ export default function BlogSidebarLeadForm() {
           <p className="text-white/75 text-xs">{tlm('checkEmailDesc')}</p>
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3"
-          toolname="suscribir_blog"
-          tooldescription="Suscribe al usuario a los contenidos del blog de Propyte."
-        >
+        <form onSubmit={handleSubmit} className="space-y-3" {...agentToolAttrs}>
           {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"
