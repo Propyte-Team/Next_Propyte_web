@@ -2653,7 +2653,12 @@
     "contextCredits": "Housing loans ({year})",
     "contextCreditsAmount": "Financed amount ({year})",
     "contextUpdated": "Updated {date}",
-    "vacationMarketIntelligence": "Vacation Rental Market Intelligence"
+    "vacationMarketIntelligence": "Vacation Rental Market Intelligence",
+    "cityStrTitle": "Vacation rental — city level",
+    "cityStrDisclaimer": "Market average for {city}. City-level estimate, not neighborhood-specific.",
+    "cityStrOccupancy": "Occupancy (city)",
+    "cityStrAdr": "Avg. daily rate (city)",
+    "cityStrRevpar": "RevPAR (city)"
   },
   "geoAnalysis": {
     "location": "Location",

@@ -10,12 +10,15 @@ import {
   getSeasonalIndices,
   getDevelopments,
   getZoneEnrichment,
+  getCityStrBenchmark,
   type ZoneEnrichment,
+  type CityStrBenchmark,
 } from '@/lib/supabase/queries';
 import { CITY_TO_MARKET_CODE, MARKET_SUBMARKET_TO_ZONE, MARKET_SUBMARKET_TO_CITY } from '@/lib/calculator';
 import { ZoneAnalytics } from './ZoneAnalytics';
 import SiteMedia from '@/components/shared/SiteMedia';
 import { zoneSlug } from '@/lib/utils';
+import { BarChart3, DollarSign, TrendingUp } from '@/lib/icons';
 
 // City → state, for the ones present in MARKET_SUBMARKET_TO_CITY. Used for the
 // Place JSON-LD addressRegion and the SSR summary copy — previously hardcoded
@@ -114,6 +117,7 @@ export default async function ZonePage({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let developments: any[] = [];
   let enrichment: ZoneEnrichment | null = null;
+  let cityStr: CityStrBenchmark | null = null;
 
   if (supabase) {
     try {
@@ -125,6 +129,7 @@ export default async function ZonePage({
         getSeasonalIndices(supabase, market, submarket),
         getDevelopments(supabase, { city, zone, orderBy: 'roi', limit: 10 }),
         getZoneEnrichment(supabase, slug),
+        getCityStrBenchmark(supabase, city),
       ]);
 
       if (results[0].status === 'fulfilled') zoneDetail = results[0].value;
@@ -134,6 +139,7 @@ export default async function ZonePage({
       if (results[4].status === 'fulfilled') seasonality = results[4].value;
       if (results[5].status === 'fulfilled') developments = results[5].value?.data || [];
       if (results[6].status === 'fulfilled') enrichment = results[6].value;
+      if (results[7].status === 'fulfilled') cityStr = results[7].value;
     } catch (e) {
       console.error('Zone page data fetch error:', e);
     }
@@ -319,6 +325,45 @@ export default async function ZonePage({
                 </div>
               )}
             </dl>
+          </section>
+        )}
+
+        {/* Renta vacacional — nivel ciudad (benchmark de compute_derived, zone='_ciudad') — fail-closed */}
+        {cityStr && (
+          <section aria-labelledby="city-str-heading" className="mb-8 rounded-xl border border-gray-200 bg-white p-5">
+            <h2 id="city-str-heading" className="text-lg font-bold text-gray-900 mb-2">
+              {tZonas('cityStrTitle')}
+            </h2>
+            <p className="text-sm text-gray-600">{tZonas('cityStrDisclaimer', { city })}</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <BarChart3 className="w-4 h-4 text-teal-600" />
+                  <span className="text-xs text-gray-600">{tZonas('cityStrOccupancy')}</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {cityStr.median_occupancy != null ? `${Math.round(cityStr.median_occupancy)}%` : '—'}
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <DollarSign className="w-4 h-4 text-teal-600" />
+                  <span className="text-xs text-gray-600">{tZonas('cityStrAdr')}</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {cityStr.median_adr != null ? `$${Math.round(cityStr.median_adr).toLocaleString('es-MX')}` : '—'}
+                </div>
+              </div>
+              <div className="bg-white rounded-xl border border-gray-200 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <TrendingUp className="w-4 h-4 text-teal-600" />
+                  <span className="text-xs text-gray-600">{tZonas('cityStrRevpar')}</span>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {cityStr.revpar != null ? `$${Math.round(cityStr.revpar).toLocaleString('es-MX')}` : '—'}
+                </div>
+              </div>
+            </div>
           </section>
         )}
 

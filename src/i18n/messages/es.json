@@ -2653,7 +2653,12 @@
     "contextCredits": "Créditos a la vivienda ({year})",
     "contextCreditsAmount": "Monto financiado ({year})",
     "contextUpdated": "Actualizado {date}",
-    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"
+    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional",
+    "cityStrTitle": "Renta vacacional — nivel ciudad",
+    "cityStrDisclaimer": "Promedio de mercado de {city}. Estimación a nivel ciudad, no de la colonia.",
+    "cityStrOccupancy": "Ocupación (ciudad)",
+    "cityStrAdr": "Tarifa diaria prom. (ciudad)",
+    "cityStrRevpar": "RevPAR (ciudad)"
   },
   "geoAnalysis": {
     "location": "Ubicación",

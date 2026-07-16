@@ -23,7 +23,7 @@ const CITY_OPTIONS: Array<{ value: string; key: 'city2' | 'city3' | 'city4' | 'c
   { value: 'otra', key: 'formCityOther' },
 ];
 
-export default function BlogSidebarBrokerForm() {
+export default function BlogSidebarBrokerForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tu = useTranslations('unete');
   const locale = useLocale();
@@ -49,6 +49,18 @@ export default function BlogSidebarBrokerForm() {
     setStatus(result.ok ? 'success' : 'error');
   }
 
+  // WebMCP: solo la instancia con registerTool=true emite atributos de tool.
+  // El artículo renderiza este form 2 veces (móvil + desktop); si la copia no
+  // registradora deja atributos WebMCP (toolname duplicado, o toolparamdescription
+  // huérfano sin toolname) Chrome tumba el renderer (RESULT_CODE_KILLED_BAD_MESSAGE).
+  const agentToolAttrs = registerTool
+    ? {
+        toolname: 'registrar_broker_blog',
+        tooldescription: 'Registra a un asesor inmobiliario desde el blog de Propyte.',
+      }
+    : {};
+  const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
+
   return (
     <aside className="bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] rounded-2xl p-6 border border-slate-200 shadow-sm">
       <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 text-propyte-brand border border-propyte-brand/30 rounded-full text-[11px] font-bold mb-3">
@@ -64,12 +76,7 @@ export default function BlogSidebarBrokerForm() {
           <p className="text-white/75 text-xs">{tu('formSubmittedDesc')}</p>
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3"
-          toolname="registrar_broker_blog"
-          tooldescription="Registra a un asesor inmobiliario desde el blog de Propyte."
-        >
+        <form onSubmit={handleSubmit} className="space-y-3" {...agentToolAttrs}>
           {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"
@@ -90,7 +97,7 @@ export default function BlogSidebarBrokerForm() {
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formNamePlaceholder')}
-              toolparamdescription="Nombre completo del asesor inmobiliario."
+              {...param('Nombre completo del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -103,7 +110,7 @@ export default function BlogSidebarBrokerForm() {
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formEmailPlaceholder')}
-              toolparamdescription="Correo electrónico del asesor inmobiliario."
+              {...param('Correo electrónico del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -116,7 +123,7 @@ export default function BlogSidebarBrokerForm() {
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formWhatsappPlaceholder')}
-              toolparamdescription="Número de WhatsApp del asesor inmobiliario."
+              {...param('Número de WhatsApp del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -127,7 +134,7 @@ export default function BlogSidebarBrokerForm() {
               onChange={(e) => setCity(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:border-propyte-brand focus:outline-none"
-              toolparamdescription="Ciudad donde opera el asesor inmobiliario."
+              {...param('Ciudad donde opera el asesor inmobiliario.')}
             >
               <option value="" className="text-slate-900">{tu('formCityPlaceholder')}</option>
               {CITY_OPTIONS.map(({ value, key }) => (

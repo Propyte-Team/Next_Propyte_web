@@ -13,7 +13,7 @@ import { submitLead } from '@/lib/leads/submit-lead';
  * Reusa el endpoint /api/leads con source='lead_magnet' (mismo que el
  * LeadMagnet del home — los leads quedan unificados en Zoho).
  */
-export default function BlogSidebarLeadForm() {
+export default function BlogSidebarLeadForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tlm = useTranslations('leadMagnet');
   const [name, setName] = useState('');
@@ -28,6 +28,20 @@ export default function BlogSidebarLeadForm() {
     const result = await submitLead('lead_magnet', { name, email, website });
     setStatus(result.ok ? 'success' : 'error');
   }
+
+  // WebMCP: solo la instancia con registerTool=true emite atributos de tool.
+  // El artículo renderiza este form 2 veces (móvil + desktop); si la copia no
+  // registradora deja atributos WebMCP (toolname duplicado, o toolparamdescription
+  // huérfano sin toolname) Chrome tumba el renderer (RESULT_CODE_KILLED_BAD_MESSAGE).
+  // La copia con registerTool=false queda 100% invisible a WebMCP (como los forms
+  // sin tool del resto del sitio).
+  const agentToolAttrs = registerTool
+    ? {
+        toolname: 'suscribir_blog',
+        tooldescription: 'Suscribe al usuario a los contenidos del blog de Propyte.',
+      }
+    : {};
+  const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
 
   return (
     <aside className="bg-[#0B1C1E] rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -45,12 +59,7 @@ export default function BlogSidebarLeadForm() {
           <p className="text-white/75 text-xs">{tlm('checkEmailDesc')}</p>
         </div>
       ) : (
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-3"
-          toolname="suscribir_blog"
-          tooldescription="Suscribe al usuario a los contenidos del blog de Propyte."
-        >
+        <form onSubmit={handleSubmit} className="space-y-3" {...agentToolAttrs}>
           {/* Honeypot sin `name`: se captura por estado, invisible para WebMCP. */}
           <input
             type="text"
@@ -71,7 +80,7 @@ export default function BlogSidebarLeadForm() {
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('namePlaceholder')}
-              toolparamdescription="Nombre completo del interesado."
+              {...param('Nombre completo del interesado.')}
             />
           </div>
           <div>
@@ -84,7 +93,7 @@ export default function BlogSidebarLeadForm() {
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('emailPlaceholder')}
-              toolparamdescription="Correo electrónico del interesado."
+              {...param('Correo electrónico del interesado.')}
             />
           </div>
           <button
