@@ -334,13 +334,22 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   </>
                 )}
               </div>
-              {/* Título + Share/Ficha en la misma fila — libera espacio vertical
-                  para el bloque de precio (original + referencial + TC). */}
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <h1 className="text-base md:text-2xl font-bold text-[#2C2C2C] flex-1 min-w-0 leading-tight tracking-tight">
+              {/* Título full-width en móvil, Share/Ficha lado a lado en ≥md.
+                  Antes iban en la misma fila flex: en móvil los dos pills con texto
+                  (~301px) aplastaban el h1 a una columna de ~26px → el título partía
+                  palabra-por-línea y se desbordaba sobre los botones. Ahora en móvil
+                  apilan (título arriba full-width, acciones debajo).
+                  Tamaño con `!` porque la regla global `:where(h1)` (globals.css, sin
+                  @layer) le gana a las utilities text-*: sin el `!` el título tomaría
+                  el clamp gigante --fs-h1 (~37px). Quitar el `!` cuando se migre el
+                  default de headings a `@layer base`. */}
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+                <h1 className="text-2xl! md:text-3xl! font-bold text-[#2C2C2C] md:flex-1 md:min-w-0 leading-tight tracking-tight text-balance">
                   {property.name}
                 </h1>
-                <ShareDownloadModal data={shareData} locale={locale} />
+                <div className="shrink-0">
+                  <ShareDownloadModal data={shareData} locale={locale} />
+                </div>
               </div>
 
               <div className="flex items-center gap-2 mt-2 text-gray-600">
