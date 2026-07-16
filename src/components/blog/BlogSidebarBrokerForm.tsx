@@ -49,15 +49,17 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
     setStatus(result.ok ? 'success' : 'error');
   }
 
-  // WebMCP: solo la instancia con registerTool=true emite el toolname. El
-  // artículo renderiza este form 2 veces (móvil + desktop); dos <form> con el
-  // mismo toolname tumban el renderer de Chrome (RESULT_CODE_KILLED_BAD_MESSAGE).
+  // WebMCP: solo la instancia con registerTool=true emite atributos de tool.
+  // El artículo renderiza este form 2 veces (móvil + desktop); si la copia no
+  // registradora deja atributos WebMCP (toolname duplicado, o toolparamdescription
+  // huérfano sin toolname) Chrome tumba el renderer (RESULT_CODE_KILLED_BAD_MESSAGE).
   const agentToolAttrs = registerTool
     ? {
         toolname: 'registrar_broker_blog',
         tooldescription: 'Registra a un asesor inmobiliario desde el blog de Propyte.',
       }
     : {};
+  const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
 
   return (
     <aside className="bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -95,7 +97,7 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formNamePlaceholder')}
-              toolparamdescription="Nombre completo del asesor inmobiliario."
+              {...param('Nombre completo del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -108,7 +110,7 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formEmailPlaceholder')}
-              toolparamdescription="Correo electrónico del asesor inmobiliario."
+              {...param('Correo electrónico del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -121,7 +123,7 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
               placeholder={tu('formWhatsappPlaceholder')}
-              toolparamdescription="Número de WhatsApp del asesor inmobiliario."
+              {...param('Número de WhatsApp del asesor inmobiliario.')}
             />
           </div>
           <div>
@@ -132,7 +134,7 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
               onChange={(e) => setCity(e.target.value)}
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:border-propyte-brand focus:outline-none"
-              toolparamdescription="Ciudad donde opera el asesor inmobiliario."
+              {...param('Ciudad donde opera el asesor inmobiliario.')}
             >
               <option value="" className="text-slate-900">{tu('formCityPlaceholder')}</option>
               {CITY_OPTIONS.map(({ value, key }) => (

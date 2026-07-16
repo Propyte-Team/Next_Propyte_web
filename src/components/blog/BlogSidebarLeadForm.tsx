@@ -29,15 +29,19 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
     setStatus(result.ok ? 'success' : 'error');
   }
 
-  // WebMCP: solo la instancia con registerTool=true emite el toolname. El
-  // artículo renderiza este form 2 veces (móvil + desktop); dos <form> con el
-  // mismo toolname tumban el renderer de Chrome (RESULT_CODE_KILLED_BAD_MESSAGE).
+  // WebMCP: solo la instancia con registerTool=true emite atributos de tool.
+  // El artículo renderiza este form 2 veces (móvil + desktop); si la copia no
+  // registradora deja atributos WebMCP (toolname duplicado, o toolparamdescription
+  // huérfano sin toolname) Chrome tumba el renderer (RESULT_CODE_KILLED_BAD_MESSAGE).
+  // La copia con registerTool=false queda 100% invisible a WebMCP (como los forms
+  // sin tool del resto del sitio).
   const agentToolAttrs = registerTool
     ? {
         toolname: 'suscribir_blog',
         tooldescription: 'Suscribe al usuario a los contenidos del blog de Propyte.',
       }
     : {};
+  const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
 
   return (
     <aside className="bg-[#0B1C1E] rounded-2xl p-6 border border-slate-200 shadow-sm">
@@ -76,7 +80,7 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('namePlaceholder')}
-              toolparamdescription="Nombre completo del interesado."
+              {...param('Nombre completo del interesado.')}
             />
           </div>
           <div>
@@ -89,7 +93,7 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
               required
               className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
               placeholder={tlm('emailPlaceholder')}
-              toolparamdescription="Correo electrónico del interesado."
+              {...param('Correo electrónico del interesado.')}
             />
           </div>
           <button
