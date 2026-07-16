@@ -572,6 +572,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       interestRateDefault={property.financing.interestRate}
                       appreciationDefault={property.roi.appreciation}
                       locale={locale}
+                      financingDirecto={property.financing.directo ?? false}
+                      esquemaPago={property.financing.esquema}
                     />
                   ),
                 }] as TabItem[] : []),

@@ -25,6 +25,7 @@ import {
 } from '@/lib/calculator';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
+import CorridaFinanciera from './CorridaFinanciera';
 
 interface UnitInvestmentCalculatorProps {
   price: number;
@@ -37,13 +38,17 @@ interface UnitInvestmentCalculatorProps {
   interestRateDefault: number;
   appreciationDefault: number;
   locale: string;
+  financingDirecto: boolean;
+  esquemaPago?: string;
 }
 
 export default function UnitInvestmentCalculator({
   price, state, monthlyRentRes, monthlyRentVac, airdnaOccupancy,
   downPaymentMinPct, financingMonths, interestRateDefault, appreciationDefault, locale,
+  financingDirecto, esquemaPago,
 }: UnitInvestmentCalculatorProps) {
   const t = useTranslations('simulator');
+  const tCorrida = useTranslations('corrida');
 
   const [downPaymentPct, setDownPaymentPct] = useState(Math.max(downPaymentMinPct || 20, 10));
   const [months, setMonths] = useState(financingMonths[1] || financingMonths[0] || 120);
@@ -281,6 +286,22 @@ export default function UnitInvestmentCalculator({
               </div>
             ),
           },
+          ...(financingDirecto && financingMonths.length > 0 && (downPaymentMinPct || 0) > 0
+            ? [{
+                id: 'corrida',
+                label: tCorrida('tab'),
+                icon: <Calculator size={16} />,
+                panel: (
+                  <CorridaFinanciera
+                    price={price}
+                    downPaymentPct={downPaymentMinPct}
+                    months={financingMonths}
+                    annualRate={interestRateDefault}
+                    esquema={esquemaPago}
+                  />
+                ),
+              }]
+            : []),
           {
             id: 'proyeccion',
             label: t('roiProjectionTab'),
