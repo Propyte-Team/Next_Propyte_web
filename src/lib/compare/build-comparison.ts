@@ -28,6 +28,14 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+// El ROI vacacional (renta de hospedaje) no aplica a terrenos/lotes — un lote
+// no se renta por noche, así que el yield saldría absurdo. Detecta el tipo no
+// rentable por nombre; el guard vive aquí (orquestador), no en projectedVacationRoi
+// (que queda pura y agnóstica del tipo). Ocupación/ADR/precio-m² sí aplican a un lote.
+function isLandType(type: string | null): boolean {
+  return !!type && /lote|terreno/i.test(type);
+}
+
 // Fila cruda de v_developments tal como la devuelve getDevelopmentsByIds
 // (ya pasó por applyDisplayName — `name` es el título público, nunca
 // nombre_desarrollo crudo).
@@ -38,6 +46,7 @@ interface RawDevelopmentRow {
   city: string | null;
   zone: string | null;
   price_min_mxn: number | string | null;
+  development_type: string | null;
 }
 
 // Fila cruda de v_units tal como la devuelve getUnitsByIds. Los NUMERIC pueden
@@ -53,6 +62,7 @@ interface RawUnitRow {
   zone: string | null;
   price_mxn: number | string | null;
   area_m2: number | string | null;
+  unit_type: string | null;
   // Descuento (v_units) — mismas columnas que consume mapUnitToProperty.
   discount_price_mxn: number | string | null;
   discount_pct: number | string | null;
@@ -125,6 +135,7 @@ async function finishItem(
     zone: string | null;
     priceBaseMxn: number | null;
     pricePerM2: number | null;
+    isLand: boolean;
   },
 ): Promise<ComparisonItem> {
   const summary = await getAirdna(base.city);
@@ -133,6 +144,12 @@ async function finishItem(
     summary?.zones ?? [],
     { occupancy: summary?.current_occupancy ?? null, adr: summary?.current_adr ?? null },
   );
+
+  // Terrenos/lotes: se suprime el ROI vacacional (no rentable como hospedaje) →
+  // el modal lo muestra como "—". Ocupación/ADR/precio-m² se conservan.
+  const roiNetYieldPct = base.isLand
+    ? null
+    : projectedVacationRoi({ priceMxn: base.priceBaseMxn, adr, occupancyPct: occupancy });
 
   return {
     id: base.id,
@@ -146,7 +163,7 @@ async function finishItem(
       pricePerM2: base.pricePerM2,
       zoneOccupancy: occupancy,
       zoneAdr: adr,
-      roiNetYieldPct: projectedVacationRoi({ priceMxn: base.priceBaseMxn, adr, occupancyPct: occupancy }),
+      roiNetYieldPct,
     },
   };
 }
@@ -202,6 +219,7 @@ export async function buildComparison(
           zone: d.zone ?? null,
           priceBaseMxn: num(d.price_min_mxn),
           pricePerM2,
+          isLand: isLandType(d.development_type),
         });
       }),
     );
@@ -240,6 +258,7 @@ export async function buildComparison(
         zone: u.zone ?? null,
         priceBaseMxn: effectivePrice,
         pricePerM2: unitPricePerM2(effectivePrice, num(u.area_m2)),
+        isLand: isLandType(u.unit_type),
       });
     }),
   );

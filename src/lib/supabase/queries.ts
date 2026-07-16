@@ -476,7 +476,7 @@ export async function getDevelopmentsByIds(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn')
+      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn, development_type')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -598,7 +598,7 @@ export async function getUnitsByIds(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_units')
-      .select('id, slug, name, title, unit_number, development_name, city, zone, price_mxn, area_m2, discount_price_mxn, discount_pct, is_discount_active')
+      .select('id, slug, name, title, unit_number, development_name, city, zone, price_mxn, area_m2, unit_type, discount_price_mxn, discount_pct, is_discount_active')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
