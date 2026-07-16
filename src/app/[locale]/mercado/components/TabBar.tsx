@@ -35,7 +35,7 @@ export function TabBar({ activeTab, locale }: TabBarProps) {
               onClick={() => handleTabChange(id)}
               className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
                 activeTab === id
-                  ? 'text-[#1A2F3F] border-propyte-brand'
+                  ? 'text-[#0E7490] font-semibold border-[#0E7490]'
                   : 'text-gray-600 border-transparent hover:text-[#1A2F3F]'
               }`}
             >

@@ -159,7 +159,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                     <span
                       className={`font-mono font-semibold ${
                         (score.score ?? 0) >= 70
-                          ? 'text-emerald-600'
+                          ? 'text-emerald-700'
                           : (score.score ?? 0) >= 50
                           ? 'text-amber-700'
                           : 'text-gray-600'

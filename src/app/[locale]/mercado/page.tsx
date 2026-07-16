@@ -101,23 +101,30 @@ export default async function MercadoPage({
 
       <MercadoHero activeTab={activeTab} locale={locale} strStats={strStats} />
 
-      <Suspense>
-        <TabBar activeTab={activeTab} locale={locale} />
-      </Suspense>
+      {/* Cuerpo claro debajo del hero oscuro (patrón del sitio: dark hero →
+          light body → dark footer). El wrapper dark de MainPadding solo debe
+          verse detrás del padding-top/hero; sin este bg-white el fondo oscuro
+          se filtraba a todo el contenido y volvía ilegibles la tabla, los KPIs
+          y los textos (todos construidos en tema claro). */}
+      <div className="bg-white">
+        <Suspense>
+          <TabBar activeTab={activeTab} locale={locale} />
+        </Suspense>
 
-      <main>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'vacacional' && (
-          <VacacionalTab scores={strScores} locale={locale} initialCity={city} />
-        )}
-        {activeTab === 'tradicional' && (
-          <TradicionalTab locale={locale} />
-        )}
-        </div>
-      </main>
+        <main>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {activeTab === 'vacacional' && (
+            <VacacionalTab scores={strScores} locale={locale} initialCity={city} />
+          )}
+          {activeTab === 'tradicional' && (
+            <TradicionalTab locale={locale} />
+          )}
+          </div>
+        </main>
 
-      <MethodologySection activeTab={activeTab} locale={locale} />
-      <AdvisorCTA activeTab={activeTab} locale={locale} />
+        <MethodologySection activeTab={activeTab} locale={locale} />
+        <AdvisorCTA activeTab={activeTab} locale={locale} />
+      </div>
     </>
   );
 }
