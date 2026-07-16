@@ -520,3 +520,21 @@ git commit -m "chore(compare): ajustes de verificacion e2e"
 - El sitio despliega desde `main` (Hostinger auto-deploy). NO push a main sin OK explícito.
 - Cambios de runtime (endpoint nuevo + fetch) NO van a prod sin validar en standalone local — `next build` verde ≠ runtime-safe (lección documentada). El plan ya valida standalone en Task 6.
 - Al terminar: PR de `feat/comparador-desarrollos` o push a main según indique Luis.
+
+---
+
+## Follow-ups pendientes (hallados en verificación, 2026-07-15)
+
+> Decisión de Luis: enviar el comparador as-is; estos follow-ups los retoma Claude **cuando la sesión `feat/str-city-benchmark` termine** (edita `queries.ts` + zonas — infra compartida). Coordinar ahí para no chocar.
+
+1. **Ocupación/ADR de zona caen a nivel market (granularidad).** Causa raíz confirmada:
+   - `fetchSubmarketZones` (`src/lib/supabase/queries.ts`) usa `.limit(2000)` ordenado por `metric_date DESC`. Para Tulum, las filas de `region_15` (="Aldea Zamá") aparecen en posición ~2330-2334 → **quedan fuera del corte** → occupancy/adr de esa zona vuelven `null` → `resolveZoneAirdna` cae al fallback de market. Fix: subir/eliminar el limit o reestructurar a "latest por submarket" (p.ej. `DISTINCT ON (submarket, metric_name)`).
+   - `MARKET_SUBMARKET_TO_ZONE` (`src/lib/calculator.ts`) está incompleto: Tulum solo mapea `region_9`→"Tulum Centro" y `region_15`→"Aldea Zamá". Zonas de desarrollos como "Tulum Sur", "Región 10/11" no existen → siempre fallback. Fix: expandir el mapa (decisión de datos que también beneficia las páginas de zona).
+   - Ambos archivos los edita la sesión `feat/str-city-benchmark` ahora mismo → posiblemente ya lo estén arreglando; verificar qué hicieron antes de duplicar.
+2. **ROI vacacional aplicado a lotes/terrenos da números absurdos** (ej. "Lotes Región 11" → ROI 65.5%, porque el precio del lote es bajo vs el ingreso nightly asumido, y un terreno no se renta como hospedaje). Fix: suprimir `roiNetYieldPct` (→ `null` → "—") para `development_type`/tipo no rentable (lotes/terrenos). Requiere pasar el tipo a `finishItem` y un guard en `projectedVacationRoi` o en el orquestador.
+3. **Reconciliar overlap en `queries.ts`**: mi rama agregó `getDevelopmentsByIds`/`getUnitsByIds`; `feat/str-city-benchmark` también toca `queries.ts` → conflicto de merge a resolver al integrar.
+
+## Verificación e2e ejecutada (2026-07-15, worktree, standalone :3200)
+- `GET /api/compare?kind=development&ids=<3 UUIDs Tulum>` → 200 con métricas reales; `pricePerM2`/`zoneOccupancy`/`zoneAdr`/`roiNetYieldPct` presentes. 400 correcto con 1 id, uuid inválido y kind inválido.
+- Modal (`/es/desarrollos`, 3 devs seleccionados) renderiza las 4 filas nuevas con dual MXN/USD, nota all-cash, y diferenciación cross-city (PdC 65% vs Tulum 51%). Screenshot: `comparador-modal-smoke.png`.
+- `tsc --noEmit` 0, `next build` exit 0 (`/api/compare` = ƒ dinámica), eslint 0. Sin errores de consola propios (los 2 existentes —CSP report-only, /apple-icon 404— son pre-existentes).
