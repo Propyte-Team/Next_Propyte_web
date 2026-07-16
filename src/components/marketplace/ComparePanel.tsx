@@ -60,8 +60,28 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
   // Body scroll lock + ESC to close + focus trap when modal open
   useEffect(() => {
     if (!modalOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // Scroll lock robusto (técnica position:fixed). overflow:hidden en html/body
+    // no bastó: el body es `min-h-screen flex` y la ventana (documentElement) es
+    // el scroller. Sacar el body del flujo con position:fixed congela la página
+    // sin depender de quirks de overflow. Guardamos scrollY para restaurarlo.
+    const scrollY = window.scrollY;
+    const b = document.body.style;
+    const prevBody = {
+      position: b.position,
+      top: b.top,
+      left: b.left,
+      right: b.right,
+      width: b.width,
+      overflow: b.overflow,
+    };
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    b.position = 'fixed';
+    b.top = `-${scrollY}px`;
+    b.left = '0';
+    b.right = '0';
+    b.width = '100%';
+    b.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     // Save the element that had focus before opening so we can restore it.
     lastFocusedRef.current = document.activeElement as HTMLElement | null;
@@ -103,7 +123,9 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      Object.assign(document.body.style, prevBody);
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      window.scrollTo(0, scrollY);
       window.removeEventListener('keydown', onKey);
       // Restore focus to the trigger that opened the modal (CTA in the bar).
       lastFocusedRef.current?.focus?.();
@@ -250,7 +272,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
             </div>
 
             <div className="flex-1 overflow-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm table-fixed">
                 {/* Safari no respeta `position: sticky` en <thead>/<tr>;
                     aplicarlo a cada <th> sí funciona en todos los browsers. */}
                 <thead className="bg-gray-50">
@@ -264,11 +286,11 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                           href={`/${locale}/${detailBase(p)}/${p.slug}`}
                           className="block hover:text-[#0E7490]"
                         >
-                          {p.images[0] && (
-                            <div className="relative aspect-[16/10] w-full mb-2 rounded-lg overflow-hidden bg-gray-100">
+                          <div className="relative aspect-[16/10] w-full mb-2 rounded-lg overflow-hidden bg-gray-100">
+                            {p.images[0] && (
                               <Image src={p.images[0]} alt={p.name} fill sizes="200px" className="object-cover" />
-                            </div>
-                          )}
+                            )}
+                          </div>
                           <div className="font-bold text-[#1A2F3F] line-clamp-2">{p.name}</div>
                           <div className="text-xs text-gray-600 mt-0.5">{p.location.city}</div>
                         </Link>
