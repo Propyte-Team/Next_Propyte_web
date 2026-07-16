@@ -115,14 +115,17 @@ export default async function RootLayout({
       className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
     >
       <head>
-        {/* WebMCP origin trial (propyte.com + subdominios). Habilita
-            document.modelContext en Chrome sin flag para usuarios reales.
-            Token PÚBLICO (no secreto). Vence 16-nov-2026 / Chrome ≤156 →
-            renovar en developer.chrome.com/origintrials antes de esa fecha. */}
+        {/* WebMCP origin trial — DESACTIVADO temporalmente (16-jul-2026).
+            Causaba RESULT_CODE_KILLED_BAD_MESSAGE (renderer crash) en las
+            páginas de artículo del blog: BlogSidebarForm se renderiza 2 veces
+            (móvil + desktop) → 2 <form> con el mismo toolname="suscribir_blog"
+            → registro declarativo WebMCP con nombre duplicado mata el renderer.
+            Re-activar SOLO tras deduplicar los toolname en todo el sitio.
+            Token PÚBLICO (no secreto). Vence 16-nov-2026.
         <meta
           httpEquiv="origin-trial"
           content="AqdaYPcrqwtNCugX/MOjAYDWrtQClCxlDzbPI006D4avRnuzVeh4lDLB0xo56RDleP/KBhashWYw59ztzxZLywsAAABeeyJvcmlnaW4iOiJodHRwczovL3Byb3B5dGUuY29tOjQ0MyIsImZlYXR1cmUiOiJXZWJNQ1AiLCJleHBpcnkiOjE3OTQ4NzM2MDAsImlzU3ViZG9tYWluIjp0cnVlfQ=="
-        />
+        /> */}
       </head>
       {/* gtag se carga únicamente en <Analytics /> ([locale]/layout) con
           Consent Mode v2 — no duplicar aquí: una segunda config sin consent
