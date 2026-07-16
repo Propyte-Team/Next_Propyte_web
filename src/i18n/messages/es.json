@@ -2226,6 +2226,28 @@
     "ctaAdvisor": "Hablar con asesor especializado",
     "disclaimer": "Cálculo referencial sin seguros, comisión por apertura, ITP, escrituración ni gastos notariales. Solicita un análisis personalizado con un asesor."
   },
+  "corrida": {
+    "tab": "Corrida financiera",
+    "title": "Plan de pagos del desarrollador",
+    "subtitle": "Amortización estimada del saldo financiado (sistema francés).",
+    "term": "Plazo",
+    "months": "{m} meses",
+    "downPayment": "Enganche",
+    "financedAmount": "Monto a financiar",
+    "monthlyPayment": "Mensualidad",
+    "colMonth": "Mes",
+    "colPayment": "Cuota",
+    "colInterest": "Interés",
+    "colCapital": "Capital",
+    "colBalance": "Saldo",
+    "totalInterest": "Total intereses",
+    "totalPaid": "Total pagado",
+    "noInterest": "Sin intereses — cuotas iguales de capital.",
+    "showAll": "Ver los {n} meses",
+    "showLess": "Ver menos",
+    "chartTitle": "Interés vs. capital por período",
+    "disclaimer": "Cálculo estimado con fines informativos. No constituye una oferta de crédito ni sustituye la propuesta formal del desarrollador."
+  },
   "glosario": {
     "heroEyebrow": "Glosario",
     "heroTitle": "Glosario inmobiliario",

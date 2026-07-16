@@ -2226,6 +2226,28 @@
     "ctaAdvisor": "Talk to a specialized advisor",
     "disclaimer": "Referential calculation. Excludes insurance, opening fees, property transfer tax, escrow and notary costs. Request a personalized analysis with an advisor."
   },
+  "corrida": {
+    "tab": "Payment schedule",
+    "title": "Developer payment plan",
+    "subtitle": "Estimated amortization of the financed balance (French system).",
+    "term": "Term",
+    "months": "{m} months",
+    "downPayment": "Down payment",
+    "financedAmount": "Amount financed",
+    "monthlyPayment": "Monthly payment",
+    "colMonth": "Month",
+    "colPayment": "Payment",
+    "colInterest": "Interest",
+    "colCapital": "Principal",
+    "colBalance": "Balance",
+    "totalInterest": "Total interest",
+    "totalPaid": "Total paid",
+    "noInterest": "Interest-free — equal principal installments.",
+    "showAll": "Show all {n} months",
+    "showLess": "Show less",
+    "chartTitle": "Interest vs. principal per period",
+    "disclaimer": "Estimated figures for informational purposes only. Not a credit offer and does not replace the developer's formal proposal."
+  },
   "glosario": {
     "heroEyebrow": "Glossary",
     "heroTitle": "Real estate glossary",

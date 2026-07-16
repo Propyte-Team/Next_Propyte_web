@@ -32,9 +32,18 @@ export interface PropertyROI {
 }
 
 export interface PropertyFinancing {
-  downPaymentMin: number;
-  months: number[];
-  interestRate: number;
+  downPaymentMin: number;   // % enganche efectivo (fin_enganche_pct)
+  months: number[];         // opciones de plazo (fin_meses_opciones)
+  interestRate: number;     // tasa anual efectiva (fin_tasa)
+  /** true si hay financiamiento directo del desarrollador (gate de la corrida) */
+  directo?: boolean;
+  /** nota libre del plazo, ej. "Hasta entrega de obra" */
+  mesesNota?: string;
+  /** esquema de pago descriptivo */
+  esquema?: string;
+  aceptaHipotecario?: boolean;
+  aceptaInfonavit?: boolean;
+  aceptaFovissste?: boolean;
 }
 
 export interface PropertyDescription {

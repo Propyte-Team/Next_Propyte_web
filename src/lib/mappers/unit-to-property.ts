@@ -69,6 +69,16 @@ export interface UnitRow {
   financing_down_payment: number | null;
   financing_months: number[] | null;
   financing_interest: number | null;
+  // Financiamiento efectivo (override unidad o herencia del desarrollo) — v_units fin_*
+  fin_directo: boolean | null;
+  fin_hipotecario: boolean | null;
+  fin_infonavit: boolean | null;
+  fin_fovissste: boolean | null;
+  fin_enganche_pct: number | string | null;
+  fin_meses_opciones: number[] | null;
+  fin_meses_nota: string | null;
+  fin_tasa: number | string | null;
+  fin_esquema: string | null;
   // Copy
   description_es: string | null;
   description_en: string | null;
@@ -298,9 +308,18 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       appreciation: row.roi_appreciation || 0,
     },
     financing: {
-      downPaymentMin: row.financing_down_payment || 0,
-      months: row.financing_months || [60, 120, 180, 240],
-      interestRate: row.financing_interest || 0,
+      downPaymentMin: Number(row.fin_enganche_pct) || row.financing_down_payment || 0,
+      months:
+        Array.isArray(row.fin_meses_opciones) && row.fin_meses_opciones.length > 0
+          ? row.fin_meses_opciones
+          : row.financing_months || [60, 120, 180, 240],
+      interestRate: Number(row.fin_tasa) || row.financing_interest || 0,
+      directo: row.fin_directo === true,
+      mesesNota: row.fin_meses_nota || undefined,
+      esquema: row.fin_esquema || undefined,
+      aceptaHipotecario: row.fin_hipotecario === true,
+      aceptaInfonavit: row.fin_infonavit === true,
+      aceptaFovissste: row.fin_fovissste === true,
     },
     description: {
       es: row.description_es || '',
