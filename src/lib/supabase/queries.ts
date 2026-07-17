@@ -489,6 +489,82 @@ export async function getDevelopmentsByIds(client: Client, ids: string[]) {
   }
 }
 
+// ── Helpers del ranking de rentabilidad de /mercado (tab tradicional) ──
+// development_financials (investment_analytics) NO tiene FK a developments y estas
+// viven en OTRO schema (real_estate_hub.v_developments) → PostgREST no puede embeber
+// `developments!inner(...)`. Por eso se resuelven por separado y se unen en JS.
+
+/** development_financials rankeados por rent_yield_gross, con coerción NUMERIC→number. */
+export async function getRankedDevelopmentFinancials(client: Client, limit = 200) {
+  const { data, error } = await inv(client)
+    .from('development_financials')
+    .select('*')
+    .order('rent_yield_gross', { ascending: false, nullsFirst: false })
+    .limit(limit);
+  if (error || !data) {
+    if (error) console.error('[getRankedDevelopmentFinancials]', error.message);
+    return [];
+  }
+  return (data as Record<string, unknown>[]).map((r) =>
+    coerceNumericFields(r, DEV_FINANCIALS_NUMERIC_KEYS),
+  );
+}
+
+/** Developments (v_developments) para el ranking: columnas que la tabla necesita
+ *  (stage/price_max_mxn/images) + display name + masking de imágenes. Gate público. */
+export async function getDevelopmentsForRanking(client: Client, ids: string[]) {
+  if (ids.length === 0) return [];
+  try {
+    const { data, error } = await hub(client)
+      .from('v_developments')
+      .select('id, slug, name, publication_title, meta_title, city, zone, stage, price_min_mxn, price_max_mxn, images')
+      .in('id', ids)
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null);
+    if (error) { console.error('[getDevelopmentsForRanking]', error.message); return []; }
+    return maskRows((data ?? []).map(applyDisplayName), 'd') ?? [];
+  } catch (e) {
+    console.error('[getDevelopmentsForRanking] exception:', e);
+    return [];
+  }
+}
+
+export interface RentalComparableRow {
+  city: string;
+  zone: string | null;
+  property_type: string;
+  bedrooms: number | null;
+  monthly_rent_mxn: number;
+  area_m2: number | null;
+  rental_type: string;
+  is_furnished: boolean | null;
+  source_portal: string;
+  scraped_at: string;
+}
+
+/** Comparables de renta activos de los últimos 12 meses (paginado; PostgREST tope 1000/req). */
+export async function getActiveRentalComparables(client: Client): Promise<RentalComparableRow[]> {
+  const since = analystWindowStart();
+  const rows: RentalComparableRow[] = [];
+  const pageSize = 1000;
+  let offset = 0;
+  for (;;) {
+    const { data, error } = await inv(client)
+      .from('rental_comparables')
+      .select('city, zone, property_type, bedrooms, monthly_rent_mxn, area_m2, rental_type, is_furnished, source_portal, scraped_at')
+      .eq('active', true)
+      .gte('scraped_at', since)
+      .gte('monthly_rent_mxn', 1000)
+      .range(offset, offset + pageSize - 1);
+    if (error) { console.error('[getActiveRentalComparables]', error.message); break; }
+    if (!data || data.length === 0) break;
+    rows.push(...(data as RentalComparableRow[]));
+    if (data.length < pageSize) break;
+    offset += pageSize;
+  }
+  return rows;
+}
+
 export async function getCityCounts(client: Client) {
   // Returns count of developments per city
   return client

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { enforceRateLimit } from '@/lib/rateLimit';
-import { analystWindowStart } from '@/lib/analyst-window';
+import {
+  getRankedDevelopmentFinancials,
+  getDevelopmentsForRanking,
+  getActiveRentalComparables,
+} from '@/lib/supabase/queries';
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -119,45 +123,24 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
 
-    // 1. Fetch development financials with development info
-    let devQuery = supabase
-      .from('development_financials')
-      .select(`
-        *,
-        developments!inner(
-          id, slug, name, city, zone, state, stage,
-          property_types, price_min_mxn, price_max_mxn,
-          images, published, deleted_at
-        )
-      `)
-      .is('developments.deleted_at', null)
-      .eq('developments.published', true);
+    // 1. Financials (investment_analytics) + developments (real_estate_hub v_developments).
+    //    Se resuelven por separado y se unen en JS: no hay FK ni embed cross-schema
+    //    en PostgREST. Solo entran developments públicos; filtro por ciudad en memoria.
+    const financialsRaw = await getRankedDevelopmentFinancials(supabase);
+    const devIds = [...new Set(
+      financialsRaw.map((f) => f.development_id as string).filter(Boolean),
+    )];
+    const devs = await getDevelopmentsForRanking(supabase, devIds);
+    const devById = new Map(
+      devs.map((d) => [(d as { id: string }).id, d as Record<string, unknown>]),
+    );
+    const financials = financialsRaw
+      .map((f) => ({ f, dev: devById.get(f.development_id as string) }))
+      .filter(({ dev }) => dev && (!city || dev.city === city))
+      .slice(0, 100);
 
-    if (city) {
-      devQuery = devQuery.eq('developments.city', city);
-    }
-
-    const { data: financials } = await devQuery
-      .order('rent_yield_gross', { ascending: false })
-      .limit(100);
-
-    // 2. Fetch ALL rental comparables
-    const allComparables: RawComparable[] = [];
-    let offset = 0;
-    const pageSize = 1000;
-    while (true) {
-      const { data: page } = await supabase
-        .from('rental_comparables')
-        .select('city, zone, property_type, bedrooms, monthly_rent_mxn, area_m2, rental_type, is_furnished, source_portal, scraped_at')
-        .eq('active', true)
-        .gte('scraped_at', analystWindowStart()) // solo comparables de los últimos 12 meses
-        .gte('monthly_rent_mxn', 1000)
-        .range(offset, offset + pageSize - 1);
-      if (!page || page.length === 0) break;
-      allComparables.push(...(page as RawComparable[]));
-      if (page.length < pageSize) break;
-      offset += pageSize;
-    }
+    // 2. Comparables de renta activos de los últimos 12 meses (investment_analytics).
+    const allComparables: RawComparable[] = await getActiveRentalComparables(supabase);
 
     // 3. Clean data (same 6-stage pipeline as Python)
     const { cleaned: comparables, removed } = cleanComparables(allComparables);
@@ -231,8 +214,8 @@ export async function GET(request: NextRequest) {
     }).sort((a, b) => b.count - a.count);
 
     // Model summary
-    const modelInfo = financials && financials.length > 0
-      ? { version: (financials[0] as Record<string, unknown>).model_version, last_computed: (financials[0] as Record<string, unknown>).last_computed }
+    const modelInfo = financials.length > 0
+      ? { version: financials[0].f.model_version, last_computed: financials[0].f.last_computed }
       : null;
 
     return NextResponse.json({
@@ -246,18 +229,18 @@ export async function GET(request: NextRequest) {
         rt: r.rental_type,
         fur: r.is_furnished,
       })),
-      developments: (financials || []).map((f: Record<string, unknown>) => {
-        const dev = f.developments as Record<string, unknown> | null;
+      developments: financials.map(({ f, dev }) => {
+        const d = dev as Record<string, unknown>;
         return {
           id: f.development_id,
-          slug: dev?.slug,
-          name: dev?.name,
-          city: dev?.city,
-          zone: dev?.zone,
-          stage: dev?.stage,
-          price_min: dev?.price_min_mxn,
-          price_max: dev?.price_max_mxn,
-          image: (dev?.images as string[])?.[0] || null,
+          slug: d.slug,
+          name: d.name,
+          city: d.city,
+          zone: d.zone,
+          stage: d.stage,
+          price_min: d.price_min_mxn,
+          price_max: d.price_max_mxn,
+          image: (d.images as string[])?.[0] || null,
           roi_annual_pct: f.roi_annual_pct,
           irr_5yr: f.irr_5yr,
           irr_10yr: f.irr_10yr,
