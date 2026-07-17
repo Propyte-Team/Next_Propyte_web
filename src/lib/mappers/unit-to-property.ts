@@ -1,4 +1,5 @@
 import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo, PropertyDiscount } from '@/types/property';
+import { parseEsquemas, type EsquemaPago } from '@/lib/esquemas-pago';
 
 /**
  * Raw row from `real_estate_hub.v_units`.
@@ -78,6 +79,7 @@ export interface UnitRow {
   fin_meses_nota: string | null;
   fin_tasa: number | string | null;
   fin_esquema: string | null;
+  fin_esquemas_pago: unknown;
   // Copy
   description_es: string | null;
   description_en: string | null;
@@ -158,6 +160,19 @@ function buildRichContent(row: Record<string, unknown>): Property['richContent']
     faqs: faqs_es || faqs_en ? { es: faqs_es, en: faqs_en } : undefined,
   };
 }
+function buildFallbackEsquemas(
+  directo: boolean, engPct: number, mesesOpts: number[], tasa: number,
+): EsquemaPago[] {
+  const terms = mesesOpts.filter((m) => Number(m) > 0);
+  if (!directo && terms.length === 0 && engPct <= 0) return [];
+  if (terms.length === 0) {
+    return [{ id: 'v1_0', label: 'Financiamiento', enganche_pct: engPct, meses: 0, tasa, descuento_pct: 0, orden: 0 }];
+  }
+  return terms.map((m, i) => ({
+    id: `v1_${m}`, label: `Financiamiento ${m} meses`, enganche_pct: engPct, meses: m, tasa, descuento_pct: 0, orden: i,
+  }));
+}
+
 const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
   disponible: 'nuevo',
   reservado: 'reservado',
@@ -246,6 +261,16 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       ? priceOriginalNum
       : undefined;
 
+  const esquemasReales = parseEsquemas(row.fin_esquemas_pago);
+  const esquemas: EsquemaPago[] = esquemasReales.length > 0
+    ? esquemasReales
+    : buildFallbackEsquemas(
+        row.fin_directo === true,
+        Number(row.fin_enganche_pct) || 0,
+        Array.isArray(row.fin_meses_opciones) ? row.fin_meses_opciones : [],
+        Number(row.fin_tasa) || 0,
+      );
+
   return {
     id: row.id,
     slug: row.slug,
@@ -319,6 +344,7 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       aceptaHipotecario: row.fin_hipotecario === true,
       aceptaInfonavit: row.fin_infonavit === true,
       aceptaFovissste: row.fin_fovissste === true,
+      esquemas,
     },
     description: {
       es: row.description_es || '',
