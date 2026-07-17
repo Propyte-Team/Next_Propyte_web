@@ -311,11 +311,19 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   void _pricePerM2;
 
   // ── ROI projection from financials ──
-  const roiDisplay = devFinancials?.roi_annual_pct ?? property.roi_projected ?? null;
+  // Number(): campos NUMERIC de v_developments llegan como string; sin coerción
+  // roiPct llega string a los componentes (riesgo .toFixed) y el template pinta
+  // decimales crudos.
+  const roiDisplay = devFinancials?.roi_annual_pct
+    ?? (property.roi_projected != null ? Number(property.roi_projected) : null);
 
   // ── IRR 5yr + 10yr for CetesComparison ──
   // Prefer precomputed financials. Fall back to in-line calc matching unit/PDF model.
-  const appreciationPct = (property.roi_appreciation as number | null) ?? 8;
+  // Number() + guard null: roi_appreciation es NUMERIC (string). Sin esto,
+  // appreciationPct.toFixed() (más abajo) truena el render y la aritmética de IRR
+  // concatena. null → fallback 8 (preserva la semántica ?? 8; un 0 real se conserva).
+  const roiAppNum = property.roi_appreciation != null ? Number(property.roi_appreciation) : null;
+  const appreciationPct = (roiAppNum != null && Number.isFinite(roiAppNum)) ? roiAppNum : 8;
   const DOWN_PCT = 30;
   const RATE_PCT = 12;
   const LOAN_MONTHS = 120;

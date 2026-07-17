@@ -60,15 +60,14 @@ export interface UnitRow {
   images: string[] | null;
   virtual_tour_url: string | null;
   video_url: string | null;
-  // Financials
-  roi_projected: number | null;
-  roi_rental_monthly: number | null;
-  roi_appreciation: number | null;
-  cap_rate: number | null;
-  annual_revenue: number | null;
-  financing_down_payment: number | null;
-  financing_months: number[] | null;
-  financing_interest: number | null;
+  // Financials — nombres REALES de v_units (verificado en information_schema
+  // 2026-07-16). Antes se leían roi_projected / roi_rental_monthly /
+  // roi_appreciation / cap_rate / annual_revenue / financing_* que NO EXISTEN
+  // en la vista → siempre undefined (apreciación caía al 8% hardcodeado y el
+  // cap rate a null para el 100% de las unidades).
+  roi_annual: number | string | null;
+  estimated_rent_mxn: number | string | null;
+  appreciation_annual: number | string | null;
   // Financiamiento efectivo (override unidad o herencia del desarrollo) — v_units fin_*
   fin_directo: boolean | null;
   fin_hipotecario: boolean | null;
@@ -303,17 +302,17 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       video: row.video_url || undefined,
     },
     roi: {
-      projected: row.roi_projected || 0,
-      rentalMonthly: row.roi_rental_monthly || 0,
-      appreciation: row.roi_appreciation || 0,
+      projected: Number(row.roi_annual) || 0,
+      rentalMonthly: Number(row.estimated_rent_mxn) || 0,
+      appreciation: Number(row.appreciation_annual) || 0,
     },
     financing: {
-      downPaymentMin: Number(row.fin_enganche_pct) || row.financing_down_payment || 0,
+      downPaymentMin: Number(row.fin_enganche_pct) || 0,
       months:
         Array.isArray(row.fin_meses_opciones) && row.fin_meses_opciones.length > 0
           ? row.fin_meses_opciones
-          : row.financing_months || [60, 120, 180, 240],
-      interestRate: Number(row.fin_tasa) || row.financing_interest || 0,
+          : [60, 120, 180, 240],
+      interestRate: Number(row.fin_tasa) || 0,
       directo: row.fin_directo === true,
       mesesNota: row.fin_meses_nota || undefined,
       esquema: row.fin_esquema || undefined,
@@ -329,8 +328,10 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
     badge,
     featured: false,
     createdAt: row.created_at || new Date().toISOString(),
-    capRate: row.cap_rate ?? undefined,
-    annualRevenue: row.annual_revenue ?? undefined,
+    // cap_rate / annual_revenue NO existen en v_units. El cap rate se calcula
+    // en vivo en el simulador; quedan undefined hasta exponerse (ver Fase 3).
+    capRate: undefined,
+    annualRevenue: undefined,
     priceOriginal,
     promo,
     discount,

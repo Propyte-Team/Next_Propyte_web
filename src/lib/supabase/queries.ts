@@ -1487,6 +1487,45 @@ export async function getRentalEstimates(
 // ML RENTAL ESTIMATES & DEVELOPMENT FINANCIALS
 // ============================================================
 
+/**
+ * Supabase serializa columnas NUMERIC como string en JSON (patrón ya conocido
+ * en el repo: ver PriceDisplay/AreaDisplay). Coerciona a number las claves
+ * indicadas y deja intactas fechas/uuids/strings. null/NaN → null. Muta y
+ * retorna el mismo row. Claves ausentes o ya numéricas se ignoran (no-op).
+ */
+function coerceNumericFields<T extends Record<string, unknown>>(
+  row: T,
+  keys: readonly string[],
+): T {
+  for (const k of keys) {
+    const v = row[k as keyof T];
+    if (typeof v === 'string') {
+      const n = Number(v);
+      (row as Record<string, unknown>)[k] = Number.isFinite(n) ? n : null;
+    }
+  }
+  return row;
+}
+
+// Columnas NUMERIC de development_financials (todas las métricas; se excluyen
+// id/development_id/model_version/last_computed que son texto/uuid/fecha).
+const DEV_FINANCIALS_NUMERIC_KEYS = [
+  'roi_annual_pct', 'irr_5yr', 'irr_10yr', 'cash_on_cash_pct', 'breakeven_months',
+  'monthly_net_flow', 'cap_rate', 'rent_yield_gross', 'rent_yield_net',
+  'estimated_rent_residencial', 'estimated_rent_vacacional', 'occupancy_rate_res',
+  'roi_annual_pct_vac', 'irr_5yr_vac', 'irr_10yr_vac', 'cash_on_cash_pct_vac',
+  'breakeven_months_vac', 'monthly_net_flow_vac', 'cap_rate_vac',
+  'rent_yield_gross_vac', 'rent_yield_net_vac', 'occupancy_rate_vac',
+] as const;
+
+// Columnas NUMERIC de zone_scores (INT como active_listings es no-op seguro).
+const ZONE_SCORE_NUMERIC_KEYS = [
+  'score', 'yield_component', 'occupancy_component', 'adr_growth_component',
+  'supply_pressure_component', 'revpar', 'price_to_rent_ratio', 'yield_spread',
+  'supply_demand_ratio', 'active_listings', 'median_adr', 'median_occupancy',
+  'median_rent',
+] as const;
+
 export async function getDevelopmentFinancials(client: Client, developmentId: string) {
   const { data, error } = await inv(client)
     .from('development_financials')
@@ -1495,7 +1534,9 @@ export async function getDevelopmentFinancials(client: Client, developmentId: st
     .single();
 
   if (error || !data) return null;
-  return data;
+  // Coerción NUMERIC-string→number: sin esto los consumidores que hacen
+  // .toFixed() (InvestmentSummary, CetesComparison) truenan el render en runtime.
+  return coerceNumericFields(data as Record<string, unknown>, DEV_FINANCIALS_NUMERIC_KEYS) as typeof data;
 }
 
 export async function getMlRentalEstimates(client: Client, developmentId: string) {
@@ -1597,7 +1638,9 @@ export async function getAirdnaMarketSummary(
   for (const r of occData) {
     if (r.metric_value != null && !seenDates.has(r.metric_date)) {
       seenDates.add(r.metric_date);
-      uniqueOcc.push({ date: r.metric_date, value: r.metric_value });
+      // Number(): metric_value es NUMERIC → string; sin esto el reduce de avgOcc
+      // concatena texto y da NaN, y las tiles corriente arriba desaparecen.
+      uniqueOcc.push({ date: r.metric_date, value: Number(r.metric_value) });
     }
   }
 
@@ -1621,7 +1664,8 @@ export async function getAirdnaMarketSummary(
       const latestDate = arr[0]?.metric_date;
       return r.metric_date === latestDate && r.metric_value != null;
     })
-    .reduce((sum, r) => sum + (r.metric_value || 0), 0);
+    // Number(): metric_value NUMERIC llega como string → sin esto suma = concatenación.
+    .reduce((sum, r) => sum + (Number(r.metric_value) || 0), 0);
 
   // Rate tiers
   const rateTiers: Record<string, number> = {};
@@ -1666,7 +1710,9 @@ async function fetchSubmarketZones(
     const sub = r.submarket!;
     if (!bySubmarket[sub]) bySubmarket[sub] = { occupancy: null, adr: null };
     if (r.section === 'occupancy' && r.chart === 'chart_1' && r.metric_name === 'occupancy' && bySubmarket[sub].occupancy === null) {
-      bySubmarket[sub].occupancy = r.metric_value;
+      // Number() defensivo (NUMERIC→string); guard != null para no fijar 0 falso
+      // (Number(null)=0) y perder el skip de filas sin dato.
+      bySubmarket[sub].occupancy = r.metric_value != null ? Number(r.metric_value) : null;
     }
     if (r.section === 'rates' && r.chart === 'chart_1' && r.metric_name === 'daily_rate' && bySubmarket[sub].adr === null) {
       bySubmarket[sub].adr = r.metric_value ? Math.round(r.metric_value) : null;
@@ -1814,9 +1860,17 @@ export async function getZoneScores(client: Client, city?: string) {
   if (error) { console.error('[getZoneScores] Supabase error:', error.code, error.message, error.details); return []; }
   if (!data) { console.warn('[getZoneScores] No data returned (null)'); return []; }
 
+  // Coerción NUMERIC-string→number upfront: sin esto median_occupancy/score/etc.
+  // llegan como string a los KPIs (/mercado suma → NaN → tiles desaparecen) y al
+  // filtro avgOcc de más abajo (concatenación). Beforehand para que todo el
+  // pipeline opere sobre números.
+  const rows = (data as ZoneScore[]).map((r) =>
+    coerceNumericFields(r as unknown as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as ZoneScore,
+  );
+
   // Keep only latest per (city, zone)
   const seen = new Set<string>();
-  const deduplicated = data.filter((row: ZoneScore) => {
+  const deduplicated = rows.filter((row: ZoneScore) => {
     const key = `${row.city}:${row.zone}`;
     if (seen.has(key)) return false;
     seen.add(key);
@@ -1865,7 +1919,9 @@ export async function getZoneDetail(client: Client, city: string, zone: string) 
     .order('computed_at', { ascending: false })
     .limit(1);
 
-  const score = scoreData?.[0] || null;
+  const score = scoreData?.[0]
+    ? (coerceNumericFields(scoreData[0] as unknown as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as ZoneScore)
+    : null;
 
   // Get zone's submarket code for AirDNA lookups
   const submarkets = MARKET_SUBMARKET_TO_ZONE;
@@ -1900,7 +1956,8 @@ export async function getCityStrBenchmark(
     .limit(1)
     .maybeSingle();
   if (error || !data) return null;
-  return data as CityStrBenchmark;
+  // NUMERIC-string→number (median_occupancy/median_adr/revpar).
+  return coerceNumericFields(data as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as CityStrBenchmark;
 }
 
 export interface ZoneEnrichment {
