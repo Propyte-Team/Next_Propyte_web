@@ -16,6 +16,7 @@ import {
   getDeveloperById,
   getDeveloperProjectCount,
   type DeveloperRecord,
+  type AirdnaMarketSummary,
 } from '@/lib/supabase/queries';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
@@ -24,7 +25,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
-import { CITY_TO_MARKET_CODE, VAC } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, VAC, calculateClosingCosts } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import SimilarListings from '@/components/shared/SimilarListings';
@@ -40,7 +41,7 @@ import type { Currency } from '@/context/CurrencyContext';
 import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
-import UnitInvestmentCalculator from './UnitInvestmentCalculator';
+import RentabilidadTab from './RentabilidadTab';
 import EsquemasDePagoTab from './EsquemasDePagoTab';
 import MarketIndicator from './MarketIndicator';
 import AmenityList from '@/components/property/AmenityList';
@@ -128,6 +129,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   let estRentRes: number | null = null;
   let estRentVac: number | null = null;
   let airdnaOccupancy: number | null = null;
+  let airdnaSummary: AirdnaMarketSummary | null = null;
 
   try {
     if (supabase) {
@@ -146,7 +148,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
           : resResult.data.median_rent_mxn;
       }
       if (vacResult.data) estRentVac = vacResult.data.median_rent_mxn;
-      if (airdnaResult) airdnaOccupancy = airdnaResult.current_occupancy;
+      if (airdnaResult) { airdnaOccupancy = airdnaResult.current_occupancy; airdnaSummary = airdnaResult; }
     }
   } catch (err) {
     console.error('Rental estimate fetch failed:', err);
@@ -571,19 +573,14 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   id: 'rentabilidad',
                   label: tProp('tabRentabilidad'),
                   panel: (
-                    <UnitInvestmentCalculator
+                    <RentabilidadTab
                       price={property.price.mxn}
-                      state={property.location.state || 'Quintana Roo'}
+                      totalPropertyCost={property.price.mxn + calculateClosingCosts(property.price.mxn, property.location.state || 'Quintana Roo')}
                       monthlyRentRes={monthlyRentRes}
                       monthlyRentVac={monthlyRentVac}
-                      airdnaOccupancy={airdnaOccupancy}
-                      downPaymentMinPct={property.financing.downPaymentMin}
-                      financingMonths={property.financing.months}
-                      interestRateDefault={property.financing.interestRate}
+                      airdna={airdnaSummary}
                       appreciationDefault={property.roi.appreciation}
                       locale={locale}
-                      esquemas={property.financing.esquemas ?? []}
-                      listPrice={property.priceOriginal ?? property.price.mxn}
                     />
                   ),
                 }] as TabItem[] : []),
