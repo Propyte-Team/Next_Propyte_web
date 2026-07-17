@@ -81,7 +81,7 @@ export default function RentabilidadTab({
             id: 'vacacional', label: t('vacationTab'), icon: <Plane size={16} />,
             panel: (
               <VacacionalPanel
-                effectiveRent={vac.effectiveMonthly} netRent={vac.netMonthly}
+                netRent={vac.netMonthly}
                 adr={vac.adr} revpar={vac.revpar} occupancy={occupancyVac}
                 avgOcc12m={airdna?.avg_occupancy_12m ?? null}
                 grossYield={vac.grossYield} netYield={vac.netYield}
@@ -154,10 +154,9 @@ function ResidencialPanel({
 }
 
 function VacacionalPanel({
-  effectiveRent, netRent, adr, revpar, occupancy, avgOcc12m, grossYield, netYield, occupancyTrend, zones, locale,
-}: { effectiveRent: number; netRent: number; adr: number | null; revpar: number | null; occupancy: number; avgOcc12m: number | null; grossYield: number; netYield: number; occupancyTrend: { label: string; value: number }[]; zones: AirdnaZoneSummary[]; locale: string }) {
+  netRent, adr, revpar, occupancy, avgOcc12m, grossYield, netYield, occupancyTrend, zones, locale,
+}: { netRent: number; adr: number | null; revpar: number | null; occupancy: number; avgOcc12m: number | null; grossYield: number; netYield: number; occupancyTrend: { label: string; value: number }[]; zones: AirdnaZoneSummary[]; locale: string }) {
   const t = useTranslations('simulator');
-  void effectiveRent;
   return (
     <div className="space-y-4">
       <div>

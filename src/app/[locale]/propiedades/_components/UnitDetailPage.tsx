@@ -25,7 +25,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
-import { CITY_TO_MARKET_CODE, VAC, calculateClosingCosts } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, VAC, calculateTotalInvestment } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import SimilarListings from '@/components/shared/SimilarListings';
@@ -575,7 +575,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   panel: (
                     <RentabilidadTab
                       price={property.price.mxn}
-                      totalPropertyCost={property.price.mxn + calculateClosingCosts(property.price.mxn, property.location.state || 'Quintana Roo')}
+                      totalPropertyCost={calculateTotalInvestment(property.price.mxn, property.location.state || 'Quintana Roo')}
                       monthlyRentRes={monthlyRentRes}
                       monthlyRentVac={monthlyRentVac}
                       airdna={airdnaSummary}
