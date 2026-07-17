@@ -311,6 +311,22 @@ export function calculateProjectedValue(
   return Math.round(price * Math.pow(1 + appreciation / 100, years));
 }
 
+/**
+ * Retorno total proyectado como % sobre el precio: plusvalía acumulada +
+ * rentas netas acumuladas, en `years`. NO resta financiamiento.
+ */
+export function projectedTotalReturn(
+  price: number,
+  appreciationPct: number,
+  annualNetRent: number,
+  years: number,
+): number {
+  if (price <= 0) return 0;
+  const appreciation = calculateProjectedValue(price, appreciationPct, years) - price;
+  const rents = annualNetRent * years;
+  return ((appreciation + rents) / price) * 100;
+}
+
 export function calculateCapRate(annualNetRent: number, price: number): number {
   if (price === 0) return 0;
   return (annualNetRent / price) * 100;
