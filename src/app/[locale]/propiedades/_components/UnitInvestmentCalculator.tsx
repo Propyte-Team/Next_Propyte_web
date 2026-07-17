@@ -26,6 +26,7 @@ import {
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import CorridaFinanciera from './CorridaFinanciera';
+import type { EsquemaPago } from '@/lib/esquemas-pago';
 
 interface UnitInvestmentCalculatorProps {
   price: number;
@@ -38,14 +39,14 @@ interface UnitInvestmentCalculatorProps {
   interestRateDefault: number;
   appreciationDefault: number;
   locale: string;
-  financingDirecto: boolean;
-  esquemaPago?: string;
+  esquemas: EsquemaPago[];
+  listPrice: number;
 }
 
 export default function UnitInvestmentCalculator({
   price, state, monthlyRentRes, monthlyRentVac, airdnaOccupancy,
   downPaymentMinPct, financingMonths, interestRateDefault, appreciationDefault, locale,
-  financingDirecto, esquemaPago,
+  esquemas, listPrice,
 }: UnitInvestmentCalculatorProps) {
   const t = useTranslations('simulator');
   const tCorrida = useTranslations('corrida');
@@ -292,18 +293,15 @@ export default function UnitInvestmentCalculator({
               </div>
             ),
           },
-          ...(financingDirecto && financingMonths.length > 0 && (downPaymentMinPct || 0) > 0
+          ...(esquemas.length > 0
             ? [{
                 id: 'corrida',
                 label: tCorrida('tab'),
                 icon: <Calculator size={16} />,
                 panel: (
                   <CorridaFinanciera
-                    price={price}
-                    downPaymentPct={downPaymentMinPct}
-                    months={financingMonths}
-                    annualRate={interestRateDefault}
-                    esquema={esquemaPago}
+                    listPrice={listPrice}
+                    esquemas={esquemas}
                   />
                 ),
               }]
