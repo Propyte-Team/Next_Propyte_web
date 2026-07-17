@@ -1,6 +1,7 @@
 'use client';
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 
 interface TrendChartProps {
@@ -10,12 +11,13 @@ interface TrendChartProps {
 }
 
 export default function TrendChart({ title, data, format }: TrendChartProps) {
+  const t = useTranslations('simulator');
   const fmt = (v: number) => (format === 'pct' ? `${v}%` : formatPrice(v));
   return (
     <div className="bg-white border border-gray-100 rounded-xl p-4">
       <div className="flex items-baseline justify-between mb-3">
         <div className="text-sm font-bold text-gray-900">{title}</div>
-        <span className="text-2xs text-[#0E7490] bg-propyte-cyan-100 px-2 py-0.5 rounded-full font-bold">dato real</span>
+        <span className="text-2xs text-[#0E7490] bg-propyte-cyan-100 px-2 py-0.5 rounded-full font-bold">{t('realDataBadge')}</span>
       </div>
       <div className="h-[200px]">
         <ResponsiveContainer width="100%" height="100%">

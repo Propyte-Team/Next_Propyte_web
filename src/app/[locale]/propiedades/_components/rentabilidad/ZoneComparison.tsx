@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { formatPrice } from '@/lib/formatters';
 import type { AirdnaZoneSummary } from '@/lib/supabase/queries';
 
@@ -11,6 +12,7 @@ interface ZoneComparisonProps {
 }
 
 export default function ZoneComparison({ metric, zones, title }: ZoneComparisonProps) {
+  const t = useTranslations('simulator');
   const rows = zones
     .map((z) => ({ name: z.zone, value: metric === 'adr' ? z.adr : z.occupancy }))
     .filter((r) => r.value != null && (r.value as number) > 0)
@@ -32,7 +34,7 @@ export default function ZoneComparison({ metric, zones, title }: ZoneComparisonP
           </div>
         ))}
       </div>
-      <p className="text-2xs text-gray-500 mt-2">* nivel ciudad cuando no hay desglose de zona</p>
+      <p className="text-2xs text-gray-500 mt-2">{t('zoneCityLevelNote')}</p>
     </div>
   );
 }
