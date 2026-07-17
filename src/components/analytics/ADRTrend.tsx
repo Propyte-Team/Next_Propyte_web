@@ -29,6 +29,7 @@ interface ADRTrendProps {
   title?: string;
   height?: number;
   currency?: string;
+  disclaimer?: string;
 }
 
 export function ADRTrend({
@@ -37,6 +38,7 @@ export function ADRTrend({
   title = 'Tarifa Promedio Diaria (ADR)',
   height = 300,
   currency = 'MXN',
+  disclaimer,
 }: ADRTrendProps) {
   const data = [
     ...historical.map((d) => ({
@@ -114,6 +116,9 @@ export function ADRTrend({
           )}
         </ComposedChart>
       </ResponsiveContainer>
+      {disclaimer && (
+        <p className="mt-2 text-[11px] leading-snug text-gray-400">{disclaimer}</p>
+      )}
     </div>
   );
 }

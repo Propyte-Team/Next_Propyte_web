@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { RENT_BOUNDS, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { cleanListingName } from '@/lib/formatters';
 import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
+import { analystWindowStart } from '@/lib/analyst-window';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -1389,6 +1390,7 @@ export async function getRentalEstimate(
       .from('rental_comparables')
       .select('monthly_rent_mxn, area_m2, bedrooms, zone')
       .eq('active', true)
+      .gte('scraped_at', analystWindowStart()) // solo comparables de los últimos 12 meses
       .gte('monthly_rent_mxn', RENT_BOUNDS.MIN)
       .lte('monthly_rent_mxn', RENT_BOUNDS.MAX);
 
@@ -1595,6 +1597,9 @@ export async function getAirdnaMarketSummary(
 ): Promise<AirdnaMarketSummary | null> {
   if (!market) return null;
 
+  // Solo datos de los últimos 12 meses (metric_date). Excluye histórico 2023/2024.
+  const since = analystWindowStart();
+
   // Fetch latest data points in parallel
   const [occResult, adrResult, adrBedsResult, listingsResult, tiersResult] = await Promise.all([
     // Occupancy trend (last 12 unique dates, market-level)
@@ -1602,30 +1607,35 @@ export async function getAirdnaMarketSummary(
       .select('metric_date, metric_value')
       .eq('market', market).eq('section', 'occupancy').eq('chart', 'chart_1').eq('metric_name', 'occupancy')
       .is('submarket', null)
+      .gte('metric_date', since)
       .order('metric_date', { ascending: false }).limit(12),
     // ADR overall
     inv(client).from('airdna_metrics')
       .select('metric_value, metric_date')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_1').eq('metric_name', 'daily_rate')
       .is('submarket', null)
+      .gte('metric_date', since)
       .order('metric_date', { ascending: false }).limit(1),
     // ADR by bedrooms (latest)
     inv(client).from('airdna_metrics')
       .select('metric_name, metric_value, metric_date')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_2')
       .is('submarket', null)
+      .gte('metric_date', since)
       .order('metric_date', { ascending: false }).limit(12),
     // Listings by bedrooms (latest)
     inv(client).from('airdna_metrics')
       .select('metric_name, metric_value, metric_date')
       .eq('market', market).eq('section', 'listings').eq('chart', 'chart_1')
       .is('submarket', null)
+      .gte('metric_date', since)
       .order('metric_date', { ascending: false }).limit(6),
     // Rate tiers (latest)
     inv(client).from('airdna_metrics')
       .select('metric_name, metric_value')
       .eq('market', market).eq('section', 'rates').eq('chart', 'chart_3')
       .is('submarket', null)
+      .gte('metric_date', since)
       .order('metric_date', { ascending: false }).limit(5),
   ]);
 
@@ -1692,13 +1702,14 @@ async function fetchSubmarketZones(
   client: Client,
   market: string,
 ): Promise<AirdnaZoneSummary[]> {
-  // Get latest occupancy and ADR per submarket
+  // Get latest occupancy and ADR per submarket (solo últimos 12 meses; excluye histórico 2023/2024)
   const { data } = await inv(client)
     .from('airdna_metrics')
     .select('submarket, section, chart, metric_name, metric_value, metric_date')
     .eq('market', market)
     .not('submarket', 'is', null)
     .in('section', ['occupancy', 'rates'])
+    .gte('metric_date', analystWindowStart())
     .order('metric_date', { ascending: false })
     .limit(2000);
 
@@ -2123,6 +2134,8 @@ export async function getOccupancyTrend(
     .eq('section', 'occupancy')
     .eq('chart', 'chart_1')
     .eq('metric_name', 'occupancy')
+    // NOTA: el forecast NO se limita a 12 meses — usa todo el histórico disponible
+    // para modelar estacionalidad. El disclaimer en OccupancyTrend lo aclara al usuario.
     .order('metric_date', { ascending: true })
     .limit(months);
 
@@ -2161,6 +2174,8 @@ export async function getADRTrend(
     .eq('section', 'rates')
     .eq('chart', 'chart_1')
     .eq('metric_name', 'daily_rate')
+    // NOTA: el forecast NO se limita a 12 meses — usa todo el histórico disponible
+    // para modelar estacionalidad. El disclaimer en ADRTrend lo aclara al usuario.
     .order('metric_date', { ascending: true })
     .limit(months);
 

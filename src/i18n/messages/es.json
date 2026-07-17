@@ -1967,7 +1967,8 @@
     "stagePresale": "Preventa",
     "stageConstruction": "Construcción",
     "stageReady": "Entrega",
-    "dismissAlert": "Descartar alerta"
+    "dismissAlert": "Descartar alerta",
+    "forecastDisclaimer": "* El pronóstico usa el histórico completo disponible (puede incluir datos anteriores a los últimos 12 meses) para modelar la estacionalidad."
   },
   "methodology": {
     "title": "Metodología",

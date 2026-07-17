@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { enforceRateLimit } from '@/lib/rateLimit';
+import { analystWindowStart } from '@/lib/analyst-window';
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -149,6 +150,7 @@ export async function GET(request: NextRequest) {
         .from('rental_comparables')
         .select('city, zone, property_type, bedrooms, monthly_rent_mxn, area_m2, rental_type, is_furnished, source_portal, scraped_at')
         .eq('active', true)
+        .gte('scraped_at', analystWindowStart()) // solo comparables de los últimos 12 meses
         .gte('monthly_rent_mxn', 1000)
         .range(offset, offset + pageSize - 1);
       if (!page || page.length === 0) break;

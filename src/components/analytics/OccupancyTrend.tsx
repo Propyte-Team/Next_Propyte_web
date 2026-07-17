@@ -28,6 +28,7 @@ interface OccupancyTrendProps {
   forecasts?: ForecastPoint[];
   title?: string;
   height?: number;
+  disclaimer?: string;
 }
 
 export function OccupancyTrend({
@@ -35,6 +36,7 @@ export function OccupancyTrend({
   forecasts = [],
   title = 'Ocupación',
   height = 300,
+  disclaimer,
 }: OccupancyTrendProps) {
   // Combine historical + forecast data
   const data = [
@@ -128,6 +130,9 @@ export function OccupancyTrend({
           )}
         </ComposedChart>
       </ResponsiveContainer>
+      {disclaimer && (
+        <p className="mt-2 text-[11px] leading-snug text-gray-400">{disclaimer}</p>
+      )}
     </div>
   );
 }

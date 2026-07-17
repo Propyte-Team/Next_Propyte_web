@@ -147,6 +147,7 @@ export function ZoneAnalytics({
             historical={occupancyTrend}
             forecasts={occupancyForecasts}
             title={t('occupancyTrend')}
+            disclaimer={t('forecastDisclaimer')}
           />
         </div>
         <div className="bg-white rounded-xl border border-gray-200 p-4">
@@ -154,6 +155,7 @@ export function ZoneAnalytics({
             historical={adrTrend}
             forecasts={adrForecasts}
             title={t('adrTrend')}
+            disclaimer={t('forecastDisclaimer')}
           />
         </div>
       </div>

@@ -1967,7 +1967,8 @@
     "stagePresale": "Presale",
     "stageConstruction": "Under Construction",
     "stageReady": "Ready",
-    "dismissAlert": "Dismiss alert"
+    "dismissAlert": "Dismiss alert",
+    "forecastDisclaimer": "* The forecast uses all available history (may include data older than the last 12 months) to model seasonality."
   },
   "methodology": {
     "title": "Methodology",
