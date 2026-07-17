@@ -18,6 +18,7 @@ export const VISIBILITY_KEYS = {
   DESARROLLOS_DETAIL_RENTABILIDAD: "desarrollos.detail.rentabilidad",
   DESARROLLOS_DETAIL_GEO: "desarrollos.detail.geo",
   PROPIEDADES_DETAIL_RENTABILIDAD: "propiedades.detail.rentabilidad",
+  PROPIEDADES_DETAIL_ESQUEMAS: "propiedades.detail.esquemas",
   PROPIEDADES_DETAIL_TOUR: "propiedades.detail.tour",
   PROPIEDADES_DETAIL_GEO: "propiedades.detail.geo",
   MERCADO_VACACIONAL: "mercado.vacacional",

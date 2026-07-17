@@ -41,6 +41,7 @@ import Badge from '@/components/ui/Badge';
 import ExpandableText from '@/components/ui/ExpandableText';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import UnitInvestmentCalculator from './UnitInvestmentCalculator';
+import EsquemasDePagoTab from './EsquemasDePagoTab';
 import MarketIndicator from './MarketIndicator';
 import AmenityList from '@/components/property/AmenityList';
 import FloatingKeyData from '@/components/property/FloatingKeyData';
@@ -581,6 +582,21 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       interestRateDefault={property.financing.interestRate}
                       appreciationDefault={property.roi.appreciation}
                       locale={locale}
+                      esquemas={property.financing.esquemas ?? []}
+                      listPrice={property.priceOriginal ?? property.price.mxn}
+                    />
+                  ),
+                }] as TabItem[] : []),
+                ...(isVisible(visibility, VISIBILITY_KEYS.PROPIEDADES_DETAIL_ESQUEMAS) ? [{
+                  id: 'esquemas',
+                  label: tProp('paymentSchemesTab'),
+                  panel: (
+                    <EsquemasDePagoTab
+                      price={property.price.mxn}
+                      state={property.location.state || 'Quintana Roo'}
+                      downPaymentMinPct={property.financing.downPaymentMin}
+                      financingMonths={property.financing.months}
+                      interestRateDefault={property.financing.interestRate}
                       esquemas={property.financing.esquemas ?? []}
                       listPrice={property.priceOriginal ?? property.price.mxn}
                     />
