@@ -2252,7 +2252,12 @@
     "showAll": "Ver los {n} meses",
     "showLess": "Ver menos",
     "chartTitle": "Interés vs. capital por período",
-    "disclaimer": "Cálculo estimado con fines informativos. No constituye una oferta de crédito ni sustituye la propuesta formal del desarrollador."
+    "disclaimer": "Cálculo estimado con fines informativos. No constituye una oferta de crédito ni sustituye la propuesta formal del desarrollador.",
+    "scheme": "Esquema de pago",
+    "cash": "Pago de contado",
+    "savings": "Ahorro",
+    "listPrice": "Precio de lista",
+    "effectivePrice": "Precio con este plan"
   },
   "glosario": {
     "heroEyebrow": "Glosario",

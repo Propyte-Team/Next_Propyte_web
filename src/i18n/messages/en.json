@@ -2252,7 +2252,12 @@
     "showAll": "Show all {n} months",
     "showLess": "Show less",
     "chartTitle": "Interest vs. principal per period",
-    "disclaimer": "Estimated figures for informational purposes only. Not a credit offer and does not replace the developer's formal proposal."
+    "disclaimer": "Estimated figures for informational purposes only. Not a credit offer and does not replace the developer's formal proposal.",
+    "scheme": "Payment plan",
+    "cash": "Cash payment",
+    "savings": "Savings",
+    "listPrice": "List price",
+    "effectivePrice": "Price with this plan"
   },
   "glosario": {
     "heroEyebrow": "Glossary",
