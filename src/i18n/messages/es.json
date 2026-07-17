@@ -848,6 +848,8 @@
     "priceLabel": "Precio",
     "totalInvestmentLabel": "Inversión total",
     "scenarios": "Escenarios de inversión",
+    "financingInputsTitle": "Ajusta tu financiamiento",
+    "scenariosHint": "Resultados calculados con los supuestos de arriba.",
     "residentialTab": "Residencial",
     "vacationTab": "Vacacional (Airbnb)",
     "residentialHeading": "Renta residencial a largo plazo",

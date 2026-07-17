@@ -156,6 +156,75 @@ export default function UnitInvestmentCalculator({
         </div>
       </div>
 
+      {/* Panel de inputs SIEMPRE visible arriba (enganche / plazo / tasa → pago
+          mensual). Antes vivía como el 3er sub-tab "Financiamiento": el usuario
+          veía primero los RESULTADOS (Residencial) calculados con supuestos que
+          no había visto ni ajustado. Ahora los supuestos encabezan la
+          calculadora y alimentan en vivo todos los escenarios de abajo. */}
+      <div className="mb-6 rounded-2xl border border-gray-200 p-5 space-y-5">
+        <div className="flex items-center gap-2">
+          <Calculator size={16} className="text-[#0E7490]" />
+          <h3 className="text-sm font-bold text-[#2C2C2C]">{t('financingInputsTitle')}</h3>
+        </div>
+
+        <Slider
+          label={t('downPayment')}
+          value={downPaymentPct}
+          display={`${downPaymentPct}% (${formatPrice(downPayment)})`}
+          min={10} max={100} step={1}
+          onChange={setDownPaymentPct}
+        />
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t('term')}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {financingMonths.map((m) => (
+              <button
+                key={m}
+                onClick={() => setMonths(m)}
+                className={`px-4 py-2 rounded-lg text-sm border transition-colors ${
+                  months === m
+                    ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand'
+                    : 'border-gray-200 hover:border-propyte-brand text-gray-700'
+                }`}
+              >
+                {t('termMonthsValue', { m })}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <Slider
+          label={t('interestRate')}
+          value={interestRate}
+          display={`${interestRate.toFixed(1)}%`}
+          min={0} max={15} step={0.5}
+          onChange={setInterestRate}
+        />
+
+        <div className="bg-[#0F1923] rounded-2xl p-6 text-white">
+          <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">
+            {t('estMonthlyPayment')}
+          </div>
+          <div className="text-3xl font-extrabold">
+            {monthlyPayment > 0 ? formatPrice(monthlyPayment) : '—'}
+          </div>
+          <div className="grid grid-cols-3 gap-3 mt-5 text-sm">
+            <FinKV label={t('downShort')} value={formatPrice(downPayment)} />
+            <FinKV label={t('closing')} value={formatPrice(closingCosts)} note={`${Math.round(closingCostRate * 100)}%`} />
+            <FinKV label={t('loanPrincipal')} value={formatPrice(price - downPayment)} />
+          </div>
+        </div>
+
+        <p className="text-2xs text-gray-600 leading-relaxed">
+          {t('financingDisclaimer')}
+        </p>
+      </div>
+
+      <p className="text-xs font-medium text-gray-500 mb-3">{t('scenariosHint')}</p>
+
       <Tabs
         variant="pill"
         tablistLabel={t('scenarios')}
@@ -220,69 +289,6 @@ export default function UnitInvestmentCalculator({
                   breakeven={calculateBreakeven(totalInvested, Math.max(vac.monthlyNet, 0))}
                   locale={locale}
                 />
-              </div>
-            ),
-          },
-          {
-            id: 'financiamiento',
-            label: t('financingTab'),
-            icon: <Calculator size={16} />,
-            panel: (
-              <div className="space-y-5">
-                <Slider
-                  label={t('downPayment')}
-                  value={downPaymentPct}
-                  display={`${downPaymentPct}% (${formatPrice(downPayment)})`}
-                  min={10} max={100} step={1}
-                  onChange={setDownPaymentPct}
-                />
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('term')}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {financingMonths.map((m) => (
-                      <button
-                        key={m}
-                        onClick={() => setMonths(m)}
-                        className={`px-4 py-2 rounded-lg text-sm border transition-colors ${
-                          months === m
-                            ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand'
-                            : 'border-gray-200 hover:border-propyte-brand text-gray-700'
-                        }`}
-                      >
-                        {t('termMonthsValue', { m })}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <Slider
-                  label={t('interestRate')}
-                  value={interestRate}
-                  display={`${interestRate.toFixed(1)}%`}
-                  min={0} max={15} step={0.5}
-                  onChange={setInterestRate}
-                />
-
-                <div className="bg-[#0F1923] rounded-2xl p-6 text-white">
-                  <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">
-                    {t('estMonthlyPayment')}
-                  </div>
-                  <div className="text-3xl font-extrabold">
-                    {monthlyPayment > 0 ? formatPrice(monthlyPayment) : '—'}
-                  </div>
-                  <div className="grid grid-cols-3 gap-3 mt-5 text-sm">
-                    <FinKV label={t('downShort')} value={formatPrice(downPayment)} />
-                    <FinKV label={t('closing')} value={formatPrice(closingCosts)} note={`${Math.round(closingCostRate * 100)}%`} />
-                    <FinKV label={t('loanPrincipal')} value={formatPrice(price - downPayment)} />
-                  </div>
-                </div>
-
-                <p className="text-2xs text-gray-600 leading-relaxed">
-                  {t('financingDisclaimer')}
-                </p>
               </div>
             ),
           },
@@ -482,11 +488,12 @@ function Slider({
 }
 
 function FinKV({ label, value, note }: { label: string; value: string; note?: string }) {
+  // Se renderiza sobre el box oscuro #0F1923 → gray-400 (no gray-600) para contraste AA.
   return (
     <div>
-      <div className="text-2xs text-gray-600 uppercase tracking-wider">{label}</div>
+      <div className="text-2xs text-gray-400 uppercase tracking-wider">{label}</div>
       <div className="font-bold">{value}</div>
-      {note && <div className="text-2xs text-gray-600">{note}</div>}
+      {note && <div className="text-2xs text-gray-400">{note}</div>}
     </div>
   );
 }
