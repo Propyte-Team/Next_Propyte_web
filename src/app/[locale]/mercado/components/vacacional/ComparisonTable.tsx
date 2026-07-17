@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/icons';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { getZoneInfo } from '@/lib/rental-data/zone-names';
 
 type TableSortField = 'zone' | 'score' | 'adr' | 'occupancy' | 'monthly' | 'listings' | 'competition';
 type SortDir = 'asc' | 'desc';
@@ -52,8 +53,8 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
 
       switch (sortField) {
         case 'zone':
-          va = a.zone;
-          vb = b.zone;
+          va = getZoneInfo(a.zone).displayName;
+          vb = getZoneInfo(b.zone).displayName;
           break;
         case 'score':
           va = a.score ?? 0;
@@ -152,7 +153,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                   className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="px-4 py-3 text-left">
-                    <div className="font-medium text-gray-900">{score.zone}</div>
+                    <div className="font-medium text-gray-900">{getZoneInfo(score.zone).displayName}</div>
                     <div className="text-xs text-gray-600">{score.city}</div>
                   </td>
                   <td className="px-4 py-3 text-right">

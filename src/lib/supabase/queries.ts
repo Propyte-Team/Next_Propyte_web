@@ -1831,6 +1831,11 @@ const INVALID_ZONE_PATTERNS = [
   /^ZONA_/i,
   /^zona_/,
   /^submarket_/,
+  // Fragmentos de dirección catastral (manzana/lote) que llegan como "zona"
+  // desde el CRM — no son colonias reales (ej. "MZ 25 LT 19 Paseo Xaman-Ha",
+  // "LB 25 Avenida Nte"). Verificados en zone_scores 2026-07-16.
+  /^(mz|lb)\s*\d/i,
+  /\blt\s*\d/i,
 ];
 const INVALID_ZONE_NAMES = new Set([
   'Venta', 'Villa', 'Piso', 'Casa', 'Departamento', 'Penthouse',

@@ -191,6 +191,30 @@ export const STR_ZONE_NAME_MAP: Record<string, ZoneInfo> = {
     description_es: 'Desarrollo residencial de lujo',
     description_en: 'Luxury residential development',
   },
+
+  // ── Slugs CRUDOS tal cual llegan de la fuente STR (zone_scores.zone).
+  //    Verificados en la BD 2026-07-16; sin estos aliases se mostraban en
+  //    MAYÚSCULAS con guiones bajos (AKUMAL_BAY_AREA) al usuario. ──
+  'AKUMAL_BAY_AREA': {
+    displayName: 'Bahía de Akumal',
+    description_es: 'Playa principal, snorkel con tortugas',
+    description_en: 'Main beach, turtle snorkeling',
+  },
+  'AKUMAL_CENTRO': {
+    displayName: 'Akumal Centro',
+    description_es: 'Pueblo de Akumal, servicios básicos',
+    description_en: 'Akumal town, basic services',
+  },
+  'AKUMAL_RESORTS': {
+    displayName: 'Zona de Resorts',
+    description_es: 'Franja hotelera all-inclusive',
+    description_en: 'All-inclusive hotel strip',
+  },
+  'AKUMAL': {
+    displayName: 'Akumal',
+    description_es: 'Destino de playa en la Riviera Maya',
+    description_en: 'Beach destination on the Riviera Maya',
+  },
 };
 
 /**
@@ -200,9 +224,16 @@ export function getZoneInfo(rawZone: string): ZoneInfo {
   const mapped = STR_ZONE_NAME_MAP[rawZone];
   if (mapped) return mapped;
 
-  // Fallback: capitalize and clean
+  // Supermanzanas de Cancún: SM_26 / SMZ_51 → "SM 26" (más legible que el slug crudo).
+  const smMatch = rawZone.match(/^SMZ?_?(\d+)$/i);
+  if (smMatch) {
+    return { displayName: `SM ${smMatch[1]}`, description_es: '', description_en: '' };
+  }
+
+  // Fallback: guiones bajos → espacios + Title Case (evita MAYÚSCULAS crudas).
   const displayName = rawZone
     .replace(/_/g, ' ')
+    .toLowerCase()
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return {

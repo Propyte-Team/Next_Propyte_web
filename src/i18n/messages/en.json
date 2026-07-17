@@ -850,6 +850,7 @@
     "scenarios": "Investment scenarios",
     "financingInputsTitle": "Adjust your financing",
     "scenariosHint": "Results calculated with the assumptions above.",
+    "dataBadge": "Real data",
     "residentialTab": "Residential",
     "vacationTab": "Vacation (Airbnb)",
     "residentialHeading": "Long-term residential rental",
@@ -1791,7 +1792,10 @@
     "vacationLong": "Vacation Rental (30+ days)",
     "shortDisclaimer": "Estimate based on active rental listings on real estate portals. Not a guarantee of income.",
     "occupancy": "Occupancy",
-    "night": "night"
+    "night": "night",
+    "dataBadge": "Real data",
+    "listingsLabel": "Listings",
+    "cityLevelNote": "* City-level data, not the exact zone (no breakdown available)."
   },
   "investmentDisclaimer": {
     "default": "Projections and estimates shown are based on historical market data and do not constitute a guarantee of future performance. Consult with an advisor before making investment decisions.",
@@ -2619,7 +2623,7 @@
   "dataManagement": {
     "marketTitle": "Vacation rental market",
     "updated": "Updated",
-    "marketSubtitle": "Short-term rental performance from public comparables of real estate portals.",
+    "marketSubtitle": "Vacation rental (Airbnb/STR) at the city/market level, not the specific neighborhood. Source: public short-term rental platform data.",
     "currentOccupancy": "Current occupancy",
     "avg12m": "Avg 12m",
     "currentAdr": "Current ADR",
@@ -2642,7 +2646,7 @@
     "bedsPlural": "{n} beds"
   },
   "zonas": {
-    "dataSource": "Propyte analysis based on +2.5M short-term rental records in Mexico",
+    "dataSource": "Propyte analysis based on +2M short-term rental records in Mexico",
     "dataSourceUpdated": " · Updated {date}",
     "allCities": "All Cities",
     "searchZone": "Search zone...",
@@ -2660,7 +2664,7 @@
     "noZonesFound": "No zones found with the current filters.",
     "showingOf": "Showing {visible} of {total} zones",
     "metaTitle": "Profitability Map — Compare Vacation Rental Zones in Mexico | Propyte",
-    "metaDescription": "Compare occupancy, nightly rates and competition across investment zones in Cancun, Playa del Carmen, Tulum, CDMX and Merida. Based on +2.5M rental records.",
+    "metaDescription": "Compare occupancy, nightly rates and competition across investment zones in Cancun, Playa del Carmen, Tulum, CDMX and Merida. Based on +2M rental records.",
     "schemaName": "Investment Zone Rankings",
     "breadcrumbHome": "Home",
     "breadcrumbZones": "Zones",
@@ -2692,6 +2696,9 @@
     "zone": "Zone",
     "zonePerformance": "Zone performance",
     "basedOn": "Based on investment analytics for {zone}",
+    "lastUpdated": "Updated",
+    "indexFactorsTitle": "Index factors (0-100)",
+    "zoneMarketDataTitle": "Zone market data",
     "compositeScore": "Composite zone score",
     "yield": "Yield",
     "occupancy": "Occupancy",

@@ -63,7 +63,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
           icon={<DollarSign size={18} />}
           label={t('currentAdr')}
           value={data.current_adr != null ? `$${data.current_adr.toLocaleString()}` : '—'}
-          subtitle={t('perNight')}
+          subtitle={`${t('perNight')} · MXN`}
         />
         <KpiCard
           icon={<Home size={18} />}
@@ -139,7 +139,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {adrByBedsEntries.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
-              <div className="text-sm font-bold text-gray-900 mb-3">{t('avgRateByBeds')}</div>
+              <div className="text-sm font-bold text-gray-900 mb-3">{t('avgRateByBeds')} · MXN</div>
               <div className="space-y-2">
                 {adrByBedsEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
@@ -152,7 +152,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
           )}
           {rateTierEntries.length > 0 && (
             <div className="bg-gray-50 rounded-xl p-4">
-              <div className="text-sm font-bold text-gray-900 mb-3">{t('rateTiers')}</div>
+              <div className="text-sm font-bold text-gray-900 mb-3">{t('rateTiers')} · MXN</div>
               <div className="space-y-2">
                 {rateTierEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
@@ -212,11 +212,17 @@ function formatDaysAgo(dateStr: string, locale: string, t: DataManagementT): str
 }
 
 function formatBedsLabel(name: string, t: DataManagementT): string {
-  const m = name.match(/^studio$|^(\d+)[-_]?(?:br|bed|bedroom|rec)/i);
+  const lower = name.toLowerCase();
+  if (/studio|estudio/.test(lower)) return t('studio');
+  // Captura el primer número y detecta el "+" ("6+ Bedroom", "6plus_bedroom",
+  // "1_bedroom"…). Antes el regex exigía dígitos pegados a br/bed/rec, así que
+  // "6+ Bedroom" caía al fallback crudo (se veía en inglés en la página ES).
+  const m = lower.match(/(\d+)/);
   if (m) {
-    if (m[0] === 'studio' || m[0].toLowerCase() === 'studio') return t('studio');
     const n = parseInt(m[1], 10);
-    return n === 1 ? t('bedsSingular', { n }) : t('bedsPlural', { n });
+    const plus = /\+|plus|mas|más/.test(lower);
+    if (n === 1 && !plus) return t('bedsSingular', { n });
+    return t('bedsPlural', { n: plus ? `${n}+` : n });
   }
   return name.replace(/_/g, ' ');
 }

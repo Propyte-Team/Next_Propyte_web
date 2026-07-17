@@ -3,7 +3,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getRentalEstimates, getAirdnaMarketSummary } from '@/lib/supabase/queries';
 import type { AirdnaMarketSummary } from '@/lib/supabase/queries';
 import { formatPrice } from '@/lib/formatters';
-import { getClosingCostRate, calculateClosingCosts, calculateTotalInvestment, CITY_TO_MARKET_CODE } from '@/lib/calculator';
+import { getClosingCostRate, calculateClosingCosts, calculateTotalInvestment, CITY_TO_MARKET_CODE, RES } from '@/lib/calculator';
 import type { RentalEstimate as RentalEstimateType } from '@/lib/supabase/queries';
 
 interface RentalEstimateProps {
@@ -144,12 +144,16 @@ function InvestmentBreakdown({
   const closingRate = getClosingCostRate(state);
   const closingCosts = calculateClosingCosts(priceMin, state);
   const totalInvestment = calculateTotalInvestment(priceMin, state);
-  const annualRent = estimatedRent * 12;
-  const annualRentNet = annualRent * 0.75; // 25% expense ratio
-  const grossYield = (annualRent / totalInvestment) * 100;
-  const netYield = (annualRentNet / totalInvestment) * 100;
+  // Mismos supuestos que InvestmentSummary / el simulador (RES.OCCUPANCY 95%,
+  // RES.EXPENSE_RATIO 20%). Antes usaba un 25% fijo sin ocupación → daba un Yield
+  // distinto al de InvestmentSummary en el MISMO tab bajo la misma etiqueta.
+  const effectiveMonthly = estimatedRent * RES.OCCUPANCY;
+  const annualGross = effectiveMonthly * 12;
+  const annualNet = annualGross * (1 - RES.EXPENSE_RATIO);
+  const grossYield = (annualGross / totalInvestment) * 100;
+  const netYield = (annualNet / totalInvestment) * 100;
   const capRate = netYield;
-  const monthlyNet = estimatedRent * 0.75;
+  const monthlyNet = effectiveMonthly * (1 - RES.EXPENSE_RATIO);
 
   return (
     <div className="mt-4 pt-4 border-t border-gray-100">
@@ -299,6 +303,9 @@ export default async function RentalEstimate({
           zone={zone}
           occupancyLabel={t('occupancy')}
           nightLabel={t('night')}
+          dataLabel={t('dataBadge')}
+          listingsLabel={t('listingsLabel')}
+          cityNote={t('cityLevelNote')}
         />
       )}
 
@@ -321,44 +328,54 @@ export default async function RentalEstimate({
   );
 }
 
-function AirdnaInsight({ summary, city, zone, occupancyLabel, nightLabel }: {
+function AirdnaInsight({ summary, city, zone, occupancyLabel, nightLabel, dataLabel, listingsLabel, cityNote }: {
   summary: AirdnaMarketSummary;
   city: string;
   zone?: string | null;
   occupancyLabel: string;
   nightLabel: string;
+  dataLabel: string;
+  listingsLabel: string;
+  cityNote: string;
 }) {
-  const zoneMatch = zone ? summary.zones.find(z => z.zone === zone) : null;
+  // Match de zona sin acentos/mayúsculas (antes exacto → "Aldea Zamá" y similares
+  // no matcheaban y caían a ciudad silenciosamente).
+  const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const zoneMatch = zone ? summary.zones.find((z) => norm(z.zone) === norm(zone)) : null;
   const displayOcc = zoneMatch?.occupancy ?? summary.current_occupancy;
   const displayAdr = zoneMatch?.adr ?? summary.current_adr;
   const displayLabel = zoneMatch ? `${zoneMatch.zone}, ${city}` : city;
+  const isCityLevel = !zoneMatch;
 
   return (
     <div className="mt-4 p-3 bg-[#0F1923] rounded-xl">
       <div className="flex items-center gap-2 mb-2">
-        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-2xs font-bold rounded uppercase tracking-wider">Data</span>
-        <span className="text-2xs text-gray-600">{displayLabel}</span>
+        <span className="px-1.5 py-0.5 bg-[#5CE0D2]/20 text-[#5CE0D2] text-2xs font-bold rounded uppercase tracking-wider">{dataLabel}</span>
+        <span className="text-2xs text-gray-400">{displayLabel}</span>
       </div>
       <div className="grid grid-cols-3 gap-3 text-center">
         {displayOcc != null && (
           <div>
             <div className="text-lg font-bold text-white">{Math.round(displayOcc)}%</div>
-            <div className="text-2xs text-gray-600">{occupancyLabel}</div>
+            <div className="text-2xs text-gray-400">{occupancyLabel}</div>
           </div>
         )}
         {displayAdr != null && (
           <div>
             <div className="text-lg font-bold text-white">${displayAdr.toLocaleString()}</div>
-            <div className="text-2xs text-gray-600">ADR/{nightLabel}</div>
+            <div className="text-2xs text-gray-400">ADR/{nightLabel} · MXN</div>
           </div>
         )}
         {summary.active_listings != null && (
           <div>
             <div className="text-lg font-bold text-white">{summary.active_listings.toLocaleString()}</div>
-            <div className="text-2xs text-gray-600">Listings</div>
+            <div className="text-2xs text-gray-400">{listingsLabel}</div>
           </div>
         )}
       </div>
+      {isCityLevel && (
+        <p className="text-2xs text-gray-400 mt-2 leading-relaxed">{cityNote}</p>
+      )}
     </div>
   );
 }

@@ -144,8 +144,8 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       {/* Data freshness */}
       <p className="text-xs text-gray-600 text-center">
         {isEn
-          ? `Propyte analysis based on +2.5M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
-          : `Análisis Propyte basado en +2.5 millones de registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
+          ? `Propyte analysis based on +2M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
+          : `Análisis Propyte basado en +2M registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
       </p>
 
       {/* Search bar + City filter */}

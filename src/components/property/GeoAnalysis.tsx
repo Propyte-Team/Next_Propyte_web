@@ -25,7 +25,7 @@ const DEFAULT_CENTERS: Record<string, { lat: number; lng: number }> = {
 };
 
 export default function GeoAnalysis({
-  lat, lng, address, city, zone, state, zoneScore, locale: _locale,
+  lat, lng, address, city, zone, state, zoneScore, locale,
 }: GeoAnalysisProps) {
   const t = useTranslations('geoAnalysis');
   const [mapError, setMapError] = useState(false);
@@ -93,7 +93,14 @@ export default function GeoAnalysis({
       {/* Zone scores grid */}
       {zoneScore && (
         <div>
-          <h3 className="text-base font-bold text-gray-900 mb-1">{t('zonePerformance')}</h3>
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <h3 className="text-base font-bold text-gray-900">{t('zonePerformance')}</h3>
+            {zoneScore.computed_at && (
+              <span className="text-2xs text-gray-600 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5 shrink-0">
+                {t('lastUpdated')} {formatZoneDate(zoneScore.computed_at, locale)}
+              </span>
+            )}
+          </div>
           <p className="text-xs text-gray-600 mb-4">
             {t('basedOn', { zone: zone || city })}
           </p>
@@ -119,6 +126,7 @@ export default function GeoAnalysis({
             </div>
           )}
 
+          <p className="text-2xs uppercase tracking-wider font-semibold text-gray-500 mb-2">{t('indexFactorsTitle')}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {zoneScore.yield_component != null && (
               <ScoreCard
@@ -150,8 +158,9 @@ export default function GeoAnalysis({
             )}
           </div>
 
-          {/* Raw metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+          {/* Raw metrics — datos de mercado reales de la zona (no el índice 0-100) */}
+          <p className="text-2xs uppercase tracking-wider font-semibold text-gray-500 mb-2 mt-4">{t('zoneMarketDataTitle')}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {zoneScore.median_occupancy != null && (
               <RawMetric
                 label={t('medianOccupancy')}
@@ -161,7 +170,7 @@ export default function GeoAnalysis({
             {zoneScore.median_adr != null && (
               <RawMetric
                 label={t('medianAdr')}
-                value={`$${Math.round(zoneScore.median_adr).toLocaleString()}`}
+                value={`$${Math.round(zoneScore.median_adr).toLocaleString()} MXN`}
               />
             )}
             {zoneScore.active_listings != null && (
@@ -173,7 +182,7 @@ export default function GeoAnalysis({
             {zoneScore.revpar != null && (
               <RawMetric
                 label="RevPAR"
-                value={`$${Math.round(zoneScore.revpar).toLocaleString()}`}
+                value={`$${Math.round(zoneScore.revpar).toLocaleString()} MXN`}
               />
             )}
           </div>
@@ -204,6 +213,17 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
       </div>
     </div>
   );
+}
+
+function formatZoneDate(dateStr: string, locale: string): string {
+  try {
+    return new Date(dateStr).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
+      month: 'short',
+      year: 'numeric',
+    }).replace('.', '');
+  } catch {
+    return dateStr;
+  }
 }
 
 function RawMetric({ label, value }: { label: string; value: string }) {

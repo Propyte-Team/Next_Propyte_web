@@ -3,6 +3,7 @@
 import { TrendingUp, TrendingDown, Minus } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { getZoneInfo } from '@/lib/rental-data/zone-names';
 
 interface ZoneScoreCardProps {
   score: ZoneScore;
@@ -74,7 +75,7 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
     <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-gray-300 transition-all">
       <div className="flex items-start justify-between mb-3">
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-gray-900 truncate">{score.zone}</h3>
+          <h3 className="font-semibold text-gray-900 truncate">{getZoneInfo(score.zone).displayName}</h3>
           <p className="text-xs text-gray-600">{score.city}</p>
         </div>
         <IndexBadge value={score.score ?? 0} />
@@ -84,12 +85,12 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         <div className="border-t border-gray-100 pt-3 space-y-0.5">
           <MetricRow
             label={t('occupancy')}
-            value={score.median_occupancy ? `${Math.round(score.median_occupancy)}%` : '—'}
+            value={score.median_occupancy != null ? `${Math.round(score.median_occupancy)}%` : '—'}
             trend={score.median_occupancy != null && score.median_occupancy > 58 ? 'up' : score.median_occupancy != null && score.median_occupancy < 40 ? 'down' : 'flat'}
           />
           <MetricRow
             label={t('avgRateNight')}
-            value={score.median_adr ? `$${Math.round(score.median_adr).toLocaleString()} MXN` : '—'}
+            value={score.median_adr != null ? `$${Math.round(score.median_adr).toLocaleString()} MXN` : '—'}
             trend={adrTrend}
           />
           <MetricRow

@@ -760,6 +760,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
 // ── Sub-components ───────────────────────────────────
 
 function RentHistogram({ rents }: { rents: number[] }) {
+  const t = useTranslations('mercado');
   if (rents.length < 10) return null;
 
   const BUCKETS = 12;
@@ -778,7 +779,7 @@ function RentHistogram({ rents }: { rents: number[] }) {
 
   return (
     <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4">
-      <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Distribucion de rentas</div>
+      <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">{t('ltrDistributionTitle')}</div>
       <div className="flex items-end gap-1 h-24">
         {buckets.map((count, i) => {
           const height = maxCount > 0 ? (count / maxCount) * 100 : 0;

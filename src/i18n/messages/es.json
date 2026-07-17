@@ -850,6 +850,7 @@
     "scenarios": "Escenarios de inversión",
     "financingInputsTitle": "Ajusta tu financiamiento",
     "scenariosHint": "Resultados calculados con los supuestos de arriba.",
+    "dataBadge": "Dato real",
     "residentialTab": "Residencial",
     "vacationTab": "Vacacional (Airbnb)",
     "residentialHeading": "Renta residencial a largo plazo",
@@ -1791,7 +1792,10 @@
     "vacationLong": "Renta Vacacional (30+ dias)",
     "shortDisclaimer": "Estimación basada en listings de renta activos en portales inmobiliarios. No constituye una garantía de ingresos.",
     "occupancy": "Ocupación",
-    "night": "noche"
+    "night": "noche",
+    "dataBadge": "Dato real",
+    "listingsLabel": "Anuncios",
+    "cityLevelNote": "* Datos a nivel ciudad, no de la zona exacta (sin desglose disponible)."
   },
   "investmentDisclaimer": {
     "default": "Las proyecciones y estimaciones mostradas se basan en datos históricos de mercado y no constituyen garantía de rendimiento futuro. Consulta con un asesor antes de tomar decisiones de inversión.",
@@ -2619,7 +2623,7 @@
   "dataManagement": {
     "marketTitle": "Mercado de renta vacacional",
     "updated": "Actualizado",
-    "marketSubtitle": "Desempeño de renta corta según comparables públicos de portales inmobiliarios.",
+    "marketSubtitle": "Renta vacacional (Airbnb/STR) a nivel ciudad/mercado, no de la colonia específica. Fuente: datos públicos de plataformas de renta corta.",
     "currentOccupancy": "Ocupación actual",
     "avg12m": "Prom. 12m",
     "currentAdr": "ADR actual",
@@ -2642,7 +2646,7 @@
     "bedsPlural": "{n} rec."
   },
   "zonas": {
-    "dataSource": "Análisis Propyte basado en +2.5 millones de registros de renta vacacional en México",
+    "dataSource": "Análisis Propyte basado en +2M registros de renta vacacional en México",
     "dataSourceUpdated": " · Actualizado {date}",
     "allCities": "Todas las Ciudades",
     "searchZone": "Buscar zona...",
@@ -2660,7 +2664,7 @@
     "noZonesFound": "No se encontraron zonas con los filtros actuales.",
     "showingOf": "Mostrando {visible} de {total} zonas",
     "metaTitle": "Mapa de Rentabilidad — Compara Zonas de Renta Vacacional en México | Propyte",
-    "metaDescription": "Compara ocupación, tarifa por noche y competencia entre zonas de inversión en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. Basado en +2.5M registros de renta.",
+    "metaDescription": "Compara ocupación, tarifa por noche y competencia entre zonas de inversión en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. Basado en +2M registros de renta.",
     "schemaName": "Rankings de Zonas de Inversión",
     "breadcrumbHome": "Inicio",
     "breadcrumbZones": "Zonas",
@@ -2692,6 +2696,9 @@
     "zone": "Zona",
     "zonePerformance": "Desempeño de la zona",
     "basedOn": "Basado en análisis de inversión de {zone}",
+    "lastUpdated": "Actualizado",
+    "indexFactorsTitle": "Factores del índice (0-100)",
+    "zoneMarketDataTitle": "Datos de mercado de la zona",
     "compositeScore": "Puntaje compuesto de zona",
     "yield": "Rendimiento",
     "occupancy": "Ocupación",
