@@ -230,7 +230,15 @@ export function getZoneInfo(rawZone: string): ZoneInfo {
     return { displayName: `SM ${smMatch[1]}`, description_es: '', description_en: '' };
   }
 
-  // Fallback: guiones bajos → espacios + Title Case (evita MAYÚSCULAS crudas).
+  // Solo re-formatear slugs "feos" (MAYÚSCULAS crudas o con guiones bajos, p.ej.
+  // AKUMAL_BAY_AREA). Los nombres ya bien escritos (Escandón II, Residencial Río)
+  // se dejan intactos: aplicarles toLowerCase + Title Case rompía los acentos
+  // (\b\w sin flag `u` capitaliza la letra que sigue a cada tilde → "EscandóN").
+  const looksLikeSlug = rawZone.includes('_') || rawZone === rawZone.toUpperCase();
+  if (!looksLikeSlug) {
+    return { displayName: rawZone, description_es: '', description_en: '' };
+  }
+
   const displayName = rawZone
     .replace(/_/g, ' ')
     .toLowerCase()
