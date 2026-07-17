@@ -58,10 +58,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   // Stats reales sin pisos inventados (Bloque A — FLOORS eliminado 2026-05-11).
   // Si Supabase devuelve 0 en alguna métrica, Hero omite esa pill condicionalmente.
-  let stats = { developments: 0, units: 0, cities: 0, zones: 0, typeCounts: {} as Record<string, number> };
-  let developers: Array<{ name: string; logo_url: string | null; slug: string; city: string | null; state: string | null }> = [];
-  let featured: FeaturedDevelopment[] = [];
-  let discountedUnits: Property[] = [];
+  // Defaults fail-open. El IIFE de Supabase RETORNA estos valores en vez de
+  // reasignar variables externas (regla del React Compiler: no reasignar
+  // variables capturadas dentro de una función async).
+  const HOME_DATA_DEFAULT = {
+    stats: { developments: 0, units: 0, cities: 0, zones: 0, typeCounts: {} as Record<string, number> },
+    developers: [] as Array<{ name: string; logo_url: string | null; slug: string; city: string | null; state: string | null }>,
+    featured: [] as FeaturedDevelopment[],
+    discountedUnits: [] as Property[],
+  };
 
   // Perf: los 3 bloques (visibility Hub, Supabase, contenido editorial Hub)
   // son independientes entre sí — ninguno depende del resultado de otro —
@@ -70,7 +75,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // rechazo de uno no tumbe a los demás.
   const visibilityPromise = getVisibility();
 
-  const supabasePromise = (async () => {
+  const supabasePromise = (async (): Promise<typeof HOME_DATA_DEFAULT> => {
     try {
       const supabase = await createServerSupabaseClient();
       const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
@@ -79,13 +84,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         getFeaturedDevelopments(supabase, 6),
         getDiscountedUnits(supabase, 6),
       ]);
-      stats = statsData;
-      discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
+      const stats = statsData;
+      const discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
       type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
-      developers = ((devsRes.data || []) as DeveloperRow[])
+      const developers = ((devsRes.data || []) as DeveloperRow[])
         .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
         .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
-      featured = (featuredRes.data || []) as FeaturedDevelopment[];
+      const featured = (featuredRes.data || []) as FeaturedDevelopment[];
 
       // Inyectar bedrooms_min/max agregado desde v_units por development_id —
       // misma lógica que /desarrollos/page.tsx. Una query bulk para los 6
@@ -123,8 +128,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           console.error('[HomePage] bedrooms aggregate failed:', err);
         }
       }
+      return { stats, developers, featured, discountedUnits };
     } catch (error) {
       console.error('[HomePage] Supabase fetch failed:', error);
+      return HOME_DATA_DEFAULT;
     }
   })();
 
@@ -141,7 +148,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     getExploreCategories(),
   ]);
 
-  const [visibility, , [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore]] =
+  const [visibility, { stats, developers, featured, discountedUnits }, [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore]] =
     await Promise.all([visibilityPromise, supabasePromise, hubContentPromise]);
 
   const homeTestimonials = hubTestimonials.map((t) => ({
