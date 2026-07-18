@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
     } catch { /* not found */ }
     if (!row) return NextResponse.json({ error: 'not found' }, { status: 404 });
 
-    const property = mapUnitToProperty(row);
+    const property = mapUnitToProperty(row, locale);
     const price = property.price.mxn;
     const priceOriginal = property.priceOriginal ?? price;
     const discountPct = property.discount?.pct ?? 0;
