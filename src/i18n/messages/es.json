@@ -2305,7 +2305,11 @@
     "cash": "Pago de contado",
     "savings": "Ahorro",
     "listPrice": "Precio de lista",
-    "effectivePrice": "Precio con este plan"
+    "effectivePrice": "Precio con este plan",
+    "viewByYear": "Ver por año",
+    "viewByMonth": "Ver por mes",
+    "colYear": "Año",
+    "year": "Año {n}"
   },
   "glosario": {
     "heroEyebrow": "Glosario",

@@ -2305,7 +2305,11 @@
     "cash": "Cash payment",
     "savings": "Savings",
     "listPrice": "List price",
-    "effectivePrice": "Price with this plan"
+    "effectivePrice": "Price with this plan",
+    "viewByYear": "By year",
+    "viewByMonth": "By month",
+    "colYear": "Year",
+    "year": "Year {n}"
   },
   "glosario": {
     "heroEyebrow": "Glossary",
