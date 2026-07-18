@@ -50,7 +50,6 @@ export interface CotizacionPDFData {
   totalIntereses: number;
   totalPagado: number;
   tieneInteres: boolean;
-  avisoCambiario: string | null;
   annual: CotizacionPDFAnnualRow[];
   qrCodeDataUrl: string;
   labels: CotizacionPDFLabels;
@@ -188,9 +187,9 @@ export function CotizacionPDFDocument({ data }: { data: CotizacionPDFData }) {
           </View>
         </View>
 
-        {data.avisoCambiario && (
+        {L.avisoCambiario && (
           <View style={styles.aviso}>
-            <Text style={styles.avisoText}>{data.avisoCambiario}</Text>
+            <Text style={styles.avisoText}>{L.avisoCambiario}</Text>
           </View>
         )}
 
