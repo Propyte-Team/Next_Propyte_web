@@ -23,6 +23,8 @@ interface EsquemasDePagoTabProps {
   downPaymentMinPct: number;
   financingMonths: number[];
   interestRateDefault: number;
+  // Reservados para el tab "Financiamiento Interno" (Slice 5): rendieren los
+  // esquemas del Hub vía CorridaFinanciera. Aún no se consumen en Slice 3.
   esquemas: EsquemaPago[];
   listPrice: number;
   stage: string;

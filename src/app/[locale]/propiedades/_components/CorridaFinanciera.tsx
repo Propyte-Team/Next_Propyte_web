@@ -1,5 +1,9 @@
 'use client';
 
+// NOTA: componente sin importadores en Slice 3. Refactorizado a CorridaCompacta y
+// reservado para el tab "Financiamiento Interno" (Slice 5), que mostrará los
+// esquemas de pago del Hub. No eliminar.
+
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { computeEsquema, type EsquemaPago } from '@/lib/esquemas-pago';
