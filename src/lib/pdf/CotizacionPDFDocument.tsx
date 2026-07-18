@@ -132,7 +132,7 @@ function KV({ label, value }: { label: string; value: string }) {
 export function CotizacionPDFDocument({ data }: { data: CotizacionPDFData }) {
   const L = data.labels;
   return (
-    <Document title={`${data.name} — ${L.docType} — Propyte`} author="Propyte" creator="Propyte" subject={L.docType}>
+    <Document title={`${data.name} — ${L.docType} — Propyte`} author="Propyte" creator="Propyte" subject={L.docType} language={data.locale}>
       <Page size="A4" style={styles.page}>
         <View style={styles.header} fixed>
           <View style={styles.brandLockup}>
