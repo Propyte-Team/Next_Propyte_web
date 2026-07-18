@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
-  ChevronDown, ChevronUp,
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
   HelpCircle, type LucideIcon,
 } from '@/lib/icons';
@@ -29,6 +28,8 @@ interface DeptView {
   isCorporate: boolean;
   directorRoleCode: string | null;
   members: OrgNodeRow[];
+  bioLong: string | null;
+  bioLongEn: string | null;
 }
 
 function buildView(nodes: OrgNodeRow[]) {
@@ -55,6 +56,8 @@ function buildView(nodes: OrgNodeRow[]) {
       members: members
         .filter((m) => m.reports_to_id === d.id)
         .sort((a, b) => a.sort_order - b.sort_order),
+      bioLong: d.bio_long,
+      bioLongEn: d.bio_long_en,
     }));
 
   // Miembros que no están bajo un departamento conocido — fallback al final
@@ -88,12 +91,14 @@ function OrgCard({
   title,
   name,
   color,
+  summary,
   onSelect,
 }: {
   role: string;
   title: string;
   name: string;
   color: string;
+  summary?: string;
   onSelect?: () => void;
 }) {
   const base = 'bg-white rounded-xl shadow-md p-5 text-center min-w-[180px]';
@@ -104,6 +109,7 @@ function OrgCard({
       </span>
       <p className="text-xs text-gray-600 mt-1">{title}</p>
       <p className="font-semibold text-gray-900 mt-1 text-sm">{name}</p>
+      {summary && <p className="text-xs text-gray-500 mt-2 leading-relaxed">{summary}</p>}
     </>
   );
   if (onSelect) {
@@ -128,48 +134,42 @@ function OrgCard({
   );
 }
 
-function DeptAccordion({ dept }: { dept: DeptView }) {
-  const [open, setOpen] = useState(false);
+function DeptSection({ dept }: { dept: DeptView }) {
   const Icon = resolveIcon(dept.iconName);
   const t = useTranslations('about');
+  const locale = useLocale();
+  const description = pickBio(locale, dept.bioLong, dept.bioLongEn);
 
   return (
-    <div className="bg-[#F4F6F8] rounded-xl border border-gray-200 overflow-hidden relative">
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-100 transition-colors text-left cursor-pointer"
-        aria-expanded={open}
-      >
-        <div className="flex items-center gap-3">
-          <Icon size={18} className="text-[#1A2F3F]" />
-          <h3 className="font-bold text-sm uppercase tracking-wider text-[#1A2F3F]">
-            {dept.name}
-            {dept.isCorporate && <span className="ml-2 text-xs font-normal text-gray-600">(Corp.)</span>}
-          </h3>
-        </div>
-        {open ? <ChevronUp size={18} className="text-gray-600" /> : <ChevronDown size={18} className="text-gray-600" />}
-      </button>
-      {open && (
-        <div className="px-4 pb-4 space-y-2">
-          {dept.members.length === 0 && (
-            <p className="text-xs text-gray-500 italic py-2">{t('hiring')}</p>
-          )}
-          {dept.members.map((m) => (
-            <div key={m.id} className="flex justify-between text-sm py-1">
-              <span className="text-gray-600">{m.role}</span>
-              {m.is_vacant ? (
-                <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
-              ) : (
-                <span className="font-medium text-gray-900">
-                  {m.name}
-                  {m.is_corporate && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
+    <div className="bg-[#F4F6F8] rounded-xl border border-gray-200 overflow-hidden">
+      <div className="flex items-center gap-3 p-4 pb-2">
+        <Icon size={18} className="text-[#1A2F3F]" />
+        <h3 className="font-bold text-sm uppercase tracking-wider text-[#1A2F3F]">
+          {dept.name}
+          {dept.isCorporate && <span className="ml-2 text-xs font-normal text-gray-600">(Corp.)</span>}
+        </h3>
+      </div>
+      {description && (
+        <p className="px-4 pb-3 text-sm text-gray-600 leading-relaxed">{description}</p>
       )}
+      <div className="px-4 pb-4 space-y-2">
+        {dept.members.length === 0 && (
+          <p className="text-xs text-gray-500 italic py-2">{t('hiring')}</p>
+        )}
+        {dept.members.map((m) => (
+          <div key={m.id} className="flex justify-between text-sm py-1">
+            <span className="text-gray-600">{m.role}</span>
+            {m.is_vacant ? (
+              <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
+            ) : (
+              <span className="font-medium text-gray-900">
+                {m.name}
+                {m.is_corporate && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -188,6 +188,8 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
   const { ceo, directors, depts } = buildView(nodes);
 
   const [selected, setSelected] = useState<TeamBioPerson | null>(null);
+
+  const leaderSummary = (n: OrgNodeRow) => pickBio(locale, n.bio_long, n.bio_long_en) ?? undefined;
 
   function leaderSelect(node: OrgNodeRow): (() => void) | undefined {
     const bio = pickBio(locale, node.bio_long, node.bio_long_en);
@@ -233,6 +235,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={ceo.role}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
+                      summary={leaderSummary(ceo)}
                       onSelect={leaderSelect(ceo)}
                     />
                   </div>
@@ -253,6 +256,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                           title={d.role}
                           name={d.name}
                           color={d.role_color ?? '#1A2F3F'}
+                          summary={leaderSummary(d)}
                           onSelect={leaderSelect(d)}
                         />
                       </div>
@@ -263,14 +267,14 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   {directorRoleCodes.map((code) => (
                     <div key={code} className="space-y-3">
                       {depts.filter((d) => d.directorRoleCode === code).map((dept) => (
-                        <DeptAccordion key={dept.id} dept={dept} />
+                        <DeptSection key={dept.id} dept={dept} />
                       ))}
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Mobile: stacked accordion */}
+              {/* Mobile: stacked list */}
               <div className="md:hidden space-y-6">
                 <div className="space-y-3">
                   {ceo && (
@@ -279,6 +283,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={ceo.role}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
+                      summary={leaderSummary(ceo)}
                       onSelect={leaderSelect(ceo)}
                     />
                   )}
@@ -289,12 +294,13 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       title={d.role}
                       name={d.name}
                       color={d.role_color ?? '#1A2F3F'}
+                      summary={leaderSummary(d)}
                       onSelect={leaderSelect(d)}
                     />
                   ))}
                 </div>
                 <div className="space-y-3">
-                  {depts.map((dept) => <DeptAccordion key={dept.id} dept={dept} />)}
+                  {depts.map((dept) => <DeptSection key={dept.id} dept={dept} />)}
                 </div>
               </div>
             </>
