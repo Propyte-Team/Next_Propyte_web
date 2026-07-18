@@ -26,8 +26,8 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
   const chartData = useMemo(
     () => annual.map((y) => ({
       label: t('year', { n: y.anio }),
-      [t('colCapital')]: Math.round(y.capital),
-      [t('colInterest')]: Math.round(y.interes),
+      capital: Math.round(y.capital),
+      interes: Math.round(y.interes),
     })),
     [annual, t],
   );
@@ -61,8 +61,8 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
                 <YAxis tickFormatter={(v) => formatPrice(v, currency)} tick={{ fontSize: 10 }} width={70} />
                 <Tooltip formatter={(v) => formatPrice(Number(v) || 0, currency)} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey={t('colCapital')} stackId="a" fill={COLOR_CAPITAL} />
-                <Bar dataKey={t('colInterest')} stackId="a" fill={COLOR_INTEREST} />
+                <Bar dataKey="capital" name={t('colCapital')} stackId="a" fill={COLOR_CAPITAL} />
+                <Bar dataKey="interes" name={t('colInterest')} stackId="a" fill={COLOR_INTEREST} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -130,7 +130,14 @@ function YearRows({
   const cols = tieneInteres ? 5 : 4;
   return (
     <>
-      <tr className={`${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} cursor-pointer hover:bg-[#F0FDFA]`} onClick={onToggle}>
+      <tr
+        className={`${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} cursor-pointer hover:bg-[#F0FDFA]`}
+        tabIndex={0}
+        role="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
+      >
         <td className="px-3 py-2 text-gray-800 font-semibold">
           <span className="inline-flex items-center gap-1">
             <ChevronRight size={13} className={`transition-transform ${open ? 'rotate-90' : ''}`} />

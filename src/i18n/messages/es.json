@@ -2297,8 +2297,6 @@
     "totalInterest": "Total intereses",
     "totalPaid": "Total pagado",
     "noInterest": "Sin intereses — cuotas iguales de capital.",
-    "showAll": "Ver los {n} meses",
-    "showLess": "Ver menos",
     "chartTitle": "Interés vs. capital por período",
     "disclaimer": "Cálculo estimado con fines informativos. No constituye una oferta de crédito ni sustituye la propuesta formal del desarrollador.",
     "scheme": "Esquema de pago",

@@ -13,7 +13,7 @@ interface CorridaFinancieraProps {
 
 export default function CorridaFinanciera({ listPrice, esquemas }: CorridaFinancieraProps) {
   const t = useTranslations('corrida');
-  const ordered = [...esquemas].sort((a, b) => a.orden - b.orden);
+  const ordered = useMemo(() => [...esquemas].sort((a, b) => a.orden - b.orden), [esquemas]);
   const [selId, setSelId] = useState(ordered.find((e) => e.destacado)?.id ?? ordered[0]?.id);
 
   const activo = useMemo(() => {
@@ -74,16 +74,19 @@ export default function CorridaFinanciera({ listPrice, esquemas }: CorridaFinanc
       </div>
 
       {activo.esContado ? (
-        <div className="rounded-2xl p-6 bg-[#0F1923] text-white">
-          <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">{t('cash')}</div>
-          <div className="text-3xl font-extrabold text-propyte-brand">{formatPrice(activo.precioEfectivo)}</div>
-          {activo.ahorro > 0 && (
-            <div className="text-sm text-gray-400 mt-2">{t('savings')}: {formatPrice(activo.ahorro)}</div>
-          )}
-        </div>
+        <>
+          <div className="rounded-2xl p-6 bg-[#0F1923] text-white">
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">{t('cash')}</div>
+            <div className="text-3xl font-extrabold text-propyte-brand">{formatPrice(activo.precioEfectivo)}</div>
+            {activo.ahorro > 0 && (
+              <div className="text-sm text-gray-400 mt-2">{t('savings')}: {formatPrice(activo.ahorro)}</div>
+            )}
+          </div>
+          <p className="text-2xs text-gray-500 leading-relaxed">{t('disclaimer')}</p>
+        </>
       ) : (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <KV label={t('downPayment')} value={formatPrice(activo.enganche)} note={`${activo.esquema.enganche_pct}%`} />
             <KV label={t('financedAmount')} value={formatPrice(activo.financiado)} />
           </div>

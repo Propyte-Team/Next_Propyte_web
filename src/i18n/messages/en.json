@@ -2297,8 +2297,6 @@
     "totalInterest": "Total interest",
     "totalPaid": "Total paid",
     "noInterest": "Interest-free — equal principal installments.",
-    "showAll": "Show all {n} months",
-    "showLess": "Show less",
     "chartTitle": "Interest vs. principal per period",
     "disclaimer": "Estimated figures for informational purposes only. Not a credit offer and does not replace the developer's formal proposal.",
     "scheme": "Payment plan",
