@@ -590,12 +590,20 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   panel: (
                     <EsquemasDePagoTab
                       price={property.price.mxn}
+                      priceOriginal={property.priceOriginal ?? property.price.mxn}
+                      discountPct={property.discount?.pct ?? 0}
                       state={property.location.state || 'Quintana Roo'}
+                      city={property.location.city}
+                      zone={property.location.zone}
+                      m2={property.specs.area}
+                      tipoEntrega={property.specs.tipoEntrega ?? null}
                       downPaymentMinPct={property.financing.downPaymentMin}
                       financingMonths={property.financing.months}
                       interestRateDefault={property.financing.interestRate}
                       esquemas={property.financing.esquemas ?? []}
                       listPrice={property.priceOriginal ?? property.price.mxn}
+                      stage={property.stage}
+                      directo={property.financing.directo ?? false}
                     />
                   ),
                 }] as TabItem[] : []),
