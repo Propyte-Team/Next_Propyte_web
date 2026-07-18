@@ -47,6 +47,7 @@ export interface UnitRow {
   floor: number | null;
   // Classification
   unit_type: string | null;       // departamento, penthouse, casa, terreno
+  tipo_entrega: string | null;    // obra gris/con acabados/equipada/amueblada/llave en mano (v_units aún no lo expone → null)
   /** v_units column real: 'preventa' | 'disponible' | 'construccion' | etc.
    *  Reemplaza el `stage` y `availability_status` legacy. */
   status: string | null;
@@ -317,6 +318,7 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       bathrooms: (row.bathrooms || 0) + (row.half_baths || 0) * 0.5,
       area: row.area_m2 || row.lot_area_m2 || 0,
       type: specType,
+      tipoEntrega: row.tipo_entrega ?? null,
     },
     stage,
     usage: usage.length > 0 ? usage : ['residencial'],

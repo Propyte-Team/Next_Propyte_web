@@ -23,6 +23,7 @@ export interface PropertySpecs {
   bathrooms: number;
   area: number;
   type: 'departamento' | 'penthouse' | 'terreno' | 'macrolote' | 'casa';
+  tipoEntrega?: string | null;
 }
 
 export interface PropertyROI {
