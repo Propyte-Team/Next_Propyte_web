@@ -604,6 +604,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       listPrice={property.priceOriginal ?? property.price.mxn}
                       stage={property.stage}
                       directo={property.financing.directo ?? false}
+                      slug={slug}
+                      locale={locale}
                     />
                   ),
                 }] as TabItem[] : []),

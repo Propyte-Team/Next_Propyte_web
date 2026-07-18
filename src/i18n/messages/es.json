@@ -971,7 +971,18 @@
     "tabInterno": "Financiamiento interno",
     "internoSoon": "Financiamiento interno — próximamente.",
     "tabHipotecario": "Financiamiento hipotecario",
-    "schemesLabel": "Esquemas de pago"
+    "schemesLabel": "Esquemas de pago",
+    "hipotecarioTitle": "Financiamiento hipotecario",
+    "hipotecarioSubtitle": "Corrida estimada del saldo financiado con crédito hipotecario.",
+    "perfilLabel": "Perfil del comprador",
+    "tasaAnual": "Tasa anual",
+    "plazo": "Plazo",
+    "plazoAnios": "{n} años",
+    "moneda": "Moneda",
+    "avisoCambiario": "El crédito para compradores extranjeros se contrata en USD (cross-border). Las mensualidades se muestran en MXN como referencia; el monto real varía con el tipo de cambio.",
+    "descargarCotizacion": "Descargar cotización PDF",
+    "generandoPdf": "Generando…",
+    "pdfError": "No se pudo generar el PDF. Intenta de nuevo."
   },
   "developers": {
     "heroEyebrow": "Para desarrolladores",

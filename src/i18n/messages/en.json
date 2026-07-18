@@ -971,7 +971,18 @@
     "tabInterno": "In-house financing",
     "internoSoon": "In-house financing — coming soon.",
     "tabHipotecario": "Mortgage financing",
-    "schemesLabel": "Payment schemes"
+    "schemesLabel": "Payment schemes",
+    "hipotecarioTitle": "Mortgage financing",
+    "hipotecarioSubtitle": "Estimated amortization of the financed balance with a mortgage.",
+    "perfilLabel": "Buyer profile",
+    "tasaAnual": "Annual rate",
+    "plazo": "Term",
+    "plazoAnios": "{n} years",
+    "moneda": "Currency",
+    "avisoCambiario": "Mortgages for foreign buyers are issued in USD (cross-border). Monthly payments are shown in MXN for reference; the actual amount varies with the exchange rate.",
+    "descargarCotizacion": "Download quote PDF",
+    "generandoPdf": "Generating…",
+    "pdfError": "Couldn't generate the PDF. Please try again."
   },
   "developers": {
     "heroEyebrow": "For developers",

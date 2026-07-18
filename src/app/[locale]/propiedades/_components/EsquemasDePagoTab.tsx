@@ -4,10 +4,11 @@ import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { CreditCard, Building2, Landmark } from '@/lib/icons';
 import { computeInversionInicial, type Nacionalidad, type NivelAcabado } from '@/lib/inversion-inicial';
+import { computeHipotecario } from '@/lib/hipotecario';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import InversionInicialCalculator from './esquemas/InversionInicialCalculator';
-import CotizacionBloques from './esquemas/CotizacionBloques';
-import CorridaFinanciera from './CorridaFinanciera';
+import CotizacionBloques, { type Bloque3Data } from './esquemas/CotizacionBloques';
+import HipotecarioCalculator from './esquemas/HipotecarioCalculator';
 import type { EsquemaPago } from '@/lib/esquemas-pago';
 
 interface EsquemasDePagoTabProps {
@@ -26,43 +27,73 @@ interface EsquemasDePagoTabProps {
   listPrice: number;
   stage: string;
   directo: boolean;
+  slug: string;
+  locale: string;
 }
 
 export default function EsquemasDePagoTab({
-  price, priceOriginal, discountPct, state, city, zone, m2, tipoEntrega,
-  downPaymentMinPct, esquemas, listPrice, stage, directo,
+  price, priceOriginal, discountPct, city, zone, m2, tipoEntrega,
+  downPaymentMinPct, stage, directo, slug, locale,
 }: EsquemasDePagoTabProps) {
   const t = useTranslations('esquemas');
   const [nacionalidad, setNacionalidad] = useState<Nacionalidad>('nacional');
   const [mobiliarioNivel, setMobiliarioNivel] = useState<NivelAcabado>('alto');
   const [decoracionNivel, setDecoracionNivel] = useState<NivelAcabado>('standard');
 
-  const engancheBase = Math.round(price * (Math.max(downPaymentMinPct || 20, 10) / 100));
+  const hipotecario = useMemo(
+    () => computeHipotecario(price, nacionalidad, downPaymentMinPct),
+    [price, nacionalidad, downPaymentMinPct],
+  );
 
   const inversion = useMemo(
     () => computeInversionInicial({
-      price, engancheMxn: engancheBase, nacionalidad, m2, city, zone, tipoEntrega, mobiliarioNivel, decoracionNivel,
+      price, engancheMxn: hipotecario.enganche, nacionalidad, m2, city, zone, tipoEntrega, mobiliarioNivel, decoracionNivel,
     }),
-    [price, engancheBase, nacionalidad, m2, city, zone, tipoEntrega, mobiliarioNivel, decoracionNivel],
+    [price, hipotecario.enganche, nacionalidad, m2, city, zone, tipoEntrega, mobiliarioNivel, decoracionNivel],
   );
 
-  const cotizacion = (extra?: React.ReactNode) => (
+  const bloque3: Bloque3Data = {
+    saldo: hipotecario.saldo,
+    mensualidades: hipotecario.config.meses,
+    interesPct: hipotecario.config.tasaAnualPct,
+    mensualidad: Math.round(hipotecario.schedule.cuota),
+  };
+
+  const placeholder = (msg: string) => (
     <div className="space-y-4">
       <CotizacionBloques precio={priceOriginal} descuentoPct={discountPct} precioVenta={price} inversion={inversion} bloque3={null} />
-      {extra}
+      <p className="text-2xs text-gray-500">{msg}</p>
     </div>
   );
 
   const items: TabItem[] = [];
   if (stage === 'preventa') {
-    items.push({ id: 'preventa', label: t('tabPreventa'), icon: <Building2 size={16} />, panel: cotizacion(<p className="text-2xs text-gray-500">{t('preventaSoon')}</p>) });
+    items.push({ id: 'preventa', label: t('tabPreventa'), icon: <Building2 size={16} />, panel: placeholder(t('preventaSoon')) });
   }
   if (directo) {
-    items.push({ id: 'interno', label: t('tabInterno'), icon: <CreditCard size={16} />, panel: cotizacion(<p className="text-2xs text-gray-500">{t('internoSoon')}</p>) });
+    items.push({ id: 'interno', label: t('tabInterno'), icon: <CreditCard size={16} />, panel: placeholder(t('internoSoon')) });
   }
   items.push({
-    id: 'hipotecario', label: t('tabHipotecario'), icon: <Landmark size={16} />,
-    panel: cotizacion(esquemas.length > 0 ? <CorridaFinanciera listPrice={listPrice} esquemas={esquemas} /> : undefined),
+    id: 'hipotecario',
+    label: t('tabHipotecario'),
+    icon: <Landmark size={16} />,
+    panel: (
+      <HipotecarioCalculator
+        priceOriginal={priceOriginal}
+        discountPct={discountPct}
+        price={price}
+        inversion={inversion}
+        bloque3={bloque3}
+        schedule={hipotecario.schedule}
+        config={hipotecario.config}
+        nacionalidad={nacionalidad}
+        onNacionalidad={setNacionalidad}
+        slug={slug}
+        locale={locale}
+        mobiliarioNivel={mobiliarioNivel}
+        decoracionNivel={decoracionNivel}
+      />
+    ),
   });
 
   return (
