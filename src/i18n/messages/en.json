@@ -2658,6 +2658,24 @@
     "stageReadyDev": "Ready to Move In",
     "stageReadyUnit": "Ready"
   },
+  "cotizacionPdf": {
+    "docType": "Quote",
+    "corridaTitle": "Yearly schedule",
+    "colYear": "Year",
+    "colPayment": "Yearly payment",
+    "colInterest": "Interest",
+    "colCapital": "Principal",
+    "colBalance": "Balance",
+    "totalInterest": "Total interest",
+    "totalPaid": "Total paid",
+    "perfilNacional": "National buyer",
+    "perfilExtranjero": "Foreign buyer",
+    "tasaPlazo": "{rate}% annual · {months} months",
+    "avisoCambiario": "USD (cross-border) loan. Amounts in MXN for reference; the actual amount varies with the exchange rate.",
+    "disclaimer": "Estimated quote for informational purposes. Not a credit offer and does not replace the developer's or bank's formal proposal.",
+    "generatedOn": "Generated",
+    "scan": "Scan to view online"
+  },
   "share": {
     "subject": "{name} on Propyte",
     "bodyText": "Take a look at this property on Propyte:\n\n{name}\n{url}",

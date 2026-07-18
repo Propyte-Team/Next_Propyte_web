@@ -2658,6 +2658,24 @@
     "stageReadyDev": "Entrega Inmediata",
     "stageReadyUnit": "Entrega Inmediata"
   },
+  "cotizacionPdf": {
+    "docType": "Cotización",
+    "corridaTitle": "Corrida por año",
+    "colYear": "Año",
+    "colPayment": "Cuota anual",
+    "colInterest": "Interés",
+    "colCapital": "Capital",
+    "colBalance": "Saldo",
+    "totalInterest": "Total intereses",
+    "totalPaid": "Total pagado",
+    "perfilNacional": "Comprador nacional",
+    "perfilExtranjero": "Comprador extranjero",
+    "tasaPlazo": "{rate}% anual · {months} meses",
+    "avisoCambiario": "Crédito en USD (cross-border). Montos en MXN como referencia; el real varía con el tipo de cambio.",
+    "disclaimer": "Cotización estimada con fines informativos. No constituye oferta de crédito ni sustituye la propuesta formal del desarrollador o banco.",
+    "generatedOn": "Generado",
+    "scan": "Escanea para ver online"
+  },
   "share": {
     "subject": "{name} en Propyte",
     "bodyText": "Mira esta propiedad en Propyte:\n\n{name}\n{url}",
