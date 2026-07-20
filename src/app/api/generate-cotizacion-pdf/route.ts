@@ -9,6 +9,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { computeInversionInicial, type Nacionalidad, type NivelAcabado } from '@/lib/inversion-inicial';
 import { computeHipotecario, HIPOTECARIO_CONFIG, type PerfilHipotecario } from '@/lib/hipotecario';
 import { computePreventa, buildContraentregaSchedule, type ContraentregaVia } from '@/lib/preventa';
+import { computeEsquema } from '@/lib/esquemas-pago';
 import { aggregateByYear } from '@/lib/corrida-anual';
 import {
   CotizacionPDFDocument, type CotizacionPDFData, type CotizacionPDFLabels,
@@ -36,7 +37,9 @@ export async function GET(req: NextRequest) {
   const localeParam = url.searchParams.get('locale');
   const mobParam = url.searchParams.get('mob');
   const decParam = url.searchParams.get('dec');
-  const mode = url.searchParams.get('mode') === 'preventa' ? 'preventa' : 'hipotecario';
+  const modeParam = url.searchParams.get('mode');
+  const mode = modeParam === 'preventa' ? 'preventa' : modeParam === 'interno' ? 'interno' : 'hipotecario';
+  const esquemaId = url.searchParams.get('esquema');
   const num = (k: string, d = 0) => {
     const v = Number(url.searchParams.get(k));
     return Number.isFinite(v) ? v : d;
@@ -81,6 +84,9 @@ export async function GET(req: NextRequest) {
     let tieneInteres: boolean;
     let tasaPlazoLabel: string;
     let preventaBlock: CotizacionPDFData['preventa'] = null;
+    let precioBloque1 = priceOriginal;
+    let descuentoPctBloque1 = discountPct;
+    let precioVentaBloque1 = price;
 
     if (mode === 'preventa') {
       const cfg = {
@@ -142,6 +148,63 @@ export async function GET(req: NextRequest) {
         contraentregaPct: plan.contraentregaPct,
         viaLabel,
       };
+    } else if (mode === 'interno') {
+      // Esquema del Hub (fin_esquemas_pago / fallback fin_directo) — independiente del
+      // descuento comercial de `property.discount`. Usa siempre el precio de LISTA
+      // (priceOriginal, sin el descuento comercial) como base, igual que CorridaFinanciera.tsx
+      // (`listPrice = property.priceOriginal ?? property.price.mxn`).
+      const listaInterno = property.priceOriginal ?? property.price.mxn;
+      const esquemaSel = (property.financing.esquemas ?? []).find((e) => e.id === esquemaId);
+      if (!esquemaSel) return NextResponse.json({ error: 'esquema not found' }, { status: 404 });
+      const computed = computeEsquema(listaInterno, esquemaSel);
+      inv = computeInversionInicial({
+        price: computed.precioEfectivo,
+        engancheMxn: computed.enganche,
+        nacionalidad: perfil as Nacionalidad,
+        m2: property.specs.area,
+        city: property.location.city,
+        zone: property.location.zone,
+        tipoEntrega: property.specs.tipoEntrega ?? null,
+        mobiliarioNivel,
+        decoracionNivel,
+      });
+      precioBloque1 = listaInterno;
+      descuentoPctBloque1 = esquemaSel.descuento_pct;
+      precioVentaBloque1 = computed.precioEfectivo;
+      if (computed.esContado) {
+        // La UI (CorridaFinanciera.tsx) nunca ofrece el botón de PDF para un esquema de
+        // contado (`{!activo.esContado && (...)}`) — esto es defensivo ante una URL manual.
+        // No hay corrida que mostrar; el banner usa la misma etiqueta "Pago de contado"
+        // que el tab interno usa para el caso de contado.
+        const tCorrida = await getTranslations({ locale, namespace: 'corrida' });
+        annual = [];
+        enganche = computed.enganche;
+        enganchePct = esquemaSel.enganche_pct;
+        saldo = 0;
+        mensualidades = 0;
+        interesPct = 0;
+        mensualidad = 0;
+        totalIntereses = 0;
+        totalPagado = computed.precioEfectivo;
+        tieneInteres = false;
+        tasaPlazoLabel = tCorrida('cash');
+      } else {
+        annual = aggregateByYear(computed.schedule!.rows).map((y) => ({
+          anio: y.anio, cuota: y.cuota, interes: y.interes, capital: y.capital, saldoFinal: y.saldoFinal,
+        }));
+        enganche = computed.enganche;
+        enganchePct = esquemaSel.enganche_pct;
+        saldo = computed.financiado;
+        mensualidades = computed.schedule!.rows.length;
+        interesPct = esquemaSel.tasa;
+        mensualidad = Math.round(computed.schedule!.cuota);
+        totalIntereses = Math.round(computed.schedule!.totalIntereses);
+        totalPagado = Math.round(computed.schedule!.totalPagado);
+        tieneInteres = computed.schedule!.tieneInteres;
+        // La corrida usa la tasa/plazo del esquema seleccionado (timing-aware vía
+        // computeEsquema) — el banner debe reflejar EXACTAMENTE esos mismos valores.
+        tasaPlazoLabel = tC('tasaPlazo', { rate: esquemaSel.tasa, months: computed.schedule!.rows.length });
+      }
     } else {
       const hip = computeHipotecario(price, perfil, property.financing.downPaymentMin);
       inv = computeInversionInicial({
@@ -201,9 +264,9 @@ export async function GET(req: NextRequest) {
       state: property.location.state,
       locale,
       generatedAt: new Date().toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', { day: '2-digit', month: 'short', year: 'numeric' }),
-      precio: priceOriginal,
-      descuentoPct: discountPct,
-      precioVenta: price,
+      precio: precioBloque1,
+      descuentoPct: descuentoPctBloque1,
+      precioVenta: precioVentaBloque1,
       enganche,
       enganchePct,
       escrituracion: inv.escrituracion,
