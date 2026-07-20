@@ -13,6 +13,7 @@ import { formatPrice, formatPercentage } from '@/lib/formatters';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import TrendChart from './rentabilidad/TrendChart';
 import ZoneComparison from './rentabilidad/ZoneComparison';
+import DataSourceTable from './rentabilidad/DataSourceTable';
 import type { AirdnaMarketSummary, AirdnaZoneSummary } from '@/lib/supabase/queries';
 
 interface RentabilidadTabProps {
@@ -149,6 +150,14 @@ function ResidencialPanel({
         <KpiTile label="Cap rate" value={formatPercentage(capRate)} />
         <KpiTile label={t('annualNetIncome')} value={formatPrice(annualNet)} />
       </div>
+      <DataSourceTable
+        rows={[
+          { label: t('rowMonthlyRent'), value: formatPrice(Math.round(grossRent)), source: t('sourcePropyte'), period: t('periodRecent') },
+          { label: t('rowOccupancyAssumed'), value: `${Math.round(RES.OCCUPANCY * 100)}%`, source: t('sourceEstimate') },
+          { label: t('rowYields'), value: `${formatPercentage(grossYield)} / ${formatPercentage(netYield)} / ${formatPercentage(capRate)}`, source: t('sourceCalc') },
+        ]}
+        footnote={t('noteCityLevel')}
+      />
       <ZoneComparison metric="occupancy" zones={zones} locale={locale} title={t('zoneCompareRes')} />
     </div>
   );
@@ -178,6 +187,15 @@ function VacacionalPanel({
         <KpiTile label={t('netYield')} value={formatPercentage(netYield)} />
       </div>
       <ZoneComparison metric="adr" zones={zones} locale={locale} title={t('zoneCompareVac')} />
+      <DataSourceTable
+        rows={[
+          { label: t('rowAdr'), value: adr != null ? formatPrice(adr) : '—', source: t('sourcePropyte'), period: t('period12m') },
+          { label: t('rowOccupancy'), value: `${Math.round(occupancy)}%`, source: t('sourcePropyte'), period: t('period12m') },
+          { label: t('rowRevpar'), value: revpar != null ? formatPrice(revpar) : '—', source: t('sourceCalc') },
+          { label: t('rowEstIncome'), value: formatPrice(netRent), source: t('sourceEstimate') },
+        ]}
+        footnote={t('noteCityLevel')}
+      />
       <p className="text-2xs text-gray-600">{t('strLanguageNote')}</p>
     </div>
   );
@@ -187,6 +205,16 @@ function ProyeccionPanel({
   price, appreciation, setAppreciation, resAnnualNet, vacAnnualNet,
 }: { price: number; appreciation: number; setAppreciation: (n: number) => void; resAnnualNet: number; vacAnnualNet: number }) {
   const t = useTranslations('simulator');
+  const [scenario, setScenario] = useState<'vac' | 'res'>('vac');
+  const annualNetSel = scenario === 'vac' ? vacAnnualNet : resAnnualNet;
+  const breakdown = useMemo(() => Array.from({ length: 10 }, (_, i) => {
+    const y = i + 1;
+    const valor = calculateProjectedValue(price, appreciation, y);
+    const rents = Math.round(annualNetSel * y);
+    const total = (valor - price) + rents;
+    const pct = projectedTotalReturn(price, appreciation, annualNetSel, y);
+    return { y, valor, rents, total, pct };
+  }), [price, appreciation, annualNetSel]);
   const chartData = useMemo(
     () => Array.from({ length: 10 }, (_, i) => {
       const yr = i + 1;
@@ -261,6 +289,55 @@ function ProyeccionPanel({
         <div className="text-xs text-gray-600 mb-1">{t('projected10yr')}</div>
         <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projected10)}</div>
       </div>
+
+      {/* Desglose año por año */}
+      <div>
+        <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <div className="text-sm font-semibold text-[#2C2C2C]">{t('breakdownTitle')}</div>
+          <div className="inline-flex rounded-full border border-gray-200 p-0.5 text-xs">
+            <button
+              type="button"
+              onClick={() => setScenario('res')}
+              className={`px-3 py-1 rounded-full border transition-colors ${scenario === 'res' ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand' : 'border-gray-200 text-gray-700 hover:border-propyte-brand'}`}
+            >
+              {t('residentialTab')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setScenario('vac')}
+              className={`px-3 py-1 rounded-full border transition-colors ${scenario === 'vac' ? 'bg-propyte-brand text-[#0F1923] border-propyte-brand' : 'border-gray-200 text-gray-700 hover:border-propyte-brand'}`}
+            >
+              {t('vacationTab')}
+            </button>
+          </div>
+        </div>
+        <p className="text-2xs text-gray-600 mb-2">{t('breakdownExplain')}</p>
+        <div className="overflow-x-auto rounded-xl border border-gray-100">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-left text-gray-500 bg-gray-50">
+                <th className="px-3 py-1.5 font-medium">{t('colYear')}</th>
+                <th className="px-3 py-1.5 font-medium">{t('colPropertyValue')}</th>
+                <th className="px-3 py-1.5 font-medium">{t('colRentsAccum')}</th>
+                <th className="px-3 py-1.5 font-medium">{t('colTotalReturn')}</th>
+                <th className="px-3 py-1.5 font-medium">{t('colReturnPct')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {breakdown.map((b) => (
+                <tr key={b.y} className="border-t border-gray-100">
+                  <td className="px-3 py-1.5 text-gray-700">{b.y}</td>
+                  <td className="px-3 py-1.5 text-gray-700">{formatPrice(b.valor)}</td>
+                  <td className="px-3 py-1.5 text-gray-700">{formatPrice(b.rents)}</td>
+                  <td className="px-3 py-1.5 font-semibold text-[#1A2F3F]">{formatPrice(b.total)}</td>
+                  <td className="px-3 py-1.5 font-semibold text-[#0E7490]">+{b.pct.toFixed(0)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <p className="text-2xs text-gray-600 leading-relaxed">{t('roiDisclaimerCompare', { n: appreciation.toFixed(1) })}</p>
     </div>
   );
