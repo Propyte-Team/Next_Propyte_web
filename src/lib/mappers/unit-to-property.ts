@@ -170,10 +170,10 @@ function buildFallbackEsquemas(
   const terms = mesesOpts.filter((m) => Number(m) > 0);
   if (!directo && terms.length === 0 && engPct <= 0) return [];
   if (terms.length === 0) {
-    return [{ id: 'v1_0', label: 'Financiamiento', enganche_pct: engPct, meses: 0, tasa, descuento_pct: 0, orden: 0 }];
+    return [{ id: 'v1_0', label: 'Financiamiento', label_en: 'Financing', enganche_pct: engPct, meses: 0, tasa, descuento_pct: 0, orden: 0 }];
   }
   return terms.map((m, i) => ({
-    id: `v1_${m}`, label: `Financiamiento ${m} meses`, enganche_pct: engPct, meses: m, tasa, descuento_pct: 0, orden: i,
+    id: `v1_${m}`, label: `Financiamiento ${m} meses`, label_en: `Financing ${m} months`, enganche_pct: engPct, meses: m, tasa, descuento_pct: 0, orden: i,
   }));
 }
 

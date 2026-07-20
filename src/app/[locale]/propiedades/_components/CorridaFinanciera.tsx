@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { computeEsquema, type EsquemaPago } from '@/lib/esquemas-pago';
+import { computeEsquema, esquemaLabel, type EsquemaPago } from '@/lib/esquemas-pago';
 import { computeInversionInicial, type Nacionalidad, type NivelAcabado } from '@/lib/inversion-inicial';
 import { formatPrice } from '@/lib/formatters';
 import { FileDown, Loader2 } from '@/lib/icons';
@@ -135,7 +135,7 @@ export default function CorridaFinanciera({
                 }`}
               >
                 {e.destacado && '★ '}
-                {e.label}
+                {esquemaLabel(e, locale)}
               </button>
             ))}
           </div>

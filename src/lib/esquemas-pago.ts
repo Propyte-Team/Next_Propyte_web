@@ -3,6 +3,7 @@ import { buildAmortizationScheduleTiming, type AmortSchedule, type TimingInteres
 export interface EsquemaPago {
   id: string;
   label: string;
+  label_en?: string;
   enganche_pct: number;
   meses: number;
   tasa: number;
@@ -29,6 +30,7 @@ export function parseEsquemas(raw: unknown): EsquemaPago[] {
     .map((x, i) => ({
       id: String(x.id ?? `sch_${i}`),
       label: String(x.label ?? `Esquema ${i + 1}`),
+      label_en: x.label_en != null && String(x.label_en).trim() !== '' ? String(x.label_en) : undefined,
       enganche_pct: Number(x.enganche_pct) || 0,
       meses: Number(x.meses) || 0,
       tasa: Number(x.tasa) || 0,
@@ -42,6 +44,10 @@ export function parseEsquemas(raw: unknown): EsquemaPago[] {
       ) as TimingIntereses,
     }))
     .sort((a, b) => a.orden - b.orden);
+}
+
+export function esquemaLabel(e: EsquemaPago, locale: string): string {
+  return locale === 'en' && e.label_en ? e.label_en : e.label;
 }
 
 export function computeEsquema(precioLista: number, e: EsquemaPago): EsquemaComputed {
