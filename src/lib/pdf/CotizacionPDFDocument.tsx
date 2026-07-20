@@ -27,7 +27,6 @@ export interface CotizacionPDFLabels {
   preventaEngancheDiferido: string;
   preventaObra: string;
   preventaContraentrega: string;
-  preventaVia: string;
 }
 
 export interface CotizacionPDFData {
@@ -193,10 +192,12 @@ export function CotizacionPDFDocument({ data }: { data: CotizacionPDFData }) {
                 value={fmt(data.preventa.obra)}
               />
             )}
-            <KV
-              label={`${L.preventaContraentrega} (${data.preventa.contraentregaPct}%) · ${data.preventa.viaLabel}`}
-              value={fmt(data.preventa.contraentrega)}
-            />
+            <View style={styles.kvTotalRow}>
+              <Text style={styles.kvTotalLabel}>
+                {`${L.preventaContraentrega} (${data.preventa.contraentregaPct}%) · ${data.preventa.viaLabel}`}
+              </Text>
+              <Text style={styles.kvTotalValue}>{fmt(data.preventa.contraentrega)}</Text>
+            </View>
           </View>
         )}
 

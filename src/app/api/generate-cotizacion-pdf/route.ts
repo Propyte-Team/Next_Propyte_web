@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
     let totalIntereses: number;
     let totalPagado: number;
     let tieneInteres: boolean;
+    let tasaPlazoLabel: string;
     let preventaBlock: CotizacionPDFData['preventa'] = null;
 
     if (mode === 'preventa') {
@@ -122,6 +123,9 @@ export async function GET(req: NextRequest) {
       totalIntereses = Math.round(schedule.totalIntereses);
       totalPagado = Math.round(schedule.totalPagado);
       tieneInteres = schedule.tieneInteres;
+      // La corrida de contraentrega usa la tasa/plazo segun `via` (interno u hipotecario) —
+      // el banner debe reflejar EXACTAMENTE esos mismos valores, no siempre los del hipotecario.
+      tasaPlazoLabel = tC('tasaPlazo', { rate: interesPct, months: schedule.rows.length });
       const viaLabel = plan.contraentregaVia === 'interno' ? tE('preventaViaInterno') : tE('preventaViaHipotecario');
       preventaBlock = {
         engancheInicial: plan.engancheInicial,
@@ -163,6 +167,7 @@ export async function GET(req: NextRequest) {
       totalIntereses = Math.round(hip.schedule.totalIntereses);
       totalPagado = Math.round(hip.schedule.totalPagado);
       tieneInteres = hip.schedule.tieneInteres;
+      tasaPlazoLabel = tC('tasaPlazo', { rate: hipCfg.tasaAnualPct, months: hipCfg.meses });
     }
 
     const propertyUrl = `https://propyte.com/${locale}/propiedades/${slug}`;
@@ -178,7 +183,7 @@ export async function GET(req: NextRequest) {
       colInterest: tC('colInterest'), colCapital: tC('colCapital'), colBalance: tC('colBalance'),
       totalInterest: tC('totalInterest'), totalPaid: tC('totalPaid'),
       perfil: perfil === 'extranjero' ? tC('perfilExtranjero') : tC('perfilNacional'),
-      tasaPlazo: tC('tasaPlazo', { rate: hipCfg.tasaAnualPct, months: hipCfg.meses }),
+      tasaPlazo: tasaPlazoLabel,
       avisoCambiario: hipCfg.avisoCambiario ? tC('avisoCambiario') : null,
       disclaimer: tC('disclaimer'), generatedOn: tC('generatedOn'), scan: tC('scan'),
       preventaTitle: tC('preventaTitle'),
@@ -186,7 +191,6 @@ export async function GET(req: NextRequest) {
       preventaEngancheDiferido: tC('preventaEngancheDiferido'),
       preventaObra: tC('preventaObra'),
       preventaContraentrega: tC('preventaContraentrega'),
-      preventaVia: tC('preventaVia'),
     };
 
     const data: CotizacionPDFData = {

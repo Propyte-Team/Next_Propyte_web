@@ -2701,8 +2701,7 @@
     "preventaEngancheInicial": "Initial down payment",
     "preventaEngancheDiferido": "Deferred down payment",
     "preventaObra": "Payments during construction",
-    "preventaContraentrega": "On delivery",
-    "preventaVia": "Delivery financed via"
+    "preventaContraentrega": "On delivery"
   },
   "share": {
     "subject": "{name} on Propyte",
