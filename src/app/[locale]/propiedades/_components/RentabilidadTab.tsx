@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Home, Plane, TrendingUp } from '@/lib/icons';
 import {
   calculateGrossYield, calculateNetYield, calculateCapRate,
@@ -186,7 +187,18 @@ function ProyeccionPanel({
   price, appreciation, setAppreciation, resAnnualNet, vacAnnualNet,
 }: { price: number; appreciation: number; setAppreciation: (n: number) => void; resAnnualNet: number; vacAnnualNet: number }) {
   const t = useTranslations('simulator');
-  const rows = [5, 10].map((yrs) => ({
+  const chartData = useMemo(
+    () => Array.from({ length: 10 }, (_, i) => {
+      const yr = i + 1;
+      return {
+        year: yr,
+        vac: Math.round(projectedTotalReturn(price, appreciation, vacAnnualNet, yr)),
+        res: Math.round(projectedTotalReturn(price, appreciation, resAnnualNet, yr)),
+      };
+    }),
+    [price, appreciation, vacAnnualNet, resAnnualNet],
+  );
+  const milestones = [5, 10].map((yrs) => ({
     yrs,
     vac: projectedTotalReturn(price, appreciation, vacAnnualNet, yrs),
     res: projectedTotalReturn(price, appreciation, resAnnualNet, yrs),
@@ -202,23 +214,49 @@ function ProyeccionPanel({
         <input type="range" min={0} max={20} step={0.5} value={appreciation}
           onChange={(e) => setAppreciation(Number(e.target.value))} className="w-full accent-[#A2F9FF]" />
       </div>
-      {rows.map((r) => (
-        <div key={r.yrs} className="rounded-xl border border-gray-100 p-4">
-          <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">{t('horizonYears', { n: r.yrs })}</div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center">
-              <div className="text-2xs text-gray-600 mb-1">{t('vacationTab')}</div>
-              <div className="text-2xl font-bold text-[#0E7490]">+{r.vac.toFixed(0)}%</div>
-              <div className="text-2xs text-gray-600">{t('appreciationPlusRents')}</div>
+
+      {/* Línea de tiempo: retorno acumulado (plusvalía + rentas) Vacacional vs Residencial */}
+      <div>
+        <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">{t('projectionTimelineTitle')}</div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 8, right: 12, left: 8, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#EEF2F4" vertical={false} />
+              <XAxis
+                dataKey="year"
+                tick={{ fontSize: 10 }}
+                interval={0}
+                tickMargin={4}
+                height={30}
+                label={{ value: t('years'), position: 'insideBottom', offset: -2, fontSize: 10, fill: '#6B7280' }}
+              />
+              <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10 }} width={44} />
+              <Tooltip formatter={(v) => `+${Number(v) || 0}%`} labelFormatter={(v) => t('horizonYears', { n: Number(v) })} />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Line type="monotone" dataKey="res" name={t('residentialTab')} stroke="#1A2F3F" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+              <Line type="monotone" dataKey="vac" name={t('vacationTab')} stroke="#0E7490" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Hitos exactos a 5 y 10 años */}
+      <div className="grid grid-cols-2 gap-3">
+        {milestones.map((m) => (
+          <div key={m.yrs} className="rounded-xl border border-gray-100 p-4">
+            <div className="text-2xs text-gray-600 uppercase tracking-wider mb-2">{t('horizonYears', { n: m.yrs })}</div>
+            <div className="flex items-baseline justify-between text-sm">
+              <span className="text-[#0E7490]">{t('vacationTab')}</span>
+              <span className="font-bold text-[#0E7490]">+{m.vac.toFixed(0)}%</span>
             </div>
-            <div className="text-center">
-              <div className="text-2xs text-gray-600 mb-1">{t('residentialTab')}</div>
-              <div className="text-2xl font-bold text-[#1A2F3F]">+{r.res.toFixed(0)}%</div>
-              <div className="text-2xs text-gray-600">{t('appreciationPlusRents')}</div>
+            <div className="flex items-baseline justify-between text-sm mt-1">
+              <span className="text-[#1A2F3F]">{t('residentialTab')}</span>
+              <span className="font-bold text-[#1A2F3F]">+{m.res.toFixed(0)}%</span>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
       <div className="bg-gray-50 rounded-xl p-4">
         <div className="text-xs text-gray-600 mb-1">{t('projected10yr')}</div>
         <div className="text-2xl font-bold text-[#2C2C2C]">{formatPrice(projected10)}</div>

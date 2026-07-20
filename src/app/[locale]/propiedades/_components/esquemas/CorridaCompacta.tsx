@@ -25,11 +25,11 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
   const annual = useMemo(() => aggregateByYear(schedule.rows), [schedule]);
   const chartData = useMemo(
     () => annual.map((y) => ({
-      label: t('year', { n: y.anio }),
+      label: y.anio,
       capital: Math.round(y.capital),
       interes: Math.round(y.interes),
     })),
-    [annual, t],
+    [annual],
   );
 
   const toggleYear = (anio: number) =>
@@ -41,11 +41,9 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
 
   return (
     <div className="space-y-4">
-      {/* Resumen */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      {/* Resumen — solo la mensualidad (dato accionable; sin lifetime que genere percepción negativa) */}
+      <div className="sm:max-w-xs">
         <KV label={t('monthlyPayment')} value={fmt(schedule.cuota)} highlight />
-        <KV label={t('totalInterest')} value={schedule.tieneInteres ? fmt(schedule.totalIntereses) : '—'} />
-        <KV label={t('totalPaid')} value={fmt(schedule.totalPagado)} />
       </div>
 
       {!schedule.tieneInteres && <p className="text-2xs text-gray-600">{t('noInterest')}</p>}
@@ -54,12 +52,19 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
       {schedule.tieneInteres && (
         <div>
           <div className="text-xs text-gray-600 uppercase tracking-wider mb-2">{t('chartTitle')}</div>
-          <div className="h-56">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} interval="preserveStartEnd" />
+              <BarChart data={chartData} margin={{ top: 4, right: 8, left: 8, bottom: 8 }}>
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 10 }}
+                  interval={0}
+                  tickMargin={4}
+                  height={30}
+                  label={{ value: t('years'), position: 'insideBottom', offset: -2, fontSize: 10, fill: '#6B7280' }}
+                />
                 <YAxis tickFormatter={(v) => formatPrice(v, currency)} tick={{ fontSize: 10 }} width={70} />
-                <Tooltip formatter={(v) => formatPrice(Number(v) || 0, currency)} />
+                <Tooltip formatter={(v) => formatPrice(Number(v) || 0, currency)} labelFormatter={(v) => t('year', { n: Number(v) })} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Bar dataKey="capital" name={t('colCapital')} stackId="a" fill={COLOR_CAPITAL} />
                 <Bar dataKey="interes" name={t('colInterest')} stackId="a" fill={COLOR_INTEREST} />
@@ -75,45 +80,43 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
         <ToggleBtn active={!byYear} onClick={() => setByYear(false)}>{t('viewByMonth')}</ToggleBtn>
       </div>
 
-      {/* Tabla */}
+      {/* Tabla — sin scroll interno (evita secuestrar el scroll de la página); fluye con la página */}
       <div className="rounded-xl border border-gray-100 overflow-x-auto">
-        <div className="max-h-[28rem] overflow-y-auto">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-gray-50 text-2xs uppercase tracking-wider text-gray-600">
-                <th className="px-3 py-2 text-left">{byYear ? t('colYear') : t('colMonth')}</th>
-                <th className="px-3 py-2 text-right">{t('colPayment')}</th>
-                {schedule.tieneInteres && <th className="px-3 py-2 text-right">{t('colInterest')}</th>}
-                <th className="px-3 py-2 text-right">{t('colCapital')}</th>
-                <th className="px-3 py-2 text-right">{t('colBalance')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {byYear
-                ? annual.map((y, idx) => (
-                  <YearRows
-                    key={y.anio}
-                    y={y}
-                    idx={idx}
-                    open={openYears.has(y.anio)}
-                    onToggle={() => toggleYear(y.anio)}
-                    tieneInteres={schedule.tieneInteres}
-                    fmt={fmt}
-                    yearLabel={t('year', { n: y.anio })}
-                  />
-                ))
-                : schedule.rows.map((r, idx) => (
-                  <tr key={r.mes} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-3 py-2 text-gray-700 font-medium">{r.mes}</td>
-                    <td className="px-3 py-2 text-right">{fmt(r.cuota)}</td>
-                    {schedule.tieneInteres && <td className="px-3 py-2 text-right text-gray-500">{fmt(r.interes)}</td>}
-                    <td className="px-3 py-2 text-right font-semibold">{fmt(r.capital)}</td>
-                    <td className="px-3 py-2 text-right text-gray-700">{fmt(r.saldo)}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-gray-50 text-2xs uppercase tracking-wider text-gray-600">
+              <th className="px-3 py-2 text-left">{byYear ? t('colYear') : t('colMonth')}</th>
+              <th className="px-3 py-2 text-right">{t('colPayment')}</th>
+              {schedule.tieneInteres && <th className="px-3 py-2 text-right">{t('colInterest')}</th>}
+              <th className="px-3 py-2 text-right">{t('colCapital')}</th>
+              <th className="px-3 py-2 text-right">{t('colBalance')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {byYear
+              ? annual.map((y, idx) => (
+                <YearRows
+                  key={y.anio}
+                  y={y}
+                  idx={idx}
+                  open={openYears.has(y.anio)}
+                  onToggle={() => toggleYear(y.anio)}
+                  tieneInteres={schedule.tieneInteres}
+                  fmt={fmt}
+                  yearLabel={t('year', { n: y.anio })}
+                />
+              ))
+              : schedule.rows.map((r, idx) => (
+                <tr key={r.mes} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-3 py-2 text-gray-700 font-medium">{r.mes}</td>
+                  <td className="px-3 py-2 text-right">{fmt(r.cuota)}</td>
+                  {schedule.tieneInteres && <td className="px-3 py-2 text-right text-gray-500">{fmt(r.interes)}</td>}
+                  <td className="px-3 py-2 text-right font-semibold">{fmt(r.capital)}</td>
+                  <td className="px-3 py-2 text-right text-gray-700">{fmt(r.saldo)}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
       </div>
 
       <p className="text-2xs text-gray-500 leading-relaxed">{t('disclaimer')}</p>

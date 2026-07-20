@@ -937,6 +937,8 @@
     "zoneCompareVac": "ADR vs similar zones",
     "horizonYears": "{n}-year horizon",
     "appreciationPlusRents": "appreciation + rents",
+    "projectionTimelineTitle": "Cumulative return by year",
+    "years": "Years",
     "roiDisclaimerCompare": "Projection at {n}% annual appreciation; compares each scheme's appreciation + rents. Excludes financing.",
     "realDataBadge": "real data",
     "zoneCityLevelNote": "* city-level when no zone breakdown available"
@@ -2305,10 +2307,8 @@
     "colInterest": "Interest",
     "colCapital": "Principal",
     "colBalance": "Balance",
-    "totalInterest": "Total interest",
-    "totalPaid": "Total paid",
     "noInterest": "Interest-free — equal principal installments.",
-    "chartTitle": "Interest vs. principal per period",
+    "chartTitle": "Interest vs. principal per year",
     "disclaimer": "Estimated figures for informational purposes only. Not a credit offer and does not replace the developer's formal proposal.",
     "scheme": "Payment plan",
     "cash": "Cash payment",
@@ -2318,7 +2318,8 @@
     "viewByYear": "By year",
     "viewByMonth": "By month",
     "colYear": "Year",
-    "year": "Year {n}"
+    "year": "Year {n}",
+    "years": "Years"
   },
   "glosario": {
     "heroEyebrow": "Glossary",

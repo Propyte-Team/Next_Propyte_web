@@ -937,6 +937,8 @@
     "zoneCompareVac": "ADR vs zonas similares",
     "horizonYears": "Horizonte {n} años",
     "appreciationPlusRents": "plusvalía + rentas",
+    "projectionTimelineTitle": "Retorno acumulado por año",
+    "years": "Años",
     "roiDisclaimerCompare": "Proyección a apreciación {n}% anual; compara plusvalía + rentas de cada esquema. No incluye financiamiento.",
     "realDataBadge": "dato real",
     "zoneCityLevelNote": "* nivel ciudad cuando no hay desglose de zona"
@@ -2305,10 +2307,8 @@
     "colInterest": "Interés",
     "colCapital": "Capital",
     "colBalance": "Saldo",
-    "totalInterest": "Total intereses",
-    "totalPaid": "Total pagado",
     "noInterest": "Sin intereses — cuotas iguales de capital.",
-    "chartTitle": "Interés vs. capital por período",
+    "chartTitle": "Interés vs. capital por año",
     "disclaimer": "Cálculo estimado con fines informativos. No constituye una oferta de crédito ni sustituye la propuesta formal del desarrollador.",
     "scheme": "Esquema de pago",
     "cash": "Pago de contado",
@@ -2318,7 +2318,8 @@
     "viewByYear": "Ver por año",
     "viewByMonth": "Ver por mes",
     "colYear": "Año",
-    "year": "Año {n}"
+    "year": "Año {n}",
+    "years": "Años"
   },
   "glosario": {
     "heroEyebrow": "Glosario",

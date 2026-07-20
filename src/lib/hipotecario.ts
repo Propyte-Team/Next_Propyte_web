@@ -14,7 +14,7 @@ export interface HipotecarioConfig {
 // Config global (arranque, ajustable) — spec §5.
 export const HIPOTECARIO_CONFIG: Record<PerfilHipotecario, HipotecarioConfig> = {
   nacional: { tasaAnualPct: 10.5, meses: 240, moneda: 'MXN', enganchePct: 20, avisoCambiario: false },
-  extranjero: { tasaAnualPct: 9.5, meses: 360, moneda: 'USD', enganchePct: 35, avisoCambiario: true },
+  extranjero: { tasaAnualPct: 9.5, meses: 240, moneda: 'USD', enganchePct: 35, avisoCambiario: true },
 };
 
 export interface HipotecarioResult {
