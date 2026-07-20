@@ -9,7 +9,9 @@ import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import InversionInicialCalculator from './esquemas/InversionInicialCalculator';
 import CotizacionBloques, { type Bloque3Data } from './esquemas/CotizacionBloques';
 import HipotecarioCalculator from './esquemas/HipotecarioCalculator';
+import PreventaCalculator from './esquemas/PreventaCalculator';
 import type { EsquemaPago } from '@/lib/esquemas-pago';
+import type { PreventaConfig } from '@/lib/preventa';
 
 interface EsquemasDePagoTabProps {
   price: number;
@@ -31,11 +33,12 @@ interface EsquemasDePagoTabProps {
   directo: boolean;
   slug: string;
   locale: string;
+  preventa: PreventaConfig | null;
 }
 
 export default function EsquemasDePagoTab({
   price, priceOriginal, discountPct, city, zone, m2, tipoEntrega,
-  downPaymentMinPct, stage, directo, slug, locale,
+  downPaymentMinPct, financingMonths, interestRateDefault, stage, directo, slug, locale, preventa,
 }: EsquemasDePagoTabProps) {
   const t = useTranslations('esquemas');
   const [nacionalidad, setNacionalidad] = useState<Nacionalidad>('nacional');
@@ -70,7 +73,31 @@ export default function EsquemasDePagoTab({
 
   const items: TabItem[] = [];
   if (stage === 'preventa') {
-    items.push({ id: 'preventa', label: t('tabPreventa'), icon: <Building2 size={16} />, panel: placeholder(t('preventaSoon')) });
+    items.push({
+      id: 'preventa',
+      label: t('tabPreventa'),
+      icon: <Building2 size={16} />,
+      panel: (
+        <PreventaCalculator
+          priceOriginal={priceOriginal}
+          discountPct={discountPct}
+          price={price}
+          config={preventa}
+          nacionalidad={nacionalidad}
+          onNacionalidad={setNacionalidad}
+          interestRateInterno={interestRateDefault}
+          mesesInterno={financingMonths[financingMonths.length - 1] ?? 60}
+          m2={m2}
+          city={city}
+          zone={zone}
+          tipoEntrega={tipoEntrega}
+          mobiliarioNivel={mobiliarioNivel}
+          decoracionNivel={decoracionNivel}
+          slug={slug}
+          locale={locale}
+        />
+      ),
+    });
   }
   if (directo) {
     items.push({ id: 'interno', label: t('tabInterno'), icon: <CreditCard size={16} />, panel: placeholder(t('internoSoon')) });

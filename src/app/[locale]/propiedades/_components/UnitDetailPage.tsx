@@ -606,6 +606,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       directo={property.financing.directo ?? false}
                       slug={slug}
                       locale={locale}
+                      preventa={property.financing.preventa ?? null}
                     />
                   ),
                 }] as TabItem[] : []),

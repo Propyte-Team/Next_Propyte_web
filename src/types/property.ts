@@ -47,6 +47,7 @@ export interface PropertyFinancing {
   aceptaFovissste?: boolean;
   /** Esquemas de pago (v2). Si vacío, el UI usa el fallback derivado del config plano. */
   esquemas?: import('@/lib/esquemas-pago').EsquemaPago[];
+  preventa?: import('@/lib/preventa').PreventaConfig | null; // Hub config (dev + unit override), null -> Modo B
 }
 
 export interface PropertyDescription {

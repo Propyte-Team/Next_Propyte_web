@@ -1,5 +1,6 @@
 import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo, PropertyDiscount } from '@/types/property';
 import { parseEsquemas, type EsquemaPago } from '@/lib/esquemas-pago';
+import { parsePreventa } from '@/lib/preventa';
 
 /**
  * Raw row from `real_estate_hub.v_units`.
@@ -81,6 +82,8 @@ export interface UnitRow {
   fin_tasa: number | string | null;
   fin_esquema: string | null;
   fin_esquemas_pago: unknown;
+  /** JSONB config de preventa (merge dev/unidad en v_units). Puede no existir aun. */
+  fin_preventa?: unknown;
   // Copy
   description_es: string | null;
   description_en: string | null;
@@ -347,6 +350,8 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       aceptaInfonavit: row.fin_infonavit === true,
       aceptaFovissste: row.fin_fovissste === true,
       esquemas,
+      // fin_preventa puede no existir aun en v_units (llega con el DDL del Hub); parsePreventa tolera undefined -> null.
+      preventa: parsePreventa(row.fin_preventa),
     },
     description: {
       es: row.description_es || '',
