@@ -1,4 +1,4 @@
-import { buildAmortizationSchedule, type AmortSchedule } from './calculator';
+import { buildAmortizationScheduleTiming, type AmortSchedule } from './calculator';
 
 export interface EsquemaPago {
   id: string;
@@ -9,6 +9,7 @@ export interface EsquemaPago {
   descuento_pct: number;
   orden: number;
   destacado?: boolean;
+  timing?: import('./calculator').TimingIntereses; // default 'prorrateado'
 }
 
 export interface EsquemaComputed {
@@ -34,6 +35,11 @@ export function parseEsquemas(raw: unknown): EsquemaPago[] {
       descuento_pct: Number(x.descuento_pct) || 0,
       orden: Number(x.orden) || i,
       destacado: x.destacado === true,
+      timing: (
+        x.timing === 'al_inicio' || x.timing === 'al_final' || x.timing === 'prorrateado'
+          ? x.timing
+          : 'prorrateado'
+      ) as import('./calculator').TimingIntereses,
     }))
     .sort((a, b) => a.orden - b.orden);
 }
@@ -45,6 +51,8 @@ export function computeEsquema(precioLista: number, e: EsquemaPago): EsquemaComp
   const esContado = !e.meses || e.meses <= 0;
   const enganche = esContado ? precioEfectivo : Math.round(precioEfectivo * (e.enganche_pct || 0) / 100);
   const financiado = esContado ? 0 : Math.max(0, precioEfectivo - enganche);
-  const schedule = esContado ? null : buildAmortizationSchedule(financiado, e.tasa || 0, e.meses);
+  const schedule = esContado
+    ? null
+    : buildAmortizationScheduleTiming(financiado, e.tasa || 0, e.meses, e.timing ?? 'prorrateado');
   return { esquema: e, precioEfectivo, ahorro, enganche, financiado, esContado, schedule };
 }
