@@ -7,7 +7,8 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnitBySlug } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { computeInversionInicial, type Nacionalidad, type NivelAcabado } from '@/lib/inversion-inicial';
-import { computeHipotecario, type PerfilHipotecario } from '@/lib/hipotecario';
+import { computeHipotecario, HIPOTECARIO_CONFIG, type PerfilHipotecario } from '@/lib/hipotecario';
+import { computePreventa, buildContraentregaSchedule, type ContraentregaVia } from '@/lib/preventa';
 import { aggregateByYear } from '@/lib/corrida-anual';
 import {
   CotizacionPDFDocument, type CotizacionPDFData, type CotizacionPDFLabels,
@@ -35,6 +36,11 @@ export async function GET(req: NextRequest) {
   const localeParam = url.searchParams.get('locale');
   const mobParam = url.searchParams.get('mob');
   const decParam = url.searchParams.get('dec');
+  const mode = url.searchParams.get('mode') === 'preventa' ? 'preventa' : 'hipotecario';
+  const num = (k: string, d = 0) => {
+    const v = Number(url.searchParams.get(k));
+    return Number.isFinite(v) ? v : d;
+  };
 
   if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 });
   const perfil: PerfilHipotecario = isPerfil(perfilParam) ? perfilParam : 'nacional';
@@ -57,28 +63,110 @@ export async function GET(req: NextRequest) {
     const price = property.price.mxn;
     const priceOriginal = property.priceOriginal ?? price;
     const discountPct = property.discount?.pct ?? 0;
-
-    const hip = computeHipotecario(price, perfil, property.financing.downPaymentMin);
-    const inv = computeInversionInicial({
-      price,
-      engancheMxn: hip.enganche,
-      nacionalidad: perfil as Nacionalidad,
-      m2: property.specs.area,
-      city: property.location.city,
-      zone: property.location.zone,
-      tipoEntrega: property.specs.tipoEntrega ?? null,
-      mobiliarioNivel,
-      decoracionNivel,
-    });
-    const annual = aggregateByYear(hip.schedule.rows).map((y) => ({
-      anio: y.anio, cuota: y.cuota, interes: y.interes, capital: y.capital, saldoFinal: y.saldoFinal,
-    }));
-
-    const propertyUrl = `https://propyte.com/${locale}/propiedades/${slug}`;
-    const qr = await QRCode.toDataURL(propertyUrl, { margin: 1, width: 200 });
+    const hipCfg = HIPOTECARIO_CONFIG[perfil];
 
     const tE = await getTranslations({ locale, namespace: 'esquemas' });
     const tC = await getTranslations({ locale, namespace: 'cotizacionPdf' });
+
+    let inv: ReturnType<typeof computeInversionInicial>;
+    let annual: CotizacionPDFData['annual'];
+    let enganche: number;
+    let enganchePct: number;
+    let saldo: number;
+    let mensualidades: number;
+    let interesPct: number;
+    let mensualidad: number;
+    let totalIntereses: number;
+    let totalPagado: number;
+    let tieneInteres: boolean;
+    let preventaBlock: CotizacionPDFData['preventa'] = null;
+
+    if (mode === 'preventa') {
+      const cfg = {
+        enganche_inicial_pct: num('ei'),
+        enganche_diferido_pct: num('ed'),
+        enganche_diferido_meses: num('edm'),
+        obra_pct: num('ob'),
+        obra_meses: num('obm'),
+        contraentrega_pct: num('ce'),
+        contraentrega_via: (url.searchParams.get('via') === 'interno' ? 'interno' : 'hipotecario') as ContraentregaVia,
+      };
+      const plan = computePreventa(price, cfg);
+      const mesesInterno = property.financing.months?.[property.financing.months.length - 1] ?? 60;
+      const schedule = buildContraentregaSchedule(plan.contraentrega, plan.contraentregaVia, {
+        tasaHipotecarioPct: hipCfg.tasaAnualPct,
+        mesesHipotecario: hipCfg.meses,
+        tasaInternoPct: property.financing.interestRate,
+        mesesInterno,
+      });
+      inv = computeInversionInicial({
+        price,
+        engancheMxn: plan.engancheInicial,
+        nacionalidad: perfil as Nacionalidad,
+        m2: property.specs.area,
+        city: property.location.city,
+        zone: property.location.zone,
+        tipoEntrega: property.specs.tipoEntrega ?? null,
+        mobiliarioNivel,
+        decoracionNivel,
+      });
+      annual = aggregateByYear(schedule.rows).map((y) => ({
+        anio: y.anio, cuota: y.cuota, interes: y.interes, capital: y.capital, saldoFinal: y.saldoFinal,
+      }));
+      enganche = plan.engancheInicial;
+      enganchePct = plan.engancheInicialPct;
+      saldo = plan.contraentrega;
+      mensualidades = schedule.rows.length;
+      interesPct = plan.contraentregaVia === 'interno' ? property.financing.interestRate : hipCfg.tasaAnualPct;
+      mensualidad = Math.round(schedule.cuota);
+      totalIntereses = Math.round(schedule.totalIntereses);
+      totalPagado = Math.round(schedule.totalPagado);
+      tieneInteres = schedule.tieneInteres;
+      const viaLabel = plan.contraentregaVia === 'interno' ? tE('preventaViaInterno') : tE('preventaViaHipotecario');
+      preventaBlock = {
+        engancheInicial: plan.engancheInicial,
+        engancheInicialPct: plan.engancheInicialPct,
+        engancheDiferido: plan.engancheDiferido,
+        engancheDiferidoPct: plan.engancheDiferidoPct,
+        engancheDiferidoMeses: plan.engancheDiferidoMeses,
+        engancheDiferidoMensual: plan.engancheDiferidoMensual,
+        obra: plan.obra,
+        obraPct: plan.obraPct,
+        obraMeses: plan.obraMeses,
+        obraMensual: plan.obraMensual,
+        contraentrega: plan.contraentrega,
+        contraentregaPct: plan.contraentregaPct,
+        viaLabel,
+      };
+    } else {
+      const hip = computeHipotecario(price, perfil, property.financing.downPaymentMin);
+      inv = computeInversionInicial({
+        price,
+        engancheMxn: hip.enganche,
+        nacionalidad: perfil as Nacionalidad,
+        m2: property.specs.area,
+        city: property.location.city,
+        zone: property.location.zone,
+        tipoEntrega: property.specs.tipoEntrega ?? null,
+        mobiliarioNivel,
+        decoracionNivel,
+      });
+      annual = aggregateByYear(hip.schedule.rows).map((y) => ({
+        anio: y.anio, cuota: y.cuota, interes: y.interes, capital: y.capital, saldoFinal: y.saldoFinal,
+      }));
+      enganche = inv.enganche;
+      enganchePct = hip.enganchePct;
+      saldo = hip.saldo;
+      mensualidades = hip.config.meses;
+      interesPct = hip.config.tasaAnualPct;
+      mensualidad = Math.round(hip.schedule.cuota);
+      totalIntereses = Math.round(hip.schedule.totalIntereses);
+      totalPagado = Math.round(hip.schedule.totalPagado);
+      tieneInteres = hip.schedule.tieneInteres;
+    }
+
+    const propertyUrl = `https://propyte.com/${locale}/propiedades/${slug}`;
+    const qr = await QRCode.toDataURL(propertyUrl, { margin: 1, width: 200 });
 
     const labels: CotizacionPDFLabels = {
       docType: tC('docType'),
@@ -90,9 +178,15 @@ export async function GET(req: NextRequest) {
       colInterest: tC('colInterest'), colCapital: tC('colCapital'), colBalance: tC('colBalance'),
       totalInterest: tC('totalInterest'), totalPaid: tC('totalPaid'),
       perfil: perfil === 'extranjero' ? tC('perfilExtranjero') : tC('perfilNacional'),
-      tasaPlazo: tC('tasaPlazo', { rate: hip.config.tasaAnualPct, months: hip.config.meses }),
-      avisoCambiario: hip.config.avisoCambiario ? tC('avisoCambiario') : null,
+      tasaPlazo: tC('tasaPlazo', { rate: hipCfg.tasaAnualPct, months: hipCfg.meses }),
+      avisoCambiario: hipCfg.avisoCambiario ? tC('avisoCambiario') : null,
       disclaimer: tC('disclaimer'), generatedOn: tC('generatedOn'), scan: tC('scan'),
+      preventaTitle: tC('preventaTitle'),
+      preventaEngancheInicial: tC('preventaEngancheInicial'),
+      preventaEngancheDiferido: tC('preventaEngancheDiferido'),
+      preventaObra: tC('preventaObra'),
+      preventaContraentrega: tC('preventaContraentrega'),
+      preventaVia: tC('preventaVia'),
     };
 
     const data: CotizacionPDFData = {
@@ -106,24 +200,25 @@ export async function GET(req: NextRequest) {
       precio: priceOriginal,
       descuentoPct: discountPct,
       precioVenta: price,
-      enganche: inv.enganche,
-      enganchePct: hip.enganchePct,
+      enganche,
+      enganchePct,
       escrituracion: inv.escrituracion,
       mobiliario: inv.mobiliario,
       decoracion: inv.decoracion,
       mobiliarioIncluido: inv.mobiliarioIncluido,
       decoracionIncluido: inv.decoracionIncluido,
       inversionTotal: inv.total,
-      saldo: hip.saldo,
-      mensualidades: hip.config.meses,
-      interesPct: hip.config.tasaAnualPct,
-      mensualidad: Math.round(hip.schedule.cuota),
-      totalIntereses: Math.round(hip.schedule.totalIntereses),
-      totalPagado: Math.round(hip.schedule.totalPagado),
-      tieneInteres: hip.schedule.tieneInteres,
+      saldo,
+      mensualidades,
+      interesPct,
+      mensualidad,
+      totalIntereses,
+      totalPagado,
+      tieneInteres,
       annual,
       qrCodeDataUrl: qr,
       labels,
+      preventa: preventaBlock,
     };
 
     const doc = createElement(CotizacionPDFDocument, { data }) as unknown as ReactElement<DocumentProps>;

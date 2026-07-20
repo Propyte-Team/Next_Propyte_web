@@ -2696,7 +2696,13 @@
     "avisoCambiario": "USD (cross-border) loan. Amounts in MXN for reference; the actual amount varies with the exchange rate.",
     "disclaimer": "Estimated quote for informational purposes. Not a credit offer and does not replace the developer's or bank's formal proposal.",
     "generatedOn": "Generated",
-    "scan": "Scan to view online"
+    "scan": "Scan to view online",
+    "preventaTitle": "Presale plan",
+    "preventaEngancheInicial": "Initial down payment",
+    "preventaEngancheDiferido": "Deferred down payment",
+    "preventaObra": "Payments during construction",
+    "preventaContraentrega": "On delivery",
+    "preventaVia": "Delivery financed via"
   },
   "share": {
     "subject": "{name} on Propyte",

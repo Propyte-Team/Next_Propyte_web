@@ -22,6 +22,12 @@ export interface CotizacionPDFLabels {
   tasaPlazo: string;
   avisoCambiario: string | null;
   disclaimer: string; generatedOn: string; scan: string;
+  preventaTitle: string;
+  preventaEngancheInicial: string;
+  preventaEngancheDiferido: string;
+  preventaObra: string;
+  preventaContraentrega: string;
+  preventaVia: string;
 }
 
 export interface CotizacionPDFData {
@@ -53,6 +59,21 @@ export interface CotizacionPDFData {
   annual: CotizacionPDFAnnualRow[];
   qrCodeDataUrl: string;
   labels: CotizacionPDFLabels;
+  preventa?: {
+    engancheInicial: number;
+    engancheInicialPct: number;
+    engancheDiferido: number;
+    engancheDiferidoPct: number;
+    engancheDiferidoMeses: number;
+    engancheDiferidoMensual: number;
+    obra: number;
+    obraPct: number;
+    obraMeses: number;
+    obraMensual: number;
+    contraentrega: number;
+    contraentregaPct: number;
+    viaLabel: string;
+  } | null;
 }
 
 const C = {
@@ -152,6 +173,32 @@ export function CotizacionPDFDocument({ data }: { data: CotizacionPDFData }) {
           <Text style={styles.profileLabel}>{L.perfil}</Text>
           <Text style={styles.profileMeta}>{L.tasaPlazo}</Text>
         </View>
+
+        {data.preventa && (
+          <View style={[styles.blockLast, { marginBottom: 16 }]}>
+            <Text style={styles.blockTitle}>{L.preventaTitle}</Text>
+            <KV
+              label={`${L.preventaEngancheInicial} (${data.preventa.engancheInicialPct}%)`}
+              value={fmt(data.preventa.engancheInicial)}
+            />
+            {data.preventa.engancheDiferido > 0 && (
+              <KV
+                label={`${L.preventaEngancheDiferido} (${data.preventa.engancheDiferidoPct}%) · ${data.preventa.engancheDiferidoMeses}m`}
+                value={fmt(data.preventa.engancheDiferido)}
+              />
+            )}
+            {data.preventa.obra > 0 && (
+              <KV
+                label={`${L.preventaObra} (${data.preventa.obraPct}%) · ${data.preventa.obraMeses}m`}
+                value={fmt(data.preventa.obra)}
+              />
+            )}
+            <KV
+              label={`${L.preventaContraentrega} (${data.preventa.contraentregaPct}%) · ${data.preventa.viaLabel}`}
+              value={fmt(data.preventa.contraentrega)}
+            />
+          </View>
+        )}
 
         {/* 3 bloques */}
         <View style={styles.blocksRow}>

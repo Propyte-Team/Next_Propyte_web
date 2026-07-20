@@ -2696,7 +2696,13 @@
     "avisoCambiario": "Crédito en USD (cross-border). Montos en MXN como referencia; el real varía con el tipo de cambio.",
     "disclaimer": "Cotización estimada con fines informativos. No constituye oferta de crédito ni sustituye la propuesta formal del desarrollador o banco.",
     "generatedOn": "Generado",
-    "scan": "Escanea para ver online"
+    "scan": "Escanea para ver online",
+    "preventaTitle": "Plan de preventa",
+    "preventaEngancheInicial": "Enganche inicial",
+    "preventaEngancheDiferido": "Enganche diferido",
+    "preventaObra": "Pagos durante obra",
+    "preventaContraentrega": "Contraentrega",
+    "preventaVia": "Contraentrega vía"
   },
   "share": {
     "subject": "{name} en Propyte",
