@@ -530,3 +530,68 @@ export function buildAmortizationSchedule(
     principal: p,
   };
 }
+
+export type TimingIntereses = 'al_inicio' | 'prorrateado' | 'al_final';
+
+/**
+ * Corrida con timing de intereses (starter, ajustable).
+ * Las tres comparten la MISMA cuota y el MISMO total de intereses que la francesa;
+ * solo cambia cómo cada mensualidad reparte interés vs capital.
+ *  - prorrateado: francesa.
+ *  - al_inicio: interés primero (cada cuota cubre interés hasta agotarlo, luego capital).
+ *  - al_final: capital primero (cada cuota cubre capital hasta liquidarlo, luego interés).
+ */
+export function buildAmortizationScheduleTiming(
+  principal: number,
+  annualRatePct: number,
+  months: number,
+  timing: TimingIntereses,
+): AmortSchedule {
+  const base = buildAmortizationSchedule(principal, annualRatePct, months);
+  if (timing === 'prorrateado' || !base.tieneInteres || base.rows.length === 0) {
+    return base;
+  }
+  const n = base.rows.length;
+  const cuota = base.cuota;
+  const p = Math.max(0, Number(principal) || 0);
+  const totalInteres = Math.max(0, base.totalPagado - p);
+
+  const rows: AmortRow[] = [];
+  let remInteres = totalInteres;
+  let remCapital = p;
+
+  for (let m = 1; m <= n; m++) {
+    const last = m === n;
+    let interes: number;
+    let capital: number;
+
+    if (timing === 'al_inicio') {
+      interes = last ? remInteres : Math.min(remInteres, cuota);
+      capital = Math.min(remCapital, cuota - interes);
+      if (last) capital = remCapital;
+    } else {
+      capital = last ? remCapital : Math.min(remCapital, cuota);
+      interes = Math.min(remInteres, cuota - capital);
+      if (last) interes = remInteres;
+    }
+
+    remInteres = Math.max(0, remInteres - interes);
+    remCapital = Math.max(0, remCapital - capital);
+    rows.push({
+      mes: m,
+      cuota: Math.round(interes + capital),
+      interes: Math.round(interes),
+      capital: Math.round(capital),
+      saldo: Math.round(remCapital),
+    });
+  }
+
+  return {
+    rows,
+    cuota,
+    totalIntereses: totalInteres,
+    totalPagado: base.totalPagado,
+    tieneInteres: true,
+    principal: p,
+  };
+}
