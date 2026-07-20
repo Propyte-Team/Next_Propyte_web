@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Building2, Landmark, CreditCard } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
+import { formatPrice } from '@/lib/formatters';
 import CotizacionBloques, { type Bloque3Data } from './CotizacionBloques';
 import CorridaCompacta from './CorridaCompacta';
 import {
@@ -37,10 +38,8 @@ interface PreventaCalculatorProps {
   locale: string;
 }
 
-const fmt = (n: number) =>
-  new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(
-    Math.round(n),
-  );
+/** Redondea el % mostrado: enteros tal cual, decimales a 2 posiciones (Hub JSONB puede traer valores sin redondear). */
+const fmtPct = (p: number) => (Number.isInteger(p) ? `${p}%` : `${p.toFixed(2)}%`);
 
 export default function PreventaCalculator({
   priceOriginal,
@@ -128,8 +127,10 @@ export default function PreventaCalculator({
   };
 
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState(false);
   const handlePdf = useCallback(async () => {
     setPdfLoading(true);
+    setPdfError(false);
     try {
       const qs = new URLSearchParams({
         slug,
@@ -155,8 +156,9 @@ export default function PreventaCalculator({
       a.download = `cotizacion-preventa-${slug}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      /* noop */
+    } catch (e) {
+      console.error('cotizacion preventa pdf error:', e);
+      setPdfError(true);
     } finally {
       setPdfLoading(false);
     }
@@ -239,14 +241,17 @@ export default function PreventaCalculator({
         <CorridaCompacta schedule={schedule} currency="MXN" />
       </div>
 
-      <button
-        type="button"
-        onClick={handlePdf}
-        disabled={pdfLoading}
-        className="inline-flex items-center gap-2 rounded-lg bg-[#0F1923] px-4 py-2 text-2xs font-semibold text-white hover:bg-[#1A2F3F] disabled:opacity-60"
-      >
-        {pdfLoading ? t('generandoPdf') : t('descargarCotizacion')}
-      </button>
+      <div>
+        <button
+          type="button"
+          onClick={handlePdf}
+          disabled={pdfLoading}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#0F1923] px-4 py-2 text-2xs font-semibold text-white hover:bg-[#1A2F3F] disabled:opacity-60"
+        >
+          {pdfLoading ? t('generandoPdf') : t('descargarCotizacion')}
+        </button>
+        {pdfError && <p className="mt-2 text-2xs text-red-600">{t('pdfError')}</p>}
+      </div>
     </div>
   );
 }
@@ -269,7 +274,7 @@ function PlanFijo({
           monto={plan.engancheDiferido}
           pct={plan.engancheDiferidoPct}
           nota={t('preventaEngancheDiferidoNota', {
-            monto: fmt(plan.engancheDiferidoMensual),
+            monto: formatPrice(plan.engancheDiferidoMensual),
             meses: plan.engancheDiferidoMeses,
           })}
         />
@@ -279,7 +284,7 @@ function PlanFijo({
           label={t('preventaObra')}
           monto={plan.obra}
           pct={plan.obraPct}
-          nota={t('preventaObraNota', { monto: fmt(plan.obraMensual), meses: plan.obraMeses })}
+          nota={t('preventaObraNota', { monto: formatPrice(plan.obraMensual), meses: plan.obraMeses })}
         />
       )}
       <StageCard
@@ -297,9 +302,9 @@ function StageCard({ label, monto, pct, nota }: { label: string; monto: number; 
     <div className="rounded-lg border border-gray-100 bg-gray-50/60 px-3 py-2">
       <div className="flex items-baseline justify-between">
         <span className="text-2xs text-gray-500">{label}</span>
-        <span className="text-2xs font-medium text-gray-400">{pct}%</span>
+        <span className="text-2xs font-medium text-gray-400">{fmtPct(pct)}</span>
       </div>
-      <div className="text-sm font-semibold text-gray-900">{fmt(monto)}</div>
+      <div className="text-sm font-semibold text-gray-900">{formatPrice(monto)}</div>
       {nota && <div className="text-2xs text-gray-500">{nota}</div>}
     </div>
   );
@@ -337,9 +342,17 @@ function PlanAjustable(props: {
         />
       )}
       <Slider label={t('preventaAjustaObra')} value={props.obra} min={0} max={100} onChange={props.setObra} />
-      <Slider label={t('preventaAjustaObraMeses')} value={props.obraMeses} min={1} max={48} onChange={props.setObraMeses} />
+      {props.obra > 0 && (
+        <Slider
+          label={t('preventaAjustaObraMeses')}
+          value={props.obraMeses}
+          min={1}
+          max={48}
+          onChange={props.setObraMeses}
+        />
+      )}
       <div className="text-2xs font-medium text-gray-700">
-        {t('preventaContraentregaAuto', { pct: props.contraentregaPct })} · {fmt(props.plan.contraentrega)}
+        {t('preventaContraentregaAuto', { pct: props.contraentregaPct })} · {formatPrice(props.plan.contraentrega)}
       </div>
       <div>
         <span className="mb-1 block text-2xs text-gray-500">{t('preventaContraentregaVia')}</span>
