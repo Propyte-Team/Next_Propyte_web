@@ -7,9 +7,10 @@ import { computeInversionInicial, type Nacionalidad, type NivelAcabado } from '@
 import { computeHipotecario } from '@/lib/hipotecario';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import InversionInicialCalculator from './esquemas/InversionInicialCalculator';
-import CotizacionBloques, { type Bloque3Data } from './esquemas/CotizacionBloques';
+import { type Bloque3Data } from './esquemas/CotizacionBloques';
 import HipotecarioCalculator from './esquemas/HipotecarioCalculator';
 import PreventaCalculator from './esquemas/PreventaCalculator';
+import CorridaFinanciera from './CorridaFinanciera';
 import type { EsquemaPago } from '@/lib/esquemas-pago';
 import type { PreventaConfig } from '@/lib/preventa';
 
@@ -39,6 +40,7 @@ interface EsquemasDePagoTabProps {
 export default function EsquemasDePagoTab({
   price, priceOriginal, discountPct, city, zone, m2, tipoEntrega,
   downPaymentMinPct, financingMonths, interestRateDefault, stage, directo, slug, locale, preventa,
+  esquemas, listPrice,
 }: EsquemasDePagoTabProps) {
   const t = useTranslations('esquemas');
   const [nacionalidad, setNacionalidad] = useState<Nacionalidad>('nacional');
@@ -63,13 +65,6 @@ export default function EsquemasDePagoTab({
     interesPct: hipotecario.config.tasaAnualPct,
     mensualidad: Math.round(hipotecario.schedule.cuota),
   };
-
-  const placeholder = (msg: string) => (
-    <div className="space-y-4">
-      <CotizacionBloques precio={priceOriginal} descuentoPct={discountPct} precioVenta={price} inversion={inversion} bloque3={null} />
-      <p className="text-2xs text-gray-500">{msg}</p>
-    </div>
-  );
 
   const items: TabItem[] = [];
   if (stage === 'preventa') {
@@ -100,7 +95,27 @@ export default function EsquemasDePagoTab({
     });
   }
   if (directo) {
-    items.push({ id: 'interno', label: t('tabInterno'), icon: <CreditCard size={16} />, panel: placeholder(t('internoSoon')) });
+    items.push({
+      id: 'interno',
+      label: t('tabInterno'),
+      icon: <CreditCard size={16} />,
+      panel: (
+        <CorridaFinanciera
+          listPrice={listPrice}
+          esquemas={esquemas}
+          priceOriginal={priceOriginal}
+          nacionalidad={nacionalidad}
+          m2={m2}
+          city={city}
+          zone={zone}
+          tipoEntrega={tipoEntrega}
+          mobiliarioNivel={mobiliarioNivel}
+          decoracionNivel={decoracionNivel}
+          slug={slug}
+          locale={locale}
+        />
+      ),
+    });
   }
   items.push({
     id: 'hipotecario',
