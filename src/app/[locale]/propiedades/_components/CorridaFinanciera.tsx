@@ -151,15 +151,18 @@ export default function CorridaFinanciera({
       />
 
       {activo.esContado ? (
-        <div className="rounded-2xl p-6 bg-[#0F1923] text-white">
-          <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">{t('cash')}</div>
-          <div className="text-3xl font-extrabold text-propyte-brand">{formatPrice(activo.precioEfectivo)}</div>
-          {activo.ahorro > 0 && (
-            <div className="text-sm text-gray-400 mt-2">
-              {t('savings')}: {formatPrice(activo.ahorro)}
-            </div>
-          )}
-        </div>
+        <>
+          <div className="rounded-2xl p-6 bg-[#0F1923] text-white">
+            <div className="text-xs text-gray-400 uppercase tracking-wider mb-2">{t('cash')}</div>
+            <div className="text-3xl font-extrabold text-propyte-brand">{formatPrice(activo.precioEfectivo)}</div>
+            {activo.ahorro > 0 && (
+              <div className="text-sm text-gray-400 mt-2">
+                {t('savings')}: {formatPrice(activo.ahorro)}
+              </div>
+            )}
+          </div>
+          <p className="text-2xs text-gray-500 leading-relaxed">{t('disclaimer')}</p>
+        </>
       ) : (
         <CorridaCompacta schedule={activo.schedule!} currency="MXN" />
       )}
