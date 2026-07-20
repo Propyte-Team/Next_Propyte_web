@@ -1,4 +1,4 @@
-import { buildAmortizationScheduleTiming, type AmortSchedule } from './calculator';
+import { buildAmortizationScheduleTiming, type AmortSchedule, type TimingIntereses } from './calculator';
 
 export interface EsquemaPago {
   id: string;
@@ -9,7 +9,7 @@ export interface EsquemaPago {
   descuento_pct: number;
   orden: number;
   destacado?: boolean;
-  timing?: import('./calculator').TimingIntereses; // default 'prorrateado'
+  timing?: TimingIntereses; // default 'prorrateado'
 }
 
 export interface EsquemaComputed {
@@ -39,7 +39,7 @@ export function parseEsquemas(raw: unknown): EsquemaPago[] {
         x.timing === 'al_inicio' || x.timing === 'al_final' || x.timing === 'prorrateado'
           ? x.timing
           : 'prorrateado'
-      ) as import('./calculator').TimingIntereses,
+      ) as TimingIntereses,
     }))
     .sort((a, b) => a.orden - b.orden);
 }
