@@ -83,6 +83,10 @@ export async function GET(req: NextRequest) {
     let totalPagado: number;
     let tieneInteres: boolean;
     let tasaPlazoLabel: string;
+    // El aviso cambiario (crédito USD cross-border) SOLO aplica cuando el saldo se financia
+    // vía crédito hipotecario para un extranjero — NO en financiamiento interno del desarrollador
+    // (100% MXN) ni en preventa con contraentrega vía interno. Espeja la condición de la UI.
+    let mostrarAvisoCambiario = false;
     let preventaBlock: CotizacionPDFData['preventa'] = null;
     let precioBloque1 = priceOriginal;
     let descuentoPctBloque1 = discountPct;
@@ -132,6 +136,8 @@ export async function GET(req: NextRequest) {
       // La corrida de contraentrega usa la tasa/plazo segun `via` (interno u hipotecario) —
       // el banner debe reflejar EXACTAMENTE esos mismos valores, no siempre los del hipotecario.
       tasaPlazoLabel = tC('tasaPlazo', { rate: interesPct, months: schedule.rows.length });
+      // Solo hipotecario extranjero: la contraentrega vía interno es MXN, sin aviso cambiario.
+      mostrarAvisoCambiario = hipCfg.avisoCambiario && plan.contraentregaVia === 'hipotecario';
       const viaLabel = plan.contraentregaVia === 'interno' ? tE('preventaViaInterno') : tE('preventaViaHipotecario');
       preventaBlock = {
         engancheInicial: plan.engancheInicial,
@@ -231,6 +237,7 @@ export async function GET(req: NextRequest) {
       totalPagado = Math.round(hip.schedule.totalPagado);
       tieneInteres = hip.schedule.tieneInteres;
       tasaPlazoLabel = tC('tasaPlazo', { rate: hipCfg.tasaAnualPct, months: hipCfg.meses });
+      mostrarAvisoCambiario = hipCfg.avisoCambiario;
     }
 
     const propertyUrl = `https://propyte.com/${locale}/propiedades/${slug}`;
@@ -247,7 +254,7 @@ export async function GET(req: NextRequest) {
       totalInterest: tC('totalInterest'), totalPaid: tC('totalPaid'),
       perfil: perfil === 'extranjero' ? tC('perfilExtranjero') : tC('perfilNacional'),
       tasaPlazo: tasaPlazoLabel,
-      avisoCambiario: hipCfg.avisoCambiario ? tC('avisoCambiario') : null,
+      avisoCambiario: mostrarAvisoCambiario ? tC('avisoCambiario') : null,
       disclaimer: tC('disclaimer'), generatedOn: tC('generatedOn'), scan: tC('scan'),
       preventaTitle: tC('preventaTitle'),
       preventaEngancheInicial: tC('preventaEngancheInicial'),

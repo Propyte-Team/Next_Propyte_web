@@ -82,7 +82,9 @@ const C = {
 };
 
 const styles = StyleSheet.create({
-  page: { fontFamily: 'Helvetica', fontSize: 10, color: C.ink, paddingTop: 36, paddingHorizontal: 40, paddingBottom: 64 },
+  // paddingBottom reserva espacio para el footer fijo (QR 58 + label + brand ≈ 100pt sobre bottom:28).
+  // Con 64 el QR/footer se encimaba sobre las últimas filas de la corrida en páginas llenas.
+  page: { fontFamily: 'Helvetica', fontSize: 10, color: C.ink, paddingTop: 36, paddingHorizontal: 40, paddingBottom: 120 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
   brandLockup: { flexDirection: 'row', alignItems: 'center' },
   brandMark: { width: 14, height: 14, borderRadius: 4, backgroundColor: C.teal, marginRight: 7 },
