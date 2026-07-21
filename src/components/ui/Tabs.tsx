@@ -66,7 +66,7 @@ export default function Tabs({
 
   const isPill = variant === 'pill';
   const tablistCls = isPill
-    ? 'inline-flex bg-gray-100 rounded-full p-1'
+    ? 'inline-flex max-w-full overflow-x-auto no-scrollbar bg-gray-100 rounded-full p-1'
     : 'border-b border-gray-200 flex gap-1 overflow-x-auto no-scrollbar';
 
   return (
