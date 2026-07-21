@@ -19,21 +19,41 @@ export default function ExpandableText({
 }: ExpandableTextProps) {
   const [expanded, setExpanded] = useState(false);
   const [needsToggle, setNeedsToggle] = useState(false);
+  const [lines, setLines] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    if (contentRef.current) {
-      setNeedsToggle(contentRef.current.scrollHeight > maxHeight + 4);
+    const el = contentRef.current;
+    if (!el) return;
+
+    // Measure line-height from the real rendered text so the clamp height
+    // tracks maxHeight regardless of font/leading.
+    const sample = (el.querySelector('p, li, span, div') as HTMLElement) || el;
+    const cs = window.getComputedStyle(sample);
+    let lineHeight = parseFloat(cs.lineHeight);
+    if (!lineHeight || Number.isNaN(lineHeight)) {
+      lineHeight = parseFloat(cs.fontSize) * 1.5;
     }
+
+    const computedLines = Math.max(2, Math.round(maxHeight / lineHeight));
+    setLines(computedLines);
+    // Only show the toggle when the content actually overflows the clamp.
+    setNeedsToggle(el.scrollHeight > computedLines * lineHeight + 4);
   }, [maxHeight, children]);
+
+  const clampStyle: React.CSSProperties =
+    !expanded && lines > 0
+      ? {
+          display: '-webkit-box',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: lines,
+          overflow: 'hidden',
+        }
+      : {};
 
   return (
     <div>
-      <div
-        ref={contentRef}
-        style={!expanded ? { maxHeight: `${maxHeight}px`, overflow: 'hidden' } : undefined}
-        className={className}
-      >
+      <div ref={contentRef} style={clampStyle} className={className}>
         {children}
       </div>
       {needsToggle && (
