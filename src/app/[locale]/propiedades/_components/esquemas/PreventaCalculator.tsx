@@ -27,6 +27,8 @@ interface PreventaCalculatorProps {
   nacionalidad: Nacionalidad;
   onNacionalidad: (n: Nacionalidad) => void;
   interestRateInterno: number;
+  /** La unidad ofrece financiamiento del desarrollador (fin_directo). Si es false, se oculta la vía interno. */
+  internoDisponible: boolean;
   mesesInterno: number;
   m2: number;
   city: string;
@@ -49,6 +51,7 @@ export default function PreventaCalculator({
   nacionalidad,
   onNacionalidad,
   interestRateInterno,
+  internoDisponible,
   mesesInterno,
   m2,
   city,
@@ -82,9 +85,9 @@ export default function PreventaCalculator({
             obra_pct: obra,
             obra_meses: obraMeses,
             contraentrega_pct: contraentregaPctB,
-            contraentrega_via: viaB,
+            contraentrega_via: internoDisponible ? viaB : 'hipotecario',
           },
-    [modeA, config, engIni, engDif, engDifMeses, obra, obraMeses, contraentregaPctB, viaB],
+    [modeA, config, engIni, engDif, engDifMeses, obra, obraMeses, contraentregaPctB, viaB, internoDisponible],
   );
 
   const plan = useMemo(() => computePreventa(price, effectiveConfig), [price, effectiveConfig]);
@@ -211,6 +214,7 @@ export default function PreventaCalculator({
           setObraMeses={setObraMeses}
           via={viaB}
           setVia={setViaB}
+          internoDisponible={internoDisponible}
           contraentregaPct={contraentregaPctB}
           plan={plan}
           t={t}
@@ -245,7 +249,7 @@ export default function PreventaCalculator({
         <button
           type="button"
           onClick={handlePdf}
-          disabled={pdfLoading}
+          disabled={pdfLoading || !plan.balanceado}
           className="inline-flex items-center gap-2 rounded-lg bg-[#0F1923] px-4 py-2 text-2xs font-semibold text-white hover:bg-[#1A2F3F] disabled:opacity-60"
         >
           {pdfLoading ? t('generandoPdf') : t('descargarCotizacion')}
@@ -323,6 +327,7 @@ function PlanAjustable(props: {
   setObraMeses: (n: number) => void;
   via: ContraentregaVia;
   setVia: (v: ContraentregaVia) => void;
+  internoDisponible: boolean;
   contraentregaPct: number;
   plan: ReturnType<typeof computePreventa>;
   t: ReturnType<typeof useTranslations>;
@@ -357,7 +362,9 @@ function PlanAjustable(props: {
       <div>
         <span className="mb-1 block text-2xs text-gray-500">{t('preventaContraentregaVia')}</span>
         <div className="flex gap-2">
-          {(['hipotecario', 'interno'] as ContraentregaVia[]).map((v) => (
+          {(['hipotecario', 'interno'] as ContraentregaVia[])
+            .filter((v) => v === 'hipotecario' || props.internoDisponible)
+            .map((v) => (
             <button
               key={v}
               type="button"

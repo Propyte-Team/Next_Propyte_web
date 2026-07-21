@@ -83,7 +83,7 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
       {/* Tabla — sin scroll interno (evita secuestrar el scroll de la página); fluye con la página */}
       <div className="rounded-xl border border-gray-100 overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 z-10">
+          <thead>
             <tr className="bg-gray-50 text-2xs uppercase tracking-wider text-gray-600">
               <th className="px-3 py-2 text-left">{byYear ? t('colYear') : t('colMonth')}</th>
               <th className="px-3 py-2 text-right">{t('colPayment')}</th>

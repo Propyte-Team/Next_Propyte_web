@@ -577,12 +577,14 @@ export function buildAmortizationScheduleTiming(
 
     remInteres = Math.max(0, remInteres - interes);
     remCapital = Math.max(0, remCapital - capital);
+    // Sin redondear por fila (igual que buildAmortizationSchedule): así cuota === interes+capital
+    // exacto y las columnas suman al principal/total. El redondeo lo hace el display (fmt/aggregate).
     rows.push({
       mes: m,
-      cuota: Math.round(interes + capital),
-      interes: Math.round(interes),
-      capital: Math.round(capital),
-      saldo: Math.round(remCapital),
+      cuota: interes + capital,
+      interes,
+      capital,
+      saldo: remCapital,
     });
   }
 

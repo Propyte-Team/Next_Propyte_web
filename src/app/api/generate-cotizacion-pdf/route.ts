@@ -100,10 +100,18 @@ export async function GET(req: NextRequest) {
         obra_pct: num('ob'),
         obra_meses: num('obm'),
         contraentrega_pct: num('ce'),
-        contraentrega_via: (url.searchParams.get('via') === 'interno' ? 'interno' : 'hipotecario') as ContraentregaVia,
+        // via=interno solo si la unidad realmente ofrece financiamiento del desarrollador;
+        // si no, cae a hipotecario (no inventar una corrida interna 0% inexistente).
+        contraentrega_via: (url.searchParams.get('via') === 'interno' && property.financing.directo
+          ? 'interno' : 'hipotecario') as ContraentregaVia,
       };
       const plan = computePreventa(price, cfg);
-      const mesesInterno = property.financing.months?.[property.financing.months.length - 1] ?? 60;
+      // Los porcentajes deben sumar 100% (espeja el gate del botón PDF en la UI).
+      if (!plan.balanceado) {
+        return NextResponse.json({ error: 'preventa percentages must sum to 100%' }, { status: 400 });
+      }
+      const mesesInternoRaw = property.financing.months?.[property.financing.months.length - 1];
+      const mesesInterno = mesesInternoRaw && mesesInternoRaw > 0 ? mesesInternoRaw : 60;
       const schedule = buildContraentregaSchedule(plan.contraentrega, plan.contraentregaVia, {
         tasaHipotecarioPct: hipCfg.tasaAnualPct,
         mesesHipotecario: hipCfg.meses,

@@ -80,6 +80,7 @@ export default function EsquemasDePagoTab({
           nacionalidad={nacionalidad}
           onNacionalidad={setNacionalidad}
           interestRateInterno={interestRateDefault}
+          internoDisponible={directo}
           mesesInterno={financingMonths[financingMonths.length - 1] ?? 60}
           m2={m2}
           city={city}
