@@ -119,7 +119,7 @@ export default function DevelopmentKeyData({
     items.push({
       icon: MapPin,
       label: labels.location,
-      value: <span className="text-base font-bold text-white truncate">{location}</span>,
+      value: <span className="text-base font-bold text-white break-words leading-snug">{location}</span>,
       key: 'location',
     });
   }
@@ -138,9 +138,11 @@ export default function DevelopmentKeyData({
           {items.map(({ icon: Icon, label, value, key }) => (
             <div key={key} className="flex items-center gap-3">
               <Icon size={18} className="text-propyte-brand shrink-0" />
-              <div className="flex-1 flex items-center justify-between gap-2 min-w-0">
+              {/* flex-wrap: si el valor no cabe junto al label, baja a su
+                  propia línea (ml-auto lo mantiene alineado a la derecha) */}
+              <div className="flex-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 min-w-0">
                 <span className="text-sm text-white/85 shrink-0">{label}</span>
-                <span className="text-right">{value}</span>
+                <span className="ml-auto min-w-0 text-right">{value}</span>
               </div>
             </div>
           ))}

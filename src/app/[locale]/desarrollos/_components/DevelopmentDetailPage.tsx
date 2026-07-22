@@ -21,7 +21,7 @@ import {
   getSimilarDevelopments,
   getZoneDetail,
 } from '@/lib/supabase/queries';
-import { buildRichContent } from '@/lib/mappers/development-to-property';
+import { buildRichContent, resolveSpecType } from '@/lib/mappers/development-to-property';
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
@@ -36,7 +36,6 @@ import {
   calculateRemainingBalanceActuarial,
 } from '@/lib/calculator';
 import { pickLang } from '@/lib/i18n/pickLang';
-import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -414,8 +413,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       : property.stage === 'construccion' ? tProp('stageConstruction')
         : tProp('stageReady');
 
-  const mainType = property.property_types?.[0] || property.property_type || 'departamento';
-  const typeLabel = tTypes(normalizeI18nKey(mainType) as 'departamento');
+  // resolveSpecType cae a development_type ("Lotes", "Residencial horizontal")
+  // cuando property_types viene null — la mayoría del catálogo.
+  const mainType = resolveSpecType(property.property_types ?? property.property_type, property.development_type);
+  const typeLabel = tTypes(mainType);
 
   // ── Share/Download modal data ──
   const shareSpecs: ShareDownloadData['specs'] = [];

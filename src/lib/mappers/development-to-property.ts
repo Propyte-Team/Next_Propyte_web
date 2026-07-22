@@ -189,6 +189,35 @@ function normalizeDevelopmentType(raw: string | null | undefined): DevelopmentTy
 }
 
 /**
+ * Resuelve el tipo canónico de specs desde `property_types` (texto sucio en
+ * BD: "Lotes", "Terrenos", "Lote comercial") con fallback a `development_type`
+ * cuando el array viene null/vacío (~95% de los rows de v_developments).
+ * Sin el fallback, todo desarrollo sin property_types caía a 'departamento' —
+ * bug visible en Datos Clave de desarrollos de lotes.
+ */
+export function resolveSpecType(
+  propertyTypes: string[] | string | null | undefined,
+  developmentType?: string | null,
+): Property['specs']['type'] {
+  const first = Array.isArray(propertyTypes) ? propertyTypes[0] : propertyTypes;
+  const firstType = (first || '').toLowerCase().trim();
+  if (firstType) {
+    return firstType.startsWith('macrolote') || firstType.startsWith('megalote') ? 'macrolote'
+      : firstType.startsWith('terreno') || firstType.startsWith('lote') ? 'terreno'
+      : firstType.startsWith('penthouse') ? 'penthouse'
+      : firstType.startsWith('casa') || firstType.startsWith('villa') || firstType.startsWith('townhouse') ? 'casa'
+      : 'departamento';
+  }
+  switch (normalizeDevelopmentType(developmentType)) {
+    case 'lotes': return 'terreno';
+    case 'macrolotes': return 'macrolote';
+    case 'residencial-horizontal':
+    case 'townhouse': return 'casa';
+    default: return 'departamento';
+  }
+}
+
+/**
  * Maps a Supabase v_developments row to the UI Property type (kind='development').
  *
  * Note: bedrooms/bathrooms/area are 0 at the development level — those specs
@@ -205,15 +234,7 @@ export function mapDevelopmentToProperty(row: DevelopmentRow, locale?: string): 
     .filter((u): u is string => typeof u === 'string')
     .filter((u) => VALID_USAGES.includes(u as PropertyUsage)) as PropertyUsage[];
 
-  // Normaliza el texto sucio de BD ("Lotes", "Terrenos", "Lote comercial") al
-  // union canónico. Antes era case-sensitive → "Lotes" caía a 'departamento'.
-  const firstType = ((row.property_types && row.property_types[0]) || '').toLowerCase().trim();
-  const specType: Property['specs']['type'] =
-    firstType.startsWith('macrolote') || firstType.startsWith('megalote') ? 'macrolote'
-    : firstType.startsWith('terreno') || firstType.startsWith('lote') ? 'terreno'
-    : firstType.startsWith('penthouse') ? 'penthouse'
-    : firstType.startsWith('casa') || firstType.startsWith('villa') || firstType.startsWith('townhouse') ? 'casa'
-    : 'departamento';
+  const specType = resolveSpecType(row.property_types, row.development_type);
 
   const inventory = {
     available: row.available_units ?? undefined,
