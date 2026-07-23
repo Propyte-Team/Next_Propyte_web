@@ -56,6 +56,7 @@ create table real_estate_hub.lead_magnet_editions (
 - **Aprobación (humano-en-loop):** la edición nace `pending`. Al aprobar → `active` y la anterior del mismo locale pasa a `archived`. Mientras no haya aprobación, **se sigue sirviendo la última `active`** — la entrega nunca se rompe por una edición mala.
   - v1 de la aprobación: **vista mínima en Propyte_hub** (lista de ediciones + preview del PDF + botón Aprobar). Interim hasta que exista: flip de `status` en Supabase Studio.
 - **Programación:** cron Hostinger mensual (día 1, madrugada). El endpoint también acepta invocación manual (mismo secret) para regenerar a media quincena.
+- **Regeneración = upsert** sobre `(edition, locale)`: reemplaza la fila y sobreescribe el archivo en Storage; si la edición estaba `active`, vuelve a `pending` (re-aprobación) y la `active` anterior por locale se restaura como vigente para la descarga.
 
 ## 4. Entrega — descarga directa tras el submit
 
