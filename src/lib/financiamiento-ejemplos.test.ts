@@ -51,4 +51,11 @@ describe('pickEjemplosPorTerciles', () => {
     ]);
     expect(picked.map((r) => r.slug)).toEqual(['s1', 's2', 's3']);
   });
+
+  it('de-duplica por slug entre terciles: el duplicado se descarta y el tercil queda vacío (no se rellena)', () => {
+    const picked = pickEjemplosPorTerciles([
+      row('dup', 1_000_000), row('dup', 5_000_000), row('otro', 9_000_000),
+    ]);
+    expect(picked.map((r) => r.slug)).toEqual(['dup', 'otro']);
+  });
 });

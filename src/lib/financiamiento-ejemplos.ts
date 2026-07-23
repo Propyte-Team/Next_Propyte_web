@@ -5,6 +5,10 @@
  * 1 por tercil (la de created_at más reciente) → hasta `count` ejemplos
  * bajo/medio/alto, en orden de precio ascendente. Fail-closed: sin filas
  * válidas retorna [].
+ * De-duplica por `slug` (Set `usados`): si una fila ya fue elegida en un
+ * tercil anterior, el tercil actual la descarta y NO se rellena con otra
+ * fila del mismo tercil — por eso el resultado puede tener menos de
+ * `count` elementos aunque el pool parezca suficiente.
  */
 export interface EjemploPoolRow {
   slug?: string | null;
