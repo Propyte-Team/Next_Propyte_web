@@ -13,7 +13,7 @@ const C = {
 
 const LABELS = {
   es: {
-    docTitle: 'Top 10 Oportunidades de Inversión',
+    docTitle: 'Top Oportunidades de Inversión',
     region: 'Caribe Mexicano', edition: 'Edición',
     intro: 'Selección mensual de las unidades con mejor combinación de rentabilidad estimada, descuento vigente y desempeño de zona, según el análisis de mercado Propyte.',
     rank: '#', price: 'Precio', discount: 'Descuento', rent: 'Renta est./mes',
@@ -31,7 +31,7 @@ const LABELS = {
     generatedOn: 'Generado el',
   },
   en: {
-    docTitle: 'Top 10 Investment Opportunities',
+    docTitle: 'Top Investment Opportunities',
     region: 'Mexican Caribbean', edition: 'Edition',
     intro: 'Monthly selection of the units with the best combination of estimated returns, active discounts and zone performance, according to Propyte market analysis.',
     rank: '#', price: 'Price', discount: 'Discount', rent: 'Est. rent/mo',

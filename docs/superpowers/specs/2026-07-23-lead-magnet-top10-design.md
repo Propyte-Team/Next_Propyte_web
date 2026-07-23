@@ -14,6 +14,7 @@ El Lead Magnet del Home (`src/components/home/LeadMagnet.tsx`) promete "Top 10 D
 | Ranking | **Score compuesto** con reglas de diversidad |
 | Entrega | **Descarga directa tras el submit** (URL firmada de corta vida; sin email — se descartó Nodemailer/SMTP) |
 | Generación | **Edición mensual pre-generada** por cron, con gate humano de aprobación |
+| Top N flexible (2026-07-23, post-implementación) | La BD real solo tenía 1/54 unidades con renta en `v_units` → se agregó **cruce con `rental_ml_estimates`** (fill por development_id+bedrooms, valor nativo gana) y la promesa pasó de "Top 10" fijo a **"Top Oportunidades" (mínimo 6, hasta 10)**; el cron hace 422 bajo el mínimo |
 
 ## 1. El PDF (edición es + en, generadas juntas)
 

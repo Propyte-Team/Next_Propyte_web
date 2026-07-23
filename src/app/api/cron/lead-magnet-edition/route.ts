@@ -19,6 +19,9 @@ export const maxDuration = 60;
 
 const LOCALES = ['es', 'en'] as const;
 const MAX_PDF_BYTES = 1_572_864; // 1.5MB objetivo del spec
+// Top N flexible (decisión Luis 2026-07-23): mínimo publicable 6, hasta 10.
+// El título del PDF no promete un número fijo.
+const MIN_UNITS = 6;
 
 function editionLabel(edition: string, locale: 'es' | 'en'): string {
   const [y, m] = edition.split('-').map(Number);
@@ -43,10 +46,10 @@ export async function GET(request: Request) {
   }
 
   const data = await buildEditionData(supabase);
-  if (data.topUnits.length < 10) {
-    // Fail-closed: un "Top 7" rompe la promesa del título. No publicar.
+  if (data.topUnits.length < MIN_UNITS) {
+    // Fail-closed: con menos de MIN_UNITS el reporte se ve pobre. No publicar.
     return NextResponse.json(
-      { error: `Pool insuficiente: ${data.topUnits.length}/10 unidades elegibles` },
+      { error: `Pool insuficiente: ${data.topUnits.length}/${MIN_UNITS} unidades elegibles` },
       { status: 422 },
     );
   }

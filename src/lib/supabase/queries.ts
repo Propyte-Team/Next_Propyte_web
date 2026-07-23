@@ -775,8 +775,9 @@ export async function getUnitsForLeadMagnet(client: Client) {
     )
     .not('approved_at', 'is', null)
     .is('deleted_at', null)
-    .not('price_mxn', 'is', null)
-    .not('estimated_rent_mxn', 'is', null);
+    .not('price_mxn', 'is', null);
+  // NOTA: sin filtro de estimated_rent_mxn — se rellena después con el modelo
+  // ML (fillEstimatedRent); la elegibilidad final la aplica score.ts.
 }
 
 export async function getAvailableUnits(client: Client, developmentId: string) {
@@ -2084,6 +2085,25 @@ export async function getCityStrBenchmarks(client: Client): Promise<CityStrBench
     out.push(coerceNumericFields(row as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as CityStrBenchmark);
   }
   return out;
+}
+
+export interface RentalMlEstimateRow {
+  development_id: string;
+  bedrooms: number | null;
+  estimated_rent_residencial: number | null;
+}
+
+/** Rentas residenciales estimadas por el modelo ML del analista (por
+ *  desarrollo + recámaras). Rellenan estimated_rent_mxn faltante en el pool
+ *  del lead magnet — v_units solo lo trae poblado en ~1/54 unidades. */
+export async function getRentalMlEstimates(client: Client): Promise<RentalMlEstimateRow[]> {
+  const { data, error } = await inv(client)
+    .from('rental_ml_estimates')
+    .select('development_id, bedrooms, estimated_rent_residencial');
+  if (error || !data) return [];
+  return (data as Record<string, unknown>[]).map(
+    (r) => coerceNumericFields(r, ['bedrooms', 'estimated_rent_residencial']) as unknown as RentalMlEstimateRow,
+  );
 }
 
 export interface ZoneEnrichment {

@@ -3,8 +3,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   getUnitsForLeadMagnet, getCityStrBenchmarks, getZoneScores,
-  getActiveRentalComparables, coerceNumericFields,
-  type CityStrBenchmark, type ZoneScore,
+  getActiveRentalComparables, getRentalMlEstimates, coerceNumericFields,
+  type CityStrBenchmark, type ZoneScore, type RentalMlEstimateRow,
 } from '@/lib/supabase/queries';
 import { selectTopUnits, type LeadMagnetUnitInput, type ScoredUnit } from './score';
 
@@ -59,17 +59,44 @@ export function ltrMediansByCity(
     .sort((a, b) => b.sample - a.sample);
 }
 
+/** Rellena estimated_rent_mxn faltante con la renta residencial del modelo ML
+ *  (match exacto development_id + bedrooms). El valor nativo de v_units gana
+ *  cuando existe. Decisión Luis 2026-07-23: sin este cruce el pool elegible
+ *  era 1/54 unidades. */
+export function fillEstimatedRent(
+  units: LeadMagnetUnitInput[],
+  ml: RentalMlEstimateRow[],
+): LeadMagnetUnitInput[] {
+  const byKey = new Map<string, number>();
+  for (const m of ml) {
+    if (m.estimated_rent_residencial != null && m.estimated_rent_residencial > 0 && m.bedrooms != null) {
+      byKey.set(`${m.development_id}|${m.bedrooms}`, m.estimated_rent_residencial);
+    }
+  }
+  return units.map((u) => {
+    if (u.estimated_rent_mxn != null && u.estimated_rent_mxn > 0) return u;
+    const filled = u.development_id != null && u.bedrooms != null
+      ? byKey.get(`${u.development_id}|${u.bedrooms}`)
+      : undefined;
+    return filled != null ? { ...u, estimated_rent_mxn: filled } : u;
+  });
+}
+
 export async function buildEditionData(client: Client, now = new Date()): Promise<EditionData> {
-  const [unitsRes, benchmarks, zoneScores, ltrRows] = await Promise.all([
+  const [unitsRes, benchmarks, zoneScores, ltrRows, mlRents] = await Promise.all([
     getUnitsForLeadMagnet(client),
     getCityStrBenchmarks(client),
     getZoneScores(client),
     getActiveRentalComparables(client),
+    getRentalMlEstimates(client),
   ]);
 
   const rawUnits = (unitsRes.data ?? []) as Record<string, unknown>[];
-  const units = rawUnits.map(
-    (r) => coerceNumericFields(r, UNIT_NUMERIC_KEYS) as unknown as LeadMagnetUnitInput,
+  const units = fillEstimatedRent(
+    rawUnits.map(
+      (r) => coerceNumericFields(r, UNIT_NUMERIC_KEYS) as unknown as LeadMagnetUnitInput,
+    ),
+    mlRents,
   );
 
   const topUnits = selectTopUnits(
