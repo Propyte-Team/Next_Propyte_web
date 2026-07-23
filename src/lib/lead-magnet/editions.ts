@@ -97,14 +97,19 @@ export async function getActiveEdition(
   return data as EditionRow;
 }
 
+const DOWNLOAD_FILENAME: Record<'es' | 'en', string> = {
+  es: 'propyte-top10-oportunidades.pdf',
+  en: 'propyte-top10-opportunities.pdf',
+};
+
 /** URL firmada de descarga (~10 min). null si falla (fail-soft). */
 export async function signEditionUrl(
-  client: Client, storagePath: string,
+  client: Client, storagePath: string, locale: 'es' | 'en' = 'es',
 ): Promise<string | null> {
   const { data, error } = await client.storage
     .from(BUCKET)
     .createSignedUrl(storagePath, 600, {
-      download: 'propyte-top10-oportunidades.pdf',
+      download: DOWNLOAD_FILENAME[locale],
     });
   if (error || !data?.signedUrl) return null;
   return data.signedUrl;

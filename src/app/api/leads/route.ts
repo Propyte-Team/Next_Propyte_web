@@ -172,7 +172,7 @@ async function leadMagnetDownloadUrl(locale: 'es' | 'en'): Promise<string | null
     if (!svc) return null;
     const edition = await getActiveEdition(svc, locale);
     if (!edition) return null;
-    return await signEditionUrl(svc, edition.storage_path);
+    return await signEditionUrl(svc, edition.storage_path, locale);
   } catch {
     return null;
   }
@@ -495,7 +495,8 @@ export async function POST(request: NextRequest) {
 
   // 9. Return success siempre que Supabase haya persistido (REQ-F-09)
   let downloadUrl: string | null = null;
-  if (data.source === 'lead_magnet') {
+  // Email no-vacío requerido server-side: la URL firmada solo a cambio de datos reales.
+  if (data.source === 'lead_magnet' && typeof data.email === 'string' && data.email.trim()) {
     downloadUrl = await leadMagnetDownloadUrl(data.locale === 'en' ? 'en' : 'es');
   }
   return NextResponse.json(

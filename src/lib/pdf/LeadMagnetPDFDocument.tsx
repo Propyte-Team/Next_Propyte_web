@@ -183,23 +183,27 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
         {/* Panorama de mercado */}
         <Text style={styles.sectionTitle} break>{L.marketTitle}</Text>
 
-        <Text style={[styles.cardTitle, { marginBottom: 6 }]}>{L.strTitle}</Text>
-        <View style={styles.table}>
-          <View style={styles.tHead}>
-            <Text style={styles.tHeadCell}>—</Text>
-            <Text style={styles.tHeadCell}>{L.occupancy}</Text>
-            <Text style={styles.tHeadCell}>{L.adr}</Text>
-            <Text style={styles.tHeadCell}>{L.revpar}</Text>
-          </View>
-          {data.cityBenchmarks.map((b) => (
-            <View style={styles.tRow} key={b.city} wrap={false}>
-              <Text style={[styles.tCell, { fontFamily: 'Helvetica-Bold' }]}>{b.city}</Text>
-              <Text style={styles.tCell}>{fmtPct(b.median_occupancy, 0)}</Text>
-              <Text style={styles.tCell}>{fmtMoney(b.median_adr)}</Text>
-              <Text style={styles.tCell}>{fmtMoney(b.revpar)}</Text>
+        {data.cityBenchmarks.length > 0 && (
+          <>
+            <Text style={[styles.cardTitle, { marginBottom: 6 }]}>{L.strTitle}</Text>
+            <View style={styles.table}>
+              <View style={styles.tHead}>
+                <Text style={styles.tHeadCell}>—</Text>
+                <Text style={styles.tHeadCell}>{L.occupancy}</Text>
+                <Text style={styles.tHeadCell}>{L.adr}</Text>
+                <Text style={styles.tHeadCell}>{L.revpar}</Text>
+              </View>
+              {data.cityBenchmarks.map((b) => (
+                <View style={styles.tRow} key={b.city} wrap={false}>
+                  <Text style={[styles.tCell, { fontFamily: 'Helvetica-Bold' }]}>{b.city}</Text>
+                  <Text style={styles.tCell}>{fmtPct(b.median_occupancy, 0)}</Text>
+                  <Text style={styles.tCell}>{fmtMoney(b.median_adr)}</Text>
+                  <Text style={styles.tCell}>{fmtMoney(b.revpar)}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
+          </>
+        )}
 
         {data.ltrByCity.length > 0 && (
           <>
@@ -244,6 +248,7 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
             <Text style={styles.footerLine}>{L.generatedOn} {generatedAt}</Text>
           </View>
           <View style={styles.footerRight}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text -- Image de react-pdf no tiene prop alt */}
             <Image src={qrCodeDataUrl} style={styles.qr} />
             <Text style={styles.qrLabel}>{L.scan}</Text>
           </View>
