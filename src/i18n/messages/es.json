@@ -959,6 +959,8 @@
     "sourceCalc": "Cálculo Propyte",
     "period12m": "últimos 12 meses",
     "periodRecent": "análisis reciente",
+    "periodAssumption": "supuesto fijo",
+    "periodDerived": "derivado de los datos anteriores",
     "noteCityLevel": "* Algunos indicadores son referencia a nivel ciudad.",
     "rowMonthlyRent": "Renta mensual (mediana)",
     "rowOccupancyAssumed": "Ocupación asumida",

@@ -959,6 +959,8 @@
     "sourceCalc": "Propyte calculation",
     "period12m": "last 12 months",
     "periodRecent": "recent analysis",
+    "periodAssumption": "fixed assumption",
+    "periodDerived": "derived from the data above",
     "noteCityLevel": "* Some indicators are city-level references.",
     "rowMonthlyRent": "Monthly rent (median)",
     "rowOccupancyAssumed": "Assumed occupancy",

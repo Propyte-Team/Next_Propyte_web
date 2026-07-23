@@ -153,8 +153,8 @@ function ResidencialPanel({
       <DataSourceTable
         rows={[
           { label: t('rowMonthlyRent'), value: formatPrice(Math.round(grossRent)), source: t('sourcePropyte'), period: t('periodRecent') },
-          { label: t('rowOccupancyAssumed'), value: `${Math.round(RES.OCCUPANCY * 100)}%`, source: t('sourceEstimate') },
-          { label: t('rowYields'), value: `${formatPercentage(grossYield)} / ${formatPercentage(netYield)} / ${formatPercentage(capRate)}`, source: t('sourceCalc') },
+          { label: t('rowOccupancyAssumed'), value: `${Math.round(RES.OCCUPANCY * 100)}%`, source: t('sourceEstimate'), period: t('periodAssumption') },
+          { label: t('rowYields'), value: `${formatPercentage(grossYield)} / ${formatPercentage(netYield)} / ${formatPercentage(capRate)}`, source: t('sourceCalc'), period: t('periodDerived') },
         ]}
         footnote={t('noteCityLevel')}
       />
@@ -191,8 +191,8 @@ function VacacionalPanel({
         rows={[
           { label: t('rowAdr'), value: adr != null ? formatPrice(adr) : '—', source: t('sourcePropyte'), period: t('period12m') },
           { label: t('rowOccupancy'), value: `${Math.round(occupancy)}%`, source: t('sourcePropyte'), period: t('period12m') },
-          { label: t('rowRevpar'), value: revpar != null ? formatPrice(revpar) : '—', source: t('sourceCalc') },
-          { label: t('rowEstIncome'), value: formatPrice(netRent), source: t('sourceEstimate') },
+          { label: t('rowRevpar'), value: revpar != null ? formatPrice(revpar) : '—', source: t('sourceCalc'), period: t('periodDerived') },
+          { label: t('rowEstIncome'), value: formatPrice(netRent), source: t('sourceEstimate'), period: t('periodDerived') },
         ]}
         footnote={t('noteCityLevel')}
       />
