@@ -7,8 +7,14 @@ import {
   CheckCircle, Sparkles,
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import MortgageCalculator from '@/components/financiamiento/MortgageCalculatorLazy';
+import FinanciamientoSimulator from '@/components/financiamiento/FinanciamientoSimulatorLazy';
+import EjemplosPropiedades, { type EjemploCard } from '@/components/financiamiento/EjemplosPropiedades';
 import BankLogos from '@/components/financiamiento/BankLogos';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getUnits } from '@/lib/supabase/queries';
+import { pickEjemplosPorTerciles } from '@/lib/financiamiento-ejemplos';
+import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { computeHipotecario } from '@/lib/hipotecario';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -70,6 +76,33 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
     };
   });
 
+  // Ejemplos con propiedades reales (fail-closed: cualquier error → sección oculta)
+  let ejemplos: EjemploCard[] = [];
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data } = await getUnits(supabase, { orderBy: 'newest', limit: 30 });
+    ejemplos = pickEjemplosPorTerciles((data ?? []) as unknown as UnitRow[])
+      .map((row) => {
+        const p = mapUnitToProperty(row, locale);
+        const hip = computeHipotecario(p.price.mxn, 'nacional');
+        return {
+          slug: p.slug,
+          name: p.name,
+          image: p.images[0] ?? '',
+          city: p.location.city ?? '',
+          bedrooms: p.specs.bedrooms || 0,
+          areaM2: p.specs.area || 0,
+          priceMxn: p.price.mxn,
+          enganchePct: hip.enganchePct,
+          engancheMxn: hip.enganche,
+          mensualidadMxn: Math.round(hip.schedule.cuota),
+        };
+      })
+      .filter((e) => e.priceMxn > 0 && e.image !== '');
+  } catch {
+    ejemplos = [];
+  }
+
   // FinancialProduct JSON-LD (one ItemList with 4 LoanOrCredit products)
   const financialSchema = {
     '@context': 'https://schema.org',
@@ -129,8 +162,11 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
       {/* Bank Logos Trustbar */}
       <BankLogos locale={locale} />
 
-      {/* Mortgage Calculator */}
-      <MortgageCalculator />
+      {/* Simulador hipotecario (perfiles Nac/Ext + corrida) */}
+      <FinanciamientoSimulator />
+
+      {/* Ejemplos con propiedades reales (fail-closed) */}
+      <EjemplosPropiedades locale={locale} ejemplos={ejemplos} />
 
       {/* 4 Methods */}
       <section className="bg-white py-16 md:py-20">

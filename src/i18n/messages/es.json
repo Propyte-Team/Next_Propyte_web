@@ -2328,6 +2328,13 @@
     "calcFinanced": "Monto a financiar",
     "calcCta": "Hablar con un asesor",
     "calcDisclaimer": "Cálculo referencial sin seguros, comisión por apertura ni gastos de escrituración. Las condiciones finales dependen del banco y tu perfil crediticio.",
+    "examplesTitle": "Ejemplos con propiedades reales",
+    "examplesSubtitle": "Unidades del catálogo con su enganche y mensualidad estimada para perfil nacional.",
+    "examplesBedrooms": "{n} rec",
+    "examplesDownPayment": "Enganche ({pct}%)",
+    "examplesMonthly": "Mensualidad",
+    "examplesCta": "Ver corrida completa",
+    "examplesNote": "Cifras informativas con perfil nacional, sujetas a aprobación bancaria. Consulta la corrida completa en cada propiedad.",
     "speedFast": "Rápido",
     "speedFastest": "Muy rápido",
     "speedSlow": "Más lento"

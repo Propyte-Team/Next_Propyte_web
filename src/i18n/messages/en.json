@@ -2328,6 +2328,13 @@
     "calcFinanced": "Amount financed",
     "calcCta": "Talk to an advisor",
     "calcDisclaimer": "Reference calculation excluding insurance, origination fees and closing costs. Final terms depend on the bank and your credit profile.",
+    "examplesTitle": "Real property examples",
+    "examplesSubtitle": "Catalog units with their down payment and estimated monthly payment for a national-buyer profile.",
+    "examplesBedrooms": "{n} BR",
+    "examplesDownPayment": "Down payment ({pct}%)",
+    "examplesMonthly": "Monthly payment",
+    "examplesCta": "See full schedule",
+    "examplesNote": "Informative figures for a national-buyer profile, subject to bank approval. See the full schedule on each property.",
     "speedFast": "Fast",
     "speedFastest": "Fastest",
     "speedSlow": "Slower"
