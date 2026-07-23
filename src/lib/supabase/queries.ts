@@ -764,6 +764,21 @@ export async function getDiscountedUnits(client: Client, limit = 12) {
   return { ...res, data: maskRows(res.data, 'u') };
 }
 
+/** Pool de candidatas para el lead magnet Top 10. Mismo gate público que el
+ *  listado (approved_at + deleted_at). El filtro fino (precio/renta) lo hace
+ *  score.ts; aquí solo pedimos lo mínimo para no traer 1400 filas inútiles. */
+export async function getUnitsForLeadMagnet(client: Client) {
+  return hub(client)
+    .from('v_units')
+    .select(
+      'id, slug, development_id, development_name, development_slug, city, zone, bedrooms, area_m2, price_mxn, discount_price_mxn, discount_pct, is_discount_active, roi_annual, estimated_rent_mxn, appreciation_annual',
+    )
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null)
+    .not('price_mxn', 'is', null)
+    .not('estimated_rent_mxn', 'is', null);
+}
+
 export async function getAvailableUnits(client: Client, developmentId: string) {
   return crm(client)
     .from('units')
@@ -1571,7 +1586,7 @@ export async function getRentalEstimates(
  * indicadas y deja intactas fechas/uuids/strings. null/NaN → null. Muta y
  * retorna el mismo row. Claves ausentes o ya numéricas se ignoran (no-op).
  */
-function coerceNumericFields<T extends Record<string, unknown>>(
+export function coerceNumericFields<T extends Record<string, unknown>>(
   row: T,
   keys: readonly string[],
 ): T {
@@ -2050,6 +2065,25 @@ export async function getCityStrBenchmark(
   if (error || !data) return null;
   // NUMERIC-string→number (median_occupancy/median_adr/revpar).
   return coerceNumericFields(data as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as CityStrBenchmark;
+}
+
+/** Benchmarks STR de TODAS las ciudades (filas zone='_ciudad'), última por ciudad.
+ *  Variante plural de getCityStrBenchmark: evita adivinar strings de ciudad. */
+export async function getCityStrBenchmarks(client: Client): Promise<CityStrBenchmark[]> {
+  const { data, error } = await client
+    .from('zone_scores')
+    .select('city, median_occupancy, median_adr, revpar, active_listings, computed_at')
+    .eq('zone', '_ciudad')
+    .order('computed_at', { ascending: false });
+  if (error || !data) return [];
+  const seen = new Set<string>();
+  const out: CityStrBenchmark[] = [];
+  for (const row of data) {
+    if (seen.has(row.city)) continue;
+    seen.add(row.city);
+    out.push(coerceNumericFields(row as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as CityStrBenchmark);
+  }
+  return out;
 }
 
 export interface ZoneEnrichment {
