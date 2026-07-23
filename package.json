@@ -12,6 +12,7 @@
     "test:e2e:smoke": "playwright test --grep @smoke",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
+    "test:unit": "vitest run",
     "test:playground": "node tests/design-playground-sync.mjs",
     "vercel:link": "vercel link",
     "vercel:env:pull": "vercel env pull .env.local",
@@ -58,7 +59,8 @@
     "eslint": "^9",
     "eslint-config-next": "^16.2.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "@swc/helpers": "^0.5.21",
