@@ -2339,26 +2339,6 @@
     "speedFastest": "Fastest",
     "speedSlow": "Slower"
   },
-  "mortgageCalc": {
-    "eyebrow": "Mortgage calculator",
-    "title": "Estimate your monthly payment",
-    "subtitle": "Adjust the parameters to see monthly payment, total interest, and principal vs interest breakdown.",
-    "amount": "Property value",
-    "downPayment": "Down payment",
-    "termYears": "Term",
-    "annualRate": "Annual rate",
-    "yearsSuffix": "years",
-    "monthlyPayment": "Estimated monthly payment",
-    "monthShort": "mo",
-    "principal": "Financed principal",
-    "totalInterest": "Total interest",
-    "totalPaid": "Total paid at end",
-    "downPaymentValue": "Down payment paid",
-    "chartPrincipal": "Principal",
-    "chartInterest": "Interest",
-    "ctaAdvisor": "Talk to a specialized advisor",
-    "disclaimer": "Referential calculation. Excludes insurance, opening fees, property transfer tax, escrow and notary costs. Request a personalized analysis with an advisor."
-  },
   "corrida": {
     "tab": "Payment schedule",
     "title": "Developer payment plan",

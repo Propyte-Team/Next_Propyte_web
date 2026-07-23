@@ -2339,26 +2339,6 @@
     "speedFastest": "Muy rápido",
     "speedSlow": "Más lento"
   },
-  "mortgageCalc": {
-    "eyebrow": "Calculadora hipotecaria",
-    "title": "Calcula tu mensualidad",
-    "subtitle": "Ajusta los parámetros y ve el pago mensual, intereses totales y desglose principal vs interés.",
-    "amount": "Valor de la propiedad",
-    "downPayment": "Enganche",
-    "termYears": "Plazo",
-    "annualRate": "Tasa anual",
-    "yearsSuffix": "años",
-    "monthlyPayment": "Pago mensual estimado",
-    "monthShort": "mes",
-    "principal": "Principal financiado",
-    "totalInterest": "Intereses totales",
-    "totalPaid": "Total pagado al final",
-    "downPaymentValue": "Enganche aportado",
-    "chartPrincipal": "Principal",
-    "chartInterest": "Interés",
-    "ctaAdvisor": "Hablar con asesor especializado",
-    "disclaimer": "Cálculo referencial sin seguros, comisión por apertura, ITP, escrituración ni gastos notariales. Solicita un análisis personalizado con un asesor."
-  },
   "corrida": {
     "tab": "Corrida financiera",
     "title": "Plan de pagos del desarrollador",
