@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomInt, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { getActiveEdition, signEditionUrl } from '@/lib/lead-magnet/editions';
 import { enforceRateLimit } from '@/lib/rateLimit';
 import { enforceGlobalQuota } from '@/lib/security/global-quota';
 import { sanitizeErrorMessage } from '@/lib/security/sanitize-error';
@@ -160,6 +161,21 @@ async function updateLeadLocal(
     }
   }
   return false;
+}
+
+/** URL firmada de la edición activa del lead magnet. Fail-soft: cualquier
+ *  fallo (sin tabla, sin edición activa, sin service key) → null y el
+ *  submit responde igual que siempre. */
+async function leadMagnetDownloadUrl(locale: 'es' | 'en'): Promise<string | null> {
+  try {
+    const svc = await createServiceRoleClient();
+    if (!svc) return null;
+    const edition = await getActiveEdition(svc, locale);
+    if (!edition) return null;
+    return await signEditionUrl(svc, edition.storage_path);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -478,5 +494,12 @@ export async function POST(request: NextRequest) {
   }
 
   // 9. Return success siempre que Supabase haya persistido (REQ-F-09)
-  return NextResponse.json({ success: true, id: row.id }, { status: 200 });
+  let downloadUrl: string | null = null;
+  if (data.source === 'lead_magnet') {
+    downloadUrl = await leadMagnetDownloadUrl(data.locale === 'en' ? 'en' : 'es');
+  }
+  return NextResponse.json(
+    { success: true, id: row.id, ...(downloadUrl ? { downloadUrl } : {}) },
+    { status: 200 },
+  );
 }

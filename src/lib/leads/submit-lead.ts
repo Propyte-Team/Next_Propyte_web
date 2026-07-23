@@ -25,6 +25,8 @@ export interface SubmitLeadResult {
   id?: string;
   /** Mensaje de error genérico para mostrar al usuario; el detalle vive server-side. */
   error?: string;
+  /** URL firmada de descarga del lead magnet (solo source=lead_magnet con edición activa). */
+  downloadUrl?: string;
 }
 
 /**
@@ -85,7 +87,7 @@ export async function submitLead(
     return { ok: false, error: response.statusText };
   }
 
-  let json: { success?: boolean; id?: string };
+  let json: { success?: boolean; id?: string; downloadUrl?: string };
   try {
     json = await response.json();
   } catch {
@@ -95,7 +97,7 @@ export async function submitLead(
   if (json.success) {
     const propertyId = typeof data.propertyId === "string" ? data.propertyId : undefined;
     trackGenerateLead({ formType: source, propertyId });
-    return { ok: true, id: json.id };
+    return { ok: true, id: json.id, downloadUrl: json.downloadUrl };
   }
   return { ok: false };
 }

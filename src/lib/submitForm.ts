@@ -22,11 +22,11 @@ import type { LeadSource } from "@/lib/zoho/field-maps";
 export async function submitForm(
   data: Record<string, unknown>,
   formType: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; downloadUrl?: string }> {
   // formType en la lib vieja era el mismo set de valores que `source` ahora.
   // Mapeo 1:1 — el cast es seguro porque los 11 valores históricos están en LeadSource.
   const result = await submitLead(formType as LeadSource, data);
   return result.ok
-    ? { success: true }
+    ? { success: true, downloadUrl: result.downloadUrl }
     : { success: false, error: result.error };
 }
