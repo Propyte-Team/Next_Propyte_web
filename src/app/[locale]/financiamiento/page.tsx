@@ -10,11 +10,15 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import FinanciamientoSimulator from '@/components/financiamiento/FinanciamientoSimulatorLazy';
 import EjemplosPropiedades, { type EjemploCard } from '@/components/financiamiento/EjemplosPropiedades';
 import BankLogos from '@/components/financiamiento/BankLogos';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnits } from '@/lib/supabase/queries';
 import { pickEjemplosPorTerciles } from '@/lib/financiamiento-ejemplos';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { computeHipotecario } from '@/lib/hipotecario';
+
+// createServerSupabaseClient() usa cookies() → rompe ISR (DYNAMIC_SERVER_USAGE);
+// esta página declara `revalidate`, por eso usa el cliente público cookie-less.
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -81,7 +85,8 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
   // segmentar el catálogo; la card muestra el precio efectivo post-descuento del mapper.
   let ejemplos: EjemploCard[] = [];
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = createPublicSupabaseClient();
+    if (!supabase) throw new Error('No Supabase');
     const { data, error } = await getUnits(supabase, { orderBy: 'newest', limit: 30 });
     if (error) console.error('[FinanciamientoPage] getUnits error:', error);
     ejemplos = pickEjemplosPorTerciles((data ?? []) as unknown as UnitRow[])
