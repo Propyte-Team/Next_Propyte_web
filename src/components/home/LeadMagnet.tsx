@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from '@/lib/icons';
-import { submitForm } from '@/lib/submitForm';
+import { submitLead } from '@/lib/leads/submit-lead';
 
 export interface LeadMagnetCta {
   eyebrow: string | null;
@@ -20,6 +20,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // honeypot (REQ-F-02)
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const eyebrow = cta?.eyebrow ?? t('freeReport');
   const titleText = cta?.title ?? t('title');
@@ -30,8 +31,13 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
     setStatus('sending');
-    const result = await submitForm({ name, email, website }, 'lead_magnet');
-    setStatus(result.success ? 'success' : 'error');
+    const result = await submitLead('lead_magnet', { name, email, website });
+    if (result.ok) {
+      setDownloadUrl(result.downloadUrl ?? null);
+      setStatus('success');
+    } else {
+      setStatus('error');
+    }
   }
 
   return (
@@ -53,8 +59,24 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
             {status === 'success' ? (
               <div className="text-center py-6">
                 <CheckCircle size={48} className="mx-auto text-[#22C55E] mb-4" />
-                <h3 className="text-xl font-bold text-white mb-2">{t('checkEmail')}</h3>
-                <p className="text-white/75 text-sm">{t('checkEmailDesc')}</p>
+                {downloadUrl ? (
+                  <>
+                    <h3 className="text-xl font-bold text-white mb-2">{t('reportReady')}</h3>
+                    <p className="text-white/75 text-sm mb-4">{t('reportReadyDesc')}</p>
+                    <a
+                      href={downloadUrl}
+                      className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors"
+                    >
+                      <FileDown size={18} />
+                      {t('downloadNow')}
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-bold text-white mb-2">{t('successGeneric')}</h3>
+                    <p className="text-white/75 text-sm">{t('successGenericDesc')}</p>
+                  </>
+                )}
               </div>
             ) : (
               <form

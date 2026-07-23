@@ -20,12 +20,14 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // honeypot
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
     setStatus('sending');
     const result = await submitLead('lead_magnet', { name, email, website });
+    if (result.ok) setDownloadUrl(result.downloadUrl ?? null);
     setStatus(result.ok ? 'success' : 'error');
   }
 
@@ -55,8 +57,19 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
       {status === 'success' ? (
         <div className="text-center py-4">
           <CheckCircle size={36} className="mx-auto text-[#22C55E] mb-3" />
-          <h4 className="text-sm font-bold text-white mb-1">{tlm('checkEmail')}</h4>
-          <p className="text-white/75 text-xs">{tlm('checkEmailDesc')}</p>
+          {downloadUrl ? (
+            <>
+              <h4 className="text-sm font-bold text-white mb-1">{tlm('reportReady')}</h4>
+              <a href={downloadUrl} className="text-xs font-bold text-[#A2F9FF] underline">
+                {tlm('downloadNow')}
+              </a>
+            </>
+          ) : (
+            <>
+              <h4 className="text-sm font-bold text-white mb-1">{tlm('successGeneric')}</h4>
+              <p className="text-white/75 text-xs">{tlm('successGenericDesc')}</p>
+            </>
+          )}
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-3" {...agentToolAttrs}>

@@ -2894,14 +2894,17 @@
     "freeReport": "REPORTE GRATUITO",
     "title": "Top 10 Desarrollos con Mayor ROI 2026",
     "description": "Obtén nuestro análisis exclusivo de las inversiones inmobiliarias en la Riviera Maya. Basado en comparables públicos de portales inmobiliarios y proyecciones referenciales de mercado.",
-    "checkEmail": "¡Revisa tu correo!",
-    "checkEmailDesc": "Te hemos enviado el reporte a tu bandeja de entrada.",
     "name": "Nombre",
     "namePlaceholder": "Tu nombre",
     "emailPlaceholder": "tu@correo.com",
     "sending": "Enviando...",
     "downloadCta": "Descargar Reporte Gratis",
-    "consent": "Al descargar, aceptas recibir actualizaciones de mercado ocasionales. Cancela cuando quieras."
+    "consent": "Al descargar, aceptas recibir actualizaciones de mercado ocasionales. Cancela cuando quieras.",
+    "reportReady": "¡Tu reporte está listo!",
+    "reportReadyDesc": "Descárgalo ahora. El enlace expira en 10 minutos.",
+    "downloadNow": "Descargar mi reporte",
+    "successGeneric": "¡Gracias por tu interés!",
+    "successGenericDesc": "Un asesor de Propyte te contactará muy pronto."
   },
   "mercadoHero": {
     "strProperties": "propiedades mapeadas",

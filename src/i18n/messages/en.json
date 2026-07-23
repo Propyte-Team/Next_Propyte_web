@@ -2894,14 +2894,17 @@
     "freeReport": "FREE REPORT",
     "title": "Top 10 Developments with Highest ROI 2026",
     "description": "Get our exclusive analysis of real estate investments in Mexico's Riviera Maya. Based on public comparables from real estate portals and referential market projections.",
-    "checkEmail": "Check your email!",
-    "checkEmailDesc": "We've sent the report to your inbox.",
     "name": "Name",
     "namePlaceholder": "Your name",
     "emailPlaceholder": "your@email.com",
     "sending": "Sending...",
     "downloadCta": "Download Free Report",
-    "consent": "By downloading, you agree to receive occasional market updates. Unsubscribe anytime."
+    "consent": "By downloading, you agree to receive occasional market updates. Unsubscribe anytime.",
+    "reportReady": "Your report is ready!",
+    "reportReadyDesc": "Download it now. The link expires in 10 minutes.",
+    "downloadNow": "Download my report",
+    "successGeneric": "Thanks for your interest!",
+    "successGenericDesc": "A Propyte advisor will contact you shortly."
   },
   "mercadoHero": {
     "strProperties": "properties mapped",
