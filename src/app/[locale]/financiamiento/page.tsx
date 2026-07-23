@@ -77,13 +77,19 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
   });
 
   // Ejemplos con propiedades reales (fail-closed: cualquier error → sección oculta)
+  // Nota: la selección por terciles usa price_mxn de lista (pre-descuento) para
+  // segmentar el catálogo; la card muestra el precio efectivo post-descuento del mapper.
   let ejemplos: EjemploCard[] = [];
   try {
     const supabase = await createServerSupabaseClient();
-    const { data } = await getUnits(supabase, { orderBy: 'newest', limit: 30 });
+    const { data, error } = await getUnits(supabase, { orderBy: 'newest', limit: 30 });
+    if (error) console.error('[FinanciamientoPage] getUnits error:', error);
     ejemplos = pickEjemplosPorTerciles((data ?? []) as unknown as UnitRow[])
       .map((row) => {
         const p = mapUnitToProperty(row, locale);
+        // Excluir unidades cotizadas en USD: su ficha muestra el USD prominente
+        // + MXN "(Referencial)", inconsistente con formatPrice() en MXN de esta card.
+        if (p.price.currency !== 'MXN') return null;
         const hip = computeHipotecario(p.price.mxn, 'nacional');
         return {
           slug: p.slug,
@@ -98,8 +104,9 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
           mensualidadMxn: Math.round(hip.schedule.cuota),
         };
       })
-      .filter((e) => e.priceMxn > 0 && e.image !== '');
-  } catch {
+      .filter((e): e is EjemploCard => e !== null && e.priceMxn > 0 && e.image !== '');
+  } catch (error) {
+    console.error('[FinanciamientoPage] Supabase fetch failed:', error);
     ejemplos = [];
   }
 
