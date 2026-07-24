@@ -128,7 +128,7 @@ function UnitCard({ u, i, L, siteUrl, locale }: {
         <Text style={styles.cardTitle}>{u.development_name ?? u.slug}</Text>
         <Text style={styles.cardSub}>
           {[u.city, u.zone].filter(Boolean).join(' · ')}
-          {u.bedrooms != null ? `  ·  ${u.bedrooms} ${L.bd}` : ''}
+          {u.bedrooms ? `  ·  ${u.bedrooms} ${L.bd}` : ''}
           {u.area_m2 != null ? `  ·  ${Math.round(u.area_m2)} m²` : ''}
         </Text>
         <View style={styles.metricsRow}>

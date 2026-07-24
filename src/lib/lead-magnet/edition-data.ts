@@ -104,8 +104,15 @@ export async function buildEditionData(client: Client, now = new Date()): Promis
     zoneScores.map((z) => ({ city: z.city, zone: z.zone, score: z.score })),
   );
 
+  // Solo zonas de las ciudades que el reporte cubre (las del benchmark STR —
+  // "Caribe Mexicano"; sin esto se cuelan CDMX/Mérida) y sin slugs crudos
+  // tipo AKUMAL_BAY_AREA (mayúsculas+guiones bajos = slug de BD, no nombre).
+  const reportCities = new Set(benchmarks.map((b) => b.city.toLowerCase()));
+  const isRawSlug = (zone: string) => /^[A-Z0-9_]+$/.test(zone) || zone.includes('_');
   const topZones = zoneScores
     .filter((z) => z.score != null)
+    .filter((z) => reportCities.has((z.city ?? '').toLowerCase()))
+    .filter((z) => !isRawSlug(z.zone ?? ''))
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
     .slice(0, 5)
     .map(({ city, zone, score, median_occupancy, median_adr }) =>
