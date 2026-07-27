@@ -21,8 +21,10 @@ desarrollos publicados**.
 Consecuencias en el sitio:
 
 - Los badges de ROI de las cards nunca aparecen (`property.roi.projected > 0` siempre es falso).
-- Toda proyección cae a un 8% de plusvalía hardcodeado, en **dos** lugares independientes:
-  `score.ts:44` (`DEFAULT_APPRECIATION_PCT`) y `generate-pdf/route.ts:195,203` (`|| 8`).
+- Toda proyección cae a un 8% de plusvalía hardcodeado, en **tres** lugares independientes:
+  `score.ts:44` (`DEFAULT_APPRECIATION_PCT`), `generate-pdf/route.ts:195,203` (`|| 8`) y
+  `RentabilidadTab.tsx:33` (`useState(appreciationDefault || 8)`, alimentado desde
+  `UnitDetailPage:582` — este es el que el usuario ve).
 - `roi.projected`/`rentalMonthly` usan `Number(x) || 0`, así que "sin dato" y "cero" son
   indistinguibles para los consumidores.
 
@@ -43,6 +45,8 @@ usan para ROI.
 | D5 | **Sin dato ⇒ no se muestra.** Nada de fallback a ciudad ni de `0` como sentinela. | Cobertura hoy: 26 de las 56 unidades publicadas pertenecen a un desarrollo con fila en `development_financials`. Ocultar es honesto; un número de ciudad presentado como número de unidad, no. |
 | D6 | La **plusvalía sale del contenido publicado** (badge de `MarketplaceCard`, `PriceTimeline`) y sobrevive solo como **supuesto editable inicializado en 5%**, rotulado como supuesto y no como proyección de Propyte. El PDF imprime ese supuesto rotulado. | No existe ninguna fuente de plusvalía en la BD y `zone_scores` no tiene serie histórica de precios para derivarla. Un slider que el usuario mueve es un supuesto suyo; un badge es una promesa nuestra. El 5% queda por encima del objetivo de inflación de Banxico sin prometer doble dígito. |
 | D7 | El score del lead magnet pasa a `roi_annual ?? modelo ?? grossYield`, **sin sumar plusvalía**. | Elimina el 8% inventado del ranking. Cambia el Top 10: se entrega comparativa antes/después para validar antes de deployar. |
+| D8 | Se **borra** `components/property/PriceTimeline.tsx`. | `generatePriceHistory` fabricaba eventos fechados con multiplicadores fijos (`×0.82` "Preventa Etapa 1" en 2025-06, `+11%`, `×1.03` "Publicado", `-3%` "Ajuste de precio") idénticos para toda unidad, con apariencia de historial real de esa propiedad. No hay serie histórica de precio por unidad en la BD que pueda sostenerlos. El componente **no tiene importadores** — es código muerto, así que borrarlo no cambia nada de lo que hoy ve el usuario. Si alguna vez existe serie real, se reconstruye con datos. |
+| D9 | El `1.35` de renta vacacional (`FinancialSimulator.tsx:55`) pasa a constante nombrada y se rotula como supuesto cuando no hay dato de mercado. | Mismo criterio que la plusvalía: un supuesto de cálculo puede quedarse si está nombrado y rotulado; lo que no puede quedarse es un número sin origen disfrazado de dato. |
 
 ## 3. Arquitectura
 
@@ -77,8 +81,13 @@ Reglas: un valor `<= 0` o no finito se trata como ausente. `roiSource`/`rentSour
 el UI pueda rotular la granularidad del dato y para que los tests afirmen la precedencia, no para
 mostrarse crudos al usuario.
 
-Constante nueva en `src/shared/constants/`: `APPRECIATION_ASSUMPTION_PCT = 5`, con comentario de que
-es un supuesto editable y no un dato de mercado. Es el único lugar donde vive el número.
+Constantes nuevas en `src/lib/calculator.ts`, junto a los bloques `VAC`/`RES` que ya documentan los
+supuestos de cálculo del sitio:
+
+- `APPRECIATION_ASSUMPTION_PCT = 5` — supuesto editable, no un dato de mercado.
+- `VAC_RENT_UPLIFT = 1.35` — el multiplicador que hoy vive inline en `FinancialSimulator.tsx:55`.
+
+Es el único lugar donde viven ambos números.
 
 ### 3.2 Flujo de datos
 
@@ -101,9 +110,11 @@ Lead magnet:
   para renta, más cobertura de ROI).
 ```
 
-El batch de `queries.ts:619` ya selecciona exactamente las dos columnas que el resolver necesita, así
-que no requiere cambio de query. **A verificar en implementación**; si el select no alcanza, se
-extiende ahí y no en un cuarto camino nuevo.
+`getBatchFinancials` (`queries.ts:616`) ya selecciona exactamente las columnas que el resolver
+necesita, pero **está definido y nadie lo llama**, y **no aplica `coerceNumericFields`**. Sin la
+coerción los NUMERIC llegan como string, `usable()` los descarta y el ROI nunca aparecería en
+listados — un fallo silencioso. La coerción se agrega dentro de `getBatchFinancials`, no en cada
+llamador.
 
 ### 3.3 Cambios de tipos — el compilador hace la auditoría
 
@@ -128,7 +139,7 @@ consumidor. Consumidores conocidos a tocar:
 | `components/marketplace/MarketplaceCard.tsx:435-453` | igual + se elimina el badge de plusvalía |
 | `components/property/Highlights.tsx:37-38` | guarda `!= null` antes del `>= 10` |
 | `components/property/ContactSidebar.tsx:24` | `??` en vez de `\|\|` |
-| `components/property/PriceTimeline.tsx:17-23` | deja de derivar el hito de entrega de la plusvalía |
+| `components/property/PriceTimeline.tsx` | **se borra el archivo** — ver D8 |
 | `components/property/FinancialSimulator.tsx:50` | slider arranca en `APPRECIATION_ASSUMPTION_PCT` + rótulo |
 | `app/[locale]/propiedades/_components/RentabilidadTab.tsx:206` | igual |
 | `app/[locale]/propiedades/_components/UnitDetailPage.tsx:158,582,701` | igual |
