@@ -26,10 +26,14 @@ export interface PropertySpecs {
   tipoEntrega?: string | null;
 }
 
+/** null = sin dato. NUNCA 0 como sentinela: `0` significaba "no sabemos" y los
+ *  consumidores no podían distinguirlo de un cero real.
+ *  `appreciation` se eliminó: no hay fuente de plusvalía en la BD y el supuesto
+ *  editable vive en APPRECIATION_ASSUMPTION_PCT (lib/calculator.ts).
+ *  Spec: docs/superpowers/specs/2026-07-27-metricas-inversion-unidades-design.md */
 export interface PropertyROI {
-  projected: number;
-  rentalMonthly: number;
-  appreciation: number;
+  projected: number | null;
+  rentalMonthly: number | null;
 }
 
 export interface PropertyFinancing {
