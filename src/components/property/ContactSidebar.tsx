@@ -21,7 +21,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
   const msg = t('whatsappMessageWithSource', { name: property.name, id: property.id });
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 
-  const rentDisplay = smartRentEstimate || property.roi.rentalMonthly;
+  const rentDisplay = smartRentEstimate ?? property.roi.rentalMonthly;
 
   return (
     <div className="sticky top-24 space-y-4">
@@ -29,7 +29,7 @@ export default function ContactSidebar({ property, smartRentEstimate }: ContactS
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         {/* Price reminder */}
         <div className="text-2xl font-bold text-[#2C2C2C] mb-1">{formatPrice(property.price.mxn)}</div>
-        {rentDisplay > 0 && (
+        {rentDisplay != null && rentDisplay > 0 && (
           <p className="text-sm text-gray-600 mb-4">
             {t('estRent')}: {formatPrice(rentDisplay)}/mes
           </p>

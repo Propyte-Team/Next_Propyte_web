@@ -638,7 +638,6 @@
     "mapNoCoords": "Las ubicaciones aún no están disponibles",
     "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas",
     "cardM2Short": "m²",
-    "cardAppreciation": "aprec./año",
     "toggleCurrencyAriaLabel": "Cambiar moneda",
     "cardPriceFrom": "Desde",
     "cardBedroomsRange": "{min} - {max} rec",

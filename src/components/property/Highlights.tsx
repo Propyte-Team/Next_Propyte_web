@@ -34,7 +34,7 @@ function getHighlightTags(property: Property, locale: string): { label: string; 
   if (property.financing.interestRate === 0) {
     tags.push({ label: locale === 'es' ? '0% interés' : '0% interest', icon: TrendingUp });
   }
-  if (property.roi.projected >= 10) {
+  if (property.roi.projected != null && property.roi.projected >= 10) {
     tags.push({ label: `ROI ${property.roi.projected}%+`, icon: TrendingUp });
   }
 

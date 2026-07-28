@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { ChevronLeft, ChevronRight, GitCompare, MapPin, TrendingUp } from '@/lib/icons';
+import { ChevronLeft, ChevronRight, GitCompare, MapPin } from '@/lib/icons';
 import type { Property, PropertyBadge } from '@/types/property';
 import { useCompare } from '@/hooks/useCompare';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -432,7 +432,7 @@ export default function MarketplaceCard({
               <MapPin size={12} className="flex-shrink-0" />
               <span className="truncate">{property.location.zone}, {property.location.city}</span>
             </div>
-            {variant === 'compact' && property.roi.projected > 0 && (
+            {variant === 'compact' && property.roi.projected != null && (
               <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0">
                 ROI {property.roi.projected}%
               </span>
@@ -442,15 +442,9 @@ export default function MarketplaceCard({
           {/* Investment metrics row — solo grid; compact ya mostró ROI inline arriba */}
           {variant !== 'compact' && (
             <div className="flex flex-wrap items-center gap-1.5">
-              {property.roi.projected > 0 && (
+              {property.roi.projected != null && (
                 <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
                   ROI {property.roi.projected}%
-                </span>
-              )}
-              {property.roi.appreciation > 0 && (
-                <span className="inline-flex items-center gap-0.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-2xs font-bold rounded-full tabular-nums">
-                  <TrendingUp size={10} />
-                  +{property.roi.appreciation}% {tMkt('cardAppreciation')}
                 </span>
               )}
               {property.capRate != null && property.capRate > 0 && (

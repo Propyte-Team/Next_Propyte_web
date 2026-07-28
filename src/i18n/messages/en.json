@@ -638,7 +638,6 @@
     "mapNoCoords": "Locations not available yet",
     "mapNoCoordsHint": "Developments will appear on the map once their coordinates are loaded",
     "cardM2Short": "m²",
-    "cardAppreciation": "apprec./yr",
     "toggleCurrencyAriaLabel": "Toggle currency",
     "cardPriceFrom": "From",
     "cardBedroomsRange": "{min} - {max} bed",
