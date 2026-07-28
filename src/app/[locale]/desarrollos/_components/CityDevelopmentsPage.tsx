@@ -9,7 +9,7 @@ import SiteMedia from '@/components/shared/SiteMedia';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import type { Property } from '@/types/property';
-import { CITY_MAP } from './cityConfig';
+import { CITY_MAP, cityMatchFilter } from './cityConfig';
 
 interface CityDevelopmentsPageProps {
   locale: string;
@@ -29,16 +29,17 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
 
   try {
     if (!supabase) throw new Error('No Supabase');
-    // ILIKE sobre matchTerm (accent-insensitive): la columna `city` tiene ambas
-    // variantes (Cancun/Cancún), por eso NO usamos eq. Seleccionamos `*` para que
-    // mapDevelopmentToProperty tenga todos los campos que la card necesita.
+    // OR de ILIKE sobre todas las variantes de escritura: ILIKE es
+    // accent-SENSITIVE, así que un solo término sin acento devolvía 0 filas
+    // (ver cityConfig.ts). Seleccionamos `*` para que mapDevelopmentToProperty
+    // tenga todos los campos que la card necesita.
     const { data } = await supabase
       .schema('real_estate_hub' as 'public')
       .from('v_developments')
       .select('*')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
-      .ilike('city', `%${cityInfo.matchTerm}%`)
+      .or(cityMatchFilter(cityInfo.matchTerms))
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);
 

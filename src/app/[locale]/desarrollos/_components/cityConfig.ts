@@ -9,11 +9,16 @@ export interface CityInfo {
   name: string;
   state: string;
   /**
-   * Substring sin acento usado en `.ilike('city', '%matchTerm%')` contra Supabase.
-   * La columna `city` tiene ambas variantes (Cancun/Cancún) — usar prefijo común
-   * sin acento captura ambas (ILIKE es case-insensitive pero accent-sensitive).
+   * Variantes de escritura de la ciudad tal como puede aparecer en la columna
+   * `city`. **ILIKE es case-insensitive pero accent-SENSITIVE**: `'%Cancun%'`
+   * NO matchea `'Cancún'`. Medido 2026-07-28 en prod: la columna solo tiene la
+   * forma acentuada (`Cancún` 141 filas, `Mérida` 216; cero sin acento), así que
+   * un `matchTerm` sin acento devolvía 0 resultados y las páginas de Cancún y
+   * Mérida estaban vacías en producción. Tulum y Playa del Carmen funcionaban
+   * solo porque no llevan acento. Se listan todas las variantes y se combinan
+   * con `.or()`.
    */
-  matchTerm: string;
+  matchTerms: string[];
   descEs: string;
   descEn: string;
 }
@@ -22,7 +27,7 @@ export const CITY_MAP: Record<string, CityInfo> = {
   cancun: {
     name: 'Cancún',
     state: 'Quintana Roo',
-    matchTerm: 'Cancun',
+    matchTerms: ['Cancún', 'Cancun'],
     descEs:
       'Explora los nuevos desarrollos inmobiliarios en Cancún, Quintana Roo. Preventas de departamentos, casas y terrenos con los mejores precios.',
     descEn:
@@ -31,7 +36,7 @@ export const CITY_MAP: Record<string, CityInfo> = {
   'playa-del-carmen': {
     name: 'Playa del Carmen',
     state: 'Quintana Roo',
-    matchTerm: 'Playa del Carmen',
+    matchTerms: ['Playa del Carmen'],
     descEs:
       'Descubre los nuevos desarrollos en Playa del Carmen. Condos de inversión, preventas y oportunidades en la Riviera Maya.',
     descEn:
@@ -40,7 +45,7 @@ export const CITY_MAP: Record<string, CityInfo> = {
   tulum: {
     name: 'Tulum',
     state: 'Quintana Roo',
-    matchTerm: 'Tulum',
+    matchTerms: ['Tulum'],
     descEs:
       'Nuevos lanzamientos inmobiliarios en Tulum. Departamentos, villas y terrenos en preventa con alto potencial de inversión.',
     descEn:
@@ -49,7 +54,7 @@ export const CITY_MAP: Record<string, CityInfo> = {
   merida: {
     name: 'Mérida',
     state: 'Yucatán',
-    matchTerm: 'Merida',
+    matchTerms: ['Mérida', 'Merida'],
     descEs:
       'Desarrollos inmobiliarios en Mérida, Yucatán. Terrenos, casas y departamentos en preventa en las mejores zonas.',
     descEn:
@@ -58,3 +63,9 @@ export const CITY_MAP: Record<string, CityInfo> = {
 };
 
 export const CITY_SLUGS = Object.keys(CITY_MAP);
+
+/** Filtro PostgREST `.or()` que matchea cualquiera de las variantes de la ciudad.
+ *  Ej: `city.ilike.%Cancún%,city.ilike.%Cancun%`. */
+export function cityMatchFilter(matchTerms: string[]): string {
+  return matchTerms.map((term) => `city.ilike.%${term}%`).join(',');
+}
