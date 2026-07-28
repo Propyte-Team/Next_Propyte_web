@@ -24,7 +24,7 @@ describe('fillEstimatedRent', () => {
     development_slug: 'dev', city: 'Tulum', zone: 'Centro', bedrooms: 2,
     area_m2: 80, price_mxn: 4_000_000, discount_price_mxn: null,
     discount_pct: null, is_discount_active: false, roi_annual: null,
-    estimated_rent_mxn: null, appreciation_annual: null,
+    estimated_rent_mxn: null,
   };
   it('rellena por development_id+bedrooms y respeta el valor nativo', () => {
     const out = fillEstimatedRent(

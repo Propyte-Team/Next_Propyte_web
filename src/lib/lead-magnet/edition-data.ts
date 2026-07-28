@@ -3,17 +3,18 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   getUnitsForLeadMagnet, getCityStrBenchmarks, getZoneScores,
-  getActiveRentalComparables, getRentalMlEstimates, coerceNumericFields,
+  getActiveRentalComparables, getRentalMlEstimates, coerceNumericFields, getFinancialsMap,
   type CityStrBenchmark, type ZoneScore, type RentalMlEstimateRow,
 } from '@/lib/supabase/queries';
 import { selectTopUnits, type LeadMagnetUnitInput, type ScoredUnit } from './score';
+import { resolveUnitInvestment, type DevFinancialsSlice } from '@/lib/investment/resolve';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
 
 const UNIT_NUMERIC_KEYS = [
   'price_mxn', 'discount_price_mxn', 'discount_pct', 'roi_annual',
-  'estimated_rent_mxn', 'appreciation_annual', 'bedrooms', 'area_m2',
+  'estimated_rent_mxn', 'bedrooms', 'area_m2',
 ] as const;
 
 export interface LtrCityMedian { city: string; medianRent: number; sample: number }
@@ -59,13 +60,14 @@ export function ltrMediansByCity(
     .sort((a, b) => b.sample - a.sample);
 }
 
-/** Rellena estimated_rent_mxn faltante con la renta residencial del modelo ML
- *  (match exacto development_id + bedrooms). El valor nativo de v_units gana
- *  cuando existe. Decisión Luis 2026-07-23: sin este cruce el pool elegible
- *  era 1/54 unidades. */
+/** Rellena roi_annual y estimated_rent_mxn faltantes con el resolver común
+ *  (manual → ML por recámaras → modelo de desarrollo). El valor nativo de
+ *  v_units gana cuando existe. Decisión Luis 2026-07-23: sin el cruce con ML el
+ *  pool elegible era 1/54 unidades. */
 export function fillEstimatedRent(
   units: LeadMagnetUnitInput[],
   ml: RentalMlEstimateRow[],
+  financials?: Map<string, DevFinancialsSlice>,
 ): LeadMagnetUnitInput[] {
   const byKey = new Map<string, number>();
   for (const m of ml) {
@@ -74,11 +76,11 @@ export function fillEstimatedRent(
     }
   }
   return units.map((u) => {
-    if (u.estimated_rent_mxn != null && u.estimated_rent_mxn > 0) return u;
-    const filled = u.development_id != null && u.bedrooms != null
-      ? byKey.get(`${u.development_id}|${u.bedrooms}`)
-      : undefined;
-    return filled != null ? { ...u, estimated_rent_mxn: filled } : u;
+    const mlRent = u.development_id != null && u.bedrooms != null
+      ? byKey.get(`${u.development_id}|${u.bedrooms}`) ?? null
+      : null;
+    const r = resolveUnitInvestment(u, financials?.get(u.development_id ?? '') ?? null, mlRent);
+    return { ...u, roi_annual: r.roiPct, estimated_rent_mxn: r.rentMonthly };
   });
 }
 
@@ -92,12 +94,14 @@ export async function buildEditionData(client: Client, now = new Date()): Promis
   ]);
 
   const rawUnits = (unitsRes.data ?? []) as Record<string, unknown>[];
-  const units = fillEstimatedRent(
-    rawUnits.map(
-      (r) => coerceNumericFields(r, UNIT_NUMERIC_KEYS) as unknown as LeadMagnetUnitInput,
-    ),
-    mlRents,
+  const coerced = rawUnits.map(
+    (r) => coerceNumericFields(r, UNIT_NUMERIC_KEYS) as unknown as LeadMagnetUnitInput,
   );
+  const finMap = await getFinancialsMap(
+    client,
+    coerced.map((u) => u.development_id).filter((id): id is string => !!id),
+  );
+  const units = fillEstimatedRent(coerced, mlRents, finMap);
 
   const topUnits = selectTopUnits(
     units,

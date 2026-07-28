@@ -12,7 +12,6 @@ function unit(over: Partial<LeadMagnetUnitInput> = {}): LeadMagnetUnitInput {
     city: 'Tulum', zone: 'Aldea Zama', bedrooms: 2, area_m2: 80,
     price_mxn: 4_000_000, discount_price_mxn: null, discount_pct: null,
     is_discount_active: false, roi_annual: 12, estimated_rent_mxn: 25_000,
-    appreciation_annual: 8,
     ...over,
   };
 }
@@ -23,9 +22,9 @@ describe('computeComponents', () => {
     expect(c.effectivePrice).toBe(3_600_000);
     expect(c.grossYieldPct).toBeCloseTo((25_000 * 12 / 3_600_000) * 100, 5);
   });
-  it('roi cae a yield + appreciation (default 8) cuando roi_annual es null', () => {
-    const c = computeComponents(unit({ roi_annual: null, appreciation_annual: null }));
-    expect(c.roiPct).toBeCloseTo(c.grossYieldPct + 8, 5);
+  it('sin roi_annual, el roi es el yield bruto — sin sumar plusvalía inventada', () => {
+    const c = computeComponents(unit({ roi_annual: null }));
+    expect(c.roiPct).toBeCloseTo(c.grossYieldPct, 6);
   });
   it('descuento inactivo aporta 0 aunque discount_pct tenga valor', () => {
     const c = computeComponents(unit({ is_discount_active: false, discount_pct: 15 }));

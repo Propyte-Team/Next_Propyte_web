@@ -19,7 +19,6 @@ export interface LeadMagnetUnitInput {
   is_discount_active: boolean | null;
   roi_annual: number | null;
   estimated_rent_mxn: number | null;
-  appreciation_annual: number | null;
 }
 
 export interface ZoneScoreInput {
@@ -41,7 +40,6 @@ export interface ScoredUnit extends LeadMagnetUnitInput {
 }
 
 export const SCORE_WEIGHTS = { yield: 0.35, roi: 0.3, discount: 0.2, zone: 0.15 } as const;
-export const DEFAULT_APPRECIATION_PCT = 8;
 const NEUTRAL_ZONE = 50;
 
 /** Clave de matching city|zone tolerante a acentos/caso. */
@@ -60,7 +58,9 @@ export function computeComponents(u: LeadMagnetUnitInput): {
       : (u.price_mxn ?? 0);
   const rent = u.estimated_rent_mxn ?? 0;
   const grossYieldPct = effectivePrice > 0 ? (rent * 12 / effectivePrice) * 100 : 0;
-  const roiPct = u.roi_annual ?? grossYieldPct + (u.appreciation_annual ?? DEFAULT_APPRECIATION_PCT);
+  // Sin ROI capturado ni del modelo, el proxy es el yield bruto. NO se suma
+  // plusvalía: no hay fuente de ese dato (spec 2026-07-27 §D6/§D7).
+  const roiPct = u.roi_annual ?? grossYieldPct;
   const discountPct = u.is_discount_active ? (u.discount_pct ?? 0) : 0;
   return { effectivePrice, grossYieldPct, roiPct, discountPct };
 }
