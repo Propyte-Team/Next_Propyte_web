@@ -42,6 +42,9 @@ usan para ROI.
 | D2 | ~~Precedencia de **ROI**: manual (Hub) → `development_financials` → `null`.~~ **REVISADA durante la implementación** — ver D10. | La premisa era falsa: `development_financials.roi_annual_pct` no es una estimación por desarrollo. |
 | D10 | El badge muestra **yield bruto** (`renta × 12 ÷ precio efectivo`) rotulado como tal, salvo que exista ROI capturado en el Hub, que gana y se rotula "ROI". `roi_annual_pct` **no se publica en ningún lado**. | Al 2026-07-27 `roi_annual_pct` tiene **2 valores distintos en 197 filas**: `0` en los 182 devs de `gbr_v2_2026-07-15` y `8.84` constante en los 15 de `v1.1-realtime`. `cap_rate` llega a 891%, `irr_5yr` es NULL en las 197 y `occupancy_rate_res` es constante. Publicar eso habría repetido el mismo número inventado que este trabajo vino a quitar. La **renta sí** tiene variación creíble (120 valores entre 12,400 y 82,400), y el yield derivado da 18 valores distintos entre 1.8% y 7.8% sobre las 56 unidades publicadas. Yield bruto no descuenta gastos: el rótulo lo dice y el tooltip lo explica. |
 | D11 | `DevelopmentDetailPage` deja de publicar `devFinancials.roi_annual_pct`. | Ya lo estaba mostrando en producción como "ROI del desarrollo" — era el 8.84 constante. |
+| D12 | **La renta del badge sale de `getRentalEstimate`** (comparables por ciudad/zona/tipo/recámaras) — la misma que publica el tab Rentabilidad — y el yield usa **una sola función compartida**, `residentialGrossYieldFromTotal`. Precedencia: manual del Hub → mercado → ML por recámaras → modelo por desarrollo. | Encontrado en el click-through con Playwright: la misma unidad mostraba **4.8% en el badge y 8.4% en el tab**. Eran dos fuentes de renta ($11,829 vs $23,590) *y* dos fórmulas — el tab divide renta efectiva tras ocupación entre la inversión total (precio + gastos de cierre), no renta entre precio. Curl y SQL nunca lo iban a ver: hay que abrir la página y mirar los dos números juntos. |
+| D13 | Los tipos que no rentan como vivienda (**terreno, macrolote**) no reciben renta de mercado. | La escalera de fallback de `getRentalEstimate` termina a nivel ciudad, así que a un lote de $300k le asignaba renta de departamento → **yields de 107%** en los `lote-*` de Región 11. |
+| D14 | Banda de plausibilidad `GROSS_YIELD_BOUNDS = 1–20%`: fuera de ahí no se publica número. | Hay unidades con precio roto en la BD — Sanam Residential a **$462,612,000** y **$84,222,000** por 2 y 3 recámaras — que daban 0.1% y 0.5%. Publicar ese extremo es publicar un dato falso con cara de dato. Mismo criterio que el `RENT_BOUNDS` que ya existe en el pipeline. **El dato roto sigue ahí: es un pendiente del Hub, no del sitio.** |
 | D3 | Precedencia de **renta**: manual (Hub) → `rental_ml_estimates` por `(desarrollo, recámaras)` → `development_financials` (nivel desarrollo) → `null`. | El ML es más granular que el dato de desarrollo, y es lo que el lead magnet ya usa hoy (`edition-data.ts:62-81`). Invertir el orden le quitaría cobertura a algo que ya funciona. |
 | D4 | El número único (badge de card) es **siempre residencial**. | `tipo_rendimiento` no sirve para elegir modalidad: sus valores son `Mixto (renta + plusvalía)` (12), `Plusvalía` (5), `Plusvalía pura` (1), `Uso propio` (1), `null` (37) — describe la tesis de inversión, no el tipo de renta. Cero unidades marcadas como vacacional. El residencial es además el conservador. El detalle de unidad conserva su vista dual actual (`RentabilidadTab`, `InvestmentSummary`). |
 | D5 | **Sin dato ⇒ no se muestra.** Nada de fallback a ciudad ni de `0` como sentinela. | Cobertura hoy: 26 de las 56 unidades publicadas pertenecen a un desarrollo con fila en `development_financials`. Ocultar es honesto; un número de ciudad presentado como número de unidad, no. |
@@ -192,19 +195,38 @@ Verificación manual antes de merge:
 
 ## 5.1 Resultado verificado en runtime (2026-07-27, `next start` sobre build limpio)
 
+Verificado con Playwright sobre `next start` y build limpio:
+
 | Ruta | Resultado |
 |---|---|
-| `/es/propiedades` | 56 cards, **27 badges de yield**, 18 valores distintos (1.8%–7.8%), 0 badges de ROI, 0 apariciones de `8.84`, 0 `NaN`, ningún decimal sin redondear |
-| `/es/propiedades/<slug>` con dato | 1 badge de yield rotulado |
-| `/es/desarrollos/<slug>` | 0 apariciones de `8.84` (antes del cambio: 3) |
-| Gates | `tsc --noEmit` limpio · `npm run test:unit` 37/37 · `npm run lint` 0 errores (15 warnings de baseline) · `next build` verde |
+| `/es/propiedades` | **35 badges** de yield, rango **1.8%–18.3%**, 0 badges de ROI, 0 apariciones de `8.84`, 0 `NaN`, ningún decimal sin redondear, **terrenos sin badge**, ubicación sin truncar |
+| Paridad | `departamento-contemporanea-1-rec`: **8.4% en la card == 8.4% en el badge de la ficha == 8.4% en el tab Rentabilidad** |
+| Tab Proyección ROI | slider de plusvalía en **5.0%** con la nota "Supuesto editable, no una proyección de Propyte" |
+| `/es/desarrollos/<slug>` | 0 apariciones de `8.84` (antes: 3) |
+| `/es/desarrollos/cancun` | **3 resultados** (antes: 0 — ver §7) |
+| Gates | `tsc --noEmit` limpio · `npm run test:unit` **54/54** · `npm run lint` 0 errores (15 warnings de baseline) · `next build` verde |
 
-Nota de método: la primera verificación dio un falso negativo porque `npm start`
-falló con `EADDRINUSE` contra un servidor viejo y las respuestas venían del build
-anterior. Matar el proceso por PID y reconstruir con el puerto libre es parte del
-procedimiento, no un detalle.
+Notas de método, las dos aprendidas a golpes en esta sesión:
 
-## 6. Fuera de alcance
+1. **`npm start` que falla con `EADDRINUSE` da falso verde**: el `curl` responde 200
+   desde el build viejo. Dos rondas de "verificación" salieron del servidor
+   anterior. Liberar el puerto por PID **antes** del build, y leer el log del server.
+2. **Contar badges en el HTML no es verificar.** El `4.8%` vs `8.4%` solo se ve
+   abriendo la página y mirando el badge junto al tab. React además intercala
+   `<!-- -->` entre nodos de texto, así que un grep ingenuo no encuentra ni los
+   badges que sí están.
+
+## 7. Fuera del alcance original, arreglado en la misma sesión
+
+**`/es/desarrollos/cancun` y `/merida` estaban vacías en producción.** El filtro
+corría `.ilike('city', '%Cancun%')` sobre una columna que solo guarda `'Cancún'`
+(141 filas; **cero** sin acento) → 0 resultados. `ILIKE` es case-insensitive pero
+**accent-SENSITIVE**, al contrario de lo que afirmaba el comentario del código.
+Tulum y Playa del Carmen funcionaban solo porque no llevan acento.
+`matchTerm` → `matchTerms[]` combinadas con `.or()`, más un test guardia que exige
+la variante acentuada para toda ciudad con acento en el nombre.
+
+## 8. Fuera de alcance
 
 - DDL o cambios sobre `real_estate_hub.v_units`.
 - Backfill de las columnas manuales del Hub.
