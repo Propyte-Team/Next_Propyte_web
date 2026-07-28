@@ -55,6 +55,13 @@ export function computePriceCeiling(properties: Property[]): number {
   return Math.max(MAX_PRICE, Math.ceil(max / 1_000_000) * 1_000_000);
 }
 
+/** Sin dato de ROI, la unidad NO satisface un mínimo de ROI. Ojo: `null < n` es
+ *  true en JS por coerción a 0 — de ahí el guard explícito. */
+export function passesRoiMin(projected: number | null, roiMin: number): boolean {
+  if (!roiMin) return true;
+  return projected != null && projected >= roiMin;
+}
+
 function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const parsed: Partial<Filters> = {};
 
@@ -191,7 +198,7 @@ export function useFilters(properties: Property[]) {
       if (filters.type && p.specs.type !== filters.type) return fail(`type:'${p.specs.type}'≠'${filters.type}'`);
       if (p.price.mxn < filters.priceMin) return fail('priceMin');
       if (p.price.mxn > filters.priceMax) return fail('priceMax');
-      if (filters.roiMin && p.roi.projected < filters.roiMin) return fail('roiMin');
+      if (!passesRoiMin(p.roi.projected, filters.roiMin)) return fail('roiMin');
       if (filters.stage && p.stage !== filters.stage) return fail(`stage:'${p.stage}'≠'${filters.stage}'`);
       if (filters.usage && !p.usage.includes(filters.usage)) return fail('usage');
       if (filters.developmentType && p.developmentType !== filters.developmentType)
@@ -236,7 +243,8 @@ export function useFilters(properties: Property[]) {
         result.sort((a, b) => b.price.mxn - a.price.mxn);
         break;
       case 'roi':
-        result.sort((a, b) => b.roi.projected - a.roi.projected);
+        // Sin dato va al final por decisión, no por coerción de null a 0.
+        result.sort((a, b) => (b.roi.projected ?? -Infinity) - (a.roi.projected ?? -Infinity));
         break;
       case 'date':
         result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
