@@ -15,9 +15,12 @@ import {
   getSimilarUnits,
   getDeveloperById,
   getDeveloperProjectCount,
+  getDevelopmentFinancials,
+  getMlRentalEstimateForUnit,
   type DeveloperRecord,
   type AirdnaMarketSummary,
 } from '@/lib/supabase/queries';
+import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
@@ -86,7 +89,34 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     notFound();
   }
 
-  const property = mapUnitToProperty(row, locale);
+  // ── Métricas de inversión: modelo por desarrollo + ML por recámaras ──
+  // El manual del Hub (row.roi_annual) gana sobre ambos; ver
+  // docs/superpowers/specs/2026-07-27-metricas-inversion-unidades-design.md
+  let devFinancials: Awaited<ReturnType<typeof getDevelopmentFinancials>> = null;
+  let mlRentRes: number | null = null;
+  try {
+    if (supabase && row.development_id) {
+      const [finResult, mlResult] = await Promise.all([
+        getDevelopmentFinancials(supabase, row.development_id),
+        getMlRentalEstimateForUnit(
+          supabase,
+          row.development_id,
+          row.unit_type ?? '',
+          row.bedrooms ?? 0,
+        ),
+      ]);
+      devFinancials = finResult;
+      mlRentRes = mlResult?.estimated_rent_residencial ?? null;
+    }
+  } catch (err) {
+    console.error('Investment metrics fetch failed:', err);
+  }
+
+  const property = mapUnitToProperty(
+    row,
+    locale,
+    resolveUnitInvestment(row, devFinancials, mlRentRes),
+  );
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
   // Editorial-first (estricto por idioma): si existe editorial en el locale
   // actual, ocultamos el bloque SEO "Acerca de" y mostramos solo el editorial.
@@ -698,7 +728,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         propertyName={property.name}
         propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
         locale={locale}
-        roiPct={property.roi.projected}
+        roiPct={property.roi.projected ?? undefined}
       />
     </>
   );
