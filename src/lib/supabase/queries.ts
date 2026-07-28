@@ -2571,6 +2571,32 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
   return Array.from(seen);
 }
 
+/**
+ * Locales en los que ESTE slug está realmente publicado y visible.
+ *
+ * El artículo se traduce con el mismo slug en ambos locales, así que el hreflang
+ * se emitía a mano para `es` y `en` sin comprobar nada. Cuando una traducción
+ * está en `draft` —caso real de `cerrar-con-comprador-extranjero`, publicado en
+ * EN y borrador en ES— la versión viva declara `hreflang="es"` y `x-default`
+ * hacia una URL que responde 200 + noindex: reciprocidad rota.
+ *
+ * Respeta el mismo gate que `getBlogPost` (status + fecha) para que el hreflang
+ * no anuncie una traducción programada que todavía no es accesible.
+ */
+export async function getBlogPostLocales(c: Client, slug: string): Promise<string[]> {
+  let q = c.from('blog_posts').select('locale').eq('slug', slug);
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
+
+  const { data, error } = await q;
+  if (error) { console.error('[getBlogPostLocales]', error.message); return []; }
+  return Array.from(new Set((data ?? []).map((r: { locale: string }) => r.locale)));
+}
+
 export async function getBlogPostSlugs(c: Client): Promise<{ slug: string; locale: string }[]> {
   let q = c
     .from('blog_posts')

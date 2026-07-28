@@ -501,6 +501,11 @@
   "blog": {
     "listingTitle": "Blog",
     "listingDescription": "Articles, guides and real estate market analysis in the Riviera Maya and Yucatán.",
+    "listingTitleCategory": "{category} — Real estate blog",
+    "listingDescriptionCategory": "Articles on {category} covering real estate investment in the Riviera Maya and Yucatán: market analysis, legal framework and the buying process.",
+    "listingTitlePaged": "{title} — Page {page}",
+    "publishedOn": "Published",
+    "updatedOn": "Updated",
     "allCategories": "All",
     "categoryFilterAriaLabel": "Filter by category",
     "featuredLabel": "Featured",

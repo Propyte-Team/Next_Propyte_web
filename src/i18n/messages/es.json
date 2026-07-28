@@ -501,6 +501,11 @@
   "blog": {
     "listingTitle": "Blog",
     "listingDescription": "Artículos, guías y análisis del mercado inmobiliario en la Riviera Maya y Yucatán.",
+    "listingTitleCategory": "{category} — Blog inmobiliario",
+    "listingDescriptionCategory": "Artículos de {category} sobre inversión inmobiliaria en la Riviera Maya y Yucatán: análisis de mercado, marco legal y proceso de compra.",
+    "listingTitlePaged": "{title} — Página {page}",
+    "publishedOn": "Publicado",
+    "updatedOn": "Actualizado",
     "allCategories": "Todos",
     "categoryFilterAriaLabel": "Filtrar por categoría",
     "featuredLabel": "Destacado",

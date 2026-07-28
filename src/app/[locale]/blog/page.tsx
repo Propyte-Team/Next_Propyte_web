@@ -11,19 +11,38 @@ import BlogPagination from '@/components/blog/BlogPagination';
 import CategoryFilter from '@/components/blog/CategoryFilter';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import { Suspense } from 'react';
+import { blogHref } from '@/lib/blog/blog-urls';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 const POSTS_PER_PAGE = 9;
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+export async function generateMetadata({ params, searchParams }: BlogPageProps) {
   const { locale } = await params;
+  const { categoria, pagina } = await searchParams;
   const t = await getTranslations({ locale, namespace: 'blog' });
-  const title = t('listingTitle');
+
+  const category = categoria || null;
+  const page = Math.max(1, Number(pagina) || 1);
+
+  // Título y descripción propios por vista. Antes las 7 categorías y las 2
+  // páginas compartían el meta de /blog y canonicalizaban ahí: el canonical a la
+  // página 1 esconde el resto del inventario, y un meta repetido no distingue
+  // una vista de otra.
+  let title = t('listingTitle');
+  let description = t('listingDescription');
+  if (category) {
+    title = t('listingTitleCategory', { category });
+    description = t('listingDescriptionCategory', { category });
+  }
+  if (page > 1) {
+    title = t('listingTitlePaged', { title, page });
+  }
+
   const brandedTitle = `${title} | Propyte`;
-  const description = t('listingDescription');
+  const state = { category, page };
+
   return {
     title,
     description,
@@ -37,8 +56,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
-      canonical: `/${locale}/blog`,
-      languages: { es: '/es/blog', en: '/en/blog', 'x-default': '/es/blog' },
+      // Self-referencing: cada categoría y cada página apunta a sí misma.
+      canonical: blogHref(locale, state),
+      languages: {
+        es: blogHref('es', state),
+        en: blogHref('en', state),
+        'x-default': blogHref('es', state),
+      },
     },
   };
 }
@@ -104,15 +128,13 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           />
 
           <div className="mt-6 mb-8">
-            <Suspense fallback={null}>
-              <CategoryFilter
-                categories={categories}
-                active={activeCategory}
-                allLabel={t('allCategories') || 'Todos'}
-                filterAriaLabel={t('categoryFilterAriaLabel')}
-                locale={locale}
-              />
-            </Suspense>
+            <CategoryFilter
+              categories={categories}
+              active={activeCategory}
+              allLabel={t('allCategories') || 'Todos'}
+              filterAriaLabel={t('categoryFilterAriaLabel')}
+              locale={locale}
+            />
           </div>
 
           {posts.length > 0 ? (
@@ -129,16 +151,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 </p>
               )}
 
-              <Suspense>
-                <BlogPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  locale={locale}
-                  prevLabel={t('paginationPrev')}
-                  nextLabel={t('paginationNext')}
-                  ariaLabel={t('paginationAriaLabel')}
-                />
-              </Suspense>
+              <BlogPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                locale={locale}
+                activeCategory={activeCategory}
+                prevLabel={t('paginationPrev')}
+                nextLabel={t('paginationNext')}
+                ariaLabel={t('paginationAriaLabel')}
+              />
             </>
           ) : (
             <EmptyState

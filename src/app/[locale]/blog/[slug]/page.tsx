@@ -3,14 +3,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPost, getRelatedPosts, getBlogPostSlugs } from '@/lib/supabase/queries';
+import { getBlogPost, getRelatedPosts, getBlogPostSlugs, getBlogPostLocales } from '@/lib/supabase/queries';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import BlogShareBar from '@/components/blog/BlogShareBar';
 import BlogSidebarForm from '@/components/blog/BlogSidebarForm';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { formatDate } from '@/lib/helpers/format-date';
+import { resolvePostDates } from '@/lib/blog/post-dates';
 import { sanitizeRichHtml } from '@/lib/security/sanitizeHtml';
-import { Calendar, Clock, Tag, ChevronLeft } from '@/lib/icons';
+import { Calendar, Clock, Tag, ChevronLeft, RefreshCw } from '@/lib/icons';
 
 export const revalidate = 3600;
 
@@ -31,6 +32,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const supabase = createPublicSupabaseClient();
   const post = supabase ? await getBlogPost(supabase, slug, locale) : null;
   if (!post) return {};
+
+  // hreflang solo hacia traducciones realmente publicadas. Declarar una que
+  // está en draft manda al rastreador a un 200 + noindex y rompe la reciprocidad.
+  const publishedLocales = supabase ? await getBlogPostLocales(supabase, slug) : [locale];
+  const languages: Record<string, string> = {};
+  for (const l of publishedLocales) languages[l] = `/${l}/blog/${slug}`;
+  // x-default apunta al ES cuando existe; si no, a la única versión viva.
+  languages['x-default'] = languages.es ?? `/${locale}/blog/${slug}`;
 
   const title = post.meta_title || post.title;
   const brandedTitle = `${title} | Propyte`;
@@ -54,24 +63,23 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
       canonical: `/${locale}/blog/${slug}`,
-      languages: {
-        es: `/es/blog/${slug}`,
-        en: `/en/blog/${slug}`,
-        'x-default': `/es/blog/${slug}`,
-      },
+      languages,
     },
   };
 }
 
 function buildJsonLd(post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>, locale: string, siteUrl: string) {
+  // `dateModified` saneado: 8 artículos ES tienen updated_at anterior al publish
+  // y emitirlo crudo daba dateModified < datePublished. Ver resolvePostDates.
+  const dates = resolvePostDates(post);
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt ?? undefined,
     image: post.featured_image ?? undefined,
-    datePublished: post.published_at ?? post.created_at,
-    dateModified: post.updated_at ?? post.created_at,
+    datePublished: dates.published,
+    dateModified: dates.modified,
     author: { '@type': 'Person', name: post.author_name },
     publisher: {
       '@type': 'Organization',
@@ -115,6 +123,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
   const jsonLd = buildJsonLd(post, locale, siteUrl);
+  const postDates = resolvePostDates(post);
   const breadcrumbs = [
     { label: t('listingTitle'), href: `/${locale}/blog` },
     { label: post.category, href: `/${locale}/blog?categoria=${encodeURIComponent(post.category)}` },
@@ -186,10 +195,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   <span className="font-medium text-[#0F1923]">{post.author_name}</span>
                 </div>
 
-                {post.published_at && (
-                  <time dateTime={post.published_at} className="flex items-center gap-1">
-                    <Calendar size={14} />
-                    {formatDate(post.published_at, locale)}
+                <time dateTime={postDates.published} className="flex items-center gap-1">
+                  <Calendar size={14} />
+                  <span className="sr-only">{t('publishedOn')} </span>
+                  {formatDate(postDates.published, locale)}
+                </time>
+
+                {/* Fecha de actualización solo cuando hubo un cambio en un día
+                    posterior. No se mueve por builds ni por cambios de estilo:
+                    sale de `updated_at` de la fila, no de la hora del render. */}
+                {postDates.showModified && (
+                  <time dateTime={postDates.modified} className="flex items-center gap-1">
+                    <RefreshCw size={14} />
+                    {t('updatedOn')} {formatDate(postDates.modified, locale)}
                   </time>
                 )}
 
