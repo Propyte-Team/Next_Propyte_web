@@ -41,6 +41,9 @@ export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
   // Brokers
   { key: 'brokers.hero', group: 'Brokers', labelEs: 'Hero · Brokers', labelEn: 'Brokers hero', defaultKind: 'image', aspect: '4/3' },
   { key: 'brokers.equipo', group: 'Brokers', labelEs: 'Equipo / Account Manager (Brokers)', labelEn: 'Broker team', defaultKind: 'image', aspect: '16/9' },
+  // Únete (reclutamiento)
+  { key: 'unete.video', group: 'Únete', labelEs: 'Video de reclutamiento (hero)', labelEn: 'Recruitment video (hero)', defaultKind: 'video', aspect: '16/9' },
+  { key: 'unete.dashboard', group: 'Únete', labelEs: 'Captura del dashboard del asesor', labelEn: 'Advisor dashboard screenshot', defaultKind: 'image', aspect: '16/9' },
 ];
 
 export const SITE_MEDIA_KEYS: string[] = SITE_MEDIA_SLOTS.map((s) => s.key);

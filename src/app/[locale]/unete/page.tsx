@@ -3,7 +3,7 @@ import UnetePageContent from './UnetePageContent';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import { getFaqs, getCta } from '@/lib/hub-content';
+import { getFaqs, getCta, getSiteMedia } from '@/lib/hub-content';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -67,17 +67,21 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
   };
 
   // Hub-driven editorial overrides (con fallback a i18n)
-  const [hubFaqs, recruitVideoCta] = await Promise.all([
+  const [hubFaqs, recruitVideoCta, siteMedia] = await Promise.all([
     getFaqs('recruitment'),
     getCta('unete_hero_video'),
+    getSiteMedia(),
   ]);
 
   const faqs = hubFaqs.map((f) => ({
     q: locale === 'en' ? f.question_en : f.question_es,
     a: locale === 'en' ? f.answer_en : f.answer_es,
   }));
-  const videoUrl = recruitVideoCta?.button_href ?? null;
-  const hubData = { videoUrl, faqs };
+  // El video se administra en Materiales del sitio (slot `unete.video`). Se
+  // conserva el CTA `unete_hero_video` como fallback porque es de donde venía
+  // antes: así el que ya esté cargado ahí no deja de funcionar al migrar.
+  const videoUrl = siteMedia['unete.video']?.url ?? recruitVideoCta?.button_href ?? null;
+  const hubData = { videoUrl, faqs, dashboard: siteMedia['unete.dashboard'] ?? null };
 
   // FAQ schema usa Hub si tiene, si no fallback a i18n
   const faqSchemaSource = faqs.length > 0

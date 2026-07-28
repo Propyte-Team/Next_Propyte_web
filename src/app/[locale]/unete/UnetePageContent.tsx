@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { submitLead } from '@/lib/leads/submit-lead';
+import SiteMediaView from '@/components/shared/SiteMediaView';
+import type { SiteMediaEntry } from '@/lib/hub-content';
 import {
   Play,
   TrendingUp,
@@ -37,10 +39,13 @@ interface UneteFaqItem {
 interface UneteHubData {
   videoUrl: string | null;
   faqs: UneteFaqItem[];
+  /** Captura del dashboard (slot `unete.dashboard`); null → mock CSS de respaldo. */
+  dashboard: SiteMediaEntry | null;
 }
 const UneteHubContext = createContext<UneteHubData>({
   videoUrl: null,
   faqs: [],
+  dashboard: null,
 });
 
 // ============================================================
@@ -306,6 +311,8 @@ function CareerPath() {
 // ============================================================
 function TechPlatform() {
   const t = useTranslations('unete');
+  const locale = useLocale();
+  const hub = useContext(UneteHubContext);
   const ICONS = [BarChart3, Globe, Laptop, TrendingUp, Zap, Headphones] as const;
   const tools = ICONS.map((Icon, i) => {
     const n = i + 1;
@@ -367,22 +374,38 @@ function TechPlatform() {
                 </div>
               </div>
             </div>
-            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-              {dashLabels.map((label) => (
-                <div key={label} className="bg-white/5 rounded-lg p-4">
-                  <div className="text-xs text-white/65">{label}</div>
-                  <div className="mt-3 h-3 w-3/4 bg-white/15 rounded" />
-                  <div className="mt-2 h-2 w-1/2 bg-white/10 rounded" />
+            {hub.dashboard?.url ? (
+              /* Captura real del dashboard, administrada desde el Hub. */
+              <SiteMediaView
+                entry={hub.dashboard}
+                label={t('dashPreviewBadge')}
+                tone="dark"
+                locale={locale}
+                className="aspect-video !rounded-none"
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
+            ) : (
+              /* Respaldo: mock en CSS mientras no haya captura subida al slot
+                 `unete.dashboard`. Nunca se muestra el marco vacío. */
+              <>
+                <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {dashLabels.map((label) => (
+                    <div key={label} className="bg-white/5 rounded-lg p-4">
+                      <div className="text-xs text-white/65">{label}</div>
+                      <div className="mt-3 h-3 w-3/4 bg-white/15 rounded" />
+                      <div className="mt-2 h-2 w-1/2 bg-white/10 rounded" />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="px-6 pb-6">
-              <div className="h-32 bg-white/5 rounded-lg flex items-end justify-around p-4 gap-2">
-                {[40, 65, 55, 80, 70, 90, 75, 95, 85, 60, 88, 92].map((h, i) => (
-                  <div key={i} className="flex-1 bg-propyte-brand/60 rounded-t" style={{ height: `${h}%` }} />
-                ))}
-              </div>
-            </div>
+                <div className="px-6 pb-6">
+                  <div className="h-32 bg-white/5 rounded-lg flex items-end justify-around p-4 gap-2">
+                    {[40, 65, 55, 80, 70, 90, 75, 95, 85, 60, 88, 92].map((h, i) => (
+                      <div key={i} className="flex-1 bg-propyte-brand/60 rounded-t" style={{ height: `${h}%` }} />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -801,7 +824,7 @@ function FinalCTA() {
 // MAIN PAGE
 // ============================================================
 export default function UnetePageContent({ hubData }: { hubData?: UneteHubData }) {
-  const value = hubData ?? { videoUrl: null, faqs: [] };
+  const value = hubData ?? { videoUrl: null, faqs: [], dashboard: null };
   return (
     <UneteHubContext.Provider value={value}>
       <div>
