@@ -9,9 +9,11 @@ import {
   getUnitBySlug,
   getDeveloperById,
   getDevelopmentFinancials,
+  getMlRentalEstimateForUnit,
   getRentalEstimate,
 } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import {
   CITY_TO_MARKET_CODE,
   calculateIRR,
@@ -19,6 +21,7 @@ import {
   calculateRemainingBalanceActuarial,
   calculateClosingCosts,
   RES,
+  APPRECIATION_ASSUMPTION_PCT,
 } from '@/lib/calculator';
 import { PropertyPDFDocument, type PropertyPDFData, type PropertyPDFLabels } from '@/lib/pdf/PropertyPDFDocument';
 import { createElement, type ReactElement } from 'react';
@@ -140,6 +143,7 @@ async function buildPdfLabels(locale: 'es' | 'en', kind: 'development' | 'unit')
     area: t('area'),
     stage: t('stage'),
     irr5y: t('irr5y'),
+    appreciationAssumption: t('appreciationAssumption', { pct: APPRECIATION_ASSUMPTION_PCT }),
     estRentMo: t('estRentMo'),
     overview: t('overview'),
     investmentMetrics: t('investmentMetrics'),
@@ -161,7 +165,26 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
   } catch { /* no fallback */ }
   if (!row) return null;
 
-  const property = mapUnitToProperty(row);
+  // Métricas de inversión: modelo por desarrollo + ML por recámaras. Si falla,
+  // el PDF sale sin ROI — nunca con un número inventado.
+  let unitFinancials: Awaited<ReturnType<typeof getDevelopmentFinancials>> = null;
+  let unitMlRent: number | null = null;
+  try {
+    if (row.development_id) {
+      const [fin, ml] = await Promise.all([
+        getDevelopmentFinancials(supabase, row.development_id),
+        getMlRentalEstimateForUnit(supabase, row.development_id, row.unit_type ?? '', row.bedrooms ?? 0),
+      ]);
+      unitFinancials = fin;
+      unitMlRent = ml?.estimated_rent_residencial ?? null;
+    }
+  } catch { /* tolerate */ }
+
+  const property = mapUnitToProperty(
+    row,
+    undefined,
+    resolveUnitInvestment(row, unitFinancials, unitMlRent),
+  );
   const description = { es: property.description.es, en: property.description.en };
   const state = property.location.state || 'Quintana Roo';
 
@@ -192,7 +215,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     totalInvested,
     annualNetFlow: monthlyNet * 12,
     price,
-    appreciationPct: property.roi.appreciation || 8,
+    appreciationPct: APPRECIATION_ASSUMPTION_PCT,
     years: 5,
     remainingBalance: calculateRemainingBalanceActuarial(price, downPct, property.financing.interestRate || 9.5, property.financing.months[0] || 120, 60),
   })) : null;
@@ -200,7 +223,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     totalInvested,
     annualNetFlow: monthlyNet * 12,
     price,
-    appreciationPct: property.roi.appreciation || 8,
+    appreciationPct: APPRECIATION_ASSUMPTION_PCT,
     years: 10,
     remainingBalance: calculateRemainingBalanceActuarial(price, downPct, property.financing.interestRate || 9.5, property.financing.months[0] || 120, 120),
   })) : null;
@@ -237,7 +260,7 @@ async function buildUnitPdfData(supabase: any, slug: string, locale: 'es' | 'en'
     deliveryLabel: property.delivery?.estimated || property.delivery?.text || null,
     whatsapp,
     description: descText,
-    roiProjected: property.roi.projected || null,
+    roiProjected: property.roi.projected ?? null,
     capRate: property.capRate ?? null,
     irr5y,
     irr10y,

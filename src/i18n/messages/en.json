@@ -2690,6 +2690,7 @@
     "area": "Area",
     "stage": "Stage",
     "irr5y": "IRR 5y",
+    "appreciationAssumption": "IRR calculated with an assumed {pct}% annual appreciation. Not a performance projection.",
     "estRentMo": "Est. Rent/mo",
     "overview": "Overview",
     "investmentMetrics": "Investment Metrics",

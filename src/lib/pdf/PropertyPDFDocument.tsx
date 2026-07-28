@@ -14,6 +14,8 @@ export interface PropertyPDFLabels {
   area: string;
   stage: string;
   irr5y: string;
+  /** Rótulo del supuesto de plusvalía con el que se calculó la IRR. */
+  appreciationAssumption: string;
   estRentMo: string;
   overview: string;
   investmentMetrics: string;
@@ -417,6 +419,9 @@ export function PropertyPDFDocument({ data }: { data: PropertyPDFData }) {
                 </View>
               ))}
             </View>
+            {data.irr5y != null && (
+              <Text style={styles.disclaimer}>{labels.appreciationAssumption}</Text>
+            )}
           </>
         )}
 

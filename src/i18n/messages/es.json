@@ -2690,6 +2690,7 @@
     "area": "Superficie",
     "stage": "Etapa",
     "irr5y": "TIR 5a",
+    "appreciationAssumption": "TIR calculada con un supuesto de plusvalía de {pct}% anual. No es una proyección de rendimiento.",
     "estRentMo": "Renta est./mes",
     "overview": "Descripción",
     "investmentMetrics": "Métricas de Inversión",
