@@ -1605,20 +1605,36 @@ export async function getMarketRentMap(
     if (!byKey.has(key)) byKey.set(key, t);
   }
 
-  const entries = await Promise.all(
-    [...byKey.entries()].map(async ([key, t]) => {
+  // Concurrencia acotada: cada combo son hasta 4 consultas secuenciales, y estas
+  // páginas se prerenderizan en paralelo con las demás. Sin tope, un build lanza
+  // cientos de requests a la vez y OTRAS páginas empiezan a prerenderizarse
+  // vacías (visto 2026-07-28: /desarrollos/cancun quedó sin resultados en un
+  // build y con 3 en otro, con el mismo código y la misma data).
+  const MAX_CONCURRENT = 6;
+  const pending = [...byKey.entries()];
+  const entries: Array<readonly [string, { median_rent_mxn: number; avg_rent_per_m2: number | null } | null]> = [];
+
+  async function worker() {
+    for (;;) {
+      const next = pending.shift();
+      if (!next) return;
+      const [key, t] = next;
       try {
         const { data } = await getRentalEstimate(
           client, t.city as string, t.propertyType, t.bedrooms, t.zone, 'residencial',
         );
-        return [key, data ? {
+        entries.push([key, data ? {
           median_rent_mxn: data.median_rent_mxn,
           avg_rent_per_m2: data.avg_rent_per_m2,
-        } : null] as const;
+        } : null] as const);
       } catch {
-        return [key, null] as const;
+        entries.push([key, null] as const);
       }
-    }),
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(MAX_CONCURRENT, pending.length) }, () => worker()),
   );
 
   return new Map(entries);

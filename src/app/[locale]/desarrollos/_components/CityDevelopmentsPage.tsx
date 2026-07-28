@@ -33,7 +33,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
     // accent-SENSITIVE, así que un solo término sin acento devolvía 0 filas
     // (ver cityConfig.ts). Seleccionamos `*` para que mapDevelopmentToProperty
     // tenga todos los campos que la card necesita.
-    const { data } = await supabase
+    const { data, error } = await supabase
       .schema('real_estate_hub' as 'public')
       .from('v_developments')
       .select('*')
@@ -42,6 +42,14 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       .or(cityMatchFilter(cityInfo.matchTerms))
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);
+
+    // Sin esto un fallo de PostgREST se veía idéntico a "no hay desarrollos":
+    // 0 resultados, sin excepción y sin una línea en el log. La página se
+    // prerenderiza con revalidate=3600, así que un error en build deja la ciudad
+    // vacía por una hora.
+    if (error) {
+      console.error(`[CityDevelopmentsPage:${citySlug}] query failed:`, error.message);
+    }
 
     if (data && data.length > 0) {
       const rows = data as DevelopmentRow[];
