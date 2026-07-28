@@ -1,4 +1,5 @@
 import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPromo, PropertyDiscount } from '@/types/property';
+import type { ResolvedInvestment } from '@/lib/investment/resolve';
 import { parseEsquemas, type EsquemaPago } from '@/lib/esquemas-pago';
 import { parsePreventa } from '@/lib/preventa';
 
@@ -190,7 +191,13 @@ const AVAILABILITY_TO_BADGE: Record<string, Exclude<PropertyBadge, null>> = {
  * development aggregates which default to 0). Links back to parent
  * development via parentDevelopmentSlug for the "View development" CTA.
  */
-export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
+/** `resolved` viene de resolveUnitInvestment. Omitirlo deja las métricas de
+ *  inversión en null: el mapper NO consulta la base de datos. */
+export function mapUnitToProperty(
+  row: UnitRow,
+  locale?: string,
+  resolved?: ResolvedInvestment,
+): Property {
   // v_units NO expone `stage` ni `availability_status` — usar `status` +
   // `is_presale`. Fix bug 2026-05-20: el mapper antiguo caía a 'preventa'
   // como fallback cuando row.stage venía undefined → TODAS las unidades
@@ -332,9 +339,8 @@ export function mapUnitToProperty(row: UnitRow, locale?: string): Property {
       video: row.video_url || undefined,
     },
     roi: {
-      projected: Number(row.roi_annual) || 0,
-      rentalMonthly: Number(row.estimated_rent_mxn) || 0,
-      appreciation: Number(row.appreciation_annual) || 0,
+      projected: resolved?.roiPct ?? null,
+      rentalMonthly: resolved?.rentMonthly ?? null,
     },
     financing: {
       downPaymentMin: Number(row.fin_enganche_pct) || 0,

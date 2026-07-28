@@ -1,3 +1,4 @@
+import type { ResolvedInvestment } from '@/lib/investment/resolve';
 import type {
   Property,
   PropertyStage,
@@ -223,7 +224,13 @@ export function resolveSpecType(
  * Note: bedrooms/bathrooms/area are 0 at the development level — those specs
  * live at the unit level (v_units). Cards hide them when 0.
  */
-export function mapDevelopmentToProperty(row: DevelopmentRow, locale?: string): Property {
+/** `resolved` viene de resolveUnitInvestment. Omitirlo deja las métricas de
+ *  inversión en null: el mapper NO consulta la base de datos. */
+export function mapDevelopmentToProperty(
+  row: DevelopmentRow,
+  locale?: string,
+  resolved?: ResolvedInvestment,
+): Property {
   const stage: PropertyStage = normalizeStage(row.stage) ?? 'preventa';
 
   const badge: PropertyBadge = VALID_BADGES.includes(row.badge as Exclude<PropertyBadge, null>)
@@ -321,9 +328,8 @@ export function mapDevelopmentToProperty(row: DevelopmentRow, locale?: string): 
       video: row.video_url || undefined,
     },
     roi: {
-      projected: row.roi_projected || 0,
-      rentalMonthly: row.roi_rental_monthly || 0,
-      appreciation: row.roi_appreciation || 0,
+      projected: resolved?.roiPct ?? null,
+      rentalMonthly: resolved?.rentMonthly ?? null,
     },
     financing: {
       downPaymentMin: row.financing_down_payment || 0,
