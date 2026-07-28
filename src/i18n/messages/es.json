@@ -892,6 +892,7 @@
     "interestRate": "Tasa de interés anual",
     "monthlyRent": "Renta mensual estimada",
     "appreciation": "Apreciación anual estimada",
+    "appreciationAssumptionNote": "Supuesto editable, no una proyección de Propyte. Muévelo para ver otros escenarios.",
     "monthlyPayment": "Mensualidad estimada",
     "projectedRoi": "ROI proyectado",
     "cashOnCash": "Cash-on-cash return",

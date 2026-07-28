@@ -8,6 +8,7 @@ import {
   calculateGrossYield, calculateNetYield, calculateCapRate,
   calculateVacGrossYield, calculateVacNetYield, calculateVacNetRent,
   calculateProjectedValue, projectedTotalReturn, VAC, RES,
+  APPRECIATION_ASSUMPTION_PCT,
 } from '@/lib/calculator';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -22,15 +23,14 @@ interface RentabilidadTabProps {
   monthlyRentRes: number;
   monthlyRentVac: number;
   airdna: AirdnaMarketSummary | null;
-  appreciationDefault: number;
   locale: string;
 }
 
 export default function RentabilidadTab({
-  price, totalPropertyCost, monthlyRentRes, monthlyRentVac, airdna, appreciationDefault, locale,
+  price, totalPropertyCost, monthlyRentRes, monthlyRentVac, airdna, locale,
 }: RentabilidadTabProps) {
   const t = useTranslations('simulator');
-  const [appreciation, setAppreciation] = useState(appreciationDefault || 8);
+  const [appreciation, setAppreciation] = useState(APPRECIATION_ASSUMPTION_PCT);
   const occupancyVac = airdna?.current_occupancy != null ? airdna.current_occupancy : VAC.DEFAULT_OCCUPANCY * 100;
 
   const res = useMemo(() => {
@@ -241,6 +241,7 @@ function ProyeccionPanel({
         </div>
         <input type="range" min={0} max={20} step={0.5} value={appreciation}
           onChange={(e) => setAppreciation(Number(e.target.value))} className="w-full accent-[#A2F9FF]" />
+        <p className="text-2xs text-gray-600 mt-1">{t('appreciationAssumptionNote')}</p>
       </div>
 
       {/* Línea de tiempo: retorno acumulado (plusvalía + rentas) Vacacional vs Residencial */}

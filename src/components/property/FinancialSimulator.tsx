@@ -20,6 +20,8 @@ import {
   calculateRemainingBalanceActuarial,
   VAC,
   RES,
+  APPRECIATION_ASSUMPTION_PCT,
+  VAC_RENT_UPLIFT,
 } from '@/lib/calculator';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import type { Property } from '@/types/property';
@@ -47,12 +49,12 @@ export default function FinancialSimulator({
   const [downPaymentPct, setDownPaymentPct] = useState(property.financing.downPaymentMin);
   const [months, setMonths] = useState(property.financing.months[1] || property.financing.months[0]);
   const [interestRate, setInterestRate] = useState(property.financing.interestRate);
-  const [appreciation, setAppreciation] = useState(property.roi.appreciation);
+  const [appreciation, setAppreciation] = useState(APPRECIATION_ASSUMPTION_PCT);
   const [occupancy, setOccupancy] = useState(airdnaOccupancy ?? VAC.DEFAULT_OCCUPANCY * 100);
 
   // Rent values (read-only)
-  const resRent = mlEstimatedRent || property.roi.rentalMonthly;
-  const vacRentBase = mlEstimatedRentVac || (airdnaAdr ? airdnaAdr * 30 : resRent * 1.35);
+  const resRent = mlEstimatedRent ?? property.roi.rentalMonthly ?? 0;
+  const vacRentBase = mlEstimatedRentVac || (airdnaAdr ? airdnaAdr * 30 : resRent * VAC_RENT_UPLIFT);
   const monthlyRent = mode === 'residencial' ? resRent : vacRentBase;
 
   // Investment
@@ -325,6 +327,7 @@ export default function FinancialSimulator({
               <span className="font-semibold">{appreciation}%</span>
             </div>
             <input type="range" min={0} max={20} step={0.5} value={appreciation} onChange={e => setAppreciation(Number(e.target.value))} className="w-full accent-[#5CE0D2]" />
+            <p className="text-2xs text-gray-600 mt-1">{t('appreciationAssumptionNote')}</p>
           </div>
 
           {results.monthly > 0 && (

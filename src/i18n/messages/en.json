@@ -892,6 +892,7 @@
     "interestRate": "Annual interest rate",
     "monthlyRent": "Estimated monthly rent",
     "appreciation": "Estimated annual appreciation",
+    "appreciationAssumptionNote": "Editable assumption, not a Propyte projection. Move it to explore other scenarios.",
     "monthlyPayment": "Estimated monthly payment",
     "projectedRoi": "Projected ROI",
     "cashOnCash": "Cash-on-cash return",

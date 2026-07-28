@@ -28,7 +28,7 @@ import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property'
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
-import { CITY_TO_MARKET_CODE, VAC, calculateTotalInvestment } from '@/lib/calculator';
+import { CITY_TO_MARKET_CODE, VAC, VAC_RENT_UPLIFT, calculateTotalInvestment } from '@/lib/calculator';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import SimilarListings from '@/components/shared/SimilarListings';
@@ -186,7 +186,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
   // Fallback values from unit metadata / mock
   const monthlyRentRes = estRentRes ?? property.roi.rentalMonthly ?? 0;
-  const monthlyRentVac = estRentVac ?? Math.round(monthlyRentRes * 1.35);
+  const monthlyRentVac = estRentVac ?? Math.round(monthlyRentRes * VAC_RENT_UPLIFT);
 
   // ── Similar units (4-level fallback) ──
   let similar: Array<{ id: string; slug: string; name: string; city: string | null; zone: string | null; images: string[] | null; price_mxn: number | null; bedrooms: number | null; bathrooms: number | null; area_m2: number | null; unit_number: string | null; development_name: string | null }> = [];
@@ -609,7 +609,6 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                       monthlyRentRes={monthlyRentRes}
                       monthlyRentVac={monthlyRentVac}
                       airdna={airdnaSummary}
-                      appreciationDefault={property.roi.appreciation}
                       locale={locale}
                     />
                   ),
