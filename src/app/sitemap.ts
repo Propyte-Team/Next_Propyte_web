@@ -5,10 +5,13 @@ import { STAGE_SLUGS_URL } from '@/app/[locale]/desarrollos/_components/stageCon
 import { shouldNoIndex } from '@/lib/seo/noindex';
 import { MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { zoneSlug } from '@/lib/utils';
+import { CITY_SLUGS } from '@/lib/cities';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 const LOCALES = ['es', 'en'];
-const CITIES = ['cancun', 'playa-del-carmen', 'tulum', 'merida'];
+// Derivado de CITY_MAP: antes era un array a mano y una ciudad nueva quedaba
+// fuera del sitemap sin que nada fallara.
+const CITIES = CITY_SLUGS;
 
 // Fecha estable de build para páginas estáticas — `new Date()` en cada
 // invocación del sitemap hace que lastmod sea siempre "ahora" y por tanto

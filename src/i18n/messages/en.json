@@ -2862,6 +2862,7 @@
     "disclaimer": "CETES and bank rates reflect 2026 BMX reference rates. Real estate figures are projections from current rent and appreciation assumptions — not guaranteed."
   },
   "cityDevelopments": {
+    "eyebrow": "Real estate · {region}",
     "breadcrumbHome": "Home",
     "breadcrumbDevelopments": "Developments",
     "h1": "New Developments in {city}",

@@ -2862,6 +2862,7 @@
     "disclaimer": "CETES y tasas bancarias reflejan referencias BMX 2026. Las cifras inmobiliarias son proyecciones basadas en renta y plusvalía estimadas — no garantizadas."
   },
   "cityDevelopments": {
+    "eyebrow": "Bienes raíces · {region}",
     "breadcrumbHome": "Inicio",
     "breadcrumbDevelopments": "Desarrollos",
     "h1": "Nuevos Desarrollos en {city}",

@@ -60,6 +60,12 @@ interface MarketplaceContentProps {
   /** Override i18n key with explicit string (used by taxonomy pages). */
   customSubtitle?: string;
   /**
+   * Override del eyebrow. Las páginas de ciudad lo necesitan porque
+   * `marketplace.heroEyebrow` está fijo en "Riviera Maya" y eso es falso para
+   * Mérida y Telchac, que son Yucatán.
+   */
+  customEyebrow?: string;
+  /**
    * Split map+list layout. Decisión arquitectónica 2026-05-11:
    * /propiedades → showMap=true (cluster pin "+N" filtra el listado);
    * /desarrollos + taxonomies → showMap=false (grid Ficha 02 full-width).
@@ -79,6 +85,7 @@ export default function MarketplaceContent({
   subtitleKey = 'subtitlePropiedades',
   customTitle,
   customSubtitle,
+  customEyebrow,
   showMap = false,
   heroHidden = false,
 }: MarketplaceContentProps) {
@@ -96,8 +103,9 @@ export default function MarketplaceContent({
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
-  // Eyebrow pill: canonical Propyte tagline para todas las listadas (ES/EN).
-  const eyebrowLabel = t('heroEyebrow');
+  // Eyebrow pill: tagline canónica de Propyte, salvo que el llamador pase la
+  // región correcta (páginas de ciudad — ver customEyebrow).
+  const eyebrowLabel = customEyebrow ?? t('heroEyebrow');
 
   // Listas dinámicas para filtros — calculadas del set actual de properties.
   // Cities: todas las ciudades distintas que aparecen.

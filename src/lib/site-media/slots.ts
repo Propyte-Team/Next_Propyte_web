@@ -1,3 +1,5 @@
+import { CITY_MAP, CITY_SLUGS, cityMediaKey } from '@/lib/cities';
+
 /**
  * Catálogo de slots de materiales audiovisuales del sitio — FUENTE ÚNICA.
  *
@@ -19,12 +21,22 @@ export interface SiteMediaSlot {
   aspect?: string;
 }
 
+/** Slots de foto de ciudad, derivados de CITY_MAP para que agregar una ciudad no
+ *  exija recordar esta lista: antes el slug vivía copiado aquí, en el sitemap y en
+ *  CITY_MAP, y una ciudad nueva podía quedar sin slot (= sin forma de subirle foto
+ *  desde el Hub) sin que nada fallara. */
+const CITY_MEDIA_SLOTS: SiteMediaSlot[] = CITY_SLUGS.map((slug) => ({
+  key: cityMediaKey(slug),
+  group: 'Desarrollos · Ciudades',
+  labelEs: `Foto de ${CITY_MAP[slug].name}`,
+  labelEn: `${CITY_MAP[slug].name} photo`,
+  defaultKind: 'image' as const,
+  aspect: '21/9',
+}));
+
 export const SITE_MEDIA_SLOTS: SiteMediaSlot[] = [
-  // Desarrollos · Ciudades
-  { key: 'city.cancun', group: 'Desarrollos · Ciudades', labelEs: 'Foto de Cancún', labelEn: 'Cancún photo', defaultKind: 'image', aspect: '21/9' },
-  { key: 'city.tulum', group: 'Desarrollos · Ciudades', labelEs: 'Foto de Tulum', labelEn: 'Tulum photo', defaultKind: 'image', aspect: '21/9' },
-  { key: 'city.merida', group: 'Desarrollos · Ciudades', labelEs: 'Foto de Mérida', labelEn: 'Mérida photo', defaultKind: 'image', aspect: '21/9' },
-  { key: 'city.playa-del-carmen', group: 'Desarrollos · Ciudades', labelEs: 'Foto de Playa del Carmen', labelEn: 'Playa del Carmen photo', defaultKind: 'image', aspect: '21/9' },
+  // Desarrollos · Ciudades (derivados de CITY_MAP)
+  ...CITY_MEDIA_SLOTS,
   // Zonas
   { key: 'zona.generic', group: 'Zonas', labelEs: 'Foto genérica de zona', labelEn: 'Generic zone photo', defaultKind: 'image', aspect: '16/9' },
   // Nosotros

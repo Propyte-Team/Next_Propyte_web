@@ -39,7 +39,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       .select('*')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
-      .or(cityMatchFilter(cityInfo.matchTerms))
+      .or(cityMatchFilter(cityInfo.name))
       .order('price_min_mxn', { ascending: false, nullsFirst: false })
       .limit(100);
 
@@ -109,6 +109,7 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         properties={properties}
         customTitle={t('h1', { city: cityInfo.name })}
         customSubtitle={pickLang(locale, cityInfo.descEn, cityInfo.descEs)}
+        customEyebrow={t('eyebrow', { region: cityInfo.region })}
       />
 
       {/* SEO prose */}
