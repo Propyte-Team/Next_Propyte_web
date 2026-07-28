@@ -37,13 +37,18 @@ interface UneteFaqItem {
   a: string;
 }
 interface UneteHubData {
+  /** Ya normalizada a forma embebible en page.tsx (ver lib/site-media/embed). */
   videoUrl: string | null;
+  /** Imagen del slot `unete.video` cuando lo subido fue foto y no video: se usa
+   *  como póster del hero. Resolución en page.tsx. */
+  videoPoster: SiteMediaEntry | null;
   faqs: UneteFaqItem[];
   /** Captura del dashboard (slot `unete.dashboard`); null → mock CSS de respaldo. */
   dashboard: SiteMediaEntry | null;
 }
 const UneteHubContext = createContext<UneteHubData>({
   videoUrl: null,
+  videoPoster: null,
   faqs: [],
   dashboard: null,
 });
@@ -54,6 +59,7 @@ const UneteHubContext = createContext<UneteHubData>({
 function HeroSection() {
   const hub = useContext(UneteHubContext);
   const t = useTranslations('unete');
+  const locale = useLocale();
   const [showVideo, setShowVideo] = useState(false);
   const hasVideo = Boolean(hub.videoUrl);
 
@@ -118,23 +124,46 @@ function HeroSection() {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-transparent to-transparent" />
+                  {/* Póster: imagen subida al slot `unete.video`. */}
+                  {hub.videoPoster && (
+                    <div className="absolute inset-0">
+                      <SiteMediaView
+                        entry={hub.videoPoster}
+                        label={t('heroVideoLabel')}
+                        tone="dark"
+                        locale={locale}
+                        className="w-full h-full !rounded-none"
+                        sizes="(max-width: 1024px) 100vw, 640px"
+                      />
+                    </div>
+                  )}
+                  {/* Los decorativos van con pointer-events-none o se comen el
+                      clic: `inset-4` se declara DESPUÉS del botón, así que pintaba
+                      encima y capturaba el puntero en casi toda la caja. El play
+                      estaba habilitado pero era inalcanzable, y el video no abría
+                      nunca por más que la URL fuera correcta. */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0F1923] via-transparent to-transparent pointer-events-none" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <button
-                        type="button"
-                        disabled={!hasVideo}
-                        className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors group disabled:cursor-default disabled:hover:bg-white/10"
-                        onClick={() => hasVideo && setShowVideo(true)}
-                        aria-label={t('heroVideoLabel')}
-                      >
-                        <Play size={36} className="text-white fill-white ml-1 group-hover:scale-110 transition-transform" />
-                      </button>
-                      <p className="text-white/60 text-sm mt-4 font-medium">{t('heroVideoLabel')}</p>
+                      {/* Sin video no se pinta el botón: deshabilitado se ve
+                          idéntico al activo y parece que la página está rota. */}
+                      {hasVideo && (
+                        <button
+                          type="button"
+                          className="w-24 h-24 mx-auto bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 hover:bg-white/20 transition-colors group"
+                          onClick={() => setShowVideo(true)}
+                          aria-label={t('heroVideoLabel')}
+                        >
+                          <Play size={36} className="text-white fill-white ml-1 group-hover:scale-110 transition-transform" />
+                        </button>
+                      )}
+                      {!hub.videoPoster && (
+                        <p className="text-white/60 text-sm mt-4 font-medium">{t('heroVideoLabel')}</p>
+                      )}
                     </div>
                   </div>
-                  <div className="absolute inset-4 border border-white/5 rounded-xl" />
-                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                  <div className="absolute inset-4 border border-white/5 rounded-xl pointer-events-none" />
+                  <div className="absolute top-4 left-4 flex items-center gap-2 pointer-events-none">
                     <div className="w-3 h-3 rounded-full bg-red-400/60" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
                     <div className="w-3 h-3 rounded-full bg-green-400/60" />
@@ -835,7 +864,7 @@ function FinalCTA() {
 // MAIN PAGE
 // ============================================================
 export default function UnetePageContent({ hubData }: { hubData?: UneteHubData }) {
-  const value = hubData ?? { videoUrl: null, faqs: [], dashboard: null };
+  const value = hubData ?? { videoUrl: null, videoPoster: null, faqs: [], dashboard: null };
   return (
     <UneteHubContext.Provider value={value}>
       <div>

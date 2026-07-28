@@ -83,9 +83,16 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
   // antes: así el que ya esté cargado ahí no deja de funcionar al migrar.
   // La URL se guarda como la pega el usuario (`youtu.be/ID`), que NO se puede
   // embeber; el hero la mete en un <iframe>, así que se normaliza aquí.
-  const rawVideoUrl = siteMedia['unete.video']?.url ?? recruitVideoCta?.button_href ?? null;
+  // Cualquier slot admite imagen o video, así que hay que mirar el `kind`: una
+  // IMAGEN subida a `unete.video` acababa dentro del <iframe> y no se veía nada.
+  // Si es imagen se usa como póster del hero.
+  const videoSlot = siteMedia['unete.video'] ?? null;
+  const rawVideoUrl = (videoSlot?.kind === 'video' ? videoSlot.url : null)
+    ?? recruitVideoCta?.button_href
+    ?? null;
   const videoUrl = rawVideoUrl ? toEmbedUrl(rawVideoUrl) : null;
-  const hubData = { videoUrl, faqs, dashboard: siteMedia['unete.dashboard'] ?? null };
+  const videoPoster = videoSlot?.kind === 'image' ? videoSlot : null;
+  const hubData = { videoUrl, videoPoster, faqs, dashboard: siteMedia['unete.dashboard'] ?? null };
 
   // FAQ schema usa Hub si tiene, si no fallback a i18n
   const faqSchemaSource = faqs.length > 0
