@@ -4,7 +4,8 @@ import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts, getBlogCategories } from '@/lib/supabase/queries';
+import { getBlogPosts, getBlogCategories, getTeamMembers } from '@/lib/supabase/queries';
+import { resolvePostAuthor } from '@/lib/blog/post-author';
 import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
 import BlogPagination from '@/components/blog/BlogPagination';
@@ -90,12 +91,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   // Single source of truth: grid completo de TODOS los posts (paginado y filtrado).
   // Categorías se descubren automáticamente desde BD para mantener el filtro
   // sincronizado sin hardcodear nombres como "Para Asesores".
-  const [{ posts, total }, categories] = supabase
+  // El equipo se trae para resolver el autor real de cada tarjeta (foto + cargo).
+  // Fail-soft: sin equipo, la tarjeta usa el autor crudo de la fila, como antes.
+  const [{ posts, total }, categories, teamMembers] = supabase
     ? await Promise.all([
         getBlogPosts(supabase, { locale, category: activeCategory ?? undefined, limit: POSTS_PER_PAGE, page: currentPage }),
         getBlogCategories(supabase, locale),
+        getTeamMembers(supabase),
       ])
-    : [{ posts: [], total: 0 }, []];
+    : [{ posts: [], total: 0 }, [], []];
 
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
   const cardT = { minRead: t('minRead') };
@@ -140,9 +144,19 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           {posts.length > 0 ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post, i) => (
-                  <BlogCard key={post.id} post={post} locale={locale} t={cardT} priority={i < 1} />
-                ))}
+                {posts.map((post, i) => {
+                  const a = resolvePostAuthor(post, teamMembers, locale);
+                  return (
+                    <BlogCard
+                      key={post.id}
+                      post={post}
+                      locale={locale}
+                      t={cardT}
+                      priority={i < 1}
+                      author={{ name: a.name, role: a.role, photo: a.photo }}
+                    />
+                  );
+                })}
               </div>
 
               {total > 0 && (

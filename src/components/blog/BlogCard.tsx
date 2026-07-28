@@ -13,9 +13,16 @@ interface BlogCardProps {
     minRead: string;
   };
   priority?: boolean;
+  /**
+   * Autor ya resuelto en el servidor. La tarjeta va envuelta en un `<Link>`, así
+   * que el perfil NO se enlaza aquí (anidar `<a>` es HTML inválido): solo se usan
+   * foto y cargo. Sin la prop cae al autor crudo de la fila.
+   */
+  author?: { name: string; role: string | null; photo: string | null };
 }
 
-export default function BlogCard({ post, locale, t, priority = false }: BlogCardProps) {
+export default function BlogCard({ post, locale, t, priority = false, author }: BlogCardProps) {
+  const a = author ?? { name: post.author_name, role: null, photo: post.author_image ?? null };
   const href = `/${locale}/blog/${post.slug}`;
   const date = formatDateShort(post.published_at, locale);
 
@@ -65,20 +72,23 @@ export default function BlogCard({ post, locale, t, priority = false }: BlogCard
           )}
 
           <div className="mt-3 flex items-center gap-2">
-            {post.author_image ? (
+            {a.photo ? (
               <Image
-                src={post.author_image}
-                alt={post.author_name}
+                src={a.photo}
+                alt={a.name}
                 width={24}
                 height={24}
-                className="rounded-full object-cover"
+                className="rounded-full object-cover flex-none"
               />
             ) : (
               <div className="w-6 h-6 rounded-full bg-[#1A2F3F] flex items-center justify-center text-white text-2xs font-bold flex-none">
-                {post.author_name.charAt(0).toUpperCase()}
+                {a.name.charAt(0).toUpperCase()}
               </div>
             )}
-            <span className="text-xs text-gray-600">{post.author_name}</span>
+            <span className="min-w-0 text-xs text-gray-600 truncate">
+              {a.name}
+              {a.role && <span className="text-gray-500"> · {a.role}</span>}
+            </span>
           </div>
         </div>
       </article>

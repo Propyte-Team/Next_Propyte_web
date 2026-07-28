@@ -3,7 +3,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPost, getRelatedPosts, getBlogPostSlugs, getBlogPostLocales } from '@/lib/supabase/queries';
+import {
+  getBlogPost, getRelatedPosts, getBlogPostSlugs, getBlogPostLocales, getTeamMembers,
+} from '@/lib/supabase/queries';
+import { resolvePostAuthor, type ResolvedAuthor } from '@/lib/blog/post-author';
+import { hasMarketFigures, needsInvestmentDisclaimer } from '@/lib/blog/article-signals';
+import ArticleDataNotice from '@/components/blog/ArticleDataNotice';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import BlogShareBar from '@/components/blog/BlogShareBar';
 import BlogSidebarForm from '@/components/blog/BlogSidebarForm';
@@ -68,7 +73,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
-function buildJsonLd(post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>, locale: string, siteUrl: string) {
+function buildJsonLd(
+  post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>,
+  locale: string,
+  siteUrl: string,
+  author: ResolvedAuthor,
+) {
   // `dateModified` saneado: 8 artículos ES tienen updated_at anterior al publish
   // y emitirlo crudo daba dateModified < datePublished. Ver resolvePostDates.
   const dates = resolvePostDates(post);
@@ -80,7 +90,15 @@ function buildJsonLd(post: NonNullable<Awaited<ReturnType<typeof getBlogPost>>>,
     image: post.featured_image ?? undefined,
     datePublished: dates.published,
     dateModified: dates.modified,
-    author: { '@type': 'Person', name: post.author_name },
+    // `url` y `jobTitle` solo cuando el autor es una persona real del equipo con
+    // perfil publicado — el schema no debe declarar lo que la página no muestra.
+    author: {
+      '@type': 'Person',
+      name: author.name,
+      ...(author.profileUrl ? { url: `${siteUrl}${author.profileUrl}` } : {}),
+      ...(author.role ? { jobTitle: author.role } : {}),
+      ...(author.photo ? { image: author.photo } : {}),
+    },
     publisher: {
       '@type': 'Organization',
       name: 'Propyte',
@@ -114,16 +132,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   if (!post) notFound();
 
-  const related = await getRelatedPosts(supabase, {
-    category: post.category,
-    excludeSlug: post.slug,
-    locale,
-    limit: 3,
-  });
+  const [related, teamMembers] = await Promise.all([
+    getRelatedPosts(supabase, {
+      category: post.category,
+      excludeSlug: post.slug,
+      locale,
+      limit: 3,
+    }),
+    // Fail-soft: si el equipo no carga, el byline cae al genérico de siempre.
+    getTeamMembers(supabase),
+  ]);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
-  const jsonLd = buildJsonLd(post, locale, siteUrl);
+  const author = resolvePostAuthor(post, teamMembers, locale);
+  const jsonLd = buildJsonLd(post, locale, siteUrl, author);
   const postDates = resolvePostDates(post);
+  const showMethodology = hasMarketFigures(post.content);
+  const showDisclaimer = needsInvestmentDisclaimer(post.content);
   const breadcrumbs = [
     { label: t('listingTitle'), href: `/${locale}/blog` },
     { label: post.category, href: `/${locale}/blog?categoria=${encodeURIComponent(post.category)}` },
@@ -178,21 +203,38 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               )}
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 pb-6 border-b border-slate-200">
+                {/* Byline: cuando el autor es una persona del equipo se muestra su
+                    cargo y el nombre enlaza a su perfil. Con el autor genérico
+                    ("Propyte", los 18 artículos de hoy) queda idéntico a antes. */}
                 <div className="flex items-center gap-2">
-                  {post.author_image ? (
+                  {author.photo ? (
                     <Image
-                      src={post.author_image}
-                      alt={post.author_name}
+                      src={author.photo}
+                      alt={author.name}
                       width={32}
                       height={32}
                       className="rounded-full object-cover"
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-[#0F1923] flex items-center justify-center text-white text-xs font-bold">
-                      {post.author_name.charAt(0).toUpperCase()}
+                      {author.name.charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <span className="font-medium text-[#0F1923]">{post.author_name}</span>
+                  <span className="flex flex-col leading-tight">
+                    {author.profileUrl ? (
+                      <Link
+                        href={author.profileUrl}
+                        className="font-medium text-[#0F1923] hover:text-[#0E7490] hover:underline transition-colors"
+                      >
+                        {author.name}
+                      </Link>
+                    ) : (
+                      <span className="font-medium text-[#0F1923]">{author.name}</span>
+                    )}
+                    {author.role && (
+                      <span className="text-xs text-slate-500">{author.role}</span>
+                    )}
+                  </span>
                 </div>
 
                 <time dateTime={postDates.published} className="flex items-center gap-1">
@@ -243,6 +285,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(post.content) }}
               />
             )}
+
+            {/* Enlace a /metodologia y al aviso legal, según lo que el artículo
+                publique. Antes ambos activos solo se alcanzaban desde el pie. */}
+            <ArticleDataNotice
+              locale={locale}
+              showMethodology={showMethodology}
+              showDisclaimer={showDisclaimer}
+              t={{
+                methodologyText: t('methodologyNoticeText'),
+                methodologyCta: t('methodologyNoticeCta'),
+                disclaimerText: t('legalNoticeText'),
+                disclaimerCta: t('legalNoticeCta'),
+              }}
+            />
 
             {/* Mobile: sidebar form appears here (between content and footer).
                 registerTool={false} → no emite toolname WebMCP: la copia

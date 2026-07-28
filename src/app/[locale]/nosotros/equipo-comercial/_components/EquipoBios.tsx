@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Users, MapPin, MessageCircle } from '@/lib/icons';
 import type { TeamMemberRow } from '@/lib/supabase/queries';
 import { pickBio, getInitials, pickAvatarColor, type TeamBioPerson } from '@/lib/team-bio';
+import { teamAnchorId } from '@/lib/blog/post-author';
 import TeamBioModal from '@/components/shared/TeamBioModal';
 
 function buildWhatsappLink(member: TeamMemberRow): string | null {
@@ -77,7 +78,11 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
           return (
             <div
               key={m.id}
-              className="group bg-white p-6 rounded-xl border border-gray-100 text-center hover:shadow-lg transition-shadow"
+              // Ancla estable derivada del nombre: es el destino del byline de un
+              // artículo firmado por esta persona (ver lib/blog/post-author.ts).
+              // scroll-mt despeja la nav fixed al aterrizar en el fragmento.
+              id={teamAnchorId(m.name)}
+              className="group bg-white p-6 rounded-xl border border-gray-100 text-center hover:shadow-lg transition-shadow scroll-mt-28"
             >
               <Avatar photoUrl={m.photo_url} name={m.name} />
               <h3 className="font-bold text-[#1A2F3F] text-lg">{m.name}</h3>
