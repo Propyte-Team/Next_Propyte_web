@@ -728,6 +728,7 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
         propertyUrl={`https://propyte.com/${locale}/propiedades/${slug}`}
         locale={locale}
         roiPct={property.roi.projected ?? undefined}
+        roiKind={property.roi.projectedKind}
       />
     </>
   );

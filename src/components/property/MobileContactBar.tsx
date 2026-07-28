@@ -11,8 +11,11 @@ interface MobileContactBarProps {
   propertyUrl: string;
   contactTargetId?: string;
   locale: string;
-  /** Optional ROI badge to show next to price */
+  /** Badge de rendimiento junto al precio. */
   roiPct?: number;
+  /** Qué es roiPct: ROI capturado en el Hub o yield bruto derivado de la renta.
+   *  Sin esto el badge rotularía como ROI un número que no lo es. */
+  roiKind?: 'roi' | 'yield' | null;
 }
 
 /**
@@ -22,9 +25,10 @@ interface MobileContactBarProps {
  * directo y reduce fricción mobile). Parent debe agregar pb-20 md:pb-0.
  */
 export default function MobileContactBar({
-  price, propertyName, propertyUrl, roiPct,
+  price, propertyName, propertyUrl, roiPct, roiKind,
 }: MobileContactBarProps) {
   const tProp = useTranslations('property');
+  const tMkt = useTranslations('marketplace');
   const { whatsapp: phone } = useSiteContact();
 
   const msg = `${tProp('whatsappInterestText', { name: propertyName })} ${propertyUrl}`;
@@ -43,7 +47,7 @@ export default function MobileContactBar({
             </span>
             {roiPct != null && roiPct > 0 && (
               <span className="text-2xs font-bold px-1.5 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] rounded-full whitespace-nowrap">
-                ROI {roiPct}%
+                {roiKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {roiPct.toFixed(1)}%
               </span>
             )}
           </div>

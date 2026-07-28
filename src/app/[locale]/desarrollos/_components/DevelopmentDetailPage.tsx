@@ -313,8 +313,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   // Number(): campos NUMERIC de v_developments llegan como string; sin coerción
   // roiPct llega string a los componentes (riesgo .toFixed) y el template pinta
   // decimales crudos.
-  const roiDisplay = devFinancials?.roi_annual_pct
-    ?? (property.roi_projected != null ? Number(property.roi_projected) : null);
+  // devFinancials.roi_annual_pct queda FUERA: 2 valores distintos en 197 filas
+  // (0 en 182 devs, 8.84 constante en 15). Ver DevFinancialsSlice en
+  // lib/investment/resolve.ts. Solo se publica el ROI capturado en el Hub.
+  const roiDisplay = property.roi_projected != null ? Number(property.roi_projected) : null;
 
   // ── IRR 5yr + 10yr for CetesComparison ──
   // Prefer precomputed financials. Fall back to in-line calc matching unit/PDF model.
