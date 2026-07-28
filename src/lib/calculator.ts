@@ -33,6 +33,17 @@ export const RES = {
   OCCUPANCY: 0.95,           // ~11.4 meses/año ocupado
 } as const;
 
+// ── Supuestos editables por el usuario (NO son datos de mercado) ──
+// No existe fuente de plusvalía en la BD (spec 2026-07-27 §D6). Este número es
+// el valor inicial de los sliders y debe rotularse como supuesto en el UI.
+// Decisión Luis 2026-07-27: 5% — por encima del objetivo de inflación de
+// Banxico, sin prometer doble dígito. Es el ÚNICO lugar donde vive.
+export const APPRECIATION_ASSUMPTION_PCT = 5;
+
+// Uplift de renta vacacional sobre la residencial cuando no hay dato de AirDNA
+// ni del ML. Vivía inline en FinancialSimulator.tsx:55.
+export const VAC_RENT_UPLIFT = 1.35;
+
 // ── Market data mapping ──
 export const CITY_TO_MARKET_CODE: Record<string, string> = {
   'Cancun': 'cancun',
