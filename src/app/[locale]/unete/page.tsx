@@ -4,6 +4,7 @@ import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { getFaqs, getCta, getSiteMedia } from '@/lib/hub-content';
+import { toEmbedUrl } from '@/lib/site-media/embed';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -80,7 +81,10 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
   // El video se administra en Materiales del sitio (slot `unete.video`). Se
   // conserva el CTA `unete_hero_video` como fallback porque es de donde venía
   // antes: así el que ya esté cargado ahí no deja de funcionar al migrar.
-  const videoUrl = siteMedia['unete.video']?.url ?? recruitVideoCta?.button_href ?? null;
+  // La URL se guarda como la pega el usuario (`youtu.be/ID`), que NO se puede
+  // embeber; el hero la mete en un <iframe>, así que se normaliza aquí.
+  const rawVideoUrl = siteMedia['unete.video']?.url ?? recruitVideoCta?.button_href ?? null;
+  const videoUrl = rawVideoUrl ? toEmbedUrl(rawVideoUrl) : null;
   const hubData = { videoUrl, faqs, dashboard: siteMedia['unete.dashboard'] ?? null };
 
   // FAQ schema usa Hub si tiene, si no fallback a i18n

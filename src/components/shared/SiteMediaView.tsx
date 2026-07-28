@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { ComponentType } from 'react';
 import type { SiteMediaEntry } from '@/lib/hub-content';
 import ImagePlaceholder from '@/components/shared/ImagePlaceholder';
+import { isExternalVideo, toEmbedUrl } from '@/lib/site-media/embed';
 
 interface SiteMediaViewProps {
   /** Entrada resuelta del Hub; si falta o no tiene url → placeholder de marca. */
@@ -13,18 +14,6 @@ interface SiteMediaViewProps {
   locale?: string;
   sizes?: string;
   priority?: boolean;
-}
-
-function isExternalVideo(url: string): boolean {
-  return /youtube\.com|youtu\.be|vimeo\.com|drive\.google\.com/i.test(url);
-}
-
-function toEmbed(url: string): string {
-  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
-  const gd = url.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
-  if (gd) return `https://drive.google.com/file/d/${gd[1]}/preview`;
-  return url;
 }
 
 /**
@@ -53,7 +42,7 @@ export default function SiteMediaView({
       return (
         <div className={`relative overflow-hidden rounded-2xl ${className}`}>
           <iframe
-            src={toEmbed(entry.url)}
+            src={toEmbedUrl(entry.url)}
             title={alt}
             className="absolute inset-0 w-full h-full"
             allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
