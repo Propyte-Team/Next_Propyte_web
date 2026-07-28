@@ -356,57 +356,68 @@ function TechPlatform() {
           })}
         </div>
 
-        {/* Dashboard preview — sin cifras (vista previa) */}
-        <div className="mt-14 bg-gradient-to-br from-[#0F1923] to-[#1A2F3F] rounded-2xl p-1 mx-auto max-w-4xl">
-          <div className="relative bg-[#0F1923] rounded-xl overflow-hidden">
-            <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-[11px] font-bold uppercase tracking-wider rounded-full">
-              {t('dashPreviewBadge')}
-            </span>
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400/60" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
-                <div className="w-3 h-3 rounded-full bg-green-400/60" />
-              </div>
-              <div className="flex-1 mx-4">
-                <div className="bg-white/10 rounded-lg h-7 flex items-center px-3 max-w-md mx-auto">
-                  <span className="text-xs text-white/65">app.propyte.com/dashboard</span>
+        {/* Dashboard preview — mockup de laptop, sin cifras (vista previa) */}
+        <div className="mt-14 mx-auto max-w-6xl">
+          {/* Tapa: bisel de la pantalla (chin inferior más grueso, como una laptop real) */}
+          <div className="relative rounded-t-2xl bg-gradient-to-br from-[#243B4F] via-[#1A2F3F] to-[#0F1923] p-2.5 pb-3 md:p-3.5 md:pb-4 ring-1 ring-white/10 shadow-[0_30px_60px_-20px_rgba(15,25,35,0.45)]">
+            {/* Cámara */}
+            <div className="absolute top-1 md:top-1.5 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-white/25 ring-1 ring-white/10" />
+
+            <div className="relative bg-[#0F1923] rounded-lg overflow-hidden">
+              <span className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-[11px] font-bold uppercase tracking-wider rounded-full">
+                {t('dashPreviewBadge')}
+              </span>
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-400/60" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-400/60" />
+                  <div className="w-3 h-3 rounded-full bg-green-400/60" />
                 </div>
               </div>
-            </div>
-            {hub.dashboard?.url ? (
-              /* Captura real del dashboard, administrada desde el Hub. */
-              <SiteMediaView
-                entry={hub.dashboard}
-                label={t('dashPreviewBadge')}
-                tone="dark"
-                locale={locale}
-                className="aspect-video !rounded-none"
-                sizes="(max-width: 896px) 100vw, 896px"
-              />
-            ) : (
-              /* Respaldo: mock en CSS mientras no haya captura subida al slot
-                 `unete.dashboard`. Nunca se muestra el marco vacío. */
-              <>
-                <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {dashLabels.map((label) => (
-                    <div key={label} className="bg-white/5 rounded-lg p-4">
-                      <div className="text-xs text-white/65">{label}</div>
-                      <div className="mt-3 h-3 w-3/4 bg-white/15 rounded" />
-                      <div className="mt-2 h-2 w-1/2 bg-white/10 rounded" />
-                    </div>
-                  ))}
-                </div>
-                <div className="px-6 pb-6">
-                  <div className="h-32 bg-white/5 rounded-lg flex items-end justify-around p-4 gap-2">
-                    {[40, 65, 55, 80, 70, 90, 75, 95, 85, 60, 88, 92].map((h, i) => (
-                      <div key={i} className="flex-1 bg-propyte-brand/60 rounded-t" style={{ height: `${h}%` }} />
+              {hub.dashboard?.url ? (
+                /* Captura real del dashboard, administrada desde el Hub. */
+                <SiteMediaView
+                  entry={hub.dashboard}
+                  label={t('dashPreviewBadge')}
+                  tone="dark"
+                  locale={locale}
+                  className="aspect-video !rounded-none"
+                  sizes="(max-width: 1152px) 100vw, 1124px"
+                />
+              ) : (
+                /* Respaldo: mock en CSS mientras no haya captura subida al slot
+                   `unete.dashboard`. Nunca se muestra el marco vacío. */
+                <>
+                  <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {dashLabels.map((label) => (
+                      <div key={label} className="bg-white/5 rounded-lg p-4">
+                        <div className="text-xs text-white/65">{label}</div>
+                        <div className="mt-3 h-3 w-3/4 bg-white/15 rounded" />
+                        <div className="mt-2 h-2 w-1/2 bg-white/10 rounded" />
+                      </div>
                     ))}
                   </div>
-                </div>
-              </>
-            )}
+                  <div className="px-6 pb-6">
+                    <div className="h-32 bg-white/5 rounded-lg flex items-end justify-around p-4 gap-2">
+                      {[40, 65, 55, 80, 70, 90, 75, 95, 85, 60, 88, 92].map((h, i) => (
+                        <div key={i} className="flex-1 bg-propyte-brand/60 rounded-t" style={{ height: `${h}%` }} />
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Base / bisagra — apenas más ancha que la tapa */}
+          <div className="relative left-1/2 -translate-x-1/2 w-[calc(100%+1.5rem)]">
+            <div className="h-2.5 md:h-3 rounded-b-[10px] bg-gradient-to-b from-[#2E4A61] to-[#152532] ring-1 ring-white/10" />
+            {/* Muesca de apertura */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-1 w-20 md:w-28 rounded-b-full bg-black/25" />
+          </div>
+
+          {/* Sombra proyectada en el piso */}
+          <div className="mx-auto mt-1.5 h-5 w-2/3 rounded-[50%] bg-[#0F1923]/15 blur-lg" aria-hidden />
         </div>
       </div>
     </section>
