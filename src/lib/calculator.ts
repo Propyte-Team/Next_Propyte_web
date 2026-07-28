@@ -160,10 +160,14 @@ export const MARKET_SUBMARKET_TO_ZONE: Record<string, string> = {
   'anzures': 'Anzures',
   // Mérida
   '97314': 'CP 97314',
-  // Akumal
-  'bay_area': 'Bahía de Akumal',
-  'centro': 'Akumal Centro',
-  'resorts': 'Zona de Resorts',
+  // Akumal — claves reales de AirROI. Las anteriores ('bay_area', 'centro', 'resorts')
+  // tienen 0 filas en airdna_metrics, así que ZONE_TO_MARKET_SUBMARKETS devolvía un código
+  // inexistente y /zonas/{bahia-de-akumal,akumal-centro,zona-de-resorts} venían sin
+  // tendencias, forecasts ni estacionalidad. Además 'centro' colisionaba con el Centro
+  // de Cancún, porque el mapa se indexa sólo por submarket, sin ciudad.
+  'akumal_bay_area': 'Bahía de Akumal',
+  'akumal_centro': 'Akumal Centro',
+  'akumal_resorts': 'Zona de Resorts',
   'bahia_principe': 'Bahía Príncipe',
   'tulum_country_club': 'Tulum Country Club',
 };
@@ -227,9 +231,9 @@ export const MARKET_SUBMARKET_TO_CITY: Record<string, string> = {
   // Mérida
   '97314': 'Merida',
   // Akumal
-  'bay_area': 'Akumal',
-  'centro': 'Akumal',
-  'resorts': 'Akumal',
+  'akumal_bay_area': 'Akumal',
+  'akumal_centro': 'Akumal',
+  'akumal_resorts': 'Akumal',
   'bahia_principe': 'Akumal',
   'tulum_country_club': 'Akumal', // needs manual confirmation — see note above
 };
