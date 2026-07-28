@@ -613,13 +613,38 @@ export async function getGlobalStats(client: Client) {
   };
 }
 
+const BATCH_FINANCIALS_NUMERIC_KEYS = [
+  'cap_rate', 'estimated_rent_residencial', 'roi_annual_pct',
+] as const;
+
+/** Exportada solo para test: coerciona una fila del batch NUMERIC→number.
+ *  Sin esto los valores llegan como string y el resolver los descarta en
+ *  silencio (el ROI simplemente no aparecería). */
+export function coerceBatchFinancialsRow(row: Record<string, unknown>) {
+  return coerceNumericFields(row, BATCH_FINANCIALS_NUMERIC_KEYS) as {
+    development_id: string;
+    cap_rate: number | null;
+    estimated_rent_residencial: number | null;
+    roi_annual_pct: number | null;
+  };
+}
+
 export async function getBatchFinancials(client: Client, developmentIds: string[]) {
   if (developmentIds.length === 0) return [];
   const { data } = await inv(client)
     .from('development_financials')
     .select('development_id, cap_rate, estimated_rent_residencial, roi_annual_pct')
     .in('development_id', developmentIds);
-  return data || [];
+  return (data || []).map((r) => coerceBatchFinancialsRow(r as Record<string, unknown>));
+}
+
+/** Map development_id → slice, listo para resolveUnitInvestment. */
+export async function getFinancialsMap(client: Client, developmentIds: string[]) {
+  const rows = await getBatchFinancials(client, [...new Set(developmentIds)]);
+  return new Map(rows.map((r) => [r.development_id, {
+    roi_annual_pct: r.roi_annual_pct,
+    estimated_rent_residencial: r.estimated_rent_residencial,
+  }]));
 }
 
 // ============================================================
