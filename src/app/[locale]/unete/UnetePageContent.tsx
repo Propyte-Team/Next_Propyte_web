@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { submitLead } from '@/lib/leads/submit-lead';
 import SiteMediaView from '@/components/shared/SiteMediaView';
+import { isExternalVideo } from '@/lib/site-media/embed';
 import type { SiteMediaEntry } from '@/lib/hub-content';
 import {
   Play,
@@ -115,13 +116,27 @@ function HeroSection() {
           <div className="relative">
             <div className="relative bg-gradient-to-br from-[#1A2F3F] to-[#0F1923] rounded-2xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
               {showVideo && hasVideo ? (
-                <iframe
-                  src={hub.videoUrl ?? ''}
-                  className="absolute inset-0 w-full h-full"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                  title={t('heroVideoLabel')}
-                />
+                isExternalVideo(hub.videoUrl as string) ? (
+                  <iframe
+                    src={hub.videoUrl as string}
+                    className="absolute inset-0 w-full h-full"
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    title={t('heroVideoLabel')}
+                  />
+                ) : (
+                  /* mp4 propio → <video> nativo: sin título, sin canal, sin logo
+                     ni sugerencias de YouTube. `autoPlay` es legítimo porque este
+                     nodo solo existe después del clic del usuario. */
+                  <video
+                    src={hub.videoUrl as string}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    controls
+                    autoPlay
+                    playsInline
+                    preload="metadata"
+                  />
+                )
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   {/* Póster: imagen subida al slot `unete.video`. */}
@@ -184,13 +199,24 @@ function HeroSection() {
           onClick={() => setShowVideo(false)}
         >
           <div className="w-full max-w-3xl aspect-video" onClick={e => e.stopPropagation()}>
-            <iframe
-              src={hub.videoUrl ?? ''}
-              className="w-full h-full rounded-xl"
-              allow="autoplay; encrypted-media"
-              allowFullScreen
-              title={t('heroVideoLabel')}
-            />
+            {isExternalVideo(hub.videoUrl as string) ? (
+              <iframe
+                src={hub.videoUrl as string}
+                className="w-full h-full rounded-xl"
+                allow="autoplay; encrypted-media"
+                allowFullScreen
+                title={t('heroVideoLabel')}
+              />
+            ) : (
+              <video
+                src={hub.videoUrl as string}
+                className="w-full h-full rounded-xl object-cover"
+                controls
+                autoPlay
+                playsInline
+                preload="metadata"
+              />
+            )}
           </div>
         </div>
       )}
