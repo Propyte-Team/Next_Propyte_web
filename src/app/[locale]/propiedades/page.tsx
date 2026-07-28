@@ -1,7 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getUnits } from '@/lib/supabase/queries';
+import { getUnits, getFinancialsMap } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import MarketplaceContent from './MarketplaceContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import type { Property } from '@/types/property';
@@ -43,7 +44,17 @@ export default async function MarketplacePage({ params }: { params: Promise<{ lo
       const { data } = await getUnits(supabase, { limit: 100 });
       if (data) {
         rawUnits = data as UnitRow[];
-        properties = rawUnits.map((u) => mapUnitToProperty(u, locale));
+        const finMap = await getFinancialsMap(
+          supabase,
+          rawUnits.map((u) => u.development_id).filter((id): id is string => !!id),
+        );
+        // mlRent = null a propósito: el ML es una consulta por unidad y las
+        // cards solo muestran ROI, no renta (spec §3.2).
+        properties = rawUnits.map((u) => mapUnitToProperty(
+          u,
+          locale,
+          resolveUnitInvestment(u, finMap.get(u.development_id ?? '') ?? null, null),
+        ));
       }
     }
   } catch (error) {

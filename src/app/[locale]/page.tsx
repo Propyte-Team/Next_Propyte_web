@@ -1,7 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getGlobalStats, getDevelopers, getFeaturedDevelopments, getDiscountedUnits } from '@/lib/supabase/queries';
+import { getGlobalStats, getDevelopers, getFeaturedDevelopments, getDiscountedUnits, getFinancialsMap } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import type { Property } from '@/types/property';
 import Hero from '@/components/home/Hero';
 import NosotrosTeaser from '@/components/home/NosotrosTeaser';
@@ -85,7 +86,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         getDiscountedUnits(supabase, 6),
       ]);
       const stats = statsData;
-      const discountedUnits = (discountedRes.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
+      const discountedRows = (discountedRes.data || []) as unknown as UnitRow[];
+      const discountedFin = await getFinancialsMap(
+        supabase,
+        discountedRows.map((u) => u.development_id).filter((id): id is string => !!id),
+      );
+      const discountedUnits = discountedRows.map((row) => mapUnitToProperty(
+        row,
+        locale,
+        resolveUnitInvestment(row, discountedFin.get(row.development_id ?? '') ?? null, null),
+      ));
       type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
       const developers = ((devsRes.data || []) as DeveloperRow[])
         .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))

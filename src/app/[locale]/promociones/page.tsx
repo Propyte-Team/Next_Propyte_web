@@ -3,8 +3,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getDiscountedUnits } from '@/lib/supabase/queries';
+import { getDiscountedUnits, getFinancialsMap } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import { Tag, ArrowRight } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import EmptyState from '@/components/ui/EmptyState';
@@ -60,7 +61,16 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   try {
     const supabase = await createServerSupabaseClient();
     const res = await getDiscountedUnits(supabase, 24);
-    items = (res.data || []).map((row) => mapUnitToProperty(row as unknown as UnitRow, locale));
+    const rows = (res.data || []) as unknown as UnitRow[];
+    const finMap = await getFinancialsMap(
+      supabase,
+      rows.map((u) => u.development_id).filter((id): id is string => !!id),
+    );
+    items = rows.map((row) => mapUnitToProperty(
+      row,
+      locale,
+      resolveUnitInvestment(row, finMap.get(row.development_id ?? '') ?? null, null),
+    ));
   } catch (error) {
     console.error('[PromocionesPage] Supabase fetch failed:', error);
   }
