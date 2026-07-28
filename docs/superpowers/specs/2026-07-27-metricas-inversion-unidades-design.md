@@ -39,7 +39,9 @@ usan para ROI.
 | # | Decisión | Motivo |
 |---|---|---|
 | D1 | La resolución vive en la **capa de app**, en un módulo compartido. **Sin DDL** sobre `v_units`. | `v_units` es compartida con el Hub. Un `COALESCE(manual, modelo)` metería un número modelado dentro de un campo de captura manual del admin — alguien lo guarda y se vuelve dato duro — y arriesga viajar a Zoho, donde ya hubo precedente de columnas derivadas filtrándose al CRM. |
-| D2 | Precedencia de **ROI**: manual (Hub) → `development_financials` (nivel desarrollo) → `null`. | Única fuente poblada y fresca. El nivel manual queda como override para el futuro aunque hoy no aporte filas. |
+| D2 | ~~Precedencia de **ROI**: manual (Hub) → `development_financials` → `null`.~~ **REVISADA durante la implementación** — ver D10. | La premisa era falsa: `development_financials.roi_annual_pct` no es una estimación por desarrollo. |
+| D10 | El badge muestra **yield bruto** (`renta × 12 ÷ precio efectivo`) rotulado como tal, salvo que exista ROI capturado en el Hub, que gana y se rotula "ROI". `roi_annual_pct` **no se publica en ningún lado**. | Al 2026-07-27 `roi_annual_pct` tiene **2 valores distintos en 197 filas**: `0` en los 182 devs de `gbr_v2_2026-07-15` y `8.84` constante en los 15 de `v1.1-realtime`. `cap_rate` llega a 891%, `irr_5yr` es NULL en las 197 y `occupancy_rate_res` es constante. Publicar eso habría repetido el mismo número inventado que este trabajo vino a quitar. La **renta sí** tiene variación creíble (120 valores entre 12,400 y 82,400), y el yield derivado da 18 valores distintos entre 1.8% y 7.8% sobre las 56 unidades publicadas. Yield bruto no descuenta gastos: el rótulo lo dice y el tooltip lo explica. |
+| D11 | `DevelopmentDetailPage` deja de publicar `devFinancials.roi_annual_pct`. | Ya lo estaba mostrando en producción como "ROI del desarrollo" — era el 8.84 constante. |
 | D3 | Precedencia de **renta**: manual (Hub) → `rental_ml_estimates` por `(desarrollo, recámaras)` → `development_financials` (nivel desarrollo) → `null`. | El ML es más granular que el dato de desarrollo, y es lo que el lead magnet ya usa hoy (`edition-data.ts:62-81`). Invertir el orden le quitaría cobertura a algo que ya funciona. |
 | D4 | El número único (badge de card) es **siempre residencial**. | `tipo_rendimiento` no sirve para elegir modalidad: sus valores son `Mixto (renta + plusvalía)` (12), `Plusvalía` (5), `Plusvalía pura` (1), `Uso propio` (1), `null` (37) — describe la tesis de inversión, no el tipo de renta. Cero unidades marcadas como vacacional. El residencial es además el conservador. El detalle de unidad conserva su vista dual actual (`RentabilidadTab`, `InvestmentSummary`). |
 | D5 | **Sin dato ⇒ no se muestra.** Nada de fallback a ciudad ni de `0` como sentinela. | Cobertura hoy: 26 de las 56 unidades publicadas pertenecen a un desarrollo con fila en `development_financials`. Ocultar es honesto; un número de ciudad presentado como número de unidad, no. |
@@ -187,6 +189,20 @@ Verificación manual antes de merge:
 5. Runtime con `next start` (no solo build verde): una unidad **con** dato de ROI y una **sin**, en
    card, detalle y PDF.
 6. Comparativa Top 10 antes/después del cambio de score, para validación de Luis.
+
+## 5.1 Resultado verificado en runtime (2026-07-27, `next start` sobre build limpio)
+
+| Ruta | Resultado |
+|---|---|
+| `/es/propiedades` | 56 cards, **27 badges de yield**, 18 valores distintos (1.8%–7.8%), 0 badges de ROI, 0 apariciones de `8.84`, 0 `NaN`, ningún decimal sin redondear |
+| `/es/propiedades/<slug>` con dato | 1 badge de yield rotulado |
+| `/es/desarrollos/<slug>` | 0 apariciones de `8.84` (antes del cambio: 3) |
+| Gates | `tsc --noEmit` limpio · `npm run test:unit` 37/37 · `npm run lint` 0 errores (15 warnings de baseline) · `next build` verde |
+
+Nota de método: la primera verificación dio un falso negativo porque `npm start`
+falló con `EADDRINUSE` contra un servidor viejo y las respuestas venían del build
+anterior. Matar el proceso por PID y reconstruir con el puerto libre es parte del
+procedimiento, no un detalle.
 
 ## 6. Fuera de alcance
 
