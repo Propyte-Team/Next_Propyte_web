@@ -15,6 +15,7 @@ import { getUnits } from '@/lib/supabase/queries';
 import { pickEjemplosPorTerciles } from '@/lib/financiamiento-ejemplos';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { computeHipotecario } from '@/lib/hipotecario';
+import { TASAS_FUENTES } from '@/lib/financiamiento/tasas-config';
 
 // createServerSupabaseClient() usa cookies() → rompe ISR (DYNAMIC_SERVER_USAGE);
 // esta página declara `revalidate`, por eso usa el cliente público cookie-less.
@@ -52,6 +53,19 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 const METHOD_ICONS = [Landmark, Banknote, Building2, ArrowLeftRight] as const;
 
+/**
+ * Rapidez por método, por índice. Antes se derivaba de `m.rate === '0%'`, lo que
+ * (a) dejaba muerta la rama "muy rápido" del pago de contado —su tasa también es
+ * 0%— y (b) se rompía en silencio al re-etiquetar la tasa del método 3 a
+ * "0% sobre precio de lista". El orden es el de METHOD_ICONS:
+ * hipotecario · contado · desarrollador · puente.
+ */
+const METHOD_SPEED = ['slow', 'fastest', 'fast', 'slow'] as const;
+const SPEED_ICON = { fastest: '⚡⚡⚡', fast: '⚡⚡', slow: '🕐' } as const;
+
+/** Solo el método 3 lleva nota aclaratoria del costo real (regla DATA-GATE). */
+const METHOD_NOTE_KEY: Record<number, 'method3RateNote' | undefined> = { 3: 'method3RateNote' };
+
 export default async function FinanciamientoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -64,6 +78,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
 
   const methods = METHOD_ICONS.map((Icon, i) => {
     const n = i + 1;
+    const noteKey = METHOD_NOTE_KEY[n];
     return {
       icon: Icon,
       title: t(`method${n}Title` as 'method1Title'),
@@ -77,6 +92,11 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
         t(`method${n}Pro3` as 'method1Pro3'),
       ],
       ideal: t(`method${n}Ideal` as 'method1Ideal'),
+      note: noteKey ? t(noteKey) : null,
+      // DATA-GATE: `null` mientras el rango no tenga atribución trazable. La UI
+      // omite el renglón en vez de publicar una fuente inventada.
+      source: TASAS_FUENTES[n as 1 | 2 | 3 | 4],
+      speed: METHOD_SPEED[i],
     };
   });
 
@@ -127,7 +147,9 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
       item: {
         '@type': 'LoanOrCredit',
         name: m.title,
-        description: m.desc,
+        // La nota va dentro de `description` para que el schema no afirme costo
+        // cero donde la página visible ya aclara que el 0% es sobre lista.
+        description: m.note ? `${m.desc} ${m.note}` : m.desc,
         amount: { '@type': 'MonetaryAmount', currency: 'MXN' },
         loanTerm: { '@type': 'QuantitativeValue', description: m.term },
         interestRate: m.rate,
@@ -228,6 +250,23 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                   <div className="text-xs text-gray-600 pt-3 border-t border-gray-100">
                     <span className="font-semibold">{t('labelIdealFor')}</span> {m.ideal}
                   </div>
+
+                  {/* Nota al pie de la tarjeta — mismo estilo que el disclaimer
+                      general. Aclara que el 0% se mide contra precio de lista.
+                      TODO: DATA-GATE — falta [CONFIRMAR: tasa anual equivalente];
+                      depende del descuento aplicable, del enganche y del plazo
+                      diferido, y varía por desarrollo. La calcula Luis.
+                      TODO: enlazar a /blog/costo-real-meses-sin-intereses cuando
+                      publique INV-07 (hoy ese slug no existe: 200 + noindex). */}
+                  {m.note && (
+                    <p className="mt-3 text-2xs leading-snug text-gray-500">{m.note}</p>
+                  )}
+
+                  {m.source && (
+                    <p className="mt-2 text-2xs leading-snug text-gray-500">
+                      <span className="font-semibold">{t('labelSource')}</span> {m.source}
+                    </p>
+                  )}
                 </div>
               );
             })}
@@ -259,12 +298,18 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
                   <tr key={i} className="hover:bg-gray-50/50">
                     <td className="px-4 py-3 font-semibold text-gray-900">{m.title}</td>
                     <td className="px-4 py-3 text-center text-gray-700">{m.downPayment}</td>
-                    <td className="px-4 py-3 text-center font-bold text-[#0E7490]">{m.rate}</td>
+                    {/* "0% sobre precio de lista" ocupa 2 líneas: leading-snug para
+                        que el salto se lea intencional y no rompa el ritmo de la fila. */}
+                    <td className="px-4 py-3 text-center font-bold leading-snug text-[#0E7490]">{m.rate}</td>
                     <td className="px-4 py-3 text-center text-gray-600">{m.term}</td>
                     <td className="px-4 py-3 text-center">
-                      {m.rate === '0%' ? '⚡⚡' : i === 1 ? '⚡⚡⚡' : '🕐'}
+                      {SPEED_ICON[m.speed]}
                       <span className="sr-only">
-                        {m.rate === '0%' ? t('speedFast') : i === 1 ? t('speedFastest') : t('speedSlow')}
+                        {m.speed === 'fastest'
+                          ? t('speedFastest')
+                          : m.speed === 'fast'
+                            ? t('speedFast')
+                            : t('speedSlow')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-600 leading-snug max-w-[220px]">

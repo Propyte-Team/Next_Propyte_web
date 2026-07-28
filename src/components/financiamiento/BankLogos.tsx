@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server';
-
-const TASA_UPDATED_AT = '2026-04-29';
+import { TASAS_UPDATED_AT } from '@/lib/financiamiento/tasas-config';
 
 /**
  * Trustbar de bancos aliados — wordmarks neutros en grayscale + colores
@@ -25,8 +24,11 @@ export default async function BankLogos({ locale }: { locale: string }) {
           <HSBCLogo />
           <BanamexLogo />
         </div>
+        {/* Cadencia declarada junto a la fecha: un rango de tasa hipotecaria se
+            mueve mes a mes, y una fecha sola no dice si el dato sigue vivo. */}
         <p className="text-xs text-gray-600 text-center mt-8">
-          {t('banksDisclaimer', { date: TASA_UPDATED_AT })}
+          {t('banksDisclaimer', { date: TASAS_UPDATED_AT })}{' '}
+          <span className="font-semibold">{t('banksCadence')}</span>
         </p>
       </div>
     </section>
