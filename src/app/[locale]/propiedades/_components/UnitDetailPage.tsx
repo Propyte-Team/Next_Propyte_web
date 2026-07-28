@@ -21,6 +21,8 @@ import {
   type AirdnaMarketSummary,
 } from '@/lib/supabase/queries';
 import { resolveUnitInvestment } from '@/lib/investment/resolve';
+import { marketRentForUnit } from '@/lib/investment/market-rent';
+import { unitMarketTarget, unitArea } from '@/lib/investment/resolve-rows';
 import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
@@ -89,33 +91,41 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     notFound();
   }
 
-  // ── Métricas de inversión: modelo por desarrollo + ML por recámaras ──
-  // El manual del Hub (row.roi_annual) gana sobre ambos; ver
-  // docs/superpowers/specs/2026-07-27-metricas-inversion-unidades-design.md
+  // ── Métricas de inversión: mercado → ML → modelo por desarrollo ──
+  // El manual del Hub (row.roi_annual) gana sobre todos. La renta de mercado se
+  // pide ANTES de mapear porque el badge debe salir de la misma estimación que
+  // luego publica el tab Rentabilidad — se reusa abajo, no se consulta dos veces.
+  // Ver docs/superpowers/specs/2026-07-27-metricas-inversion-unidades-design.md
+  const marketTarget = unitMarketTarget(row);
   let devFinancials: Awaited<ReturnType<typeof getDevelopmentFinancials>> = null;
   let mlRentRes: number | null = null;
+  let resEstimate: Awaited<ReturnType<typeof getRentalEstimate>> | null = null;
   try {
-    if (supabase && row.development_id) {
-      const [finResult, mlResult] = await Promise.all([
-        getDevelopmentFinancials(supabase, row.development_id),
-        getMlRentalEstimateForUnit(
-          supabase,
-          row.development_id,
-          row.unit_type ?? '',
-          row.bedrooms ?? 0,
+    if (supabase) {
+      const [finResult, mlResult, resResult] = await Promise.all([
+        row.development_id ? getDevelopmentFinancials(supabase, row.development_id) : Promise.resolve(null),
+        row.development_id
+          ? getMlRentalEstimateForUnit(supabase, row.development_id, row.unit_type ?? '', row.bedrooms ?? 0)
+          : Promise.resolve(null),
+        getRentalEstimate(
+          supabase, marketTarget.city ?? '', marketTarget.propertyType,
+          marketTarget.bedrooms, marketTarget.zone, 'residencial',
         ),
       ]);
       devFinancials = finResult;
       mlRentRes = mlResult?.estimated_rent_residencial ?? null;
+      resEstimate = resResult;
     }
   } catch (err) {
     console.error('Investment metrics fetch failed:', err);
   }
 
+  const marketRentRes = marketRentForUnit(resEstimate?.data ?? null, unitArea(row));
+
   const property = mapUnitToProperty(
     row,
     locale,
-    resolveUnitInvestment(row, devFinancials, mlRentRes),
+    resolveUnitInvestment(row, devFinancials, mlRentRes, marketRentRes),
   );
   const description = property.description[locale as 'es' | 'en'] || property.description.es || '';
   // Editorial-first (estricto por idioma): si existe editorial en el locale
@@ -156,7 +166,9 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   }
 
   // ── Rental estimates + market data ──
-  let estRentRes: number | null = null;
+  // La residencial ya se pidió arriba (resEstimate) para que el badge y este tab
+  // salgan de la MISMA estimación. Aquí solo falta vacacional + AirDNA.
+  const estRentRes: number | null = marketRentRes;
   let estRentVac: number | null = null;
   let airdnaOccupancy: number | null = null;
   let airdnaSummary: AirdnaMarketSummary | null = null;
@@ -164,19 +176,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   try {
     if (supabase) {
       const airdnaMarket = CITY_TO_MARKET_CODE[property.location.city] || '';
-      const [resResult, vacResult, airdnaResult] = await Promise.all([
-        getRentalEstimate(supabase, property.location.city, property.specs.type, property.specs.bedrooms, property.location.zone, 'residencial'),
+      const [vacResult, airdnaResult] = await Promise.all([
         getRentalEstimate(supabase, property.location.city, property.specs.type, property.specs.bedrooms, property.location.zone, 'vacacional'),
         airdnaMarket ? getAirdnaMarketSummary(supabase, airdnaMarket) : Promise.resolve(null),
       ]);
 
-      if (resResult.data) {
-        const perM2 = resResult.data.avg_rent_per_m2;
-        const area = property.specs.area;
-        estRentRes = perM2 && perM2 > 0 && area > 0
-          ? Math.round(perM2 * area)
-          : resResult.data.median_rent_mxn;
-      }
       if (vacResult.data) estRentVac = vacResult.data.median_rent_mxn;
       if (airdnaResult) { airdnaOccupancy = airdnaResult.current_occupancy; airdnaSummary = airdnaResult; }
     }

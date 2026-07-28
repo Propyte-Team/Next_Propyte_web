@@ -5,10 +5,10 @@ import { useTranslations } from 'next-intl';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Home, Plane, TrendingUp } from '@/lib/icons';
 import {
-  calculateGrossYield, calculateNetYield, calculateCapRate,
+  calculateNetYield, calculateCapRate,
   calculateVacGrossYield, calculateVacNetYield, calculateVacNetRent,
   calculateProjectedValue, projectedTotalReturn, VAC, RES,
-  APPRECIATION_ASSUMPTION_PCT,
+  APPRECIATION_ASSUMPTION_PCT, residentialGrossYieldFromTotal,
 } from '@/lib/calculator';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
@@ -40,7 +40,9 @@ export default function RentabilidadTab({
     const annualNet = netMonthly * 12;
     return {
       effectiveMonthly, netMonthly, annualNet,
-      grossYield: calculateGrossYield(annualGross, totalPropertyCost),
+      // Función compartida con el badge de las cards: si esta cuenta cambia,
+      // cambia en los dos lados a la vez (antes divergían 8.4% vs 4.8%).
+      grossYield: residentialGrossYieldFromTotal(monthlyRentRes, totalPropertyCost) ?? 0,
       netYield: calculateNetYield(annualGross, totalPropertyCost, RES.EXPENSE_RATIO),
       capRate: calculateCapRate(annualNet, totalPropertyCost),
     };

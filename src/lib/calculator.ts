@@ -44,6 +44,47 @@ export const APPRECIATION_ASSUMPTION_PCT = 5;
 // ni del ML. Vivía inline en FinancialSimulator.tsx:55.
 export const VAC_RENT_UPLIFT = 1.35;
 
+/**
+ * "Yield bruto" residencial — la MISMA definición que publica el tab Rentabilidad
+ * de la ficha: renta efectiva tras ocupación ÷ inversión total (precio + gastos
+ * de cierre), no renta ÷ precio.
+ *
+ * Existe como función compartida a propósito: el badge de las cards y el tab
+ * mostraban 4.8% y 8.4% para la misma unidad porque cada uno tenía su fórmula
+ * y su fuente de renta. Si vas a cambiar esta cuenta, cámbiala aquí y para todos.
+ */
+export function residentialGrossYieldFromTotal(
+  monthlyRent: number | null,
+  totalInvestment: number | null,
+): number | null {
+  if (monthlyRent == null || monthlyRent <= 0) return null;
+  if (totalInvestment == null || totalInvestment <= 0) return null;
+  const effectiveMonthly = Math.round(monthlyRent * RES.OCCUPANCY);
+  return calculateGrossYield(effectiveMonthly * 12, totalInvestment);
+}
+
+/**
+ * Banda de plausibilidad del yield bruto residencial publicable. Fuera de aquí
+ * el número no se muestra: no confiamos en él.
+ *
+ * No es un gusto estético — al 2026-07-28 hay unidades con precio roto en la BD
+ * (Sanam Residential a $462,612,000 y $84,222,000, que dan 0.1% y 0.5%) y, antes
+ * de excluir terrenos, lotes de $300k daban 107%. Publicar cualquiera de los dos
+ * extremos es publicar un dato falso con cara de dato.
+ * Mismo criterio que RENT_BOUNDS, que ya acota rentas absurdas en el pipeline.
+ */
+export const GROSS_YIELD_BOUNDS = { MIN: 1, MAX: 20 } as const;
+
+/** Igual que la anterior, partiendo del precio + el estado (para gastos de cierre). */
+export function residentialGrossYieldPct(
+  monthlyRent: number | null,
+  price: number | null,
+  state: string,
+): number | null {
+  if (price == null || price <= 0) return null;
+  return residentialGrossYieldFromTotal(monthlyRent, calculateTotalInvestment(price, state));
+}
+
 // ── Market data mapping ──
 export const CITY_TO_MARKET_CODE: Record<string, string> = {
   'Cancun': 'cancun',

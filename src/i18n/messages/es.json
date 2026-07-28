@@ -638,7 +638,7 @@
     "mapNoCoords": "Las ubicaciones aún no están disponibles",
     "mapNoCoordsHint": "Los desarrollos aparecerán en el mapa cuando se carguen sus coordenadas",
     "cardM2Short": "m²",
-    "cardGrossYield": "Yield bruto est.",
+    "cardGrossYield": "Yield",
     "cardGrossYieldTooltip": "Renta estimada anual ÷ precio, antes de gastos. Estimación de Análisis de mercado Propyte.",
     "toggleCurrencyAriaLabel": "Cambiar moneda",
     "cardPriceFrom": "Desde",

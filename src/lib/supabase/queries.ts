@@ -3,6 +3,7 @@ import { RENT_BOUNDS, MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { cleanListingName } from '@/lib/formatters';
 import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
 import { analystWindowStart } from '@/lib/analyst-window';
+import { marketComboKey, isRentableType, type MarketRentTarget } from '@/lib/investment/market-rent';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -1580,6 +1581,47 @@ export async function getRentalEstimate(
   }
 
   return { data: null, fallback: true };
+}
+
+/**
+ * Renta de mercado residencial para muchas unidades, deduplicando por combo
+ * (ciudad|zona|tipo|recámaras). Llama a `getRentalEstimate` — la MISMA función
+ * que usa la ficha — en vez de reimplementar su escalera de fallback, para que
+ * card y ficha no puedan volver a mostrar rentas distintas.
+ *
+ * 35 combos para las 49 unidades publicadas al 2026-07-28. La página es ISR, así
+ * que estas consultas corren en build/revalidate, no por request.
+ */
+export async function getMarketRentMap(
+  client: Client,
+  targets: MarketRentTarget[],
+): Promise<Map<string, { median_rent_mxn: number; avg_rent_per_m2: number | null } | null>> {
+  const byKey = new Map<string, MarketRentTarget>();
+  for (const t of targets) {
+    // Sin ciudad no hay grupo de comparables; los terrenos no rentan como
+    // vivienda y la escalera de fallback les asignaría renta de departamento.
+    if (!t.city || !isRentableType(t.propertyType)) continue;
+    const key = marketComboKey(t);
+    if (!byKey.has(key)) byKey.set(key, t);
+  }
+
+  const entries = await Promise.all(
+    [...byKey.entries()].map(async ([key, t]) => {
+      try {
+        const { data } = await getRentalEstimate(
+          client, t.city as string, t.propertyType, t.bedrooms, t.zone, 'residencial',
+        );
+        return [key, data ? {
+          median_rent_mxn: data.median_rent_mxn,
+          avg_rent_per_m2: data.avg_rent_per_m2,
+        } : null] as const;
+      } catch {
+        return [key, null] as const;
+      }
+    }),
+  );
+
+  return new Map(entries);
 }
 
 /**

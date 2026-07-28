@@ -638,7 +638,7 @@
     "mapNoCoords": "Locations not available yet",
     "mapNoCoordsHint": "Developments will appear on the map once their coordinates are loaded",
     "cardM2Short": "m²",
-    "cardGrossYield": "Est. gross yield",
+    "cardGrossYield": "Yield",
     "cardGrossYieldTooltip": "Estimated annual rent ÷ price, before expenses. Estimate by Propyte market analysis.",
     "toggleCurrencyAriaLabel": "Toggle currency",
     "cardPriceFrom": "From",

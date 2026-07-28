@@ -107,7 +107,9 @@ const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional',
  * Bug 2026-06-16: el match anterior era `['terreno',...].includes(row.unit_type)`
  * case-sensitive → "Terreno" caía a 'departamento' → lotes mostraban "Apartment".
  */
-function normalizeUnitType(raw: string | null | undefined): Property['specs']['type'] {
+/** Exportada para que los llamadores puedan derivar el tipo ANTES de mapear —
+ *  lo necesita el target de renta de mercado (ver lib/investment/market-rent.ts). */
+export function normalizeUnitType(raw: string | null | undefined): Property['specs']['type'] {
   const lower = (raw || '').toLowerCase().trim();
   if (!lower) return 'departamento';
   if (lower.startsWith('macrolote') || lower.startsWith('megalote')) return 'macrolote';
