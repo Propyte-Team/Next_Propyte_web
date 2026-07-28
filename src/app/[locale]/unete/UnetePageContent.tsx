@@ -193,33 +193,14 @@ function HeroSection() {
         </div>
       </div>
 
-      {showVideo && hasVideo && (
-        <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 lg:hidden"
-          onClick={() => setShowVideo(false)}
-        >
-          <div className="w-full max-w-3xl aspect-video" onClick={e => e.stopPropagation()}>
-            {isExternalVideo(hub.videoUrl as string) ? (
-              <iframe
-                src={hub.videoUrl as string}
-                className="w-full h-full rounded-xl"
-                allow="autoplay; encrypted-media"
-                allowFullScreen
-                title={t('heroVideoLabel')}
-              />
-            ) : (
-              <video
-                src={hub.videoUrl as string}
-                className="w-full h-full rounded-xl object-cover"
-                controls
-                autoPlay
-                playsInline
-                preload="metadata"
-              />
-            )}
-          </div>
-        </div>
-      )}
+      {/* Aquí vivía un modal móvil (`lg:hidden`) con una SEGUNDA copia del
+          reproductor, bajo la misma condición `showVideo && hasVideo`: ambos se
+          montaban siempre. `lg:hidden` es `display:none`, y un <video> oculto
+          así **sigue reproduciendo audio**, así que en desktop sonaban los dos
+          desfasados y pausar el visible no callaba al oculto. Con los iframes de
+          YouTube no se notaba porque no llevaban autoplay.
+          El player en línea es responsive (`aspect-video`, ancho completo en
+          móvil), así que el modal no aportaba nada: un solo reproductor. */}
     </section>
   );
 }
