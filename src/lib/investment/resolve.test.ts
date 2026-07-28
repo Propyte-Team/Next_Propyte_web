@@ -58,14 +58,22 @@ describe('resolveUnitInvestment', () => {
     expect(r.rentMonthly).toBeNull();
   });
 
-  it('descarta strings: los NUMERIC sin coercionar no deben pasar como dato', () => {
-    // Supabase devuelve NUMERIC como string. Si llega sin coercionar es un bug
-    // del llamador, y el resolver debe negarse en vez de propagar '7.4'.
+  it('coerciona los NUMERIC que Postgres entrega como string', () => {
+    // v_units tipa roi_annual como number|string|null: si el resolver los
+    // rechazara, el nivel manual del Hub nunca funcionaría al capturarse.
     const r = resolveUnitInvestment(
-      unit(),
-      { roi_annual_pct: '7.4' as unknown as number, estimated_rent_residencial: null },
+      { roi_annual: '9.5', estimated_rent_mxn: '18000.00' },
+      { roi_annual_pct: '7.4', estimated_rent_residencial: null },
       null,
     );
+    expect(r.roiPct).toBe(9.5);
+    expect(r.roiSource).toBe('manual');
+    expect(r.rentMonthly).toBe(18000);
+  });
+
+  it('un string no numérico es ausencia, no NaN', () => {
+    const r = resolveUnitInvestment({ roi_annual: 'N/D', estimated_rent_mxn: '' }, null, null);
     expect(r.roiPct).toBeNull();
+    expect(r.rentMonthly).toBeNull();
   });
 });

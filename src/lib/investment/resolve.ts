@@ -6,17 +6,20 @@
 
 export type InvestmentSource = 'manual' | 'model' | 'ml' | 'none';
 
+/** v_units entrega los NUMERIC como string cuando la fila no pasó por
+ *  coerceNumericFields (así los tipa UnitRow), de modo que aquí se aceptan
+ *  ambas formas y se coercionan. */
 export interface UnitInvestmentFields {
-  roi_annual: number | null;
-  estimated_rent_mxn: number | null;
+  roi_annual: number | string | null;
+  estimated_rent_mxn: number | string | null;
 }
 
 /** Subconjunto de investment_analytics.development_financials que el sitio necesita.
  *  Solo residencial: el badge de card muestra siempre el escenario conservador
  *  (spec D4 — tipo_rendimiento no distingue modalidad de renta). */
 export interface DevFinancialsSlice {
-  roi_annual_pct: number | null;
-  estimated_rent_residencial: number | null;
+  roi_annual_pct: number | string | null;
+  estimated_rent_residencial: number | string | null;
 }
 
 export interface ResolvedInvestment {
@@ -28,10 +31,14 @@ export interface ResolvedInvestment {
   rentSource: InvestmentSource;
 }
 
-/** Un valor sirve solo si es number finito y > 0. Strings (NUMERIC sin coercionar),
- *  null, 0, negativos y NaN se tratan como ausentes. */
-function usable(v: number | null | undefined): number | null {
-  return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : null;
+/** Un valor sirve solo si es un número finito y > 0. null, 0, negativos, NaN y
+ *  strings no numéricos se tratan como ausentes. Los NUMERIC de Postgres llegan
+ *  como string y se coercionan aquí — el guard contra un pipeline sin coerción
+ *  vive en getBatchFinancials, no en este módulo. */
+function usable(v: number | string | null | undefined): number | null {
+  if (v == null || v === '') return null;
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) && n > 0 ? n : null;
 }
 
 export function resolveUnitInvestment(
