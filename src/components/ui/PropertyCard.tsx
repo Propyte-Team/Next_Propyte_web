@@ -14,6 +14,7 @@ interface PropertyCardProps {
 export default function PropertyCard({ property }: PropertyCardProps) {
   const locale = useLocale();
   const tStages = useTranslations('stages');
+  const tMkt = useTranslations('marketplace');
 
   const formattedPrice = new Intl.NumberFormat('es-MX', {
     style: 'currency',
@@ -82,7 +83,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {property.roi.projected != null && (
               <span className="text-sm font-medium text-[#0E7490]">
-                ROI {property.roi.projected}%
+                {property.roi.projectedKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {property.roi.projected.toFixed(1)}%
               </span>
             )}
             {property.capRate != null && property.capRate > 0 && (

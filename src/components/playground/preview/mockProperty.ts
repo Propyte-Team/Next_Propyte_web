@@ -32,7 +32,7 @@ export const MOCK_PROPERTY: Property = {
     'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
     'https://images.unsplash.com/photo-1580041065738-e72023775cdc?w=800',
   ],
-  roi: { projected: 12, rentalMonthly: 38000 },
+  roi: { projected: 12, projectedKind: 'roi', rentalMonthly: 38000 },
   financing: { downPaymentMin: 30, months: [60, 120], interestRate: 12 },
   description: { es: 'Descripción demo', en: 'Demo description' },
   badge: 'preventa',

@@ -32,7 +32,11 @@ export interface PropertySpecs {
  *  editable vive en APPRECIATION_ASSUMPTION_PCT (lib/calculator.ts).
  *  Spec: docs/superpowers/specs/2026-07-27-metricas-inversion-unidades-design.md */
 export interface PropertyROI {
+  /** Número del badge: ROI capturado en el Hub o, en su defecto, yield bruto
+   *  derivado de la renta estimada. */
   projected: number | null;
+  /** Qué es `projected` — determina el rótulo. null cuando no hay número. */
+  projectedKind: 'roi' | 'yield' | null;
   rentalMonthly: number | null;
 }
 

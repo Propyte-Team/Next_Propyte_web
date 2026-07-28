@@ -80,7 +80,13 @@ export function fillEstimatedRent(
       ? byKey.get(`${u.development_id}|${u.bedrooms}`) ?? null
       : null;
     const r = resolveUnitInvestment(u, financials?.get(u.development_id ?? '') ?? null, mlRent);
-    return { ...u, roi_annual: r.roiPct, estimated_rent_mxn: r.rentMonthly };
+    // roi_annual solo si viene capturado del Hub: score.ts deriva el yield bruto
+    // por su cuenta a partir de la renta y el precio efectivo.
+    return {
+      ...u,
+      roi_annual: r.displayKind === 'roi' ? r.displayPct : null,
+      estimated_rent_mxn: r.rentMonthly,
+    };
   });
 }
 

@@ -433,8 +433,11 @@ export default function MarketplaceCard({
               <span className="truncate">{property.location.zone}, {property.location.city}</span>
             </div>
             {variant === 'compact' && property.roi.projected != null && (
-              <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0">
-                ROI {property.roi.projected}%
+              <span
+                title={property.roi.projectedKind === 'yield' ? tMkt('cardGrossYieldTooltip') : undefined}
+                className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0"
+              >
+                {property.roi.projectedKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {property.roi.projected.toFixed(1)}%
               </span>
             )}
           </div>
@@ -443,8 +446,11 @@ export default function MarketplaceCard({
           {variant !== 'compact' && (
             <div className="flex flex-wrap items-center gap-1.5">
               {property.roi.projected != null && (
-                <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums">
-                  ROI {property.roi.projected}%
+                <span
+                  title={property.roi.projectedKind === 'yield' ? tMkt('cardGrossYieldTooltip') : undefined}
+                  className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums"
+                >
+                  {property.roi.projectedKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {property.roi.projected.toFixed(1)}%
                 </span>
               )}
               {property.capRate != null && property.capRate > 0 && (

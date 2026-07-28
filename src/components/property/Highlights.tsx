@@ -34,7 +34,9 @@ function getHighlightTags(property: Property, locale: string): { label: string; 
   if (property.financing.interestRate === 0) {
     tags.push({ label: locale === 'es' ? '0% interés' : '0% interest', icon: TrendingUp });
   }
-  if (property.roi.projected != null && property.roi.projected >= 10) {
+  // Solo el ROI capturado en el Hub merece el highlight: el yield bruto ya sale
+  // en el badge de la card y no es lo mismo que un rendimiento neto.
+  if (property.roi.projectedKind === 'roi' && property.roi.projected != null && property.roi.projected >= 10) {
     tags.push({ label: `ROI ${property.roi.projected}%+`, icon: TrendingUp });
   }
 

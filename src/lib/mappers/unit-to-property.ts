@@ -339,7 +339,8 @@ export function mapUnitToProperty(
       video: row.video_url || undefined,
     },
     roi: {
-      projected: resolved?.roiPct ?? null,
+      projected: resolved?.displayPct ?? null,
+      projectedKind: resolved?.displayKind ?? null,
       rentalMonthly: resolved?.rentMonthly ?? null,
     },
     financing: {

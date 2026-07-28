@@ -638,11 +638,12 @@ export async function getBatchFinancials(client: Client, developmentIds: string[
   return (data || []).map((r) => coerceBatchFinancialsRow(r as Record<string, unknown>));
 }
 
-/** Map development_id → slice, listo para resolveUnitInvestment. */
+/** Map development_id → slice, listo para resolveUnitInvestment.
+ *  Solo la renta: roi_annual_pct y cap_rate quedan fuera a propósito porque son
+ *  constantes/basura en prod (ver DevFinancialsSlice en lib/investment/resolve). */
 export async function getFinancialsMap(client: Client, developmentIds: string[]) {
   const rows = await getBatchFinancials(client, [...new Set(developmentIds)]);
   return new Map(rows.map((r) => [r.development_id, {
-    roi_annual_pct: r.roi_annual_pct,
     estimated_rent_residencial: r.estimated_rent_residencial,
   }]));
 }
@@ -796,7 +797,7 @@ export async function getUnitsForLeadMagnet(client: Client) {
   return hub(client)
     .from('v_units')
     .select(
-      'id, slug, development_id, development_name, development_slug, city, zone, bedrooms, area_m2, price_mxn, discount_price_mxn, discount_pct, is_discount_active, roi_annual, estimated_rent_mxn, appreciation_annual',
+      'id, slug, development_id, development_name, development_slug, city, zone, bedrooms, area_m2, price_mxn, discount_price_mxn, discount_pct, is_discount_active, roi_annual, estimated_rent_mxn',
     )
     .not('approved_at', 'is', null)
     .is('deleted_at', null)
