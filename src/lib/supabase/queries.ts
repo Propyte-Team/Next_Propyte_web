@@ -1757,7 +1757,6 @@ export async function getZoneScores(client: Client, city?: string) {
   let query = client
     .from('zone_scores')
     .select('*')
-    .neq('zone', '_ciudad') // excluye la fila-benchmark de ciudad (no es una pseudo-zona real)
     .order('computed_at', { ascending: false });
 
   if (city) query = query.eq('city', city);
@@ -1827,63 +1826,6 @@ export async function getZoneDetail(client: Client, city: string, zone: string) 
     .map(([sub]) => sub);
 
   return { score, submarkets: zoneSubmarkets };
-}
-
-export interface CityStrBenchmark {
-  city: string;
-  median_occupancy: number | null;
-  median_adr: number | null;
-  revpar: number | null;
-  active_listings: number | null;
-  computed_at: string | null;
-}
-
-/** Benchmark STR a nivel ciudad (fila zone_scores donde zone == '_ciudad', escrita por compute_derived).
- *  Fail-closed: devuelve null si no hay fila. */
-export async function getCityStrBenchmark(
-  client: Client,
-  city: string,
-): Promise<CityStrBenchmark | null> {
-  const { data, error } = await client
-    .from('zone_scores')
-    .select('city, median_occupancy, median_adr, revpar, active_listings, computed_at')
-    .eq('city', city)
-    .eq('zone', '_ciudad') // marcador de la fila-benchmark de ciudad (compute_derived CITY_BENCHMARK_ZONE)
-    .order('computed_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  return data as CityStrBenchmark;
-}
-
-export interface ZoneEnrichment {
-  zone_slug: string;
-  city: string;
-  municipio_name: string;
-  poblacion_total: number | null;
-  viviendas_habitadas: number | null;
-  census_year: number | null;
-  negocios_denue: number | null;
-  negocios_scope: 'real_estate' | 'all' | null;
-  sniiv_creditos: number | null;
-  sniiv_monto: number | null;
-  sniiv_anio: number | null;
-  computed_at: string | null;
-}
-
-/** Enriquecimiento por municipio (INEGI/DENUE/SNIIV) para /zonas/[slug].
- * Devuelve null si no hay fila (fail-closed → la sección no se renderiza). */
-export async function getZoneEnrichment(
-  client: Client,
-  slug: string,
-): Promise<ZoneEnrichment | null> {
-  const { data, error } = await client
-    .from('zone_enrichment')
-    .select('*')
-    .eq('zone_slug', slug)
-    .maybeSingle();
-  if (error || !data) return null;
-  return data as ZoneEnrichment;
 }
 
 // ============================================================

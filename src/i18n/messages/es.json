@@ -2634,22 +2634,7 @@
     "h1": "Mapa de Rentabilidad",
     "subtitle": "Compara ocupación, ingreso por noche y competencia entre zonas antes de invertir",
     "methodology": "Metodología",
-    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente.",
-    "contextTitle": "Contexto del municipio",
-    "contextIntro": "Datos oficiales del municipio de {municipio}, {state} (INEGI · SNIIV). La granularidad es municipal, no por colonia.",
-    "contextPopulation": "Población (censo {year})",
-    "contextHouseholds": "Viviendas habitadas",
-    "contextRealEstate": "Inmobiliarias registradas (DENUE)",
-    "contextBusinesses": "Unidades económicas (DENUE)",
-    "contextCredits": "Créditos a la vivienda ({year})",
-    "contextCreditsAmount": "Monto financiado ({year})",
-    "contextUpdated": "Actualizado {date}",
-    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional",
-    "cityStrTitle": "Renta vacacional — nivel ciudad",
-    "cityStrDisclaimer": "Promedio de mercado de {city}. Estimación a nivel ciudad, no de la colonia.",
-    "cityStrOccupancy": "Ocupación (ciudad)",
-    "cityStrAdr": "Tarifa diaria prom. (ciudad)",
-    "cityStrRevpar": "RevPAR (ciudad)"
+    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente."
   },
   "geoAnalysis": {
     "location": "Ubicación",
@@ -2766,7 +2751,8 @@
     "noZonesFound": "No se encontraron zonas con los filtros actuales.",
     "noResultsFallback": "Sin coincidencias para tu filtro. Mostrando Top 10 nacional.",
     "viewAllZones": "Ver todas las {count} zonas",
-    "showingOf": "Mostrando {visible} de {total} zonas"
+    "showingOf": "Mostrando {visible} de {total} zonas",
+    "vacationMarketIntelligence": "Inteligencia de Mercado de Renta Vacacional"
   },
   "zoneScoreCard": {
     "occupancy": "Ocupación",
