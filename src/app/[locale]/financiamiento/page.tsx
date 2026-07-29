@@ -14,7 +14,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnits } from '@/lib/supabase/queries';
 import { pickEjemplosPorTerciles } from '@/lib/financiamiento-ejemplos';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
-import { computeHipotecario } from '@/lib/hipotecario';
+import { computeHipotecario, HIPOTECARIO_CONFIG } from '@/lib/hipotecario';
 import { TASAS_FUENTES } from '@/lib/financiamiento/tasas-config';
 
 // createServerSupabaseClient() usa cookies() → rompe ISR (DYNAMIC_SERVER_USAGE);
@@ -66,6 +66,32 @@ const SPEED_ICON = { fastest: '⚡⚡⚡', fast: '⚡⚡', slow: '🕐' } as con
 /** Solo el método 3 lleva nota aclaratoria del costo real (regla DATA-GATE). */
 const METHOD_NOTE_KEY: Record<number, 'method3RateNote' | undefined> = { 3: 'method3RateNote' };
 
+/**
+ * Valores de la tarjeta de crédito hipotecario, derivados de HIPOTECARIO_CONFIG.
+ *
+ * Antes estaban escritos a mano en el copy ("Enganche 10-20%", "Plazo 10-20
+ * años") y contradecían al simulador de ESTA MISMA página, que aplica 35% de
+ * enganche y 360 meses al perfil extranjero. Escribir el mismo número en dos
+ * lugares es lo que produjo la contradicción, así que ahora el copy lleva
+ * placeholders y el número sale de la config: si cambia el perfil, cambia el
+ * texto solo.
+ *
+ * Se pasan como STRING a propósito — un `10.5` numérico lo formatearía ICU por
+ * locale y en inglés saldría "10.5" pero en otros "10,5".
+ */
+function hipotecarioCopyValues() {
+  const { nacional, extranjero } = HIPOTECARIO_CONFIG;
+  const años = (meses: number) => String(Math.round(meses / 12));
+  return {
+    nacRate: String(nacional.tasaAnualPct),
+    extRate: String(extranjero.tasaAnualPct),
+    nacDown: String(nacional.enganchePct),
+    extDown: String(extranjero.enganchePct),
+    nacYears: años(nacional.meses),
+    extYears: años(extranjero.meses),
+  };
+}
+
 export default async function FinanciamientoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -76,16 +102,20 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
+  // Los valores solo los consume el método 1; para 2-4 son inertes (sus strings
+  // no tienen placeholders), así que se pasan a todos sin ramificar.
+  const hipValues = hipotecarioCopyValues();
+
   const methods = METHOD_ICONS.map((Icon, i) => {
     const n = i + 1;
     const noteKey = METHOD_NOTE_KEY[n];
     return {
       icon: Icon,
       title: t(`method${n}Title` as 'method1Title'),
-      desc: t(`method${n}Desc` as 'method1Desc'),
-      downPayment: t(`method${n}DownPayment` as 'method1DownPayment'),
-      rate: t(`method${n}Rate` as 'method1Rate'),
-      term: t(`method${n}Term` as 'method1Term'),
+      desc: t(`method${n}Desc` as 'method1Desc', hipValues),
+      downPayment: t(`method${n}DownPayment` as 'method1DownPayment', hipValues),
+      rate: t(`method${n}Rate` as 'method1Rate', hipValues),
+      term: t(`method${n}Term` as 'method1Term', hipValues),
       pros: [
         t(`method${n}Pro1` as 'method1Pro1'),
         t(`method${n}Pro2` as 'method1Pro2'),
