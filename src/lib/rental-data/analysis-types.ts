@@ -39,6 +39,15 @@ export interface DevelopmentFinancial {
   rent_yield_net: number | null;
   estimated_rent: number | null;
   estimated_rent_vac: number | null;
+  // Variante vacacional. El endpoint SIEMPRE las devolvió; el tipo no las declaraba, así
+  // que el cliente no podía verlas aunque viajaran por el cable.
+  roi_annual_pct_vac: number | null;
+  irr_5yr_vac: number | null;
+  cap_rate_vac: number | null;
+  rent_yield_gross_vac: number | null;
+  rent_yield_net_vac: number | null;
+  monthly_net_flow_vac: number | null;
+  occupancy_rate_vac: number | null;
 }
 
 export interface SourceStat {
@@ -54,4 +63,12 @@ export interface AnalysisData {
   data_freshness: string | null;
   model: { version: string; last_computed: string } | null;
   total_comparables: number;
+  /** Cuánto se descartó al limpiar. También viajaba sin estar declarado. */
+  data_quality: {
+    raw_count: number;
+    clean_count: number;
+    removed_count: number;
+    removed_pct: number;
+    removed_reasons: Record<string, number>;
+  };
 }

@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
+import { getRentalAnalysis } from '@/lib/rental-data/analysis';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { MercadoHero } from './components/MercadoHero';
 import { TabBar } from './components/TabBar';
@@ -62,6 +63,10 @@ export default async function MercadoPage({
   const supabase = await createServerSupabaseClient();
   const strScores = activeTab === 'vacacional' && supabase ? await getZoneScores(supabase) : [];
 
+  // La tab tradicional tambien se pre-carga en el servidor: su tabla ES el contenido de
+  // la pagina, y con el fetch de cliente no llegaba al HTML rastreable.
+  const tradicionalData = activeTab === 'tradicional' ? await getRentalAnalysis() : null;
+
   // STR stats for hero
   const strStats = strScores.length > 0
     ? {
@@ -117,7 +122,7 @@ export default async function MercadoPage({
             <VacacionalTab scores={strScores} locale={locale} initialCity={city} />
           )}
           {activeTab === 'tradicional' && (
-            <TradicionalTab locale={locale} />
+            <TradicionalTab locale={locale} initialData={tradicionalData} />
           )}
           </div>
         </main>
