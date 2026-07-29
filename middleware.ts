@@ -5,6 +5,7 @@ import { routing } from './src/i18n/routing';
 import { matchEntityPath } from './src/lib/redirects/match-entity-path';
 import { resolveTarget } from './src/lib/redirects/resolve-target';
 import { loadRedirectMap } from './src/lib/redirects/load-map';
+import { paginaSinContenido } from './src/lib/redirects/pagina-sin-contenido';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -86,13 +87,24 @@ export default async function middleware(request: NextRequest) {
       url.pathname = pathname.replace(/\/+$/, '').replace(/[^/]+$/, target.slug);
       return NextResponse.redirect(url, 308);
     }
-    if (target?.kind === 'gone') {
-      // 410 y no 404: le dice a Google que la URL existió y ya no, y la retira
-      // del índice más rápido.
-      return new NextResponse('Gone', {
-        status: 410,
-        headers: { 'content-type': 'text/plain; charset=utf-8' },
-      });
+    // 410 solo para el retiro deliberado; 404 para lo inferido (la entidad dejó
+    // de estar publicada, y eso se revierte desde el Hub en un clic). Ver el
+    // bloque de RedirectTarget en resolve-target.ts.
+    if (target?.kind === 'gone' || target?.kind === 'not-found') {
+      const status = target.kind === 'gone' ? 410 : 404;
+      return new NextResponse(
+        paginaSinContenido({ status, locale: entityMatch.locale, seccion: entityMatch.seccion }),
+        {
+          status,
+          headers: {
+            'content-type': 'text/html; charset=utf-8',
+            // Que un CDN no se quede con el 404 más de lo necesario: republicar
+            // un desarrollo debe volver a servir la página, no este cuerpo.
+            'cache-control': 'public, max-age=0, s-maxage=60',
+            'x-robots-tag': 'noindex, follow',
+          },
+        },
+      );
     }
   }
 

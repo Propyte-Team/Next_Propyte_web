@@ -34,6 +34,11 @@ export type RedirectMapLoaderOptions = {
 
 const TTL_POR_DEFECTO_MS = 5 * 60 * 1000;
 
+/** Mapa vacío: el middleware no redirige y la ruta sigue su curso normal. */
+function mapaVacio(): RedirectMap {
+  return { filas: new Map(), slugVigentePorEntidad: new Map() };
+}
+
 export function createRedirectMapLoader(
   opts: RedirectMapLoaderOptions,
 ): () => Promise<RedirectMap> {
@@ -55,9 +60,8 @@ export function createRedirectMapLoader(
         cache = { map, at: now() };
         return map;
       } catch {
-        // Mapa anterior si lo hay; si no, vacío — el middleware no redirige y la
-        // ruta sigue su curso normal. Un error de red no tumba el sitio.
-        return cache?.map ?? new Map();
+        // Mapa anterior si lo hay; si no, vacío. Un error de red no tumba el sitio.
+        return cache?.map ?? mapaVacio();
       } finally {
         // Sin esto, un fallo dejaría el loader clavado creyendo que hay una carga
         // en vuelo y no reintentaría nunca.

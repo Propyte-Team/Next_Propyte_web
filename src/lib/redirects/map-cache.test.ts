@@ -3,7 +3,12 @@ import { createRedirectMapLoader } from './map-cache';
 import type { RedirectMap } from './resolve-target';
 
 function mapa(): RedirectMap {
-  return new Map([['development:viejo', { newSlug: 'nuevo', kind: 'redirect' as const }]]);
+  return {
+    filas: new Map([
+      ['development:viejo', { entityId: 'e1', newSlug: 'nuevo', kind: 'redirect' as const }],
+    ]),
+    slugVigentePorEntidad: new Map([['e1', 'nuevo']]),
+  };
 }
 
 // El middleware corre en CADA request del sitio. La primera versión confiaba en
@@ -81,7 +86,7 @@ describe('createRedirectMapLoader', () => {
 
     const map = await load();
 
-    expect(map.size).toBe(0);
+    expect(map.filas.size).toBe(0);
   });
 
   // Un fallo no debe dejar el loader clavado creyendo que hay una carga en vuelo.
@@ -93,8 +98,8 @@ describe('createRedirectMapLoader', () => {
     let ahora = 1_000;
     const load = createRedirectMapLoader({ fetchRows, now: () => ahora, ttlMs: 60_000 });
 
-    expect((await load()).size).toBe(0);
+    expect((await load()).filas.size).toBe(0);
     ahora = 1_100;
-    expect((await load()).size).toBe(1);
+    expect((await load()).filas.size).toBe(1);
   });
 });

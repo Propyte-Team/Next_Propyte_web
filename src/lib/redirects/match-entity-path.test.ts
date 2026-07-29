@@ -11,11 +11,13 @@ describe('matchEntityPath', () => {
       locale: 'es',
       entityType: 'blog_post',
       slug: 'mi-articulo',
+      seccion: 'blog',
     });
     expect(matchEntityPath('/en/blog/mi-articulo')).toEqual({
       locale: 'en',
       entityType: 'blog_post',
       slug: 'mi-articulo',
+      seccion: 'blog',
     });
   });
 
@@ -53,6 +55,7 @@ describe('matchEntityPath', () => {
       locale: 'es',
       entityType: 'blog_post',
       slug: 'mi-articulo',
+      seccion: 'blog',
     });
   });
 

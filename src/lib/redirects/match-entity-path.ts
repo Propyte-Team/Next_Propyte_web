@@ -19,6 +19,8 @@ export type EntityPathMatch = {
   locale: string;
   entityType: EntityType;
   slug: string;
+  /** El segmento tal como viene en la URL. Sirve para armar el enlace al listado. */
+  seccion: string;
 };
 
 const LOCALES = new Set(['es', 'en']);
@@ -43,5 +45,5 @@ export function matchEntityPath(pathname: string): EntityPathMatch | null {
   const entityType = SECCION_A_ENTIDAD[seccion];
   if (!entityType || !slug) return null;
 
-  return { locale, entityType, slug };
+  return { locale, entityType, slug, seccion };
 }
