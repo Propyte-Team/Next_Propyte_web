@@ -6,6 +6,8 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getBlogPost, getRelatedPosts, getBlogPostSlugs, getBlogPostLocales, getTeamMembers,
 } from '@/lib/supabase/queries';
+import { robotsDeArticulo } from '@/lib/seo/robots-articulo';
+import { shouldNoIndex } from '@/lib/seo/noindex';
 import { resolvePostAuthor, type ResolvedAuthor } from '@/lib/blog/post-author';
 import { hasMarketFigures, needsInvestmentDisclaimer } from '@/lib/blog/article-signals';
 import { pilarDeCategoria, pilarHref, PILAR_LABEL_KEY } from '@/lib/blog/pilares';
@@ -39,6 +41,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const post = supabase ? await getBlogPost(supabase, slug, locale) : null;
   if (!post) return {};
 
+  const robots = robotsDeArticulo({ postNoindex: post.noindex, deployNoindex: shouldNoIndex() });
+
   // hreflang solo hacia traducciones realmente publicadas. Declarar una que
   // está en draft manda al rastreador a un 200 + noindex y rompe la reciprocidad.
   const publishedLocales = supabase ? await getBlogPostLocales(supabase, slug) : [locale];
@@ -71,6 +75,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       canonical: `/${locale}/blog/${slug}`,
       languages,
     },
+    // Solo se emite si algo lo pide: un `robots` presente y permisivo compite con
+    // el default del layout.
+    ...(robots ? { robots } : {}),
   };
 }
 

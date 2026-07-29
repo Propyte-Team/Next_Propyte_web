@@ -151,10 +151,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── Dynamic blog posts ────────────────────────
   try {
     const supabase2 = await createServiceRoleClient() || await createServerSupabaseClient();
+    // El sitemap es una afirmación: "indexa esto". Un artículo con `noindex` o en
+    // la papelera contradice esa afirmación, y anunciarlo aquí para después
+    // devolver noindex es una señal en conflicto que Google reporta como error.
     const { data: blogPosts } = await supabase2
       .from('blog_posts')
       .select('slug, locale, updated_at')
       .eq('status', 'published')
+      .eq('noindex', false)
+      .is('deleted_at', null)
       .lte('published_at', new Date().toISOString())
       .limit(1000);
 

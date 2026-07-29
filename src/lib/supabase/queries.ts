@@ -2427,13 +2427,22 @@ export type BlogPost = {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Retirado del índice sin borrarlo. Ver src/lib/seo/robots-articulo.ts. */
+  noindex: boolean;
 };
 
 const BLOG_SELECT = `
   id, slug, locale, status, title, excerpt, content, category, tags,
   featured_image, author_name, author_image, read_time_min,
-  meta_title, meta_description, related_city, published_at, created_at, updated_at
+  meta_title, meta_description, related_city, published_at, created_at, updated_at,
+  noindex
 `.trim();
+
+// La papelera del blog marca `deleted_at` en vez de borrar la fila, así que TODA
+// consulta pública de abajo lleva `.is('deleted_at', null)` — si no, un artículo
+// "eliminado" desde el Hub seguiría sirviéndose en el sitio y nadie se enteraría.
+// Se aplica también con `includeStaged`: estar en la papelera no es un estado de
+// publicación.
 
 // En dev.propyte.com (Vercel), poner BLOG_INCLUDE_STAGED=true para ver posts en staging.
 // En propyte.com (Hostinger) no definir la variable → solo muestra 'published'.
@@ -2450,6 +2459,7 @@ export async function getBlogPosts(
   let q = c
     .from('blog_posts')
     .select(BLOG_SELECT, { count: 'exact' })
+    .is('deleted_at', null)
     .eq('locale', locale)
     .order('published_at', { ascending: false })
     .range(from, to);
@@ -2472,6 +2482,7 @@ export async function getBlogPost(c: Client, slug: string, locale: string): Prom
   let q = c
     .from('blog_posts')
     .select(BLOG_SELECT)
+    .is('deleted_at', null)
     .eq('slug', slug)
     .eq('locale', locale);
 
@@ -2497,6 +2508,7 @@ export async function getRelatedPosts(
   let q = c
     .from('blog_posts')
     .select(BLOG_SELECT)
+    .is('deleted_at', null)
     .eq('locale', locale)
     .eq('category', category)
     .neq('slug', excludeSlug)
@@ -2518,6 +2530,7 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
   let q = c
     .from('blog_posts')
     .select('category')
+    .is('deleted_at', null)
     .eq('locale', locale)
     .order('category');
 
@@ -2547,7 +2560,7 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
  * no anuncie una traducción programada que todavía no es accesible.
  */
 export async function getBlogPostLocales(c: Client, slug: string): Promise<string[]> {
-  let q = c.from('blog_posts').select('locale').eq('slug', slug);
+  let q = c.from('blog_posts').select('locale').is('deleted_at', null).eq('slug', slug);
 
   if (includeStaged) {
     q = q.in('status', ['published', 'staged']);
@@ -2561,9 +2574,13 @@ export async function getBlogPostLocales(c: Client, slug: string): Promise<strin
 }
 
 export async function getBlogPostSlugs(c: Client): Promise<{ slug: string; locale: string }[]> {
+  // Sin filtro de `noindex` a propósito: un artículo con noindex SÍ se renderiza
+  // —eso es justo la diferencia con borrarlo—, solo no entra al índice ni al
+  // sitemap. Lo que no se genera es lo que está en la papelera.
   let q = c
     .from('blog_posts')
-    .select('slug, locale');
+    .select('slug, locale')
+    .is('deleted_at', null);
 
   if (includeStaged) {
     q = q.in('status', ['published', 'staged']);
