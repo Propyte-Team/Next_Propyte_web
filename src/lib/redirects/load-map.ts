@@ -1,5 +1,6 @@
 import type { EntityType } from './match-entity-path';
 import type { RedirectEntry, RedirectMap } from './resolve-target';
+import { createRedirectMapLoader } from './map-cache';
 
 /**
  * Carga del mapa de redirecciones que consume el middleware.
@@ -74,33 +75,32 @@ export function rowsToMap(rows: unknown): RedirectMap {
 }
 
 /**
- * Trae el mapa desde PostgREST. Cacheado por el fetch de Next (`revalidate`), el
- * mismo mecanismo que ya usaba el lookup anterior: una instancia fría hace un
- * fetch y el resto de los requests lo reusan durante la hora.
+ * Trae el mapa desde PostgREST. Una sola consulta que devuelve la tabla completa.
  *
- * Devuelve un mapa vacío ante cualquier fallo: sin datos, el middleware no
- * redirige y la ruta sigue su curso normal. Un error de red no debe tumbar el
- * sitio entero.
+ * NO lleva `next: { revalidate }`: en middleware eso es un no-op — ver map-cache.ts,
+ * que explica por qué y trae el caché que sí funciona. Poner la opción acá sería
+ * mentira en el código.
  */
-export async function loadRedirectMap(): Promise<RedirectMap> {
+async function fetchRedirectMap(): Promise<RedirectMap> {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!supabaseUrl || !supabaseKey) return new Map();
 
-  try {
-    const res = await fetch(redirectMapUrl(supabaseUrl), {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-        // Sin esto PostgREST resuelve al schema `public`, donde la tabla no está.
-        // Era la causa de que el lookup anterior no encontrara nada.
-        'Accept-Profile': 'real_estate_hub',
-      },
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return new Map();
-    return rowsToMap(await res.json());
-  } catch {
-    return new Map();
-  }
+  const res = await fetch(redirectMapUrl(supabaseUrl), {
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${supabaseKey}`,
+      // Sin esto PostgREST resuelve al schema `public`, donde la tabla no está.
+      // Era la causa de que el lookup anterior no encontrara nada.
+      'Accept-Profile': 'real_estate_hub',
+    },
+  });
+  if (!res.ok) throw new Error(`slug_redirects HTTP ${res.status}`);
+  return rowsToMap(await res.json());
 }
+
+/**
+ * El loader que consume el middleware: cacheado en memoria con TTL y con las
+ * cargas concurrentes deduplicadas. El camino caliente no hace I/O.
+ */
+export const loadRedirectMap = createRedirectMapLoader({ fetchRows: fetchRedirectMap });
