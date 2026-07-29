@@ -78,18 +78,29 @@ const nextConfig: NextConfig = {
       { source: '/:locale/equipo', destination: '/:locale/nosotros/equipo-comercial', permanent: true },
       // ── Blog retirado → hermano temático (2026-07-28) ────────────────────
       // lfpiorpi estuvo publicado del 14 al 28 de julio en ES y EN, o sea que
-      // sus dos URLs quedaron indexadas. Al archivarlo, blog/[slug] hace
-      // notFound() y ambas pasaron a 404 duro, que para una URL indexada es la
-      // peor respuesta posible. Destino: due-diligence, que es el hermano
-      // temático real (LFPIORPI es el cumplimiento antilavado DENTRO del
-      // proceso de compra que due diligence describe). Si el destino no cubre
-      // la misma intención de búsqueda, Google trata el redirect como soft 404
-      // y lo ignora — por eso no va a /blog ni a la home.
-      // Mecanismo provisional: el permanente vive en public.blog_redirects,
-      // administrable desde el Hub. Ver docs del frente D en Propyte_hub.
+      // sus dos URLs quedaron indexadas. Al archivarlo dejaron de servir el
+      // artículo, así que necesitan destino.
+      //
+      // Destino: la guía de compra, que cubre la misma intención de búsqueda
+      // (LFPIORPI es el cumplimiento antilavado DENTRO del proceso de compra).
+      // Si el destino no cubre la misma intención, Google trata el redirect
+      // como soft 404 y lo ignora — por eso no va a /blog ni a la home.
+      //
+      // REGLA APRENDIDA A GOLPES: verificar que el destino esté PUBLISHED en
+      // ambos locales antes de apuntarle un 301. El primer intento apuntó a
+      // due-diligence, que había pasado a draft, y la cadena quedaba
+      // 308 → 200 con "Página no encontrada": un soft 404 con paso extra.
+      // El status en la BD no basta si se consultó hace rato; y en la página
+      // la señal fiable es la presencia de <h1>, no el texto "Página no
+      // encontrada", que vive en el payload de i18n de TODAS las páginas.
+      //
+      // Mecanismo provisional: el permanente vive en public.blog_redirects
+      // resuelto en middleware —no en la página, porque con la cadena de
+      // loading.tsx el 200 ya está comprometido cuando corre el componente—
+      // administrable desde el Hub. Ver el frente D del spec en Propyte_hub.
       {
         source: '/:locale/blog/lfpiorpi-2025-bienes-raices-proceso',
-        destination: '/:locale/blog/due-diligence-inmuebles-mexico-17-puntos',
+        destination: '/:locale/blog/guia-compra-propiedad-riviera-maya-2026',
         permanent: true,
       },
     ];
