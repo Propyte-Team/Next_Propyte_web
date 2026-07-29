@@ -76,33 +76,25 @@ const nextConfig: NextConfig = {
       // /equipo (slug corto que existió temporalmente en B4.4) → subpágina canónica
       // bajo /nosotros. Decisión 2026-05-12: el equipo es subpágina de "Nosotros".
       { source: '/:locale/equipo', destination: '/:locale/nosotros/equipo-comercial', permanent: true },
-      // ── Blog retirado → hermano temático (2026-07-28) ────────────────────
-      // lfpiorpi estuvo publicado del 14 al 28 de julio en ES y EN, o sea que
-      // sus dos URLs quedaron indexadas. Al archivarlo dejaron de servir el
-      // artículo, así que necesitan destino.
+      // ── Blog: NO agregar redirects de artículos aquí ─────────────────────
+      // Hubo un 301 de lfpiorpi-2025-bienes-raices-proceso en este bloque y se
+      // retiró el 2026-07-29 porque no se puede mantener a mano.
       //
-      // Destino: la guía de compra, que cubre la misma intención de búsqueda
-      // (LFPIORPI es el cumplimiento antilavado DENTRO del proceso de compra).
-      // Si el destino no cubre la misma intención, Google trata el redirect
-      // como soft 404 y lo ignora — por eso no va a /blog ni a la home.
+      // Historia corta, dos destinos muertos en un día: apuntó a due-diligence,
+      // que pasó a draft; se repuntó a guia-compra, que pasó a archived. Un 308
+      // hacia una página vacía le dice a Google "el contenido se mudó aquí"
+      // apuntando a nada — peor que no redirigir, y encima suma un salto.
       //
-      // REGLA APRENDIDA A GOLPES: verificar que el destino esté PUBLISHED en
-      // ambos locales antes de apuntarle un 301. El primer intento apuntó a
-      // due-diligence, que había pasado a draft, y la cadena quedaba
-      // 308 → 200 con "Página no encontrada": un soft 404 con paso extra.
-      // El status en la BD no basta si se consultó hace rato; y en la página
-      // la señal fiable es la presencia de <h1>, no el texto "Página no
-      // encontrada", que vive en el payload de i18n de TODAS las páginas.
+      // La causa no es el destino elegido: es que el status de un artículo
+      // cambia desde el Hub y este archivo exige commit y deploy para seguirlo.
+      // Los redirects de blog, desarrollos y unidades se resuelven desde
+      // middleware contra real_estate_hub.slug_redirects, administrable en
+      // caliente y donde el status SÍ se puede validar. Y es el único lugar
+      // donde se puede fijar el código de estado: con la cadena de loading.tsx
+      // el 200 ya está comprometido cuando corre la página.
       //
-      // Mecanismo provisional: el permanente vive en public.blog_redirects
-      // resuelto en middleware —no en la página, porque con la cadena de
-      // loading.tsx el 200 ya está comprometido cuando corre el componente—
-      // administrable desde el Hub. Ver el frente D del spec en Propyte_hub.
-      {
-        source: '/:locale/blog/lfpiorpi-2025-bienes-raices-proceso',
-        destination: '/:locale/blog/guia-compra-propiedad-riviera-maya-2026',
-        permanent: true,
-      },
+      // Ver el frente D del spec en Propyte_hub. Los redirects de arriba son de
+      // rutas de sección, que no cambian de status y sí pertenecen aquí.
     ];
   },
   async headers() {
