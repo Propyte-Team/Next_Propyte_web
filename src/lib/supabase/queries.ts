@@ -2012,93 +2012,56 @@ export interface ZoneScore {
   computed_at: string;
 }
 
-// Zone names that are DB slugs, not real geography
-const INVALID_ZONE_PATTERNS = [
-  /^SUBMARKET_/i,
-  /^ZONA_/i,
-  /^zona_/,
-  /^submarket_/,
-  // Fragmentos de dirección catastral (manzana/lote) que llegan como "zona"
-  // desde el CRM — no son colonias reales (ej. "MZ 25 LT 19 Paseo Xaman-Ha",
-  // "LB 25 Avenida Nte"). Verificados en zone_scores 2026-07-16.
-  /^(mz|lb)\s*\d/i,
-  /\blt\s*\d/i,
-];
-const INVALID_ZONE_NAMES = new Set([
-  'Venta', 'Villa', 'Piso', 'Casa', 'Departamento', 'Penthouse',
-  'venta', 'villa', 'piso', 'casa', 'departamento', 'penthouse',
-]);
-
-function isValidZoneName(zone: string): boolean {
-  if (!zone || zone.length > 50) return false;
-  if (INVALID_ZONE_NAMES.has(zone)) return false;
-  if (INVALID_ZONE_PATTERNS.some((p) => p.test(zone))) return false;
-  // Single word that looks like a listing title (contains uppercase + lowercase mix with spaces)
-  if (zone.includes('RENTA') || zone.includes('VENTA')) return false;
-  return true;
-}
-
+/**
+ * Zonas publicables del Índice Propyte.
+ *
+ * Ya NO limpia nada. La puerta de publicación vive en el pipeline
+ * (`crawlers/glowing-spork/analytics/publication_gates.py` + `zone_crosswalk.py` en el
+ * monorepo) y `public.zone_scores` tiene `UNIQUE(city, zone)` desde la migración 0007,
+ * así que aquí no hay basura que filtrar ni duplicados que deduplicar.
+ *
+ * Lo que se borró de aquí el 2026-07-29, y por qué:
+ *
+ * - `isValidZoneName` / `INVALID_ZONE_*`: compensaban los nombres fabricados
+ *   (`ZONA_1..15`, `SM_*`, `AKUMAL_*`) que el fallback `sub.upper()` metía en la tabla.
+ *   Ese fallback ya no existe y las filas se purgaron. La lista escrita dos veces —aquí
+ *   y en el pipeline— es el patrón que produjo el problema: una copia se actualiza y la
+ *   otra no.
+ *
+ * - El dedup por `city:zone`: la tabla no tenía UNIQUE y el upsert appendeaba, así que
+ *   había hasta 42 pares con dos filas de score distinto. Peor: `computed_at` era una
+ *   fecha a medianoche, el `ORDER BY` empataba y qué score se publicaba lo decidía
+ *   Postgres request a request. Lo resuelve la constraint, no un filtro de cliente.
+ *
+ * - El filtro de «>50% scores idénticos»: comparaba `Math.round(score ?? 0)`, o sea que
+ *   contaba TODAS las zonas sin índice como si compartieran el score 0. Con el umbral de
+ *   muestra activo, Cancún quedó con 7 de 14 zonas sin índice: 7/14 = 0.5, exactamente
+ *   en el borde de la condición `> 0.5`. Una zona más sin índice y este filtro borraba
+ *   **Cancún entero** del sitio. El guard equivalente vive en `score_pool`, que anula el
+ *   índice del pool y conserva las métricas en vez de desaparecer la ciudad.
+ *
+ * - El filtro `avgOcc < 1`: mismo problema, promediaba nulls como ceros.
+ */
 export async function getZoneScores(client: Client, city?: string) {
   let query = client
     .from('zone_scores')
     .select('*')
-    .neq('zone', '_ciudad') // excluye la fila-benchmark de ciudad (no es una pseudo-zona real)
-    .order('computed_at', { ascending: false });
+    .neq('zone', '_ciudad') // la fila-benchmark de ciudad no es una zona
+    .order('score', { ascending: false, nullsFirst: false })
+    .limit(1000);
 
   if (city) query = query.eq('city', city);
 
-  // Get latest snapshot: deduplicate by zone
-  const { data, error } = await query.limit(5000);
+  const { data, error } = await query;
   if (error) { console.error('[getZoneScores] Supabase error:', error.code, error.message, error.details); return []; }
   if (!data) { console.warn('[getZoneScores] No data returned (null)'); return []; }
 
-  // Coerción NUMERIC-string→number upfront: sin esto median_occupancy/score/etc.
-  // llegan como string a los KPIs (/mercado suma → NaN → tiles desaparecen) y al
-  // filtro avgOcc de más abajo (concatenación). Beforehand para que todo el
-  // pipeline opere sobre números.
-  const rows = (data as ZoneScore[]).map((r) =>
+  // Coerción NUMERIC-string→number: PostgREST manda los NUMERIC como string, y sin esto
+  // median_occupancy/score llegan concatenables en vez de sumables (los KPIs de /mercado
+  // suman → NaN → los tiles desaparecen).
+  return (data as ZoneScore[]).map((r) =>
     coerceNumericFields(r as unknown as Record<string, unknown>, ZONE_SCORE_NUMERIC_KEYS) as unknown as ZoneScore,
   );
-
-  // Keep only latest per (city, zone)
-  const seen = new Set<string>();
-  const deduplicated = rows.filter((row: ZoneScore) => {
-    const key = `${row.city}:${row.zone}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }) as ZoneScore[];
-
-  // Filter out invalid zone names (DB slugs, listing titles, generic words)
-  const validZones = deduplicated.filter((row) => isValidZoneName(row.zone));
-
-  // Filter out cities with corrupt data (>50% identical scores or 0% occupancy)
-  const cityGroups = new Map<string, ZoneScore[]>();
-  for (const row of validZones) {
-    const list = cityGroups.get(row.city) || [];
-    list.push(row);
-    cityGroups.set(row.city, list);
-  }
-
-  const cleanZones: ZoneScore[] = [];
-  for (const [, zones] of cityGroups) {
-    // Check if >50% have identical scores (fallback data)
-    const scoreCounts = new Map<number, number>();
-    for (const z of zones) {
-      const s = Math.round(z.score ?? 0);
-      scoreCounts.set(s, (scoreCounts.get(s) || 0) + 1);
-    }
-    const maxSameScore = Math.max(...scoreCounts.values());
-    if (maxSameScore / zones.length > 0.5 && zones.length > 5) continue; // Skip corrupt city
-
-    // Check if avg occupancy is 0 (no real data)
-    const avgOcc = zones.reduce((a, z) => a + (z.median_occupancy ?? 0), 0) / zones.length;
-    if (avgOcc < 1) continue; // Skip city with 0% occupancy
-
-    cleanZones.push(...zones);
-  }
-
-  return cleanZones;
 }
 
 export async function getZoneDetail(client: Client, city: string, zone: string) {
