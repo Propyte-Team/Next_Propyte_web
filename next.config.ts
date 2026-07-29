@@ -76,6 +76,22 @@ const nextConfig: NextConfig = {
       // /equipo (slug corto que existió temporalmente en B4.4) → subpágina canónica
       // bajo /nosotros. Decisión 2026-05-12: el equipo es subpágina de "Nosotros".
       { source: '/:locale/equipo', destination: '/:locale/nosotros/equipo-comercial', permanent: true },
+      // ── Blog retirado → hermano temático (2026-07-28) ────────────────────
+      // lfpiorpi estuvo publicado del 14 al 28 de julio en ES y EN, o sea que
+      // sus dos URLs quedaron indexadas. Al archivarlo, blog/[slug] hace
+      // notFound() y ambas pasaron a 404 duro, que para una URL indexada es la
+      // peor respuesta posible. Destino: due-diligence, que es el hermano
+      // temático real (LFPIORPI es el cumplimiento antilavado DENTRO del
+      // proceso de compra que due diligence describe). Si el destino no cubre
+      // la misma intención de búsqueda, Google trata el redirect como soft 404
+      // y lo ignora — por eso no va a /blog ni a la home.
+      // Mecanismo provisional: el permanente vive en public.blog_redirects,
+      // administrable desde el Hub. Ver docs del frente D en Propyte_hub.
+      {
+        source: '/:locale/blog/lfpiorpi-2025-bienes-raices-proceso',
+        destination: '/:locale/blog/due-diligence-inmuebles-mexico-17-puntos',
+        permanent: true,
+      },
     ];
   },
   async headers() {
