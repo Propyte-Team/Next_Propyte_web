@@ -119,7 +119,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
   return (
     <>
-      <BlogHero t={heroT} activeCategory={activeCategory} />
+      <BlogHero t={heroT} activeCategory={activeCategory} availableCategories={categories} />
 
       <section className="bg-white py-10 md:py-14">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">

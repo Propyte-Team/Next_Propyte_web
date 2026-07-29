@@ -13,12 +13,21 @@ interface BlogHeroProps {
     ctaInversionistas: string;
   };
   activeCategory?: string | null;
+  /**
+   * Categorías con al menos un artículo publicado. Un CTA hacia una categoría
+   * vacía manda al lector al estado vacío desde el hero: pasó al poner en draft
+   * los artículos con marcadores DATA-GATE, que dejó "Para Asesores" en cero.
+   * `undefined` = no se pasó la lista → se muestran ambos (comportamiento previo).
+   */
+  availableCategories?: string[];
 }
 
 import { CAT_ASESORES, CAT_INVERSIONISTAS } from './categories';
+import { blogHref } from '@/lib/blog/blog-urls';
 
-export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
+export default function BlogHero({ t, activeCategory, availableCategories }: BlogHeroProps) {
   const locale = useLocale();
+  const has = (cat: string) => !availableCategories || availableCategories.includes(cat);
 
   return (
     <section className="bg-[#0F1923] w-full py-16 md:py-24">
@@ -40,28 +49,34 @@ export default function BlogHero({ t, activeCategory }: BlogHeroProps) {
           {t.heroDescription}
         </p>
 
-        {/* CTA filter buttons */}
+        {/* CTA filter buttons — el href sale de blogHref, igual que los chips y el
+            canonical: con encodeURIComponent daban "Para%20Asesores" y los chips
+            "Para+Asesores", o sea DOS URLs para el mismo contenido. */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_ASESORES)}`}
-            className={`px-6 py-3 rounded-full font-semibold text-sm transition-all ${
-              activeCategory === CAT_ASESORES
-                ? 'bg-[#A2F9FF] text-[#0F1923] shadow-lg shadow-[#A2F9FF]/20 ring-2 ring-white/30'
-                : 'bg-[#A2F9FF]/80 text-[#0F1923] hover:bg-[#A2F9FF]'
-            }`}
-          >
-            {t.ctaAsesores}
-          </Link>
-          <Link
-            href={`/${locale}/blog?categoria=${encodeURIComponent(CAT_INVERSIONISTAS)}`}
-            className={`px-6 py-3 rounded-full font-semibold text-sm border-2 transition-all ${
-              activeCategory === CAT_INVERSIONISTAS
-                ? 'border-[#A2F9FF] bg-[#A2F9FF] text-[#0F1923]'
-                : 'border-[#A2F9FF] text-[#A2F9FF] hover:bg-[#A2F9FF] hover:text-[#0F1923]'
-            }`}
-          >
-            {t.ctaInversionistas}
-          </Link>
+          {has(CAT_ASESORES) && (
+            <Link
+              href={blogHref(locale, { category: CAT_ASESORES })}
+              className={`px-6 py-3 rounded-full font-semibold text-sm transition-all ${
+                activeCategory === CAT_ASESORES
+                  ? 'bg-[#A2F9FF] text-[#0F1923] shadow-lg shadow-[#A2F9FF]/20 ring-2 ring-white/30'
+                  : 'bg-[#A2F9FF]/80 text-[#0F1923] hover:bg-[#A2F9FF]'
+              }`}
+            >
+              {t.ctaAsesores}
+            </Link>
+          )}
+          {has(CAT_INVERSIONISTAS) && (
+            <Link
+              href={blogHref(locale, { category: CAT_INVERSIONISTAS })}
+              className={`px-6 py-3 rounded-full font-semibold text-sm border-2 transition-all ${
+                activeCategory === CAT_INVERSIONISTAS
+                  ? 'border-[#A2F9FF] bg-[#A2F9FF] text-[#0F1923]'
+                  : 'border-[#A2F9FF] text-[#A2F9FF] hover:bg-[#A2F9FF] hover:text-[#0F1923]'
+              }`}
+            >
+              {t.ctaInversionistas}
+            </Link>
+          )}
         </div>
       </div>
     </section>
