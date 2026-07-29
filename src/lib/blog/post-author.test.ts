@@ -7,7 +7,7 @@ const TEAM: TeamAuthorSource[] = [
 ];
 
 describe('resolvePostAuthor', () => {
-  it('deja intacto el byline genérico de los 18 artículos actuales', () => {
+  it('sin categoría, el autor genérico queda intacto', () => {
     const a = resolvePostAuthor({ author_name: 'Propyte', author_image: null }, TEAM, 'es');
     expect(a.isTeamMember).toBe(false);
     expect(a.name).toBe('Propyte');
@@ -57,6 +57,55 @@ describe('resolvePostAuthor', () => {
       { ...TEAM[1], bio_short: 'Especialista en identidad de marca' },
     ], 'es');
     expect(conBio.credentials).toBe('Especialista en identidad de marca');
+  });
+
+  it('caída por categoría: un artículo genérico se firma según la regla editorial', () => {
+    const team: TeamAuthorSource[] = [
+      { name: 'Dana Marisol', role: 'Gestor Jurídico', photo_url: 'https://cdn/dana.webp', bio_short: null },
+    ];
+    const a = resolvePostAuthor(
+      { author_name: 'Propyte', category: 'Legal y fiscal' },
+      team,
+      'es'
+    );
+    expect(a.name).toBe('Dana Marisol');
+    expect(a.role).toBe('Gestor Jurídico');
+    expect(a.profileUrl).toBe('/es/nosotros/equipo-comercial#dana-marisol');
+  });
+
+  it('un autor explícito GANA sobre la caída por categoría', () => {
+    const a = resolvePostAuthor(
+      { author_name: 'Felipe Luksic', category: 'Estilo de vida' }, // la regla diría Luis Flores
+      TEAM,
+      'es'
+    );
+    expect(a.name).toBe('Felipe Luksic');
+  });
+
+  it('si la caída apunta a alguien fuera del equipo, se conserva el genérico', () => {
+    // "Legal y fiscal" cae a Dana Marisol, que no está en TEAM.
+    const a = resolvePostAuthor({ author_name: 'Propyte', category: 'Legal y fiscal' }, TEAM, 'es');
+    expect(a.name).toBe('Propyte');
+    expect(a.isTeamMember).toBe(false);
+    expect(a.profileUrl).toBeNull();
+  });
+
+  it('una categoría sin regla deja el genérico', () => {
+    const a = resolvePostAuthor({ author_name: 'Propyte', category: 'Categoría nueva' }, TEAM, 'es');
+    expect(a.name).toBe('Propyte');
+  });
+
+  it('la categoría de Pablo Toral está en la regla', () => {
+    const team: TeamAuthorSource[] = [
+      { name: 'Pablo Toral', role: 'Arquitecto · Postventa', photo_url: null, bio_short: null },
+    ];
+    const a = resolvePostAuthor(
+      { author_name: 'Propyte', category: 'Arquitectura y diseño' },
+      team,
+      'es'
+    );
+    expect(a.name).toBe('Pablo Toral');
+    expect(a.role).toBe('Arquitecto · Postventa');
   });
 
   it('el ancla es estable y URL-safe', () => {

@@ -36,6 +36,11 @@ export const CATEGORIA_A_PILAR: Record<string, Pilar | null> = {
   'Para Asesores': 'brokers',
   // Sin pilar por decisión explícita — no es un olvido.
   'Estilo de vida': null,
+  // Categoría creada 2026-07-29 para el contenido de arquitectura y diseño de
+  // vivienda (autor por defecto: Pablo Toral). Sin pilar, por el mismo criterio
+  // que "Estilo de vida": es contenido editorial, no una etapa del embudo de
+  // compra. Si se decide colgarla de /como-comprar, es cambiar este valor.
+  'Arquitectura y diseño': null,
 };
 
 /** Clave i18n del texto de enlace, en el namespace `pilares`. */

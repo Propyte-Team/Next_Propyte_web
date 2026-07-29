@@ -30,13 +30,26 @@ export const TASAS_CADENCIA = 'monthly' as const;
  *      el copy se genera desde `HIPOTECARIO_CONFIG` y la propia tarjeta dice que
  *      son las condiciones que aplica el simulador, por perfil. La fuente es
  *      interna y está declarada en el texto, así que no lleva renglón aparte.
- *   2. Descuento por pago de contado 5-15% → TODO: DATA-GATE [CONFIRMAR: fuente].
- *      Es una política que varía por desarrollador; el respaldo natural son los
- *      `esquemas_pago` de los desarrollos publicados en el Hub.
- *   3. Financiamiento del desarrollador 0% sobre precio de lista → TODO: DATA-GATE
- *      [CONFIRMAR: fuente]. Mismo respaldo que el 2.
+ *   2. Descuento por pago de contado — RESUELTO POR RETIRO (Luis, 2026-07-29). El
+ *      "5-15%" era una política de UN desarrollador (Nativa Tulum), publicada como
+ *      si fuera general. En una página general no se publica cifra: queda
+ *      "Descuento según proyecto". El respaldo del Hub (`esquemas_pago`) solo
+ *      sostiene el caso de Nativa, así que solo sirve en material de ese desarrollo.
+ *   3. Financiamiento del desarrollador 0% sobre precio de lista — RESUELTO. La
+ *      nota ya no afirma que exista descuento: dice que CUANDO el desarrollo lo
+ *      ofrece, ese descuento es el costo real. No hay cifra que respaldar.
  *   4. Crédito puente 12-18% → TODO: DATA-GATE [CONFIRMAR: fuente]. Externa: tasas
  *      publicadas por la institución.
+ *
+ * PENDIENTE de rango de mercado bancario (Luis pidió "un rango generoso, fechado"):
+ * la fuente correcta son los Cuadros Comparativos de Crédito Hipotecario de
+ * CONDUSEF (oficiales, actualización trimestral):
+ *   https://www.condusef.gob.mx/comparativos/comparativos.php?idc=1&im=bancos.jpg&h=1
+ * No se pudo leer desde aquí (el sitio falla la validación de certificado), así que
+ * NO se publicó cita ni fecha: citar una fuente no leída es justo lo que esta página
+ * existe para no hacer. Hoy la tarjeta muestra 9.5-10.5%, que NO es una afirmación
+ * de mercado sin respaldo — son las condiciones del simulador, declaradas como
+ * tales. Para publicar un rango de mercado hace falta el dato de CONDUSEF.
  * Formato esperado al llenarlo: `Tasas publicadas por <institución>, consultadas <YYYY-MM-DD>.`
  */
 export const TASAS_FUENTES: Record<1 | 2 | 3 | 4, string | null> = {

@@ -18,6 +18,15 @@ describe('mapa de pilares', () => {
     expect(sinMapear).toEqual([]);
   });
 
+  it('"Arquitectura y diseño" ya está mapeada aunque todavía no tenga artículos', () => {
+    // Creada 2026-07-29 para el contenido de Pablo Toral. Sin pilar por decisión,
+    // igual que "Estilo de vida": es contenido editorial, no etapa del embudo.
+    expect('Arquitectura y diseño' in CATEGORIA_A_PILAR).toBe(true);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(pilarDeCategoria('Arquitectura y diseño')).toBeNull();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
   it('cada pilar declarado es una ruta válida', () => {
     for (const p of Object.values(CATEGORIA_A_PILAR)) {
       if (p !== null) expect(PILARES).toContain(p);

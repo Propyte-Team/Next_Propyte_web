@@ -12,7 +12,12 @@
  *
  * Si dos miembros normalizan al mismo nombre no se enlaza a ninguno: un perfil
  * equivocado firma a una persona real con texto que no escribió.
+ *
+ * Cuando la fila trae el autor genérico se aplica la caída por categoría
+ * (`autor-por-categoria.ts`), para que un artículo nuevo nazca firmado sin que
+ * nadie tenga que acordarse.
  */
+import { AUTOR_GENERICO, autorPorDefecto } from './autor-por-categoria';
 
 export interface TeamAuthorSource {
   name: string;
@@ -54,17 +59,28 @@ export function teamAnchorId(name: string): string {
 }
 
 export function resolvePostAuthor(
-  post: { author_name: string; author_image?: string | null },
+  post: { author_name: string; author_image?: string | null; category?: string | null },
   team: TeamAuthorSource[],
   locale: string
 ): ResolvedAuthor {
-  const target = normalizeName(post.author_name);
+  // Caída por categoría: solo cuando la fila trae el autor genérico. Un autor
+  // puesto a mano en el Hub siempre gana sobre la regla editorial.
+  const declarado = post.author_name;
+  const porDefecto =
+    normalizeName(declarado) === normalizeName(AUTOR_GENERICO)
+      ? autorPorDefecto(post.category)
+      : null;
+  const buscado = porDefecto ?? declarado;
+
+  const target = normalizeName(buscado);
   const matches = team.filter((m) => normalizeName(m.name) === target);
   const member = matches.length === 1 ? matches[0] : null;
 
   if (!member) {
+    // Si la caída apuntaba a alguien que no está en el equipo, se conserva el
+    // genérico: un byline con un nombre inexistente es peor que ninguno.
     return {
-      name: post.author_name,
+      name: declarado,
       role: null,
       credentials: null,
       photo: post.author_image ?? null,
