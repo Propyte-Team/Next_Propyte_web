@@ -507,6 +507,9 @@
     "publishedOn": "Published",
     "updatedOn": "Updated",
     "authorProfileCta": "View profile",
+    "pilarLinkIntro": "This article is part of our guide",
+    "pilarArticlesTitle": "Related articles",
+    "pilarViewAll": "View all articles",
     "methodologyNoticeText": "The figures in this article are validated with the same process we publish openly.",
     "methodologyNoticeCta": "How we validate our data",
     "legalNoticeText": "Projections and returns mentioned here are referential, not guaranteed.",
@@ -3002,5 +3005,13 @@
     "brokerSubtitle": "Join the advisor network closing more pre-sale deals in Mexico.",
     "brokerCta": "I want to apply",
     "errorRetry": "Could not send. Please try again."
+  },
+  "pilares": {
+    "comoInvertir": "How to invest in Mexican real estate",
+    "financiamiento": "Financing options in Mexico",
+    "comoComprar": "How to buy property in Mexico",
+    "mercado": "Real estate market intelligence",
+    "brokers": "For brokers and real estate agencies",
+    "desarrolladores": "Real estate development marketing"
   }
 }

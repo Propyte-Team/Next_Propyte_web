@@ -8,6 +8,11 @@ import {
 } from '@/lib/icons';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
+import PilarArticlesSection from '@/components/blog/PilarArticlesSection';
+
+// El módulo de artículos consulta la BD; sin `revalidate` la página quedaría
+// congelada en el build y un artículo nuevo no aparecería hasta el próximo deploy.
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -210,6 +215,9 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
           </div>
         </div>
       </section>
+
+      {/* Artículos de "Guías de compra" y "Legal y fiscal" que refuerzan este pilar. */}
+      <PilarArticlesSection locale={locale} pilar="como-comprar" />
 
       {/* Legal disclaimer */}
       <div className="py-6 bg-gray-50">

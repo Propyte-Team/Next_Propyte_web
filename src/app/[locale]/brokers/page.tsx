@@ -6,6 +6,7 @@ import BrokersPageContent from './BrokersPageContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
+import PilarArticlesSection from '@/components/blog/PilarArticlesSection';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getFaqs, getSiteMedia } from '@/lib/hub-content';
 import {
@@ -128,6 +129,9 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
         title={locale === 'es' ? 'Inventario de aliados estratégicos' : 'Strategic partner inventory'}
         subtitle={locale === 'es' ? 'Desarrolladoras, bancos y servicios trans­accionales con los que trabajamos' : 'Developers, banks and transactional services we work with'}
       />
+
+      {/* Artículos de "Para Asesores" que refuerzan este pilar. */}
+      <PilarArticlesSection locale={locale} pilar="brokers" />
     </>
   );
 }

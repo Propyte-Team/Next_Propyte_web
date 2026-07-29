@@ -10,6 +10,11 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
 import InvestmentComparison from '@/components/como-invertir/InvestmentComparisonLazy';
 import { getMarketStats, getComparatorRates } from '@/lib/market-stats';
+import PilarArticlesSection from '@/components/blog/PilarArticlesSection';
+
+// El módulo de artículos consulta la BD; sin `revalidate` la página quedaría
+// congelada en el build y un artículo nuevo no aparecería hasta el próximo deploy.
+export const revalidate = 3600;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -278,6 +283,10 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
           </div>
         </div>
       </section>
+
+      {/* Lado hub→artículo del enlace bidireccional: los artículos de "Inversión"
+          y "Para Inversionistas" refuerzan este pilar en vez de competir con él. */}
+      <PilarArticlesSection locale={locale} pilar="como-invertir" />
     </>
   );
 }

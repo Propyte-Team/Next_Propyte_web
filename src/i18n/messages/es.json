@@ -507,6 +507,9 @@
     "publishedOn": "Publicado",
     "updatedOn": "Actualizado",
     "authorProfileCta": "Ver perfil",
+    "pilarLinkIntro": "Este artículo forma parte de nuestra guía",
+    "pilarArticlesTitle": "Artículos relacionados",
+    "pilarViewAll": "Ver todos los artículos",
     "methodologyNoticeText": "Las cifras de este artículo se validan con el mismo proceso que publicamos abierto.",
     "methodologyNoticeCta": "Cómo validamos los datos",
     "legalNoticeText": "Las proyecciones y rendimientos aquí mencionados son referenciales, no garantizados.",
@@ -3002,5 +3005,13 @@
     "brokerSubtitle": "Trabaja con la red de asesores que cierra más operaciones en preventa de México.",
     "brokerCta": "Quiero aplicar",
     "errorRetry": "No se pudo enviar. Intenta de nuevo."
+  },
+  "pilares": {
+    "comoInvertir": "Cómo invertir en bienes raíces en México",
+    "financiamiento": "Opciones de financiamiento en México",
+    "comoComprar": "Cómo comprar propiedad en México",
+    "mercado": "Inteligencia de mercado inmobiliario",
+    "brokers": "Para brokers y agencias inmobiliarias",
+    "desarrolladores": "Comercialización de desarrollos inmobiliarios"
   }
 }

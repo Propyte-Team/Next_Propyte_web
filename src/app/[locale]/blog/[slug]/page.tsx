@@ -8,6 +8,7 @@ import {
 } from '@/lib/supabase/queries';
 import { resolvePostAuthor, type ResolvedAuthor } from '@/lib/blog/post-author';
 import { hasMarketFigures, needsInvestmentDisclaimer } from '@/lib/blog/article-signals';
+import { pilarDeCategoria, pilarHref, PILAR_LABEL_KEY } from '@/lib/blog/pilares';
 import ArticleDataNotice from '@/components/blog/ArticleDataNotice';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import BlogShareBar from '@/components/blog/BlogShareBar';
@@ -124,10 +125,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const supabase = createPublicSupabaseClient();
   if (!supabase) notFound();
 
-  const [post, t, tb] = await Promise.all([
+  const [post, t, tb, tPilar] = await Promise.all([
     getBlogPost(supabase, slug, locale),
     getTranslations({ locale, namespace: 'blog' }),
     getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'pilares' }),
   ]);
 
   if (!post) notFound();
@@ -149,6 +151,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const postDates = resolvePostDates(post);
   const showMethodology = hasMarketFigures(post.content);
   const showDisclaimer = needsInvestmentDisclaimer(post.content);
+  const pilar = pilarDeCategoria(post.category);
   const breadcrumbs = [
     { label: t('listingTitle'), href: `/${locale}/blog` },
     { label: post.category, href: `/${locale}/blog?categoria=${encodeURIComponent(post.category)}` },
@@ -284,6 +287,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   prose-code:bg-slate-100 prose-code:text-[#0F1923] prose-code:px-1 prose-code:rounded"
                 dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(post.content) }}
               />
+            )}
+
+            {/* Enlace al pilar padre. Anchor descriptivo (el título del pilar), no
+                "clic aquí": es el lado artículo→hub del enlace bidireccional, y
+                sin él el artículo compite con su propio pilar por la misma
+                intención en vez de reforzarlo. */}
+            {pilar && (
+              <p className="mt-10 rounded-xl bg-[#F4F6F8] px-5 py-4 text-sm text-slate-600">
+                {t('pilarLinkIntro')}{' '}
+                <Link
+                  href={pilarHref(locale, pilar)}
+                  className="font-semibold text-[#0E7490] hover:underline"
+                >
+                  {tPilar(PILAR_LABEL_KEY[pilar] as 'comoInvertir')}
+                </Link>
+                .
+              </p>
             )}
 
             {/* Enlace a /metodologia y al aviso legal, según lo que el artículo
