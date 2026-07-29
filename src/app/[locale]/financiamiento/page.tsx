@@ -15,7 +15,7 @@ import { getUnits } from '@/lib/supabase/queries';
 import { pickEjemplosPorTerciles } from '@/lib/financiamiento-ejemplos';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { computeHipotecario, HIPOTECARIO_CONFIG } from '@/lib/hipotecario';
-import { TASAS_FUENTES } from '@/lib/financiamiento/tasas-config';
+import { TASAS_FUENTES, TASAS_MERCADO_HIPOTECARIO } from '@/lib/financiamiento/tasas-config';
 
 // createServerSupabaseClient() usa cookies() → rompe ISR (DYNAMIC_SERVER_USAGE);
 // esta página declara `revalidate`, por eso usa el cliente público cookie-less.
@@ -89,6 +89,12 @@ function hipotecarioCopyValues() {
     extDown: String(extranjero.enganchePct),
     nacYears: años(nacional.meses),
     extYears: años(extranjero.meses),
+    // Rango de MERCADO (los 5 bancos aliados, verificado en sus sitios oficiales),
+    // distinto de lo que aplica el simulador. La celda "Tasa" muestra el mercado;
+    // la descripción dice qué usa el simulador. Son dos afirmaciones distintas y
+    // las dos están etiquetadas: el rango de mercado contiene a las nuestras.
+    mktMin: TASAS_MERCADO_HIPOTECARIO.min,
+    mktMax: TASAS_MERCADO_HIPOTECARIO.max,
   };
 }
 

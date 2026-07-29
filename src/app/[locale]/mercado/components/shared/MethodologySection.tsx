@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronRight, Info } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
@@ -11,7 +10,6 @@ interface MethodologySectionProps {
 }
 
 export function MethodologySection({ activeTab }: MethodologySectionProps) {
-  const [open, setOpen] = useState(false);
   const t = useTranslations('methodology');
 
   return (
@@ -30,16 +28,16 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
           </div>
         </div>
 
-        {/* Expandable detail */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-sm font-medium text-[#0E7490] hover:text-[#134E4A] transition-colors ml-7"
-        >
-          {t('seeFull')}
-          <ChevronRight size={14} className={`transition-transform ${open ? 'rotate-90' : ''}`} />
-        </button>
+        {/* Detalle expandible con <details>, NO con {open && …}: el patrón anterior
+            dejaba el contenido FUERA del DOM hasta el primer clic, y la metodología es
+            justamente el activo de E-E-A-T que un rastreador tiene que poder leer.
+            <details> vive en el HTML cerrado y funciona sin JavaScript. */}
+        <details className="group">
+          <summary className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-sm font-medium text-[#0E7490] hover:text-[#134E4A] transition-colors ml-7 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+            {t('seeFull')}
+            <ChevronRight size={14} className="transition-transform group-open:rotate-90" />
+          </summary>
 
-        {open && (
           <div className="mt-4 ml-7 bg-white rounded-lg border border-gray-200 p-5 text-sm text-gray-600 leading-relaxed space-y-3">
             {activeTab === 'vacacional' ? (
               <>
@@ -63,6 +61,15 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
                     <strong>{t('strFactorCompetition')}</strong> — {t('strFactorCompetitionDesc')}
                   </li>
                 </ul>
+                <p className="font-semibold text-[#1A2F3F] pt-2">{t('methodPoolTitle')}</p>
+                <p>{t('methodPool')}</p>
+                <p className="font-semibold text-[#1A2F3F] pt-2">{t('methodSampleTitle')}</p>
+                <p>{t('methodSample')}</p>
+                <p>{t('methodMissing')}</p>
+                <p className="font-semibold text-[#1A2F3F] pt-2">{t('methodGrossTitle')}</p>
+                <p>{t('methodGross')}</p>
+                <p className="font-semibold text-[#1A2F3F] pt-2">{t('methodProvenanceTitle')}</p>
+                <p>{t('methodProvenance')}</p>
                 <p className="text-xs text-gray-600">
                   {t('strFooter')}
                 </p>
@@ -98,7 +105,7 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
               </>
             )}
           </div>
-        )}
+        </details>
       </div>
     </section>
   );

@@ -12,54 +12,11 @@ import {
 import { formatPrice, formatPercentage } from '@/lib/formatters';
 
 // ── Types ────────────────────────────────────────────
-interface Comparable {
-  city: string;
-  zone: string | null;
-  pt: string;   // property_type
-  beds: number | null;
-  rent: number;
-  m2: number | null;
-  rt: string;   // rental_type
-  fur: boolean | null;
-}
-
-interface DevelopmentFinancial {
-  id: string;
-  slug: string;
-  name: string;
-  city: string;
-  zone: string | null;
-  stage: string;
-  price_min: number | null;
-  price_max: number | null;
-  image: string | null;
-  roi_annual_pct: number | null;
-  irr_5yr: number | null;
-  irr_10yr: number | null;
-  cash_on_cash_pct: number | null;
-  breakeven_months: number | null;
-  monthly_net_flow: number | null;
-  cap_rate: number | null;
-  rent_yield_gross: number | null;
-  rent_yield_net: number | null;
-  estimated_rent: number | null;
-  estimated_rent_vac: number | null;
-}
-
-interface SourceStat {
-  source: string;
-  count: number;
-}
-
-interface AnalysisData {
-  comparables: Comparable[];
-  developments: DevelopmentFinancial[];
-  city_stats: Array<Record<string, unknown>>;
-  source_stats: SourceStat[];
-  data_freshness: string | null;
-  model: { version: string; last_computed: string } | null;
-  total_comparables: number;
-}
+// Los tipos viven en lib/rental-data/analysis-types.ts: el server component de
+// /mercado tambien los necesita para pasar los datos por props.
+import type {
+  AnalysisData, Comparable,
+} from '@/lib/rental-data/analysis-types';
 
 interface Filters {
   city: string;
@@ -232,10 +189,19 @@ function computePercentile(arr: number[], p: number): number {
 }
 
 // ── Component ────────────────────────────────────────
-export function TradicionalTab({ locale }: { locale: string }) {
+export function TradicionalTab({
+  locale,
+  initialData = null,
+}: {
+  locale: string;
+  /** Datos pre-cargados en el servidor. Con esto la tabla llega en el HTML. */
+  initialData?: AnalysisData | null;
+}) {
   const t = useTranslations('rentas');
-  const [data, setData] = useState<AnalysisData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<AnalysisData | null>(initialData);
+  // Arrancar en loading=true aunque los datos ya vengan del servidor deja el marcador
+  // "Cargando…" en el HTML: es lo que hacia invisible la tabla para el rastreo.
+  const [loading, setLoading] = useState(initialData == null);
   const [sortBy, setSortBy] = useState<SortKey>('rent_yield_gross');
   const [showFilters, setShowFilters] = useState(true);
 
@@ -252,6 +218,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
   });
 
   useEffect(() => {
+    if (initialData) return;   // ya vino del servidor: no re-pedirlo al hidratar
     async function fetchData() {
       try {
         const res = await fetch('/api/rental-analysis');
@@ -263,7 +230,7 @@ export function TradicionalTab({ locale }: { locale: string }) {
       }
     }
     fetchData();
-  }, []);
+  }, [initialData]);
 
   // ── Normalize zones + price bounds safety net ──
   type ComparableWithZone = Comparable & { normalizedZone: string | null };
@@ -695,7 +662,9 @@ export function TradicionalTab({ locale }: { locale: string }) {
 
           <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              {/* Marcador de verificación: el HTML del servidor debe traer este atributo.
+                  Grepear el texto i18n no sirve — next-intl inyecta todo el payload. */}
+              <table className="w-full" data-testid="tradicional-table">
                 <thead>
                   <tr className="border-b border-gray-100">
                     <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wider px-5 py-3">#</th>

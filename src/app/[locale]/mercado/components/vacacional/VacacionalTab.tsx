@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { MapPin, Search } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { averageIndex, partitionByPool } from '@/lib/rental-data/pools';
 import { VacacionalKPIs } from './VacacionalKPIs';
 import { ZoneCards } from './ZoneCards';
 import { ComparisonTable } from './ComparisonTable';
@@ -101,12 +102,19 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
   const isFilteredEmpty = isFiltered && filtered.length === 0 && scores.length > 0;
   const displayScores = isFilteredEmpty ? [...scores].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 10) : filtered;
 
+  // CDMX no es mercado de Propyte: es conjunto de comparacion. Sale del ranking y de los
+  // KPIs, y se publica en su propio bloque rotulado (auditoria jul-2026, P-7).
+  const { ranking, benchmark } = useMemo(() => partitionByPool(displayScores), [displayScores]);
+
   // KPI stats
   const kpiStats = useMemo(() => {
-    const target = filtered.length > 0 ? filtered : scores;
+    const target = ranking.length > 0 ? ranking : partitionByPool(scores).ranking;
     if (target.length === 0) return { zones: 0, avgIndex: 0, avgOccupancy: 0, totalListings: 0 };
 
-    const avgIndex = target.reduce((s, z) => s + (z.score ?? 0), 0) / target.length;
+    // Solo las zonas CON indice. Contar como cero a las que no lo tienen hunde el
+    // promedio: con el umbral de muestra activo, 8 de 44 zonas publican score = null.
+    const avg = averageIndex(target);
+    const avgIndex = avg ?? 0;
     const occZones = target.filter((z) => z.median_occupancy != null);
     const avgOcc = occZones.length > 0
       ? occZones.reduce((s, z) => s + (z.median_occupancy ?? 0), 0) / occZones.length
@@ -119,7 +127,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       avgOccupancy: Math.round(avgOcc),
       totalListings,
     };
-  }, [filtered, scores]);
+  }, [ranking, scores]);
 
   // Latest data date
   const latestDate = useMemo(() => {
@@ -141,11 +149,11 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
 
   return (
     <div className="space-y-8">
-      {/* Data freshness */}
+      {/* Procedencia + corte. Estaba hardcodeado aqui, fuera de i18n, y no declaraba de
+          donde salen los datos: un dato sin procedencia no es citable, y si el blog cita
+          /mercado la trazabilidad se rompe en el primer eslabon (auditoria jul-2026, P-4). */}
       <p className="text-xs text-gray-600 text-center">
-        {isEn
-          ? `Propyte analysis based on +2M short-term rental records in Mexico${latestDate ? ` · Updated ${latestDate}` : ''}`
-          : `Análisis Propyte basado en +2M registros de renta vacacional en México${latestDate ? ` · Actualizado ${latestDate}` : ''}`}
+        {tMer('provenanceLine', { date: latestDate ?? '—' })}
       </p>
 
       {/* Search bar + City filter */}
@@ -199,7 +207,7 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
 
       {/* Zone cards grid with sort pills */}
       <ZoneCards
-        scores={displayScores}
+        scores={ranking}
         locale={locale}
         sortField={sortField}
         sortDir={sortDir}
@@ -208,7 +216,16 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       />
 
       {/* Comparison table */}
-      <ComparisonTable scores={displayScores} locale={locale} />
+      <ComparisonTable scores={ranking} locale={locale} />
+
+      {/* Mercado de referencia: fuera del ranking y de los KPIs, con su propio rotulo. */}
+      {benchmark.length > 0 && (
+        <section className="space-y-3 pt-6 border-t border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">{tMer('benchmarkHeading')}</h3>
+          <p className="text-sm text-gray-600 leading-relaxed">{tMer('benchmarkNote')}</p>
+          <ComparisonTable scores={benchmark} locale={locale} />
+        </section>
+      )}
 
       {/* ROI Calculator CTA */}
       <ROICalculatorCTA locale={locale} />

@@ -59,6 +59,9 @@ function MetricRow({ label, value, context, trend }: {
 
 export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
   const t = useTranslations('zoneScoreCard');
+  // La etiqueta de muestra baja se reusa de comparisonTable: mismo texto en la tabla y
+  // en la tarjeta, una sola redacción que mantener.
+  const tTable = useTranslations('comparisonTable');
 
   const adrGrowth = score.adr_growth_component;
   const adrTrend: 'up' | 'down' | 'flat' =
@@ -78,7 +81,19 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
           <h3 className="font-semibold text-gray-900 truncate">{getZoneInfo(score.zone).displayName}</h3>
           <p className="text-xs text-gray-600">{score.city}</p>
         </div>
-        <IndexBadge value={score.score ?? 0} />
+        {/* `?? 0` pintaba un Índice Propyte de 0 con etiqueta "En observación" para una
+            zona que simplemente no tiene muestra suficiente: un número inventado, peor
+            que no mostrar nada. El umbral lo decide el pipeline; aquí solo se rotula. */}
+        {score.score != null ? (
+          <IndexBadge value={score.score} />
+        ) : (
+          <span
+            className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap"
+            title={tTable('lowSampleTitle')}
+          >
+            {tTable('lowSampleBadge')}
+          </span>
+        )}
       </div>
 
       {!compact && (

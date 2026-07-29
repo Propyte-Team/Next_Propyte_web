@@ -157,17 +157,28 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                     <div className="text-xs text-gray-600">{score.city}</div>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <span
-                      className={`font-mono font-semibold ${
-                        (score.score ?? 0) >= 70
-                          ? 'text-emerald-700'
-                          : (score.score ?? 0) >= 50
-                          ? 'text-amber-700'
-                          : 'text-gray-600'
-                      }`}
-                    >
-                      {score.score != null ? Math.round(score.score) : '—'}
-                    </span>
+                    {score.score != null ? (
+                      <span
+                        className={`font-mono font-semibold ${
+                          score.score >= 70
+                            ? 'text-emerald-700'
+                            : score.score >= 50
+                            ? 'text-amber-700'
+                            : 'text-gray-600'
+                        }`}
+                      >
+                        {Math.round(score.score)}
+                      </span>
+                    ) : (
+                      // score null = el pipeline decidió que la muestra no sostiene un
+                      // índice. El sitio NO reevalúa el umbral: solo lo rotula.
+                      <span
+                        className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
+                        title={t('lowSampleTitle')}
+                      >
+                        {t('lowSampleBadge')}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
                     {score.median_adr != null
@@ -204,6 +215,8 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
           </tbody>
         </table>
       </div>
+
+      <p className="text-xs text-gray-600 leading-relaxed">{t('grossIncomeNote')}</p>
     </div>
   );
 }

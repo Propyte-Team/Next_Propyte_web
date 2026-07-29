@@ -12,7 +12,40 @@
  */
 
 /** Última fecha en que los rangos publicados se revisaron contra la fuente. */
-export const TASAS_UPDATED_AT = '2026-04-29';
+export const TASAS_UPDATED_AT = '2026-07-29';
+
+/**
+ * Rango de tasa hipotecaria del mercado, verificado banco por banco en el sitio
+ * oficial de cada institución el 2026-07-29.
+ *
+ *   Banorte      Hipoteca Fuerte          desde  8.80%   CAT 12.4%   (cálculo 06-abr-2026, vigente 04-oct-2026)
+ *   BBVA         Hipoteca Fija            desde  9.15%   CAT 13.2%   (cálculo 27-feb-2026, vigente 26-ago-2026)
+ *   Citibanamex  Hipoteca Perfiles        desde  9.25%   CAT 12.3%   (cálculo 01-abr-2026, vigente 30-sep-2026)
+ *   HSBC         Hipoteca Full            desde  9.65%   CAT 11.7%   (cálculo 01-jun-2026, vigente 30-nov-2026)
+ *   Santander    Hipoteca Santander      10.25-13.25%    CAT 12.6%   (cálculo 09-mar-2026, vigente 09-sep-2026)
+ *
+ * El máximo del rango (13.25%) es el tope contractual publicado por Santander,
+ * el único que publica rango en vez de un "desde".
+ *
+ * OJO — la tasa "desde" NO es comparable entre bancos: está condicionada al
+ * enganche y al perfil, y BBVA anuncia 9.15% pero calcula su CAT sobre 11.20%.
+ * El indicador comparable es el CAT (circular 9/2015 de Banxico), por eso se
+ * publica junto al rango. Ninguna cifra viene de agregadores ni de blogs.
+ *
+ * CONDUSEF (fuente preferida) bloquea el acceso automatizado, así que se usó la
+ * fuente primaria alternativa: la página de producto de cada banco. Queda
+ * pendiente que un humano coteje los Cuadros Comparativos bajo un perfil
+ * homogéneo; si CONDUSEF trae cifras distintas, manda CONDUSEF y se marca la
+ * discrepancia en vez de promediar.
+ *
+ * RECONSULTAR antes del primer vencimiento de CAT: 26-ago-2026 (BBVA).
+ */
+export const TASAS_MERCADO_HIPOTECARIO = {
+  min: '8.8',
+  max: '13.25',
+  catMin: '11.7',
+  catMax: '13.2',
+} as const;
 
 /**
  * Cadencia de revisión declarada al lector. Los rangos de tasa hipotecaria se
@@ -53,8 +86,8 @@ export const TASAS_CADENCIA = 'monthly' as const;
  * Formato esperado al llenarlo: `Tasas publicadas por <institución>, consultadas <YYYY-MM-DD>.`
  */
 export const TASAS_FUENTES: Record<1 | 2 | 3 | 4, string | null> = {
-  // 1 queda null a propósito: su respaldo va en la descripción, no en un renglón.
-  1: null,
+  1: `Tasas ordinarias anuales fijas publicadas por BBVA, Banorte, Santander, HSBC y Citibanamex en sus sitios oficiales, consultadas ${TASAS_UPDATED_AT}. CAT promedio publicado: ${TASAS_MERCADO_HIPOTECARIO.catMin}%–${TASAS_MERCADO_HIPOTECARIO.catMax}%. El CAT es el indicador comparable entre bancos; la tasa "desde" depende del enganche y del perfil.`,
+  // 2 y 3 no llevan fuente porque ya no publican cifra (ver arriba).
   2: null,
   3: null,
   4: null,
