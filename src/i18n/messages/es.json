@@ -2068,6 +2068,9 @@
     "kpiSelectCity": "Selecciona una ciudad específica para ver métricas disponibles.",
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
+    "provenanceLine": "Elaboración propia sobre registros públicos de plataformas de renta vacacional · Corte {date}",
+    "benchmarkHeading": "Mercado de referencia",
+    "benchmarkNote": "Ciudad de México no forma parte de la oferta de Propyte. Se incluye como conjunto de comparación: sirve para contrastar los rendimientos del Caribe mexicano contra un mercado urbano maduro.",
     "openFinancingCalculator": "Abrir calculadora de financiamiento",
     "talkToAdvisor": "Hablar con un asesor Propyte"
   },
@@ -2906,9 +2909,12 @@
     "colIndex": "Índice",
     "colRate": "Tarifa/noche",
     "colOccupancy": "Ocupación",
-    "colMonthlyIncome": "Ingreso mensual est.",
+    "colMonthlyIncome": "Ingreso bruto mensual est.",
     "colProperties": "Propiedades",
-    "colCompetition": "Competencia"
+    "colCompetition": "Competencia",
+    "grossIncomeNote": "El ingreso mostrado es bruto: antes de comisiones de plataforma, administración, mantenimiento e impuestos. El neto suele ser sustancialmente menor.",
+    "lowSampleBadge": "muestra baja",
+    "lowSampleTitle": "Muestra insuficiente para publicar índice. Las métricas de esta zona son indicativas."
   },
   "leadMagnet": {
     "freeReport": "REPORTE GRATUITO",

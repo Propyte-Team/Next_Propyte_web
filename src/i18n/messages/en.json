@@ -2068,6 +2068,9 @@
     "kpiSelectCity": "Select a specific city to see available metrics.",
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",
+    "provenanceLine": "Propyte's own analysis of public short-term rental platform records · Data as of {date}",
+    "benchmarkHeading": "Reference market",
+    "benchmarkNote": "Mexico City is not part of Propyte's portfolio. It is included as a comparison set: it contrasts Mexican Caribbean returns against a mature urban market.",
     "openFinancingCalculator": "Open financing calculator",
     "talkToAdvisor": "Talk to a Propyte advisor"
   },
@@ -2906,9 +2909,12 @@
     "colIndex": "Index",
     "colRate": "Rate/night",
     "colOccupancy": "Occupancy",
-    "colMonthlyIncome": "Est. monthly income",
+    "colMonthlyIncome": "Est. gross monthly income",
     "colProperties": "Properties",
-    "colCompetition": "Competition"
+    "colCompetition": "Competition",
+    "grossIncomeNote": "The income shown is gross: before platform fees, management, maintenance and taxes. Net income is usually substantially lower.",
+    "lowSampleBadge": "small sample",
+    "lowSampleTitle": "Sample too small to publish an index. This zone's metrics are indicative."
   },
   "leadMagnet": {
     "freeReport": "FREE REPORT",
