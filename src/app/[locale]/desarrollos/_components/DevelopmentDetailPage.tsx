@@ -1,4 +1,4 @@
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
@@ -11,7 +11,6 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getDevelopmentBySlug,
   getDevelopmentWithUnits,
-  getSlugRedirect,
   getRentalEstimate,
   getDevelopmentFinancials,
   getMlRentalEstimates,
@@ -97,12 +96,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   }
 
   if (!property) {
-    if (supabase) {
-      const newSlug = await getSlugRedirect(supabase, 'development', slug);
-      if (newSlug && newSlug !== slug) {
-        permanentRedirect(`/${locale}/desarrollos/${newSlug}`);
-      }
-    }
+    // La redirección de slugs retirados YA OCURRIÓ en el middleware, que es el
+    // único lugar donde el status se puede fijar. Aquí vivía un
+    // permanentRedirect() que no emitía un 3xx: con la cadena de loading.tsx el
+    // 200 se compromete antes de que este componente corra, así que el visitante
+    // aterrizaba bien por navegación de cliente pero el crawler veía 200 sin
+    // header Location. Medido sobre cuatro desarrollos el 29-jul.
+    // Si llegamos hasta acá, el slug no tiene fila de redirección: es un 404.
     notFound();
   }
 

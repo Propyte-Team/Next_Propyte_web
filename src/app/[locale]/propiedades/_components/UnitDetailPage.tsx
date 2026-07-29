@@ -1,4 +1,4 @@
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
@@ -9,7 +9,6 @@ import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getUnitBySlug,
-  getSlugRedirect,
   getRentalEstimate,
   getAirdnaMarketSummary,
   getSimilarUnits,
@@ -82,12 +81,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
   }
 
   if (!row) {
-    if (supabase) {
-      const newSlug = await getSlugRedirect(supabase, 'unit', slug);
-      if (newSlug && newSlug !== slug) {
-        permanentRedirect(`/${locale}/propiedades/${newSlug}`);
-      }
-    }
+    // La redirección de slugs retirados YA OCURRIÓ en el middleware, que es el
+    // único lugar donde el status se puede fijar (ver DevelopmentDetailPage y el
+    // frente D del spec). Si llegamos hasta acá, el slug no tiene fila de
+    // redirección: es un 404.
     notFound();
   }
 

@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './src/i18n/routing';
+import { matchEntityPath } from './src/lib/redirects/match-entity-path';
+import { resolveTarget } from './src/lib/redirects/resolve-target';
+import { loadRedirectMap } from './src/lib/redirects/load-map';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -51,50 +54,45 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Check for slug redirects (old WP URLs → new Next.js paths)
-  // Strips locale prefix to get the bare slug for lookup
-  const bareSlug = pathname.replace(/^\/(es|en)\//, '').replace(/\/$/, '');
-  if (bareSlug && !bareSlug.includes('/')) {
-    // Single-segment path that could be an old WP slug
-    try {
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-      if (supabaseUrl && supabaseKey) {
-        const res = await fetch(
-          `${supabaseUrl}/rest/v1/slug_redirects?old_slug=eq.${encodeURIComponent(bareSlug)}&select=new_path,redirect_type&limit=1`,
-          {
-            headers: {
-              apikey: supabaseKey,
-              Authorization: `Bearer ${supabaseKey}`,
-            },
-            next: { revalidate: 3600 }, // Cache redirect lookups for 1 hour
-          }
-        );
-        if (res.ok) {
-          const data = await res.json();
-          if (data.length > 0) {
-            const { new_path, redirect_type } = data[0];
-            // Defense: only follow rows that look like a safe internal redirect.
-            // Reject protocol-relative ('//evil.com'), absolute URLs, and non-path values
-            // — even if the Hub editor (or a compromised account) inserts hostile data.
-            const isSafePath =
-              typeof new_path === 'string' &&
-              new_path.startsWith('/') &&
-              !new_path.startsWith('//');
-            const ALLOWED_REDIRECT_STATUS = new Set([301, 302, 307, 308]);
-            const status = ALLOWED_REDIRECT_STATUS.has(redirect_type)
-              ? redirect_type
-              : 301;
-            if (isSafePath) {
-              const url = request.nextUrl.clone();
-              url.pathname = new_path;
-              return NextResponse.redirect(url, status);
-            }
-          }
-        }
-      }
-    } catch {
-      // Supabase unavailable — continue to intl middleware
+  // ── Redirecciones de entidades retiradas: blog, desarrollos y unidades ──────
+  //
+  // Este bloque REEMPLAZA un lookup que no podía funcionar: pedía
+  // `/rest/v1/slug_redirects?select=new_path,redirect_type` — tabla y columnas
+  // que no existen. `slug_redirects` vive en el schema `real_estate_hub` y sus
+  // columnas son `new_slug` y `kind`; sin el header `Accept-Profile`, PostgREST
+  // resolvía al schema `public`, devolvía error, `if (res.ok)` lo descartaba y el
+  // `catch {}` se lo comía. Los redirects de slugs legacy de WP nunca corrieron,
+  // y tampoco hay filas de WP en la tabla: si alguna vez se necesitan, necesitan
+  // diseño y datos propios, no este bloque.
+  //
+  // Y es el único lugar donde el status se puede fijar. `permanentRedirect()`
+  // desde un componente de página no emite un 3xx: con la cadena de loading.tsx
+  // el 200 ya está comprometido cuando el componente corre. Medido el 29-jul
+  // sobre cuatro desarrollos con fila en la tabla — 200 sin header Location en
+  // los cuatro, de 3,569 filas creadas para "preservar SEO de URLs indexadas".
+  // Ver el frente D del spec en Propyte_hub.
+  const entityMatch = matchEntityPath(pathname);
+  if (entityMatch) {
+    const target = resolveTarget(
+      await loadRedirectMap(),
+      entityMatch.entityType,
+      entityMatch.slug
+    );
+    if (target?.kind === 'redirect') {
+      const url = request.nextUrl.clone();
+      // Se reemplaza sólo el último segmento: matchEntityPath ya garantizó la
+      // forma /{locale}/{sección}/{slug}, así que la sección se preserva tal cual
+      // sin que el middleware tenga que conocer su nombre.
+      url.pathname = pathname.replace(/\/+$/, '').replace(/[^/]+$/, target.slug);
+      return NextResponse.redirect(url, 308);
+    }
+    if (target?.kind === 'gone') {
+      // 410 y no 404: le dice a Google que la URL existió y ya no, y la retira
+      // del índice más rápido.
+      return new NextResponse('Gone', {
+        status: 410,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
     }
   }
 
