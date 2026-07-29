@@ -40,6 +40,9 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
   setRequestLocale(locale);
   await assertPageVisible(VISIBILITY_KEYS.PAGE_METODOLOGIA);
   const t = await getTranslations({ locale, namespace: 'metodologiaPage' });
+  // Namespace compartido con la sección de /mercado: una sola redacción del criterio
+  // del Índice Propyte, citable desde las dos superficies.
+  const tMethod = await getTranslations({ locale, namespace: 'methodology' });
 
   const criteria = [
     { num: '01', heading: t('criterion1Heading'), body: t('criterion1Body') },
@@ -135,6 +138,26 @@ export default async function MetodologiaPage({ params }: { params: Promise<{ lo
           <p className="text-base text-gray-700 leading-relaxed">
             {t('section2Body')}
           </p>
+        </div>
+      </section>
+
+      {/* Índice Propyte: contra qué se compara, muestra mínima, ingreso bruto y
+          procedencia. Reusa el namespace `methodology` para no mantener dos
+          redacciones del mismo criterio (la otra vive en /mercado). */}
+      <section className="bg-white py-16 md:py-20 border-t border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 space-y-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-4">
+            {tMethod('indexSectionTitle')}
+          </h2>
+          <h3 className="font-semibold text-[#1A2F3F]">{tMethod('methodPoolTitle')}</h3>
+          <p className="text-base text-gray-700 leading-relaxed">{tMethod('methodPool')}</p>
+          <h3 className="font-semibold text-[#1A2F3F]">{tMethod('methodSampleTitle')}</h3>
+          <p className="text-base text-gray-700 leading-relaxed">{tMethod('methodSample')}</p>
+          <p className="text-base text-gray-700 leading-relaxed">{tMethod('methodMissing')}</p>
+          <h3 className="font-semibold text-[#1A2F3F]">{tMethod('methodGrossTitle')}</h3>
+          <p className="text-base text-gray-700 leading-relaxed">{tMethod('methodGross')}</p>
+          <h3 className="font-semibold text-[#1A2F3F]">{tMethod('methodProvenanceTitle')}</h3>
+          <p className="text-base text-gray-700 leading-relaxed">{tMethod('methodProvenance')}</p>
         </div>
       </section>
 
