@@ -554,7 +554,13 @@
     "newsletterError": "Something went wrong. Try again.",
     "homeEmptyTitle": "Coming soon: market analysis and investment guides",
     "homeEmptyBody": "We're building editorial content on Riviera Maya investing. Subscribe and get it the moment it's out.",
-    "homeEmptyCta": "Subscribe"
+    "homeEmptyCta": "Subscribe",
+    "pilarFilterAriaLabel": "Filter articles by pillar",
+    "audienciaFilterAriaLabel": "Filter articles by audience",
+    "allPilares": "All topics",
+    "allAudiencias": "Everyone",
+    "mapaPilaresTitle": "The seven pillars",
+    "mapaPilaresBody": "Each pillar has its own guide. Start with the one that applies to you."
   },
   "marketplace": {
     "title": "Properties",

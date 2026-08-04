@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from '@/lib/icons';
-import { blogHref } from '@/lib/blog/blog-urls';
+import { blogHref, type BlogUrlState } from '@/lib/blog/blog-urls';
 
 interface BlogPaginationProps {
   currentPage: number;
   totalPages: number;
   locale: string;
-  /** Filtro activo: viaja en cada href para no perderlo al paginar. */
-  activeCategory?: string | null;
+  /**
+   * Estado COMPLETO del filtro: viaja en cada href para no perderlo al paginar.
+   * Antes era solo la categoría, así que paginar dentro de un filtro de pilar o
+   * audiencia lo habría descartado en silencio.
+   */
+  keep?: BlogUrlState;
   prevLabel: string;
   nextLabel: string;
   ariaLabel: string;
@@ -28,14 +32,14 @@ export default function BlogPagination({
   currentPage,
   totalPages,
   locale,
-  activeCategory = null,
+  keep = {},
   prevLabel,
   nextLabel,
   ariaLabel,
 }: BlogPaginationProps) {
   if (totalPages <= 1) return null;
 
-  const hrefFor = (page: number) => blogHref(locale, { category: activeCategory, page });
+  const hrefFor = (page: number) => blogHref(locale, { ...keep, page });
   const edgeClass =
     'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 transition-colors';
 

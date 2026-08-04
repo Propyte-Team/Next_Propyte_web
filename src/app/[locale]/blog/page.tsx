@@ -4,28 +4,73 @@ import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts, getBlogCategories, getTeamMembers } from '@/lib/supabase/queries';
+import { getBlogPosts, getBlogCategories, getBlogPilares, getTeamMembers } from '@/lib/supabase/queries';
 import { resolvePostAuthor } from '@/lib/blog/post-author';
 import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
 import BlogPagination from '@/components/blog/BlogPagination';
 import CategoryFilter from '@/components/blog/CategoryFilter';
+import PilarFilter from '@/components/blog/PilarFilter';
+import AudienciaFilter from '@/components/blog/AudienciaFilter';
+import MapaDePilares from '@/components/blog/MapaDePilares';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { blogHref } from '@/lib/blog/blog-urls';
+import { PILARES, AUDIENCIAS, pilarPorSlug, esAudiencia } from '@/lib/blog/pilares';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 const POSTS_PER_PAGE = 9;
 
+interface BlogSearchParams {
+  categoria?: string;
+  pilar?: string;
+  audiencia?: string;
+  pagina?: string;
+}
+
+/**
+ * Resuelve los searchParams a estado validado.
+ *
+ * Un solo lugar para los dos consumidores (`generateMetadata` y la página): antes
+ * cada uno derivaba el estado por su cuenta, y este módulo existe justo porque un
+ * tope escrito dos veces ya falló en silencio aquí.
+ *
+ * Un valor fuera del catálogo NO es 404: es un param basura en una ruta que sí
+ * existe. Se ignora el filtro y se marca la vista `noindex` para que la URL basura
+ * no entre al índice mostrando el listado completo bajo otra dirección. No se usa
+ * `notFound()` a propósito — en este sitio las rutas dinámicas flushean shell con
+ * 200 antes de resolverlo.
+ */
+function resolveBlogState(sp: BlogSearchParams) {
+  const pilar = sp.pilar ? pilarPorSlug(sp.pilar) : null;
+  const audiencia = sp.audiencia && esAudiencia(sp.audiencia) ? sp.audiencia : null;
+  const paramInvalido = Boolean((sp.pilar && !pilar) || (sp.audiencia && !audiencia));
+
+  return {
+    category: sp.categoria || null,
+    pilar,
+    audiencia,
+    page: Math.max(1, Number(sp.pagina) || 1),
+    paramInvalido,
+    /** Lo que va a `blogHref`: el SLUG del pilar, no su código. */
+    urlState: {
+      category: sp.categoria || null,
+      pilar: pilar?.slug ?? null,
+      audiencia,
+    },
+  };
+}
+
 export async function generateMetadata({ params, searchParams }: BlogPageProps) {
   const { locale } = await params;
-  const { categoria, pagina } = await searchParams;
-  const t = await getTranslations({ locale, namespace: 'blog' });
-
-  const category = categoria || null;
-  const page = Math.max(1, Number(pagina) || 1);
+  const sp = await searchParams;
+  const [t, tp] = await Promise.all([
+    getTranslations({ locale, namespace: 'blog' }),
+    getTranslations({ locale, namespace: 'pilares' }),
+  ]);
+  const { category, pilar, page, paramInvalido, urlState } = resolveBlogState(sp);
 
   // Título y descripción propios por vista. Antes las 7 categorías y las 2
   // páginas compartían el meta de /blog y canonicalizaban ahí: el canonical a la
@@ -36,17 +81,23 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
   if (category) {
     title = t('listingTitleCategory', { category });
     description = t('listingDescriptionCategory', { category });
+  } else if (pilar) {
+    title = t('listingTitleCategory', { category: tp(pilar.code) });
+    description = t('listingDescriptionCategory', { category: tp(pilar.code) });
   }
   if (page > 1) {
     title = t('listingTitlePaged', { title, page });
   }
 
   const brandedTitle = `${title} | Propyte`;
-  const state = { category, page };
+  const state = { ...urlState, page };
 
   return {
     title,
     description,
+    // Un valor fuera del catálogo se ignora en el listado, así que esa URL
+    // mostraría el set completo bajo otra dirección: contenido duplicado.
+    ...(paramInvalido ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       type: 'website',
       title: brandedTitle,
@@ -57,7 +108,7 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
-      // Self-referencing: cada categoría y cada página apunta a sí misma.
+      // Self-referencing: cada vista apunta a sí misma, con el estado limpio.
       canonical: blogHref(locale, state),
       languages: {
         es: blogHref('es', state),
@@ -70,39 +121,53 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
 
 interface BlogPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ categoria?: string; pagina?: string }>;
+  searchParams: Promise<BlogSearchParams>;
 }
 
 export default async function BlogPage({ params, searchParams }: BlogPageProps) {
   const { locale } = await params;
-  const { categoria, pagina } = await searchParams;
+  const sp = await searchParams;
   setRequestLocale(locale);
   await assertPageVisible(VISIBILITY_KEYS.PAGE_BLOG);
 
-  const [t, tb] = await Promise.all([
+  const [t, tb, tp, ta] = await Promise.all([
     getTranslations({ locale, namespace: 'blog' }),
     getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'pilares' }),
+    getTranslations({ locale, namespace: 'audiencias' }),
   ]);
 
-  const activeCategory = categoria || null;
-  const currentPage = Math.max(1, Number(pagina) || 1);
+  const { category, pilar, audiencia, page: currentPage, urlState } = resolveBlogState(sp);
   const supabase = createPublicSupabaseClient();
 
   // Single source of truth: grid completo de TODOS los posts (paginado y filtrado).
-  // Categorías se descubren automáticamente desde BD para mantener el filtro
-  // sincronizado sin hardcodear nombres como "Para Asesores".
-  // El equipo se trae para resolver el autor real de cada tarjeta (foto + cargo).
-  // Fail-soft: sin equipo, la tarjeta usa el autor crudo de la fila, como antes.
-  const [{ posts, total }, categories, teamMembers] = supabase
+  // Categorías y pilares se descubren desde BD para mantener los filtros
+  // sincronizados sin hardcodear nombres. El equipo se trae para resolver el autor
+  // real de cada tarjeta (foto + cargo); fail-soft: sin equipo, la tarjeta usa el
+  // autor crudo de la fila, como antes.
+  const [{ posts, total }, categories, pilarCodes, teamMembers] = supabase
     ? await Promise.all([
-        getBlogPosts(supabase, { locale, category: activeCategory ?? undefined, limit: POSTS_PER_PAGE, page: currentPage }),
+        getBlogPosts(supabase, {
+          locale,
+          category: category ?? undefined,
+          pilar: pilar?.code,
+          audiencia: audiencia ?? undefined,
+          limit: POSTS_PER_PAGE,
+          page: currentPage,
+        }),
         getBlogCategories(supabase, locale),
+        getBlogPilares(supabase, locale),
         getTeamMembers(supabase),
       ])
-    : [{ posts: [], total: 0 }, [], []];
+    : [{ posts: [], total: 0 }, [], [], []];
 
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
   const cardT = { minRead: t('minRead') };
+
+  // Labels resueltos en el servidor: los componentes de filtro son neutros y no
+  // llaman a getTranslations por su cuenta.
+  const pilarLabels = Object.fromEntries(PILARES.map((p) => [p.code, tp(p.code)]));
+  const audienciaLabels = Object.fromEntries(AUDIENCIAS.map((a) => [a, ta(a)]));
 
   const heroT = {
     heroHeadLine1: t('heroHeadLine1'),
@@ -113,13 +178,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
-  const breadcrumbItems = activeCategory
-    ? [{ label: t('listingTitle'), href: `/${locale}/blog` }, { label: activeCategory }]
+  const activeLabel = category ?? (pilar ? tp(pilar.code) : null);
+  const breadcrumbItems = activeLabel
+    ? [{ label: t('listingTitle'), href: `/${locale}/blog` }, { label: activeLabel }]
     : [{ label: t('listingTitle') }];
+  const hayFiltro = Boolean(category || pilar || audiencia);
 
   return (
     <>
-      <BlogHero t={heroT} activeCategory={activeCategory} availableCategories={categories} />
+      <BlogHero t={heroT} activeCategory={category} availableCategories={categories} />
 
       <section className="bg-white py-10 md:py-14">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
@@ -131,12 +198,29 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
             baseUrl={siteUrl}
           />
 
-          <div className="mt-6 mb-8">
+          <div className="mt-6 mb-8 space-y-3">
             <CategoryFilter
               categories={categories}
-              active={activeCategory}
+              active={category}
               allLabel={t('allCategories') || 'Todos'}
               filterAriaLabel={t('categoryFilterAriaLabel')}
+              locale={locale}
+            />
+            <PilarFilter
+              codes={pilarCodes}
+              active={pilar?.code ?? null}
+              keep={urlState}
+              allLabel={t('allPilares')}
+              filterAriaLabel={t('pilarFilterAriaLabel')}
+              labels={pilarLabels}
+              locale={locale}
+            />
+            <AudienciaFilter
+              active={audiencia}
+              keep={urlState}
+              allLabel={t('allAudiencias')}
+              filterAriaLabel={t('audienciaFilterAriaLabel')}
+              labels={audienciaLabels}
               locale={locale}
             />
           </div>
@@ -169,7 +253,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 currentPage={currentPage}
                 totalPages={totalPages}
                 locale={locale}
-                activeCategory={activeCategory}
+                keep={urlState}
                 prevLabel={t('paginationPrev')}
                 nextLabel={t('paginationNext')}
                 ariaLabel={t('paginationAriaLabel')}
@@ -182,11 +266,10 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
               description={t('emptyStateBody')}
               actions={[
                 { label: t('emptyStateCtaContact'), href: `/${locale}/contacto?asunto=blog` },
-                // "Volver al blog" solo tiene sentido cuando hay un filtro de
-                // categoría activo (limpia el filtro). Sin categoría, el
-                // grid ya está vacío sitewide y el CTA sería un loop al
-                // mismo estado vacío.
-                ...(activeCategory
+                // "Volver al blog" solo tiene sentido con algún filtro activo (lo
+                // limpia). Sin filtro, el grid ya está vacío sitewide y el CTA
+                // sería un loop al mismo estado vacío.
+                ...(hayFiltro
                   ? [{ label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' as const }]
                   : []),
               ]}
@@ -194,6 +277,13 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           )}
         </div>
       </section>
+
+      <MapaDePilares
+        locale={locale}
+        title={t('mapaPilaresTitle')}
+        body={t('mapaPilaresBody')}
+        labels={pilarLabels}
+      />
 
       <NewsletterCTA />
     </>

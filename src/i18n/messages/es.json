@@ -554,7 +554,13 @@
     "newsletterError": "Hubo un problema. Inténtalo de nuevo.",
     "homeEmptyTitle": "Próximamente: análisis de mercado y guías de inversión",
     "homeEmptyBody": "Estamos preparando contenido editorial sobre inversión en Riviera Maya. Suscríbete y te llega directo cuando se publique.",
-    "homeEmptyCta": "Suscribirme"
+    "homeEmptyCta": "Suscribirme",
+    "pilarFilterAriaLabel": "Filtrar artículos por pilar",
+    "audienciaFilterAriaLabel": "Filtrar artículos por audiencia",
+    "allPilares": "Todos los temas",
+    "allAudiencias": "Todo el público",
+    "mapaPilaresTitle": "Los siete pilares",
+    "mapaPilaresBody": "Cada pilar tiene su propia guía. Entra por el que te toque."
   },
   "marketplace": {
     "title": "Propiedades",
