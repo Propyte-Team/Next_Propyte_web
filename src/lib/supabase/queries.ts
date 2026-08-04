@@ -2429,13 +2429,20 @@ export type BlogPost = {
   updated_at: string;
   /** Retirado del índice sin borrarlo. Ver src/lib/seo/robots-articulo.ts. */
   noindex: boolean;
+  /**
+   * Pilar canónico (`P1..P7`), o null si nadie la clasificó todavía. Ver
+   * `src/lib/blog/pilares.ts`. NO confundir con el eje de afinidad de superficie
+   * que deriva de `category` en `src/lib/blog/hub-relacionado.ts`.
+   */
+  pilar: string | null;
+  audiencia: string | null;
 };
 
 const BLOG_SELECT = `
   id, slug, locale, status, title, excerpt, content, category, tags,
   featured_image, author_name, author_image, read_time_min,
   meta_title, meta_description, related_city, published_at, created_at, updated_at,
-  noindex
+  noindex, pilar, audiencia
 `.trim();
 
 // La papelera del blog marca `deleted_at` en vez de borrar la fila, así que TODA
@@ -2450,9 +2457,15 @@ const includeStaged = process.env.BLOG_INCLUDE_STAGED === 'true';
 
 export async function getBlogPosts(
   c: Client,
-  opts: { locale?: string; category?: string; categories?: string[]; limit?: number; page?: number } = {}
+  opts: {
+    locale?: string; category?: string; categories?: string[];
+    /** CÓDIGO del pilar (`P1`), no el slug. La traducción slug→código la hace quien llama. */
+    pilar?: string;
+    audiencia?: string;
+    limit?: number; page?: number;
+  } = {}
 ): Promise<{ posts: BlogPost[]; total: number }> {
-  const { locale = 'es', category, categories, limit = 9, page = 1 } = opts;
+  const { locale = 'es', category, categories, pilar, audiencia, limit = 9, page = 1 } = opts;
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
@@ -2472,6 +2485,11 @@ export async function getBlogPosts(
 
   if (category) q = q.eq('category', category);
   else if (categories && categories.length) q = q.in('category', categories);
+
+  // Los dos ejes son independientes y combinables: `pilar` es la taxonomía
+  // canónica del maestro, `category` la afinidad de superficie.
+  if (pilar) q = q.eq('pilar', pilar);
+  if (audiencia) q = q.eq('audiencia', audiencia);
 
   const { data, count, error } = await q;
   if (error) { console.error('[getBlogPosts]', error.message); return { posts: [], total: 0 }; }
@@ -2544,6 +2562,39 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
   if (error) { console.error('[getBlogCategories]', error.message); return []; }
   const seen = new Set<string>();
   (data ?? []).forEach((r: { category: string }) => seen.add(r.category));
+  return Array.from(seen);
+}
+
+/**
+ * Códigos de pilar con al menos un post visible en este locale.
+ *
+ * Deriva de lo publicado, igual que `getBlogCategories`: un chip que lleva a una
+ * vista vacía es un filtro muerto y una URL indexable sin contenido. Mientras el
+ * reparto de pilares no se ejecute devuelve `[]`, y el filtro simplemente no se
+ * renderiza — no aparece vacío ni roto.
+ *
+ * Excluye NULL explícitamente: las columnas se añadieron nullable, así que una
+ * fila sin clasificar no debe producir un chip fantasma.
+ */
+export async function getBlogPilares(c: Client, locale: string): Promise<string[]> {
+  let q = c
+    .from('blog_posts')
+    .select('pilar')
+    .is('deleted_at', null)
+    .not('pilar', 'is', null)
+    .eq('locale', locale)
+    .order('pilar');
+
+  if (includeStaged) {
+    q = q.in('status', ['published', 'staged']);
+  } else {
+    q = q.eq('status', 'published').lte('published_at', new Date().toISOString());
+  }
+
+  const { data, error } = await q;
+  if (error) { console.error('[getBlogPilares]', error.message); return []; }
+  const seen = new Set<string>();
+  (data ?? []).forEach((r: { pilar: string }) => seen.add(r.pilar));
   return Array.from(seen);
 }
 
