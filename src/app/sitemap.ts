@@ -46,6 +46,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/como-comprar', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/como-invertir', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/financiamiento', priority: 0.7, changeFrequency: 'monthly' as const },
+    // Hubs de pilar. El hreflang NO sale de aquí: lo emite `alternates.languages`
+    // en el generateMetadata de cada página, igual que blog/page.tsx.
+    // `sitemap.test.ts` verifica que todo hub declarado en el catálogo de pilares
+    // aparezca aquí, para que añadir un pilar no deje su hub fuera del índice.
+    { path: '/guias/fiscal-legal', priority: 0.8, changeFrequency: 'monthly' as const },
+    { path: '/guias/costa', priority: 0.8, changeFrequency: 'monthly' as const },
     { path: '/promociones', priority: 0.75, changeFrequency: 'weekly' as const },
     { path: '/faq', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/glosario', priority: 0.6, changeFrequency: 'monthly' as const },

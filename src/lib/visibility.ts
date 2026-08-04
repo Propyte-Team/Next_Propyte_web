@@ -50,6 +50,13 @@ export const VISIBILITY_KEYS = {
   PAGE_COMO_COMPRAR: "page.como-comprar",
   PAGE_COMO_INVERTIR: "page.como-invertir",
   PAGE_PROMOCIONES: "page.promociones",
+  // Hubs de pilar creados 2026-08-04. NO están registradas en el Hub todavía:
+  // `isVisible` es fail-open (`map[key] !== false`), así que una key que el Hub
+  // no conoce deja la página VISIBLE. Registrarlas es opcional y posterior — sin
+  // este detalle, gatear un hub nuevo lo devolvería en 404 y sería peor que no
+  // haberlo construido.
+  PAGE_GUIAS_FISCAL_LEGAL: "page.guias-fiscal-legal",
+  PAGE_GUIAS_COSTA: "page.guias-costa",
 } as const;
 
 // fail-open: key not in map → visible

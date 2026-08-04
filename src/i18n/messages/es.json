@@ -3042,5 +3042,41 @@
   "audiencias": {
     "inversionistas": "Para inversionistas",
     "asesores": "Para asesores"
+  },
+  "guias": {
+    "fiscalLegal": {
+      "metaTitle": "Guía fiscal y legal para comprar propiedad en México",
+      "metaDescription": "Los impuestos, trámites y revisiones legales de una compra inmobiliaria en México, explicados uno por uno y con la ley citada. Punto de partida del pilar fiscal y legal de Propyte.",
+      "h1": "Fiscal y legal",
+      "intro": "Comprar en México tiene una capa fiscal y una capa legal que casi nadie te explica completas antes de firmar. No es una sola pregunta: es el impuesto que pagas al comprar, el que pagas al vender, los trámites que necesitas según tu situación migratoria y fiscal, y las revisiones que deciden si lo que compras es lo que crees que compras. Esta página ordena esa capa y te manda a la pieza que responde cada cosa.",
+      "comoLeerTitle": "En qué orden leerlo",
+      "comoLeerBody": "Si estás por comprar, el orden útil es: primero qué impuestos y trámites te tocan a ti, después qué revisar del inmueble antes de firmar, y al final qué pasa cuando lo vendes o lo heredas. Cada pieza se sostiene sola, así que puedes entrar por la que te apriete hoy.",
+      "avisoTitle": "Sobre las cifras y las citas",
+      "avisoBody": "Cada cifra fiscal de este pilar se publica con la disposición que la sostiene: artículo de ley, regla de la Resolución Miscelánea o ley de hacienda municipal, con su fecha. Cuando un dato no se puede sostener con fuente primaria, no se escribe. Nada de esto sustituye la asesoría de un contador o un fiscalista para tu caso concreto.",
+      "relacionadosTitle": "Dónde sigue",
+      "relacionadosBody": "La capa fiscal no vive sola: el esquema con el que pagas cambia tu costo total, y la zona donde compras cambia tu base gravable.",
+      "linkComoComprar": "El proceso de compra, paso a paso",
+      "linkFinanciamiento": "Esquemas de financiamiento",
+      "linkMercado": "Datos de mercado por zona"
+    },
+    "costa": {
+      "metaTitle": "Comprar frente al mar en México: qué te transmite tu escritura",
+      "metaDescription": "La franja de playa es propiedad federal y no se vende. Qué significa entonces \"frente al mar\", qué te transmite tu escritura, qué no, y cómo verificarlo tú mismo en fuentes oficiales.",
+      "h1": "Costa y branded residences",
+      "intro": "\"Frente al mar\" es la promesa más repetida del Caribe mexicano y la menos examinada. Detrás hay una capa legal concreta que decide qué compras exactamente, y que casi no está escrita para compradores: la franja de arena no es del desarrollo, no se vende, y tu escritura no te la transmite. Esta página explica el marco y te dice qué puedes verificar por tu cuenta antes de firmar.",
+      "zofematTitle": "La franja de playa no se vende",
+      "zofematBody": "La Zona Federal Marítimo Terrestre —la ZOFEMAT— es la faja de veinte metros de ancho contigua a la playa. Es bien del dominio público de la Federación: inalienable e imprescriptible. Eso significa que nadie te la puede vender y nadie la puede adquirir por el paso del tiempo. Lo que existe sobre ella son concesiones: permisos que la Federación otorga para usarla, con vigencia, obligaciones y causas de terminación.",
+      "escrituraTitle": "Lo que sí te transmite tu escritura",
+      "escrituraBody": "Tu escritura transmite el lote que colinda con la franja federal, no la franja. Son dos cosas distintas con dos títulos distintos, y una no arrastra a la otra: la compraventa del lote no te cede la concesión de la ZOFEMAT contigua. Cuando un proyecto ofrece acceso, palapa, camastros o club de playa sobre esa franja, lo que hay detrás —si está en regla— es una concesión a nombre de alguien, con una vigencia que se vence. La pregunta útil no es si el desarrollo tiene playa, sino a nombre de quién está la concesión, hasta cuándo, y qué pasa contigo cuando venza. Y si no está a nombre del desarrollo sino de un tercero, el acceso que te venden depende de un acuerdo entre dos partes en el que tú no estás.",
+      "verificarTitle": "Cómo verificarlo tú mismo",
+      "verificarBody": "SEMARNAT publica los títulos de concesión de ZOFEMAT en su apartado de transparencia focalizada. Eso convierte \"verifícalo tú mismo\" en un paso real y no en un consejo vacío: puedes revisar si existe concesión para el predio que te interesa, a nombre de quién está y con qué vigencia, antes de firmar cualquier cosa. Si un vendedor no puede decirte el número de título y su vencimiento, eso ya es información. Pídelo por escrito antes del apartado y no después: una vez entregado el anticipo, la conversación cambia de lado.",
+      "extranjeroTitle": "Si eres extranjero, son dos trámites, no uno",
+      "extranjeroBody": "Comprar en la zona restringida —los cincuenta kilómetros de costa— se resuelve con un fideicomiso ante una institución bancaria mexicana. La concesión de ZOFEMAT es otra cosa, con su propio régimen. Tener fideicomiso no te da concesión, y tener concesión no sustituye al fideicomiso. Confundirlos es el error más común de esta capa, y se paga tarde. Conviene preguntar por los dos por separado, porque son dos expedientes distintos, con dos vigencias distintas y dos formas distintas de salir mal.",
+      "masAllaTitle": "Qué más cambia frente al mar",
+      "masAllaBody": "La costa no solo cambia el título: cambia el costo de mantener. La salinidad y la corrosión aceleran el desgaste de estructura e instalaciones; el seguro contra huracán y marejada tiene exclusiones que conviene leer antes de contratarlo; el sargazo se reparte de forma muy distinta según la zona y afecta la ocupación real; y la línea de costa se mueve. Cada uno de esos temas merece su propia pieza y las estamos escribiendo. Mientras tanto, si estás evaluando un proyecto concreto, el inventario y los datos por zona son el mejor punto de partida.",
+      "linkDesarrollos": "Ver desarrollos frente al mar",
+      "linkZonas": "Datos por zona",
+      "linkMercado": "Inteligencia de mercado"
+    }
   }
 }

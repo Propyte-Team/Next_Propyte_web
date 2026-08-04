@@ -3042,5 +3042,41 @@
   "audiencias": {
     "inversionistas": "For investors",
     "asesores": "For brokers"
+  },
+  "guias": {
+    "fiscalLegal": {
+      "metaTitle": "Tax and legal guide to buying property in Mexico",
+      "metaDescription": "The taxes, paperwork and legal checks behind a Mexican property purchase, covered one at a time with the statute cited. Entry point to Propyte's tax and legal pillar.",
+      "h1": "Tax and legal",
+      "intro": "Buying in Mexico carries a tax layer and a legal layer that almost nobody walks you through in full before you sign. It is not one question: it is the tax you pay when you buy, the tax you pay when you sell, the filings you need given your immigration and tax residency, and the checks that decide whether what you are buying is what you think you are buying. This page orders that layer and points you to the piece that answers each part.",
+      "comoLeerTitle": "What to read first",
+      "comoLeerBody": "If a purchase is close, the useful order is: first which taxes and filings apply to you, then what to verify about the property before signing, and last what happens when you sell it or pass it on. Each piece stands on its own, so start with whatever is pressing today.",
+      "avisoTitle": "About the figures and the citations",
+      "avisoBody": "Every tax figure in this pillar is published with the provision behind it: the article of law, the Miscellaneous Tax Resolution rule or the municipal finance act, with its date. When a figure cannot be supported by a primary source, we do not publish it. None of this replaces advice from an accountant or tax lawyer for your specific case.",
+      "relacionadosTitle": "Where this continues",
+      "relacionadosBody": "The tax layer does not stand alone: the payment scheme you choose changes your total cost, and the area you buy in changes your taxable base.",
+      "linkComoComprar": "The buying process, step by step",
+      "linkFinanciamiento": "Financing schemes",
+      "linkMercado": "Market data by area"
+    },
+    "costa": {
+      "metaTitle": "Buying beachfront in Mexico: what your deed actually conveys",
+      "metaDescription": "The beach strip is federal property and cannot be sold. So what does \"beachfront\" mean, what does your deed convey, what does it not, and how can you verify it yourself in official records.",
+      "h1": "Beachfront and branded residences",
+      "intro": "\"Beachfront\" is the most repeated promise in the Mexican Caribbean and the least examined. Behind it sits a specific legal layer that decides what you are actually buying, and it is barely written down for buyers: the strip of sand does not belong to the development, cannot be sold, and your deed does not convey it. This page explains the framework and tells you what you can verify yourself before signing.",
+      "zofematTitle": "The beach strip is not for sale",
+      "zofematBody": "The Federal Maritime Land Zone — ZOFEMAT — is the twenty-metre-wide strip adjoining the beach. It is federal public domain property: inalienable and not subject to prescription. Nobody can sell it to you and nobody can acquire it through the passage of time. What exists over it are concessions: permits the federal government grants for its use, with an expiry date, obligations and grounds for termination.",
+      "escrituraTitle": "What your deed does convey",
+      "escrituraBody": "Your deed conveys the lot adjoining the federal strip, not the strip itself. Two different things with two different titles, and one does not carry the other: buying the lot does not assign you the concession over the adjoining ZOFEMAT. When a project offers beach access, a palapa, loungers or a beach club on that strip, what sits behind it — if it is in order — is a concession in someone's name, with an expiry date. The useful question is not whether the development has a beach, but whose name the concession is in, until when, and what happens to you when it expires. And if it sits with a third party rather than the development, the access being sold to you rests on an arrangement between two parties you are not one of.",
+      "verificarTitle": "How to verify it yourself",
+      "verificarBody": "SEMARNAT publishes ZOFEMAT concession titles in its targeted transparency section. That turns \"verify it yourself\" into a real step rather than empty advice: you can check whether a concession exists for the property you are considering, whose name it is in and how long it runs, before signing anything. If a seller cannot give you the title number and its expiry date, that is already information. Ask for it in writing before you put money down, not after: once the deposit is in, the conversation changes sides.",
+      "extranjeroTitle": "As a foreign buyer, these are two filings, not one",
+      "extranjeroBody": "Buying inside the restricted zone — the fifty kilometres along the coast — is handled through a trust held by a Mexican bank. A ZOFEMAT concession is a separate matter under its own regime. Holding a trust does not give you a concession, and holding a concession does not replace the trust. Confusing the two is the most common mistake in this layer, and it surfaces late. Ask about each one separately: they are two different files, with two different expiry dates and two different ways of going wrong.",
+      "masAllaTitle": "What else changes on the coast",
+      "masAllaBody": "The coast changes more than the title: it changes the cost of ownership. Salt and corrosion accelerate wear on structure and building systems; hurricane and storm-surge coverage carries exclusions worth reading before you sign up; sargassum lands very unevenly by area and affects real occupancy; and the shoreline moves. Each of those deserves its own piece and we are writing them. In the meantime, if you are evaluating a specific project, the inventory and the area-level data are the better starting point.",
+      "linkDesarrollos": "Browse beachfront developments",
+      "linkZonas": "Area-level data",
+      "linkMercado": "Market intelligence"
+    }
   }
 }
