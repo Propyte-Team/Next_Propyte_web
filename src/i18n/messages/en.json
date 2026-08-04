@@ -3029,5 +3029,18 @@
     "mercado": "Real estate market intelligence",
     "brokers": "For brokers and real estate agencies",
     "desarrolladores": "Real estate development marketing"
+  },
+  "pilares": {
+    "P1": "Tax and legal",
+    "P2": "The buying process",
+    "P3": "Investment, ROI and rental",
+    "P4": "Financing",
+    "P5": "Market and areas",
+    "P6": "Beachfront and branded residences",
+    "P7": "Brokers and developers"
+  },
+  "audiencias": {
+    "inversionistas": "For investors",
+    "asesores": "For brokers"
   }
 }

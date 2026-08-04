@@ -3029,5 +3029,18 @@
     "mercado": "Inteligencia de mercado inmobiliario",
     "brokers": "Para brokers y agencias inmobiliarias",
     "desarrolladores": "Comercialización de desarrollos inmobiliarios"
+  },
+  "pilares": {
+    "P1": "Fiscal y legal",
+    "P2": "Proceso de compra",
+    "P3": "Inversión, ROI y renta",
+    "P4": "Financiamiento",
+    "P5": "Mercado y zonas",
+    "P6": "Costa y branded residences",
+    "P7": "Asesores y desarrolladores"
+  },
+  "audiencias": {
+    "inversionistas": "Para inversionistas",
+    "asesores": "Para asesores"
   }
 }
