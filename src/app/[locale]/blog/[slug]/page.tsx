@@ -10,7 +10,7 @@ import { robotsDeArticulo } from '@/lib/seo/robots-articulo';
 import { shouldNoIndex } from '@/lib/seo/noindex';
 import { resolvePostAuthor, type ResolvedAuthor } from '@/lib/blog/post-author';
 import { hasMarketFigures, needsInvestmentDisclaimer } from '@/lib/blog/article-signals';
-import { pilarDeCategoria, pilarHref, PILAR_LABEL_KEY } from '@/lib/blog/pilares';
+import { hubDeCategoria, hubHref, HUB_LABEL_KEY } from '@/lib/blog/hub-relacionado';
 import ArticleDataNotice from '@/components/blog/ArticleDataNotice';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import BlogShareBar from '@/components/blog/BlogShareBar';
@@ -132,11 +132,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const supabase = createPublicSupabaseClient();
   if (!supabase) notFound();
 
-  const [post, t, tb, tPilar] = await Promise.all([
+  const [post, t, tb, tHub] = await Promise.all([
     getBlogPost(supabase, slug, locale),
     getTranslations({ locale, namespace: 'blog' }),
     getTranslations({ locale, namespace: 'breadcrumbs' }),
-    getTranslations({ locale, namespace: 'pilares' }),
+    getTranslations({ locale, namespace: 'hubRelacionado' }),
   ]);
 
   if (!post) notFound();
@@ -158,7 +158,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const postDates = resolvePostDates(post);
   const showMethodology = hasMarketFigures(post.content);
   const showDisclaimer = needsInvestmentDisclaimer(post.content);
-  const pilar = pilarDeCategoria(post.category);
+  const hub = hubDeCategoria(post.category);
   const breadcrumbs = [
     { label: t('listingTitle'), href: `/${locale}/blog` },
     { label: post.category, href: `/${locale}/blog?categoria=${encodeURIComponent(post.category)}` },
@@ -300,14 +300,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 "clic aquí": es el lado artículo→hub del enlace bidireccional, y
                 sin él el artículo compite con su propio pilar por la misma
                 intención en vez de reforzarlo. */}
-            {pilar && (
+            {hub && (
               <p className="mt-10 rounded-xl bg-[#F4F6F8] px-5 py-4 text-sm text-slate-600">
                 {t('pilarLinkIntro')}{' '}
                 <Link
-                  href={pilarHref(locale, pilar)}
+                  href={hubHref(locale, hub)}
                   className="font-semibold text-[#0E7490] hover:underline"
                 >
-                  {tPilar(PILAR_LABEL_KEY[pilar] as 'comoInvertir')}
+                  {tHub(HUB_LABEL_KEY[hub] as 'comoInvertir')}
                 </Link>
                 .
               </p>

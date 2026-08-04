@@ -217,7 +217,7 @@ export default async function ComoComprarPage({ params }: { params: Promise<{ lo
       </section>
 
       {/* Artículos de "Guías de compra" y "Legal y fiscal" que refuerzan este pilar. */}
-      <PilarArticlesSection locale={locale} pilar="como-comprar" />
+      <PilarArticlesSection locale={locale} hub="como-comprar" />
 
       {/* Legal disclaimer */}
       <div className="py-6 bg-gray-50">

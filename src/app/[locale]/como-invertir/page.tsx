@@ -286,7 +286,7 @@ export default async function ComoInvertirPage({ params }: { params: Promise<{ l
 
       {/* Lado hub→artículo del enlace bidireccional: los artículos de "Inversión"
           y "Para Inversionistas" refuerzan este pilar en vez de competir con él. */}
-      <PilarArticlesSection locale={locale} pilar="como-invertir" />
+      <PilarArticlesSection locale={locale} hub="como-invertir" />
     </>
   );
 }

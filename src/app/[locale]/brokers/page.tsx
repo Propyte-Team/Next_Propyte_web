@@ -131,7 +131,7 @@ export default async function BrokersPage({ params }: { params: Promise<{ locale
       />
 
       {/* Artículos de "Para Asesores" que refuerzan este pilar. */}
-      <PilarArticlesSection locale={locale} pilar="brokers" />
+      <PilarArticlesSection locale={locale} hub="brokers" />
     </>
   );
 }

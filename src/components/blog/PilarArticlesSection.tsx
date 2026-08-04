@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts, type BlogPost } from '@/lib/supabase/queries';
-import { categoriasDePilar, type Pilar } from '@/lib/blog/pilares';
+import { categoriasDeHub, type HubRelacionado } from '@/lib/blog/hub-relacionado';
 import PilarArticles from './PilarArticles';
 
 type PilarLabels = { title: string; minRead: string; viewAll: string };
@@ -18,14 +18,14 @@ type PilarLabels = { title: string; minRead: string; viewAll: string };
  */
 export default async function PilarArticlesSection({
   locale,
-  pilar,
+  hub,
   limit = 3,
 }: {
   locale: string;
-  pilar: Pilar;
+  hub: HubRelacionado;
   limit?: number;
 }) {
-  const categories = categoriasDePilar(pilar);
+  const categories = categoriasDeHub(hub);
   // Sin categorías mapeadas no hay nada que consultar: se evita el viaje a la BD.
   if (categories.length === 0) return null;
 
@@ -49,7 +49,7 @@ export default async function PilarArticlesSection({
       };
     }
   } catch (error) {
-    console.error(`[PilarArticlesSection] ${pilar}:`, error);
+    console.error(`[PilarArticlesSection] ${hub}:`, error);
   }
 
   if (!data) return null;
