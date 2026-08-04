@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts, type BlogPost } from '@/lib/supabase/queries';
 import { categoriasDeHub, type HubRelacionado } from '@/lib/blog/hub-relacionado';
+import { blogHref } from '@/lib/blog/blog-urls';
 import PilarArticles from './PilarArticles';
 
 type PilarLabels = { title: string; minRead: string; viewAll: string };
@@ -58,7 +59,7 @@ export default async function PilarArticlesSection({
     <PilarArticles
       locale={locale}
       posts={data.posts}
-      categories={categories}
+      viewAllHref={categories.length > 0 ? blogHref(locale, { category: categories[0] }) : null}
       t={data.labels}
     />
   );

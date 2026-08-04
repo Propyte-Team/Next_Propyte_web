@@ -3,13 +3,16 @@ import Image from 'next/image';
 import { Clock, ArrowRight } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDateShort } from '@/lib/helpers/format-date';
-import { blogHref } from '@/lib/blog/blog-urls';
 
 interface PilarArticlesProps {
   locale: string;
   posts: BlogPost[];
-  /** Categorías que alimentan este pilar: el "Ver todos" filtra por la primera. */
-  categories: string[];
+  /**
+   * Destino del "Ver todos". Lo calcula quien llama porque los dos ejes filtran
+   * distinto: los hubs viejos por `?categoria=` (afinidad de superficie), los
+   * nuevos por `?pilar=` (taxonomía canónica). `null` esconde el enlace.
+   */
+  viewAllHref: string | null;
   t: { title: string; minRead: string; viewAll: string };
 }
 
@@ -21,7 +24,7 @@ interface PilarArticlesProps {
  * Devuelve null sin artículos — un hub sin contenido mapeado no muestra un módulo
  * vacío.
  */
-export default function PilarArticles({ locale, posts, categories, t }: PilarArticlesProps) {
+export default function PilarArticles({ locale, posts, viewAllHref, t }: PilarArticlesProps) {
   if (posts.length === 0) return null;
 
   return (
@@ -29,9 +32,9 @@ export default function PilarArticles({ locale, posts, categories, t }: PilarArt
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F]">{t.title}</h2>
-          {categories.length > 0 && (
+          {viewAllHref && (
             <Link
-              href={blogHref(locale, { category: categories[0] })}
+              href={viewAllHref}
               className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0E7490] hover:underline"
             >
               {t.viewAll} <ArrowRight size={15} />
