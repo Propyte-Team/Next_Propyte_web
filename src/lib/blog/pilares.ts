@@ -1,7 +1,7 @@
 /**
  * Catálogo canónico de pilares editoriales (P1..P7).
  *
- * Fuente de verdad: `docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md` §3.
+ * Fuente de verdad: `docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md` §3.
  * El Hub empareja briefs por `code` y guarda el destino en `blog_briefs.pillar_url`,
  * así que el CÓDIGO es el identificador estable — no el slug, no el label.
  *

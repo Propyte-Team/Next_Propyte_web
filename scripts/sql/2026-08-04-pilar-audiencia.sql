@@ -1,5 +1,5 @@
 -- Taxonomía canónica de pilares en blog_posts.
--- Fuente: docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md §4-§10.
+-- Fuente: docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md §4-§10.
 -- Cierra los bloqueos #7 y #8 de su §14.
 --
 -- Se ejecuta en DOS PARTES a propósito. La parte 1 es aditiva y ya está

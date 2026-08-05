@@ -1,7 +1,7 @@
 # Taxonomía de pilares y hubs faltantes — diseño
 
 **Fecha:** 2026-08-04 · **Rama:** `feat/pilares-taxonomia` (desde `origin/main` @ `ff54201`)
-**Fuente de verdad editorial:** `~/Projects/Propyte/docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md`
+**Fuente de verdad editorial:** `~/Projects/Propyte/docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md`
 
 Resuelve los bloqueos **#7** (los hubs de P1 y P6 no existen, así que ningún brief
 puede enlazar a su pilar padre) y **#8** (taxonomía de categorías incompleta) de la

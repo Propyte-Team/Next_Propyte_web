@@ -9,7 +9,7 @@
 **Tech Stack:** Next 16.2 (App Router, RSC), next-intl 4.11, Supabase JS, vitest 4, Playwright 1.59, Tailwind.
 
 **Spec:** `docs/superpowers/specs/2026-08-04-pilares-taxonomia-hubs-design.md`
-**Fuente de verdad editorial:** `~/Projects/Propyte/docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md`
+**Fuente de verdad editorial:** `~/Projects/Propyte/docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md`
 
 ---
 
@@ -428,7 +428,7 @@ Crear `src/lib/blog/pilares.ts`:
 /**
  * Catálogo canónico de pilares editoriales (P1..P7).
  *
- * Fuente de verdad: `docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md` §3.
+ * Fuente de verdad: `docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md` §3.
  * El Hub empareja briefs por `code` y guarda el destino en `blog_briefs.pillar_url`,
  * así que el CÓDIGO es el identificador estable — no el slug, no el label.
  *
@@ -790,7 +790,7 @@ Crear `scripts/sql/2026-08-04-pilar-audiencia.sql`:
 
 ```sql
 -- Taxonomía canónica de pilares en blog_posts.
--- Fuente: docs-editorial/07_Sistema-Pilares_MAESTRO_corte-30jul2026.md §4-§10.
+-- Fuente: docs-editorial/07_Sistema-Pilares_MAESTRO_corte-05ago2026.md §4-§10.
 -- Cierra los bloqueos #7 y #8 de su §14.
 --
 -- Nullable y sin default a propósito: NULL = "sin clasificar", que es honesto.
