@@ -668,7 +668,8 @@
     "toggleCurrencyAriaLabel": "Toggle currency",
     "cardPriceFrom": "From",
     "cardBedroomsRange": "{min} - {max} bed",
-    "cardBedroomsSingle": "{count} bed"
+    "cardBedroomsSingle": "{count} bed",
+    "cardAreaFrom": "from {area} {unit}"
   },
   "property": {
     "bedrooms": "Bedrooms",
@@ -818,6 +819,13 @@
     "townhouse": "Townhouse",
     "local_comercial": "Commercial",
     "departamentoShort": "Apt"
+  },
+  "unitTypesPlural": {
+    "departamento": "Apartments",
+    "penthouse": "Penthouses",
+    "casa": "Houses",
+    "terreno": "Land",
+    "macrolote": "Large lots"
   },
   "developmentTypes": {
     "residencial-vertical": "Vertical residential",

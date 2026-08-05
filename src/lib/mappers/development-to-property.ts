@@ -147,6 +147,11 @@ function normalizeStage(raw: string | null | undefined): PropertyStage | null {
 }
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
+/** Union canónico de `specs.type`. Guard para los `unit_types` agregados desde
+ *  v_units, que llegan como `unknown` por el index signature de DevelopmentRow. */
+const VALID_SPEC_TYPES: ReadonlyArray<Property['specs']['type']> = [
+  'departamento', 'penthouse', 'casa', 'terreno', 'macrolote',
+];
 
 /**
  * Normaliza `development_type` (texto sucio en BD: 'vertical', 'preventa',
@@ -243,6 +248,24 @@ export function mapDevelopmentToProperty(
 
   const specType = resolveSpecType(row.property_types, row.development_type);
 
+  // Tipos de unidad del INVENTARIO (v_units.unit_type agregado por
+  // attachDevelopmentUnitAggregates). `row.unit_types` es `unknown` porque
+  // DevelopmentRow tiene index signature — se valida item por item contra el
+  // union canónico antes de exponerlo.
+  //
+  // Fallback: cuando el caller no corrió el helper, o el desarrollo no tiene
+  // unidades cargadas (1 de 19 en prod al 2026-08-05: Nubba), cae a `specType`,
+  // que ya deriva de property_types → development_type.
+  const rawUnitTypes = Array.isArray(row.unit_types) ? row.unit_types : [];
+  const inventoryUnitTypes = rawUnitTypes.filter(
+    (t): t is Property['specs']['type'] => typeof t === 'string' && VALID_SPEC_TYPES.includes(t as Property['specs']['type']),
+  );
+  const unitTypes = inventoryUnitTypes.length > 0 ? inventoryUnitTypes : [specType];
+
+  // Área mínima del inventario. NUMERIC de Supabase puede llegar como string.
+  const areaMinNum = Number(row.area_min_m2);
+  const areaMin = Number.isFinite(areaMinNum) && areaMinNum > 0 ? areaMinNum : undefined;
+
   const inventory = {
     available: row.available_units ?? undefined,
     total: row.total_units ?? undefined,
@@ -312,6 +335,8 @@ export function mapDevelopmentToProperty(
     developmentType: normalizeDevelopmentType(row.development_type as string | null | undefined),
     bedroomsMin: typeof row.bedrooms_min === 'number' && row.bedrooms_min > 0 ? row.bedrooms_min : undefined,
     bedroomsMax: typeof row.bedrooms_max === 'number' && row.bedrooms_max > 0 ? row.bedrooms_max : undefined,
+    unitTypes,
+    areaMin,
     specs: {
       // Developments have no single unit's specs — surfaced only for units
       bedrooms: 0,

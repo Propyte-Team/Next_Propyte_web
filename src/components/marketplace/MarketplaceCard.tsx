@@ -42,9 +42,16 @@ export default function MarketplaceCard({
   const tMkt = useTranslations('marketplace');
   const tTypes = useTranslations('types');
   const tDevTypes = useTranslations('developmentTypes');
+  const tUnitTypesPlural = useTranslations('unitTypesPlural');
   const safeStage = (s: string) => tStages(normalizeI18nKey(s) as 'preventa');
   const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
   const safeDevType = (t: string) => tDevTypes(normalizeDevTypeKey(t) as 'mixto');
+  // `unitTypes` ya viene canónico lowercase del mapper. `.has()` explícito para
+  // caer al singular de `types` si faltara la key plural — sin él el fallback
+  // global de request.ts humanizaría la key y rendearía el singular igual, pero
+  // esto lo hace intencional en vez de accidental.
+  const safeUnitTypePlural = (t: string) =>
+    tUnitTypesPlural.has(t as 'departamento') ? tUnitTypesPlural(t as 'departamento') : safeType(t);
   const [currentImg, setCurrentImg] = useState(0);
   const { isComparing, toggle: toggleCompare, isFull: compareFull } = useCompare();
   const comparing = isComparing(property.id);
@@ -122,6 +129,25 @@ export default function MarketplaceCard({
         ? tMkt('cardBedroomsRange', { min: property.bedroomsMin, max: property.bedroomsMax })
         : tMkt('cardBedroomsSingle', { count: property.bedroomsMin }))
     : null;
+
+  // "desde X m²" — área mínima del inventario (v_units). Respeta el toggle
+  // global m²↔sqft igual que la fila de specs de las unidades. 4 de 19
+  // desarrollos en prod no tienen área cargada: ahí no se rendea nada, no hay
+  // de dónde derivarla (v_developments no tiene columna de área).
+  const areaFromLabel = (() => {
+    if (property.kind !== 'development' || property.areaMin == null || property.areaMin <= 0) return null;
+    const value = areaUnit === 'm2' ? property.areaMin : (m2ToSqft(property.areaMin) ?? property.areaMin);
+    return tMkt('cardAreaFrom', {
+      area: Math.round(value).toLocaleString(locale === 'en' ? 'en-US' : 'es-MX'),
+      unit: areaUnit === 'm2' ? 'm²' : 'sqft',
+    });
+  })();
+
+  // Tipos de unidad del inventario — qué se vende aquí (departamentos, casas,
+  // terrenos…). Sin conteos: v_units es un subconjunto del inventario real.
+  const unitTypeLabels = property.kind === 'development' && property.unitTypes?.length
+    ? property.unitTypes.map((t) => ({ key: t, label: safeUnitTypePlural(t) }))
+    : [];
 
   return (
     <div
@@ -351,10 +377,15 @@ export default function MarketplaceCard({
             )}
           </div>
 
-          {/* Row 2 — Bedrooms range (developments) */}
-          {bedroomsLabel && (
-            <div className={`text-[var(--propyte-dark-700)] font-semibold tabular-nums ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
-              {bedroomsLabel}
+          {/* Row 2 — Bedrooms range + área desde (developments). Ambos agregados
+              desde v_units; comparten fila para no crecer la card. */}
+          {(bedroomsLabel || areaFromLabel) && (
+            <div className={`flex items-center flex-wrap text-[var(--propyte-dark-700)] font-semibold tabular-nums ${variant === 'compact' ? 'text-xs' : 'text-sm'}`}>
+              {bedroomsLabel && <span>{bedroomsLabel}</span>}
+              {bedroomsLabel && areaFromLabel && (
+                <span className="text-gray-300 mx-2" aria-hidden="true">·</span>
+              )}
+              {areaFromLabel && <span>{areaFromLabel}</span>}
             </div>
           )}
 
@@ -399,6 +430,23 @@ export default function MarketplaceCard({
               <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
                 {devTypeLabel}
               </span>
+            </div>
+          )}
+
+          {/* Row 3b — Tipos de unidad del inventario. Contesta "qué se vende
+              aquí", que el chip de tipo desarrollo (RESIDENCIAL VERTICAL, MIXTO)
+              no contesta. Estilo neutro para no competir con el chip cyan. */}
+          {unitTypeLabels.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {unitTypeLabels.map(({ key, label }) => (
+                <span
+                  key={key}
+                  data-testid="marketplace-card-unit-type"
+                  className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-[var(--propyte-dark-900)]/[0.06] text-[var(--propyte-dark-900)]"
+                >
+                  {label}
+                </span>
+              ))}
             </div>
           )}
 

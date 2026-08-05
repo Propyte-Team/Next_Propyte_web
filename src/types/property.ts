@@ -162,6 +162,26 @@ export interface Property {
   /** Rango de recámaras agregado desde v_units (kind='development' only). */
   bedroomsMin?: number;
   bedroomsMax?: number;
+  /**
+   * Tipos de unidad presentes en el INVENTARIO del desarrollo (kind='development'
+   * only), canónicos y dedup. Contestan la pregunta que el chip `developmentType`
+   * no contesta: qué se vende aquí (departamentos, casas, terrenos…).
+   *
+   * Salen de `attachDevelopmentUnitAggregates` (agregado de v_units.unit_type),
+   * con fallback a `resolveSpecType(property_types, development_type)` cuando el
+   * desarrollo no tiene unidades cargadas.
+   *
+   * SIN conteos a propósito: v_units es un subconjunto del inventario real, así
+   * que "3 departamentos" sería falso. Ver spec 2026-08-05.
+   */
+  unitTypes?: Array<PropertySpecs['type']>;
+  /**
+   * Área mínima en m² agregada desde v_units (`area_m2 || lot_area_m2`).
+   * Alimenta el "desde X m²" de la card. NO se escribe en `specs.area`: eso
+   * encendería el cálculo de $/m² dividiendo el precio de una unidad entre el
+   * área de otra — métrica fabricada.
+   */
+  areaMin?: number;
   stage: PropertyStage;
   usage: PropertyUsage[];
   amenities: string[];

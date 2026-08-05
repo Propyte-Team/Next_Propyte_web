@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopments } from '@/lib/supabase/queries';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
+import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import type { Property } from '@/types/property';
 
@@ -42,6 +43,9 @@ export default async function TaxonomyDevelopmentsPage({
       const { data } = await getDevelopments(supabase, { ...filter, limit: 100, orderBy: 'newest' });
       if (data) {
         rawDevs = data as DevelopmentRow[];
+        // Mismos agregados de v_units que /desarrollos: recámaras, tipos de
+        // unidad del inventario y área mínima.
+        await attachDevelopmentUnitAggregates(supabase, rawDevs);
         properties = rawDevs.map((d) => mapDevelopmentToProperty(d, locale));
       }
     }
