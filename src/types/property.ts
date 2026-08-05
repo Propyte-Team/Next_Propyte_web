@@ -43,7 +43,15 @@ export interface PropertyROI {
 export interface PropertyFinancing {
   downPaymentMin: number;   // % enganche efectivo (fin_enganche_pct)
   months: number[];         // opciones de plazo (fin_meses_opciones)
-  interestRate: number;     // tasa anual efectiva (fin_tasa)
+  interestRate: number;     // tasa anual efectiva (fin_tasa). 0 cuando NO hay dato — ver interestRateKnown
+  /**
+   * true solo si `fin_tasa` trae un número en la BD. Las calculadoras necesitan
+   * un `interestRate` numérico y por eso el mapper defaultea a 0, pero 0 es un
+   * valor afirmativo ("sin intereses") y sin este flag la ausencia de dato se
+   * publica como promesa comercial. Cualquier UI que ROTULE la tasa debe exigir
+   * `interestRateKnown`; las que solo CALCULAN pueden usar el default.
+   */
+  interestRateKnown: boolean;
   /** true si hay financiamiento directo del desarrollador (gate de la corrida) */
   directo?: boolean;
   /** nota libre del plazo, ej. "Hasta entrega de obra" */

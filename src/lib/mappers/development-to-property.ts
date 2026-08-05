@@ -361,6 +361,7 @@ export function mapDevelopmentToProperty(
       downPaymentMin: row.financing_down_payment || 0,
       months: row.financing_months || [60, 120, 180, 240],
       interestRate: row.financing_interest || 0,
+      interestRateKnown: row.financing_interest != null && Number.isFinite(Number(row.financing_interest)),
     },
     description: {
       es: row.description_es || '',

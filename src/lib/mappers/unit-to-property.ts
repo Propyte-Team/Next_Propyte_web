@@ -352,6 +352,10 @@ export function mapUnitToProperty(
           ? row.fin_meses_opciones
           : [60, 120, 180, 240],
       interestRate: Number(row.fin_tasa) || 0,
+      // fin_tasa NULL significa "no sabemos la tasa", no "la tasa es 0". El 0 de
+      // arriba existe para que las calculadoras no truenen; este flag impide que
+      // se rotule como "0% interés". Ver feedback_null_coercionado_a_cero_se_publica.
+      interestRateKnown: Number.isFinite(Number(row.fin_tasa)) && row.fin_tasa !== null,
       directo: row.fin_directo === true,
       mesesNota: row.fin_meses_nota || undefined,
       esquema: row.fin_esquema || undefined,

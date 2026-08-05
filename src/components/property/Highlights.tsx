@@ -31,7 +31,10 @@ function getHighlightTags(property: Property, locale: string): { label: string; 
   if (property.stage === 'preventa') {
     tags.push({ label: locale === 'es' ? 'Precio de preventa' : 'Presale price', icon: TrendingUp });
   }
-  if (property.financing.interestRate === 0) {
+  // Solo con tasa CONFIRMADA en la BD. Antes bastaba con `=== 0`, y como el
+  // mapper defaultea fin_tasa NULL a 0, la falta de dato se publicaba como
+  // "0% interés" (los 6 terrenos lo mostraban sin que nadie lo capturara).
+  if (property.financing.interestRateKnown && property.financing.interestRate === 0) {
     tags.push({ label: locale === 'es' ? '0% interés' : '0% interest', icon: TrendingUp });
   }
   // Solo el ROI capturado en el Hub merece el highlight: el yield bruto ya sale
