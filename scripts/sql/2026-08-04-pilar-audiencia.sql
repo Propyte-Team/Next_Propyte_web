@@ -147,11 +147,56 @@ where slug = 'isai-quintana-roo-yucatan-2026-version-junio'
 --   filtro público: es → P1 con 5 piezas · en → P1 con 4
 --   la pieza en papelera resuelve al not-found de Next y NO filtra su contenido
 --
--- SIGUE PENDIENTE (dueño: Luis):
---   `fiscal-legalcfdi-compra-inmueble` (draft, P1) quedó superado por
---   `cfdi-compra-inmueble`, ya publicado. Si se archiva, necesita 301 del slug
---   viejo al nuevo: su published_at es del 18-jun-2026, así que su URL pudo estar
---   indexada. El maestro §4 pide exactamente ese 301.
+-- ═══════════════════════════════════════════════════════════════════════
+-- PARTE 4 · CIERRE DE CFDI — EJECUTADA 2026-08-05
+-- ═══════════════════════════════════════════════════════════════════════
+--
+-- Decisión de Luis: mismo criterio que ISAI, el draft se va y el publicado queda.
+--
+-- DIFERENCIA con ISAI, y por eso este caso sí necesitó 301: en ISAI los dos slugs
+-- terminaron siendo el mismo (Luis renombró la pieza publicada al slug canónico),
+-- así que la URL indexada quedó servida. Aquí los slugs son DISTINTOS
+-- —`fiscal-legalcfdi-compra-inmueble` vs `cfdi-compra-inmueble`— así que archivar
+-- sin redirect dejaba un 404 en una URL con published_at del 18-jun-2026.
+-- El maestro §1 pide exactamente este 301.
+--
+-- ORDEN IMPORTANTE: primero el redirect, después la papelera. Al revés hay una
+-- ventana en la que la URL vieja devuelve 404.
+
+-- 1) El 301. entity_id null es CORRECTO para blog_post: `resolve-target.ts` solo
+--    resuelve por entidad los `development` (RESUELTOS_POR_ENTIDAD); para blog
+--    respeta `new_slug`, porque esas filas las escribe una persona.
+insert into real_estate_hub.slug_redirects
+  (entity_type, entity_id, old_slug, new_slug, kind, reason, created_by)
+select 'blog_post', null,
+       'fiscal-legalcfdi-compra-inmueble', 'cfdi-compra-inmueble', 'redirect',
+       'P1-03 CFDI. Slug viejo malformado al migrar de carpeta a plana; maestro §1.',
+       'claude-code (autorizado por Luis 2026-08-05)'
+where not exists (
+  select 1 from real_estate_hub.slug_redirects
+  where entity_type = 'blog_post' and old_slug = 'fiscal-legalcfdi-compra-inmueble'
+);
+
+-- 2) La pieza superada, a la papelera (borrado suave).
+update public.blog_posts
+set deleted_at = now(),
+    deleted_by = 'marketing@nativatulum.mx via claude-code (superado por cfdi-compra-inmueble, 301 creado antes)'
+where slug = 'fiscal-legalcfdi-compra-inmueble' and locale = 'es' and deleted_at is null;
+
+-- Verificado con el servidor de producción, no solo en la tabla:
+--   /es/blog/fiscal-legalcfdi-compra-inmueble → 308 → /es/blog/cfdi-compra-inmueble
+--   /en/... → 308 → /en/blog/cfdi-compra-inmueble  (el redirect no lleva locale)
+--   el destino renderiza con <h1> real y 200 en los dos idiomas: no es un 308
+--   hacia un soft-404, que es el fallo que documenta resolve-target.ts
+--   el 308 sigue vivo DESPUÉS de mandar la pieza a la papelera
+--
+-- Estado final: vivas=21 (9 publicadas, 12 draft) · sin pilar=0 · papelera=12
+--   P1=13 (9+4) · P5=5 (0+5) · P7=3 (0+3)
+--   los 2 redirects de blog apuntan a destinos publicados en 2 locales cada uno
+--
+-- Nota: 1 fila de la papelera conserva su pilar (este CFDI, clasificado cuando
+-- estaba vivo). No es un error: toda consulta pública filtra `deleted_at is null`,
+-- y si alguien la restaura vuelve ya clasificada.
 
 
 -- ═══════════════════════════════════════════════════════════════════════
