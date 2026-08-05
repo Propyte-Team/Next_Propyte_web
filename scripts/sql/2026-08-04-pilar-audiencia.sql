@@ -106,8 +106,52 @@ where p.slug = v.slug and p.locale = v.locale and p.deleted_at is null;
 -- Las filas en papelera quedan en NULL: son duplicados borrados, y clasificarlos
 -- afirmaría que forman parte de la taxonomía.
 --
--- PENDIENTE al cerrar: las 2 filas ISAI. Cuando se resuelva cuál es el P1-02
--- canónico, clasificarla como ('P1','inversionistas') y resolver la otra URL.
+-- ═══════════════════════════════════════════════════════════════════════
+-- PARTE 3 · CIERRE DE ISAI Y PIEZAS NUEVAS — EJECUTADA 2026-08-05
+-- ═══════════════════════════════════════════════════════════════════════
+--
+-- Decisión de Luis: queda el ISAI publicado, el que siguió en draft se va.
+--
+-- Contexto de lo que pasó entre la Parte 2 y esta: Luis renombró el duplicado
+-- con timestamp al slug canónico del maestro y lo publicó en es y en, y movió el
+-- draft viejo a `...-version-junio`. Eso conserva la URL indexada
+-- `isai-quintana-roo-yucatan-2026` sin necesidad de 301, porque ahora la sirve la
+-- pieza publicada. También apareció `cfdi-compra-inmueble` publicado en es y en:
+-- es P1-03 en el slug nuevo que el maestro recomienda.
+
+-- 1) Clasificar las 4 publicadas que quedaban sin pilar.
+update public.blog_posts p
+set pilar = v.pilar, audiencia = v.audiencia
+from (values
+  ('isai-quintana-roo-yucatan-2026', 'es', 'P1', 'inversionistas'), -- P1-02 canónico
+  ('isai-quintana-roo-yucatan-2026', 'en', 'P1', 'inversionistas'), -- P1-02 canónico
+  ('cfdi-compra-inmueble',           'es', 'P1', 'inversionistas'), -- P1-03
+  ('cfdi-compra-inmueble',           'en', 'P1', 'inversionistas')  -- P1-03
+) as v(slug, locale, pilar, audiencia)
+where p.slug = v.slug and p.locale = v.locale and p.deleted_at is null;
+
+-- 2) El ISAI que siguió en draft, a la papelera. Borrado SUAVE (deleted_at),
+--    recuperable. Su slug `...-version-junio` nunca estuvo indexado, así que no
+--    necesita 301.
+update public.blog_posts
+set deleted_at = now(),
+    deleted_by = 'marketing@nativatulum.mx via claude-code (dedup ISAI 2026-08-05)'
+where slug = 'isai-quintana-roo-yucatan-2026-version-junio'
+  and locale = 'es' and deleted_at is null;
+
+-- Verificado después:
+--   vivas=22 · publicadas=9 · papelera=11
+--   vivas sin pilar → 0 · publicadas sin pilar → 0
+--   papelera clasificada por error → 0
+--   P1=14 (9 publicadas + 5 draft) · P5=5 (0+5) · P7=3 (0+3)
+--   filtro público: es → P1 con 5 piezas · en → P1 con 4
+--   la pieza en papelera resuelve al not-found de Next y NO filtra su contenido
+--
+-- SIGUE PENDIENTE (dueño: Luis):
+--   `fiscal-legalcfdi-compra-inmueble` (draft, P1) quedó superado por
+--   `cfdi-compra-inmueble`, ya publicado. Si se archiva, necesita 301 del slug
+--   viejo al nuevo: su published_at es del 18-jun-2026, así que su URL pudo estar
+--   indexada. El maestro §4 pide exactamente ese 301.
 
 
 -- ═══════════════════════════════════════════════════════════════════════
