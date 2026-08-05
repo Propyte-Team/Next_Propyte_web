@@ -108,8 +108,35 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Default: next-intl locale routing
-  return intlMiddleware(request);
+  // Default: next-intl locale routing.
+  //
+  // next-intl emite 307 (temporal) al anteponer el prefijo de locale, y ese es el
+  // status con el que Google ve `propyte.com/` → `/es`. Search Console las reporta
+  // como "Página con redirección" (17 URLs al 5-ago): la raíz es la URL a la que
+  // apunta cada backlink y cada mención de la marca, y un redirect temporal no
+  // consolida esas señales en la versión con prefijo. Se reescribe a 308.
+  //
+  // Es seguro porque `localeDetection: false` en src/i18n/routing.ts fija el
+  // destino: la raíz SIEMPRE va a /es. Si algún día se activa la detección de
+  // idioma, ESTE BLOQUE SE REVIERTE — con destino variable un 308 es un bug, el
+  // navegador cachea el permanente y clava al visitante en el primer locale que
+  // le tocó.
+  const response = intlMiddleware(request);
+  const location = response.headers.get('location');
+  if (response.status === 307 && location) {
+    const permanent = NextResponse.redirect(new URL(location, request.url), 308);
+    response.headers.forEach((value, key) => {
+      const k = key.toLowerCase();
+      // `location` ya viaja en el redirect nuevo; las cookies se copian aparte
+      // porque headers.forEach colapsa múltiples Set-Cookie en uno solo.
+      if (k !== 'location' && k !== 'set-cookie') permanent.headers.set(key, value);
+    });
+    for (const cookie of response.cookies.getAll()) {
+      permanent.cookies.set(cookie);
+    }
+    return permanent;
+  }
+  return response;
 }
 
 export const config = {
