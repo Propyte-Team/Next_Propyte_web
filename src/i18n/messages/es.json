@@ -559,6 +559,12 @@
     "audienciaFilterAriaLabel": "Filtrar artículos por audiencia",
     "allPilares": "Todos los temas",
     "allAudiencias": "Todo el público",
+    "filtersAriaLabel": "Filtros del blog",
+    "filterTema": "Tema",
+    "filterPublico": "Público",
+    "activeFilters": "Filtros activos",
+    "removeFilter": "Quitar filtro",
+    "clearAll": "Limpiar todo",
     "mapaPilaresTitle": "Los siete pilares",
     "mapaPilaresBody": "Cada pilar tiene su propia guía. Entra por el que te toque."
   },

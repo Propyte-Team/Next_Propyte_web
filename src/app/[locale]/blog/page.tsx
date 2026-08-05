@@ -4,14 +4,12 @@ import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts, getBlogCategories, getBlogPilares, getTeamMembers } from '@/lib/supabase/queries';
+import { getBlogPosts, getBlogPilares, getTeamMembers } from '@/lib/supabase/queries';
 import { resolvePostAuthor } from '@/lib/blog/post-author';
 import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
 import BlogPagination from '@/components/blog/BlogPagination';
-import CategoryFilter from '@/components/blog/CategoryFilter';
-import PilarFilter from '@/components/blog/PilarFilter';
-import AudienciaFilter from '@/components/blog/AudienciaFilter';
+import BlogFilterBar from '@/components/blog/BlogFilterBar';
 import MapaDePilares from '@/components/blog/MapaDePilares';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
@@ -141,11 +139,14 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const supabase = createPublicSupabaseClient();
 
   // Single source of truth: grid completo de TODOS los posts (paginado y filtrado).
-  // Categorías y pilares se descubren desde BD para mantener los filtros
-  // sincronizados sin hardcodear nombres. El equipo se trae para resolver el autor
-  // real de cada tarjeta (foto + cargo); fail-soft: sin equipo, la tarjeta usa el
-  // autor crudo de la fila, como antes.
-  const [{ posts, total }, categories, pilarCodes, teamMembers] = supabase
+  // Los pilares se descubren desde BD para que la barra no ofrezca un tema sin
+  // piezas. El equipo se trae para resolver el autor real de cada tarjeta (foto +
+  // cargo); fail-soft: sin equipo, la tarjeta usa el autor crudo de la fila.
+  //
+  // `getBlogCategories` ya no se llama: la categoría dejó de ser un filtro
+  // público al fusionarse los ejes en la barra, y descubrirla era un viaje a la
+  // BD que nadie leía. El param `?categoria=` sigue funcionando.
+  const [{ posts, total }, pilarCodes, teamMembers] = supabase
     ? await Promise.all([
         getBlogPosts(supabase, {
           locale,
@@ -155,11 +156,10 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           limit: POSTS_PER_PAGE,
           page: currentPage,
         }),
-        getBlogCategories(supabase, locale),
         getBlogPilares(supabase, locale),
         getTeamMembers(supabase),
       ])
-    : [{ posts: [], total: 0 }, [], [], []];
+    : [{ posts: [], total: 0 }, [], []];
 
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
   const cardT = { minRead: t('minRead') };
@@ -173,8 +173,6 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     heroHeadLine1: t('heroHeadLine1'),
     heroHeadLine2: t('heroHeadLine2'),
     heroDescription: t('heroDescription'),
-    ctaAsesores: t('ctaAsesores'),
-    ctaInversionistas: t('ctaInversionistas'),
   };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
@@ -186,7 +184,29 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
   return (
     <>
-      <BlogHero t={heroT} activeCategory={category} availableCategories={categories} />
+      <BlogHero t={heroT} />
+
+      <BlogFilterBar
+        locale={locale}
+        pilarCodes={pilarCodes}
+        activePilar={pilar?.code ?? null}
+        activeAudiencia={audiencia}
+        activeCategory={category}
+        total={total}
+        labels={{
+          tema: t('filterTema'),
+          publico: t('filterPublico'),
+          allPilares: t('allPilares'),
+          allAudiencias: t('allAudiencias'),
+          pilares: pilarLabels,
+          audiencias: audienciaLabels,
+          articleCount: t('articleCount', { count: total }),
+          filtersAriaLabel: t('filtersAriaLabel'),
+          activeFilters: t('activeFilters'),
+          removeFilter: t('removeFilter'),
+          clearAll: t('clearAll'),
+        }}
+      />
 
       <section className="bg-white py-10 md:py-14">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
@@ -198,32 +218,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
             baseUrl={siteUrl}
           />
 
-          <div className="mt-6 mb-8 space-y-3">
-            <CategoryFilter
-              categories={categories}
-              active={category}
-              allLabel={t('allCategories') || 'Todos'}
-              filterAriaLabel={t('categoryFilterAriaLabel')}
-              locale={locale}
-            />
-            <PilarFilter
-              codes={pilarCodes}
-              active={pilar?.code ?? null}
-              keep={urlState}
-              allLabel={t('allPilares')}
-              filterAriaLabel={t('pilarFilterAriaLabel')}
-              labels={pilarLabels}
-              locale={locale}
-            />
-            <AudienciaFilter
-              active={audiencia}
-              keep={urlState}
-              allLabel={t('allAudiencias')}
-              filterAriaLabel={t('audienciaFilterAriaLabel')}
-              labels={audienciaLabels}
-              locale={locale}
-            />
-          </div>
+          <div className="mt-6" />
 
           {posts.length > 0 ? (
             <>
@@ -243,11 +238,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                 })}
               </div>
 
-              {total > 0 && (
-                <p className="mt-6 text-xs text-gray-500 text-center">
-                  {t('articleCount', { count: total })}
-                </p>
-              )}
+              {/* El conteo vive en la barra de filtros, a la derecha, como en
+                  /desarrollos. Repetirlo aquí era decir lo mismo dos veces. */}
 
               <BlogPagination
                 currentPage={currentPage}

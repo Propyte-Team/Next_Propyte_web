@@ -559,6 +559,12 @@
     "audienciaFilterAriaLabel": "Filter articles by audience",
     "allPilares": "All topics",
     "allAudiencias": "Everyone",
+    "filtersAriaLabel": "Blog filters",
+    "filterTema": "Topic",
+    "filterPublico": "Audience",
+    "activeFilters": "Active filters",
+    "removeFilter": "Remove filter",
+    "clearAll": "Clear all",
     "mapaPilaresTitle": "The seven pillars",
     "mapaPilaresBody": "Each pillar has its own guide. Start with the one that applies to you."
   },
