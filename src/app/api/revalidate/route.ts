@@ -19,6 +19,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { safeEqualSecret } from "@/lib/security/compareSecret";
+import { submitToIndexNow } from "@/lib/indexnow/submit";
 
 export async function POST(req: Request) {
   const secret = process.env.REVALIDATION_SECRET;
@@ -63,9 +64,17 @@ export async function POST(req: Request) {
     }
   }
 
+  // IndexNow: el Hub ya nos dice exactamente qué cambió, así que este es el
+  // momento de avisar a Bing/Yandex en vez de esperar al recrawl. Solo los
+  // paths — los tags no son URLs. Es fail-open por dentro: nunca lanza, así que
+  // un problema de red no puede tumbar la revalidación, que es lo que el Hub
+  // está esperando.
+  const indexnow = await submitToIndexNow(revalidated.paths);
+
   return NextResponse.json({
     ok: true,
     revalidated,
+    indexnow,
     at: new Date().toISOString(),
   });
 }
