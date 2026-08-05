@@ -1,5 +1,5 @@
-import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getGlobalStats, getDevelopers, getFeaturedDevelopments, getDiscountedUnits } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { resolveInvestmentForRows } from '@/lib/investment/resolve-rows';
@@ -56,6 +56,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  // Sin esto next-intl resuelve el locale vía cookies()/headers() y la home
+  // vuelve a caer a render dinámico. Mismo patrón que desarrolladores/page.tsx.
+  setRequestLocale(locale);
 
   // Stats reales sin pisos inventados (Bloque A — FLOORS eliminado 2026-05-11).
   // Si Supabase devuelve 0 en alguna métrica, Hero omite esa pill condicionalmente.
@@ -78,7 +81,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const supabasePromise = (async (): Promise<typeof HOME_DATA_DEFAULT> => {
     try {
-      const supabase = await createServerSupabaseClient();
+      // Cliente sin cookies: createServerSupabaseClient() usa cookies() y eso
+      // demovía la home a dinámica (Cache-Control: no-store medido en prod el
+      // 5-ago). Todos los queries de aquí son catálogo público.
+      const supabase = createPublicSupabaseClient();
       const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
         getGlobalStats(supabase),
         getDevelopers(supabase),
