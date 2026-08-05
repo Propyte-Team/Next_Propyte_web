@@ -1,5 +1,5 @@
-import { getTranslations } from 'next-intl/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getUnits } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { resolveInvestmentForRows } from '@/lib/investment/resolve-rows';
@@ -31,6 +31,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function MarketplacePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  // Sin esto next-intl resuelve el locale vía cookies()/headers() y la página
+  // vuelve a caer a render dinámico.
+  setRequestLocale(locale);
   const [tBC, tA11y] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
@@ -39,7 +42,9 @@ export default async function MarketplacePage({ params }: { params: Promise<{ lo
   let properties: Property[] = [];
   let rawUnits: UnitRow[] = [];
   try {
-    const supabase = await createServerSupabaseClient();
+    // Cliente sin cookies: createServerSupabaseClient() demovía la página a
+    // dinámica (`no-store` medido en prod el 5-ago). El catálogo es público.
+    const supabase = createPublicSupabaseClient();
     if (supabase) {
       const { data } = await getUnits(supabase, { limit: 100 });
       if (data) {

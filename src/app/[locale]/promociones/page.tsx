@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDiscountedUnits } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { resolveInvestmentForRows } from '@/lib/investment/resolve-rows';
@@ -59,7 +59,9 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   // primero los descuentos más fuertes.
   let items: Property[] = [];
   try {
-    const supabase = await createServerSupabaseClient();
+    // Cliente sin cookies: createServerSupabaseClient() demovía la página a
+    // dinámica (`no-store` medido en prod el 5-ago). El catálogo es público.
+    const supabase = createPublicSupabaseClient();
     const res = await getDiscountedUnits(supabase, 24);
     const rows = (res.data || []) as unknown as UnitRow[];
     const resolved = await resolveInvestmentForRows(supabase, rows);
