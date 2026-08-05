@@ -12,7 +12,7 @@ import PriceDisplay from '@/components/ui/PriceDisplay';
 import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
-import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
+import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
 import { useUnits, m2ToSqft } from '@/lib/units-context';
 
 interface MarketplaceCardProps {
@@ -41,11 +41,9 @@ export default function MarketplaceCard({
   const tStages = useTranslations('stages');
   const tMkt = useTranslations('marketplace');
   const tTypes = useTranslations('types');
-  const tDevTypes = useTranslations('developmentTypes');
   const tUnitTypesPlural = useTranslations('unitTypesPlural');
   const safeStage = (s: string) => tStages(normalizeI18nKey(s) as 'preventa');
   const safeType = (t: string) => tTypes(normalizeI18nKey(t) as 'departamento');
-  const safeDevType = (t: string) => tDevTypes(normalizeDevTypeKey(t) as 'mixto');
   // `unitTypes` ya viene canónico lowercase del mapper. `.has()` explícito para
   // caer al singular de `types` si faltara la key plural — sin él el fallback
   // global de request.ts humanizaría la key y rendearía el singular igual, pero
@@ -117,11 +115,6 @@ export default function MarketplaceCard({
   const hoverHighlightClass = isHovered
     ? 'ring-2 ring-propyte-brand ring-offset-2 ring-offset-transparent -translate-y-0.5'
     : '';
-
-  // Tipo desarrollo chip — solo para kind='development' con valor canónico.
-  const devTypeLabel = property.kind === 'development' && property.developmentType
-    ? safeDevType(property.developmentType)
-    : null;
 
   // Rango bedrooms — solo desarrollos con datos agregados en page query.
   const bedroomsLabel = property.kind === 'development' && property.bedroomsMin != null
@@ -424,18 +417,11 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Row 3 — Tipo desarrollo (chip dedicado). Solo development. */}
-          {devTypeLabel && (
-            <div>
-              <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
-                {devTypeLabel}
-              </span>
-            </div>
-          )}
-
-          {/* Row 3b — Tipos de unidad del inventario. Contesta "qué se vende
-              aquí", que el chip de tipo desarrollo (RESIDENCIAL VERTICAL, MIXTO)
-              no contesta. Estilo neutro para no competir con el chip cyan. */}
+          {/* Row 3 — Tipos de unidad del inventario: qué se vende aquí.
+              Antes había encima un chip cyan de tipo de desarrollo
+              (RESIDENCIAL HORIZONTAL, LOTES). Se quitó: decía casi lo mismo por
+              otra vía y dos filas de chips saturaban la card. Este gana porque
+              sale del inventario real de v_units, no del campo declarado. */}
           {unitTypeLabels.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {unitTypeLabels.map(({ key, label }) => (
