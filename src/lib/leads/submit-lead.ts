@@ -16,7 +16,7 @@
 //   - retry curva [200, 600, 1500] ms del UPDATE local
 
 import { getCapturedUTMs } from "@/hooks/useUTMCapture";
-import { trackGenerateLead } from "@/lib/analytics/track";
+import { newEventId, trackGenerateLead } from "@/lib/analytics/track";
 import type { LeadSource } from "@/lib/zoho/field-maps";
 
 export interface SubmitLeadResult {
@@ -63,11 +63,17 @@ export async function submitLead(
   const utms = getCapturedUTMs();
   const detectedLocale = detectLocaleFromPathname();
 
+  // Se genera ANTES del POST: el mismo id va al servidor (que dispara el Lead
+  // por Conversions API con el PII hasheado) y al Pixel del navegador más
+  // abajo. Meta deduplica por event_id y cuenta UNA sola conversión.
+  const eventId = newEventId();
+
   const payload = {
     ...utms,
     locale: detectedLocale, // default — robusto contra forms que olvidan pasar locale
     ...data,                // data.locale sobrescribe si está presente
     source,
+    metaEventId: eventId,
     page: typeof window !== "undefined" ? window.location.href : undefined,
   };
 
@@ -96,7 +102,7 @@ export async function submitLead(
 
   if (json.success) {
     const propertyId = typeof data.propertyId === "string" ? data.propertyId : undefined;
-    trackGenerateLead({ formType: source, propertyId });
+    trackGenerateLead({ formType: source, propertyId, eventId });
     return { ok: true, id: json.id, downloadUrl: json.downloadUrl };
   }
   return { ok: false };

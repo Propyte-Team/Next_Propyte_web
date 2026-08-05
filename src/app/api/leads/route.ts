@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { getActiveEdition, signEditionUrl } from '@/lib/lead-magnet/editions';
 import { enforceRateLimit } from '@/lib/rateLimit';
+import { getBrowserContext, sendCAPIEvents } from '@/lib/meta/capi';
 import { enforceGlobalQuota } from '@/lib/security/global-quota';
 import { sanitizeErrorMessage } from '@/lib/security/sanitize-error';
 import { getZohoClient } from '@/lib/zoho/client';
@@ -96,6 +97,8 @@ const LeadSchema = z.object({
   utm_term: optionalUtm,
   gclid: optionalUtm,
   fbclid: optionalUtm,
+  /** event_id generado por submitLead() para deduplicar Pixel ↔ Conversions API. */
+  metaEventId: z.string().max(100).optional(),
 });
 
 // Origin allowlist — extensible vía env (REQ-F-17).
@@ -490,6 +493,49 @@ export async function POST(request: NextRequest) {
         source,
         error: sanitizeErrorMessage(err),
       }),
+    );
+  }
+
+  // 8b. Meta Conversions API — el Lead server-side.
+  //
+  //     Va DESPUÉS de Zoho y nunca lanza: el tracking no puede costarle un
+  //     lead al negocio. Comparte `metaEventId` con el fbq() del navegador
+  //     para que Meta cuente una sola conversión (dedup), y aporta lo que el
+  //     Pixel no puede: PII hasheado + _fbp/_fbc + IP + user-agent, que es
+  //     de donde sale el Event Match Quality.
+  try {
+    const ctx = getBrowserContext(request, data.page ?? null);
+    const [firstName, ...restName] = (data.name ?? '').trim().split(/\s+/);
+    await sendCAPIEvents([
+      {
+        eventName: 'Lead',
+        actionSource: 'website',
+        eventId: data.metaEventId,
+        eventSourceUrl: data.page ?? undefined,
+        userData: {
+          email: data.email,
+          phone: data.phone || data.whatsapp,
+          firstName: firstName || null,
+          lastName: restName.length ? restName.join(' ') : null,
+          city: data.city,
+          // external_id estable: el mismo uuid queda en public.leads, así el
+          // backfill y los eventos posteriores refieren a la misma persona.
+          externalId: row.id,
+          clientIpAddress: ctx.ip,
+          clientUserAgent: ctx.userAgent,
+          fbp: ctx.fbp,
+          fbc: ctx.fbc,
+        },
+        customData: {
+          content_name: source,
+          content_category: 'Real Estate',
+          lead_source: utms.utm_source ?? undefined,
+        },
+      },
+    ]);
+  } catch (err) {
+    console.error(
+      JSON.stringify({ event: 'leads.capi.uncaught', lead_id: row.id, error: sanitizeErrorMessage(err) }),
     );
   }
 
