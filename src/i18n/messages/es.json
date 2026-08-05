@@ -668,7 +668,8 @@
     "toggleCurrencyAriaLabel": "Cambiar moneda",
     "cardPriceFrom": "Desde",
     "cardBedroomsRange": "{min} - {max} rec",
-    "cardBedroomsSingle": "{count} rec"
+    "cardBedroomsSingle": "{count} rec",
+    "cardAreaFrom": "desde {area} {unit}"
   },
   "property": {
     "bedrooms": "Recámaras",
@@ -818,6 +819,13 @@
     "townhouse": "Townhouse",
     "local_comercial": "Local",
     "departamentoShort": "Depto"
+  },
+  "unitTypesPlural": {
+    "departamento": "Departamentos",
+    "penthouse": "Penthouses",
+    "casa": "Casas",
+    "terreno": "Terrenos",
+    "macrolote": "Macrolotes"
   },
   "developmentTypes": {
     "residencial-vertical": "Residencial vertical",

@@ -8,6 +8,7 @@ import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SiteMedia from '@/components/shared/SiteMedia';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
+import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
 import type { Property } from '@/types/property';
 import { CITY_MAP, cityMatchFilter } from './cityConfig';
 
@@ -55,6 +56,10 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
       const rows = data as DevelopmentRow[];
       count = rows.length;
       zonesCount = new Set(rows.map((d) => d.zone).filter(Boolean)).size;
+      // Mismos agregados de v_units que /desarrollos: recámaras, tipos de
+      // unidad del inventario y área mínima. Sin esto las cards de ciudad
+      // quedaban sin ninguno de los tres.
+      await attachDevelopmentUnitAggregates(supabase, rows);
       properties = rows.map((d) => mapDevelopmentToProperty(d, locale));
     }
   } catch (err) {
