@@ -71,8 +71,11 @@ export const TASAS_CADENCIA = 'monthly' as const;
  *   3. Financiamiento del desarrollador 0% sobre precio de lista — RESUELTO. La
  *      nota ya no afirma que exista descuento: dice que CUANDO el desarrollo lo
  *      ofrece, ese descuento es el costo real. No hay cifra que respaldar.
- *   4. Crédito puente 12-18% → TODO: DATA-GATE [CONFIRMAR: fuente]. Externa: tasas
- *      publicadas por la institución.
+ *   4. Crédito puente — RESUELTO POR RETIRO (handoff sitio, 2026-08-06). El
+ *      "12-18%" no tenía atribución trazable; `method4Rate` dice ahora "Según la
+ *      institución". Para restituir la cifra: fuente primaria en TASAS_FUENTES[4]
+ *      con formato `Tasas publicadas por <institución>, consultadas <YYYY-MM-DD>`
+ *      y el rango de vuelta en `method4Rate` (es + en).
  *
  * PENDIENTE de rango de mercado bancario (Luis pidió "un rango generoso, fechado"):
  * la fuente correcta son los Cuadros Comparativos de Crédito Hipotecario de

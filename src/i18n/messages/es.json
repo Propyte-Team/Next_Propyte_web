@@ -2341,7 +2341,7 @@
     "method4Title": "Crédito puente",
     "method4Desc": "Financiamiento temporal que te permite comprar una nueva propiedad antes de vender la actual. Plazos cortos de 6-12 meses con tasas más altas.",
     "method4DownPayment": "20-30%",
-    "method4Rate": "12-18%",
+    "method4Rate": "Según la institución",
     "method4Term": "6-12 meses",
     "method4Pro1": "No esperas a vender",
     "method4Pro2": "Acceso rápido",
@@ -3065,8 +3065,8 @@
   },
   "guias": {
     "fiscalLegal": {
-      "metaTitle": "Guía fiscal y legal para comprar propiedad en México",
-      "metaDescription": "Los impuestos, trámites y revisiones legales de una compra inmobiliaria en México, explicados uno por uno y con la ley citada. Punto de partida del pilar fiscal y legal de Propyte.",
+      "metaTitle": "Guía fiscal y legal: comprar propiedad en México",
+      "metaDescription": "Los impuestos, trámites y revisiones legales de una compra inmobiliaria en México, explicados uno por uno y con la ley citada.",
       "h1": "Fiscal y legal",
       "intro": "Comprar en México tiene una capa fiscal y una capa legal que casi nadie te explica completas antes de firmar. No es una sola pregunta: es el impuesto que pagas al comprar, el que pagas al vender, los trámites que necesitas según tu situación migratoria y fiscal, y las revisiones que deciden si lo que compras es lo que crees que compras. Esta página ordena esa capa y te manda a la pieza que responde cada cosa.",
       "comoLeerTitle": "En qué orden leerlo",
@@ -3080,8 +3080,8 @@
       "linkMercado": "Datos de mercado por zona"
     },
     "costa": {
-      "metaTitle": "Comprar frente al mar en México: qué te transmite tu escritura",
-      "metaDescription": "La franja de playa es propiedad federal y no se vende. Qué significa entonces \"frente al mar\", qué te transmite tu escritura, qué no, y cómo verificarlo tú mismo en fuentes oficiales.",
+      "metaTitle": "Comprar frente al mar en México: guía legal",
+      "metaDescription": "La franja de playa es propiedad federal y no se vende. Qué te transmite tu escritura al comprar frente al mar, qué no, y cómo verificarlo en fuentes oficiales.",
       "h1": "Costa y branded residences",
       "intro": "\"Frente al mar\" es la promesa más repetida del Caribe mexicano y la menos examinada. Detrás hay una capa legal concreta que decide qué compras exactamente, y que casi no está escrita para compradores: la franja de arena no es del desarrollo, no se vende, y tu escritura no te la transmite. Esta página explica el marco y te dice qué puedes verificar por tu cuenta antes de firmar.",
       "zofematTitle": "La franja de playa no se vende",
