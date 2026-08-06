@@ -54,8 +54,19 @@ export type RedirectMap = {
  */
 export type RedirectTarget =
   | { kind: 'redirect'; slug: string }
+  /** El destino es una PÁGINA del sitio (`/{locale}/{slug}`), no otra entrada de la sección. */
+  | { kind: 'redirect-page'; slug: string }
   | { kind: 'gone' }
   | { kind: 'not-found' };
+
+/**
+ * Prefijo para destinos que son una página del sitio y no otro artículo. Lo usa
+ * el archivo editorial (maestro §15): una pieza retirada cuya intención cubre un
+ * hub apunta `page:como-invertir`. Lo que sigue al prefijo es un slug limpio de
+ * un solo segmento — la defensa de load-map se mantiene intacta. Solo lo consume
+ * blog_post; development resuelve por entidad e ignora `new_slug`.
+ */
+export const PREFIJO_PAGINA = 'page:';
 
 /**
  * Tipos cuyas filas nacen de un trigger sobre el título: su `new_slug` no es
@@ -138,6 +149,12 @@ function seguirCadena(
 
     if (fila.kind === 'gone') return { kind: 'gone' };
     if (!fila.newSlug) break;
+
+    // Un destino de página termina la cadena: las páginas no son filas de la
+    // tabla, así que no hay nada más que seguir.
+    if (fila.newSlug.startsWith(PREFIJO_PAGINA)) {
+      return { kind: 'redirect-page', slug: fila.newSlug.slice(PREFIJO_PAGINA.length) };
+    }
 
     // Auto-referencia: la fila no aporta nada y redirigir sería un bucle de un salto.
     if (fila.newSlug === actual) break;

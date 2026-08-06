@@ -165,6 +165,41 @@ describe('resolveTarget — blog_post (filas que escribe una persona)', () => {
   });
 });
 
+describe('resolveTarget — destino de página (page:)', () => {
+  // El archivo editorial (maestro §15) retira piezas cuya intención cubre un
+  // hub: la fila apunta a una PÁGINA (`page:como-invertir`), no a otro artículo.
+  it('resuelve un destino page: hacia la página, no hacia otro post', () => {
+    const m = mapa([
+      ['blog_post:argumentos-viejos', { entityId: null, newSlug: 'page:como-invertir', kind: 'redirect' }],
+    ]);
+
+    expect(resolveTarget(m, 'blog_post', 'argumentos-viejos')).toEqual({
+      kind: 'redirect-page',
+      slug: 'como-invertir',
+    });
+  });
+
+  it('una cadena que termina en page: llega a la página', () => {
+    const m = mapa([
+      ['blog_post:v1', { entityId: null, newSlug: 'v2', kind: 'redirect' }],
+      ['blog_post:v2', { entityId: null, newSlug: 'page:como-comprar', kind: 'redirect' }],
+    ]);
+
+    expect(resolveTarget(m, 'blog_post', 'v1')).toEqual({ kind: 'redirect-page', slug: 'como-comprar' });
+  });
+
+  // Para development el new_slug es una foto y se ignora SIEMPRE — también
+  // cuando trae la forma page:.
+  it('development ignora un destino page: y se resuelve por entidad', () => {
+    const m = mapa(
+      [['development:x', { entityId: 'e1', newSlug: 'page:como-invertir', kind: 'redirect' }]],
+      [['e1', 'slug-vigente']],
+    );
+
+    expect(resolveTarget(m, 'development', 'x')).toEqual({ kind: 'redirect', slug: 'slug-vigente' });
+  });
+});
+
 describe('resolveTarget — casos comunes', () => {
   it('deja pasar un slug que no está en la tabla', () => {
     expect(resolveTarget(mapa([]), 'development', 'nunca-existio')).toBeNull();

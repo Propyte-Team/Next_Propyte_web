@@ -81,6 +81,16 @@ function esSlugLimpio(valor: unknown): valor is string {
   return typeof valor === 'string' && valor.length > 0 && /^[a-z0-9][a-z0-9-]*$/i.test(valor);
 }
 
+/**
+ * Destino de página: `page:` + slug limpio (ver PREFIJO_PAGINA en
+ * resolve-target.ts). Mismo régimen de defensa que esSlugLimpio — un solo
+ * segmento, sin barras ni esquema — así que una fila hostil sigue sin poder
+ * mandar al visitante fuera del sitio.
+ */
+function esDestinoPagina(valor: unknown): valor is string {
+  return typeof valor === 'string' && /^page:[a-z0-9][a-z0-9-]*$/i.test(valor);
+}
+
 /** Pura: filas de PostgREST → las filas del mapa, llaveadas por tipo y slug viejo. */
 export function filasToMap(rows: unknown): Map<string, RedirectRow> {
   const map = new Map<string, RedirectRow>();
@@ -104,7 +114,7 @@ export function filasToMap(rows: unknown): Map<string, RedirectRow> {
       entityId: typeof entityId === 'string' && entityId.length > 0 ? entityId : null,
       // Un destino sucio se anula en lugar de propagarse: resolveTarget lo trata
       // como "sin destino" y no redirige.
-      newSlug: esSlugLimpio(newSlug) ? newSlug : null,
+      newSlug: esSlugLimpio(newSlug) || esDestinoPagina(newSlug) ? newSlug : null,
       kind: kind as 'redirect' | 'gone',
     });
   }

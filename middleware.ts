@@ -87,6 +87,13 @@ export default async function middleware(request: NextRequest) {
       url.pathname = pathname.replace(/\/+$/, '').replace(/[^/]+$/, target.slug);
       return NextResponse.redirect(url, 308);
     }
+    // Destino `page:`: la pieza archivada apunta a una página del sitio
+    // (/{locale}/{slug}), no a otra entrada de su sección. Ver PREFIJO_PAGINA.
+    if (target?.kind === 'redirect-page') {
+      const url = request.nextUrl.clone();
+      url.pathname = `/${entityMatch.locale}/${target.slug}`;
+      return NextResponse.redirect(url, 308);
+    }
     // 410 solo para el retiro deliberado; 404 para lo inferido (la entidad dejó
     // de estar publicada, y eso se revierte desde el Hub en un clic). Ver el
     // bloque de RedirectTarget en resolve-target.ts.

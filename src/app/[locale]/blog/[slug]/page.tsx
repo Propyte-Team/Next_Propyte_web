@@ -51,7 +51,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   // x-default apunta al ES cuando existe; si no, a la única versión viva.
   languages['x-default'] = languages.es ?? `/${locale}/blog/${slug}`;
 
-  const title = post.meta_title || post.title;
+  // Algunos meta_title de BD ya traen el sufijo "| Propyte" (caso real: el post
+  // de ejido). El template del layout agrega el suyo, y publicar los dos es
+  // "| Propyte | Propyte". Se retira aquí cualquier sufijo que venga en el dato
+  // para que la composición final siempre lleve UNO.
+  const title = (post.meta_title || post.title).replace(/(\s*\|\s*Propyte)+\s*$/i, '');
   const brandedTitle = `${title} | Propyte`;
   const description = post.meta_description || post.excerpt || '';
   const image = post.featured_image;

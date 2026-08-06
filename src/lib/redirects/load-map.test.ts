@@ -165,6 +165,29 @@ describe('filasToMap', () => {
     expect(map.get('blog_post:e')?.newSlug).toBe('slug-legitimo');
   });
 
+  // `page:` + slug limpio es la única forma de apuntar fuera de la sección, y
+  // conserva la defensa: un solo segmento, sin barras ni esquema.
+  it('conserva un destino page: con slug limpio', () => {
+    const map = filasToMap([
+      { entity_type: 'blog_post', old_slug: 'a', new_slug: 'page:como-invertir', kind: 'redirect', entity_id: null },
+    ]);
+
+    expect(map.get('blog_post:a')?.newSlug).toBe('page:como-invertir');
+  });
+
+  it('anula un page: con barras, esquema o vacío — misma defensa que los slugs', () => {
+    const map = filasToMap([
+      { entity_type: 'blog_post', old_slug: 'a', new_slug: 'page:', kind: 'redirect', entity_id: null },
+      { entity_type: 'blog_post', old_slug: 'b', new_slug: 'page:a/b', kind: 'redirect', entity_id: null },
+      { entity_type: 'blog_post', old_slug: 'c', new_slug: 'page://evil.com', kind: 'redirect', entity_id: null },
+      { entity_type: 'blog_post', old_slug: 'd', new_slug: 'page:nosotros/quienes-somos', kind: 'redirect', entity_id: null },
+    ]);
+
+    for (const k of ['a', 'b', 'c', 'd']) {
+      expect(map.get(`blog_post:${k}`)?.newSlug).toBeNull();
+    }
+  });
+
   it('descarta filas con entity_type desconocido', () => {
     expect(filasToMap([{ entity_type: 'algo_nuevo', old_slug: 'x', new_slug: 'y', kind: 'redirect' }]).size).toBe(0);
   });
