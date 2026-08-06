@@ -2576,7 +2576,18 @@ export async function getBlogCategories(c: Client, locale: string): Promise<stri
  * Excluye NULL explícitamente: las columnas se añadieron nullable, así que una
  * fila sin clasificar no debe producir un chip fantasma.
  */
-export async function getBlogPilares(c: Client, locale: string): Promise<string[]> {
+/**
+ * Piezas publicadas por pilar canónico, para el filtro del blog.
+ *
+ * Devuelve CONTEOS y no la lista de pilares con contenido porque la barra
+ * muestra los siete del maestro: sin el número, un pilar vacío se ve igual que
+ * uno lleno y el lector descubre que no hay nada después de hacer clic. Un
+ * pilar sin piezas simplemente no aparece en el objeto — la barra lo lee como 0.
+ */
+export async function getBlogPilarCounts(
+  c: Client,
+  locale: string,
+): Promise<Record<string, number>> {
   let q = c
     .from('blog_posts')
     .select('pilar')
@@ -2592,10 +2603,12 @@ export async function getBlogPilares(c: Client, locale: string): Promise<string[
   }
 
   const { data, error } = await q;
-  if (error) { console.error('[getBlogPilares]', error.message); return []; }
-  const seen = new Set<string>();
-  (data ?? []).forEach((r: { pilar: string }) => seen.add(r.pilar));
-  return Array.from(seen);
+  if (error) { console.error('[getBlogPilarCounts]', error.message); return {}; }
+  const counts: Record<string, number> = {};
+  (data ?? []).forEach((r: { pilar: string }) => {
+    counts[r.pilar] = (counts[r.pilar] ?? 0) + 1;
+  });
+  return counts;
 }
 
 /**

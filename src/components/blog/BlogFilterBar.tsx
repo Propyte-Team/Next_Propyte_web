@@ -32,8 +32,8 @@ import { PILARES, AUDIENCIAS, pilarPorCodigo } from '@/lib/blog/pilares';
 
 interface BlogFilterBarProps {
   locale: string;
-  /** Códigos de pilar con piezas publicadas, de `getBlogPilares`. */
-  pilarCodes: string[];
+  /** Piezas publicadas por código de pilar, de `getBlogPilarCounts`. Ausente = 0. */
+  pilarCounts: Record<string, number>;
   /** Estado activo, ya validado por `resolveBlogState`. */
   activePilar: string | null;
   activeAudiencia: string | null;
@@ -45,6 +45,8 @@ interface BlogFilterBarProps {
     allPilares: string;
     allAudiencias: string;
     pilares: Record<string, string>;
+    /** Conteo ya redactado por pilar ("6 artículos"), para lector de pantalla. */
+    pilarCounts: Record<string, string>;
     audiencias: Record<string, string>;
     articleCount: string;
     filtersAriaLabel: string;
@@ -97,7 +99,7 @@ function PillDetails({
 
 export default function BlogFilterBar({
   locale,
-  pilarCodes,
+  pilarCounts,
   activePilar,
   activeAudiencia,
   activeCategory,
@@ -113,7 +115,6 @@ export default function BlogFilterBar({
   };
 
   const pilarActivo = activePilar ? pilarPorCodigo(activePilar) : null;
-  const disponibles = PILARES.filter((p) => pilarCodes.includes(p.code));
 
   // Los chips son SOLO para filtros que no tienen pill donde verse.
   //
@@ -144,31 +145,50 @@ export default function BlogFilterBar({
           className="flex flex-wrap items-center gap-2"
           aria-label={labels.filtersAriaLabel}
         >
-          {/* Tema — solo pilares con piezas publicadas: un chip hacia una vista
-              vacía es un filtro muerto y una URL indexable sin contenido. */}
-          {disponibles.length > 0 && (
-            <PillDetails
-              label={labels.tema}
-              activeLabel={pilarActivo ? labels.pilares[pilarActivo.code] : undefined}
+          {/* Tema — los SIETE pilares del maestro, tengan piezas o no.
+              Antes solo se ofrecían los que tenían contenido, y el lector veía
+              dos de siete: el mapa editorial quedaba oculto justo mientras se
+              construye. Ahora se ofrecen todos con su conteo al lado, así que
+              un tema vacío se reconoce ANTES de hacer clic y no después.
+              La vista sin resultados no ensucia el índice: `generateMetadata`
+              la marca `noindex, follow` y deja de hacerlo sola en cuanto el
+              pilar publica su primera pieza. */}
+          <PillDetails
+            label={labels.tema}
+            activeLabel={pilarActivo ? labels.pilares[pilarActivo.code] : undefined}
+          >
+            <Link
+              href={blogHref(locale, { ...keep, pilar: null, page: null })}
+              className={`${ITEM_BASE} ${!pilarActivo ? ITEM_ON : ITEM_OFF}`}
             >
-              <Link
-                href={blogHref(locale, { ...keep, pilar: null, page: null })}
-                className={`${ITEM_BASE} ${!pilarActivo ? ITEM_ON : ITEM_OFF}`}
-              >
-                {labels.allPilares}
-              </Link>
-              {disponibles.map((p) => (
+              {labels.allPilares}
+            </Link>
+            {PILARES.map((p) => {
+              const n = pilarCounts[p.code] ?? 0;
+              const nombre = labels.pilares[p.code] ?? p.code;
+              return (
                 <Link
                   key={p.code}
                   href={blogHref(locale, { ...keep, pilar: p.slug, page: null })}
                   aria-current={activePilar === p.code ? 'page' : undefined}
-                  className={`${ITEM_BASE} ${activePilar === p.code ? ITEM_ON : ITEM_OFF}`}
+                  aria-label={`${nombre} — ${labels.pilarCounts[p.code] ?? n}`}
+                  className={`${ITEM_BASE} flex items-center justify-between gap-3 ${
+                    activePilar === p.code ? ITEM_ON : ITEM_OFF
+                  }`}
                 >
-                  {labels.pilares[p.code] ?? p.code}
+                  <span>{nombre}</span>
+                  {/* Sin piezas se atenúa en vez de desaparecer: el tema sigue
+                      siendo parte del mapa y el 0 es la información útil. */}
+                  <span
+                    aria-hidden="true"
+                    className={`text-xs tabular-nums ${n === 0 ? 'text-gray-400' : 'text-gray-600'}`}
+                  >
+                    {n}
+                  </span>
                 </Link>
-              ))}
-            </PillDetails>
-          )}
+              );
+            })}
+          </PillDetails>
 
           {/* Público — catálogo cerrado de dos valores, siempre visible. */}
           <PillDetails

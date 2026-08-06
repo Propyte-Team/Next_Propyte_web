@@ -1,10 +1,11 @@
+import { cache } from 'react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookOpen } from '@/lib/icons';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
 import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getBlogPosts, getBlogPilares, getTeamMembers } from '@/lib/supabase/queries';
+import { getBlogPosts, getBlogPilarCounts, getTeamMembers } from '@/lib/supabase/queries';
 import { resolvePostAuthor } from '@/lib/blog/post-author';
 import BlogCard from '@/components/blog/BlogCard';
 import BlogHero from '@/components/blog/BlogHero';
@@ -14,6 +15,7 @@ import MapaDePilares from '@/components/blog/MapaDePilares';
 import NewsletterCTA from '@/components/blog/NewsletterCTA';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { blogHref } from '@/lib/blog/blog-urls';
+import { robotsDeListado } from '@/lib/seo/robots-listado';
 import { PILARES, AUDIENCIAS, pilarPorSlug, esAudiencia } from '@/lib/blog/pilares';
 
 export const dynamic = 'force-dynamic';
@@ -61,6 +63,44 @@ function resolveBlogState(sp: BlogSearchParams) {
   };
 }
 
+/**
+ * Carga del listado, memoizada por request.
+ *
+ * `generateMetadata` y el componente necesitan lo MISMO: el metadata decide el
+ * `robots` a partir de si la vista trae resultados, y la página pinta esos
+ * mismos posts. Sin memoizar, cada request corría las consultas dos veces.
+ * `cache()` de React las dedupe dentro del mismo render — por eso los argumentos
+ * son primitivos y no el objeto de estado: se comparan por valor, y un objeto
+ * nuevo en cada llamada nunca acertaría el caché.
+ */
+const cargarListado = cache(async function cargarListado(
+  locale: string,
+  category: string | null,
+  pilarCode: string | null,
+  audiencia: string | null,
+  page: number,
+) {
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) {
+    return { posts: [], total: 0, pilarCounts: {} as Record<string, number>, teamMembers: [] };
+  }
+
+  const [{ posts, total }, pilarCounts, teamMembers] = await Promise.all([
+    getBlogPosts(supabase, {
+      locale,
+      category: category ?? undefined,
+      pilar: pilarCode ?? undefined,
+      audiencia: audiencia ?? undefined,
+      limit: POSTS_PER_PAGE,
+      page,
+    }),
+    getBlogPilarCounts(supabase, locale),
+    getTeamMembers(supabase),
+  ]);
+
+  return { posts, total, pilarCounts, teamMembers };
+});
+
 export async function generateMetadata({ params, searchParams }: BlogPageProps) {
   const { locale } = await params;
   const sp = await searchParams;
@@ -68,7 +108,7 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
     getTranslations({ locale, namespace: 'blog' }),
     getTranslations({ locale, namespace: 'pilares' }),
   ]);
-  const { category, pilar, page, paramInvalido, urlState } = resolveBlogState(sp);
+  const { category, pilar, audiencia, page, paramInvalido, urlState } = resolveBlogState(sp);
 
   // Título y descripción propios por vista. Antes las 7 categorías y las 2
   // páginas compartían el meta de /blog y canonicalizaban ahí: el canonical a la
@@ -90,12 +130,21 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
   const brandedTitle = `${title} | Propyte`;
   const state = { ...urlState, page };
 
+  // Qué se indexa y qué no lo decide `robotsDeListado`: un pilar sin piezas o
+  // una página fuera de rango son URLs vivas con un estado vacío, y el filtro
+  // ahora ofrece los siete pilares tengan contenido o no.
+  const { posts } = await cargarListado(locale, category, pilar?.code ?? null, audiencia, page);
+  const robots = robotsDeListado({
+    paramInvalido,
+    resultados: posts.length,
+    hayFiltro: Boolean(category || pilar || audiencia),
+    page,
+  });
+
   return {
     title,
     description,
-    // Un valor fuera del catálogo se ignora en el listado, así que esa URL
-    // mostraría el set completo bajo otra dirección: contenido duplicado.
-    ...(paramInvalido ? { robots: { index: false, follow: true } } : {}),
+    ...(robots ? { robots } : {}),
     openGraph: {
       type: 'website',
       title: brandedTitle,
@@ -136,30 +185,24 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   ]);
 
   const { category, pilar, audiencia, page: currentPage, urlState } = resolveBlogState(sp);
-  const supabase = createPublicSupabaseClient();
 
-  // Single source of truth: grid completo de TODOS los posts (paginado y filtrado).
-  // Los pilares se descubren desde BD para que la barra no ofrezca un tema sin
-  // piezas. El equipo se trae para resolver el autor real de cada tarjeta (foto +
-  // cargo); fail-soft: sin equipo, la tarjeta usa el autor crudo de la fila.
+  // Single source of truth: grid completo de TODOS los posts (paginado y
+  // filtrado). Se comparte con `generateMetadata` vía `cargarListado`, que
+  // memoiza por request. Los conteos por pilar alimentan la barra —los siete
+  // temas se ofrecen siempre, con su número al lado—. El equipo se trae para
+  // resolver el autor real de cada tarjeta (foto + cargo); fail-soft: sin
+  // equipo, la tarjeta usa el autor crudo de la fila.
   //
   // `getBlogCategories` ya no se llama: la categoría dejó de ser un filtro
   // público al fusionarse los ejes en la barra, y descubrirla era un viaje a la
   // BD que nadie leía. El param `?categoria=` sigue funcionando.
-  const [{ posts, total }, pilarCodes, teamMembers] = supabase
-    ? await Promise.all([
-        getBlogPosts(supabase, {
-          locale,
-          category: category ?? undefined,
-          pilar: pilar?.code,
-          audiencia: audiencia ?? undefined,
-          limit: POSTS_PER_PAGE,
-          page: currentPage,
-        }),
-        getBlogPilares(supabase, locale),
-        getTeamMembers(supabase),
-      ])
-    : [{ posts: [], total: 0 }, [], []];
+  const { posts, total, pilarCounts, teamMembers } = await cargarListado(
+    locale,
+    category,
+    pilar?.code ?? null,
+    audiencia,
+    currentPage,
+  );
 
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
   const cardT = { minRead: t('minRead') };
@@ -168,6 +211,12 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   // llaman a getTranslations por su cuenta.
   const pilarLabels = Object.fromEntries(PILARES.map((p) => [p.code, tp(p.code)]));
   const audienciaLabels = Object.fromEntries(AUDIENCIAS.map((a) => [a, ta(a)]));
+  // El número que se pinta junto a cada tema es un glifo suelto: un lector de
+  // pantalla necesita la unidad ("6 artículos", "0 artículos"), así que el
+  // enlace lleva su propia etiqueta accesible.
+  const pilarCountLabels = Object.fromEntries(
+    PILARES.map((p) => [p.code, t('articleCount', { count: pilarCounts[p.code] ?? 0 })]),
+  );
 
   const heroT = {
     heroHeadLine1: t('heroHeadLine1'),
@@ -188,7 +237,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
       <BlogFilterBar
         locale={locale}
-        pilarCodes={pilarCodes}
+        pilarCounts={pilarCounts}
         activePilar={pilar?.code ?? null}
         activeAudiencia={audiencia}
         activeCategory={category}
@@ -199,6 +248,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           allPilares: t('allPilares'),
           allAudiencias: t('allAudiencias'),
           pilares: pilarLabels,
+          pilarCounts: pilarCountLabels,
           audiencias: audienciaLabels,
           articleCount: t('articleCount', { count: total }),
           filtersAriaLabel: t('filtersAriaLabel'),
