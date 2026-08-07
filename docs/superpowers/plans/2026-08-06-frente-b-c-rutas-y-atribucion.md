@@ -296,7 +296,7 @@ El resto del bloque se conserva sin cambios.
 npx vitest run src/lib/compliance/provider-names.test.ts
 ```
 
-Esperado: PASS, 3 pruebas.
+Esperado: PASS, 5 pruebas.
 
 - [ ] **Paso 10: Gates**
 
