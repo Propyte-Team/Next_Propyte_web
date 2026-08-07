@@ -34,6 +34,19 @@ export const PROPYTE_ATTRIBUTION_ES = 'Análisis de mercado Propyte';
 export const PROPYTE_ATTRIBUTION_EN = 'Propyte market analysis';
 
 /**
+ * La misma atribución en minúscula, para cuando va embebida en una oración
+ * («según el análisis de mercado Propyte»). La versión capitalizada es para uso
+ * como etiqueta suelta: chip, título, pie de gráfica.
+ *
+ * No se eleva «Análisis de mercado Propyte» a nombre propio como sí lo es
+ * «Índice Propyte» —que tiene score, fórmula y página de metodología—, porque
+ * aquí es una frase descriptiva: el análisis de mercado que hace Propyte.
+ *
+ * `provider-names.test.ts` verifica que ambas no se separen con el tiempo.
+ */
+export const PROPYTE_ATTRIBUTION_ES_INLINE = 'análisis de mercado Propyte';
+
+/**
  * Tipo de archivo que se escanea. Determina si se le aplica semántica de
  * comentarios de JavaScript antes de buscar — ver `findForbiddenProviderNames`.
  */
@@ -66,17 +79,19 @@ function stripComments(source: string): string {
  * usuario. Case-sensitive a propósito: `airdna_metrics` no es una violación,
  * `AirDNA` sí.
  *
- * `fileType` decide si se aplica `stripComments` antes de buscar:
- * - `'code'` (default): quita comentarios de bloque y de línea — legítimo en
- *   `.ts`/`.tsx`, donde documentar la procedencia del dato en un comentario
- *   no expone a nadie.
+ * `fileType` decide si se aplica `stripComments` antes de buscar, y es
+ * OBLIGATORIO a propósito: un default dejaría que un segundo consumidor pasara
+ * contenido JSON sin declararlo y reabriera en silencio el agujero que este
+ * parámetro existe para cerrar. Que lo obligue el compilador.
+ * - `'code'`: quita comentarios de bloque y de línea — legítimo en `.ts`/`.tsx`,
+ *   donde documentar la procedencia del dato en un comentario no expone a nadie.
  * - `'json'`: escanea el contenido tal cual. JSON no tiene comentarios, y
  *   tratarlo como si los tuviera trunca cualquier línea que contenga `//`
  *   —una URL— ocultando lo que venga después en esa misma línea.
  */
 export function findForbiddenProviderNames(
   source: string,
-  fileType: ScannableFileType = 'code',
+  fileType: ScannableFileType,
 ): string[] {
   const scanned = fileType === 'json' ? source : stripComments(source);
   return FORBIDDEN_PROVIDER_DISPLAY_NAMES.filter((name) => scanned.includes(name));

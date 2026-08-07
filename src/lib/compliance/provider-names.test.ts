@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
-import { findForbiddenProviderNames } from './provider-names';
+import {
+  findForbiddenProviderNames,
+  PROPYTE_ATTRIBUTION_ES,
+  PROPYTE_ATTRIBUTION_ES_INLINE,
+} from './provider-names';
 
 const SRC = path.resolve(__dirname, '../..');
 
@@ -38,22 +42,22 @@ describe('nombres de proveedores de datos', () => {
   });
 
   it('permite los identificadores internos en minúscula', () => {
-    expect(findForbiddenProviderNames('const airdnaOccupancy = row.airdna_metrics')).toEqual([]);
-    expect(findForbiddenProviderNames('type AirdnaMarketSummary = { occupancy: number }')).toEqual([]);
+    expect(findForbiddenProviderNames('const airdnaOccupancy = row.airdna_metrics', 'code')).toEqual([]);
+    expect(findForbiddenProviderNames('type AirdnaMarketSummary = { occupancy: number }', 'code')).toEqual([]);
   });
 
   it('permite Airbnb como categoría de renta vacacional', () => {
-    expect(findForbiddenProviderNames('Vacacional (Airbnb)')).toEqual([]);
+    expect(findForbiddenProviderNames('Vacacional (Airbnb)', 'code')).toEqual([]);
   });
 
   it('permite el nombre del proveedor en comentarios', () => {
-    expect(findForbiddenProviderNames('// Sin dato AirDNA para este market')).toEqual([]);
-    expect(findForbiddenProviderNames('/** Resuelve AirDNA por zona */')).toEqual([]);
+    expect(findForbiddenProviderNames('// Sin dato AirDNA para este market', 'code')).toEqual([]);
+    expect(findForbiddenProviderNames('/** Resuelve AirDNA por zona */', 'code')).toEqual([]);
   });
 
   it('sí detecta el nombre en una plantilla visible', () => {
     // El bug exacto que se está arreglando.
-    expect(findForbiddenProviderNames('`con datos de mercado de AirDNA`')).toEqual(['AirDNA']);
+    expect(findForbiddenProviderNames('`con datos de mercado de AirDNA`', 'code')).toEqual(['AirDNA']);
   });
 
   it('en .json un "//" de URL no debe tapar lo que sigue en la misma línea', () => {
@@ -62,5 +66,20 @@ describe('nombres de proveedores de datos', () => {
     // "AirDNA" desaparece del escaneo sin que nadie lo note.
     const line = '{"disclaimer": "Ver https://propyte.com para más detalle: AirDNA"}';
     expect(findForbiddenProviderNames(line, 'json')).toEqual(['AirDNA']);
+  });
+});
+
+describe('atribución aprobada', () => {
+  it('la variante de oración y la de etiqueta no se separan', () => {
+    // Existen dos porque la gramática lo pide: «según el análisis de mercado
+    // Propyte» en medio de una frase, «Análisis de mercado Propyte» como chip.
+    // Si alguien edita una y olvida la otra, esto cae.
+    expect(PROPYTE_ATTRIBUTION_ES_INLINE.toLowerCase())
+      .toBe(PROPYTE_ATTRIBUTION_ES.toLowerCase());
+  });
+
+  it('la variante de oración empieza en minúscula y la de etiqueta en mayúscula', () => {
+    expect(PROPYTE_ATTRIBUTION_ES_INLINE[0]).toBe('a');
+    expect(PROPYTE_ATTRIBUTION_ES[0]).toBe('A');
   });
 });
