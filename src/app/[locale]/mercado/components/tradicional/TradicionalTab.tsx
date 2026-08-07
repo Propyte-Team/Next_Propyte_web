@@ -7,9 +7,9 @@ import { useTranslations } from 'next-intl';
 import {
   Building2, MapPin, BarChart3, ArrowUpRight,
   ChevronDown, Loader2, X, SlidersHorizontal,
-  Database, Clock,
 } from '@/lib/icons';
 import { formatPrice, formatPercentage } from '@/lib/formatters';
+import MarketAttributionBadge from '@/components/shared/MarketAttributionBadge';
 
 // ── Types ────────────────────────────────────────────
 // Los tipos viven en lib/rental-data/analysis-types.ts: el server component de
@@ -392,28 +392,14 @@ export function TradicionalTab({
 
   return (
     <div className="space-y-8">
-      {/* Source badges + data freshness */}
-      {data.source_stats && data.source_stats.length > 0 && (
+      {/* Atribución + frescura del dato */}
+      {data.total_comparables > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <Database size={14} className="text-gray-600" />
-          {data.source_stats.map(s => (
-            <span key={s.source} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-propyte-brand" />
-              {s.source} <span className="text-gray-600">({s.count.toLocaleString()})</span>
-            </span>
-          ))}
-          {data.data_freshness && (() => {
-            // eslint-disable-next-line react-hooks/purity -- "days ago" display is intentionally live; staleness across re-renders is acceptable
-            const daysAgo = Math.floor((Date.now() - new Date(data.data_freshness).getTime()) / 86400000);
-            const dotColor = daysAgo <= 7 ? 'bg-[#22C55E]' : daysAgo <= 30 ? 'bg-yellow-400' : 'bg-[#EF4444]';
-            return (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-600 ml-auto">
-                <Clock size={10} />
-                <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
-                {t('dataFreshness')}: {daysAgo <= 0 ? t('today') : `${daysAgo}d`}
-              </span>
-            );
-          })()}
+          <MarketAttributionBadge
+            totalComparables={data.total_comparables}
+            dataFreshness={data.data_freshness}
+            accentDotClassName="bg-propyte-brand"
+          />
         </div>
       )}
 

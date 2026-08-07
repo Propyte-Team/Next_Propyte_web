@@ -50,16 +50,10 @@ export interface DevelopmentFinancial {
   occupancy_rate_vac: number | null;
 }
 
-export interface SourceStat {
-  source: string;
-  count: number;
-}
-
 export interface AnalysisData {
   comparables: Comparable[];
   developments: DevelopmentFinancial[];
   city_stats: Array<Record<string, unknown>>;
-  source_stats: SourceStat[];
   data_freshness: string | null;
   model: { version: string; last_computed: string } | null;
   total_comparables: number;
