@@ -6,6 +6,7 @@ import { shouldNoIndex } from '@/lib/seo/noindex';
 import { MARKET_SUBMARKET_TO_ZONE } from '@/lib/calculator';
 import { zoneSlug } from '@/lib/utils';
 import { CITY_SLUGS } from '@/lib/cities';
+import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 const LOCALES = ['es', 'en'];
@@ -28,42 +29,61 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
   // ── Static pages ──────────────────────────────
-  const staticPages = [
+  // Tipo explícito: al declarar `visibilityKey` solo en algunas entradas, sin
+  // esta anotación TypeScript infiere una unión y `page.visibilityKey` revienta
+  // en las entradas que no la llevan.
+  type StaticPage = {
+    path: string;
+    priority: number;
+    changeFrequency: NonNullable<MetadataRoute.Sitemap[number]['changeFrequency']>;
+    visibilityKey?: string;
+  };
+
+  const staticPages: StaticPage[] = [
     { path: '', priority: 1.0, changeFrequency: 'weekly' as const },
     { path: '/propiedades', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/desarrollos', priority: 0.9, changeFrequency: 'daily' as const },
-    { path: '/exclusivos', priority: 0.85, changeFrequency: 'weekly' as const },
-    { path: '/destacados', priority: 0.85, changeFrequency: 'weekly' as const },
-    { path: '/blog', priority: 0.8, changeFrequency: 'daily' as const },
-    { path: '/desarrolladores', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/brokers', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/proveedores', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/built', priority: 0.7, changeFrequency: 'monthly' as const },
+    { path: '/exclusivos', priority: 0.85, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_EXCLUSIVOS },
+    { path: '/destacados', priority: 0.85, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_DESTACADOS },
+    { path: '/blog', priority: 0.8, changeFrequency: 'daily' as const, visibilityKey: VISIBILITY_KEYS.PAGE_BLOG },
+    { path: '/desarrolladores', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_DESARROLLADORES },
+    { path: '/brokers', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_BROKERS },
+    { path: '/proveedores', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_PROVEEDORES },
+    { path: '/built', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_BUILT },
     { path: '/nosotros/quienes-somos', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/nosotros/estructura', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/nosotros/equipo-comercial', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/metodologia', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/como-comprar', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/como-invertir', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/financiamiento', priority: 0.7, changeFrequency: 'monthly' as const },
+    { path: '/metodologia', priority: 0.8, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_METODOLOGIA },
+    { path: '/como-comprar', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_COMO_COMPRAR },
+    { path: '/como-invertir', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_COMO_INVERTIR },
+    { path: '/financiamiento', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_FINANCIAMIENTO },
     // Hubs de pilar. El hreflang NO sale de aquí: lo emite `alternates.languages`
     // en el generateMetadata de cada página, igual que blog/page.tsx.
     // `sitemap.test.ts` verifica que todo hub declarado en el catálogo de pilares
     // aparezca aquí, para que añadir un pilar no deje su hub fuera del índice.
-    { path: '/guias/fiscal-legal', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/guias/costa', priority: 0.8, changeFrequency: 'monthly' as const },
-    { path: '/promociones', priority: 0.75, changeFrequency: 'weekly' as const },
-    { path: '/faq', priority: 0.7, changeFrequency: 'monthly' as const },
-    { path: '/glosario', priority: 0.6, changeFrequency: 'monthly' as const },
-    { path: '/unete', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/guias/fiscal-legal', priority: 0.8, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GUIAS_FISCAL_LEGAL },
+    { path: '/guias/costa', priority: 0.8, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GUIAS_COSTA },
+    { path: '/promociones', priority: 0.75, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_PROMOCIONES },
+    { path: '/faq', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_FAQ },
+    { path: '/glosario', priority: 0.6, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GLOSARIO },
+    { path: '/unete', priority: 0.6, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_UNETE },
     { path: '/aviso-legal-inversion', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/contacto', priority: 0.6, changeFrequency: 'monthly' as const },
     { path: '/mercado', priority: 0.85, changeFrequency: 'weekly' as const },
-    { path: '/rentas', priority: 0.85, changeFrequency: 'weekly' as const },
-    { path: '/zonas', priority: 0.85, changeFrequency: 'weekly' as const },
+    { path: '/rentas', priority: 0.85, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_RENTAS },
+    { path: '/zonas', priority: 0.85, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_ZONAS },
   ];
 
-  for (const page of staticPages) {
+  // El sitemap no puede anunciar páginas que el sitio 404ea: las mismas claves
+  // que consulta assertPageVisible mandan aquí. Fail-open igual que el gate —si
+  // el Hub no responde sale el sitemap completo, que es preferible a emitir uno
+  // mutilado y que Google lo lea como desindexación.
+  const visibility = await getVisibility();
+  const visiblePages = staticPages.filter(
+    (page) => !page.visibilityKey || isVisible(visibility, page.visibilityKey),
+  );
+
+  for (const page of visiblePages) {
     for (const locale of LOCALES) {
       entries.push({
         url: `${BASE_URL}/${locale}${page.path}`,
