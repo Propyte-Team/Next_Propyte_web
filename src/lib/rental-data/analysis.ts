@@ -157,17 +157,13 @@ export async function getRentalAnalysis(city: string | null = null): Promise<Ana
     // 3. Clean data (same 6-stage pipeline as Python)
     const { cleaned: comparables, removed } = cleanComparables(allComparables);
 
-    // Source stats
-    const sourceMap: Record<string, number> = {};
+    // Fecha del registro más reciente. El desglose por portal ya no se emite:
+    // la atribución pública es agregada ("Análisis de mercado Propyte"), así que
+    // los nombres de proveedor no deben salir del servidor ni en el JSON.
     let latestScraped = '';
     for (const r of comparables) {
-      const src = r.source_portal || 'otro';
-      sourceMap[src] = (sourceMap[src] || 0) + 1;
       if (r.scraped_at && r.scraped_at > latestScraped) latestScraped = r.scraped_at;
     }
-    const sourceStats = Object.entries(sourceMap)
-      .map(([source, count]) => ({ source, count }))
-      .sort((a, b) => b.count - a.count);
 
     // Aggregate comparables by city
     const cityGroups: Record<string, RawComparable[]> = {};
@@ -279,7 +275,6 @@ export async function getRentalAnalysis(city: string | null = null): Promise<Ana
         };
       }),
       city_stats: cityStats,
-      source_stats: sourceStats,
       data_freshness: latestScraped || null,
       data_quality: {
         raw_count: allComparables.length,

@@ -252,8 +252,8 @@ export default async function ZonePage({
             </h2>
             <p className="text-gray-700 leading-relaxed">
               {isEn
-                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on AirDNA market data${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
-                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, con datos de mercado de AirDNA${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
+                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on Propyte market analysis${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
+                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, según el análisis de mercado Propyte${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
             </p>
             <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
               {summaryStats.map((stat) => (
