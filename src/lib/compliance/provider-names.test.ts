@@ -25,7 +25,10 @@ describe('nombres de proveedores de datos', () => {
     const offenders: string[] = [];
 
     for (const file of walk(SRC)) {
-      const hits = findForbiddenProviderNames(readFileSync(file, 'utf8'));
+      const hits = findForbiddenProviderNames(
+        readFileSync(file, 'utf8'),
+        file.endsWith('.json') ? 'json' : 'code',
+      );
       if (hits.length) {
         offenders.push(`${path.relative(SRC, file)} → ${hits.join(', ')}`);
       }
@@ -51,5 +54,13 @@ describe('nombres de proveedores de datos', () => {
   it('sí detecta el nombre en una plantilla visible', () => {
     // El bug exacto que se está arreglando.
     expect(findForbiddenProviderNames('`con datos de mercado de AirDNA`')).toEqual(['AirDNA']);
+  });
+
+  it('en .json un "//" de URL no debe tapar lo que sigue en la misma línea', () => {
+    // JSON no tiene comentarios. Tratar esta línea como código —stripComments
+    // por defecto— trunca todo lo que sigue a "https://propyte.com" y
+    // "AirDNA" desaparece del escaneo sin que nadie lo note.
+    const line = '{"disclaimer": "Ver https://propyte.com para más detalle: AirDNA"}';
+    expect(findForbiddenProviderNames(line, 'json')).toEqual(['AirDNA']);
   });
 });

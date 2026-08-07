@@ -19,6 +19,7 @@ import { ZoneAnalytics } from './ZoneAnalytics';
 import SiteMedia from '@/components/shared/SiteMedia';
 import { zoneSlug } from '@/lib/utils';
 import { BarChart3, DollarSign, TrendingUp } from '@/lib/icons';
+import { PROPYTE_ATTRIBUTION_ES, PROPYTE_ATTRIBUTION_EN } from '@/lib/compliance/provider-names';
 
 // City → state, for the ones present in MARKET_SUBMARKET_TO_CITY. Used for the
 // Place JSON-LD addressRegion and the SSR summary copy — previously hardcoded
@@ -252,8 +253,8 @@ export default async function ZonePage({
             </h2>
             <p className="text-gray-700 leading-relaxed">
               {isEn
-                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on Propyte market analysis${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
-                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, según el análisis de mercado Propyte${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
+                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on ${PROPYTE_ATTRIBUTION_EN}${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
+                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, según el ${PROPYTE_ATTRIBUTION_ES}${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
             </p>
             <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
               {summaryStats.map((stat) => (
