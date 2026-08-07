@@ -77,7 +77,9 @@ export default function PropertyList({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    // `h-full` solo en escritorio: en móvil encerraba la lista en el alto del
+    // shell y obligaba al scroller anidado de abajo.
+    <div className="flex flex-col lg:h-full">
       <div className="flex items-center justify-between px-3 py-2 border-b bg-white">
         <span className="text-sm font-semibold text-[#2C2C2C]">
           {t('results', { count: properties.length })}
@@ -99,7 +101,19 @@ export default function PropertyList({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto overscroll-contain" data-lenis-prevent>
+      {/*
+        El scroller propio es SOLO de escritorio, donde la lista convive con el
+        mapa en un split de altura fija. En móvil ese mismo shell dejaba 49
+        resultados asomando por una ventana de 571 px sobre 12.691 px de
+        contenido, con `overscroll-contain` impidiendo que el scroll de la
+        página encadenara: dos regiones compitiendo y ninguna señal de cuál
+        mueve qué. Por debajo de `lg` la lista fluye en el documento.
+
+        `data-lenis-prevent` se queda sin condicionar: Lenis solo suaviza la
+        rueda (`smoothWheel`, sin `syncTouch`), y en móvil el scroll es táctil,
+        así que el atributo no interviene.
+      */}
+      <div className="lg:flex-1 lg:overflow-y-auto lg:overscroll-contain" data-lenis-prevent>
         {properties.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>

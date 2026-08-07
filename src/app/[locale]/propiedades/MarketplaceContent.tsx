@@ -193,7 +193,11 @@ export default function MarketplaceContent({
       // Audit 2026-05-18: restar MainPadding pt (52/56px) + Breadcrumbs (~44px)
       // para que el split map+list quepa entero en el viewport y muestre 4 cards
       // completas sin scroll del listado.
-      <div className="flex flex-col h-[calc(100dvh-96px)] lg:h-[calc(100dvh-100px)]">
+      //
+      // Auditoría 2026-08-06: la altura fija es intencional en `lg`, donde hay
+      // split mapa+lista. En móvil encerraba el catálogo entero en el alto del
+      // viewport, así que ahí el shell crece con su contenido.
+      <div className="flex flex-col lg:h-[calc(100dvh-100px)]">
         {heroHidden ? (
           <h1 className="sr-only">{heading}</h1>
         ) : (
@@ -278,7 +282,10 @@ export default function MarketplaceContent({
                   <MobileBottomSheet properties={displayed} />
                 </div>
               ) : (
-                <div className="w-full h-full overflow-y-auto">
+                /* Sin `h-full overflow-y-auto`: esta rama solo existe en móvil,
+                   donde la lista fluye en el documento en vez de vivir en una
+                   ventana de scroll propia. */
+                <div className="w-full">
                   <PropertyList properties={displayed} sortBy={sortBy} onSortChange={setSortBy} />
                 </div>
               )}
