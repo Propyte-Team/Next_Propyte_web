@@ -4,6 +4,7 @@ import { cleanListingName } from '@/lib/formatters';
 import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
 import { analystWindowStart } from '@/lib/analyst-window';
 import { marketComboKey, isRentableType, type MarketRentTarget } from '@/lib/investment/market-rent';
+import { STAGE_DB_VALUES, TYPE_DB_VALUES } from './taxonomy-values';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -126,8 +127,12 @@ export async function getDevelopments(client: Client, filters: DevelopmentFilter
   if (filters.zone) query = query.eq('zone', filters.zone);
   if (filters.zoneId) query = query.eq('zone_id', filters.zoneId);
   if (filters.plaza) query = query.eq('plaza', filters.plaza);
-  if (filters.type) query = query.contains('property_types', [filters.type]);
-  if (filters.stage) query = query.eq('stage', filters.stage);
+  // El inventario guarda las grafías de display ('Preventa', 'Departamento'),
+  // no los slugs de la URL: `.eq('stage','preventa')` nunca igualaba nada y las
+  // ocho facetas devolvían cero. `in`/`overlaps` sobre el mapa cubren además las
+  // variantes plurales (terreno casa con Terrenos y con Lotes).
+  if (filters.type) query = query.overlaps('property_types', TYPE_DB_VALUES[filters.type] ?? [filters.type]);
+  if (filters.stage) query = query.in('stage', STAGE_DB_VALUES[filters.stage] ?? [filters.stage]);
   if (filters.minPrice) query = query.gte('price_min_mxn', filters.minPrice);
   if (filters.maxPrice) query = query.lte('price_min_mxn', filters.maxPrice);
   if (filters.minRoi) query = query.gte('roi_projected', filters.minRoi);
