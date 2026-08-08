@@ -10,6 +10,7 @@ import {
   MessageCircle, Zap, Shield, Users, Sparkles,
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
+import { trackWhatsAppClick } from '@/lib/analytics/track';
 import { toast } from 'sonner';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
@@ -66,6 +67,7 @@ function DevelopersHero() {
                 href={`https://wa.me/${phone}?text=${encodeURIComponent('Hola, me interesa comercializar mi desarrollo con Propyte')}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackWhatsAppClick({ surface: 'developers-hero' })}
                 className="h-12 px-7 propyte-cta-whatsapp font-bold text-sm rounded-xl transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
               >
                 <MessageCircle size={16} /> {t('heroCtaSecondary')}
