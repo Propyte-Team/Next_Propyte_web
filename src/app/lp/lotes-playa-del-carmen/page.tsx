@@ -12,7 +12,9 @@ import QueEstasComprando from '../_components/QueEstasComprando';
 import PlanDePagos from '../_components/PlanDePagos';
 import PruebaDeQueExistimos from '../_components/PruebaDeQueExistimos';
 import WhatsAppCta from '../_components/WhatsAppCta';
-import { Gate, TituloSeccion, RULE_DARK } from '../_components/ui';
+import UnDomingoAqui from '../_components/UnDomingoAqui';
+import LoQueFaltaConfirmar from '../_components/LoQueFaltaConfirmar';
+import { EnlaceGate, TituloSeccion, RULE_DARK } from '../_components/ui';
 import { mxn, mxnExacto, m2, fechaLarga } from '../_components/format';
 
 // ISR: el inventario cambia sin deploy. 5 min es suficientemente fresco para que
@@ -61,6 +63,17 @@ export default async function LandingLotesPlayaDelCarmen() {
   const corte = fechaLarga(lote.fechaCorte);
   const plan = lote.plan;
   const plazoMax = plan?.opciones.at(-1) ?? null;
+  const apr = lote.aprovechamiento;
+  // Imagen curada; `imagenPortada` queda como respaldo si la galería del
+  // desarrollo cambia y el archivo de la lista blanca deja de existir.
+  const heroImg =
+    lote.imagenes.hero ??
+    (lote.imagenPortada
+      ? {
+          url: lote.imagenPortada,
+          alt: 'Vista aérea de la privada residencial sobre Av. Universidades, Playa del Carmen',
+        }
+      : null);
 
   const mensajeWa = [
     `Hola, me interesa el lote residencial en privada de Playa del Carmen (ref. ${lote.slug}).`,
@@ -94,11 +107,17 @@ export default async function LandingLotesPlayaDelCarmen() {
               )}
             </div>
 
+            {/* H1. El anterior describía una categoría («un lote en privada»);
+                este nombra la consecuencia. No es una promesa: «puedes construir
+                una casa de dos niveles» es aritmética de COS y CUS que cualquiera
+                puede verificar, y el dato que la sostiene está justo debajo. Es
+                simultáneamente lo más duro y lo más emocional de la página. */}
             <h1 className="mt-5 max-w-[24ch] font-display text-[clamp(2rem,1.4rem+3.2vw,3.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-balance text-white">
-              {plan?.sinIntereses ? (
+              {apr ? (
                 <>
-                  Un lote en privada en Playa del Carmen, con {plan.enganchePct}% de
-                  enganche y sin intereses
+                  Aquí puedes construir una casa de{' '}
+                  {apr.niveles === 2 ? 'dos' : apr.niveles} niveles, a 4.2 km de la
+                  playa
                 </>
               ) : (
                 <>Un lote en privada en Playa del Carmen, a 4.2 km de la playa</>
@@ -107,23 +126,44 @@ export default async function LandingLotesPlayaDelCarmen() {
 
             <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-white/70">
               {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
-              sobre Av. Universidades, dentro de una privada
-              {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>} con
-              alberca, casa club, gimnasio, canchas y vigilancia 24 horas. El
-              financiamiento es directo con el desarrollador
-              {plan?.sinIntereses && <> y no cobra intereses</>}
-              {plazoMax && <>: hasta {plazoMax.meses} meses</>}.
+              dentro de una privada
+              {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>} en
+              Playa del Carmen.
+              {apr && (
+                <>
+                  {' '}
+                  El uso de suelo permite hasta {m2(apr.construibleM2)} construidos:
+                  tres recámaras, no dos.
+                </>
+              )}{' '}
+              El financiamiento es directo con el desarrollador
+              {plan?.sinIntereses && (
+                <>
+                  , <strong className="font-semibold text-white">sin intereses</strong>
+                </>
+              )}
+              {lote.enganchePct && <>, con {lote.enganchePct}% de enganche</>}.
             </p>
 
             {/* Tira de pago. Orden deliberado: primero lo que cuesta entrar, luego
-                lo que se paga cada mes, y sólo después el precio total. */}
+                lo que se paga cada mes, después lo construible y sólo al final el
+                precio total.
+
+                La tercera celda es la que cambia la percepción del precio: el
+                total sobre la superficie del lote se lee caro; sobre los metros
+                construibles se lee distinto. Mismo número, marco distinto, cero
+                engaño — el precio total sigue en la tira, no se esconde.
+
+                El enganche ya NO se lee de `plan`: se lee de `lote.engancheMxn`,
+                que no depende de la tasa. Antes esta celda decía «sin dato»
+                mientras la ficha, cuatro bloques abajo, publicaba la cifra. */}
             <dl
               className={`mt-9 grid grid-cols-2 border-y ${RULE_DARK} divide-x divide-aqua-bright/20 sm:grid-cols-4`}
             >
               {[
                 {
                   k: 'Enganche',
-                  v: plan ? mxn(plan.engancheMxn) : null,
+                  v: lote.engancheMxn !== null ? mxn(lote.engancheMxn) : null,
                   destacado: true,
                 },
                 {
@@ -131,8 +171,12 @@ export default async function LandingLotesPlayaDelCarmen() {
                   v: plazoMax ? mxn(plazoMax.mensualidadMxn) : null,
                   destacado: true,
                 },
+                {
+                  k: 'Construible',
+                  v: apr ? m2(apr.construibleM2) : null,
+                  destacado: false,
+                },
                 { k: 'Precio total', v: lote.precioMxn ? mxn(lote.precioMxn) : null },
-                { k: 'Por m²', v: lote.precioM2Mxn ? mxnExacto(lote.precioM2Mxn) : null },
               ].map((c) => (
                 <div key={c.k} className="px-3 py-4 sm:px-4">
                   <dt className="text-[0.625rem] uppercase tracking-[0.1em] text-white/40">
@@ -143,18 +187,32 @@ export default async function LandingLotesPlayaDelCarmen() {
                       c.destacado ? 'text-aqua-bright' : 'text-white'
                     }`}
                   >
-                    {c.v ?? <span className="text-white/30">sin dato</span>}
+                    {c.v ?? (
+                      <a
+                        href="#falta-confirmar"
+                        className="text-amber/90 underline decoration-dotted underline-offset-4 transition-colors duration-200 hover:text-amber"
+                      >
+                        falta confirmar
+                      </a>
+                    )}
                   </dd>
                 </div>
               ))}
             </dl>
 
             {/* La contraentrega no es letra chica: es parte del número de arriba. */}
-            {plan && (
+            {plan ? (
               <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-white/45">
                 Más un pago final de {mxn(plan.contraentregaMxn)} contra entrega, que
                 es el {plan.contraentregaPct}% del precio. Te mandamos la tabla de
                 amortización completa por escrito.
+              </p>
+            ) : (
+              <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-white/45">
+                El precio por metro cuadrado es{' '}
+                {lote.precioM2Mxn ? mxnExacto(lote.precioM2Mxn) : 'por confirmar'}. La
+                mensualidad la publicamos en cuanto el desarrollador declare la tasa
+                por escrito.
               </p>
             )}
 
@@ -185,11 +243,11 @@ export default async function LandingLotesPlayaDelCarmen() {
             </p>
           </div>
 
-          {lote.imagenPortada && (
+          {heroImg && (
             <div className="relative mt-10 h-[42vw] min-h-[240px] lg:mt-0 lg:h-auto lg:min-h-[560px]">
               <Image
-                src={lote.imagenPortada}
-                alt="Vista aérea del polígono de la privada residencial sobre Av. Universidades, Playa del Carmen"
+                src={heroImg.url}
+                alt={heroImg.alt}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 46vw"
@@ -210,13 +268,22 @@ export default async function LandingLotesPlayaDelCarmen() {
             {lote.precioM2Mxn && <>, es decir {mxnExacto(lote.precioM2Mxn)} por metro cuadrado</>}
             . Está en preventa dentro de una privada sobre Av. Universidades, a 4.2 km
             de la playa, con financiamiento directo del desarrollador
-            {plan?.sinIntereses && <> y sin intereses</>}: {plan ? `${plan.enganchePct}%` : 'enganche'}{' '}
-            de enganche
+            {plan?.sinIntereses && <> y sin intereses</>}
+            {/* B-2: cuando `plan` era null esto interpolaba la palabra «enganche»
+                y luego la repetía, produciendo «enganche de enganche» en vivo.
+                El porcentaje no depende del plan: vive en `lote.enganchePct`. */}
+            {lote.enganchePct && <>: {lote.enganchePct}% de enganche</>}
             {plazoMax && <> y hasta {plazoMax.meses} meses</>}. Es propiedad privada, no
             terreno ejidal.
           </p>
         </div>
       </section>
+
+      {/* ═══════════ 2.5 · Un domingo aquí ═══════════
+          Va inmediatamente después de la respuesta directa, antes de cualquier
+          objeción. Es el único bloque de la página cuyo trabajo es proyectar la
+          vida, y el único punto donde se agrega un ancla de CTA. */}
+      <UnDomingoAqui lote={lote} telefono={FALLBACK_WHATSAPP} mensaje={mensajeWa} />
 
       {/* ═══════════ 3-4 · Promesa y plan, con el formulario al lado ═══════════
           El formulario vive aquí y no al final: en móvil aparece justo después del
@@ -249,6 +316,61 @@ export default async function LandingLotesPlayaDelCarmen() {
       {/* ═══════════ 6 · Urbanización ═══════════ */}
       <UrbanizacionReal lote={lote} />
 
+      {/* ═══════════ 6.5 · El calendario, reencuadrado ═══════════
+          El cambio de mayor palanca de la página, y no cambia un solo hecho:
+          mismas fechas, misma advertencia, ninguna omisión. Lo que cambia es
+          que el calendario largo deja de ser sólo un costo y se nombra también
+          como lo que es —la razón por la que el producto es barato y financiado
+          sin intereses— y el costo se declara acto seguido, en el mismo bloque.
+
+          Va DESPUÉS de la tabla de servicios a propósito: primero el visitante
+          ve que hoy no hay nada conectado, y sólo entonces lee por qué eso es
+          el precio de la ventana de cinco años. Al revés sería suavizar. */}
+      <section aria-labelledby="ventana-titulo" className="border-b border-navy/12 bg-gray-light">
+        <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+            <TituloSeccion id="ventana-titulo">
+              Por qué el calendario largo es la razón para comprar ahora, no el motivo
+              para no hacerlo
+            </TituloSeccion>
+
+            <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-graphite">
+              <p>
+                Un terreno urbanizado y escriturado en esta zona cuesta más y se paga
+                de contado o con crédito bancario. Lo que compras aquí es tiempo:
+                fijas hoy el precio y la ubicación, y el desarrollo te da una ventana
+                de cinco años para iniciar obra.
+              </p>
+              <p>
+                Eso significa que no necesitas el dinero de la construcción hoy. Pagas
+                el terreno
+                {plan?.sinIntereses && lote.mesesOpciones.length > 0 ? (
+                  <> en {lote.mesesOpciones.join(' o ')} meses sin intereses</>
+                ) : (
+                  <> conforme al plan del desarrollador</>
+                )}
+                , y cuando termines de pagarlo empiezas a juntar para la obra, sin que
+                nadie te apure y sin renta corriendo en paralelo sobre algo que no es
+                tuyo.
+              </p>
+              {/* El costo de la ventana, sin suavizar y en el mismo bloque. */}
+              <p>
+                El costo de esa ventana es concreto y está arriba: hoy no hay
+                servicios conectados y el lote no es escriturable. Los servicios están
+                proyectados para octubre y noviembre de 2027, y la escrituración a
+                finales de 2026 según el desarrollador. Si tu plan es construir el año
+                que entra, este producto no te sirve y te lo decimos aquí en lugar de
+                tres llamadas después.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ 6.6 · Lo que falta confirmar ═══════════
+          Los chips ámbar que antes vivían dispersos por seis secciones. */}
+      <LoQueFaltaConfirmar lote={lote} />
+
       {/* ═══════════ 7 · Situación jurídica ═══════════ */}
       <section aria-labelledby="juridico-titulo" className="border-t border-aqua-bright/15 bg-aztec">
         <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
@@ -264,7 +386,7 @@ export default async function LandingLotesPlayaDelCarmen() {
                     Régimen
                   </dt>
                   <dd className="mt-2 max-w-[58ch] text-sm leading-relaxed text-white/80">
-                    {lote.regimenPropiedad ?? <Gate que="régimen de propiedad" tono="oscuro" />}.
+                    {lote.regimenPropiedad ?? <EnlaceGate que="régimen de propiedad" tono="oscuro" />}.
                     Opera con reglamento de construcción y comité de arquitectura que
                     revisa cada proyecto antes de iniciar obra.
                   </dd>
@@ -343,7 +465,7 @@ export default async function LandingLotesPlayaDelCarmen() {
                     ({lote.costos.cierrePctMin}% a {lote.costos.cierrePctMax}% adicional)
                   </span>
                 ) : (
-                  <Gate que="% de gastos de cierre" />
+                  <EnlaceGate que="% de gastos de cierre" />
                 )}{' '}
                 más los cargos únicos que listamos arriba, conviene esperar en lugar de
                 estirarte.
@@ -464,7 +586,13 @@ export default async function LandingLotesPlayaDelCarmen() {
             </p>
             {/* Condicional a propósito: si la licencia no está completa, afirmar
                 que los datos "se indican" sería exactamente el tipo de declaración
-                falsa que el artículo 69 pretende evitar. */}
+                falsa que el artículo 69 pretende evitar.
+
+                Cuando NO está completa, el pie no repite el párrafo: el
+                incumplimiento se declara una sola vez, en el bloque de
+                pendientes, y aquí sólo se enlaza. Tres copias del mismo texto
+                legal en una página leen como plantilla, y la plantilla es
+                justo lo que esta página no puede permitirse. */}
             {lote.licencia.completa ? (
               <p>
                 Publicidad de lotes conforme al artículo 69 de la Ley de Asentamientos
@@ -474,11 +602,14 @@ export default async function LandingLotesPlayaDelCarmen() {
               </p>
             ) : (
               <p>
-                El artículo 69 de la Ley de Asentamientos Urbanos de Quintana Roo
-                obliga a citar la licencia del desarrollo y la autorización de venta
-                municipal en la publicidad de lotes. Todavía no tenemos esos cuatro
-                datos por escrito del desarrollador, así que lo decimos aquí en lugar
-                de omitirlo. Si los necesitas antes de avanzar, pídelos.
+                Sobre la licencia del desarrollo y la autorización de venta municipal,{' '}
+                <a
+                  href="#falta-confirmar"
+                  className="underline decoration-white/30 transition-colors duration-200 hover:text-white/80"
+                >
+                  lo decimos arriba
+                </a>
+                : todavía no las tenemos por escrito y explicamos por qué.
               </p>
             )}
             <p>

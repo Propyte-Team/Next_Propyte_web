@@ -1,0 +1,103 @@
+import Image from 'next/image';
+import { TituloSeccion } from './ui';
+import WhatsAppCta from './WhatsAppCta';
+import type { LoteLanding } from '@/lib/supabase/lp-lotes';
+
+// ============================================================
+// Un domingo aquí.
+//
+// El único bloque de la página cuyo trabajo es proyectar la vida. Todo lo demás
+// es dato, prueba u objeción; sin esto, la página es un informe de due
+// diligence cuya conclusión implícita es «no compres».
+//
+// Regla de escritura: segunda persona, presente, específico, sin adjetivos de
+// folleto. Cada frase se apoya en un hecho que la página ya publica —la
+// distancia, el acceso controlado, el número de lotes, las amenidades del
+// desarrollo— y el último párrafo declara el límite en la misma respiración.
+// Eso es lo que lo mantiene dentro de la voz de la marca en vez de convertirlo
+// en publicidad: la escena no añade ningún hecho nuevo.
+//
+// Es también el único punto de anclaje de CTA que se agrega a la página,
+// porque es el único momento donde el visitante siente algo antes de que
+// empiecen las objeciones.
+// ============================================================
+
+export default function UnDomingoAqui({
+  lote,
+  telefono,
+  mensaje,
+}: {
+  lote: LoteLanding;
+  telefono: string;
+  mensaje: string;
+}) {
+  const imagen = lote.imagenes.domingo;
+
+  return (
+    <section aria-labelledby="domingo-titulo" className="border-b border-navy/12 bg-white">
+      <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
+        <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+          <div>
+            <TituloSeccion id="domingo-titulo">Un domingo aquí</TituloSeccion>
+
+            <div className="mt-6 flex max-w-[58ch] flex-col gap-4 text-base leading-relaxed text-graphite">
+              <p>
+                Salen de casa a las nueve menos veinte y a las nueve están en la
+                arena. Son 4.2 km: no es una excursión, es una decisión de última
+                hora.
+              </p>
+              <p>
+                Vuelven a comer y en la tarde los niños se van solos a la alberca.
+                Solos, porque la privada tiene un solo acceso controlado y vigilancia
+                las 24 horas, y porque son{' '}
+                {lote.lotesTotalesPrivada ? (
+                  <span className="font-mono tabular-nums">
+                    {lote.lotesTotalesPrivada}
+                  </span>
+                ) : (
+                  'unos cientos de'
+                )}{' '}
+                lotes y no tres mil: en un año conoces a tus vecinos por su nombre.
+              </p>
+              <p>
+                El perro sale al pet park, no a la banqueta. El cumpleaños se hace en
+                el salón de eventos, no en un salón rentado del otro lado de la
+                ciudad. El gimnasio está a dos cuadras de tu puerta y ya lo estás
+                pagando en el mantenimiento, así que no hay membresía que cancelar en
+                marzo.
+              </p>
+              {/* El párrafo que hace que esto sea Sage y no folleto. No se quita. */}
+              <p className="text-graphite/70">
+                Nada de esto es una proyección. Son las amenidades que el
+                desarrollador se comprometió a entregar, con el calendario de obra que
+                está más abajo y las fechas que todavía no podemos confirmar.
+              </p>
+            </div>
+
+            <div className="mt-8">
+              <WhatsAppCta
+                loteSlug={lote.slug}
+                telefono={telefono}
+                mensaje={mensaje}
+                surface="lp-lotes-pdc-domingo"
+              />
+            </div>
+          </div>
+
+          {imagen && (
+            <div className="relative aspect-[4/3] lg:aspect-[5/4]">
+              <Image
+                src={imagen.url}
+                alt={imagen.alt}
+                fill
+                loading="lazy"
+                sizes="(max-width: 1024px) 100vw, 46vw"
+                className="object-cover"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}

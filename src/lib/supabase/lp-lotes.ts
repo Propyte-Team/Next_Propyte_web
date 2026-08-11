@@ -87,6 +87,51 @@ export interface PlanPago {
   sinIntereses: boolean;
 }
 
+/**
+ * Aprovechamiento del lote, derivado de COS y CUS.
+ *
+ * COS y CUS no son columnas: vienen de la ficha técnica del desarrollador y ya
+ * se publican como prosa en el bloque jurídico. Se declaran aquí una sola vez
+ * para que la aritmética y el texto no puedan divergir.
+ *
+ * La consecuencia (cuántos m² se pueden construir) NO es un dato nuevo que
+ * requiera fuente propia: es multiplicación sobre dos hechos ya publicados.
+ */
+export interface Aprovechamiento {
+  cos: number;
+  cus: number;
+  /** Huella máxima en planta: superficie × COS. */
+  huellaM2: number;
+  /** Superficie máxima construible sumando niveles: superficie × CUS. */
+  construibleM2: number;
+  /**
+   * Niveles que la relación CUS/COS permite, truncados hacia abajo. Se trunca
+   * en vez de redondear: prometer un nivel que no cabe es exactamente el tipo
+   * de afirmación que esta página existe para no hacer.
+   */
+  niveles: number;
+}
+
+/** Imagen ya curada, con su alt escrito a mano. */
+export interface ImagenLanding {
+  url: string;
+  alt: string;
+}
+
+/**
+ * Las cuatro imágenes que usa la página, por rol narrativo. Cada una es null si
+ * el archivo curado ya no está en la galería del desarrollo.
+ */
+export interface ImagenesLanding {
+  hero: ImagenLanding | null;
+  /** Amenidad con gente. Sostiene el bloque "Un domingo aquí". */
+  domingo: ImagenLanding | null;
+  /** Amenidad distinta de la del hero y de la de `domingo`. */
+  amenidades: ImagenLanding | null;
+  /** Aérea real del polígono: tierra, sin urbanizar. Sostiene la sección de servicios. */
+  urbanizacion: ImagenLanding | null;
+}
+
 export interface AsesorLanding {
   nombre: string;
   rol: string;
@@ -124,6 +169,15 @@ export interface LoteLanding {
    */
   precioM2Mxn: number | null;
   enganchePct: number | null;
+  /**
+   * Enganche en pesos, derivado de precio × pct.
+   *
+   * Vive FUERA de `plan` a propósito. `plan` es null mientras falte la tasa, y
+   * cuando el hero leía el enganche desde ahí publicaba «sin dato» cuatro
+   * bloques encima de una ficha que sí mostraba la cifra. El enganche no
+   * depende de la tasa: no tiene por qué caerse con ella.
+   */
+  engancheMxn: number | null;
   /** Tasa anual de financiamiento. null ⇒ la mensualidad NO se publica. */
   tasaAnual: number | null;
   mesesOpciones: number[];
@@ -138,6 +192,8 @@ export interface LoteLanding {
   escrituraDisponibleHoy: boolean;
   rentasCortoPlazoPermitidas: boolean | null;
   imagenPortada: string | null;
+  /** Selección curada a mano. Ver `IMAGENES_CURADAS`: la galería NO se itera. */
+  imagenes: ImagenesLanding;
   servicios: ServicioUrbanizacion[];
   /** true si el registro declara explícitamente que hoy no hay servicios. */
   ningunServicioHoy: boolean;
@@ -147,6 +203,8 @@ export interface LoteLanding {
   amenidades: string[];
   /** Lotes totales de la privada (`unidades_totales`). */
   lotesTotalesPrivada: number | null;
+  /** null si falta la superficie: sin ella no hay nada que multiplicar. */
+  aprovechamiento: Aprovechamiento | null;
   /** null si falta la tasa o si el esquema de pago no parsea. */
   plan: PlanPago | null;
   asesor: AsesorLanding | null;
@@ -350,6 +408,83 @@ function construirPlan(
 }
 
 /**
+ * Selección curada de imágenes, por nombre de archivo.
+ *
+ * LISTA BLANCA, NO LISTA NEGRA, y esto es Camino A en su forma más literal:
+ * `fotos_desarrollo` contiene renders donde el nombre comercial del desarrollo
+ * aparece ROTULADO dentro de la imagen (el monumento de acceso, la señalética
+ * de los locales). `sanitizarTexto` no puede verlos: sólo lee cadenas.
+ *
+ * Por eso la página nunca itera la galería. Cada archivo que se publica se
+ * revisó a ojo y se dio de alta aquí con su alt escrito a mano. Un archivo
+ * nuevo en el Hub no aparece solo: hay que mirarlo y añadirlo.
+ */
+const IMAGENES_CURADAS: Record<keyof ImagenesLanding, { archivo: string; alt: string }> = {
+  hero: {
+    archivo: '1782488140188-rd7fp2.webp',
+    alt: 'Render aéreo de la privada residencial: calles arboladas, casas de dos niveles y la zona de albercas al centro',
+  },
+  domingo: {
+    archivo: '1782488140710-ioqoqf.webp',
+    alt: 'Alberca comunitaria con camastros y palapas, y la casa club al fondo, con residentes usándola',
+  },
+  amenidades: {
+    archivo: '1782488141250-usa71a.webp',
+    alt: 'Canchas de pádel y pickleball entre árboles, con vecinos jugando y otros sentados en las bancas',
+  },
+  urbanizacion: {
+    archivo: '1782496845888-h9idmq.webp',
+    alt: 'Vista aérea real del polígono: las vialidades y los lotes delimitados todavía sin construir ni urbanizar',
+  },
+};
+
+/**
+ * Resuelve la lista blanca contra la galería real del desarrollo. Compara por
+ * nombre de archivo y no por URL completa para que un cambio de bucket o de
+ * dominio de storage no vacíe la página en silencio.
+ */
+function curarImagenes(galeria: unknown): ImagenesLanding {
+  const urls = Array.isArray(galeria)
+    ? galeria.filter((u): u is string => typeof u === 'string')
+    : [];
+
+  const buscar = (archivo: string) => urls.find((u) => u.endsWith(`/${archivo}`)) ?? null;
+
+  const resolver = (clave: keyof ImagenesLanding): ImagenLanding | null => {
+    const { archivo, alt } = IMAGENES_CURADAS[clave];
+    const url = buscar(archivo);
+    return url ? { url, alt } : null;
+  };
+
+  return {
+    hero: resolver('hero'),
+    domingo: resolver('domingo'),
+    amenidades: resolver('amenidades'),
+    urbanizacion: resolver('urbanizacion'),
+  };
+}
+
+/**
+ * COS y CUS declarados en la ficha técnica del desarrollador para este uso de
+ * suelo. Constantes y no columnas porque no existen como campo en el Hub; el
+ * día que existan, este es el único punto que cambia.
+ */
+const COS = 0.55;
+const CUS = 1.6;
+
+function construirAprovechamiento(superficieM2: number | null): Aprovechamiento | null {
+  if (superficieM2 === null || superficieM2 <= 0) return null;
+  const redondear = (n: number) => Math.round(n * 100) / 100;
+  return {
+    cos: COS,
+    cus: CUS,
+    huellaM2: redondear(superficieM2 * COS),
+    construibleM2: redondear(superficieM2 * CUS),
+    niveles: Math.floor(CUS / COS),
+  };
+}
+
+/**
  * Asesor a mostrar. Patrón de adopción: si la unidad tiene agente asignado, ese;
  * si no, el primer contacto de ventas de la ciudad por `sort_order` del Hub.
  * Así la elección la fija el Hub y no queda un nombre hardcodeado en el código:
@@ -497,7 +632,7 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
   const { data: dev } = devId
     ? await hub
         .from('v_developments')
-        .select('amenities, total_units')
+        .select('amenities, total_units, images')
         .eq('id', devId)
         .maybeSingle()
     : { data: null };
@@ -522,6 +657,8 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
       ? Math.round((precioMxn / superficieM2) * 100) / 100
       : null;
 
+  const enganchePct = numeroONull(u.fin_enganche_pct);
+
   const { servicios, ningunServicioHoy } = mapearServicios(b.servicios);
 
   const mesesRaw = Array.isArray(u.fin_meses_opciones) ? u.fin_meses_opciones : [];
@@ -539,7 +676,11 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
     superficieM2,
     precioMxn,
     precioM2Mxn,
-    enganchePct: numeroONull(u.fin_enganche_pct),
+    enganchePct,
+    engancheMxn:
+      enganchePct !== null && precioMxn !== null
+        ? Math.round(((precioMxn * enganchePct) / 100) * 100) / 100
+        : null,
     tasaAnual: numeroONull(u.fin_tasa),
     mesesOpciones,
     mesesNota: sanitizarTexto(u.fin_meses_nota),
@@ -555,12 +696,14 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
         ? b.rentas_corto_plazo_permitidas
         : null,
     imagenPortada: typeof u.cover_image === 'string' ? u.cover_image : null,
+    imagenes: curarImagenes(d.images),
     servicios,
     ningunServicioHoy,
     costos: mapearCostos(b.costos_adicionales),
     licencia,
     amenidades,
     lotesTotalesPrivada: numeroONull(d.total_units),
+    aprovechamiento: construirAprovechamiento(superficieM2),
     plan: construirPlan(
       precioMxn,
       numeroONull(u.fin_tasa),

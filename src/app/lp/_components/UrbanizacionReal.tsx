@@ -1,4 +1,5 @@
-import { Gate, EstadoServicio, TituloSeccion, RULE_DARK } from './ui';
+import Image from 'next/image';
+import { EnlaceGate, EstadoServicio, TituloSeccion, RULE_DARK } from './ui';
 import { mesAnio } from './format';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -45,8 +46,27 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
             </p>
 
             <div className="mt-5">
-              <Gate que="etapa a la que pertenece este lote" tono="oscuro" />
+              <EnlaceGate que="etapa a la que pertenece este lote" tono="oscuro" />
             </div>
+
+            {/* Aérea REAL del polígono, no render. Es la única imagen de la
+                página que muestra el lote como está hoy: vialidades trazadas y
+                terreno sin construir. Va justo aquí porque la sección afirma
+                que no hay ningún servicio conectado, y una foto que lo confirma
+                vale más que la tabla. Los renders viven arriba, etiquetados
+                como lo que son. */}
+            {lote.imagenes.urbanizacion && (
+              <div className="relative mt-8 aspect-[16/10]">
+                <Image
+                  src={lote.imagenes.urbanizacion.url}
+                  alt={lote.imagenes.urbanizacion.alt}
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 1024px) 100vw, 38vw"
+                  className="object-cover"
+                />
+              </div>
+            )}
           </div>
 
           {lote.servicios.length > 0 ? (
@@ -78,7 +98,7 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
             </div>
           ) : (
             <div className="self-start">
-              <Gate que="estatus de urbanización servicio por servicio" tono="oscuro" />
+              <EnlaceGate que="estatus de urbanización servicio por servicio" tono="oscuro" />
             </div>
           )}
         </div>

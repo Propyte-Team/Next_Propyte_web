@@ -1,4 +1,4 @@
-import { Gate, TituloSeccion, RULE_LIGHT } from './ui';
+import { EnlaceGate, TituloSeccion, RULE_LIGHT } from './ui';
 import { mxn } from './format';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -34,7 +34,7 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
           antes que estimarlo.
         </p>
         <div className="mt-4">
-          <Gate que="tasa de financiamiento" />
+          <EnlaceGate que="tasa de financiamiento" />
         </div>
       </section>
     );

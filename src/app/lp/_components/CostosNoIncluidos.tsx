@@ -1,4 +1,4 @@
-import { Campo, BloqueCampos, Gate, TituloSeccion } from './ui';
+import { Campo, BloqueCampos, EnlaceGate, TituloSeccion } from './ui';
 import { mxn } from './format';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -11,6 +11,14 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // del lote más los costos reales, y ese filtro ahorra tiempo de asesor, que es
 // el cuello de botella de la operación.
 // ============================================================
+
+/** Detecta montos expresados en unidades indexadas en vez de en pesos. */
+function esIndexado(monto: string): boolean {
+  const m = monto.toLowerCase();
+  return (
+    m.includes('salario') || m.includes('uma') || m.includes('cuotas de mantenimiento')
+  );
+}
 
 export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
   const c = lote.costos;
@@ -38,7 +46,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
       <div className="mt-6 border-t-2 border-navy">
         <BloqueCampos>
           <Campo etiqueta="Escrituración">
-            {cierre ?? <Gate que="% de gastos de escrituración" />}
+            {cierre ?? <EnlaceGate que="% de gastos de escrituración" />}
             {c?.cierreExcluye && (
               <span className="block text-xs text-graphite/55">
                 No incluye {c.cierreExcluye}
@@ -47,7 +55,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
           </Campo>
 
           <Campo etiqueta="Mantenimiento">
-            {mantenimiento ?? <Gate que="cuota de mantenimiento" />}
+            {mantenimiento ?? <EnlaceGate que="cuota de mantenimiento" />}
             {c?.mantenimientoPorDefinir && (
               <span className="block text-xs text-graphite/55">
                 Monto final por definir, más cerca de la entrega
@@ -63,6 +71,19 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
                 {cargo.reembolsable === true && ', reembolsable'}
                 {cargo.reembolsable === false && ', no reembolsable'}
               </span>
+              {/* Un cargo indexado a salarios mínimos no es un monto: es una
+                  fórmula. Publicarlo sin decir eso deja al comprador creyendo
+                  que sabe cuánto va a pagar. No convertimos a pesos porque
+                  requiere fijar QUÉ salario mínimo y de qué año aplica, y eso
+                  lo define el contrato, no nosotros. */}
+              {esIndexado(cargo.monto) && (
+                <span className="mt-1.5 block text-xs leading-relaxed text-graphite/70">
+                  Es un cargo indexado: se calcula con el salario mínimo vigente el
+                  día que inicies obra, no con el de hoy. Te pasamos el equivalente
+                  en pesos y el salario mínimo que aplica en cuanto el desarrollador
+                  lo confirme por escrito.
+                </span>
+              )}
             </Campo>
           ))}
         </BloqueCampos>

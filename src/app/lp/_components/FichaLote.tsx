@@ -1,4 +1,4 @@
-import { Campo, BloqueCampos, Gate, TituloSeccion } from './ui';
+import { Campo, BloqueCampos, EnlaceGate, TituloSeccion } from './ui';
 import { mxn, mxnExacto, m2 } from './format';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -16,6 +16,8 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // ============================================================
 
 export default function FichaLote({ lote }: { lote: LoteLanding }) {
+  const plazoMax = lote.plan?.opciones.at(-1) ?? null;
+
   return (
     <section aria-labelledby="ficha-titulo">
       <TituloSeccion id="ficha-titulo">El lote, con todos sus números</TituloSeccion>
@@ -23,44 +25,67 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
       <div className="mt-6 border-t-2 border-navy">
         <BloqueCampos>
           <Campo etiqueta="Superficie">
-            {lote.superficieM2 ? m2(lote.superficieM2) : <Gate que="superficie" />}
+            {lote.superficieM2 ? m2(lote.superficieM2) : <EnlaceGate que="superficie" />}
           </Campo>
 
           <Campo etiqueta="Precio">
-            {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : <Gate que="precio" />}
+            {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : <EnlaceGate que="precio" />}
           </Campo>
 
           <Campo etiqueta="Precio por m²" destacado>
             {lote.precioM2Mxn ? (
               `${mxnExacto(lote.precioM2Mxn)} MXN`
             ) : (
-              <Gate que="superficie para calcular el precio por m²" />
+              <EnlaceGate que="superficie para calcular el precio por m²" />
+            )}
+          </Campo>
+
+          {/* Consecuencia del uso de suelo. Va junto al precio a propósito: es
+              el denominador que cambia cómo se lee el precio por m². */}
+          <Campo etiqueta="Construible" destacado>
+            {lote.aprovechamiento ? (
+              <>
+                {m2(lote.aprovechamiento.construibleM2)}
+                <span className="block text-xs text-graphite/55">
+                  COS {lote.aprovechamiento.cos} · CUS {lote.aprovechamiento.cus}, hasta{' '}
+                  {m2(lote.aprovechamiento.huellaM2)} en planta
+                </span>
+              </>
+            ) : (
+              <EnlaceGate que="superficie para calcular lo construible" />
             )}
           </Campo>
 
           <Campo etiqueta="Enganche">
-            {lote.enganchePct ? (
+            {lote.enganchePct && lote.engancheMxn !== null ? (
               <>
                 Desde {lote.enganchePct}%
-                {lote.precioMxn && (
-                  <span className="text-graphite/55">
-                    {'  '}
-                    {mxn((lote.precioMxn * lote.enganchePct) / 100)} MXN
-                  </span>
-                )}
+                <span className="text-graphite/55">
+                  {'  '}
+                  {mxn(lote.engancheMxn)} MXN
+                </span>
               </>
             ) : (
-              <Gate que="enganche" />
+              <EnlaceGate que="enganche" />
             )}
           </Campo>
 
-          {/* Gate deliberado. La mensualidad es la cifra de mayor palanca de
-              conversión en este segmento, y por eso mismo publicarla asumiendo
-              0% de interés y descubrir después que hay tasa convertiría la
-              página en publicidad engañosa. Cerrar el gate es un cambio de
-              dato: basta poblar `fin_tasa`. */}
-          <Campo etiqueta="Mensualidad">
-            <Gate que="tasa de financiamiento" />
+          {/* La mensualidad es la cifra de mayor palanca de conversión en este
+              segmento, y por eso mismo publicarla asumiendo 0% de interés y
+              descubrir después que hay tasa convertiría la página en publicidad
+              engañosa. Se publica sólo cuando `construirPlan` devuelve plan, y
+              eso exige que la tasa esté declarada como dato. */}
+          <Campo etiqueta="Mensualidad" destacado>
+            {plazoMax ? (
+              <>
+                {mxn(plazoMax.mensualidadMxn)} MXN
+                <span className="block text-xs text-graphite/55">
+                  {plazoMax.pagos} pagos a {plazoMax.meses} meses, sin intereses
+                </span>
+              </>
+            ) : (
+              <EnlaceGate que="tasa de financiamiento" />
+            )}
           </Campo>
 
           <Campo etiqueta="Plazos">
@@ -69,14 +94,14 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
             ) : lote.mesesNota ? (
               lote.mesesNota
             ) : (
-              <Gate que="plazos de financiamiento" />
+              <EnlaceGate que="plazos de financiamiento" />
             )}
           </Campo>
 
           <Campo etiqueta="Urbanización" destacado>
             {lote.ningunServicioHoy
               ? 'Ningún servicio conectado hoy'
-              : lote.subtipoLiteral ?? <Gate que="estatus de urbanización" />}
+              : lote.subtipoLiteral ?? <EnlaceGate que="estatus de urbanización" />}
           </Campo>
 
           <Campo etiqueta="Escrituración">
@@ -87,26 +112,61 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
         </BloqueCampos>
       </div>
 
-      <p className="mt-5 max-w-[62ch] text-sm leading-relaxed text-graphite">
+      {/* ───── Cómo leer este precio ─────
+          La versión anterior invitaba a comparar precio por m² contra cualquier
+          otro terreno y ahí se detenía. Es honesto y, tal cual, trabajaba para
+          la competencia: en el mismo fraccionamiento hay lotes anunciados a la
+          mitad de este precio por metro, y varios ya tienen servicios o son
+          reventa con escritura inmediata.
+
+          La invitación a comparar se conserva —quitarla sería exactamente lo
+          contrario de la marca— pero se completa con los cuatro renglones que
+          hacen que la comparación signifique algo. No es un truco retórico:
+          cada uno es verificable en el otro terreno. */}
+      <div className="mt-5 max-w-[62ch] text-sm leading-relaxed text-graphite">
         {lote.precioM2Mxn && lote.superficieM2 ? (
           <>
-            <strong className="font-semibold text-navy">Cómo leer esta ficha.</strong>{' '}
-            El precio por metro cuadrado es lo que permite comparar este lote
-            contra cualquier otro, y es el dato que casi nadie publica. Aquí son{' '}
-            {mxnExacto(lote.precioM2Mxn)} sobre {m2(lote.superficieM2)}. Si te
-            ofrecen un terreno sin ese número, pídelo: un ticket total más bajo
-            puede salir más caro por metro.
+            <p>
+              <strong className="font-semibold text-navy">
+                Cómo leer este precio.
+              </strong>{' '}
+              Son {mxnExacto(lote.precioM2Mxn)} por metro cuadrado sobre{' '}
+              {m2(lote.superficieM2)}. Vas a encontrar terrenos en Playa del Carmen
+              a la mitad de ese precio por metro, y conviene que los veas. Antes de
+              comparar, revisa cuatro cosas en el otro terreno:
+            </p>
+            <ol className="mt-3 flex flex-col gap-2">
+              {[
+                'Si está en régimen de condominio o es un lote suelto.',
+                'Si la urbanización corre por cuenta del desarrollador o por la tuya.',
+                'Si tiene amenidades entregables por contrato.',
+                'Si te lo financian a 48 o 60 meses o hay que pagarlo de contado.',
+              ].map((criterio, i) => (
+                <li key={criterio} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
+                  <span
+                    aria-hidden="true"
+                    className="font-mono text-xs tabular-nums text-navy/45"
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span>{criterio}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-3">
+              Cuando esos cuatro renglones estén en la mesa, la comparación por metro
+              cuadrado significa algo. Antes, no.
+            </p>
           </>
         ) : (
-          <>
-            <strong className="font-semibold text-navy">Cómo leer esta ficha.</strong>{' '}
-            El precio por metro cuadrado es lo que permite comparar este lote
-            contra cualquier otro. Todavía no lo publicamos porque falta
-            confirmar la superficie exacta, y preferimos decírtelo antes que
-            estimarlo.
-          </>
+          <p>
+            <strong className="font-semibold text-navy">Cómo leer este precio.</strong>{' '}
+            El precio por metro cuadrado es lo que permite comparar este lote contra
+            cualquier otro. Todavía no lo publicamos porque falta confirmar la
+            superficie exacta, y preferimos decírtelo antes que estimarlo.
+          </p>
         )}
-      </p>
+      </div>
     </section>
   );
 }

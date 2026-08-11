@@ -42,6 +42,39 @@ export function Gate({ que, tono = 'claro' }: { que: string; tono?: 'claro' | 'o
 }
 
 /**
+ * Referencia al bloque único de pendientes.
+ *
+ * Sustituye a los chips ámbar dispersos. La honestidad no se reduce: se
+ * concentra. El ámbar se queda como acento mínimo —sigue siendo el color de
+ * «esto no lo sabemos»— pero sin caja ni versalitas, porque ocho cajas ámbar
+ * repartidas por la página se leían como desorganización y no como integridad.
+ *
+ * Es un ancla real y no un botón: funciona sin JS y el foco aterriza en el
+ * bloque, que lleva `scroll-mt`.
+ */
+export function EnlaceGate({
+  que,
+  tono = 'claro',
+}: {
+  que: string;
+  tono?: 'claro' | 'oscuro';
+}) {
+  return (
+    <a
+      href="#falta-confirmar"
+      className={`inline-flex items-baseline gap-1.5 underline decoration-dotted underline-offset-4 transition-colors duration-200 ${
+        tono === 'oscuro'
+          ? 'text-amber/90 decoration-amber/50 hover:text-amber'
+          : 'text-[#7A4E00] decoration-[#7A4E00]/40 hover:text-[#5C3B00]'
+      }`}
+    >
+      <AlertTriangle className="size-3 shrink-0 translate-y-px" aria-hidden="true" />
+      Falta confirmar: {que}
+    </a>
+  );
+}
+
+/**
  * Fila de campo del bloque de especificaciones. Etiqueta a la izquierda en
  * versalitas, dato a la derecha en mono. La regla vertical entre columnas es
  * lo que le da la lectura de documento y no de tarjeta.

@@ -1,4 +1,4 @@
-import { Gate, RULE_DARK } from './ui';
+import { EnlaceGate, RULE_DARK } from './ui';
 import { fechaLarga } from './format';
 import type { LicenciaDesarrollo as Licencia } from '@/lib/supabase/lp-lotes';
 
@@ -59,19 +59,26 @@ export default function LicenciaDesarrollo({ licencia }: { licencia: Licencia })
               {c.etiqueta}
             </dt>
             <dd className="mt-1.5 font-mono text-sm text-white/85">
-              {c.valor ?? <Gate que={c.falta} tono="oscuro" />}
+              {c.valor ?? <EnlaceGate que={c.falta} tono="oscuro" />}
             </dd>
           </div>
         ))}
       </dl>
 
+      {/* La cita del artículo 69 y el compromiso de publicarlos viven UNA sola
+          vez, en el bloque de pendientes. Antes se repetían aquí y otra vez en
+          el pie legal: tres versiones del mismo párrafo en una página que se
+          juega la credibilidad en no sonar a boilerplate. */}
       {!licencia.completa && (
         <p className={`mt-6 border-t ${RULE_DARK} pt-4 max-w-[62ch] text-xs leading-relaxed text-white/55`}>
-          Estos cuatro datos son obligatorios en la publicidad de lotes conforme al
-          artículo 69 de la Ley de Asentamientos Urbanos de Quintana Roo. Los
-          estamos recabando con el desarrollador y los publicamos aquí en cuanto los
-          tengamos por escrito. Si los necesitas antes de avanzar, pídelos y te los
-          enviamos en cuanto lleguen.
+          Estos cuatro datos son obligatorios y todavía no los tenemos por escrito.{' '}
+          <a
+            href="#falta-confirmar"
+            className="underline decoration-white/30 underline-offset-4 transition-colors duration-200 hover:text-white/85"
+          >
+            Por qué, y qué más falta
+          </a>
+          .
         </p>
       )}
     </section>
