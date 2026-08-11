@@ -12,12 +12,18 @@ const intlMiddleware = createIntlMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip API routes, static assets, Design Playground (/admin/*),
-  // y rutas de metadata de Next (icon/apple-icon/manifest/sitemap/robots).
+  // Skip API routes, static assets, Design Playground (/admin/*), landings de
+  // pago (/lp/*) y rutas de metadata de Next (icon/apple-icon/manifest/sitemap/robots).
+  //
+  // /lp/* vive fuera de `[locale]` para no heredar el chrome del sitio, así que
+  // NO debe recibir el prefijo de locale: sin este skip, next-intl redirige
+  // /lp/x → /es/lp/x (307) y esa ruta no existe. Son páginas noindex de un solo
+  // idioma; no hay hreflang que declarar.
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/admin') ||
+    pathname.startsWith('/lp/') ||
     pathname === '/icon' ||
     pathname === '/apple-icon' ||
     pathname === '/manifest.webmanifest' ||

@@ -18,7 +18,9 @@ export type LeadSource =
   | "affiliate_request"
   | "newsletter"
   | "lead_magnet"
-  | "glossary_pdf";
+  | "glossary_pdf"
+  /** Landing de pago de lotes, Playa del Carmen (Google Ads). */
+  | "lp_lotes_pdc";
 
 export interface FormData {
   // Identidad
@@ -59,6 +61,11 @@ export interface UtmData {
   /** Facebook Click ID — se persiste en Supabase para Meta CAPI; en Zoho solo
       viaja dentro de la nota UTM (no hay campo custom fbclid todavía). */
   fbclid?: string | null;
+  /** Google Ads click ID alternativo: llega en lugar de `gclid` cuando el
+      usuario no dio consentimiento de cookies (tráfico iOS/EEA). Sin él se
+      pierde la importación de conversiones offline de ese segmento. Igual que
+      `fbclid`, hoy solo viaja en la nota UTM — no hay campo custom en Zoho. */
+  wbraid?: string | null;
 }
 
 export type Locale = "es" | "en";
@@ -182,6 +189,7 @@ function campaignSlug(source: LeadSource): string {
     case "newsletter":            return "blog/newsletter";
     case "lead_magnet":           return "home/lead-magnet";
     case "glossary_pdf":          return "glosario/pdf-gate";
+    case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
   }
 }
 
@@ -232,6 +240,7 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "newsletter":          return "Newsletter Blog";
       case "lead_magnet":         return "Lead Magnet Home";
       case "glossary_pdf":        return "Glosario PDF";
+      case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
     }
   })();
   return `Formulario Propyte web ${langTag} - ${desc}`;
@@ -326,6 +335,13 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
     case "newsletter":
       // sin Description — el form solo captura email
       break;
+    case "lp_lotes_pdc":
+      // Los dos taps de calificación de la landing. Son el dato que decide si
+      // el lead vale una llamada, así que van primero en la Description.
+      if (data.investmentType) parts.push(`Objetivo: ${data.investmentType}`);
+      if (data.budget) parts.push(`Presupuesto total: ${data.budget}`);
+      if (data.propertyName) parts.push(`Lote de interés: ${data.propertyName}`);
+      break;
   }
 
   return parts.length > 0 ? truncateDescription(parts.join("\n")) : undefined;
@@ -398,6 +414,7 @@ export function composeDuplicateNote(
   if (utms.utm_campaign) utmParts.push(`campaign=${utms.utm_campaign}`);
   if (utms.gclid) utmParts.push(`gclid=${utms.gclid}`);
   if (utms.fbclid) utmParts.push(`fbclid=${utms.fbclid}`);
+  if (utms.wbraid) utmParts.push(`wbraid=${utms.wbraid}`);
   if (utmParts.length > 0) {
     lines.push("");
     lines.push(`UTM: ${utmParts.join(" | ")}`);

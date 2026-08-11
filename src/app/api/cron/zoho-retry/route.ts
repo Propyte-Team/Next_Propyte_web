@@ -38,6 +38,7 @@ const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
   'newsletter',
   'lead_magnet',
   'glossary_pdf',
+  'lp_lotes_pdc',
 ];
 
 const ORPHAN_ID_RE = /ORPHAN: zoho_id=([A-Za-z0-9]+)/;

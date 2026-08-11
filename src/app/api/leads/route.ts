@@ -41,6 +41,7 @@ const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
   'newsletter',
   'lead_magnet',
   'glossary_pdf',
+  'lp_lotes_pdc',
 ];
 
 // Regex defensivo para UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).
@@ -99,6 +100,9 @@ const LeadSchema = z.object({
   fbclid: optionalUtm,
   /** event_id generado por submitLead() para deduplicar Pixel ↔ Conversions API. */
   metaEventId: z.string().max(100).optional(),
+  // Sustituye a gclid cuando el visitante no dio consentimiento de cookies.
+  // Sin él se pierde la conversión offline de ese segmento (REQ-F-21).
+  wbraid: optionalUtm,
 });
 
 // Origin allowlist — extensible vía env (REQ-F-17).
@@ -420,6 +424,10 @@ export async function POST(request: NextRequest) {
     utm_term: data.utm_term || null,
     gclid: data.gclid || null,
     fbclid: data.fbclid || null,
+    // Viaja a Zoho dentro de la nota UTM. NO se persiste en public.leads
+    // todavía: falta la columna `wbraid`. Migración pendiente en
+    // specs/lp-lotes-playa-del-carmen.md §DDL pendiente.
+    wbraid: data.wbraid || null,
   };
 
   // Resolver Proyecto_de_Interes si form 2 (lookup unit → development → zoho_id)
