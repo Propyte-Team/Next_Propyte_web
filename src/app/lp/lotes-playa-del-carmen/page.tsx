@@ -31,6 +31,20 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
 
+/**
+ * Placeholder borroso del hero: la imagen curada reducida a 16 px de ancho.
+ *
+ * Constante y no generado en tiempo de render a propósito. La alternativa
+ * (`plaiceholder`) añade una dependencia y una descarga de 1 MB en cada
+ * revalidación de ISR para producir estos 306 bytes. La imagen del hero está
+ * fijada por nombre de archivo en `IMAGENES_CURADAS`, así que solo puede
+ * cambiar cuando alguien edite esa lista a mano — y ese es el momento de
+ * regenerar esto. Si la foto cambiara sin regenerarlo, el peor caso es un
+ * degradado de otros colores durante unos milisegundos.
+ */
+const BLUR_HERO =
+  'data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAJABADASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABAEF/8QAHhABAAICAQUAAAAAAAAAAAAAAQIDABESMUVRcYL/xAAVAQEBAAAAAAAAAAAAAAAAAAABA//EABYRAQEBAAAAAAAAAAAAAAAAAAABIf/aAAwDAQACEQMRAD8AJVZVJFCDs2efWW6secGzc4hLprCmaHbqfrJTS//Z';
+
 export default async function LandingLotesPlayaDelCarmen() {
   // En paralelo: el comparador es contenido secundario y no debe sumar su
   // latencia a la del lote protagonista.
@@ -112,7 +126,17 @@ export default async function LandingLotesPlayaDelCarmen() {
             alt={heroImg.alt}
             fill
             priority
-            sizes="100vw"
+            // `100vw` a secas hacía que el navegador pidiera el candidato de
+            // 3840 px: 691 KB de JPEG para el LCP. El original de Supabase mide
+            // 2400 px de ancho, así que pedir más no añade un solo píxel real,
+            // solo lo reescala hacia arriba. Con este tope se sirve 2048.
+            sizes="(min-width: 2048px) 2048px, 100vw"
+            // Sin placeholder, el hueco se pintaba con el fondo oscuro de la
+            // sección mientras bajaba la foto, y en una conexión lenta la
+            // página se veía como un rectángulo negro con texto encima. Ahora
+            // entra el degradado de la propia imagen desde el primer frame.
+            placeholder="blur"
+            blurDataURL={BLUR_HERO}
             className="object-cover"
           />
         )}

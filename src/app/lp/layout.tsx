@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Newsreader } from 'next/font/google';
 import Analytics from '@/components/shared/Analytics';
 import ConsentBannerLp from './_components/ConsentBannerLp';
@@ -61,12 +62,28 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
           Logo no clicable: identidad sin ruta de salida (un solo objetivo). */}
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex max-w-6xl items-baseline justify-between gap-4 px-5 py-5 sm:px-8">
-          <span
-            className="lp-display text-xl text-[var(--lp-on-dark)] drop-shadow-[0_1px_12px_rgb(0_0_0/0.45)]"
-            aria-label="Propyte"
-          >
-            Propyte
-          </span>
+          {/* Logo real, variante blanca: la cabecera flota sobre la foto del
+              hero, oscura en su parte alta. Sin <Link>: la landing tiene un
+              solo objetivo y el logo es identidad, no navegación.
+
+              El archivo mide 2420x468 y pesa 65 KB, pero aquí se ve a 24 px de
+              alto. Se declara el tamaño de RENDER y no el intrínseco: con 2420
+              Next generaría candidatos de 2420 y 4840 px para un logo de
+              cabecera. Con 123 sirve 256 (2x), unos pocos KB.
+
+              Por qué 123 y no 124: Next avisa de deformación comparando el
+              ancho MAQUETADO contra este atributo, y el ancho maquetado sale
+              del ratio de la imagen SERVIDA, no del archivo. El optimizador
+              genera 256x50 (redondea 49.5 hacia arriba), o sea ratio 5.12 en
+              vez de 5.1709, y a 24 px de alto eso da 122.88 -> 123. */}
+          <Image
+            src="/img/logos/logo-horizontal-white.png"
+            alt="Propyte"
+            width={123}
+            height={24}
+            priority
+            className="h-5 w-auto drop-shadow-[0_1px_12px_rgb(0_0_0/0.45)] sm:h-6"
+          />
           <span className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-on-dark)]/70 drop-shadow-[0_1px_12px_rgb(0_0_0/0.45)]">
             Riviera Maya
           </span>
