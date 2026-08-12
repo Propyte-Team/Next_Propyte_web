@@ -1,15 +1,21 @@
 import { EnlaceGate, TituloSeccion, RULE_LIGHT } from './ui';
 import { mxn } from './format';
+import SelectorPlazo from './SelectorPlazo';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
 // Plan de pagos.
 //
-// Server component a propósito: el patch pedía un simulador con selectores de
-// enganche y plazo, pero con un solo esquema declarado por el desarrollador
-// (20/60/20) el "simulador" tendría exactamente dos estados. Publicar las dos
-// opciones de plazo lado a lado da la misma información sin enviar JavaScript a
-// una ruta cuyo LCP es el criterio de aceptación más apretado.
+// Sigue siendo server component: lo único que se hidrata es `SelectorPlazo`,
+// que recibe las opciones ya calculadas y solo decide cuál se ve. La
+// aritmética de dinero no cruza al cliente.
+//
+// Este bloque publicaba las dos opciones de plazo como tarjetas estáticas, con
+// el argumento de que un "simulador" de dos estados no justificaba mandar JS a
+// una ruta cuyo LCP es el criterio de aceptación más apretado. Luis pidió los
+// chips seleccionables (2026-08-12). El costo real resultó ser un componente
+// de ~90 líneas sin dependencias, y la lectura mejora: una cifra grande que
+// responde a lo que tocas comunica mejor que dos cifras medianas compitiendo.
 //
 // Toda la aritmética viene de `construirPlan` en la capa de datos: los tres
 // porcentajes se parsean del esquema declarado y los importes se calculan. Si el
@@ -54,22 +60,7 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
         aplicado al precio de este lote.
       </p>
 
-      {/* Las dos opciones de plazo, lado a lado. La comparación es el valor. */}
-      <div className="mt-6 grid gap-px border-t-2 border-[var(--lp-accent)] bg-[var(--lp-line)] sm:grid-cols-2">
-        {plan.opciones.map((o) => (
-          <div key={o.meses} className="bg-white p-5">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
-              Plazo de {o.meses} meses
-            </p>
-            <p className="mt-3 font-mono text-2xl tabular-nums text-[var(--lp-ink)]">
-              {mxn(o.mensualidadMxn)}
-            </p>
-            <p className="mt-1 text-xs text-[var(--lp-muted)]">
-              al mes, {o.pagos} pagos
-            </p>
-          </div>
-        ))}
-      </div>
+      <SelectorPlazo opciones={plan.opciones} sinIntereses={plan.sinIntereses} />
 
       {/* Desglose completo: lo que entra al inicio, en medio y al final. */}
       <dl className={`mt-6 border-x border-b border-t-2 border-t-[var(--lp-accent)] ${RULE_LIGHT}`}>
