@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { getLotePlayaDelCarmen } from '@/lib/supabase/lp-lotes';
+import { getLotesComparables } from '@/lib/supabase/lp-lotes-comparador';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import FichaLote from '../_components/FichaLote';
 import UrbanizacionReal from '../_components/UrbanizacionReal';
@@ -14,6 +15,7 @@ import PruebaDeQueExistimos from '../_components/PruebaDeQueExistimos';
 import WhatsAppCta from '../_components/WhatsAppCta';
 import UnDomingoAqui from '../_components/UnDomingoAqui';
 import LoQueFaltaConfirmar from '../_components/LoQueFaltaConfirmar';
+import ComparadorLotes from '../_components/ComparadorLotes';
 import { EnlaceGate, TituloSeccion, BotonPrimario, RULE_DARK } from '../_components/ui';
 import { mxn, mxnExacto, m2, fechaLarga } from '../_components/format';
 
@@ -30,7 +32,12 @@ export const metadata: Metadata = {
 };
 
 export default async function LandingLotesPlayaDelCarmen() {
-  const lote = await getLotePlayaDelCarmen();
+  // En paralelo: el comparador es contenido secundario y no debe sumar su
+  // latencia a la del lote protagonista.
+  const [lote, lotesComparables] = await Promise.all([
+    getLotePlayaDelCarmen(),
+    getLotesComparables(),
+  ]);
 
   // Inventario de una unidad: que se venda o se aparte es un escenario probable,
   // no un caso borde. La página lo trata como estado, no como error.
@@ -564,6 +571,13 @@ export default async function LandingLotesPlayaDelCarmen() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════ 12b · Otros lotes de Playa del Carmen ═══════════
+          DESPUÉS del cierre, nunca antes: la página no tiene rutas de salida a
+          propósito. Esto captura a quien ya decidió que este lote no era el
+          suyo, en vez de desviar a quien iba a convertir. Se oculta solo si no
+          hay con qué comparar. */}
+      <ComparadorLotes lotes={lotesComparables} />
 
       {/* ═══════════ 13 · Pie legal ═══════════ */}
       <footer className="border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]">
