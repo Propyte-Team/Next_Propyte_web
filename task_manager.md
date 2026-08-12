@@ -1,12 +1,75 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
+> Última actualización: 2026-08-12 (LP Lotes PDC: rediseño commiteado + chips de plazo + comparador de 4 lotes — ver primera entrada de «En progreso». Rama `feat/lp-lotes-pdc` en `0dacbda`, 5 commits, nada en `main`). Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
 ---
 
 ## En progreso
+
+### LP Lotes Playa del Carmen — rediseño visual (sesión 2026-08-12)
+
+> Rama `feat/lp-lotes-pdc`. Capa de emoción commiteada (`b6a3021`); **el rediseño visual está SIN COMMITEAR**. Typecheck limpio, `npm run build` verde, verificado en navegador. `main` intacto.
+
+Luis: «es feo feo feo, el contenido creo que está bien». Alcance acordado: solo la LP, paleta incluida.
+
+- [x] Tema confinado en `src/app/lp/lp-theme.css` bajo `.lp-root`. `/lp` cuelga fuera de `[locale]` con layout propio ⇒ ningún token puede tocar propyte.com.
+- [x] Acento único terracota `#a8402a`, derivado de los muros del propio desarrollo (toda la fotografía es hora dorada; el aztec frío hacía que las imágenes se vieran pegadas).
+- [x] Newsreader (next/font) para titulares vía `.lp-display`.
+- [x] Gates: de chips ámbar a tinta apagada con subrayado punteado. El ámbar los hacía leer como errores de validación.
+- [x] Amenidades: de 11 filas con hairline a 2 columnas (se comían el 20% del scroll).
+- [x] Hero: imagen a sangre + degradado, 4 elementos. Las cifras bajaron a banda propia.
+- [x] 128 reemplazos de tokens heredados en 12 archivos. Cero residuo de teal/aztec/navy/graphite, banner de consentimiento incluido.
+- [x] **Commitear el rediseño** — `bc1e15e` (16 archivos). Falta decidir deploy a `main`.
+- [ ] Distribuir más imágenes: hay 10 verificadas como seguras y la página usa 5.
+- [ ] Assets que no existen en la base: masterplan con el lote marcado, casa comparable de 207 m². Trabajo de Victor.
+
+- [x] Fix de la imagen en «Qué estás comprando»: tenía `lg:aspect-auto lg:min-h-[360px]` dentro de un grid, así que la celda se estiraba a la altura de la columna de texto y `object-cover` recortaba el centro de un render horizontal (se veían árboles desenfocados). Ahora `<figure>` con relación fija 4/3, `self-start`, sticky en desktop y pie de foto.
+
+### Pedidos nuevos de Luis (2026-08-12) — 2 de 3 hechos
+
+- [x] **Chips de opciones de plazo seleccionables** — `f786a14`. `SelectorPlazo.tsx` es lo único que se hidrata y recibe las opciones ya calculadas: ninguna aritmética de dinero cruza al cliente. Radios nativos `sr-only` + `peer-checked` (teclado y anuncio gratis) y `aria-live` en la cifra. Default al plazo más largo, que es la cifra que ya publica el hero. Verificado en navegador: 60 m → $10,280/59 pagos, 48 m → $12,905/47 pagos.
+- [x] **Simulador de financiamiento con selección de desarrollo** — `0dacbda`. Ver la sección de datos abajo: cambió el diagnóstico entero.
+- [ ] **Formulario como punto focal.** Hoy vive en columna lateral a media página. **Esperando 2-3 referencias de Luis**: «punto focal» admite lecturas muy distintas (sobre el hero / banda a ancho completo / panel fijo que acompaña scroll / modal desde el CTA) y cada una cambia estructura y medición.
+
+### Datos de financiamiento de los 4 lotes de PdC — verificado 2026-08-12
+
+⚠️ **La hipótesis del gate de herencia era FALSA.** Los otros 3 sí tienen `financiamiento_propio = false`, pero poner el flag en `true` no habría arreglado nada: sus unidades tienen los `ext_*` vacíos. No era un gate mal puesto, el dato vive en el DESARROLLO. Ver [[feedback_hub_financiamiento_tres_fuentes]].
+
+**El Hub captura las condiciones de pago en TRES lugares y cada desarrollo usa uno:**
+
+| | Fuente | Plazos | Mensualidad |
+|---|---|---|---|
+| 130 m² · $1,010,880 (este) | `ext_*` de la unidad | 48/60 (47/59 pagos) | $12,905 / $10,280 |
+| 200 m² · $1,599,840 | **`ext_esquema_pago` en PROSA** del desarrollo | 36 + apartado $25,000 | $26,664 |
+| 180 m² · $1,854,518 | `esquemas_pago` JSONB | 12/24/36/48 con descuento | $48,571 … $15,454 |
+| 240 m² · $2,136,000 | `esquemas_pago` (solo contado) | — | gate: 90% al firmar + 10% contra entrega |
+
+**Yo reporté que 2 no tenían plan y Luis me corrigió: son 3 de 4.** El de 200 m² tiene su plan a 36 meses escrito en una cadena de texto (`"Preventa: apartado $25,000, enganche 20%, 60% durante obra en 36 meses, 20% contra entrega · Contado: …"`), no en el JSONB estructurado. Contar fuentes estructuradas no es contar datos.
+
+🚨 **El precio del de 180 m² es función del plazo.** `ext_precio_min_mxn` del desarrollo = $1,854,518.40 (lista), pero `v_units.price_mxn` publica $1,457,121.60 = lista − 21.4286%, **el precio del plazo de 12 meses**. A 48 meses el descuento es 0% y vuelve a la lista. Calcular una mensualidad de 48 meses sobre `price_mxn` publicaría una cifra que no existe. El módulo reconstruye la lista y la **valida contra el mínimo declarado** (tolerancia 0.5%); si no cuadra, gate.
+
+Otros dos hechos que corrigen la tabla vieja: cada desarrollo tiene **1 sola unidad** en la base (92/310/422/403 son `unidades_totales`, campo declarativo), y `v_units.area_m2` viene NULL en el de 240 m² — el dato está en `superficie_terreno_m2`, de donde se rescata.
+
+- [ ] **Opcional, mejora de dato:** capturar el esquema del lote de 200 m² en `esquemas_pago` estructurado, para no depender del parser de prosa. Requiere UPDATE a prod y por tanto autorización de Luis. El parser funciona y tiene gate, así que no es urgente.
+
+**RESUELTO 2026-08-12 — «que vean que tenemos varios Lotes».** El comparador publica las 4 opciones de PdC después del CTA de cierre. Hay **5 desarrollos de Lotes publicados**, verificado por Luis en el sitio vivo (`/es/desarrollos` filtrado por Terreno = 5 resultados).
+
+⚠️ **Yo reporté que solo había 1 y estaba equivocado.** Mi consulta filtraba de más; NO reutilizarla. Para contar lotes, replicar el filtro que usa `/desarrollos` o contar contra el sitio. Recordar `feedback_v_units_terreno_query_capitalizada`: Arrecifes usa `unit_type = 'Lote'` + `'Preventa'`, no `'Terreno'`/`'Disponible'`.
+
+**Decisión de Luis: EXCLUIR el de Tulum.** La LP es campaña de Playa del Carmen. Quedan 4 opciones (inventario INTERNO, los nombres NUNCA van a la LP):
+
+| Ubicación | Desde | Sup. mín | Unidades | Etapa |
+|---|---|---|---|---|
+| Playa del Carmen | $2,136,000 | 240 m² | 92 | Entrega inmediata |
+| Arrecifes, PdC (**este lote**) | $1,010,880 | 130 m² | 310 | Preventa, 2030 |
+| Maroma, PdC | $1,599,840 | 200 m² | 422 | Preventa, F1 2027 F2 2028 F3 2029 |
+| Arrecifes, PdC | $1,854,518 | 180 m² | 403 | Preventa, 2026-12-15 |
+
+Rango $1.0M–$2.1M y 130–240 m². **Etiquetado resuelto y aplicado:** ubicación + superficie + precio desde («Playa del Carmen · 240 m² · desde $2,136,000»), cero nombres comerciales. **Ubicación resuelta:** después del CTA de cierre, como se había decidido. Ojo: el precio «desde» del de 180 m² en esta tabla ($1,854,518) es el de LISTA y es el correcto; el $1,457,121.60 que publica `v_units` es el del plazo de 12 meses.
+
+
 
 ### Tracking — Meta Pixel (sesión 2026-06-01)
 
