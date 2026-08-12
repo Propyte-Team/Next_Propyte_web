@@ -37,18 +37,18 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
     <section aria-labelledby="costos-titulo">
       <TituloSeccion id="costos-titulo">Lo que no está en el precio</TituloSeccion>
 
-      <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-graphite">
+      <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-ink-soft)]">
         El precio del lote no es el costo de adquirirlo. Estos son los conceptos
         adicionales que el desarrollador declara, para que calcules tu presupuesto
         completo antes de hablar con nosotros y no después.
       </p>
 
-      <div className="mt-6 border-t-2 border-navy">
+      <div className="mt-6 border-t-2 border-[var(--lp-accent)]">
         <BloqueCampos>
           <Campo etiqueta="Escrituración">
             {cierre ?? <EnlaceGate que="% de gastos de escrituración" />}
             {c?.cierreExcluye && (
-              <span className="block text-xs text-graphite/55">
+              <span className="block text-xs text-[var(--lp-muted)]">
                 No incluye {c.cierreExcluye}
               </span>
             )}
@@ -57,7 +57,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
           <Campo etiqueta="Mantenimiento">
             {mantenimiento ?? <EnlaceGate que="cuota de mantenimiento" />}
             {c?.mantenimientoPorDefinir && (
-              <span className="block text-xs text-graphite/55">
+              <span className="block text-xs text-[var(--lp-muted)]">
                 Monto final por definir, más cerca de la entrega
               </span>
             )}
@@ -66,7 +66,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
           {(c?.cargosUnicos ?? []).map((cargo) => (
             <Campo key={cargo.concepto} etiqueta={cargo.concepto}>
               {cargo.monto}
-              <span className="block text-xs text-graphite/55">
+              <span className="block text-xs text-[var(--lp-muted)]">
                 {cargo.momento}
                 {cargo.reembolsable === true && ', reembolsable'}
                 {cargo.reembolsable === false && ', no reembolsable'}
@@ -77,7 +77,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
                   requiere fijar QUÉ salario mínimo y de qué año aplica, y eso
                   lo define el contrato, no nosotros. */}
               {esIndexado(cargo.monto) && (
-                <span className="mt-1.5 block text-xs leading-relaxed text-graphite/70">
+                <span className="mt-1.5 block text-xs leading-relaxed text-[var(--lp-muted)]">
                   Es un cargo indexado: se calcula con el salario mínimo vigente el
                   día que inicies obra, no con el de hoy. Te pasamos el equivalente
                   en pesos y el salario mínimo que aplica en cuanto el desarrollador
@@ -89,7 +89,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
         </BloqueCampos>
       </div>
 
-      <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-graphite/65">
+      <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-[var(--lp-muted)]">
         Condiciones publicadas por el desarrollador, sujetas a cambio y
         disponibilidad. Conviene confirmar vigencia y lote específico al momento de
         decidir.

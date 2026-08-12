@@ -40,9 +40,9 @@ export default function ConsentBannerLp() {
       aria-label="Consentimiento de cookies"
       // bottom-20 en móvil: la barra de CTA fija ocupa la parte inferior y no
       // puede quedar tapada: es el objetivo primario de la página.
-      className="fixed inset-x-0 bottom-20 z-50 mx-auto max-w-3xl border border-navy/15 bg-white p-4 lg:bottom-4"
+      className="fixed inset-x-0 bottom-20 z-50 mx-auto max-w-3xl rounded-[var(--lp-r-media)] border border-[var(--lp-line)] bg-[var(--lp-paper)] p-4 shadow-[0_12px_40px_rgb(22_25_28/0.14)] lg:bottom-4"
     >
-      <p className="text-xs leading-relaxed text-graphite">
+      <p className="text-xs leading-relaxed text-[var(--lp-ink-soft)]">
         Usamos cookies de medición para saber qué anuncios traen visitantes que
         de verdad encuentran lo que buscan. Puedes rechazarlas y la página
         funciona igual.
@@ -51,14 +51,14 @@ export default function ConsentBannerLp() {
         <button
           type="button"
           onClick={() => decidir(true)}
-          className="min-h-[44px] flex-1 cursor-pointer bg-teal-a11y px-4 py-2 text-xs font-semibold text-white"
+          className="min-h-[44px] flex-1 cursor-pointer rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-4 py-2 text-xs font-medium text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
         >
           Aceptar
         </button>
         <button
           type="button"
           onClick={() => decidir(false)}
-          className="min-h-[44px] flex-1 cursor-pointer border border-navy/15 px-4 py-2 text-xs font-medium text-graphite"
+          className="min-h-[44px] flex-1 cursor-pointer rounded-[var(--lp-r-control)] border border-[var(--lp-line)] px-4 py-2 text-xs font-medium text-[var(--lp-ink-soft)] transition-colors duration-200 hover:bg-[var(--lp-paper-2)]"
         >
           Rechazar
         </button>

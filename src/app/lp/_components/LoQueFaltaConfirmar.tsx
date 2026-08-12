@@ -77,7 +77,7 @@ export default function LoQueFaltaConfirmar({ lote }: { lote: LoteLanding }) {
     <section
       id={ANCLA_GATES}
       aria-labelledby="gates-titulo"
-      className="scroll-mt-6 border-t border-aqua-bright/15 bg-aztec"
+      className="scroll-mt-6 border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]"
     >
       <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
@@ -100,12 +100,12 @@ export default function LoQueFaltaConfirmar({ lote }: { lote: LoteLanding }) {
                 >
                   <span
                     aria-hidden="true"
-                    className="font-mono text-sm tabular-nums text-amber"
+                    className="lp-num text-sm text-amber"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <div>
-                    <h3 className="font-display text-base font-semibold leading-snug tracking-tight text-white">
+                    <h3 className="lp-display text-base font-semibold leading-snug tracking-tight text-white">
                       {p.titulo}
                     </h3>
                     <p className="mt-1.5 max-w-[58ch] text-sm leading-relaxed text-white/60">

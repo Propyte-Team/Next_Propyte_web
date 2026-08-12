@@ -1,0 +1,117 @@
+/* ============================================================
+   Tema visual de las landings de pago.
+
+   ALCANCE: estas variables viven bajo `.lp-root` y NADA MÁS. La LP cuelga de
+   `app/lp/`, fuera de `[locale]`, así que ni un token de aquí puede tocar
+   propyte.com. Es la razón por la que el rediseño se pudo hacer completo sin
+   arriesgar el sitio vivo.
+
+   POR QUÉ ESTA PALETA. La versión anterior usaba el aztec frío de marca con
+   cian. El problema no era el color en abstracto: era que TODA la fotografía
+   del desarrollo es hora dorada sobre muros de terracota, grava clara y
+   follaje profundo. Un contenedor frío alrededor de imágenes cálidas hace que
+   las imágenes se lean pegadas, como traídas de otro sitio. La paleta ahora
+   sale del material real.
+
+   UN SOLO ACENTO. Terracota. No hay segundo color decorativo. El verde de
+   WhatsApp es la única excepción, y solo porque es la marca de un tercero:
+   pintarlo de otro color lo haría irreconocible.
+
+   LOS GATES YA NO SON ÁMBAR. Ocho chips ámbar repartidos por la página se
+   leían como errores de formulario, no como integridad. Ahora son tinta
+   apagada con subrayado punteado: se notan, se pueden seguir, y no gritan.
+   ============================================================ */
+
+.lp-root {
+  /* Tinta: casi-negro FRÍO. Nunca #000: mata la profundidad. */
+  --lp-ink: #16191c;
+  --lp-ink-soft: #3d454c;
+  --lp-muted: #6b7480;
+  --lp-line: rgb(22 25 28 / 0.14);
+  --lp-line-soft: rgb(22 25 28 / 0.08);
+
+  /* Superficies claras. Casi neutras, con un grado de calidez para que la
+     fotografía no flote sobre un blanco clínico. */
+  --lp-paper: #ffffff;
+  --lp-paper-2: #f4f3f1;
+
+  /* Superficies oscuras. */
+  --lp-dark: #191d21;
+  --lp-dark-2: #23282d;
+  --lp-on-dark: #f2f1ef;
+  --lp-on-dark-soft: rgb(242 241 239 / 0.62);
+  --lp-line-dark: rgb(242 241 239 / 0.16);
+
+  /* ACENTO ÚNICO. Terracota de los muros del desarrollo.
+     #a8402a sobre blanco = 6.1:1 (AA para texto normal).
+     Blanco sobre #a8402a = 6.1:1, así que el CTA sólido pasa AA holgado. */
+  --lp-accent: #a8402a;
+  --lp-accent-strong: #8c3320;
+  /* Sobre fondo oscuro el terracota se apaga: se levanta para conservar AA. */
+  --lp-accent-on-dark: #e0795b;
+
+  /* RADIOS. Regla documentada y aplicada en todos lados:
+     controles 6px, medios y bloques 14px. Sin mezclas fuera de esto. */
+  --lp-r-control: 6px;
+  --lp-r-media: 14px;
+}
+
+/* Marca tipográfica: la display serif solo en titulares. El grotesk del sitio
+   sigue haciendo el trabajo de interfaz y de cifras. */
+.lp-display {
+  font-family: var(--font-lp-display), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+/* Cifras: tabulares siempre, para que las columnas de dinero cuadren. */
+.lp-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Gate: lo que no sabemos. Sin caja, sin ámbar, sin icono de alerta.
+   Subrayado punteado = "esto está incompleto a propósito y puedes ir a verlo". */
+.lp-gate {
+  color: var(--lp-muted);
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
+  text-decoration-color: rgb(22 25 28 / 0.32);
+  transition: color 0.2s ease;
+}
+.lp-gate:hover {
+  color: var(--lp-ink);
+}
+.lp-gate-dark {
+  color: var(--lp-on-dark-soft);
+  text-decoration-color: rgb(242 241 239 / 0.36);
+}
+.lp-gate-dark:hover {
+  color: var(--lp-on-dark);
+}
+
+/* Reveal de scroll. CSS puro con scroll-driven animations donde existan, para
+   no mandar JS de animación a una ruta cuyo LCP es criterio de aceptación.
+   Si el navegador no las soporta, el contenido simplemente ya está visible:
+   nunca se queda en opacity 0. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lp-reveal {
+      animation: lp-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 42%;
+    }
+  }
+}
+
+@keyframes lp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

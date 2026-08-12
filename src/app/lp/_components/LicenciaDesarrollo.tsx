@@ -47,7 +47,7 @@ export default function LicenciaDesarrollo({ licencia }: { licencia: Licencia })
     >
       <h3
         id="licencia-titulo"
-        className="font-display text-base font-semibold tracking-tight text-white"
+        className="lp-display text-base font-semibold tracking-tight text-white"
       >
         Licencia y autorización de venta
       </h3>

@@ -1,6 +1,24 @@
 import type { Metadata } from 'next';
+import { Newsreader } from 'next/font/google';
 import Analytics from '@/components/shared/Analytics';
 import ConsentBannerLp from './_components/ConsentBannerLp';
+import './lp-theme.css';
+
+// Display serif SOLO para titulares de la landing. El grotesk del sitio sigue
+// haciendo interfaz y cifras.
+//
+// Por qué una serif aquí y no en el resto de propyte.com: esta página vende
+// confianza mediante un texto largo y argumentado, no mediante fotos de
+// producto. Una serif de texto le da autoridad de publicación a los titulares,
+// que es exactamente el registro que la página necesita. Newsreader, no las
+// dos serifs que todo generador escoge por defecto.
+const displaySerif = Newsreader({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  style: ['normal', 'italic'],
+  variable: '--font-lp-display',
+  display: 'swap',
+});
 
 // ============================================================
 // Layout de landings de pago.
@@ -34,19 +52,22 @@ export const metadata: Metadata = {
 
 export default function LpLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      {/* Cabecera sobre el mismo fondo que el hero, para que la marca y el
-          primer pliegue lean como una sola pieza. Logo no clicable: identidad
-          sin ruta de salida (un solo objetivo). */}
-      <header className="bg-aztec">
-        <div className="mx-auto flex max-w-6xl items-baseline justify-between gap-4 px-5 py-4">
+    <div
+      className={`lp-root flex min-h-screen flex-col bg-[var(--lp-paper)] ${displaySerif.variable}`}
+    >
+      {/* Cabecera transparente sobre el hero. El hero ahora es una imagen a
+          sangre, así que la cabecera flota encima en vez de cortarla con una
+          banda de color: el primer pliegue se lee como una sola pieza.
+          Logo no clicable: identidad sin ruta de salida (un solo objetivo). */}
+      <header className="absolute inset-x-0 top-0 z-20">
+        <div className="mx-auto flex max-w-6xl items-baseline justify-between gap-4 px-5 py-5 sm:px-8">
           <span
-            className="font-display text-lg font-semibold tracking-tight text-white"
+            className="lp-display text-xl text-[var(--lp-on-dark)] drop-shadow-[0_1px_12px_rgb(0_0_0/0.45)]"
             aria-label="Propyte"
           >
             Propyte
           </span>
-          <span className="font-mono text-[0.625rem] uppercase tracking-[0.12em] text-aqua-bright/55">
+          <span className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-on-dark)]/70 drop-shadow-[0_1px_12px_rgb(0_0_0/0.45)]">
             Riviera Maya
           </span>
         </div>

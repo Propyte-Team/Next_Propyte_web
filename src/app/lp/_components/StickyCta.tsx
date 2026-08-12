@@ -29,14 +29,14 @@ export default function StickyCta({
   const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}&utm_content=${encodeURIComponent(loteSlug)}`;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-navy/12 bg-white/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(0.625rem,env(safe-area-inset-bottom))] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--lp-line)] bg-white/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(0.625rem,env(safe-area-inset-bottom))] lg:hidden">
       <div className="flex items-stretch gap-2 px-4 py-2.5">
         {mensualidad && (
           <div className="flex shrink-0 flex-col justify-center pr-1">
-            <span className="text-[0.5625rem] uppercase tracking-[0.08em] text-navy/50">
+            <span className="text-[0.5625rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
               Al mes
             </span>
-            <span className="font-mono text-sm tabular-nums leading-tight text-navy">
+            <span className="lp-num text-sm leading-tight text-[var(--lp-ink)]">
               {mensualidad}
             </span>
           </div>
@@ -49,7 +49,7 @@ export default function StickyCta({
               .getElementById('solicitar')
               ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
           }
-          className="min-h-[48px] flex-1 cursor-pointer bg-teal-a11y px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-teal-a11y/90"
+          className="min-h-[48px] flex-1 cursor-pointer bg-[var(--lp-accent)] px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
         >
           {mensualidad ? 'Ver mi plan' : 'Pedir el detalle'}
         </button>
@@ -62,7 +62,7 @@ export default function StickyCta({
             trackWhatsAppClick({ surface: 'lp-lotes-pdc-sticky', propertySlug: loteSlug })
           }
           aria-label="Escribir por WhatsApp"
-          className="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border border-navy/15 text-graphite transition-colors duration-200 hover:border-navy/35"
+          className="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border border-[var(--lp-line)] text-[var(--lp-ink-soft)] transition-colors duration-200 hover:border-[var(--lp-accent)]/35"
         >
           <MessageCircle className="size-5" aria-hidden="true" />
         </a>

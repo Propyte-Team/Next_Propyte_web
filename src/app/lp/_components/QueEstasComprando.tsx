@@ -75,7 +75,7 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
       <TituloSeccion id="comprando-titulo">Qué estás comprando, exactamente</TituloSeccion>
 
       <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-10">
-        <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-graphite">
+        <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
           <p>
             No una casa terminada: el espacio para decidir la tuya. Cuando compras
             un terreno no heredas los acabados ni la distribución de alguien más.
@@ -91,10 +91,10 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
           {apr && lote.superficieM2 && (
             <p>
               Sobre {m2(lote.superficieM2)}, el uso de suelo permite ocupar{' '}
-              <span className="font-mono tabular-nums">{m2(apr.huellaM2)}</span> en
+              <span className="lp-num">{m2(apr.huellaM2)}</span> en
               planta y construir hasta{' '}
-              <strong className="font-semibold text-navy">
-                <span className="font-mono tabular-nums">{m2(apr.construibleM2)}</span>{' '}
+              <strong className="font-semibold text-[var(--lp-ink)]">
+                <span className="lp-num">{m2(apr.construibleM2)}</span>{' '}
                 en total
               </strong>
               : una casa de {apr.niveles === 2 ? 'dos' : apr.niveles} niveles con tres
@@ -110,13 +110,13 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
 
           {amenidades.length > 0 && (
             <div className="mt-2">
-              <p className="text-sm text-graphite">
+              <p className="text-sm text-[var(--lp-ink-soft)]">
                 Dentro de la privada
                 {lote.lotesTotalesPrivada && (
                   <>
                     {' '}
                     de{' '}
-                    <span className="font-mono tabular-nums">
+                    <span className="lp-num">
                       {lote.lotesTotalesPrivada}
                     </span>{' '}
                     lotes
@@ -124,24 +124,24 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
                 )}
                 , esto es lo que cada amenidad significa un martes cualquiera:
               </p>
-              {/* Reja de dos columnas, no chips: la consecuencia es el contenido
-                  y necesita ancho de línea, no una cápsula. */}
-              <dl className="mt-4 border-t border-navy/12">
+              {/* Reja de dos columnas, NO una fila por amenidad.
+                  Once filas apiladas con hairline se comían el 20% del scroll
+                  de la página y leían como hoja de cálculo. En dos columnas la
+                  misma información ocupa la mitad y se escanea de un vistazo,
+                  que es lo único que alguien hace con una lista de amenidades. */}
+              <dl className="mt-5 grid gap-x-10 gap-y-5 sm:grid-cols-2">
                 {amenidades.map((a) => (
-                  <div
-                    key={a.nombre}
-                    className="grid gap-x-4 border-b border-navy/12 py-3 sm:grid-cols-[minmax(9rem,0.5fr)_1fr]"
-                  >
-                    <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-navy/50">
+                  <div key={a.nombre}>
+                    <dt className="text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--lp-accent)]">
                       {a.nombre}
                     </dt>
-                    <dd className="mt-1 text-sm leading-relaxed text-graphite sm:mt-0">
+                    <dd className="mt-1 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
                       {a.consecuencia}
                     </dd>
                   </div>
                 ))}
               </dl>
-              <p className="mt-3 text-sm text-graphite/70">
+              <p className="mt-3 text-sm text-[var(--lp-muted)]">
                 Se entregan conforme al calendario de obra, y ese calendario está más
                 abajo con sus fechas y con lo que todavía no podemos confirmar.
               </p>
@@ -151,17 +151,31 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
 
         {/* Imagen curada, distinta de la del hero. Antes era el MISMO archivo:
             una aérea repetida bajo el rótulo «áreas comunes». */}
+        {/* `self-start` + relación de aspecto FIJA, y sticky en desktop.
+            Antes era `lg:aspect-auto lg:min-h-[360px]`: dentro de un grid eso
+            estira la celda hasta la altura de la columna de texto, que aquí es
+            larguísima. El resultado era una tira vertical estrecha con
+            `object-cover` recortando el centro de un render horizontal, o sea
+            árboles desenfocados. Con la relación fija la foto vuelve a leerse
+            como foto, y el sticky la acompaña mientras se lee el texto en vez
+            de dejar un hueco muerto debajo. */}
         {imagen && (
-          <div className="relative aspect-[4/3] lg:aspect-auto lg:min-h-[360px]">
-            <Image
-              src={imagen.url}
-              alt={imagen.alt}
-              fill
-              loading="lazy"
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="object-cover"
-            />
-          </div>
+          <figure className="lg:sticky lg:top-8 lg:self-start">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--lp-r-media)]">
+              <Image
+                src={imagen.url}
+                alt={imagen.alt}
+                fill
+                loading="lazy"
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="mt-3 text-xs leading-relaxed text-[var(--lp-muted)]">
+              Render de las canchas del desarrollo. Se entregan conforme al
+              calendario de obra que está más abajo.
+            </figcaption>
+          </figure>
         )}
       </div>
     </section>

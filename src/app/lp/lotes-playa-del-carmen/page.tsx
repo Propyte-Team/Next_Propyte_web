@@ -14,7 +14,7 @@ import PruebaDeQueExistimos from '../_components/PruebaDeQueExistimos';
 import WhatsAppCta from '../_components/WhatsAppCta';
 import UnDomingoAqui from '../_components/UnDomingoAqui';
 import LoQueFaltaConfirmar from '../_components/LoQueFaltaConfirmar';
-import { EnlaceGate, TituloSeccion, RULE_DARK } from '../_components/ui';
+import { EnlaceGate, TituloSeccion, BotonPrimario, RULE_DARK } from '../_components/ui';
 import { mxn, mxnExacto, m2, fechaLarga } from '../_components/format';
 
 // ISR: el inventario cambia sin deploy. 5 min es suficientemente fresco para que
@@ -36,9 +36,9 @@ export default async function LandingLotesPlayaDelCarmen() {
   // no un caso borde. La página lo trata como estado, no como error.
   if (!lote) {
     return (
-      <div className="bg-aztec">
+      <div className="bg-[var(--lp-dark)]">
         <div className="mx-auto max-w-2xl px-5 py-24">
-          <h1 className="font-display text-[clamp(1.75rem,1.3rem+2vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-white">
+          <h1 className="lp-display text-[clamp(1.75rem,1.3rem+2vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.02em] text-white">
             Este lote ya no está disponible
           </h1>
           <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-white/70">
@@ -90,125 +90,144 @@ export default async function LandingLotesPlayaDelCarmen() {
   return (
     <>
       {/* ═══════════ 1 · Hero ═══════════
-          Fondo aztec drenado: es lo que hace legible el cian de marca, que sobre
-          blanco es inusable. La foto va a sangre por la derecha, sin radio. */}
-      <section className="bg-aztec">
-        <div className="mx-auto max-w-6xl px-5 pt-10 lg:grid lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-16">
-          <div className="lg:pb-16">
-            {/* Escasez verificable, no fabricada: el inventario es de una unidad. */}
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-              <p className="font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-aqua-bright">
-                Uno disponible
-              </p>
-              {corte && (
-                <p className="font-mono text-[0.6875rem] uppercase tracking-[0.1em] text-white/40">
-                  Al {corte}
-                </p>
-              )}
-            </div>
+          Antes: dos columnas, texto a la izquierda sobre aztec plano, foto
+          arrinconada a la derecha. La foto no hacía trabajo y el bloque de
+          texto cargaba con siete elementos.
 
-            {/* H1. El anterior describía una categoría («un lote en privada»);
-                este nombra la consecuencia. No es una promesa: «puedes construir
-                una casa de dos niveles» es aritmética de COS y CUS que cualquiera
-                puede verificar, y el dato que la sostiene está justo debajo. Es
-                simultáneamente lo más duro y lo más emocional de la página. */}
-            <h1 className="mt-5 max-w-[24ch] font-display text-[clamp(2rem,1.4rem+3.2vw,3.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-balance text-white">
-              {apr ? (
-                <>
-                  Aquí puedes construir una casa de{' '}
-                  {apr.niveles === 2 ? 'dos' : apr.niveles} niveles, a 4.2 km de la
-                  playa
-                </>
-              ) : (
-                <>Un lote en privada en Playa del Carmen, a 4.2 km de la playa</>
-              )}
-            </h1>
+          Ahora: imagen a sangre con degradado, y sólo cuatro elementos encima
+          (cintillo, titular, subtítulo, CTAs). Las cifras y la línea de
+          honestidad bajan a su propia banda: son la segunda respiración, no
+          parte del primer golpe. */}
+      <section className="relative isolate min-h-[92svh] overflow-hidden bg-[var(--lp-dark)] lg:min-h-[100svh]">
+        {heroImg && (
+          <Image
+            src={heroImg.url}
+            alt={heroImg.alt}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
+        {/* Degradado, no capa plana: la foto conserva su hora dorada arriba y
+            cede legibilidad abajo, que es donde vive el texto. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-[var(--lp-dark)] via-[var(--lp-dark)]/72 to-[var(--lp-dark)]/15"
+        />
 
-            <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-white/70">
-              {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
-              dentro de una privada
-              {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>} en
-              Playa del Carmen.
-              {apr && (
-                <>
-                  {' '}
-                  El uso de suelo permite hasta {m2(apr.construibleM2)} construidos:
-                  tres recámaras, no dos.
-                </>
-              )}{' '}
-              El financiamiento es directo con el desarrollador
-              {plan?.sinIntereses && (
-                <>
-                  , <strong className="font-semibold text-white">sin intereses</strong>
-                </>
-              )}
-              {lote.enganchePct && <>, con {lote.enganchePct}% de enganche</>}.
-            </p>
+        <div className="relative mx-auto flex min-h-[92svh] max-w-6xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:min-h-[100svh] lg:pb-20">
+          {/* Escasez verificable, no fabricada: el inventario es de una unidad. */}
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[0.6875rem] uppercase tracking-[0.14em]">
+            <span className="text-[var(--lp-accent-on-dark)]">Uno disponible</span>
+            {corte && (
+              <span className="text-[var(--lp-on-dark)]/45">Al {corte}</span>
+            )}
+          </div>
 
-            {/* Tira de pago. Orden deliberado: primero lo que cuesta entrar, luego
-                lo que se paga cada mes, después lo construible y sólo al final el
-                precio total.
+          {/* H1. Nombra la consecuencia, no la categoría. No es una promesa:
+              «puedes construir una casa de dos niveles» es aritmética de COS y
+              CUS que cualquiera puede verificar. Es a la vez el dato más duro y
+              el más emocional de la página, y por eso es el titular. */}
+          <h1 className="lp-display mt-5 max-w-[19ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
+            {apr ? (
+              <>
+                Aquí puedes construir una casa de{' '}
+                {apr.niveles === 2 ? 'dos' : apr.niveles} niveles, a 4.2 km de la
+                playa
+              </>
+            ) : (
+              <>Un lote en privada en Playa del Carmen, a 4.2 km de la playa</>
+            )}
+          </h1>
 
-                La tercera celda es la que cambia la percepción del precio: el
-                total sobre la superficie del lote se lee caro; sobre los metros
-                construibles se lee distinto. Mismo número, marco distinto, cero
-                engaño — el precio total sigue en la tira, no se esconde.
+          <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
+            {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
+            en una privada
+            {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>}.
+            {apr && (
+              <> El uso de suelo permite hasta {m2(apr.construibleM2)} construidos.</>
+            )}
+          </p>
 
-                El enganche ya NO se lee de `plan`: se lee de `lote.engancheMxn`,
-                que no depende de la tasa. Antes esta celda decía «sin dato»
-                mientras la ficha, cuatro bloques abajo, publicaba la cifra. */}
-            <dl
-              className={`mt-9 grid grid-cols-2 border-y ${RULE_DARK} divide-x divide-aqua-bright/20 sm:grid-cols-4`}
-            >
-              {[
-                {
-                  k: 'Enganche',
-                  v: lote.engancheMxn !== null ? mxn(lote.engancheMxn) : null,
-                  destacado: true,
-                },
-                {
-                  k: plazoMax ? `Al mes · ${plazoMax.meses} meses` : 'Al mes',
-                  v: plazoMax ? mxn(plazoMax.mensualidadMxn) : null,
-                  destacado: true,
-                },
-                {
-                  k: 'Construible',
-                  v: apr ? m2(apr.construibleM2) : null,
-                  destacado: false,
-                },
-                { k: 'Precio total', v: lote.precioMxn ? mxn(lote.precioMxn) : null },
-              ].map((c) => (
-                <div key={c.k} className="px-3 py-4 sm:px-4">
-                  <dt className="text-[0.625rem] uppercase tracking-[0.1em] text-white/40">
-                    {c.k}
-                  </dt>
-                  <dd
-                    className={`mt-1.5 font-mono text-[0.9375rem] tabular-nums sm:text-lg ${
-                      c.destacado ? 'text-aqua-bright' : 'text-white'
-                    }`}
-                  >
-                    {c.v ?? (
-                      <a
-                        href="#falta-confirmar"
-                        className="text-amber/90 underline decoration-dotted underline-offset-4 transition-colors duration-200 hover:text-amber"
-                      >
-                        falta confirmar
-                      </a>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <BotonPrimario href="#solicitar">
+              {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle'}
+            </BotonPrimario>
+            <WhatsAppCta
+              loteSlug={lote.slug}
+              telefono={FALLBACK_WHATSAPP}
+              mensaje={mensajeWa}
+              surface="lp-lotes-pdc-hero"
+            />
+          </div>
+        </div>
+      </section>
 
+      {/* ═══════════ 1.5 · Las cifras ═══════════
+          Banda propia, inmediatamente bajo el hero. Orden deliberado: lo que
+          cuesta entrar, lo que se paga cada mes, lo construible, y sólo al
+          final el precio total.
+
+          La tercera celda es la que cambia la percepción del precio: el total
+          sobre la superficie del lote se lee caro; sobre los metros
+          construibles se lee distinto. Mismo número, marco distinto, cero
+          engaño, y el precio total sigue presente.
+
+          El enganche NO se lee de `plan`: se lee de `lote.engancheMxn`, que no
+          depende de la tasa. Antes esta celda decía «sin dato» mientras la
+          ficha, cuatro bloques abajo, publicaba la cifra. */}
+      <section className="border-b border-[var(--lp-line)] bg-[var(--lp-paper)]">
+        <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 lg:py-12">
+          <dl className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
+            {[
+              {
+                k: 'Enganche',
+                v: lote.engancheMxn !== null ? mxn(lote.engancheMxn) : null,
+                destacado: true,
+              },
+              {
+                k: plazoMax ? `Al mes, ${plazoMax.meses} meses` : 'Al mes',
+                v: plazoMax ? mxn(plazoMax.mensualidadMxn) : null,
+                destacado: true,
+              },
+              { k: 'Construible', v: apr ? m2(apr.construibleM2) : null },
+              { k: 'Precio total', v: lote.precioMxn ? mxn(lote.precioMxn) : null },
+            ].map((c) => (
+              <div key={c.k}>
+                <dt className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-muted)]">
+                  {c.k}
+                </dt>
+                <dd
+                  className={`lp-display lp-num mt-2 text-[clamp(1.5rem,1.1rem+1.4vw,2.125rem)] leading-none ${
+                    c.destacado
+                      ? 'text-[var(--lp-accent)]'
+                      : 'text-[var(--lp-ink)]'
+                  }`}
+                >
+                  {c.v ?? (
+                    <a href="#falta-confirmar" className="lp-gate text-base">
+                      falta confirmar
+                    </a>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <div className="mt-9 grid gap-x-12 gap-y-4 border-t border-[var(--lp-line-soft)] pt-6 md:grid-cols-2">
             {/* La contraentrega no es letra chica: es parte del número de arriba. */}
             {plan ? (
-              <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-white/45">
-                Más un pago final de {mxn(plan.contraentregaMxn)} contra entrega, que
-                es el {plan.contraentregaPct}% del precio. Te mandamos la tabla de
-                amortización completa por escrito.
+              <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-muted)]">
+                Más un pago final de{' '}
+                <span className="lp-num text-[var(--lp-ink-soft)]">
+                  {mxn(plan.contraentregaMxn)}
+                </span>{' '}
+                contra entrega, que es el {plan.contraentregaPct}% del precio. Te
+                mandamos la tabla de amortización completa por escrito.
               </p>
             ) : (
-              <p className="mt-3 max-w-[52ch] text-xs leading-relaxed text-white/45">
+              <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-muted)]">
                 El precio por metro cuadrado es{' '}
                 {lote.precioM2Mxn ? mxnExacto(lote.precioM2Mxn) : 'por confirmar'}. La
                 mensualidad la publicamos en cuanto el desarrollador declare la tasa
@@ -216,52 +235,25 @@ export default async function LandingLotesPlayaDelCarmen() {
               </p>
             )}
 
-            {/* CTA doble, mismo peso visual. WhatsApp co-primario. */}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#solicitar"
-                className="inline-flex min-h-[52px] cursor-pointer items-center justify-center bg-teal px-6 text-sm font-semibold text-aztec transition-colors duration-200 hover:bg-teal-dark"
-              >
-                {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle del lote'}
-              </a>
-              <WhatsAppCta
-                loteSlug={lote.slug}
-                telefono={FALLBACK_WHATSAPP}
-                mensaje={mensajeWa}
-                surface="lp-lotes-pdc-hero"
-              />
-            </div>
-
             {/* Honestidad en una línea, DESPUÉS del valor. El detalle vive abajo.
-                No se suaviza la objeción, se recoloca: como cierre del bloque de
-                respuesta directa era la última cosa que el visitante leía antes
-                de decidir irse. */}
-            <p className="mt-7 max-w-[52ch] text-sm leading-relaxed text-white/55">
+                No se suaviza la objeción, se recoloca. */}
+            <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
               Hoy el lote no tiene servicios conectados y no es escriturable. Abajo
               está el detalle servicio por servicio, con las fechas que declara el
-              desarrollador y lo que todavía no podemos confirmar.
+              desarrollador y{' '}
+              <a href="#falta-confirmar" className="lp-gate">
+                lo que todavía no podemos confirmar
+              </a>
+              .
             </p>
           </div>
-
-          {heroImg && (
-            <div className="relative mt-10 h-[42vw] min-h-[240px] lg:mt-0 lg:h-auto lg:min-h-[560px]">
-              <Image
-                src={heroImg.url}
-                alt={heroImg.alt}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 46vw"
-                className="object-cover"
-              />
-            </div>
-          )}
         </div>
       </section>
 
       {/* ═══════════ 2 · Respuesta directa ═══════════ */}
-      <section className="border-b border-navy/12 bg-gray-light">
+      <section className="border-b border-[var(--lp-line)] bg-[var(--lp-paper-2)]">
         <div className="mx-auto max-w-6xl px-5 py-12 lg:py-16">
-          <p className="max-w-[58ch] font-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] leading-[1.5] text-navy">
+          <p className="max-w-[58ch] lp-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] leading-[1.5] text-[var(--lp-ink)]">
             En Playa del Carmen tenemos un lote residencial disponible de{' '}
             {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'} en{' '}
             {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
@@ -300,7 +292,7 @@ export default async function LandingLotesPlayaDelCarmen() {
               loteNombre={lote.titulo}
               plazoMeses={plazoMax?.meses ?? null}
             />
-            <p className="mt-5 max-w-[46ch] text-xs leading-relaxed text-graphite/70">
+            <p className="mt-5 max-w-[46ch] text-xs leading-relaxed text-[var(--lp-muted)]">
               Si por presupuesto u objetivo no encaja, te lo decimos en el primer
               mensaje.
             </p>
@@ -326,7 +318,7 @@ export default async function LandingLotesPlayaDelCarmen() {
           Va DESPUÉS de la tabla de servicios a propósito: primero el visitante
           ve que hoy no hay nada conectado, y sólo entonces lee por qué eso es
           el precio de la ventana de cinco años. Al revés sería suavizar. */}
-      <section aria-labelledby="ventana-titulo" className="border-b border-navy/12 bg-gray-light">
+      <section aria-labelledby="ventana-titulo" className="border-b border-[var(--lp-line)] bg-[var(--lp-paper-2)]">
         <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
           <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
             <TituloSeccion id="ventana-titulo">
@@ -334,7 +326,7 @@ export default async function LandingLotesPlayaDelCarmen() {
               para no hacerlo
             </TituloSeccion>
 
-            <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-graphite">
+            <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
               <p>
                 Un terreno urbanizado y escriturado en esta zona cuesta más y se paga
                 de contado o con crédito bancario. Lo que compras aquí es tiempo:
@@ -372,7 +364,7 @@ export default async function LandingLotesPlayaDelCarmen() {
       <LoQueFaltaConfirmar lote={lote} />
 
       {/* ═══════════ 7 · Situación jurídica ═══════════ */}
-      <section aria-labelledby="juridico-titulo" className="border-t border-aqua-bright/15 bg-aztec">
+      <section aria-labelledby="juridico-titulo" className="border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]">
         <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <TituloSeccion id="juridico-titulo" tono="oscuro">
@@ -443,7 +435,7 @@ export default async function LandingLotesPlayaDelCarmen() {
               razón para seguir leyendo. */}
           <section aria-labelledby="filtro-titulo">
             <TituloSeccion id="filtro-titulo">Para quién no es este producto</TituloSeccion>
-            <div className="mt-5 flex flex-col gap-4 text-base leading-relaxed text-graphite">
+            <div className="mt-5 flex flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
               <p>
                 Comprar el terreno y poder construir no ocurren el mismo día. La
                 escrituración está proyectada para finales de 2026 según el
@@ -461,7 +453,7 @@ export default async function LandingLotesPlayaDelCarmen() {
                 Y si tu presupuesto total no alcanza el precio del lote más los gastos
                 de escrituración{' '}
                 {lote.costos?.cierrePctMin && lote.costos?.cierrePctMax ? (
-                  <span className="font-mono text-sm tabular-nums">
+                  <span className="lp-num text-sm">
                     ({lote.costos.cierrePctMin}% a {lote.costos.cierrePctMax}% adicional)
                   </span>
                 ) : (
@@ -478,7 +470,7 @@ export default async function LandingLotesPlayaDelCarmen() {
           {/* ───── 11 · FAQ ───── */}
           <section aria-labelledby="faq-titulo">
             <TituloSeccion id="faq-titulo">Preguntas que sí importan</TituloSeccion>
-            <dl className="mt-6 border-t border-navy/12">
+            <dl className="mt-6 border-t border-[var(--lp-line)]">
               {[
                 {
                   q: '¿Es terreno ejidal o propiedad privada, y cómo lo compruebo?',
@@ -534,11 +526,11 @@ export default async function LandingLotesPlayaDelCarmen() {
                   ),
                 },
               ].map((item) => (
-                <div key={item.q} className="border-b border-navy/12 py-5">
-                  <dt className="font-display text-base font-semibold leading-snug tracking-tight text-navy">
+                <div key={item.q} className="border-b border-[var(--lp-line)] py-5">
+                  <dt className="lp-display text-base font-semibold leading-snug tracking-tight text-[var(--lp-ink)]">
                     {item.q}
                   </dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-graphite">{item.a}</dd>
+                  <dd className="mt-2 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{item.a}</dd>
                 </div>
               ))}
             </dl>
@@ -549,9 +541,9 @@ export default async function LandingLotesPlayaDelCarmen() {
       {/* ═══════════ 12 · Cierre ═══════════
           Un solo formulario en la página, arriba. Aquí sólo el ancla de vuelta,
           para no duplicar componente ni eventos de medición. */}
-      <section className="bg-aztec">
+      <section className="bg-[var(--lp-dark)]">
         <div className="mx-auto max-w-6xl px-5 py-14">
-          <p className="max-w-[46ch] font-display text-[clamp(1.25rem,1.1rem+0.8vw,1.75rem)] font-semibold leading-tight tracking-[-0.02em] text-balance text-white">
+          <p className="max-w-[46ch] lp-display text-[clamp(1.25rem,1.1rem+0.8vw,1.75rem)] font-semibold leading-tight tracking-[-0.02em] text-balance text-white">
             {plan
               ? `Te mandamos tu tabla de amortización, el plano con la ubicación del lote y el paquete documental.`
               : 'Te mandamos el detalle completo del lote y el paquete documental.'}
@@ -559,7 +551,7 @@ export default async function LandingLotesPlayaDelCarmen() {
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <a
               href="#solicitar"
-              className="inline-flex min-h-[52px] cursor-pointer items-center justify-center bg-teal px-6 text-sm font-semibold text-aztec transition-colors duration-200 hover:bg-teal-dark"
+              className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--lp-accent-strong)] active:translate-y-px"
             >
               {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle del lote'}
             </a>
@@ -574,7 +566,7 @@ export default async function LandingLotesPlayaDelCarmen() {
       </section>
 
       {/* ═══════════ 13 · Pie legal ═══════════ */}
-      <footer className="border-t border-aqua-bright/15 bg-aztec">
+      <footer className="border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]">
         <div className="mx-auto max-w-6xl px-5 py-10 pb-24 lg:pb-10">
           <div className="flex max-w-[80ch] flex-col gap-3 text-xs leading-relaxed text-white/50">
             <p>

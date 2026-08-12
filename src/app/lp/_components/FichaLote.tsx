@@ -22,7 +22,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
     <section aria-labelledby="ficha-titulo">
       <TituloSeccion id="ficha-titulo">El lote, con todos sus números</TituloSeccion>
 
-      <div className="mt-6 border-t-2 border-navy">
+      <div className="mt-6 border-t-2 border-[var(--lp-accent)]">
         <BloqueCampos>
           <Campo etiqueta="Superficie">
             {lote.superficieM2 ? m2(lote.superficieM2) : <EnlaceGate que="superficie" />}
@@ -46,7 +46,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
             {lote.aprovechamiento ? (
               <>
                 {m2(lote.aprovechamiento.construibleM2)}
-                <span className="block text-xs text-graphite/55">
+                <span className="block text-xs text-[var(--lp-muted)]">
                   COS {lote.aprovechamiento.cos} · CUS {lote.aprovechamiento.cus}, hasta{' '}
                   {m2(lote.aprovechamiento.huellaM2)} en planta
                 </span>
@@ -60,7 +60,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
             {lote.enganchePct && lote.engancheMxn !== null ? (
               <>
                 Desde {lote.enganchePct}%
-                <span className="text-graphite/55">
+                <span className="text-[var(--lp-muted)]">
                   {'  '}
                   {mxn(lote.engancheMxn)} MXN
                 </span>
@@ -79,7 +79,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
             {plazoMax ? (
               <>
                 {mxn(plazoMax.mensualidadMxn)} MXN
-                <span className="block text-xs text-graphite/55">
+                <span className="block text-xs text-[var(--lp-muted)]">
                   {plazoMax.pagos} pagos a {plazoMax.meses} meses, sin intereses
                 </span>
               </>
@@ -123,11 +123,11 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
           contrario de la marca— pero se completa con los cuatro renglones que
           hacen que la comparación signifique algo. No es un truco retórico:
           cada uno es verificable en el otro terreno. */}
-      <div className="mt-5 max-w-[62ch] text-sm leading-relaxed text-graphite">
+      <div className="mt-5 max-w-[62ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
         {lote.precioM2Mxn && lote.superficieM2 ? (
           <>
             <p>
-              <strong className="font-semibold text-navy">
+              <strong className="font-semibold text-[var(--lp-ink)]">
                 Cómo leer este precio.
               </strong>{' '}
               Son {mxnExacto(lote.precioM2Mxn)} por metro cuadrado sobre{' '}
@@ -145,7 +145,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
                 <li key={criterio} className="grid grid-cols-[1.5rem_1fr] gap-x-2">
                   <span
                     aria-hidden="true"
-                    className="font-mono text-xs tabular-nums text-navy/45"
+                    className="lp-num text-xs text-[var(--lp-muted)]"
                   >
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -160,7 +160,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
           </>
         ) : (
           <p>
-            <strong className="font-semibold text-navy">Cómo leer este precio.</strong>{' '}
+            <strong className="font-semibold text-[var(--lp-ink)]">Cómo leer este precio.</strong>{' '}
             El precio por metro cuadrado es lo que permite comparar este lote contra
             cualquier otro. Todavía no lo publicamos porque falta confirmar la
             superficie exacta, y preferimos decírtelo antes que estimarlo.

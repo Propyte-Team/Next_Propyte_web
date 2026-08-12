@@ -19,7 +19,7 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
   return (
-    <section aria-labelledby="urb-titulo" className="bg-aztec">
+    <section aria-labelledby="urb-titulo" className="bg-[var(--lp-dark)]">
       <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <div>
@@ -29,7 +29,7 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
 
             {lote.ningunServicioHoy && (
               <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-white/75">
-                <strong className="font-semibold text-aqua-bright">
+                <strong className="font-semibold text-[var(--lp-accent-on-dark)]">
                   Hoy no hay ningún servicio conectado.
                 </strong>{' '}
                 Ninguno. Todos están proyectados. Lo ponemos antes de la tabla, no
@@ -70,7 +70,7 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
           </div>
 
           {lote.servicios.length > 0 ? (
-            <div className={`border-t-2 border-aqua-bright/45`}>
+            <div className={`border-t-2 border-[var(--lp-accent-on-dark)]`}>
               <dl className={`border-x border-b ${RULE_DARK}`}>
                 {lote.servicios.map((s) => {
                   const fecha = mesAnio(s.fechaEstimada);
@@ -85,7 +85,7 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
                           <span className="block text-xs text-white/40">{s.detalle}</span>
                         )}
                       </dt>
-                      <dd className="text-right font-mono text-xs tabular-nums">
+                      <dd className="text-right lp-num text-xs">
                         <EstadoServicio estado={s.estado} />
                         {fecha && (
                           <span className="block text-white/45">{fecha}</span>

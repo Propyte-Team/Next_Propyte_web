@@ -28,7 +28,7 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
     return (
       <section aria-labelledby="plan-titulo">
         <TituloSeccion id="plan-titulo">Cómo se paga</TituloSeccion>
-        <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-graphite">
+        <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-ink-soft)]">
           El financiamiento es directo con el desarrollador, pero todavía no
           publicamos las mensualidades porque falta un dato y preferimos decírtelo
           antes que estimarlo.
@@ -46,7 +46,7 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
         {plan.sinIntereses ? 'Cómo se paga, sin intereses' : 'Cómo se paga'}
       </TituloSeccion>
 
-      <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-graphite">
+      <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-ink-soft)]">
         Financiamiento directo con el desarrollador
         {plan.sinIntereses && ', sin intereses'}. El esquema que publica es{' '}
         {plan.enganchePct}% de enganche, {plan.mensualidadesPct}% en mensualidades y{' '}
@@ -55,16 +55,16 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
       </p>
 
       {/* Las dos opciones de plazo, lado a lado. La comparación es el valor. */}
-      <div className="mt-6 grid gap-px border-t-2 border-navy bg-navy/12 sm:grid-cols-2">
+      <div className="mt-6 grid gap-px border-t-2 border-[var(--lp-accent)] bg-[var(--lp-line)] sm:grid-cols-2">
         {plan.opciones.map((o) => (
           <div key={o.meses} className="bg-white p-5">
-            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-navy/55">
+            <p className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
               Plazo de {o.meses} meses
             </p>
-            <p className="mt-3 font-mono text-2xl tabular-nums text-navy">
+            <p className="mt-3 font-mono text-2xl tabular-nums text-[var(--lp-ink)]">
               {mxn(o.mensualidadMxn)}
             </p>
-            <p className="mt-1 text-xs text-graphite/70">
+            <p className="mt-1 text-xs text-[var(--lp-muted)]">
               al mes, {o.pagos} pagos
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
       </div>
 
       {/* Desglose completo: lo que entra al inicio, en medio y al final. */}
-      <dl className={`mt-6 border-x border-b border-t-2 border-t-navy ${RULE_LIGHT}`}>
+      <dl className={`mt-6 border-x border-b border-t-2 border-t-[var(--lp-accent)] ${RULE_LIGHT}`}>
         {[
           {
             k: `Enganche (${plan.enganchePct}%)`,
@@ -94,18 +94,18 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
             key={f.k}
             className={`grid grid-cols-[1fr_auto] items-baseline gap-4 border-t ${RULE_LIGHT} px-4 py-3.5`}
           >
-            <dt className="text-sm text-graphite">
+            <dt className="text-sm text-[var(--lp-ink-soft)]">
               {f.k}
-              <span className="block text-xs text-graphite/55">{f.nota}</span>
+              <span className="block text-xs text-[var(--lp-muted)]">{f.nota}</span>
             </dt>
-            <dd className="text-right font-mono text-sm tabular-nums text-navy">
+            <dd className="text-right lp-num text-sm text-[var(--lp-ink)]">
               {f.v}
             </dd>
           </div>
         ))}
       </dl>
 
-      <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-graphite/70">
+      <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-[var(--lp-muted)]">
         Cifras calculadas sobre el precio publicado y el esquema que declara el
         desarrollador, redondeadas al peso. No son una tabla de amortización: esa
         te la mandamos por escrito, con las fechas de cada pago, antes de que

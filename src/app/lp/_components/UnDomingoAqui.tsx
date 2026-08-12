@@ -34,13 +34,13 @@ export default function UnDomingoAqui({
   const imagen = lote.imagenes.domingo;
 
   return (
-    <section aria-labelledby="domingo-titulo" className="border-b border-navy/12 bg-white">
+    <section aria-labelledby="domingo-titulo" className="border-b border-[var(--lp-line)] bg-white">
       <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
           <div>
             <TituloSeccion id="domingo-titulo">Un domingo aquí</TituloSeccion>
 
-            <div className="mt-6 flex max-w-[58ch] flex-col gap-4 text-base leading-relaxed text-graphite">
+            <div className="mt-6 flex max-w-[58ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
               <p>
                 Salen de casa a las nueve menos veinte y a las nueve están en la
                 arena. Son 4.2 km: no es una excursión, es una decisión de última
@@ -51,7 +51,7 @@ export default function UnDomingoAqui({
                 Solos, porque la privada tiene un solo acceso controlado y vigilancia
                 las 24 horas, y porque son{' '}
                 {lote.lotesTotalesPrivada ? (
-                  <span className="font-mono tabular-nums">
+                  <span className="lp-num">
                     {lote.lotesTotalesPrivada}
                   </span>
                 ) : (
@@ -67,7 +67,7 @@ export default function UnDomingoAqui({
                 marzo.
               </p>
               {/* El párrafo que hace que esto sea Sage y no folleto. No se quita. */}
-              <p className="text-graphite/70">
+              <p className="text-[var(--lp-muted)]">
                 Nada de esto es una proyección. Son las amenidades que el
                 desarrollador se comprometió a entregar, con el calendario de obra que
                 está más abajo y las fechas que todavía no podemos confirmar.

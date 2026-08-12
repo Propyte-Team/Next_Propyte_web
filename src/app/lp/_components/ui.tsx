@@ -1,55 +1,37 @@
-import { AlertTriangle, Check, Clock, Minus } from '@/lib/icons';
+import { Check, Clock, Minus } from '@/lib/icons';
 
 // ============================================================
 // Primitivas de la landing.
 //
-// Referencia visual: la autoridad de un plano catastral / certificado de
-// registro. Bloque de título, campos reglados, leyenda con estados explícitos,
-// sello de licencia. NO brochure, NO revista, NO terminal de desarrollador.
+// La referencia anterior era «plano catastral»: radius 0, cero sombras,
+// hairlines por todas partes, mono en todo. La intención era autoridad de
+// documento. El resultado real, a 8000px de scroll, era una página que se
+// leía como wireframe sin terminar: todo pesaba lo mismo y nada respiraba.
+//
+// La referencia ahora es EDITORIAL: una publicación que argumenta. Titulares
+// en serif de texto, cifras en grotesk tabular, y el peso lo hacen la escala y
+// el espacio, no las reglas de 1px.
 //
 // Reglas de la superficie:
-//   · radius 0 y cero sombras. La estructura la hacen las reglas de 1px.
-//   · nada de tarjetas: bloques reglados que comparten el grid de la página.
-//   · el cian de marca (#A2F9FF) SOLO sobre fondo oscuro. Es el activo de
-//     identidad más distintivo y es ilegible sobre blanco.
-//   · el ámbar es exclusivamente semántico: marca lo que no sabemos. Nunca
-//     decoración.
-//   · cifras en mono con tabular-nums, para que las columnas cuadren.
+//   · un solo acento (terracota) en toda la página. Ver `lp-theme.css`.
+//   · radios documentados: controles 6px, medios y bloques 14px. Sin mezclas.
+//   · las cifras SIEMPRE tabulares, para que las columnas de dinero cuadren.
+//   · los gates no gritan: tinta apagada y subrayado punteado, nunca ámbar.
+//   · sombras tintadas al fondo, jamás negro puro.
 // ============================================================
 
-/** Hairline sobre oscuro y sobre claro. */
-export const RULE_DARK = 'border-aqua-bright/20';
-export const RULE_LIGHT = 'border-navy/12';
-
-/**
- * Gate abierto: dato que no publicamos porque no lo tenemos por escrito.
- * Es el centro moral de la página, así que se ve, no se esconde.
- */
-export function Gate({ que, tono = 'claro' }: { que: string; tono?: 'claro' | 'oscuro' }) {
-  return (
-    <span
-      role="note"
-      className={`inline-flex items-baseline gap-1.5 border px-2 py-1 font-mono text-[0.6875rem] uppercase tracking-wide ${
-        tono === 'oscuro'
-          ? 'border-amber/50 bg-amber/10 text-amber'
-          : 'border-amber/60 bg-amber/8 text-[#7A4E00]'
-      }`}
-    >
-      <AlertTriangle className="size-3 shrink-0 translate-y-px" aria-hidden="true" />
-      Falta confirmar: {que}
-    </span>
-  );
-}
+/** Hairline sobre claro y sobre oscuro. */
+export const RULE_LIGHT = 'border-[var(--lp-line)]';
+export const RULE_DARK = 'border-[var(--lp-line-dark)]';
 
 /**
  * Referencia al bloque único de pendientes.
  *
- * Sustituye a los chips ámbar dispersos. La honestidad no se reduce: se
- * concentra. El ámbar se queda como acento mínimo —sigue siendo el color de
- * «esto no lo sabemos»— pero sin caja ni versalitas, porque ocho cajas ámbar
- * repartidas por la página se leían como desorganización y no como integridad.
+ * Sustituye a los ocho chips ámbar que antes se repartían por seis secciones.
+ * El ámbar los hacía leer como errores de validación; concentrados y en tinta
+ * apagada leen como lo que son: integridad editorial.
  *
- * Es un ancla real y no un botón: funciona sin JS y el foco aterriza en el
+ * Es un ancla real, no un botón: funciona sin JS y el foco aterriza en el
  * bloque, que lleva `scroll-mt`.
  */
 export function EnlaceGate({
@@ -62,22 +44,19 @@ export function EnlaceGate({
   return (
     <a
       href="#falta-confirmar"
-      className={`inline-flex items-baseline gap-1.5 underline decoration-dotted underline-offset-4 transition-colors duration-200 ${
-        tono === 'oscuro'
-          ? 'text-amber/90 decoration-amber/50 hover:text-amber'
-          : 'text-[#7A4E00] decoration-[#7A4E00]/40 hover:text-[#5C3B00]'
-      }`}
+      className={`lp-gate text-sm ${tono === 'oscuro' ? 'lp-gate-dark' : ''}`}
     >
-      <AlertTriangle className="size-3 shrink-0 translate-y-px" aria-hidden="true" />
       Falta confirmar: {que}
     </a>
   );
 }
 
 /**
- * Fila de campo del bloque de especificaciones. Etiqueta a la izquierda en
- * versalitas, dato a la derecha en mono. La regla vertical entre columnas es
- * lo que le da la lectura de documento y no de tarjeta.
+ * Fila de campo. Etiqueta a la izquierda, dato a la derecha.
+ *
+ * Ya no lleva reja completa ni regla vertical entre columnas: eso era lo que
+ * producía la lectura de hoja de cálculo. Solo una regla inferior suave, y el
+ * dato destacado gana peso por escala y color, no por fondo.
  */
 export function Campo({
   etiqueta,
@@ -94,26 +73,30 @@ export function Campo({
   const oscuro = tono === 'oscuro';
   return (
     <div
-      className={`grid grid-cols-[minmax(7.5rem,0.8fr)_1.2fr] border-t ${
+      className={`grid grid-cols-[minmax(7rem,0.7fr)_1.3fr] items-baseline gap-4 border-b py-4 ${
         oscuro ? RULE_DARK : RULE_LIGHT
-      } ${destacado ? (oscuro ? 'bg-aqua-bright/[0.04]' : 'bg-navy/[0.03]') : ''}`}
+      }`}
     >
       <dt
-        className={`border-r px-3 py-3 text-[0.6875rem] uppercase tracking-[0.08em] sm:px-4 ${
-          oscuro ? `${RULE_DARK} text-white/45` : `${RULE_LIGHT} text-navy/50`
+        className={`text-[0.6875rem] uppercase tracking-[0.1em] ${
+          oscuro ? 'text-[var(--lp-on-dark-soft)]' : 'text-[var(--lp-muted)]'
         }`}
       >
         {etiqueta}
       </dt>
       <dd
-        className={`px-3 py-3 font-mono text-sm tabular-nums sm:px-4 ${
+        className={`lp-num ${
+          destacado
+            ? 'lp-display text-xl sm:text-2xl'
+            : 'text-sm sm:text-[0.9375rem]'
+        } ${
           oscuro
             ? destacado
-              ? 'text-aqua-bright'
-              : 'text-white/85'
+              ? 'text-[var(--lp-accent-on-dark)]'
+              : 'text-[var(--lp-on-dark)]'
             : destacado
-              ? 'font-medium text-navy'
-              : 'text-graphite'
+              ? 'text-[var(--lp-accent)]'
+              : 'text-[var(--lp-ink-soft)]'
         }`}
       >
         {children}
@@ -122,7 +105,7 @@ export function Campo({
   );
 }
 
-/** Contenedor del bloque de campos: cierra la reja por abajo y por los lados. */
+/** Contenedor del bloque de campos. Solo abre con una regla marcada arriba. */
 export function BloqueCampos({
   children,
   tono = 'claro',
@@ -132,7 +115,11 @@ export function BloqueCampos({
 }) {
   return (
     <dl
-      className={`border-x border-b ${tono === 'oscuro' ? RULE_DARK : RULE_LIGHT}`}
+      className={`border-t-2 ${
+        tono === 'oscuro'
+          ? 'border-[var(--lp-accent-on-dark)]'
+          : 'border-[var(--lp-accent)]'
+      }`}
     >
       {children}
     </dl>
@@ -142,19 +129,19 @@ export function BloqueCampos({
 type Estado = 'disponible' | 'en_proceso' | 'proyectado';
 
 const ESTADO_META: Record<Estado, { etiqueta: string; Icono: typeof Check; clase: string }> = {
-  disponible: { etiqueta: 'Disponible', Icono: Check, clase: 'text-success' },
-  en_proceso: { etiqueta: 'En proceso', Icono: Clock, clase: 'text-amber' },
-  proyectado: { etiqueta: 'Proyectado', Icono: Minus, clase: 'text-white/40' },
+  disponible: { etiqueta: 'Disponible', Icono: Check, clase: 'text-[#3F8F5C]' },
+  en_proceso: { etiqueta: 'En proceso', Icono: Clock, clase: 'text-[var(--lp-accent-on-dark)]' },
+  proyectado: { etiqueta: 'Proyectado', Icono: Minus, clase: 'text-[var(--lp-on-dark-soft)]' },
 };
 
 /**
  * Estado de un servicio. El icono acompaña al texto: el color nunca es el único
- * indicador, porque quien no distingue verde de ámbar también necesita saberlo.
+ * indicador, porque quien no distingue verde de terracota también necesita saberlo.
  */
 export function EstadoServicio({ estado }: { estado: Estado }) {
   const { etiqueta, Icono, clase } = ESTADO_META[estado];
   return (
-    <span className={`inline-flex items-center gap-1.5 ${clase}`}>
+    <span className={`inline-flex items-center gap-1.5 text-sm ${clase}`}>
       <Icono className="size-3.5 shrink-0" aria-hidden="true" />
       {etiqueta}
     </span>
@@ -162,9 +149,11 @@ export function EstadoServicio({ estado }: { estado: Estado }) {
 }
 
 /**
- * Encabezado de sección. Sin kicker en versalitas: repetir una etiqueta
- * diminuta sobre cada título es andamiaje, no voz. La jerarquía la hace la
- * escala y la regla superior.
+ * Encabezado de sección, en serif de texto.
+ *
+ * Sin kicker en versalitas: repetir una etiqueta diminuta sobre cada título es
+ * andamiaje, no voz, y a lo largo de la página producía un ritmo de plantilla.
+ * La jerarquía la hacen la escala y el aire.
  */
 export function TituloSeccion({
   children,
@@ -178,11 +167,32 @@ export function TituloSeccion({
   return (
     <h2
       id={id}
-      className={`font-display text-[clamp(1.5rem,1.1rem+1.6vw,2.125rem)] font-semibold leading-[1.15] tracking-[-0.02em] ${
-        tono === 'oscuro' ? 'text-white' : 'text-navy'
+      className={`lp-display text-[clamp(1.75rem,1.2rem+2.2vw,2.75rem)] leading-[1.12] text-balance ${
+        tono === 'oscuro' ? 'text-[var(--lp-on-dark)]' : 'text-[var(--lp-ink)]'
       }`}
     >
       {children}
     </h2>
+  );
+}
+
+/**
+ * CTA primario. Terracota sólido, texto blanco: 6.1:1, AA holgado.
+ * El `active:translate-y` es el único gesto físico de la página.
+ */
+export function BotonPrimario({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      className="inline-flex min-h-[52px] cursor-pointer items-center justify-center whitespace-nowrap rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--lp-accent-strong)] active:translate-y-px"
+    >
+      {children}
+    </a>
   );
 }

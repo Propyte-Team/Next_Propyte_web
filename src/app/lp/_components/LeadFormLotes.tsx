@@ -56,12 +56,12 @@ function emitirPaso(evento: string) {
 }
 
 const OPCION =
-  'group flex min-h-[52px] w-full cursor-pointer items-center justify-between gap-3 border border-navy/15 bg-white px-4 text-left text-sm text-graphite transition-colors duration-200 hover:border-teal-a11y hover:bg-teal-a11y/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-a11y';
+  'group flex min-h-[52px] w-full cursor-pointer items-center justify-between gap-3 border border-[var(--lp-line)] bg-white px-4 text-left text-sm text-[var(--lp-ink-soft)] transition-colors duration-200 hover:border-[var(--lp-accent)] hover:bg-[var(--lp-accent)]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lp-accent)]';
 
 const INPUT =
-  'min-h-[52px] w-full border border-navy/15 bg-white px-4 font-mono text-sm text-graphite transition-colors duration-200 placeholder:font-sans placeholder:text-graphite/35 focus:border-teal-a11y focus:outline-2 focus:outline-offset-0 focus:outline-teal-a11y';
+  'min-h-[52px] w-full border border-[var(--lp-line)] bg-white px-4 font-mono text-sm text-[var(--lp-ink-soft)] transition-colors duration-200 placeholder:font-sans placeholder:text-[var(--lp-ink-soft)]/35 focus:border-[var(--lp-accent)] focus:outline-2 focus:outline-offset-0 focus:outline-[var(--lp-accent)]';
 
-const ETIQUETA = 'text-[0.6875rem] uppercase tracking-[0.08em] text-navy/55';
+const ETIQUETA = 'text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]';
 
 export default function LeadFormLotes({
   loteNombre,
@@ -143,19 +143,19 @@ export default function LeadFormLotes({
   // de medición y el gclid de la URL.
   if (enviado) {
     return (
-      <div className="border-t-2 border-teal-a11y bg-white p-6" role="status" aria-live="polite">
-        <Check className="size-5 text-teal-a11y" aria-hidden="true" />
-        <h3 className="mt-3 font-display text-lg font-semibold tracking-tight text-navy">
+      <div className="border-t-2 border-[var(--lp-accent)] bg-white p-6" role="status" aria-live="polite">
+        <Check className="size-5 text-[var(--lp-accent)]" aria-hidden="true" />
+        <h3 className="mt-3 lp-display text-lg font-semibold tracking-tight text-[var(--lp-ink)]">
           Listo, {nombre.trim().split(' ')[0]}.
         </h3>
-        <p className="mt-3 text-sm leading-relaxed text-graphite">
+        <p className="mt-3 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
           Te enviamos por WhatsApp al{' '}
           <span className="font-mono">{whatsapp.trim()}</span> el comparativo del
           lote con precio, precio por metro cuadrado, estatus de urbanización
           servicio por servicio y el esquema de pago completo, incluidos los costos
           que no están en el precio.
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-graphite">
+        <p className="mt-3 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
           Si por presupuesto u objetivo este lote no encaja, te lo decimos en el
           primer mensaje y te ahorramos la llamada.
         </p>
@@ -164,15 +164,15 @@ export default function LeadFormLotes({
   }
 
   return (
-    <div className="border-t-2 border-navy bg-white">
-      <div className="border-x border-b border-navy/12 p-5 sm:p-6">
+    <div className="border-t-2 border-[var(--lp-accent)] bg-white">
+      <div className="border-x border-b border-[var(--lp-line)] p-5 sm:p-6">
         <div className="flex items-baseline justify-between gap-4">
-          <h3 className="font-display text-lg font-semibold leading-snug tracking-tight text-navy">
+          <h3 className="lp-display text-lg font-semibold leading-snug tracking-tight text-[var(--lp-ink)]">
             {paso === 1 && '¿Qué estás buscando?'}
             {paso === 2 && 'Tu presupuesto total, gastos de cierre incluidos'}
             {paso === 3 && '¿A dónde te enviamos el comparativo?'}
           </h3>
-          <span className="shrink-0 font-mono text-[0.6875rem] tabular-nums text-navy/45">
+          <span className="shrink-0 font-mono text-[0.6875rem] tabular-nums text-[var(--lp-muted)]">
             {paso}/3
           </span>
         </div>
@@ -190,7 +190,7 @@ export default function LeadFormLotes({
             <span
               key={n}
               className={`h-0.5 flex-1 transition-colors duration-300 ${
-                n <= paso ? 'bg-teal-a11y' : 'bg-navy/12'
+                n <= paso ? 'bg-[var(--lp-accent)]' : 'bg-[var(--lp-line)]'
               }`}
             />
           ))}
@@ -211,7 +211,7 @@ export default function LeadFormLotes({
               >
                 {o}
                 <ArrowRight
-                  className="size-4 shrink-0 text-navy/25 transition-colors duration-200 group-hover:text-teal-a11y"
+                  className="size-4 shrink-0 text-[var(--lp-ink)]/25 transition-colors duration-200 group-hover:text-[var(--lp-accent)]"
                   aria-hidden="true"
                 />
               </button>
@@ -225,7 +225,7 @@ export default function LeadFormLotes({
               <button
                 key={p}
                 type="button"
-                className={`${OPCION} font-mono tabular-nums`}
+                className={`${OPCION} lp-num`}
                 onClick={() => {
                   setPresupuesto(p);
                   emitirPaso('paso_2_completado');
@@ -234,14 +234,14 @@ export default function LeadFormLotes({
               >
                 {p}
                 <ArrowRight
-                  className="size-4 shrink-0 text-navy/25 transition-colors duration-200 group-hover:text-teal-a11y"
+                  className="size-4 shrink-0 text-[var(--lp-ink)]/25 transition-colors duration-200 group-hover:text-[var(--lp-accent)]"
                   aria-hidden="true"
                 />
               </button>
             ))}
             <button
               type="button"
-              className="mt-1 cursor-pointer self-start text-xs text-graphite/55 underline transition-colors duration-200 hover:text-graphite"
+              className="mt-1 cursor-pointer self-start text-xs text-[var(--lp-muted)] underline transition-colors duration-200 hover:text-[var(--lp-ink-soft)]"
               onClick={() => setPaso(1)}
             >
               Volver
@@ -314,11 +314,11 @@ export default function LeadFormLotes({
                 que sólo existen fuera de la página: el plano con la ubicación del
                 lote, la tabla de amortización con el pago final por escrito, y el
                 paquete documental para que lo revise tu abogado. */}
-            <div className="border-t border-navy/12 pt-4">
-              <p className="text-[0.6875rem] uppercase tracking-[0.08em] text-navy/55">
+            <div className="border-t border-[var(--lp-line)] pt-4">
+              <p className="text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
                 Lo que recibes
               </p>
-              <ul className="mt-2 flex flex-col gap-1.5 text-xs leading-relaxed text-graphite">
+              <ul className="mt-2 flex flex-col gap-1.5 text-xs leading-relaxed text-[var(--lp-ink-soft)]">
                 <li>El plano con la ubicación exacta del lote dentro de la privada.</li>
                 <li>
                   Tu tabla de amortización
@@ -335,13 +335,13 @@ export default function LeadFormLotes({
             <button
               type="submit"
               disabled={enviando}
-              className="flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 bg-teal-a11y px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-teal-a11y/90 disabled:cursor-default disabled:opacity-60"
+              className="flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 bg-[var(--lp-accent)] px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)] disabled:cursor-default disabled:opacity-60"
             >
               {enviando ? 'Enviando' : 'Enviarme el plan y los documentos'}
               {!enviando && <ArrowRight className="size-4" aria-hidden="true" />}
             </button>
 
-            <p className="text-xs leading-relaxed text-graphite/60">
+            <p className="text-xs leading-relaxed text-[var(--lp-ink-soft)]/60">
               Al enviar aceptas que te contactemos por WhatsApp sobre este lote.
               Puedes pedirnos que dejemos de hacerlo en cualquier momento.
             </p>
