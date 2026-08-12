@@ -220,6 +220,7 @@ export interface LoteLanding {
  */
 const NOMBRES_PROHIBIDOS = [
   'gran coralia',
+  'coralia',
   'ancestral',
   'aztro',
   'ipal',
@@ -228,15 +229,42 @@ const NOMBRES_PROHIBIDOS = [
 ];
 
 /**
+ * Los nombres se buscan como PALABRA COMPLETA, no como subcadena.
+ *
+ * Con `includes` la lista era a la vez demasiado laxa y demasiado agresiva:
+ * `ipal` casa dentro de "municipal", y esta página dice "licencia municipal" y
+ * "autorización de venta municipal" once veces porque el artículo 69 de la Ley
+ * de Asentamientos Urbanos de Q. Roo la obliga a decirlo. Cualquier campo que
+ * el Hub capturara con esa palabra —el número de licencia, el uso de suelo— se
+ * habría descartado en silencio y la página habría publicado un gate encima de
+ * un dato que sí existe. Hoy ningún registro cae en el caso (verificado contra
+ * la base), pero el modo de fallo es invisible: no hay error, solo un dato que
+ * no aparece.
+ *
+ * `marina` y `serena` tenían el mismo problema con palabras corrientes.
+ *
+ * Esto NO debilita Camino A: los límites de palabra siguen atrapando el nombre
+ * suelto, entre comillas, con guiones o pegado a puntuación, que es como
+ * aparece un nombre comercial en un texto editorial. Y `coralia` se añade por
+ * separado para que el nombre corto también quede cubierto.
+ */
+const PATRONES_PROHIBIDOS = NOMBRES_PROHIBIDOS.map(
+  (n) => new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'),
+);
+
+/**
  * Descarta un texto si contiene un nombre comercial prohibido. Devuelve null
  * en ese caso para que la UI muestre [CONFIRMAR] en vez de filtrar la marca.
+ *
+ * Recordatorio: esto solo lee CADENAS. No puede ver un nombre rotulado dentro
+ * de un render. Por eso las imágenes van por lista blanca (`IMAGENES_CURADAS`)
+ * y la galería no se itera nunca.
  */
 function sanitizarTexto(valor: unknown): string | null {
   if (typeof valor !== 'string') return null;
   const limpio = valor.trim();
   if (!limpio) return null;
-  const bajo = limpio.toLowerCase();
-  if (NOMBRES_PROHIBIDOS.some((n) => bajo.includes(n))) return null;
+  if (PATRONES_PROHIBIDOS.some((re) => re.test(limpio))) return null;
   return limpio;
 }
 
