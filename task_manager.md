@@ -1,6 +1,8 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-12 (LP Lotes PDC: rediseño commiteado + chips de plazo + comparador de 4 lotes — ver primera entrada de «En progreso». Rama `feat/lp-lotes-pdc` en `0dacbda`, 5 commits, nada en `main`). Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
+> Última actualización: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
+>
+> ⚠️ Al medir el alcance del deploy comparé contra `main` **local** (parado en junio) y reporté 699 commits; contra `origin/main` eran **7**. Medir divergencias siempre contra el remoto tras `fetch`. Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
 
 Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
 
@@ -21,7 +23,8 @@ Luis: «es feo feo feo, el contenido creo que está bien». Alcance acordado: so
 - [x] Amenidades: de 11 filas con hairline a 2 columnas (se comían el 20% del scroll).
 - [x] Hero: imagen a sangre + degradado, 4 elementos. Las cifras bajaron a banda propia.
 - [x] 128 reemplazos de tokens heredados en 12 archivos. Cero residuo de teal/aztec/navy/graphite, banner de consentimiento incluido.
-- [x] **Commitear el rediseño** — `bc1e15e` (16 archivos). Falta decidir deploy a `main`.
+- [x] **Commitear el rediseño** — `bc1e15e` (16 archivos).
+- [x] **Deploy a `main`** — `8b87115`, fast-forward desde `eb954ff`. Verificado en producción. El push directo a `main` lo bloquea el clasificador de permisos hasta que Luis lo reafirma.
 - [ ] Distribuir más imágenes: hay 10 verificadas como seguras y la página usa 5.
 - [ ] Assets que no existen en la base: masterplan con el lote marcado, casa comparable de 207 m². Trabajo de Victor.
 
