@@ -15,6 +15,7 @@ import {
   type UtmData,
 } from '@/lib/zoho/field-maps';
 import { resolveProyectoDeInteres } from '@/lib/zoho/resolve-proyecto-interes';
+import { resolveQrOwner } from '@/lib/leads/qr-owner';
 import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
 
 // ============================================================
@@ -66,6 +67,7 @@ interface RetryLeadRow {
   utm_term: string | null;
   gclid: string | null;
   fbclid: string | null;
+  wbraid: string | null;
   qr_code: string | null;
   zoho_lead_id: string | null;
   zoho_account_id: string | null;
@@ -128,6 +130,7 @@ async function rebuildPayload(
     utm_term: row.utm_term,
     gclid: row.gclid,
     fbclid: row.fbclid,
+    wbraid: row.wbraid,
     // Sin esto, un lead que falla el push a Zoho pierde la atribución al QR
     // justo en el reintento — el mismo agujero que ya mordió con KNOWN_SOURCES.
     qr: row.qr_code,
@@ -146,6 +149,14 @@ async function rebuildPayload(
     utms,
     zohoDevelopmentId,
   );
+
+  // Mismo asesor fijo que aplicaría el envío original. Sin esto, un lead que
+  // falla el push perdería la asignación justo en el reintento — el mismo
+  // agujero que ya mordió con KNOWN_SOURCES y con la atribución al QR.
+  const qrOwner = await resolveQrOwner(row.qr_code);
+  if (qrOwner) {
+    payload.lead.Owner = { id: qrOwner.id, name: qrOwner.nombre ?? '' };
+  }
 
   return { source: source as LeadSource, payload, locale, email: row.email, formData, utms };
 }
