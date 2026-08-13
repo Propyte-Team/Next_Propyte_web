@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { getActiveEdition, signEditionUrl } from '@/lib/lead-magnet/editions';
 import { optionalUtmField } from '@/lib/leads/utm-sanitize';
+import { resolveQrOwner } from '@/lib/leads/qr-owner';
 import { enforceRateLimit } from '@/lib/rateLimit';
 import { getBrowserContext, sendCAPIEvents } from '@/lib/meta/capi';
 import { enforceGlobalQuota } from '@/lib/security/global-quota';
@@ -347,6 +348,7 @@ export async function POST(request: NextRequest) {
         utm_term: data.utm_term || null,
         gclid: data.gclid || null,
         fbclid: data.fbclid || null,
+        wbraid: data.wbraid || null,
         qr_code: data.qr || null,
         zoho_sync_error: 'SKIPPED: unknown source',
       })
@@ -426,9 +428,10 @@ export async function POST(request: NextRequest) {
     gclid: data.gclid || null,
     fbclid: data.fbclid || null,
     qr: data.qr || null,
-    // Viaja a Zoho dentro de la nota UTM. NO se persiste en public.leads
-    // todavía: falta la columna `wbraid`. Migración pendiente en
-    // specs/lp-lotes-playa-del-carmen.md §DDL pendiente.
+    // Viaja a Zoho en la nota UTM y desde 2026-08-13 TAMBIÉN se persiste: la
+    // columna `public.leads.wbraid` ya existe. Antes solo se veía abriendo el
+    // lead en Zoho, así que no se podía agregar ni cruzar desde Supabase — que
+    // es justo lo que hace falta para importar conversiones offline en bloque.
     wbraid: data.wbraid || null,
   };
 
@@ -451,6 +454,14 @@ export async function POST(request: NextRequest) {
   // Generar payload Zoho (necesitamos los identificadores para auditar en Supabase)
   const zohoPayload = sourceToZohoPayload(source, formData, locale, utms, zohoDevelopmentId);
 
+  // Asesor fijo del QR, si lo tiene. Se aplica DESPUÉS de armar el payload y solo
+  // cuando hay valor: sin asesor asignado no se toca `Owner` y Zoho reparte como
+  // siempre — pisar ese reparto por defecto rompería algo que hoy funciona.
+  const qrOwner = await resolveQrOwner(utms.qr);
+  if (qrOwner) {
+    zohoPayload.lead.Owner = { id: qrOwner.id, name: qrOwner.nombre ?? '' };
+  }
+
   const { data: row, error: insertErr } = await supabase
     .from('leads')
     .insert({
@@ -469,6 +480,7 @@ export async function POST(request: NextRequest) {
       utm_term: utms.utm_term,
       gclid: utms.gclid,
       fbclid: utms.fbclid,
+      wbraid: utms.wbraid,
       qr_code: utms.qr,
       nombre_campana: zohoPayload.lead.Nombre_de_Campa_a ?? null,
       nombre_formulario: zohoPayload.lead.Nombre_del_formulario ?? null,
