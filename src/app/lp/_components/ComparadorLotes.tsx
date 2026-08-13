@@ -2,6 +2,7 @@
 
 import { useId, useState } from 'react';
 import { mxn } from './format';
+import { DisclaimerCifras } from './ui';
 import type { LoteComparable } from '@/lib/supabase/lp-lotes-comparador';
 
 // ============================================================
@@ -241,18 +242,21 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
           </div>
         </div>
 
-        <p className="mt-6 max-w-[62ch] text-xs leading-relaxed text-[var(--lp-on-dark-soft)]">
-          Cifras calculadas sobre el precio publicado y el esquema que declara
-          cada desarrollador, redondeadas al peso. No son una tabla de
-          amortización: esa te la mandamos por escrito, con las fechas de cada
-          pago, antes de que firmes nada. Precios sujetos a cambio y
-          disponibilidad.
-        </p>
+        <div className="mt-6">
+          <DisclaimerCifras
+            tono="oscuro"
+            alcance="el esquema que declara cada desarrollador"
+          />
+        </div>
 
         <div className="mt-7">
+          {/* Contorno, no sólido. Este bloque va DESPUÉS del cierre y su lote no
+              es el protagonista de la página: un botón sólido aquí compite con
+              el CTA del cierre por la misma acción y a dos pantallas de
+              distancia. Mismo destino y mismo tap target, menos peso. */}
           <a
             href="#solicitar"
-            className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent-on-dark)] px-7 text-sm font-medium text-[var(--lp-dark)] transition-all duration-200 hover:brightness-95 active:translate-y-px"
+            className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] border border-[var(--lp-accent-on-dark)]/45 px-7 text-sm font-medium text-[var(--lp-accent-on-dark)] transition-colors duration-200 hover:border-[var(--lp-accent-on-dark)] hover:bg-[var(--lp-accent-on-dark)]/10"
           >
             Pedir el detalle de este lote
           </a>

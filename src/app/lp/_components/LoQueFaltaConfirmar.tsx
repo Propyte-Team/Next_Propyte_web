@@ -1,8 +1,8 @@
-import { TituloSeccion, RULE_DARK } from './ui';
+import { RULE_DARK } from './ui';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
-// Lo que todavía no sabemos. Bloque único.
+// Lo que todavía no sabemos. Panel del módulo «Antes de firmar».
 //
 // Antes esto eran ocho chips ámbar repartidos por toda la página. Honestidad
 // concentrada se lee como integridad; dispersa se lee como desorganización, y
@@ -15,20 +15,26 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // La lista se construye desde el estado real de los datos, no a mano. Cuando el
 // Hub publique la tasa o la licencia, el punto correspondiente desaparece solo
 // y el encabezado cambia de número: no hay que acordarse de editar este
-// archivo. Si algún día no queda ninguno, el bloque no se renderiza.
+// archivo.
 // ============================================================
 
 /** ANCLA canónica. Toda referencia a este bloque usa esta constante. */
 export const ANCLA_GATES = 'falta-confirmar';
 
-const NUMERO_PALABRA = ['Cero', 'Una', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis'];
+export const NUMERO_PALABRA = ['Cero', 'Una', 'Dos', 'Tres', 'Cuatro', 'Cinco', 'Seis'];
 
 interface Pendiente {
   titulo: string;
   porQueImporta: string;
 }
 
-export default function LoQueFaltaConfirmar({ lote }: { lote: LoteLanding }) {
+/**
+ * Se exporta porque el `<summary>` del acordeón necesita CONTAR los pendientes
+ * sin renderizar el panel. Un número escrito a mano en el resumen y una lista
+ * derivada del dato divergen el día que el Hub publique la tasa, y el resumen
+ * mentiría en un bloque cuyo único propósito es no mentir.
+ */
+export function construirPendientes(lote: LoteLanding): Pendiente[] {
   const pendientes: Pendiente[] = [];
 
   // 1 · Etapa. El registro trae fechas de urbanización de UNA etapa y no
@@ -68,63 +74,50 @@ export default function LoQueFaltaConfirmar({ lote }: { lote: LoteLanding }) {
     });
   }
 
+  return pendientes;
+}
+
+export default function LoQueFaltaConfirmar({ lote }: { lote: LoteLanding }) {
+  const pendientes = construirPendientes(lote);
   if (pendientes.length === 0) return null;
 
-  const cuantas = NUMERO_PALABRA[pendientes.length] ?? String(pendientes.length);
   const plural = pendientes.length > 1;
 
   return (
-    <section
-      id={ANCLA_GATES}
-      aria-labelledby="gates-titulo"
-      className="scroll-mt-6 border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]"
-    >
-      <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <div>
-            <TituloSeccion id="gates-titulo" tono="oscuro">
-              {cuantas} cosa{plural && 's'} que todavía no sabemos
-            </TituloSeccion>
-            <p className="mt-5 max-w-[42ch] text-base leading-relaxed text-white/70">
-              Publicamos esto porque la mayoría de los anuncios de esta zona
-              simplemente no lo menciona.
-            </p>
-          </div>
+    <div>
+      <p className="max-w-[58ch] text-base leading-relaxed text-white/70">
+        Publicamos esto porque la mayoría de los anuncios de esta zona simplemente
+        no lo menciona.
+      </p>
 
-          <div>
-            <ol className={`border-t ${RULE_DARK}`}>
-              {pendientes.map((p, i) => (
-                <li
-                  key={p.titulo}
-                  className={`grid grid-cols-[2rem_1fr] gap-x-3 border-b ${RULE_DARK} py-5`}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="lp-num text-sm text-amber"
-                  >
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div>
-                    <h3 className="lp-display text-base font-semibold leading-snug tracking-tight text-white">
-                      {p.titulo}
-                    </h3>
-                    <p className="mt-1.5 max-w-[58ch] text-sm leading-relaxed text-white/60">
-                      {p.porQueImporta}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+      <ol className={`mt-6 border-t ${RULE_DARK}`}>
+        {pendientes.map((p, i) => (
+          <li
+            key={p.titulo}
+            className={`grid grid-cols-[2rem_1fr] gap-x-3 border-b ${RULE_DARK} py-5`}
+          >
+            <span aria-hidden="true" className="lp-num text-sm text-[var(--lp-accent-on-dark)]">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div>
+              {/* `p` y no `h3`: dentro de un `<details>` de acordeón el
+                  encabezado real es el `<summary>`, y `globals.css` pisa el
+                  tamaño de cualquier heading. Ver `TrustBar`. */}
+              <p className="text-sm font-medium leading-snug text-white">{p.titulo}</p>
+              <p className="mt-1.5 max-w-[58ch] text-sm leading-relaxed text-white/60">
+                {p.porQueImporta}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ol>
 
-            <p className="mt-6 max-w-[58ch] text-sm leading-relaxed text-white/70">
-              {plural ? 'Las' : 'La'} pedimos por escrito y{' '}
-              {plural ? 'las publicamos' : 'la publicamos'} aquí en cuanto{' '}
-              {plural ? 'lleguen' : 'llegue'}. Si necesitas alguna antes de avanzar,
-              dínoslo y te la mandamos el mismo día en que la tengamos.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+      <p className="mt-6 max-w-[58ch] text-sm leading-relaxed text-white/70">
+        {plural ? 'Las' : 'La'} pedimos por escrito y{' '}
+        {plural ? 'las publicamos' : 'la publicamos'} aquí en cuanto{' '}
+        {plural ? 'lleguen' : 'llegue'}. Si necesitas alguna antes de avanzar,
+        dínoslo y te la mandamos el mismo día en que la tengamos.
+      </p>
+    </div>
   );
 }

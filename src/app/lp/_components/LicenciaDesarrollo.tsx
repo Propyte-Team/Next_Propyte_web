@@ -1,5 +1,6 @@
-import { EnlaceGate, RULE_DARK } from './ui';
+import { RULE_DARK } from './ui';
 import { fechaLarga } from './format';
+import PendingStatus from './PendingStatus';
 import type { LicenciaDesarrollo as Licencia } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
@@ -11,35 +12,24 @@ import type { LicenciaDesarrollo as Licencia } from '@/lib/supabase/lp-lotes';
 // Ayuntamiento. Una landing de pago que oferta lotes es publicidad en el
 // sentido más literal de la norma.
 //
-// Se dibuja como el sello de un documento oficial: cuatro campos en reja, sobre
-// fondo oscuro, al pie del bloque jurídico. Mientras estén vacíos publica el
-// hueco en lugar de omitirlo, porque omitirlo sería incumplir en silencio.
+// DOS ESTADOS, NUNCA UNA REJA VACÍA. Cuando los cuatro datos existen se dibuja
+// como el sello de un documento oficial: cuatro campos en reja. Cuando no
+// existen —que es hoy— la reja de cuatro huecos se leía como un formulario a
+// medio llenar, y publicar el incumplimiento así hacía más daño que declararlo
+// en una frase. En su lugar va un solo estado con dueño y fecha.
+//
+// Lo que NO cambia: el hueco se sigue publicando. Omitirlo sería incumplir en
+// silencio, que es justo lo que el artículo 69 persigue.
 // ============================================================
 
-export default function LicenciaDesarrollo({ licencia }: { licencia: Licencia }) {
-  const campos = [
-    {
-      etiqueta: 'Licencia del desarrollo',
-      valor: licencia.licenciaNumero,
-      falta: 'número de licencia municipal',
-    },
-    {
-      etiqueta: 'Fecha de licencia',
-      valor: licencia.licenciaFecha ? fechaLarga(licencia.licenciaFecha) : null,
-      falta: 'fecha de licencia',
-    },
-    {
-      etiqueta: 'Autorización de venta',
-      valor: licencia.autorizacionNumero,
-      falta: 'número de autorización de venta',
-    },
-    {
-      etiqueta: 'Fecha de autorización',
-      valor: licencia.autorizacionFecha ? fechaLarga(licencia.autorizacionFecha) : null,
-      falta: 'fecha de autorización',
-    },
-  ];
-
+export default function LicenciaDesarrollo({
+  licencia,
+  actualizado,
+}: {
+  licencia: Licencia;
+  /** Fecha de corte de la consulta: cuándo se verificó por última vez. */
+  actualizado: string | null;
+}) {
   return (
     <section
       aria-labelledby="licencia-titulo"
@@ -52,34 +42,62 @@ export default function LicenciaDesarrollo({ licencia }: { licencia: Licencia })
         Licencia y autorización de venta
       </h3>
 
-      <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-        {campos.map((c) => (
-          <div key={c.etiqueta}>
-            <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
-              {c.etiqueta}
-            </dt>
-            <dd className="mt-1.5 font-mono text-sm text-white/85">
-              {c.valor ?? <EnlaceGate que={c.falta} tono="oscuro" />}
-            </dd>
-          </div>
-        ))}
-      </dl>
-
-      {/* La cita del artículo 69 y el compromiso de publicarlos viven UNA sola
-          vez, en el bloque de pendientes. Antes se repetían aquí y otra vez en
-          el pie legal: tres versiones del mismo párrafo en una página que se
-          juega la credibilidad en no sonar a boilerplate. */}
-      {!licencia.completa && (
-        <p className={`mt-6 border-t ${RULE_DARK} pt-4 max-w-[62ch] text-xs leading-relaxed text-white/55`}>
-          Estos cuatro datos son obligatorios y todavía no los tenemos por escrito.{' '}
-          <a
-            href="#falta-confirmar"
-            className="underline decoration-white/30 underline-offset-4 transition-colors duration-200 hover:text-white/85"
+      {licencia.completa ? (
+        <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          {[
+            { etiqueta: 'Licencia del desarrollo', valor: licencia.licenciaNumero },
+            {
+              etiqueta: 'Fecha de licencia',
+              valor: licencia.licenciaFecha ? fechaLarga(licencia.licenciaFecha) : null,
+            },
+            { etiqueta: 'Autorización de venta', valor: licencia.autorizacionNumero },
+            {
+              etiqueta: 'Fecha de autorización',
+              valor: licencia.autorizacionFecha
+                ? fechaLarga(licencia.autorizacionFecha)
+                : null,
+            },
+          ].map((c) => (
+            <div key={c.etiqueta}>
+              <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
+                {c.etiqueta}
+              </dt>
+              <dd className="mt-1.5 font-mono text-sm text-white/85">{c.valor}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <div className="mt-5">
+          <PendingStatus
+            tono="oscuro"
+            titulo="Licencia del desarrollo y autorización de venta municipal"
+            actualizado={actualizado}
+            cta={
+              <>
+                Pídelas y te las mandamos el mismo día en que las tengamos.{' '}
+                <a
+                  href="#solicitar"
+                  className="underline decoration-white/30 underline-offset-4 transition-colors duration-200 hover:text-white"
+                >
+                  Pedirlas
+                </a>
+                .
+              </>
+            }
           >
-            Por qué, y qué más falta
-          </a>
-          .
-        </p>
+            Son obligatorias conforme al artículo 69 de la Ley de Asentamientos
+            Urbanos de Quintana Roo. Todavía no las tenemos por escrito del
+            desarrollador; las estamos recabando y se publican aquí en cuanto
+            lleguen.{' '}
+            <a
+              href="#falta-confirmar"
+              className="underline decoration-white/30 underline-offset-4 transition-colors duration-200 hover:text-white"
+            >
+              Qué más falta
+            </a>
+            .
+          </PendingStatus>
+        </div>
       )}
     </section>
   );

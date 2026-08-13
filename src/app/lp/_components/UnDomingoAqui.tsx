@@ -1,6 +1,5 @@
-import Image from 'next/image';
+import Figure from './Figure';
 import { TituloSeccion } from './ui';
-import WhatsAppCta from './WhatsAppCta';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
@@ -17,20 +16,15 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // Eso es lo que lo mantiene dentro de la voz de la marca en vez de convertirlo
 // en publicidad: la escena no añade ningún hecho nuevo.
 //
-// Es también el único punto de anclaje de CTA que se agrega a la página,
-// porque es el único momento donde el visitante siente algo antes de que
-// empiecen las objeciones.
+// YA NO LLEVA CTA. Tenía un WhatsApp suelto que era el cuarto de la página
+// contra tres al formulario, y encima sobre fondo claro, donde el componente ni
+// siquiera tiene estilo definido. La página se queda con tres puntos de
+// conversión —hero, formulario junto al plan de pagos, cierre— y este bloque
+// hace solo su trabajo: construir el deseo que el formulario cobra dos
+// secciones más abajo. Interrumpir la escena para pedir un WhatsApp la anulaba.
 // ============================================================
 
-export default function UnDomingoAqui({
-  lote,
-  telefono,
-  mensaje,
-}: {
-  lote: LoteLanding;
-  telefono: string;
-  mensaje: string;
-}) {
+export default function UnDomingoAqui({ lote }: { lote: LoteLanding }) {
   const imagen = lote.imagenes.domingo;
 
   return (
@@ -73,28 +67,14 @@ export default function UnDomingoAqui({
                 está más abajo y las fechas que todavía no podemos confirmar.
               </p>
             </div>
-
-            <div className="mt-8">
-              <WhatsAppCta
-                loteSlug={lote.slug}
-                telefono={telefono}
-                mensaje={mensaje}
-                surface="lp-lotes-pdc-domingo"
-              />
-            </div>
           </div>
 
           {imagen && (
-            <div className="relative aspect-[4/3] lg:aspect-[5/4]">
-              <Image
-                src={imagen.url}
-                alt={imagen.alt}
-                fill
-                loading="lazy"
-                sizes="(max-width: 1024px) 100vw, 46vw"
-                className="object-cover"
-              />
-            </div>
+            <Figure
+              imagen={imagen}
+              sizes="(max-width: 1024px) 100vw, 46vw"
+              aspecto="aspect-[4/3] lg:aspect-[5/4]"
+            />
           )}
         </div>
       </div>

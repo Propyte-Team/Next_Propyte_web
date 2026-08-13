@@ -16,6 +16,9 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // circule en briefs externos no está respaldada por la fuente de verdad.
 // ============================================================
 
+/** Destino de la barra de credibilidad del inicio, que resume este bloque. */
+export const ANCLA_PRUEBA = 'comprobar';
+
 export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
   const { asesor, oficina, costos } = lote;
   const apartado = costos?.cargosUnicos.find((c) =>
@@ -23,7 +26,7 @@ export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
   );
 
   return (
-    <section aria-labelledby="prueba-titulo">
+    <section id={ANCLA_PRUEBA} aria-labelledby="prueba-titulo" className="scroll-mt-6">
       <TituloSeccion id="prueba-titulo">Cómo compruebas que existimos</TituloSeccion>
 
       <div className="mt-6 grid gap-px border-t-2 border-[var(--lp-accent)] bg-[var(--lp-line)] sm:grid-cols-2">

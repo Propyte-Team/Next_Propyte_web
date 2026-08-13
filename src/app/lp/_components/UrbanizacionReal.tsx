@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import { EnlaceGate, EstadoServicio, TituloSeccion, RULE_DARK } from './ui';
+import Figure from './Figure';
+import { EnlaceGate, EstadoServicio, RULE_DARK } from './ui';
 import { mesAnio } from './format';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -17,18 +17,15 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // fueran del lote sería tergiversación.
 // ============================================================
 
+/** Destino de las referencias al estado real de urbanización. */
+export const ANCLA_URBANIZACION = 'urbanizacion';
+
 export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
   return (
-    <section aria-labelledby="urb-titulo" className="bg-[var(--lp-dark)]">
-      <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
-        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <div>
-            <TituloSeccion id="urb-titulo" tono="oscuro">
-              Qué tiene el lote hoy, y qué falta
-            </TituloSeccion>
-
-            {lote.ningunServicioHoy && (
-              <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-white/75">
+    <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+      <div>
+        {lote.ningunServicioHoy && (
+              <p className="max-w-[46ch] text-base leading-relaxed text-white/75">
                 <strong className="font-semibold text-[var(--lp-accent-on-dark)]">
                   Hoy no hay ningún servicio conectado.
                 </strong>{' '}
@@ -56,53 +53,46 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
                 vale más que la tabla. Los renders viven arriba, etiquetados
                 como lo que son. */}
             {lote.imagenes.urbanizacion && (
-              <div className="relative mt-8 aspect-[16/10]">
-                <Image
-                  src={lote.imagenes.urbanizacion.url}
-                  alt={lote.imagenes.urbanizacion.alt}
-                  fill
-                  loading="lazy"
-                  sizes="(max-width: 1024px) 100vw, 38vw"
-                  className="object-cover"
-                />
-              </div>
+              <Figure
+                imagen={lote.imagenes.urbanizacion}
+                sizes="(max-width: 1024px) 100vw, 38vw"
+                aspecto="aspect-[16/10]"
+                tono="oscuro"
+                className="mt-8"
+              />
             )}
           </div>
 
-          {lote.servicios.length > 0 ? (
-            <div className={`border-t-2 border-[var(--lp-accent-on-dark)]`}>
-              <dl className={`border-x border-b ${RULE_DARK}`}>
-                {lote.servicios.map((s) => {
-                  const fecha = mesAnio(s.fechaEstimada);
-                  return (
-                    <div
-                      key={s.clave}
-                      className={`grid grid-cols-[1fr_auto] items-baseline gap-4 border-t ${RULE_DARK} px-4 py-3.5`}
-                    >
-                      <dt className="text-sm text-white/85">
-                        <span className="capitalize">{s.etiqueta}</span>
-                        {s.detalle && (
-                          <span className="block text-xs text-white/40">{s.detalle}</span>
-                        )}
-                      </dt>
-                      <dd className="text-right lp-num text-xs">
-                        <EstadoServicio estado={s.estado} />
-                        {fecha && (
-                          <span className="block text-white/45">{fecha}</span>
-                        )}
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
-            </div>
-          ) : (
-            <div className="self-start">
-              <EnlaceGate que="estatus de urbanización servicio por servicio" tono="oscuro" />
-            </div>
-          )}
+      {lote.servicios.length > 0 ? (
+        <div className={`border-t-2 border-[var(--lp-accent-on-dark)]`}>
+          <dl className={`border-x border-b ${RULE_DARK}`}>
+            {lote.servicios.map((s) => {
+              const fecha = mesAnio(s.fechaEstimada);
+              return (
+                <div
+                  key={s.clave}
+                  className={`grid grid-cols-[1fr_auto] items-baseline gap-4 border-t ${RULE_DARK} px-4 py-3.5`}
+                >
+                  <dt className="text-sm text-white/85">
+                    <span className="capitalize">{s.etiqueta}</span>
+                    {s.detalle && (
+                      <span className="block text-xs text-white/40">{s.detalle}</span>
+                    )}
+                  </dt>
+                  <dd className="text-right lp-num text-xs">
+                    <EstadoServicio estado={s.estado} />
+                    {fecha && <span className="block text-white/45">{fecha}</span>}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
         </div>
-      </div>
-    </section>
+      ) : (
+        <div className="self-start">
+          <EnlaceGate que="estatus de urbanización servicio por servicio" tono="oscuro" />
+        </div>
+      )}
+    </div>
   );
 }

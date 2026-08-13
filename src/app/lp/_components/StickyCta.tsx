@@ -1,70 +1,94 @@
 'use client';
 
-import { MessageCircle } from '@/lib/icons';
-import { trackWhatsAppClick } from '@/lib/analytics/track';
+import { useEffect, useState } from 'react';
 
 // ============================================================
 // Barra de CTA fija en móvil.
 //
-// Tres elementos: la mensualidad como ancla de precio, el CTA primario y
-// WhatsApp. La mensualidad va aquí porque es la cifra de mayor palanca del
-// segmento y en móvil el visitante la pierde de vista al hacer scroll; tenerla
-// siempre presente es lo que sostiene la intención hasta el formulario.
+// PRECIO TOTAL PRIMERO. Antes mostraba solo la mensualidad: «$10,280 al mes»
+// sin el precio al lado es el patrón visual de la financiera agresiva, que es
+// exactamente la percepción que esta página existe para combatir. La
+// mensualidad sigue —es la cifra de mayor palanca del segmento— pero
+// subordinada al total, no en su lugar.
 //
-// Si no hay plan de pagos (falta la tasa), la barra cae a dos elementos en lugar
-// de mostrar un hueco.
+// UN SOLO CTA. El WhatsApp de la barra era el cuarto de la página y en 390px
+// dos destinos compitiendo en 48px de alto es fricción, no elección. WhatsApp
+// sigue disponible en el hero y en el cierre.
+//
+// APARECE Y DESAPARECE. Antes estaba fija desde el primer píxel, tapando el
+// hero justo cuando el hero hace su trabajo. Ahora entra pasado el 20% del
+// scroll y se retira cuando `#solicitar` está a la vista: mientras el
+// formulario es visible, una barra que apunta al formulario solo estorba —y en
+// 390px llegaba a solaparse con sus propios campos.
 // ============================================================
 
 export default function StickyCta({
-  loteSlug,
-  telefono,
+  precioTotal,
   mensualidad,
-  mensaje,
 }: {
-  loteSlug: string;
-  telefono: string;
+  precioTotal: string | null;
   mensualidad: string | null;
-  mensaje: string;
 }) {
-  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}&utm_content=${encodeURIComponent(loteSlug)}`;
+  const [visible, setVisible] = useState(false);
+  const [formularioALaVista, setFormularioALaVista] = useState(false);
+
+  useEffect(() => {
+    const alHacerScroll = () => {
+      const alcanzable = document.documentElement.scrollHeight - window.innerHeight;
+      // Guarda para páginas cortas: sin ella, 0/0 = NaN y la barra no sale nunca.
+      setVisible(alcanzable > 0 && window.scrollY / alcanzable > 0.2);
+    };
+    alHacerScroll();
+    window.addEventListener('scroll', alHacerScroll, { passive: true });
+    return () => window.removeEventListener('scroll', alHacerScroll);
+  }, []);
+
+  useEffect(() => {
+    const destino = document.getElementById('solicitar');
+    if (!destino) return;
+    const observador = new IntersectionObserver(
+      ([entrada]) => setFormularioALaVista(entrada.isIntersecting),
+      // Un pelo de margen: la barra se va justo ANTES de que el formulario
+      // asome bajo ella, no cuando ya lo está tapando.
+      { rootMargin: '0px 0px -96px 0px' },
+    );
+    observador.observe(destino);
+    return () => observador.disconnect();
+  }, []);
+
+  const mostrar = visible && !formularioALaVista;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[var(--lp-line)] bg-white/95 backdrop-blur supports-[padding:max(0px)]:pb-[max(0.625rem,env(safe-area-inset-bottom))] lg:hidden">
-      <div className="flex items-stretch gap-2 px-4 py-2.5">
-        {mensualidad && (
-          <div className="flex shrink-0 flex-col justify-center pr-1">
-            <span className="text-[0.5625rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
-              Al mes
-            </span>
-            <span className="lp-num text-sm leading-tight text-[var(--lp-ink)]">
-              {mensualidad}
-            </span>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() =>
-            document
-              .getElementById('solicitar')
-              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-          }
-          className="min-h-[48px] flex-1 cursor-pointer bg-[var(--lp-accent)] px-3 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
-        >
-          {mensualidad ? 'Ver mi plan' : 'Pedir el detalle'}
-        </button>
+    <div
+      // `hidden` en vez de desmontar: el lector de pantalla no anuncia una barra
+      // que aparece y desaparece con el scroll, y la transición puede correr.
+      aria-hidden={!mostrar}
+      className={`fixed inset-x-0 bottom-0 z-30 border-t border-[var(--lp-line)] bg-[var(--lp-paper)]/95 backdrop-blur transition-transform duration-300 supports-[padding:max(0px)]:pb-[max(0.5rem,env(safe-area-inset-bottom))] lg:hidden ${
+        mostrar ? 'translate-y-0' : 'translate-y-full'
+      }`}
+    >
+      <div className="flex items-center gap-3 px-4 py-2.5">
+        <div className="min-w-0 flex-1">
+          {precioTotal && (
+            <p className="lp-num truncate text-base leading-tight text-[var(--lp-ink)]">
+              {precioTotal}
+            </p>
+          )}
+          {mensualidad && (
+            <p className="lp-num truncate text-xs leading-tight text-[var(--lp-muted)]">
+              {mensualidad} al mes
+            </p>
+          )}
+        </div>
 
         <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() =>
-            trackWhatsAppClick({ surface: 'lp-lotes-pdc-sticky', propertySlug: loteSlug })
-          }
-          aria-label="Escribir por WhatsApp"
-          className="flex min-h-[48px] min-w-[48px] cursor-pointer items-center justify-center border border-[var(--lp-line)] text-[var(--lp-ink-soft)] transition-colors duration-200 hover:border-[var(--lp-accent)]/35"
+          href="#solicitar"
+          // Ancla real, no botón con scrollIntoView: funciona sin JS y el foco
+          // aterriza en el formulario. Tap target de 48px con padding real.
+          tabIndex={mostrar ? undefined : -1}
+          className="inline-flex min-h-[48px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-6 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
         >
-          <MessageCircle className="size-5" aria-hidden="true" />
+          {mensualidad ? 'Ver mi plan' : 'Pedir el detalle'}
         </a>
       </div>
     </div>

@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { getLotePlayaDelCarmen } from '@/lib/supabase/lp-lotes';
+import { getLotePlayaDelCarmen, type ImagenLanding } from '@/lib/supabase/lp-lotes';
 import { getLotesComparables } from '@/lib/supabase/lp-lotes-comparador';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import FichaLote from '../_components/FichaLote';
-import UrbanizacionReal from '../_components/UrbanizacionReal';
-import CostosNoIncluidos from '../_components/CostosNoIncluidos';
-import LicenciaDesarrollo from '../_components/LicenciaDesarrollo';
+import DisclosureModule from '../_components/DisclosureModule';
 import LeadFormLotes from '../_components/LeadFormLotes';
 import StickyCta from '../_components/StickyCta';
 import QueEstasComprando from '../_components/QueEstasComprando';
@@ -14,10 +12,11 @@ import PlanDePagos from '../_components/PlanDePagos';
 import PruebaDeQueExistimos from '../_components/PruebaDeQueExistimos';
 import WhatsAppCta from '../_components/WhatsAppCta';
 import UnDomingoAqui from '../_components/UnDomingoAqui';
-import LoQueFaltaConfirmar from '../_components/LoQueFaltaConfirmar';
 import ComparadorLotes from '../_components/ComparadorLotes';
+import AvailabilityBadge from '../_components/AvailabilityBadge';
+import TrustBar from '../_components/TrustBar';
 import { EnlaceGate, TituloSeccion, BotonPrimario, RULE_DARK } from '../_components/ui';
-import { mxn, mxnExacto, m2, fechaLarga } from '../_components/format';
+import { mxn, mxnExacto, m2 } from '../_components/format';
 
 // ISR: el inventario cambia sin deploy. 5 min es suficientemente fresco para que
 // un anuncio no cite un precio que la página ya no muestra, y evita pegarle a
@@ -81,7 +80,6 @@ export default async function LandingLotesPlayaDelCarmen() {
     );
   }
 
-  const corte = fechaLarga(lote.fechaCorte);
   const plan = lote.plan;
   const plazoMax = plan?.opciones.at(-1) ?? null;
   const apr = lote.aprovechamiento;
@@ -90,10 +88,16 @@ export default async function LandingLotesPlayaDelCarmen() {
   const heroImg =
     lote.imagenes.hero ??
     (lote.imagenPortada
-      ? {
+      ? ({
           url: lote.imagenPortada,
           alt: 'Vista aérea de la privada residencial sobre Av. Universidades, Playa del Carmen',
-        }
+          // El respaldo se rotula como render por defecto. La portada del Hub
+          // no declara su tipo, y en este catálogo la portada es casi siempre
+          // un render: ante la duda, la etiqueta conservadora es la que no
+          // presenta una imagen del proyecto como si fuera obra existente.
+          tipo: 'render',
+          caption: 'La privada terminada, según el proyecto del desarrollador.',
+        } satisfies ImagenLanding)
       : null);
 
   const mensajeWa = [
@@ -148,12 +152,15 @@ export default async function LandingLotesPlayaDelCarmen() {
         />
 
         <div className="relative mx-auto flex min-h-[92svh] max-w-6xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:min-h-[100svh] lg:pb-20">
-          {/* Escasez verificable, no fabricada: el inventario es de una unidad. */}
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[0.6875rem] uppercase tracking-[0.14em]">
-            <span className="text-[var(--lp-accent-on-dark)]">Uno disponible</span>
-            {corte && (
-              <span className="text-[var(--lp-on-dark)]/45">Al {corte}</span>
-            )}
+          {/* Estado real, no escasez. Decía «Uno disponible» leyendo el número
+              de REGISTROS de `v_units`, y el desarrollador declara 229 lotes
+              disponibles de 310: ver `AvailabilityBadge`. */}
+          <div>
+            <AvailabilityBadge
+              estado={lote.estadoComercial}
+              disponibles={lote.lotesDisponiblesPrivada}
+              fechaCorte={lote.fechaCorte}
+            />
           </div>
 
           {/* H1. Nombra la consecuencia, no la categoría. No es una promesa:
@@ -192,6 +199,17 @@ export default async function LandingLotesPlayaDelCarmen() {
               surface="lp-lotes-pdc-hero"
             />
           </div>
+
+          {/* El render más grande de la página era el único sin rotular. No
+              puede ir en un `<figure>` —es el fondo, con el texto encima— así
+              que el rótulo va aquí, discreto y al pie, como en una publicación:
+              se lee si lo buscas y no compite con el titular. Sin él, la página
+              abre contradiciendo su propia tesis. */}
+          {heroImg && (
+            <p className="mt-8 text-[0.6875rem] leading-relaxed text-[var(--lp-on-dark)]/45">
+              Render del desarrollador. {heroImg.caption}
+            </p>
+          )}
         </div>
       </section>
 
@@ -281,32 +299,22 @@ export default async function LandingLotesPlayaDelCarmen() {
         </div>
       </section>
 
-      {/* ═══════════ 2 · Respuesta directa ═══════════ */}
-      <section className="border-b border-[var(--lp-line)] bg-[var(--lp-paper-2)]">
-        <div className="mx-auto max-w-6xl px-5 py-12 lg:py-16">
-          <p className="max-w-[58ch] lp-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] leading-[1.5] text-[var(--lp-ink)]">
-            En Playa del Carmen tenemos un lote residencial disponible de{' '}
-            {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'} en{' '}
-            {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
-            {lote.precioM2Mxn && <>, es decir {mxnExacto(lote.precioM2Mxn)} por metro cuadrado</>}
-            . Está en preventa dentro de una privada sobre Av. Universidades, a 4.2 km
-            de la playa, con financiamiento directo del desarrollador
-            {plan?.sinIntereses && <> y sin intereses</>}
-            {/* B-2: cuando `plan` era null esto interpolaba la palabra «enganche»
-                y luego la repetía, produciendo «enganche de enganche» en vivo.
-                El porcentaje no depende del plan: vive en `lote.enganchePct`. */}
-            {lote.enganchePct && <>: {lote.enganchePct}% de enganche</>}
-            {plazoMax && <> y hasta {plazoMax.meses} meses</>}. Es propiedad privada, no
-            terreno ejidal.
-          </p>
-        </div>
-      </section>
+      {/* ═══════════ 1.6 · Barra de credibilidad ═══════════
+          Va aquí y no pegada al hero: la banda de cifras es la segunda
+          respiración del hero y romperla dejaría el precio flotando lejos del
+          titular. Este es el primer hueco real, y sigue estando dos pantallas
+          antes del primer punto de conversión.
+
+          Resume el bloque «Cómo compruebas que existimos», que vive al 90% del
+          scroll y que nadie que dude de nosotros alcanza a leer. Ese bloque no
+          se toca: aquí solo se declara que hay algo verificable, con enlace. */}
+      <TrustBar lote={lote} />
 
       {/* ═══════════ 2.5 · Un domingo aquí ═══════════
           Va inmediatamente después de la respuesta directa, antes de cualquier
           objeción. Es el único bloque de la página cuyo trabajo es proyectar la
           vida, y el único punto donde se agrega un ancla de CTA. */}
-      <UnDomingoAqui lote={lote} telefono={FALLBACK_WHATSAPP} mensaje={mensajeWa} />
+      <UnDomingoAqui lote={lote} />
 
       {/* ═══════════ 3-4 · Promesa y plan, con el formulario al lado ═══════════
           El formulario vive aquí y no al final: en móvil aparece justo después del
@@ -321,7 +329,8 @@ export default async function LandingLotesPlayaDelCarmen() {
           <aside id="solicitar" className="lg:sticky lg:top-6">
             <LeadFormLotes
               loteNombre={lote.titulo}
-              plazoMeses={plazoMax?.meses ?? null}
+              loteRef={lote.slug}
+              plazosDisponibles={lote.mesesOpciones}
             />
             <p className="mt-5 max-w-[46ch] text-xs leading-relaxed text-[var(--lp-muted)]">
               Si por presupuesto u objetivo no encaja, te lo decimos en el primer
@@ -336,8 +345,12 @@ export default async function LandingLotesPlayaDelCarmen() {
         </div>
       </div>
 
-      {/* ═══════════ 6 · Urbanización ═══════════ */}
-      <UrbanizacionReal lote={lote} />
+      {/* ═══════════ 6 · Antes de firmar: los cinco bloques de riesgo ═══════════
+          Eran cinco secciones consecutivas —urbanización, lo que no sabemos,
+          jurídico, costos, para quién no es— y el scroll medio de la página era
+          un descargo de responsabilidad de varias pantallas. Van íntegras,
+          agrupadas en acordeón nativo. Ver `DisclosureModule`. */}
+      <DisclosureModule lote={lote} />
 
       {/* ═══════════ 6.5 · El calendario, reencuadrado ═══════════
           El cambio de mayor palanca de la página, y no cambia un solo hecho:
@@ -390,112 +403,12 @@ export default async function LandingLotesPlayaDelCarmen() {
         </div>
       </section>
 
-      {/* ═══════════ 6.6 · Lo que falta confirmar ═══════════
-          Los chips ámbar que antes vivían dispersos por seis secciones. */}
-      <LoQueFaltaConfirmar lote={lote} />
-
-      {/* ═══════════ 7 · Situación jurídica ═══════════ */}
-      <section aria-labelledby="juridico-titulo" className="border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]">
-        <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-            <TituloSeccion id="juridico-titulo" tono="oscuro">
-              Situación jurídica, sin adjetivos
-            </TituloSeccion>
-
-            <div className="flex flex-col gap-8">
-              <dl className="flex flex-col gap-6">
-                <div>
-                  <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
-                    Régimen
-                  </dt>
-                  <dd className="mt-2 max-w-[58ch] text-sm leading-relaxed text-white/80">
-                    {lote.regimenPropiedad ?? <EnlaceGate que="régimen de propiedad" tono="oscuro" />}.
-                    Opera con reglamento de construcción y comité de arquitectura que
-                    revisa cada proyecto antes de iniciar obra.
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
-                    Uso de suelo
-                  </dt>
-                  <dd className="mt-2 max-w-[58ch] text-sm leading-relaxed text-white/80">
-                    <span className="font-mono">{lote.usoSuelo ?? 'por confirmar'}</span>,
-                    con COS 0.55 y CUS 1.60 según la ficha técnica del desarrollador.
-                    Definen cuánto puedes ocupar en planta y cuánto construir en total.
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
-                    Escrituración
-                  </dt>
-                  <dd className="mt-2 max-w-[58ch] text-sm leading-relaxed text-white/80">
-                    Proyectada a finales de 2026 según el desarrollador. Hoy el título
-                    está en fideicomiso, así que el lote no es escriturable. No usamos
-                    la expresión &laquo;certeza jurídica absoluta&raquo;: ninguna
-                    comercializadora puede sostenerla.
-                  </dd>
-                </div>
-                {lote.rentasCortoPlazoPermitidas !== null && (
-                  <div>
-                    <dt className="text-[0.6875rem] uppercase tracking-[0.08em] text-white/40">
-                      Renta de corto plazo
-                    </dt>
-                    <dd className="mt-2 max-w-[58ch] text-sm leading-relaxed text-white/80">
-                      {lote.rentasCortoPlazoPermitidas
-                        ? 'Permitida conforme a los estatutos de la privada, una vez que exista construcción. Un terreno sin construir no genera renta.'
-                        : 'No permitida conforme a los estatutos de la privada.'}
-                    </dd>
-                  </div>
-                )}
-              </dl>
-
-              <LicenciaDesarrollo licencia={lote.licencia} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ 8-11 · Costos, filtro, prueba y FAQ ═══════════ */}
+      {/* ═══════════ 7-8 · Prueba y FAQ ═══════════
+          Urbanización, pendientes, jurídico, costos y «para quién no es» subieron
+          al módulo `DisclosureModule`. Aquí queda lo que NO es una objeción: la
+          prueba de que existimos y las preguntas. */}
       <div className="mx-auto max-w-3xl px-5 py-14 lg:py-20">
         <div className="flex flex-col gap-16">
-          <CostosNoIncluidos lote={lote} />
-
-          {/* ───── 9 · Para quién no es ─────
-              Baja hasta aquí desde la primera posición. El texto va íntegro: no
-              se acorta ni se suaviza, sólo se coloca después de que exista una
-              razón para seguir leyendo. */}
-          <section aria-labelledby="filtro-titulo">
-            <TituloSeccion id="filtro-titulo">Para quién no es este producto</TituloSeccion>
-            <div className="mt-5 flex flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
-              <p>
-                Comprar el terreno y poder construir no ocurren el mismo día. La
-                escrituración está proyectada para finales de 2026 según el
-                desarrollador, y hoy el título está en fideicomiso: el lote no es
-                escriturable en este momento. La construcción depende de que se
-                entreguen servicios y vialidades, proyectados hacia el último
-                trimestre de 2027.
-              </p>
-              <p>
-                Si necesitas mudarte pronto, este no es tu producto y es mejor decirlo
-                ahora. Si esperas rendimiento por renta desde el primer día, un
-                terreno no lo da: lo da lo que construyas encima.
-              </p>
-              <p>
-                Y si tu presupuesto total no alcanza el precio del lote más los gastos
-                de escrituración{' '}
-                {lote.costos?.cierrePctMin && lote.costos?.cierrePctMax ? (
-                  <span className="lp-num text-sm">
-                    ({lote.costos.cierrePctMin}% a {lote.costos.cierrePctMax}% adicional)
-                  </span>
-                ) : (
-                  <EnlaceGate que="% de gastos de cierre" />
-                )}{' '}
-                más los cargos únicos que listamos arriba, conviene esperar en lugar de
-                estirarte.
-              </p>
-            </div>
-          </section>
-
           <PruebaDeQueExistimos lote={lote} />
 
           {/* ───── 11 · FAQ ───── */}
@@ -574,6 +487,16 @@ export default async function LandingLotesPlayaDelCarmen() {
           para no duplicar componente ni eventos de medición. */}
       <section className="bg-[var(--lp-dark)]">
         <div className="mx-auto max-w-6xl px-5 py-14">
+          {/* Segunda y última instancia. Quien llega hasta aquí leyó los cinco
+              bloques de riesgo: recordarle en qué estado está el lote y a qué
+              fecha lo verificamos es información, no presión. */}
+          <div className="mb-6">
+            <AvailabilityBadge
+              estado={lote.estadoComercial}
+              disponibles={lote.lotesDisponiblesPrivada}
+              fechaCorte={lote.fechaCorte}
+            />
+          </div>
           <p className="max-w-[46ch] lp-display text-[clamp(1.25rem,1.1rem+0.8vw,1.75rem)] font-semibold leading-tight tracking-[-0.02em] text-balance text-white">
             {plan
               ? `Te mandamos tu tabla de amortización, el plano con la ubicación del lote y el paquete documental.`
@@ -655,10 +578,8 @@ export default async function LandingLotesPlayaDelCarmen() {
       </footer>
 
       <StickyCta
-        loteSlug={lote.slug}
-        telefono={FALLBACK_WHATSAPP}
+        precioTotal={lote.precioMxn ? mxn(lote.precioMxn) : null}
         mensualidad={plazoMax ? mxn(plazoMax.mensualidadMxn) : null}
-        mensaje={mensajeWa}
       />
     </>
   );

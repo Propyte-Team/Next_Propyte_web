@@ -177,6 +177,38 @@ export function TituloSeccion({
 }
 
 /**
+ * Advertencia sobre las cifras calculadas.
+ *
+ * Vivía copiada palabra por palabra en `PlanDePagos` y en `ComparadorLotes`.
+ * Que dos copias de la misma advertencia legal se separen con el tiempo es
+ * cuestión de un solo editor con prisa, y la versión que quede desactualizada
+ * es la que un comprador leerá como promesa incumplida.
+ *
+ * `alcance` es lo único que difería: un plan habla de UN esquema, el comparador
+ * de varios desarrolladores.
+ */
+export function DisclaimerCifras({
+  alcance = 'el esquema que declara el desarrollador',
+  tono = 'claro',
+}: {
+  alcance?: string;
+  tono?: 'claro' | 'oscuro';
+}) {
+  return (
+    <p
+      className={`max-w-[62ch] text-xs leading-relaxed ${
+        tono === 'oscuro' ? 'text-[var(--lp-on-dark-soft)]' : 'text-[var(--lp-muted)]'
+      }`}
+    >
+      Cifras calculadas sobre el precio publicado y {alcance}, redondeadas al peso.
+      No son una tabla de amortización: esa te la mandamos por escrito, con las
+      fechas de cada pago, antes de que firmes nada. Condiciones sujetas a cambio
+      y disponibilidad.
+    </p>
+  );
+}
+
+/**
  * CTA primario. Terracota sólido, texto blanco: 6.1:1, AA holgado.
  * El `active:translate-y` es el único gesto físico de la página.
  */

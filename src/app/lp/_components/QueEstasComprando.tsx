@@ -1,6 +1,6 @@
-import Image from 'next/image';
+import Figure from './Figure';
 import { TituloSeccion } from './ui';
-import { m2 } from './format';
+import { m2, mxn, mxnExacto } from './format';
 
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
@@ -50,6 +50,41 @@ const CONSECUENCIA: Record<string, string> = {
   'casa club': 'Hay dónde recibir visitas cuando tu casa se queda chica.',
 };
 
+/**
+ * Territorio de cada amenidad.
+ *
+ * Once amenidades en lista plana obligan a leerlas todas para saber si hay
+ * alguna que importe. Agrupadas en tres territorios, el visitante encuentra el
+ * suyo de un vistazo: quien compra por los hijos busca «familia», quien viene
+ * de otra ciudad busca «seguridad». El copy de cada una NO cambia — la lista
+ * ya estaba bien escrita; lo que faltaba era el orden.
+ *
+ * Una amenidad sin territorio cae en «vida diaria», que es el cajón correcto
+ * para lo que no es ni infantil ni perimetral.
+ */
+const TERRITORIO: Record<string, 'familia' | 'seguridad' | 'vida diaria'> = {
+  'alberca comunitaria': 'familia',
+  'area de ninos': 'familia',
+  'jardin comunitario': 'familia',
+  cancha: 'familia',
+  'seguridad 24h': 'seguridad',
+  cctv: 'seguridad',
+  'acceso controlado': 'seguridad',
+  gimnasio: 'vida diaria',
+  'salon de eventos': 'vida diaria',
+  'pet zone': 'vida diaria',
+  'casa club': 'vida diaria',
+};
+
+/** Orden de presentación. Familia primero: es el motivo de compra dominante. */
+const ORDEN_TERRITORIOS = ['familia', 'seguridad', 'vida diaria'] as const;
+
+const ROTULO: Record<(typeof ORDEN_TERRITORIOS)[number], string> = {
+  familia: 'Para los que viven contigo',
+  seguridad: 'Para dormir tranquilo',
+  'vida diaria': 'Para el día a día',
+};
+
 /** Quita acentos y normaliza para hacer match con `CONSECUENCIA`. */
 function clave(amenidad: string): string {
   return amenidad
@@ -64,17 +99,43 @@ function clave(amenidad: string): string {
 export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
   // Sólo sobreviven las amenidades con consecuencia escribible.
   const amenidades = lote.amenidades
-    .map((a) => ({ nombre: a, consecuencia: CONSECUENCIA[clave(a)] }))
-    .filter((a): a is { nombre: string; consecuencia: string } => Boolean(a.consecuencia));
+    .map((a) => ({
+      nombre: a,
+      consecuencia: CONSECUENCIA[clave(a)],
+      territorio: TERRITORIO[clave(a)] ?? ('vida diaria' as const),
+    }))
+    .filter((a) => Boolean(a.consecuencia));
 
   const imagen = lote.imagenes.amenidades;
   const apr = lote.aprovechamiento;
+  const plazoMax = lote.plan?.opciones.at(-1) ?? null;
 
   return (
     <section aria-labelledby="comprando-titulo">
       <TituloSeccion id="comprando-titulo">Qué estás comprando, exactamente</TituloSeccion>
 
-      <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-10">
+      {/* Resumen en una frase. Bajó del hero, donde ocupaba la banda entera
+          justo después de las cifras y repetía en prosa lo que las cifras
+          acababan de decir en números. Aquí abre el bloque que sí desarrolla el
+          argumento, y la afirmación que de verdad hace trabajo —propiedad
+          privada, no ejidal— aterriza donde el visitante ya se está preguntando
+          qué está comprando. */}
+      <p className="mt-5 max-w-[58ch] lp-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] leading-[1.5] text-[var(--lp-ink)]">
+        En Playa del Carmen tenemos un lote residencial disponible de{' '}
+        {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'} en{' '}
+        {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
+        {lote.precioM2Mxn && <>, es decir {mxnExacto(lote.precioM2Mxn)} por metro cuadrado</>}
+        . Está en preventa dentro de una privada sobre Av. Universidades, a 4.2 km de
+        la playa, con financiamiento directo del desarrollador
+        {lote.plan?.sinIntereses && <> y sin intereses</>}
+        {/* El porcentaje NO depende del plan: vive en `lote.enganchePct`. Leerlo
+            de `plan` producía «enganche de enganche» cuando faltaba la tasa. */}
+        {lote.enganchePct && <>: {lote.enganchePct}% de enganche</>}
+        {plazoMax && <> y hasta {plazoMax.meses} meses</>}. Es propiedad privada, no
+        terreno ejidal.
+      </p>
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-10">
         <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
           <p>
             No una casa terminada: el espacio para decidir la tuya. Cuando compras
@@ -124,23 +185,37 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
                 )}
                 , esto es lo que cada amenidad significa un martes cualquiera:
               </p>
-              {/* Reja de dos columnas, NO una fila por amenidad.
-                  Once filas apiladas con hairline se comían el 20% del scroll
-                  de la página y leían como hoja de cálculo. En dos columnas la
-                  misma información ocupa la mitad y se escanea de un vistazo,
-                  que es lo único que alguien hace con una lista de amenidades. */}
-              <dl className="mt-5 grid gap-x-10 gap-y-5 sm:grid-cols-2">
-                {amenidades.map((a) => (
-                  <div key={a.nombre}>
-                    <dt className="text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--lp-accent)]">
-                      {a.nombre}
-                    </dt>
-                    <dd className="mt-1 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
-                      {a.consecuencia}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
+              {/* Agrupadas en tres territorios, no en lista plana. Once
+                  amenidades seguidas obligan a leerlas todas para saber si hay
+                  alguna que te importe; en territorios, cada perfil encuentra
+                  el suyo de un vistazo. Dentro de cada uno, dos columnas: once
+                  filas apiladas con hairline se comían el 20% del scroll y
+                  leían como hoja de cálculo. */}
+              <div className="mt-5 flex flex-col gap-6">
+                {ORDEN_TERRITORIOS.map((t) => {
+                  const delGrupo = amenidades.filter((a) => a.territorio === t);
+                  if (delGrupo.length === 0) return null;
+                  return (
+                    <div key={t}>
+                      <p className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-muted)]">
+                        {ROTULO[t]}
+                      </p>
+                      <dl className="mt-3 grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                        {delGrupo.map((a) => (
+                          <div key={a.nombre}>
+                            <dt className="text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--lp-accent)]">
+                              {a.nombre}
+                            </dt>
+                            <dd className="mt-1 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
+                              {a.consecuencia}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
+                  );
+                })}
+              </div>
               <p className="mt-3 text-sm text-[var(--lp-muted)]">
                 Se entregan conforme al calendario de obra, y ese calendario está más
                 abajo con sus fechas y con lo que todavía no podemos confirmar.
@@ -160,22 +235,11 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
             como foto, y el sticky la acompaña mientras se lee el texto en vez
             de dejar un hueco muerto debajo. */}
         {imagen && (
-          <figure className="lg:sticky lg:top-8 lg:self-start">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--lp-r-media)]">
-              <Image
-                src={imagen.url}
-                alt={imagen.alt}
-                fill
-                loading="lazy"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover"
-              />
-            </div>
-            <figcaption className="mt-3 text-xs leading-relaxed text-[var(--lp-muted)]">
-              Render de las canchas del desarrollo. Se entregan conforme al
-              calendario de obra que está más abajo.
-            </figcaption>
-          </figure>
+          <Figure
+            imagen={imagen}
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            className="lg:sticky lg:top-8 lg:self-start"
+          />
         )}
       </div>
     </section>

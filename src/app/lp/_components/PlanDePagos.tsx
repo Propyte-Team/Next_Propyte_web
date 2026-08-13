@@ -1,4 +1,4 @@
-import { EnlaceGate, TituloSeccion, RULE_LIGHT } from './ui';
+import { DisclaimerCifras, EnlaceGate, TituloSeccion, RULE_LIGHT } from './ui';
 import { mxn } from './format';
 import SelectorPlazo from './SelectorPlazo';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
@@ -96,12 +96,9 @@ export default function PlanDePagos({ lote }: { lote: LoteLanding }) {
         ))}
       </dl>
 
-      <p className="mt-5 max-w-[62ch] text-xs leading-relaxed text-[var(--lp-muted)]">
-        Cifras calculadas sobre el precio publicado y el esquema que declara el
-        desarrollador, redondeadas al peso. No son una tabla de amortización: esa
-        te la mandamos por escrito, con las fechas de cada pago, antes de que
-        firmes nada. Condiciones sujetas a cambio y disponibilidad.
-      </p>
+      <div className="mt-5">
+        <DisclaimerCifras />
+      </div>
     </section>
   );
 }

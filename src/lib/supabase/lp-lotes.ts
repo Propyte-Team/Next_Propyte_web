@@ -116,6 +116,17 @@ export interface Aprovechamiento {
 export interface ImagenLanding {
   url: string;
   alt: string;
+  /**
+   * Render del desarrollador o fotografía del estado real.
+   *
+   * No es metadato ocioso: la tesis entera de la página es que no vende
+   * renders como si fueran obra terminada. Publicar tres imágenes donde solo
+   * una declara ser render es una contradicción visible, así que el tipo viaja
+   * con la imagen y `Figure` obliga a rotularlo.
+   */
+  tipo: 'render' | 'foto';
+  /** Qué se está viendo. Obligatorio: ver `Figure`. */
+  caption: string;
 }
 
 /**
@@ -203,6 +214,25 @@ export interface LoteLanding {
   amenidades: string[];
   /** Lotes totales de la privada (`unidades_totales`). */
   lotesTotalesPrivada: number | null;
+  /**
+   * Lotes que el desarrollador declara disponibles en la privada.
+   *
+   * 🚨 NO CONFUNDIR CON EL NÚMERO DE REGISTROS DE `v_units`. El Hub guarda UNA
+   * unidad por desarrollo, y esa unidad representa un TIPO de lote («Lote
+   * Residencial en comunidad privada», 129.6 m²), no un lote concreto. La
+   * página llegó a publicar «Uno disponible» leyendo el conteo de registros:
+   * el desarrollador declara 229 disponibles de 310. Afirmar escasez por un
+   * artefacto del modelo de datos es exactamente lo que esta página existe
+   * para no hacer, y con un factor de error de 229 no es un matiz.
+   */
+  lotesDisponiblesPrivada: number | null;
+  /**
+   * Estado comercial literal del registro («Preventa», «Disponible», …).
+   *
+   * NO es el gate de publicación —ese es `approved_at` + `published`— y por eso
+   * se publica tal cual en vez de traducirse a un «disponible» genérico.
+   */
+  estadoComercial: string | null;
   /** null si falta la superficie: sin ella no hay nada que multiplicar. */
   aprovechamiento: Aprovechamiento | null;
   /** null si falta la tasa o si el esquema de pago no parsea. */
@@ -447,22 +477,35 @@ function construirPlan(
  * revisó a ojo y se dio de alta aquí con su alt escrito a mano. Un archivo
  * nuevo en el Hub no aparece solo: hay que mirarlo y añadirlo.
  */
-const IMAGENES_CURADAS: Record<keyof ImagenesLanding, { archivo: string; alt: string }> = {
+const IMAGENES_CURADAS: Record<
+  keyof ImagenesLanding,
+  { archivo: string; alt: string; tipo: 'render' | 'foto'; caption: string }
+> = {
   hero: {
     archivo: '1782488140188-rd7fp2.webp',
     alt: 'Render aéreo de la privada residencial: calles arboladas, casas de dos niveles y la zona de albercas al centro',
+    tipo: 'render',
+    caption: 'La privada terminada, según el proyecto del desarrollador.',
   },
   domingo: {
     archivo: '1782488140710-ioqoqf.webp',
     alt: 'Alberca comunitaria con camastros y palapas, y la casa club al fondo, con residentes usándola',
+    tipo: 'render',
+    caption: 'La alberca comunitaria y la casa club, como están proyectadas.',
   },
   amenidades: {
     archivo: '1782488141250-usa71a.webp',
     alt: 'Canchas de pádel y pickleball entre árboles, con vecinos jugando y otros sentados en las bancas',
+    tipo: 'render',
+    caption:
+      'Las canchas, como están proyectadas. Se entregan conforme al calendario de obra que está más abajo.',
   },
   urbanizacion: {
     archivo: '1782496845888-h9idmq.webp',
     alt: 'Vista aérea real del polígono: las vialidades y los lotes delimitados todavía sin construir ni urbanizar',
+    tipo: 'foto',
+    caption:
+      'El polígono hoy: vialidades trazadas y lotes delimitados, sin urbanizar y sin construir.',
   },
 };
 
@@ -479,9 +522,9 @@ function curarImagenes(galeria: unknown): ImagenesLanding {
   const buscar = (archivo: string) => urls.find((u) => u.endsWith(`/${archivo}`)) ?? null;
 
   const resolver = (clave: keyof ImagenesLanding): ImagenLanding | null => {
-    const { archivo, alt } = IMAGENES_CURADAS[clave];
+    const { archivo, alt, tipo, caption } = IMAGENES_CURADAS[clave];
     const url = buscar(archivo);
-    return url ? { url, alt } : null;
+    return url ? { url, alt, tipo, caption } : null;
   };
 
   return {
@@ -660,7 +703,7 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
   const { data: dev } = devId
     ? await hub
         .from('v_developments')
-        .select('amenities, total_units, images')
+        .select('amenities, total_units, available_units, images')
         .eq('id', devId)
         .maybeSingle()
     : { data: null };
@@ -731,6 +774,8 @@ export async function getLotePlayaDelCarmen(): Promise<LoteLanding | null> {
     licencia,
     amenidades,
     lotesTotalesPrivada: numeroONull(d.total_units),
+    lotesDisponiblesPrivada: numeroONull(d.available_units),
+    estadoComercial: sanitizarTexto(u.status),
     aprovechamiento: construirAprovechamiento(superficieM2),
     plan: construirPlan(
       precioMxn,
