@@ -84,6 +84,25 @@ describe('sanitizeUtm', () => {
   });
 });
 
+// Contrato entre repos: el `short_code` que estampa el Hub como `?qr=` pasa por
+// este mismo saneo. `generateShortCode` (Propyte_hub/src/lib/qr/short-code.ts)
+// produce base62, que cae entero dentro del alfabeto seguro — asi que debe
+// sobrevivir INTACTO. Si alguien cambia el alfabeto de cualquiera de los dos
+// lados, la atribucion se corromperia en silencio; este test lo delata.
+describe('sanitizeUtm — short_code del QR (contrato con el Hub)', () => {
+  it('un short_code base62 sobrevive sin un solo cambio', () => {
+    const codigos = ['aB3xK9z', '0000000', 'ZZZZZZZ', 'qR7mN2p', '1a2B3c4'];
+    for (const codigo of codigos) {
+      expect(sanitizeUtm(codigo), `short_code: ${codigo}`).toBe(codigo);
+    }
+  });
+
+  it('cubre todo el alfabeto base62 de generateShortCode', () => {
+    const base62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    expect(sanitizeUtm(base62)).toBe(base62);
+  });
+});
+
 describe('optionalUtmField', () => {
   it('NUNCA falla el parse — ese era el bug que perdia leads', () => {
     const hostiles = ['Restaurante Corazón', '<script>x</script>', 'a'.repeat(500), 42, null, undefined, {}];

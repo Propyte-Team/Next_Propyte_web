@@ -96,6 +96,8 @@ const LeadSchema = z.object({
   utm_term: optionalUtmField,
   gclid: optionalUtmField,
   fbclid: optionalUtmField,
+  /** `short_code` del QR físico de origen — lo estampa /q/[code] del Hub. */
+  qr: optionalUtmField,
   /** event_id generado por submitLead() para deduplicar Pixel ↔ Conversions API. */
   metaEventId: z.string().max(100).optional(),
   // Sustituye a gclid cuando el visitante no dio consentimiento de cookies.
@@ -345,6 +347,7 @@ export async function POST(request: NextRequest) {
         utm_term: data.utm_term || null,
         gclid: data.gclid || null,
         fbclid: data.fbclid || null,
+        qr_code: data.qr || null,
         zoho_sync_error: 'SKIPPED: unknown source',
       })
       .select('id')
@@ -422,6 +425,7 @@ export async function POST(request: NextRequest) {
     utm_term: data.utm_term || null,
     gclid: data.gclid || null,
     fbclid: data.fbclid || null,
+    qr: data.qr || null,
     // Viaja a Zoho dentro de la nota UTM. NO se persiste en public.leads
     // todavía: falta la columna `wbraid`. Migración pendiente en
     // specs/lp-lotes-playa-del-carmen.md §DDL pendiente.
@@ -465,6 +469,7 @@ export async function POST(request: NextRequest) {
       utm_term: utms.utm_term,
       gclid: utms.gclid,
       fbclid: utms.fbclid,
+      qr_code: utms.qr,
       nombre_campana: zohoPayload.lead.Nombre_de_Campa_a ?? null,
       nombre_formulario: zohoPayload.lead.Nombre_del_formulario ?? null,
       zoho_sync_error: 'PENDING_SYNC',

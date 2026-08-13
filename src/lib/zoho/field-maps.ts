@@ -66,6 +66,11 @@ export interface UtmData {
       pierde la importación de conversiones offline de ese segmento. Igual que
       `fbclid`, hoy solo viaja en la nota UTM — no hay campo custom en Zoho. */
   wbraid?: string | null;
+  /** `short_code` del QR físico de origen. A diferencia de los utm_*, que son
+      texto libre tecleado por quien crea el código, este identifica al QR
+      CONCRETO — dos QRs pueden compartir campaña y volverse indistinguibles.
+      Lo estampa el redirect `/q/[code]` del Hub como `?qr=`. */
+  qr?: string | null;
 }
 
 export type Locale = "es" | "en";
@@ -268,6 +273,8 @@ function baseLeadFields(
     ...(utms.gclid ? { GCLID: utms.gclid } : {}),
     ...(utms.utm_campaign ? { Ad_Campaign_Name: utms.utm_campaign } : {}),
     ...(utms.utm_content ? { AdGroup_Name: utms.utm_content } : {}),
+    // Campo custom dedicado: identifica el QR físico concreto, no su campaña.
+    ...(utms.qr ? { QR_de_origen: utms.qr } : {}),
     // Owner OMITIDO — Zoho Assignment Rule rota
   };
 }
@@ -415,6 +422,7 @@ export function composeDuplicateNote(
   if (utms.gclid) utmParts.push(`gclid=${utms.gclid}`);
   if (utms.fbclid) utmParts.push(`fbclid=${utms.fbclid}`);
   if (utms.wbraid) utmParts.push(`wbraid=${utms.wbraid}`);
+  if (utms.qr) utmParts.push(`qr=${utms.qr}`);
   if (utmParts.length > 0) {
     lines.push("");
     lines.push(`UTM: ${utmParts.join(" | ")}`);
