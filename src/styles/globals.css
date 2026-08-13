@@ -215,43 +215,67 @@ body {
 
 /* ─────────────────────────────────────────────────────────
    Heading defaults — escala fluida global.
+
    `:where()` colapsa la especificidad a 0 para que cualquier utility
    Tailwind (text-base, text-2xl, font-bold…) en el JSX override sin
    conflicto. Sin esto, el element selector ganaba a `.text-2xl` y
-   los headings se veían siempre con su tamaño default fluid. */
-:where(h1, .h1) {
+   los headings se veían siempre con su tamaño default fluid.
+
+   ⚠️ LO ANTERIOR ES FALSO FUERA DE `.lp-root`, Y A PROPÓSITO. `:where()` sí
+   colapsa la especificidad a 0, pero eso no basta: `@import "tailwindcss"` mete
+   base/components/utilities en cascade layers, y en CSS **una declaración
+   normal SIN capa gana a cualquier declaración normal EN una capa** — las capas
+   se comparan ANTES que la especificidad. Escritas aquí, fuera de todo
+   `@layer`, estas reglas le ganan a `.text-sm` pese a tener especificidad 0, y
+   ningún `text-*` / `font-*` / `leading-*` del JSX surte efecto sobre un
+   heading.
+
+   POR QUÉ NO SE ARREGLA ENVOLVIÉNDOLO EN `@layer base`. Se probó y se midió
+   (2026-08-13, 406 headings en 14 rutas): **369 cambiarían de golpe**. Muchos a
+   mejor —los H1 de las interiores pasan de 56px a los 72px que el JSX pide, y
+   el «Tu privacidad» del banner de cookies de 36px a sus 14px— pero otros se
+   destrozan: el H1 de la home cae a 16px y el de `/propiedades` también, porque
+   llevan clases que nunca surtieron efecto y el default los venía salvando.
+   Arreglarlo en la raíz es correcto pero exige revisar esos headings uno a uno;
+   hasta entonces, esto se queda fuera de la capa.
+
+   LA EXCEPCIÓN: `.lp-root`. Las landings de pago tienen su propia escala
+   tipográfica editorial en `lp-theme.css` y su árbol está aislado del sitio, así
+   que ahí sí se excluye el default y mandan las utilities. La exclusión vive
+   DENTRO del `:where()` para no alterar la especificidad. */
+:where(h1:not(.lp-root *), .h1) {
   font-family: var(--font-heading);
   font-size: var(--fs-h1);
   line-height: var(--lh-tight);
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-tight);
 }
-:where(h2, .h2) {
+:where(h2:not(.lp-root *), .h2) {
   font-family: var(--font-heading);
   font-size: var(--fs-h2);
   line-height: var(--lh-tight);
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-tight);
 }
-:where(h3, .h3) {
+:where(h3:not(.lp-root *), .h3) {
   font-family: var(--font-heading);
   font-size: var(--fs-h3);
   line-height: var(--lh-normal);
   font-weight: var(--fw-semibold);
 }
-:where(h4, .h4) {
+:where(h4:not(.lp-root *), .h4) {
   font-family: var(--font-heading);
   font-size: var(--fs-h4);
   line-height: var(--lh-normal);
   font-weight: var(--fw-semibold);
 }
-:where(h5, .h5) {
+:where(h5:not(.lp-root *), .h5) {
   font-family: var(--font-heading);
   font-size: var(--fs-h5);
   line-height: var(--lh-normal);
   font-weight: var(--fw-semibold);
 }
-:where(h6, .h6) {
+:where(h6:not(.lp-root *), .h6) {
   font-family: var(--font-heading);
   font-size: var(--fs-h6);
   line-height: var(--lh-normal);
