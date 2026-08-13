@@ -12,6 +12,12 @@
 >
 > ⚠️ **Lección de proceso:** la primera versión de esta nota la escribí en el worktree principal, que estaba en la rama de otra sesión. `task_manager.md` es un archivo versionado, así que un cambio de rama se la llevó completa. Editarlo **solo desde un worktree cuya rama vaya a `main`, y commitearlo**.
 >
+> **LP Lotes PdC — handoff de arquitectura de persuasión, 14 de 15 puntos.** Rama
+> `feat/lp-lotes-trustbar`, rebasada sobre este `main`. TrustBar, badge que ya no miente
+> («Uno disponible» → `229 disponibles según el desarrollador`), acordeón «Antes de firmar»
+> (−62.7% de scroll en la zona de riesgo), formulario de 2 pasos, `Figure` con caption
+> obligatorio, y la prosa que se leía a 34 caracteres por línea. Ver «En progreso».
+>
 > Anterior: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
 >
 > ⚠️ Al medir el alcance del deploy comparé contra `main` **local** (parado en junio) y reporté 699 commits; contra `origin/main` eran **7**. Medir divergencias siempre contra el remoto tras `fetch`. Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
@@ -21,6 +27,209 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+### LP Lotes PdC — arquitectura de persuasión, handoff 2026-08-13 (sesión 2026-08-13)
+
+> Rama `feat/lp-lotes-trustbar`, basada en `origin/main` (`245328c`). **Todo sin commitear.**
+> `tsc --noEmit` limpio · `npm run build` verde · verificado en navegador (desktop 1440 + móvil 390).
+
+Fuente: `HANDOFF-lp-lotes-playa-del-carmen.md`. Ojo: el handoff describe un estado
+**anterior** a `245328c`. P1.1 (hero desintoxicado), y las partes de P2.3/P3.1 sobre el
+formulario al final, ya estaban resueltas antes de empezar.
+
+**Hecho — P1.2 · badge de escasez**
+- `_components/AvailabilityBadge.tsx` nuevo. Pill con superficie propia (fondo al 92% +
+  ring terracota): sobre el hero el fondo es una foto, así el contraste deja de depender
+  del encuadre. 4.6:1 incluso contra blanco puro. Fecha desde `lote.fechaCorte`.
+- Instanciado en hero y en cierre. Legible en 390px sin zoom (verificado).
+
+**Hecho — P1.3 · barra de credibilidad**
+- `_components/TrustBar.tsx` nuevo. Va tras la banda de cifras, no pegado al hero: las
+  cifras son la segunda respiración del titular. **212px** en desktop (criterio ≤280),
+  2×2 en 390px. Cuatro celdas, cada una enlace completo.
+- Oficina y asesor se leen del Hub; si faltan, la reja se recompone (sin huecos vacíos).
+- `#comprobar` y `#urbanizacion` **no existían** — el handoff los daba por hechos. Creadas
+  como constantes exportadas con `scroll-mt`, igual que `ANCLA_GATES`. Las 4 anclas resuelven.
+
+**Descartado por decisión de Luis — los 2 testimonios de P1.3.** Los de la home dicen «25%
+de plusvalía» y «generando ingresos en Airbnb»; el pie legal de esta LP declara que no
+publica proyecciones de plusvalía ni rendimiento, y «Para quién no es» dice que un terreno
+no da renta. Además llevan sello «Verificado» sin nada verificable. **No se ponen.**
+
+**Hecho — tipografía de headings, acotada a la LP**
+`globals.css` declaraba `:where(h1…h6)` **fuera de `@layer`**. Como `@import "tailwindcss"`
+mete las utilities en capas, y una declaración sin capa gana a cualquiera en capa *antes* de
+comparar especificidad, ningún `text-*` / `font-*` / `leading-*` surtía efecto en un heading
+**de todo el sitio**.
+
+Se midieron 406 headings en 14 rutas, antes y después, para no tocar a ciegas:
+- **Fix en la raíz (`@layer base`): mueve 369 de 406.** A mejor los H1 de las interiores
+  (56→72px) y el «Tu privacidad» del CookieBanner (36→14px, hoy inflado en todas las rutas);
+  a peor el H1 de la home, que cae a **16px**, y el de `/propiedades`. Exige revisar ~15
+  headings a mano. **NO aplicado — pendiente de decidir.**
+- **Aplicado: `:where(h1:not(.lp-root *), .h1)`**, la exclusión dentro del `:where()` para no
+  alterar la especificidad. Verificado: **cambian 24 headings, los 24 en la LP; los otros 382
+  intactos.** Los H2 pasan a sus 44px y las etiquetas de `#comprobar` a 11px en DM Sans.
+  Validado visualmente en desktop y 390px.
+
+⚠️ Al medir, correr **siempre** con `.next` borrado y el dev server reiniciado: con caché
+caliente Turbopack sirve la hoja vieja y la nueva a la vez y el diff da «0 cambios» —
+falso negativo perfecto. Harness (`.headings-audit.mjs` / `-diff` / `-probe`) en el
+scratchpad de la sesión. Detalle en `feedback_headings_unlayered_pisan_tailwind.md`.
+
+**⚠️ Contaminación de rama.** Otra sesión commiteó `049ebf8` (fix de UTMs) en
+`feat/lp-lotes-trustbar` en vez de en `fix/utm-sanitize-no-tumbar-lead`. Si se abre PR de
+esta rama, va incluido. Sin mover: esa sesión puede seguir activa.
+
+**Hecho — P1.1 (resto)** · El párrafo de resumen SEO sale del hero y baja a
+`QueEstasComprando`, que es donde el visitante ya se pregunta qué compra. No se borró:
+la afirmación que hace trabajo —propiedad privada, no ejidal— sigue publicada.
+
+**Hecho — P1.4 · etiquetado de imágenes**
+`Figure.tsx` nuevo, con `caption` **obligatorio en el tipo** (si falta, falla el build) y
+prefijo canónico puesto por el componente, no por quien lo llama. `ImagenLanding` gana
+`tipo: 'render' | 'foto'` y `caption`, declarados en `IMAGENES_CURADAS`.
+⚠️ El handoff decía que la aérea era la única CON caption. Es al revés: el render de las
+canchas lo tenía y **la fotografía real del polígono —el activo más creíble— no**. Ahora
+las 4 están rotuladas; el hero lleva el suyo al pie (es fondo, no cabe en un `<figure>`).
+Verificado en navegador: 3 figcaptions + el rótulo del hero, y las 7 imágenes cargan.
+
+**Hecho — P2.2 · los «Falta confirmar» vacíos**
+`PendingStatus.tsx` nuevo: estado «En trámite» + título + porqué + **fecha de verificación**
++ CTA. `LicenciaDesarrollo` pasa a dos estados: reja de 4 campos cuando los datos existan,
+un solo estado con dueño y fecha mientras no. Se acabó la tabla de cuatro huecos. El
+incumplimiento del art. 69 se sigue publicando — omitirlo sería incumplir en silencio.
+
+**Hecho — P2.4 · jerarquía CTA.** Medido en navegador: **WhatsApp bajó de 4 a 2**, enlaces
+a `#solicitar` = 5. Eliminado el WhatsApp suelto de `UnDomingoAqui` (que además estaba
+sobre fondo claro, donde el componente ni tenía estilo); el CTA del comparador pasa a
+contorno. `WhatsAppCta` arrastraba clases de la paleta ANTERIOR (`aqua-bright`,
+`bg-whatsapp`) que no existen en el tema de la LP: reescrito con los tokens reales.
+
+**Hecho — P3.4 · barra fija móvil.** Precio total primario + mensualidad secundaria + un
+solo CTA; fuera el WhatsApp. Aparece pasado el 20% de scroll y se retira cuando
+`#solicitar` entra en viewport (IntersectionObserver). Verificado: oculta en el hero →
+visible al 45% → oculta con el formulario a la vista. Tap target 48px, `safe-area-inset`.
+
+**P3.1 — el handoff parte de una premisa falsa.** Dice que el calculador «aparece dos veces
+con la misma UI y las mismas cifras». No es cierto: `ComparadorLotes` muestra OTROS lotes,
+con modelo de datos distinto (`LoteComparable`, descuento por plazo, `contraentregaVia`,
+apartado). Fusionarlos exigiría unificar dos modelos y arriesgar el comparador recién
+aprobado. Lo que **sí** estaba duplicado palabra por palabra es el disclaimer de «no es
+tabla de amortización»: extraído a `DisclaimerCifras` en `ui.tsx` y usado en ambos.
+
+**Hecho fuera del handoff — `wbraid` (a petición de Luis).** Añadido a `TRACKED_KEYS` y a
+`CapturedUTMs` en `useUTMCapture.ts`. Google lo manda EN LUGAR DE `gclid` cuando el
+visitante rechaza cookies (típicamente iOS); sin él esos leads llegaban sin atribución
+ninguna, y afecta a `/es/desarrolladores`, donde apunta la otra campaña. El resto de la
+cadena ya lo esperaba (schema de `/api/leads` + `field-maps`). Verificado que `submitLead`
+hace `...utms` (spread), así que no hay que tocar ningún formulario.
+⚠️ Llega a **Zoho**, no a Supabase: falta la columna `wbraid` en `public.leads` (migración
+pendiente, anotada en `specs/lp-lotes-playa-del-carmen.md`).
+
+**Hecho — P2.1 · «Antes de firmar: lo que debes saber»** (+ P4.1 en lo que dependía de él)
+`DisclosureModule.tsx` agrupa los cinco bloques de riesgo en **`<details>` nativos**. Los
+cinco contenidos van íntegros; lo que se fue es el peaje de scroll.
+- **Medido: 1334 px con un panel abierto vs 3577 px con los cinco → 62.7% de reducción**
+  (criterio del handoff: ≥60%). Página completa 11 072 px.
+- **Contenido en el HTML servido**, verificado por `curl` sin JS: «certeza jurídica
+  absoluta», «artículo 69», «cargo indexado», «no es tu producto», «ningún servicio
+  conectado», «condiciones de devolución del apartado» — todas presentes. Nada se esconde
+  detrás del JS ni desaparece para un crawler.
+- **Las 5 anclas abren su panel**: `#urbanizacion`, `#falta-confirmar`, `#juridico`,
+  `#costos`, `#para-quien-no-es`. Lo hace `AbrirPanelPorHash` (client, ~40 líneas): CSS no
+  puede abrir un `<details>` por hash y `:target` no toca el atributo `open`. Escucha
+  `hashchange` además del montaje, porque los enlaces internos no recargan.
+- **Los resúmenes del `summary` se CALCULAN** («5 servicios · ninguno conectado hoy», «3
+  datos en trámite», «5 conceptos adicionales»). Por eso se exporta
+  `construirPendientes`: un número a mano se desincroniza el día que el Hub publique la
+  tasa, y un resumen que miente en el bloque de la honestidad es el peor error posible.
+- Panel 1 abierto por defecto: un módulo con los cinco cerrados se lee como la caja donde
+  escondimos las malas noticias.
+- **El contraargumento queda FUERA** del acordeón, a ancho completo y después del módulo,
+  como pide el handoff.
+
+Refactor que exigió: `UrbanizacionReal`, `LoQueFaltaConfirmar` y `CostosNoIncluidos` pasan
+a contenido puro (sin `<section>`/`TituloSeccion`/fondo); `CostosNoIncluidos` adaptado a
+tono oscuro. Extraídos de `page.tsx` a componentes propios: `SituacionJuridica.tsx` y
+`ParaQuienNoEs.tsx` — eran ~200 líneas de JSX jurídico inline que hacían del reordenado un
+ejercicio de mover llaves. `page.tsx` baja de ~660 a ~470 líneas.
+
+⚠️ La aérea del panel 1 es `loading="lazy"` y vive a ~5000 px de scroll: hay un instante de
+hueco al llegar. **No es un bug** —el espacio está reservado, CLS 0— pero conviene saberlo
+antes de reportarlo como tal. Dentro de un `<details>` cerrado el navegador no carga las
+lazy; hoy solo el panel 1 tiene imagen y está abierto por defecto.
+
+**🚨 Corregido — el badge afirmaba una escasez falsa (lo detectó Luis viendo la página)**
+Decía **«Uno disponible»**, escrito a mano porque `v_units` devuelve UNA fila para este
+desarrollo. Pero esa fila es un **TIPO** de lote («Lote Residencial en comunidad privada»,
+129.6 m²), no un lote concreto: el desarrollador declara **229 disponibles de 310**, y el
+estado del registro es **«Preventa»**, no «Disponible». La página afirmaba escasez con un
+factor de error de 229, en el pixel más caro de una landing cuya tesis es no fabricar
+urgencia. Yo además le había subido el contraste en P1.2 sin comprobar de dónde salía el
+número. Ahora lee `v_developments.available_units` + `status` y publica
+`Preventa · 229 lotes disponibles según el desarrollador · Al 13 de agosto de 2026`.
+Detalle en `feedback_un_registro_v_units_no_es_una_unidad_disponible.md`.
+
+**⚠️ `origin/main` avanzó durante la sesión.** Otra sesión pusheó el fix de `wbraid`
+(`93ec2ee`) además de `e56fb48` y `a313bb2`. **Mi cambio local en `useUTMCapture.ts` es
+funcionalmente idéntico al de main y solo difiere en comentarios**: hay que descartarlo
+(`git checkout origin/main -- src/hooks/useUTMCapture.ts`) o dará conflicto al integrar.
+El clasificador de permisos bloqueó esa operación, así que **queda pendiente de hacer a
+mano**. Conviene rebasar la rama sobre `origin/main` antes de seguir.
+
+**Hecho — P2.3 · formulario de 2 pasos**
+⚠️ Otra premisa desactualizada: el handoff describe el stepper «¿Qué estás buscando? 1/3»
+como un qualifier huérfano «tirado entre el bloque de pagos y la ficha técnica». **Es el
+propio formulario**, que ya vivía en el aside sticky. No había nada que absorber.
+
+Lo aplicable sí se hizo — de 3 pasos a 2:
+- **Eliminado el paso del presupuesto** (4 rangos). Era el único que no producía ni
+  contacto ni intención, y llegaba justo después de que el visitante ya hubiera invertido
+  un tap: el punto de abandono más caro. El asesor lo pregunta en WhatsApp, donde cuesta
+  cero, y la página ya publica precio + gastos de cierre + cargos únicos, así que el
+  visitante se autofiltra mejor que con cuatro rangos.
+- **El plazo (48/60) lo sustituye como señal de calificación**: cambia de verdad la
+  conversación, se contesta con un tap y va dentro del paso donde ya está escribiendo.
+- Paso 2 = **3 campos** (nombre · WhatsApp · plazo). Email **colapsado** tras «Prefiero
+  que me lo manden por email».
+- «Qué pasa cuando envías» **debajo** del botón, no encima: encima es una lista de
+  requisitos antes de actuar, debajo es lo que recibes por haber actuado.
+- Payload con `loteRef` (slug), plazo e intención → el lead llega al CRM ya calificado.
+
+**Verificado:** con JS deshabilitado, `#solicitar` y las 3 opciones del paso 1 **están en
+el HTML servido**. Con JS: indicador 1/2 → 2/2, 3 campos, email colapsado. Build exit 0.
+
+✅ **`tiempoRespuesta` = «el mismo día hábil», CONFIRMADO por Luis (2026-08-13).** Es un
+compromiso de negocio, no copy: aparece dos veces de cara al cliente. Vive en una sola prop
+de `LeadFormLotes`.
+
+**Hecho — P4.1 · orden de secciones**
+Al medir el DOM contra la secuencia objetivo del handoff, **13 de los 14 puntos alcanzables
+ya coincidían**. Lo único que faltaba de verdad era agrupar las amenidades:
+- **Amenidades en tres territorios** (`QueEstasComprando`): «Para los que viven contigo»
+  (alberca · jardín · cancha · área de niños) · «Para dormir tranquilo» (seguridad 24h ·
+  CCTV · acceso controlado) · «Para el día a día» (gimnasio · salón de eventos · pet zone).
+  El copy de cada amenidad NO se tocó, como pide el handoff: la lista ya estaba bien
+  escrita, lo que faltaba era el orden. Once seguidas obligan a leerlas todas para saber si
+  hay alguna que te importe.
+- El punto 10 «Cómo leer este precio» ya existía dentro de `FichaLote`.
+- El formulario ya cae en el punto 08 del DOM (verificado): en móvil aparece justo tras
+  «Cómo se paga»; en desktop es el aside sticky de ese mismo bloque.
+
+**Divergencia deliberada del handoff:** el comparador se queda **DESPUÉS** del cierre, no
+en el punto 15. El handoff lo pone antes, pero el razonamiento ya documentado en
+`ComparadorLotes` es mejor y no lo rebate: la página no tiene rutas de salida a propósito;
+poner alternativas antes del cierre desvía a quien iba a convertir, mientras que después
+captura a quien ya decidió que este lote no era el suyo.
+
+**Pendiente del handoff:**
+- **P2.5 LocationMap** — **bloqueada**: necesita un asset de mapa estático que no existe.
+- **P4.2 espejo indexable** en `/es/desarrollos/…` + canonical.
+- **P3.2** (comparador duplicado de la home) y **P3.3** (medida de lectura y `tabular-nums`;
+  el fix de headings lo desbloquea).
+
+---
 
 ### LP Lotes Playa del Carmen — rediseño visual (sesión 2026-08-12)
 
