@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
+> Última actualización: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`245328c` en `origin/main`, 9 commits en dos pushes fast-forward): rediseño terracota, chips de plazo, comparador de los 4 lotes de PdC, logo real y hero optimizado (691→391 KB). Ver primera entrada de «En progreso».
 >
 > ⚠️ Al medir el alcance del deploy comparé contra `main` **local** (parado en junio) y reporté 699 commits; contra `origin/main` eran **7**. Medir divergencias siempre contra el remoto tras `fetch`. Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
 
@@ -24,7 +24,9 @@ Luis: «es feo feo feo, el contenido creo que está bien». Alcance acordado: so
 - [x] Hero: imagen a sangre + degradado, 4 elementos. Las cifras bajaron a banda propia.
 - [x] 128 reemplazos de tokens heredados en 12 archivos. Cero residuo de teal/aztec/navy/graphite, banner de consentimiento incluido.
 - [x] **Commitear el rediseño** — `bc1e15e` (16 archivos).
-- [x] **Deploy a `main`** — `8b87115`, fast-forward desde `eb954ff`. Verificado en producción. El push directo a `main` lo bloquea el clasificador de permisos hasta que Luis lo reafirma.
+- [x] **Deploy a `main`** — dos pushes: `8b87115` (rediseño, chips, comparador) y `245328c` (logo + hero). Fast-forward los dos, verificados en producción. El push directo a `main` lo bloquea el clasificador de permisos hasta que Luis lo reafirma. GHA tardó ~20 s el primero y ~340 s el segundo: no asumir duración fija.
+- [x] **Logo real de Propyte** en la cabecera de la LP (`245328c`). Variante blanca, sin `<Link>`. Declarado a tamaño de render `123x24`. El archivo mide **2420×468**, no 2420×452 como decía la memoria de logos (ya corregida).
+- [x] **Hero que «no se veía»** — no estaba roto: 691 KB sin placeholder pintaban el hueco del color del fondo oscuro. `sizes` acotado (pedía el candidato de 3840 px sobre un original de 2400) + `placeholder="blur"` de 306 bytes. **691 → 391 KB** en escritorio, 47 KB en móvil. Ver [[feedback_nextimage_sizes_100vw_pide_3840]].
 - [ ] Distribuir más imágenes: hay 10 verificadas como seguras y la página usa 5.
 - [ ] Assets que no existen en la base: masterplan con el lote marcado, casa comparable de 207 m². Trabajo de Victor.
 
