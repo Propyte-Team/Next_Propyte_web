@@ -17,6 +17,12 @@ export interface CapturedUTMs {
   gclid?: string;
   /** Facebook Click ID (fbclid) — needed for Meta Ads attribution. */
   fbclid?: string;
+  /**
+   * `short_code` del QR físico que originó la visita. Lo estampa el redirect
+   * `/q/[code]` del Hub (ver `mergeUtm`, constante `QR_PARAM`). Identifica al QR
+   * concreto — los utm_* son texto libre y dos códigos pueden compartir campaña.
+   */
+  qr?: string;
   /** First page the visitor landed on. */
   landing_page?: string;
   /** External referrer (document.referrer at landing). */
@@ -34,6 +40,7 @@ const TRACKED_KEYS = [
   'utm_content',
   'gclid',
   'fbclid',
+  'qr',
 ] as const;
 
 function readStored(): CapturedUTMs | null {

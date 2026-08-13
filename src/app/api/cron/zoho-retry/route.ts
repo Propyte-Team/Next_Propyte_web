@@ -66,6 +66,7 @@ interface RetryLeadRow {
   utm_term: string | null;
   gclid: string | null;
   fbclid: string | null;
+  qr_code: string | null;
   zoho_lead_id: string | null;
   zoho_account_id: string | null;
   zoho_sync_error: string | null;
@@ -127,6 +128,9 @@ async function rebuildPayload(
     utm_term: row.utm_term,
     gclid: row.gclid,
     fbclid: row.fbclid,
+    // Sin esto, un lead que falla el push a Zoho pierde la atribución al QR
+    // justo en el reintento — el mismo agujero que ya mordió con KNOWN_SOURCES.
+    qr: row.qr_code,
   };
 
   let zohoDevelopmentId: string | undefined;

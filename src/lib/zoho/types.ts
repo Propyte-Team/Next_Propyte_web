@@ -140,6 +140,9 @@ export interface ZohoLead extends ZohoRecord {
   GCLID?: string;
   Ad_Campaign_Name?: string;
   AdGroup_Name?: string;
+  /** Campo custom `QR_de_origen` (id 6040986000105777001, creado 2026-08-13).
+      Guarda el `short_code` del QR físico que originó el lead. */
+  QR_de_origen?: string;
   Created_Time?: string;
   Modified_Time?: string;
 }

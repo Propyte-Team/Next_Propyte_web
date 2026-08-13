@@ -40,6 +40,10 @@ const CLAVES_URL = [
   'gclid',
   'wbraid',
   'fbclid',
+  // `short_code` del QR fisico (lo estampa /q/[code] del Hub). Esta LP vive
+  // fuera de [locale], asi que <UTMCapture /> no se monta aqui: la lista de
+  // claves esta duplicada a proposito y hay que tocar AMBAS.
+  'qr',
 ] as const;
 
 type Atribucion = Partial<Record<(typeof CLAVES_URL)[number], string>>;

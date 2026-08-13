@@ -3,6 +3,7 @@ import { randomInt, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { createServiceRoleClient } from '@/lib/supabase/server';
 import { getActiveEdition, signEditionUrl } from '@/lib/lead-magnet/editions';
+import { optionalUtmField } from '@/lib/leads/utm-sanitize';
 import { enforceRateLimit } from '@/lib/rateLimit';
 import { getBrowserContext, sendCAPIEvents } from '@/lib/meta/capi';
 import { enforceGlobalQuota } from '@/lib/security/global-quota';
@@ -44,14 +45,11 @@ const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
   'lp_lotes_pdc',
 ];
 
-// Regex defensivo para UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).
-const UTM_REGEX = /^[A-Za-z0-9._~-]{0,200}$/;
-const optionalUtm = z
-  .string()
-  .regex(UTM_REGEX)
-  .optional()
-  .nullable()
-  .or(z.literal(''));
+// Saneo defensivo de UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).
+// Vive en `@/lib/leads/utm-sanitize`: antes era un `.regex()` que ante un valor
+// con espacio o acento tumbaba el safeParse ENTERO y devolvia 400, perdiendo el
+// lead completo. Ahora sanea en vez de rechazar — la atribucion nunca cuesta
+// el lead — y garantiza el mismo alfabeto seguro por construccion.
 
 const LeadSchema = z.object({
   // Identidad
@@ -91,18 +89,20 @@ const LeadSchema = z.object({
   page: z.string().max(2000).url().optional().nullable().or(z.literal('')),
 
   // UTM tracking
-  utm_source: optionalUtm,
-  utm_medium: optionalUtm,
-  utm_campaign: optionalUtm,
-  utm_content: optionalUtm,
-  utm_term: optionalUtm,
-  gclid: optionalUtm,
-  fbclid: optionalUtm,
+  utm_source: optionalUtmField,
+  utm_medium: optionalUtmField,
+  utm_campaign: optionalUtmField,
+  utm_content: optionalUtmField,
+  utm_term: optionalUtmField,
+  gclid: optionalUtmField,
+  fbclid: optionalUtmField,
+  /** `short_code` del QR físico de origen — lo estampa /q/[code] del Hub. */
+  qr: optionalUtmField,
   /** event_id generado por submitLead() para deduplicar Pixel ↔ Conversions API. */
   metaEventId: z.string().max(100).optional(),
   // Sustituye a gclid cuando el visitante no dio consentimiento de cookies.
   // Sin él se pierde la conversión offline de ese segmento (REQ-F-21).
-  wbraid: optionalUtm,
+  wbraid: optionalUtmField,
 });
 
 // Origin allowlist — extensible vía env (REQ-F-17).
@@ -347,6 +347,7 @@ export async function POST(request: NextRequest) {
         utm_term: data.utm_term || null,
         gclid: data.gclid || null,
         fbclid: data.fbclid || null,
+        qr_code: data.qr || null,
         zoho_sync_error: 'SKIPPED: unknown source',
       })
       .select('id')
@@ -424,6 +425,7 @@ export async function POST(request: NextRequest) {
     utm_term: data.utm_term || null,
     gclid: data.gclid || null,
     fbclid: data.fbclid || null,
+    qr: data.qr || null,
     // Viaja a Zoho dentro de la nota UTM. NO se persiste en public.leads
     // todavía: falta la columna `wbraid`. Migración pendiente en
     // specs/lp-lotes-playa-del-carmen.md §DDL pendiente.
@@ -467,6 +469,7 @@ export async function POST(request: NextRequest) {
       utm_term: utms.utm_term,
       gclid: utms.gclid,
       fbclid: utms.fbclid,
+      qr_code: utms.qr,
       nombre_campana: zohoPayload.lead.Nombre_de_Campa_a ?? null,
       nombre_formulario: zohoPayload.lead.Nombre_del_formulario ?? null,
       zoho_sync_error: 'PENDING_SYNC',
