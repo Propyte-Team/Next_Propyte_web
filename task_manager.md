@@ -223,6 +223,35 @@ en el punto 15. El handoff lo pone antes, pero el razonamiento ya documentado en
 poner alternativas antes del cierre desvía a quien iba a convertir, mientras que después
 captura a quien ya decidió que este lote no era el suyo.
 
+**Hecho — P4.2 · espejo indexable: YA EXISTÍA, no había que construirlo**
+La unidad está publicada y aprobada, y su desarrollo también. Verificado **en producción**:
+`/es/propiedades/lote-residencial-en-comunidad-privada` y
+`/es/desarrollos/terrenos-residenciales-con-amenidades-en-playa-del-carmen` responden 200,
+**sin `noindex`** y con canonical propio correcto. El `noindex, nofollow` que se ve en local
+es artefacto del entorno (su canonical apunta a `dev.propyte.com`). Crear una tercera página
+del mismo lote habría sido exactamente el duplicado que el handoff quería evitar.
+⚠️ Ojo: el handoff pide el espejo en `/es/desarrollos/lote-residencial-…`, pero ese slug es
+de UNIDAD; la ruta de unidades es `/es/propiedades/…`.
+
+**NO aplicado a propósito — el `canonical` de la LP al espejo.** La LP es `noindex, follow`,
+y combinar `noindex` con `canonical` a otra URL son señales contradictorias: una dice «no
+indexes esto», la otra «consolida en aquello». Google lo desaconseja y el riesgo documentado
+es que el `noindex` se propague a la URL canónica — desindexando la página que SÍ rankea. La
+LP ya hace lo correcto: no se indexa y el `follow` deja pasar autoridad. **Decisión de Luis.**
+
+**Hecho — P3.3 · tipografía** (`9cff77d`), medido en navegador, no leído del JSX:
+- 🚨 **La prosa se leía a 34 caracteres por línea.** `QueEstasComprando` abría un grid de
+  texto + imagen DENTRO de la columna izquierda de la página, que ya mide ~550px porque el
+  formulario ocupa la derecha: la prosa quedaba en **276px**, con la imagen al lado y un
+  hueco muerto debajo. Apilado → **550px ≈ 68ch**, dentro del objetivo 65–75.
+- **7 cifras sin `tabular-nums`** → 0. Las 4 opciones del comparador eran las que más
+  dolían: son precios que se apilan para compararse y no cuadraban entre sí.
+- **La interlínea ya era 1.63** (objetivo 1.65). No se tocó.
+- **El formato de moneda NO estaba mezclado.** `mxn()` sin decimales para totales y
+  `mxnExacto()` con dos solo para el precio por m² ya era la regla y se cumple; los únicos
+  montos con decimales de la página son los $7,800.00 del m². El handoff lo señalaba como
+  inconsistencia y no lo es.
+
 **Pendiente del handoff:**
 - **P2.5 LocationMap** — **bloqueada**: necesita un asset de mapa estático que no existe.
 - **P4.2 espejo indexable** en `/es/desarrollos/…` + canonical.
