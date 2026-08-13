@@ -103,7 +103,7 @@ export default async function LandingLotesPlayaDelCarmen() {
   const mensajeWa = [
     `Hola, me interesa el lote residencial en privada de Playa del Carmen (ref. ${lote.slug}).`,
     lote.superficieM2 && lote.precioMxn
-      ? `Son ${m2(lote.superficieM2)} en ${mxn(lote.precioMxn)} MXN.`
+      ? `Son ${m2(lote.superficieM2)} en ${mxn(lote.precioMxn)}.`
       : null,
     plazoMax
       ? `Quiero confirmar el plan a ${plazoMax.meses} meses y qué falta por urbanizar.`

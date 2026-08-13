@@ -127,7 +127,7 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
         </span>{' '}
         en{' '}
         <span className="lp-num">
-          {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
+          {lote.precioMxn ? `${mxn(lote.precioMxn)}` : 'precio por confirmar'}
         </span>
         {lote.precioM2Mxn && (
           <>

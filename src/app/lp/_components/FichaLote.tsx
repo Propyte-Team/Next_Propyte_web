@@ -29,12 +29,12 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
           </Campo>
 
           <Campo etiqueta="Precio">
-            {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : <EnlaceGate que="precio" />}
+            {lote.precioMxn ? `${mxn(lote.precioMxn)}` : <EnlaceGate que="precio" />}
           </Campo>
 
           <Campo etiqueta="Precio por m²" destacado>
             {lote.precioM2Mxn ? (
-              `${mxnExacto(lote.precioM2Mxn)} MXN`
+              `${mxnExacto(lote.precioM2Mxn)}`
             ) : (
               <EnlaceGate que="superficie para calcular el precio por m²" />
             )}
@@ -62,7 +62,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
                 Desde {lote.enganchePct}%
                 <span className="text-[var(--lp-muted)]">
                   {'  '}
-                  {mxn(lote.engancheMxn)} MXN
+                  {mxn(lote.engancheMxn)}
                 </span>
               </>
             ) : (
@@ -78,7 +78,7 @@ export default function FichaLote({ lote }: { lote: LoteLanding }) {
           <Campo etiqueta="Mensualidad" destacado>
             {plazoMax ? (
               <>
-                {mxn(plazoMax.mensualidadMxn)} MXN
+                {mxn(plazoMax.mensualidadMxn)}
                 <span className="block text-xs text-[var(--lp-muted)]">
                   {plazoMax.pagos} pagos a {plazoMax.meses} meses, sin intereses
                 </span>

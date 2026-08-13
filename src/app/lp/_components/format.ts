@@ -1,5 +1,16 @@
 // Formateadores compartidos de la landing. Locale fijo es-MX: la página no
 // tiene variante en inglés en esta iteración.
+//
+// TODA CIFRA DE DINERO LLEVA «MXN», Y NO ES REDUNDANCIA. `Intl` con locale
+// es-MX rinde `$1,010,880`: el mismo símbolo que el dólar. Playa del Carmen
+// vende a compradores de Estados Unidos y Canadá —la propia página explica el
+// fideicomiso para extranjeros en zona restringida—, así que un `$` desnudo en
+// un lote de siete cifras es una ambigüedad de 20× a favor nuestro. Nadie que
+// lea «$1,010,880» pensando en dólares llega contento a la primera llamada.
+//
+// Va en el formateador y no en cada llamada a propósito: estaba escrito a mano
+// en 7 sitios y faltaba en el hero, en el plan de pagos, en el comparador y en
+// la barra fija. Aquí es imposible olvidarlo.
 
 const MXN = new Intl.NumberFormat('es-MX', {
   style: 'currency',
@@ -17,12 +28,21 @@ const MXN_CENTAVOS = new Intl.NumberFormat('es-MX', {
 const M2 = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 });
 
 export function mxn(valor: number): string {
-  return MXN.format(valor);
+  return `${MXN.format(valor)} MXN`;
 }
 
 /** Para precio por m², donde los centavos sí distinguen dos lotes. */
 export function mxnExacto(valor: number): string {
-  return MXN_CENTAVOS.format(valor);
+  return `${MXN_CENTAVOS.format(valor)} MXN`;
+}
+
+/**
+ * Sin moneda. Solo donde la unidad ya está dicha en la etiqueta de al lado y
+ * repetirla sería ruido — la columna derecha de una tabla cuyo encabezado ya
+ * dice MXN, por ejemplo. Úsese con cuidado: el default debe ser `mxn()`.
+ */
+export function mxnDesnudo(valor: number): string {
+  return MXN.format(valor);
 }
 
 export function m2(valor: number): string {

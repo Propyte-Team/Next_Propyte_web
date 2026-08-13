@@ -384,9 +384,12 @@ function construirEtiqueta(
   precioDesde: number,
 ): string {
   // Formato acordado: ubicación · superficie · precio desde. Sin nombres.
+  //
+  // Lleva «MXN» como el resto de la página: este es justo el bloque donde se
+  // comparan precios entre lotes, y un `$` ambiguo aquí vale por cuatro.
   const partes = [ciudad];
   if (superficieM2 !== null) partes.push(`${M2_ETIQUETA.format(superficieM2)} m²`);
-  partes.push(`desde ${MXN_ETIQUETA.format(precioDesde)}`);
+  partes.push(`desde ${MXN_ETIQUETA.format(precioDesde)} MXN`);
   return partes.join(' · ');
 }
 

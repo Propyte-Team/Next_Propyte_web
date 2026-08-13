@@ -30,7 +30,7 @@ export default function CostosNoIncluidos({ lote }: { lote: LoteLanding }) {
 
   const mantenimiento =
     c?.mantenimientoMxnMin && c?.mantenimientoMxnMax
-      ? `${mxn(c.mantenimientoMxnMin)} a ${mxn(c.mantenimientoMxnMax)} MXN al mes`
+      ? `${mxn(c.mantenimientoMxnMin)} a ${mxn(c.mantenimientoMxnMax)} al mes`
       : null;
 
   return (
