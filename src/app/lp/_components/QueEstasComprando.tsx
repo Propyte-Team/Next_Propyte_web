@@ -122,9 +122,19 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
           qué está comprando. */}
       <p className="mt-5 max-w-[58ch] lp-display text-[clamp(1.0625rem,1rem+0.4vw,1.375rem)] leading-[1.5] text-[var(--lp-ink)]">
         En Playa del Carmen tenemos un lote residencial disponible de{' '}
-        {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'} en{' '}
-        {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
-        {lote.precioM2Mxn && <>, es decir {mxnExacto(lote.precioM2Mxn)} por metro cuadrado</>}
+        <span className="lp-num">
+          {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'}
+        </span>{' '}
+        en{' '}
+        <span className="lp-num">
+          {lote.precioMxn ? `${mxn(lote.precioMxn)} MXN` : 'precio por confirmar'}
+        </span>
+        {lote.precioM2Mxn && (
+          <>
+            , es decir <span className="lp-num">{mxnExacto(lote.precioM2Mxn)}</span> por
+            metro cuadrado
+          </>
+        )}
         . Está en preventa dentro de una privada sobre Av. Universidades, a 4.2 km de
         la playa, con financiamiento directo del desarrollador
         {lote.plan?.sinIntereses && <> y sin intereses</>}
@@ -135,7 +145,16 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
         terreno ejidal.
       </p>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_0.85fr] lg:gap-10">
+      {/* UNA columna, no dos. Esta sección ya vive dentro de la columna
+          izquierda del grid de la página (~550 px, porque el formulario ocupa
+          la derecha). Abrir aquí un segundo grid de texto + imagen dejaba la
+          prosa en **276 px**: unos 34 caracteres por línea, la mitad de la
+          medida legible, con la imagen flotando al lado y un hueco muerto
+          debajo. Medido, no estimado.
+
+          Apilado, el texto recupera los ~62ch de `max-w` y la imagen se lee
+          como imagen en vez de como columna lateral. */}
+      <div className="mt-8 flex flex-col gap-8">
         <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
           <p>
             No una casa terminada: el espacio para decidir la tuya. Cuando compras
@@ -235,11 +254,11 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
             como foto, y el sticky la acompaña mientras se lee el texto en vez
             de dejar un hueco muerto debajo. */}
         {imagen && (
-          <Figure
-            imagen={imagen}
-            sizes="(max-width: 1024px) 100vw, 40vw"
-            className="lg:sticky lg:top-8 lg:self-start"
-          />
+          // Ya no es `sticky`: eso tenía sentido cuando acompañaba a una
+          // columna de texto larguísima a su izquierda. Apilada, seguir a la
+          // vista mientras se lee lo de abajo sería una imagen persiguiendo al
+          // lector.
+          <Figure imagen={imagen} sizes="(max-width: 1024px) 100vw, 46vw" />
         )}
       </div>
     </section>

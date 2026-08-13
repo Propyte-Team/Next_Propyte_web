@@ -52,8 +52,12 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
   const plazo = lote.plazos[Math.min(idxActivo, lote.plazos.length - 1)] ?? null;
   const hayDescuento = plazo !== null && plazo.descuentoPct > 0;
 
+  // `lp-num`: las etiquetas son casi todas cifras («130 m² · desde $1,010,880»)
+  // y se apilan verticalmente para compararse. Sin dígitos tabulares los
+  // precios no cuadran entre opciones, que es justo lo único que hace un
+  // comparador.
   const CHIP =
-    'block cursor-pointer select-none rounded-[var(--lp-r-control)] border px-4 py-2.5 text-sm ' +
+    'lp-num block cursor-pointer select-none rounded-[var(--lp-r-control)] border px-4 py-2.5 text-sm ' +
     'transition-colors duration-150 border-[var(--lp-line-dark)] text-[var(--lp-on-dark-soft)] ' +
     'hover:border-[var(--lp-on-dark-soft)] hover:text-[var(--lp-on-dark)] ' +
     'peer-checked:border-[var(--lp-accent-on-dark)] peer-checked:bg-[var(--lp-accent-on-dark)] ' +
@@ -199,7 +203,7 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                       >
                         <dt className="text-sm text-[var(--lp-on-dark-soft)]">
                           {f.k}
-                          <span className="block text-xs opacity-70">{f.nota}</span>
+                          <span className="lp-num block text-xs opacity-70">{f.nota}</span>
                         </dt>
                         <dd className="lp-num text-right text-sm text-[var(--lp-on-dark)]">
                           {mxn(f.v)}
