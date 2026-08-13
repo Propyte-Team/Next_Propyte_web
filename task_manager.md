@@ -252,6 +252,28 @@ LP ya hace lo correcto: no se indexa y el `follow` deja pasar autoridad. **Decis
   montos con decimales de la página son los $7,800.00 del m². El handoff lo señalaba como
   inconsistencia y no lo es.
 
+**Hecho — `MXN` en toda cifra de dinero** (`35ffc41`, en prod, CDN 12/12)
+`Intl` con locale es-MX rinde `$1,010,880`: **el mismo símbolo que el dólar**. Esta página
+vende a compradores de EE.UU. y Canadá —ella misma explica el fideicomiso para extranjeros
+en zona restringida—, así que un `$` desnudo en un lote de siete cifras es una ambigüedad
+de 20× a nuestro favor. Estaba escrito **a mano en 7 sitios** y faltaba justo en el hero,
+el plan de pagos, el comparador y la barra fija. Ahora vive en `format.ts` (`mxn()` y
+`mxnExacto()` lo incluyen; queda `mxnDesnudo()` para cuando la unidad ya está al lado) y en
+`construirEtiqueta` del comparador. Verificado en 390px: sin recortes ni scroll horizontal.
+
+**P3.2 — MEDIDO, no hecho.** El comparador A/B de la home manda los DOS árboles y CSS
+oculta uno: desktop 30.3 KB / 249 nodos · móvil **36.6 KB / 325 nodos**. En 1440px sobra el
+móvil = **6.4% del HTML** de la home (574 KB). El handoff acierta en el impacto, pero el
+arreglo obliga a rediseñar el layout desktop con el markup del móvil en un componente de
+**909 líneas de la página principal**; `useMediaQuery` no sirve (en SSR no hay viewport →
+mismatch de hidratación o flash). **Merece su propio ciclo con revisión visual.**
+⚠️ La primera medición dio «0.9%» porque el selector por clase cogió un fragmento
+incompleto. Localizar los árboles **por contenido**, no por clase.
+
+**Fix global de headings — NO aplicado.** Cambia 369 headings del sitio entero: es un
+cambio estético masivo que nadie habría revisado antes de salir a producción. Requiere que
+Luis lo vea. Ver `feedback_headings_unlayered_pisan_tailwind.md`.
+
 **Pendiente del handoff:**
 - **P2.5 LocationMap** — **bloqueada**: necesita un asset de mapa estático que no existe.
 - **P4.2 espejo indexable** en `/es/desarrollos/…` + canonical.
