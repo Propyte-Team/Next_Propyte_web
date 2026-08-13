@@ -1,6 +1,18 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
+> Última actualización: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
+>
+> 🚨 **`/api/leads` estaba perdiendo leads COMPLETOS.** Validaba los UTMs con `.regex(/^[A-Za-z0-9._~-]{0,200}$/)` dentro del `z.object`: un valor con espacio o acento no se descartaba, tumbaba el `safeParse` entero y devolvía `400` **antes de cualquier escritura**. Sin fila en Supabase, sin push a Zoho, sin nada que reintentar. Una campaña «Restaurante Corazón» borraba todos sus propios leads, y aplica igual a cualquier campaña de Ads con acentos. **El daño histórico no se puede medir**: nunca tocó la base. Fix en `src/lib/leads/utm-sanitize.ts` — sanear, nunca rechazar. Ver [[feedback_zod_regex_en_objeto_tumba_el_parse]].
+>
+> **Atribución QR (verificada end-to-end en prod con un lead real):** el `short_code` viaja como `?qr=` desde `/q/[code]` del Hub hasta `public.leads.qr_code` y el campo `QR_de_origen` de Zoho. Capturado en `useUTMCapture` **y** en `LeadFormLotes` — duplicados a propósito, la LP vive fuera de `[locale]`, así que **toda mejora de atribución va por duplicado**. También en `zoho-retry`, o el reintento perdía la atribución.
+>
+> **Asesor fijo del QR → `Owner` de Zoho** vía `resolveQrOwner()` (`src/lib/leads/qr-owner.ts`). Es **opt-in**: sin asesor en el QR no se toca `Owner`, porque el test demostró que **Zoho ya asigna dueño solo**. ⚠️ Usa **cliente dedicado** al schema `qr` — `.schema()` sobre el cliente compartido deja sticky `Accept-Profile` y revienta los INSERT a `public.leads` con 500.
+>
+> **`wbraid` ya se persiste** (columna creada en `public.leads`). Antes se capturaba y llegaba a Zoho, pero se descartaba al guardar: solo se veía abriendo el lead uno por uno, inservible para importar conversiones offline en bloque.
+>
+> ⚠️ **Lección de proceso:** la primera versión de esta nota la escribí en el worktree principal, que estaba en la rama de otra sesión. `task_manager.md` es un archivo versionado, así que un cambio de rama se la llevó completa. Editarlo **solo desde un worktree cuya rama vaya a `main`, y commitearlo**.
+>
+> Anterior: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
 >
 > ⚠️ Al medir el alcance del deploy comparé contra `main` **local** (parado en junio) y reporté 699 commits; contra `origin/main` eran **7**. Medir divergencias siempre contra el remoto tras `fetch`. Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
 
