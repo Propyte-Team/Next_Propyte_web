@@ -18,6 +18,12 @@ export interface CapturedUTMs {
   /** Facebook Click ID (fbclid) — needed for Meta Ads attribution. */
   fbclid?: string;
   /**
+   * Sustituye a `gclid` cuando el visitante no dio consentimiento de cookies
+   * (tráfico iOS/EEA). Sin él se pierde la conversión offline de ese segmento.
+   * `LeadSchema` y Zoho ya lo aceptaban, pero no se capturaba fuera de la LP.
+   */
+  wbraid?: string;
+  /**
    * `short_code` del QR físico que originó la visita. Lo estampa el redirect
    * `/q/[code]` del Hub (ver `mergeUtm`, constante `QR_PARAM`). Identifica al QR
    * concreto — los utm_* son texto libre y dos códigos pueden compartir campaña.
@@ -40,6 +46,7 @@ const TRACKED_KEYS = [
   'utm_content',
   'gclid',
   'fbclid',
+  'wbraid',
   'qr',
 ] as const;
 
