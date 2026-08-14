@@ -77,8 +77,10 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
 
   return (
     <header className={`lg:hidden fixed top-0 left-0 right-0 z-50 ${darkTopRow ? '' : 'propyte-mobile-header-bg'}`} role="banner" aria-label={t('openMenu')}>
-      {/* Row 1: Logo | Lang | Hamburger */}
-      <div className="flex items-stretch justify-between h-11 px-3">
+      {/* Row 1: Logo | Lang | Hamburger. pt-5 empuja el contenido hacia abajo
+          para que no quede pegado al borde, pero el fondo (propyte-mobile-header-bg)
+          arranca en top-0 y cubre ese espacio en vez de dejarlo transparente. */}
+      <div className="flex items-stretch justify-between min-h-[44px] px-3 pt-5">
         <Link
           href={`/${locale}`}
           className="flex items-center shrink-0 min-w-[44px] min-h-[44px]"
@@ -154,7 +156,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
 
       {/* Row 2: Search bubble */}
       {displayBubble && (
-        <div className="flex justify-center px-3 pb-1.5">
+        <div className="flex justify-center px-3 pt-2 pb-1.5">
           <SearchBubble variant="mobile" dark={darkTopRow} className="w-full" />
         </div>
       )}
