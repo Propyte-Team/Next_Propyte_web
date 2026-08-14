@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Newsreader } from 'next/font/google';
 import Analytics from '@/components/shared/Analytics';
 import ConsentBannerLp from './_components/ConsentBannerLp';
+import MotionProvider from './_components/MotionProvider';
 import './lp-theme.css';
 
 // Display serif SOLO para titulares de la landing. El grotesk del sitio sigue
@@ -56,6 +57,23 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
     <div
       className={`lp-root flex min-h-screen flex-col bg-[var(--lp-paper)] ${displaySerif.variable}`}
     >
+      {/* ═══ RED DE SEGURIDAD DEL MOVIMIENTO ═══
+          Las primitivas de `motion.tsx` serializan su estado inicial en el HTML
+          del servidor: hoy salen 22 nodos con `opacity:0` incrustado. Con JS,
+          Framer los levanta al entrar en pantalla. SIN JS no los levanta nadie,
+          y la página se serviría con un tercio de su contenido invisible para
+          siempre —incluidas las dos líneas de honestidad bajo las cifras.
+
+          Una regla de autor con `!important` sí gana a un `style` en línea sin
+          `!important`, que es exactamente el caso. Y va en `<noscript>`, así que
+          en el 99.9% de las visitas este bloque ni se descarga como CSS activo.
+
+          Esto conserva el principio que ya regía el tema: el movimiento es una
+          mejora, nunca el requisito para leer la página. */}
+      <noscript>
+        <style>{`.lp-root [style*="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+      </noscript>
+
       {/* Cabecera transparente sobre el hero. El hero ahora es una imagen a
           sangre, así que la cabecera flota encima en vez de cortarla con una
           banda de color: el primer pliegue se lee como una sola pieza.
@@ -90,7 +108,11 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      {/* Toda la landing dentro de `MotionConfig`: es el único lugar donde se
+          decide qué hacer con `prefers-reduced-motion`. Ver `MotionProvider`. */}
+      <main className="flex-1">
+        <MotionProvider>{children}</MotionProvider>
+      </main>
 
       <Analytics />
       <ConsentBannerLp />

@@ -1,6 +1,6 @@
 import Figure from './Figure';
-import { EnlaceGate, EstadoServicio, RULE_DARK } from './ui';
-import { mesAnio } from './format';
+import LineaTiempoServicios from './LineaTiempoServicios';
+import { EnlaceGate } from './ui';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
@@ -64,30 +64,10 @@ export default function UrbanizacionReal({ lote }: { lote: LoteLanding }) {
           </div>
 
       {lote.servicios.length > 0 ? (
-        <div className={`border-t-2 border-[var(--lp-accent-on-dark)]`}>
-          <dl className={`border-x border-b ${RULE_DARK}`}>
-            {lote.servicios.map((s) => {
-              const fecha = mesAnio(s.fechaEstimada);
-              return (
-                <div
-                  key={s.clave}
-                  className={`grid grid-cols-[1fr_auto] items-baseline gap-4 border-t ${RULE_DARK} px-4 py-3.5`}
-                >
-                  <dt className="text-sm text-white/85">
-                    <span className="capitalize">{s.etiqueta}</span>
-                    {s.detalle && (
-                      <span className="block text-xs text-white/40">{s.detalle}</span>
-                    )}
-                  </dt>
-                  <dd className="text-right lp-num text-xs">
-                    <EstadoServicio estado={s.estado} />
-                    {fecha && <span className="block text-white/45">{fecha}</span>}
-                  </dd>
-                </div>
-              );
-            })}
-          </dl>
-        </div>
+        /* La tabla de cinco filas pasó a línea de tiempo: mismos servicios,
+           mismos estados y mismas fechas, agrupados por el mes que declara el
+           desarrollador. Ver `LineaTiempoServicios`. */
+        <LineaTiempoServicios servicios={lote.servicios} />
       ) : (
         <div className="self-start">
           <EnlaceGate que="estatus de urbanización servicio por servicio" tono="oscuro" />

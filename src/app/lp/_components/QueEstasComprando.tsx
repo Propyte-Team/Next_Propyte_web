@@ -145,16 +145,20 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
         terreno ejidal.
       </p>
 
-      {/* UNA columna, no dos. Esta sección ya vive dentro de la columna
-          izquierda del grid de la página (~550 px, porque el formulario ocupa
-          la derecha). Abrir aquí un segundo grid de texto + imagen dejaba la
-          prosa en **276 px**: unos 34 caracteres por línea, la mitad de la
-          medida legible, con la imagen flotando al lado y un hueco muerto
-          debajo. Medido, no estimado.
+      {/* DOS COLUMNAS OTRA VEZ, y esta vez sí caben.
+          Aquí vivió un grid de texto + imagen que dejaba la prosa en 276 px
+          —unos 34 caracteres por línea, la mitad de la medida legible— y por eso
+          se apiló. Pero la causa nunca fue el grid: era que esta sección
+          compartía fila con el formulario sticky y sólo disponía de ~550 px.
+          Ahora ocupa la sección entera, así que la prosa conserva sus 62ch Y la
+          imagen cabe al lado. Apilarla aquí dejaría media página en blanco a la
+          derecha durante tres pantallas.
 
-          Apilado, el texto recupera los ~62ch de `max-w` y la imagen se lee
-          como imagen en vez de como columna lateral. */}
-      <div className="mt-8 flex flex-col gap-8">
+          La reja de amenidades queda FUERA de este grid, a ancho completo: es
+          una reja, no prosa, y encerrada en la medida de lectura sólo caben dos
+          columnas estrechas. */}
+      <div className="mt-8 flex flex-col gap-10">
+        <div className="grid gap-10 lg:grid-cols-[1fr_0.8fr] lg:items-start lg:gap-14">
         <div className="flex max-w-[62ch] flex-col gap-4 text-base leading-relaxed text-[var(--lp-ink-soft)]">
           <p>
             No una casa terminada: el espacio para decidir la tuya. Cuando compras
@@ -188,9 +192,25 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
             El desarrollo fija una ventana máxima de cinco años para iniciar obra.
           </p>
 
-          {amenidades.length > 0 && (
+        </div>
+
+          {/* Imagen curada, distinta de la del hero. Antes era el MISMO archivo:
+              una aérea repetida bajo el rótulo «áreas comunes».
+
+              Relación de aspecto FIJA. Con `lg:aspect-auto` dentro de un grid la
+              celda se estira hasta la altura de la columna de texto, que aquí es
+              larguísima, y `object-cover` acaba recortando el centro de un
+              render horizontal: una tira vertical de árboles desenfocados. */}
+          {imagen && <Figure imagen={imagen} sizes="(max-width: 1024px) 100vw, 38vw" />}
+        </div>
+
+        {/* La reja de amenidades, a ancho completo y fuera del grid de arriba.
+            Encerrada en la medida de lectura sólo caben dos columnas estrechas;
+            aquí caben tres, y el bloque baja de once filas a cuatro sin perder
+            una sola amenidad ni su consecuencia. */}
+        {amenidades.length > 0 && (
             <div className="mt-2">
-              <p className="text-sm text-[var(--lp-ink-soft)]">
+              <p className="max-w-[62ch] text-sm text-[var(--lp-ink-soft)]">
                 Dentro de la privada
                 {lote.lotesTotalesPrivada && (
                   <>
@@ -219,7 +239,7 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
                       <p className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-muted)]">
                         {ROTULO[t]}
                       </p>
-                      <dl className="mt-3 grid gap-x-10 gap-y-5 sm:grid-cols-2">
+                      <dl className="mt-3 grid gap-x-10 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {delGrupo.map((a) => (
                           <div key={a.nombre}>
                             <dt className="text-[0.6875rem] uppercase tracking-[0.12em] text-[var(--lp-accent)]">
@@ -235,31 +255,13 @@ export default function QueEstasComprando({ lote }: { lote: LoteLanding }) {
                   );
                 })}
               </div>
-              <p className="mt-3 text-sm text-[var(--lp-muted)]">
+              <p className="mt-3 max-w-[62ch] text-sm text-[var(--lp-muted)]">
                 Se entregan conforme al calendario de obra, y ese calendario está más
                 abajo con sus fechas y con lo que todavía no podemos confirmar.
               </p>
             </div>
           )}
-        </div>
 
-        {/* Imagen curada, distinta de la del hero. Antes era el MISMO archivo:
-            una aérea repetida bajo el rótulo «áreas comunes». */}
-        {/* `self-start` + relación de aspecto FIJA, y sticky en desktop.
-            Antes era `lg:aspect-auto lg:min-h-[360px]`: dentro de un grid eso
-            estira la celda hasta la altura de la columna de texto, que aquí es
-            larguísima. El resultado era una tira vertical estrecha con
-            `object-cover` recortando el centro de un render horizontal, o sea
-            árboles desenfocados. Con la relación fija la foto vuelve a leerse
-            como foto, y el sticky la acompaña mientras se lee el texto en vez
-            de dejar un hueco muerto debajo. */}
-        {imagen && (
-          // Ya no es `sticky`: eso tenía sentido cuando acompañaba a una
-          // columna de texto larguísima a su izquierda. Apilada, seguir a la
-          // vista mientras se lee lo de abajo sería una imagen persiguiendo al
-          // lector.
-          <Figure imagen={imagen} sizes="(max-width: 1024px) 100vw, 46vw" />
-        )}
       </div>
     </section>
   );

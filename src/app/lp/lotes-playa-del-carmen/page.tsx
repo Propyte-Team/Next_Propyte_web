@@ -16,8 +16,13 @@ import UnDomingoAqui from '../_components/UnDomingoAqui';
 import ComparadorLotes from '../_components/ComparadorLotes';
 import AvailabilityBadge from '../_components/AvailabilityBadge';
 import TrustBar from '../_components/TrustBar';
+import BandaCifras from '../_components/BandaCifras';
+import DistanciaPlaya from '../_components/DistanciaPlaya';
+import Aprovechamiento from '../_components/Aprovechamiento';
+import { ParallaxHero, VeloScroll, Reveal } from '../_components/motion';
+import { TitularHero, SecundarioHero } from '../_components/EntradaHero';
 import { EnlaceGate, TituloSeccion, BotonPrimario, RULE_DARK } from '../_components/ui';
-import { mxn, mxnExacto, m2 } from '../_components/format';
+import { mxn, m2 } from '../_components/format';
 
 // ISR: el inventario cambia sin deploy. 5 min es suficientemente fresco para que
 // un anuncio no cite un precio que la página ya no muestra, y evita pegarle a
@@ -125,25 +130,31 @@ export default async function LandingLotesPlayaDelCarmen() {
           honestidad bajan a su propia banda: son la segunda respiración, no
           parte del primer golpe. */}
       <section className="relative isolate min-h-[92svh] overflow-hidden bg-[var(--lp-dark)] lg:min-h-[100svh]">
+        {/* La imagen la sigue rindiendo el servidor con `priority`. `ParallaxHero`
+            solo le aplica un `transform` cuando ya existe, así que el LCP no
+            espera a que cargue el JS de animación. La escala interna de 1.12
+            evita que la deriva despegue el borde inferior. */}
         {heroImg && (
-          <Image
-            src={heroImg.url}
-            alt={heroImg.alt}
-            fill
-            priority
-            // `100vw` a secas hacía que el navegador pidiera el candidato de
-            // 3840 px: 691 KB de JPEG para el LCP. El original de Supabase mide
-            // 2400 px de ancho, así que pedir más no añade un solo píxel real,
-            // solo lo reescala hacia arriba. Con este tope se sirve 2048.
-            sizes="(min-width: 2048px) 2048px, 100vw"
-            // Sin placeholder, el hueco se pintaba con el fondo oscuro de la
-            // sección mientras bajaba la foto, y en una conexión lenta la
-            // página se veía como un rectángulo negro con texto encima. Ahora
-            // entra el degradado de la propia imagen desde el primer frame.
-            placeholder="blur"
-            blurDataURL={BLUR_HERO}
-            className="object-cover"
-          />
+          <ParallaxHero className="absolute inset-0">
+            <Image
+              src={heroImg.url}
+              alt={heroImg.alt}
+              fill
+              priority
+              // `100vw` a secas hacía que el navegador pidiera el candidato de
+              // 3840 px: 691 KB de JPEG para el LCP. El original de Supabase mide
+              // 2400 px de ancho, así que pedir más no añade un solo píxel real,
+              // solo lo reescala hacia arriba. Con este tope se sirve 2048.
+              sizes="(min-width: 2048px) 2048px, 100vw"
+              // Sin placeholder, el hueco se pintaba con el fondo oscuro de la
+              // sección mientras bajaba la foto, y en una conexión lenta la
+              // página se veía como un rectángulo negro con texto encima. Ahora
+              // entra el degradado de la propia imagen desde el primer frame.
+              placeholder="blur"
+              blurDataURL={BLUR_HERO}
+              className="object-cover"
+            />
+          </ParallaxHero>
         )}
         {/* Degradado, no capa plana: la foto conserva su hora dorada arriba y
             cede legibilidad abajo, que es donde vive el texto. */}
@@ -151,24 +162,32 @@ export default async function LandingLotesPlayaDelCarmen() {
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-t from-[var(--lp-dark)] via-[var(--lp-dark)]/72 to-[var(--lp-dark)]/15"
         />
+        {/* Segundo velo, este sí ligado al scroll: arranca en cero —el degradado
+            de arriba ya garantiza la legibilidad desde el primer frame— y cierra
+            hacia el fondo oscuro conforme el hero sale, para que el corte con la
+            banda de cifras no sea una línea dura. */}
+        <VeloScroll className="absolute inset-0 bg-[var(--lp-dark)]" />
 
         <div className="relative mx-auto flex min-h-[92svh] max-w-6xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:min-h-[100svh] lg:pb-20">
           {/* Estado real, no escasez. Decía «Uno disponible» leyendo el número
               de REGISTROS de `v_units`, y el desarrollador declara 229 lotes
               disponibles de 310: ver `AvailabilityBadge`. */}
-          <div>
+          <SecundarioHero orden={0}>
             <AvailabilityBadge
               estado={lote.estadoComercial}
               disponibles={lote.lotesDisponiblesPrivada}
               fechaCorte={lote.fechaCorte}
             />
-          </div>
+          </SecundarioHero>
 
           {/* H1. Nombra la consecuencia, no la categoría. No es una promesa:
               «puedes construir una casa de dos niveles» es aritmética de COS y
               CUS que cualquiera puede verificar. Es a la vez el dato más duro y
-              el más emocional de la página, y por eso es el titular. */}
-          <h1 className="lp-display mt-5 max-w-[19ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
+              el más emocional de la página, y por eso es el titular.
+
+              Entra solo con `transform`. Ver `EntradaHero`: fundirlo costaría
+              LCP medible. */}
+          <TitularHero className="lp-display mt-5 max-w-[19ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
             {apr ? (
               <>
                 Aquí puedes construir una casa de{' '}
@@ -178,28 +197,32 @@ export default async function LandingLotesPlayaDelCarmen() {
             ) : (
               <>Un lote en privada en Playa del Carmen, a 4.2 km de la playa</>
             )}
-          </h1>
+          </TitularHero>
 
-          <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
-            {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
-            en una privada
-            {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>}.
-            {apr && (
-              <> El uso de suelo permite hasta {m2(apr.construibleM2)} construidos.</>
-            )}
-          </p>
+          <SecundarioHero orden={2}>
+            <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
+              {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
+              en una privada
+              {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>}.
+              {apr && (
+                <> El uso de suelo permite hasta {m2(apr.construibleM2)} construidos.</>
+              )}
+            </p>
+          </SecundarioHero>
 
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <BotonPrimario href="#solicitar">
-              {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle'}
-            </BotonPrimario>
-            <WhatsAppCta
-              loteSlug={lote.slug}
-              telefono={FALLBACK_WHATSAPP}
-              mensaje={mensajeWa}
-              surface="lp-lotes-pdc-hero"
-            />
-          </div>
+          <SecundarioHero orden={3}>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <BotonPrimario href="#solicitar">
+                {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle'}
+              </BotonPrimario>
+              <WhatsAppCta
+                loteSlug={lote.slug}
+                telefono={FALLBACK_WHATSAPP}
+                mensaje={mensajeWa}
+                surface="lp-lotes-pdc-hero"
+              />
+            </div>
+          </SecundarioHero>
 
           {/* El render más grande de la página era el único sin rotular. No
               puede ir en un `<figure>` —es el fondo, con el texto encima— así
@@ -207,9 +230,11 @@ export default async function LandingLotesPlayaDelCarmen() {
               se lee si lo buscas y no compite con el titular. Sin él, la página
               abre contradiciendo su propia tesis. */}
           {heroImg && (
-            <p className="mt-8 text-[0.6875rem] leading-relaxed text-[var(--lp-on-dark)]/45">
-              Render del desarrollador. {heroImg.caption}
-            </p>
+            <SecundarioHero orden={4}>
+              <p className="mt-8 text-[0.6875rem] leading-relaxed text-[var(--lp-on-dark)]/45">
+                Render del desarrollador. {heroImg.caption}
+              </p>
+            </SecundarioHero>
           )}
         </div>
       </section>
@@ -227,78 +252,17 @@ export default async function LandingLotesPlayaDelCarmen() {
           El enganche NO se lee de `plan`: se lee de `lote.engancheMxn`, que no
           depende de la tasa. Antes esta celda decía «sin dato» mientras la
           ficha, cuatro bloques abajo, publicaba la cifra. */}
-      <section className="border-b border-[var(--lp-line)] bg-[var(--lp-paper)]">
-        <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 lg:py-12">
-          <dl className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
-            {[
-              {
-                k: 'Enganche',
-                v: lote.engancheMxn !== null ? mxn(lote.engancheMxn) : null,
-                destacado: true,
-              },
-              {
-                k: plazoMax ? `Al mes, ${plazoMax.meses} meses` : 'Al mes',
-                v: plazoMax ? mxn(plazoMax.mensualidadMxn) : null,
-                destacado: true,
-              },
-              { k: 'Construible', v: apr ? m2(apr.construibleM2) : null },
-              { k: 'Precio total', v: lote.precioMxn ? mxn(lote.precioMxn) : null },
-            ].map((c) => (
-              <div key={c.k}>
-                <dt className="text-[0.625rem] uppercase tracking-[0.14em] text-[var(--lp-muted)]">
-                  {c.k}
-                </dt>
-                <dd
-                  className={`lp-display lp-num mt-2 text-[clamp(1.5rem,1.1rem+1.4vw,2.125rem)] leading-none ${
-                    c.destacado
-                      ? 'text-[var(--lp-accent)]'
-                      : 'text-[var(--lp-ink)]'
-                  }`}
-                >
-                  {c.v ?? (
-                    <a href="#falta-confirmar" className="lp-gate text-base">
-                      falta confirmar
-                    </a>
-                  )}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="mt-9 grid gap-x-12 gap-y-4 border-t border-[var(--lp-line-soft)] pt-6 md:grid-cols-2">
-            {/* La contraentrega no es letra chica: es parte del número de arriba. */}
-            {plan ? (
-              <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-muted)]">
-                Más un pago final de{' '}
-                <span className="lp-num text-[var(--lp-ink-soft)]">
-                  {mxn(plan.contraentregaMxn)}
-                </span>{' '}
-                contra entrega, que es el {plan.contraentregaPct}% del precio. Te
-                mandamos la tabla de amortización completa por escrito.
-              </p>
-            ) : (
-              <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-muted)]">
-                El precio por metro cuadrado es{' '}
-                {lote.precioM2Mxn ? mxnExacto(lote.precioM2Mxn) : 'por confirmar'}. La
-                mensualidad la publicamos en cuanto el desarrollador declare la tasa
-                por escrito.
-              </p>
-            )}
-
-            {/* Honestidad en una línea, DESPUÉS del valor. El detalle vive abajo.
-                No se suaviza la objeción, se recoloca. */}
-            <p className="max-w-[54ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
-              Hoy el lote no tiene servicios conectados y no es escriturable. Abajo
-              está el detalle servicio por servicio, con las fechas que declara el
-              desarrollador y{' '}
-              <a href="#falta-confirmar" className="lp-gate">
-                lo que todavía no podemos confirmar
-              </a>
-              .
-            </p>
-          </div>
-        </div>
-      </section>
+      <BandaCifras
+        engancheMxn={lote.engancheMxn}
+        mensualidadMxn={plazoMax?.mensualidadMxn ?? null}
+        plazoMeses={plazoMax?.meses ?? null}
+        construibleM2={apr?.construibleM2 ?? null}
+        precioMxn={lote.precioMxn}
+        contraentrega={
+          plan ? { montoMxn: plan.contraentregaMxn, pct: plan.contraentregaPct } : null
+        }
+        precioM2Mxn={lote.precioM2Mxn}
+      />
 
       {/* ═══════════ 1.6 · Barra de credibilidad ═══════════
           Va aquí y no pegada al hero: la banda de cifras es la segunda
@@ -311,21 +275,66 @@ export default async function LandingLotesPlayaDelCarmen() {
           se toca: aquí solo se declara que hay algo verificable, con enlace. */}
       <TrustBar lote={lote} />
 
+      {/* ═══════════ 2 · Dónde estás parado ═══════════
+          Sección nueva. «A 4.2 km de la playa» aparecía dos veces como texto
+          corrido, dentro de párrafos largos. Es la afirmación geográfica que
+          más pesa en la decisión y llegaba con el mismo cuerpo tipográfico que
+          el resto de la oración. Aquí no se añade ningún dato: se le da escala
+          a los que ya estaban. Ver `DistanciaPlaya` para por qué no es un mapa
+          de verdad. */}
+      <DistanciaPlaya />
+
       {/* ═══════════ 2.5 · Un domingo aquí ═══════════
           Va inmediatamente después de la respuesta directa, antes de cualquier
           objeción. Es el único bloque de la página cuyo trabajo es proyectar la
           vida, y el único punto donde se agrega un ancla de CTA. */}
       <UnDomingoAqui lote={lote} />
 
+      {/* ═══════════ 3 · Qué cabe aquí ═══════════
+          Sección nueva, y va ANTES de «Qué estás comprando» a propósito: dibuja
+          en diez segundos el argumento que ese bloque desarrolla en prosa. Las
+          tres cifras ya se publicaban dentro de un párrafo, donde «207.36» se
+          lee como un número más grande que «129.6» y ahí se pierde la idea.
+          A escala, salta sola: lo construible es mayor que el terreno.
+
+          Condicionada a `apr`: sin COS y CUS no hay proporción que dibujar, y
+          un diagrama con anchos inventados en esta página sería la
+          contradicción más cara del rediseño. */}
+      {apr && lote.superficieM2 && (
+        <Aprovechamiento
+          superficieM2={lote.superficieM2}
+          huellaM2={apr.huellaM2}
+          construibleM2={apr.construibleM2}
+          cos={apr.cos}
+          cus={apr.cus}
+          niveles={apr.niveles}
+        />
+      )}
+
       {/* ═══════════ 3-4 · Promesa y plan, con el formulario al lado ═══════════
           El formulario vive aquí y no al final: en móvil aparece justo después del
           plan de pagos, a dos pantallas del hero. */}
+      {/* «Qué estás comprando» sale de la reja y pasa a ancho completo.
+          Compartía fila con el formulario sticky en un grid de dos columnas, y
+          ahí estaba el mayor desperdicio de la página: este bloque más el plan
+          y la ficha sumaban 3,971 px —el 31% del scroll— con la mitad derecha
+          del ancho vacía durante cuatro pantallas, porque el formulario es
+          corto y se quedaba pegado arriba. Medido, no estimado.
+
+          Suelto, la prosa conserva su medida de 62ch, la reja de amenidades
+          puede usar tres columnas en vez de dos, y el render se lee como
+          imagen y no como columna lateral. */}
       <div className="mx-auto max-w-6xl px-5 py-14 lg:py-20">
+        <QueEstasComprando lote={lote} />
+      </div>
+
+      {/* El formulario vive junto al PLAN DE PAGOS, no junto a la prosa: el CTA
+          de toda la página dice «Ver mi plan de pagos», y este es el punto donde
+          el visitante acaba de ver las mensualidades. Sigue siendo el único
+          formulario de la página, y en móvil aparece justo después del plan. */}
+      <div className="mx-auto max-w-6xl px-5 pb-14 lg:pb-20">
         <div className="grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:gap-16">
-          <div className="flex flex-col gap-16">
-            <QueEstasComprando lote={lote} />
-            <PlanDePagos lote={lote} />
-          </div>
+          <PlanDePagos lote={lote} />
 
           <aside id="solicitar" className="lg:sticky lg:top-6">
             <LeadFormLotes
