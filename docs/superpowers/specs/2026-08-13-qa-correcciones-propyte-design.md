@@ -68,8 +68,8 @@ Sin dependencias entre sí, sin riesgo de regresión.
 - Traducciones que **sí** viven en i18n: «Cliente internacional» → *International client*,
   «EE.UU.» → *USA*, categorías del blog («Para inversionistas», «Guías de compra»), párrafo
   de Mortgage en Financiamiento.
-- `type="tel"` + `inputMode="numeric"` + `pattern` en los 4 formularios (Desarrolladores,
-  Brokers, Proveedores, Reclutamiento). Ver divergencia §5.4 sobre el `alert`.
+- Teléfono: los 4 campos **ya tienen `type="tel"`** (verificado 2026-08-14). Falta
+  `inputMode="numeric"` y validación en submit. Ver divergencia §5.4 sobre el `alert`.
 - Hover en los chips de filtro.
 - Emojis de rapidez → etiqueta textual («Inmediato», «6–36 meses»).
 
@@ -100,9 +100,16 @@ de moverse al cambiar de opción. Revisar la latencia percibida en móvil que em
 a hacer spam de clicks.
 
 ### F6 · Catálogo de traducción de datos
-Diccionario es→en en el mapper para amenidades y etapas de entrega. Mercado: «Oferta vs
-Demanda», «Índice Propyte», filtros. Los roles del equipo van aparte: son texto libre
-capturado a mano y necesitan decisión de formato y de dónde se capturan.
+**Corrección 2026-08-14: el catálogo ya existe.** `src/components/property/AmenityList.tsx:24-52`
+tiene 21 amenidades con `es`, `en`, icono y regex de match. «Cancha» y «Área de Yoga»
+simplemente no están en la lista y caen al fallback de la línea 72, que pinta el string crudo
+con icono genérico. El screenshot del PDF lo confirma solo: los dos textos sin traducir son
+exactamente los dos con icono de palomita. **Son dos entradas nuevas, no una fase.**
+
+Queda de F6: Mercado («Oferta vs Demanda», «Índice Propyte») que son literales en JSX y se
+mueven a i18n — `SupplyDemandIndicator.tsx`, `ZoneScoreCard.tsx`,
+`RentalAnalysisDashboard.tsx`. Los testimonios y las categorías del blog sí son datos del Hub.
+Los roles del equipo van aparte: texto libre capturado a mano, necesitan decisión de formato.
 
 ### F7 · `mailto:` y CTAs muertos
 - «Enviar mi CV» (`UnetePageContent.tsx:590`) y correo de Contacto: en PC sin cliente de
@@ -115,6 +122,16 @@ capturado a mano y necesitan decisión de formato y de dónde se capturan.
 Espacio muerto en Inicio antes de FAQ (+ separador) · Exclusivos · Brokers «Próximamente»
 amontonado · Reclutamiento pegado al borde · footer sin centrar · zoom raro en Financiamiento
 en móvil · elemento cortado en Mercado (solo en español).
+
+### F8b · Hallazgos nuevos del PDF v2 (2026-08-14)
+- **Barra de búsqueda: elegir «Desarrollos»/«Propiedades» no navega.**
+  `src/components/layout/SearchBubble.tsx:88-93` y `:100-105` — el `onClick` solo hace
+  `setType` + cerrar. `handleSubmit:41` **ya resuelve** el caso de query vacío
+  (`router.push(/${locale}/${path})`); falta invocarlo también al elegir del menú.
+- **Correos de Privacidad, Términos y Cookies muertos en PC.** Mismo `mailto:` de F7, en
+  `legal/PrivacidadContent.tsx:27,65,83` · `TerminosContent.tsx:74` · `CookiesContent.tsx:69`
+  · `LegalPage.tsx:59`. **Subir prioridad**: son la vía para ejercer derechos ARCO; que no
+  funcionen es cumplimiento, no UX. Total: 6 sitios con `mailto:` → un solo componente.
 
 ### F9 · Mapa de Propiedades en móvil
 Gravedad Alta y **causa desconocida** — el propio PDF duda («puede que sea cosa del
