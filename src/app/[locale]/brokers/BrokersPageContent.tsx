@@ -298,74 +298,7 @@ function HowItWorks() {
 }
 
 // ─────────────────────────────────────────────────────
-// 6. PLATAFORMA — EN DESARROLLO (preview)
-// ─────────────────────────────────────────────────────
-function PlatformPreview() {
-  const t = useTranslations('brokers');
-  const features = [
-    { title: t('platformFeature1Title'), desc: t('platformFeature1Desc') },
-    { title: t('platformFeature2Title'), desc: t('platformFeature2Desc') },
-    { title: t('platformFeature3Title'), desc: t('platformFeature3Desc') },
-    { title: t('platformFeature4Title'), desc: t('platformFeature4Desc') },
-  ];
-  return (
-    <section className="py-16 md:py-20 bg-[#F4F6F8]">
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 max-w-2xl mx-auto">
-          <span className="inline-flex items-center gap-1.5 text-[#0E7490] text-sm font-bold tracking-widest uppercase">
-            <Sparkles size={14} /> {t('platformEyebrow')}
-          </span>
-          <h2 className="mt-3 text-3xl md:text-4xl font-bold text-[#1A2F3F]">{t('platformTitle')}</h2>
-          <p className="mt-3 text-gray-600 text-base leading-relaxed">{t('platformSubtitle')}</p>
-        </div>
-
-        <ScrollReveal y={28}>
-          <div className="relative max-w-4xl mx-auto bg-[#1A2F3F] rounded-2xl overflow-hidden shadow-2xl">
-            {/* Badge En desarrollo */}
-            <span className="absolute top-4 right-4 z-10 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-2xs font-bold uppercase tracking-wider rounded-full">
-              <Monitor size={11} /> {t('platformBadge')}
-            </span>
-            <div className="flex items-center gap-2 px-4 py-3 bg-[#132535]">
-              <div className="w-3 h-3 rounded-full bg-red-400/70" />
-              <div className="w-3 h-3 rounded-full bg-yellow-400/70" />
-              <div className="w-3 h-3 rounded-full bg-green-400/70" />
-              <div className="ml-4 flex-1 h-7 bg-white/10 rounded-md flex items-center px-3">
-                <span className="text-white/65 text-xs">app.propyte.com/dashboard</span>
-              </div>
-            </div>
-            <div className="p-6 md:p-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {features.map((feat) => (
-                  <div key={feat.title} className="propyte-card-glass-sm p-4">
-                    <div className="text-propyte-brand text-sm font-bold mb-1">{feat.title}</div>
-                    <div className="text-white/55 text-xs leading-relaxed">{feat.desc}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-3 mt-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="propyte-card-glass-sm flex items-center gap-4 p-4">
-                    <div className="w-10 h-10 bg-propyte-cyan-100 rounded-lg flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="h-3 bg-white/20 rounded w-3/4 mb-2" />
-                      <div className="h-2 bg-white/10 rounded w-1/2" />
-                    </div>
-                    <div className="px-3 py-1 bg-propyte-brand/30 rounded-full">
-                      <span className="text-propyte-brand text-xs font-bold">●</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────────────
-// 7. FAQ
+// 6. FAQ
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('brokers');
@@ -418,7 +351,7 @@ function FAQ() {
 }
 
 // ─────────────────────────────────────────────────────
-// 8. FORMULARIO — Solicita acceso
+// 7. FORMULARIO — Solicita acceso
 // ─────────────────────────────────────────────────────
 function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');
@@ -626,7 +559,6 @@ export default function BrokersPageContent({ hubData, siteMedia }: { hubData?: B
         <WhyPropyte />
         <TwoModels />
         <HowItWorks />
-        <PlatformPreview />
         <FAQ />
         <BrokerForm siteMedia={siteMedia} />
       </div>
