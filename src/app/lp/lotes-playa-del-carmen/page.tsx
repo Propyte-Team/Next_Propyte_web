@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { getLotePlayaDelCarmen, type ImagenLanding } from '@/lib/supabase/lp-lotes';
 import { getLotesComparables } from '@/lib/supabase/lp-lotes-comparador';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
@@ -566,12 +567,12 @@ export default async function LandingLotesPlayaDelCarmen() {
               </p>
             )}
             <p>
-              <a
+              <Link
                 href="/es/privacidad"
                 className="underline decoration-white/30 transition-colors duration-200 hover:text-white/80"
               >
                 Aviso de privacidad
-              </a>
+              </Link>
             </p>
           </div>
         </div>
