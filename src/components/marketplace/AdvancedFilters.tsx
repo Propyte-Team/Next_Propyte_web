@@ -23,8 +23,10 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
   const stages: PropertyStage[] = ['preventa', 'construccion', 'entrega_inmediata'];
   const usages: PropertyUsage[] = ['residencial', 'vacacional', 'renta', 'mixto'];
 
+  // z-[60]: por encima de WhatsAppButton y CookieBanner (ambos z-50/z-[55]) —
+  // mismo fix aplicado en ComparePanel para este solapamiento conocido.
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div id="advanced-filters-dialog" className="relative bg-white rounded-xl w-full max-w-md mx-4 p-6 shadow-xl" role="dialog" aria-modal="true">
         <div className="flex items-center justify-between mb-6">

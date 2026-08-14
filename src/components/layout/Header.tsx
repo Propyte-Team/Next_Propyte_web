@@ -107,12 +107,18 @@ export default function Header({ siteConfig }: { siteConfig?: HubSiteConfig }) {
         </div>
       </header>
 
-      {/* Mobile header (gradient, 2 rows) */}
+      {/* Mobile header (gradient, 2 rows). showBubble={!isListingArchive}:
+          en /desarrollos y /propiedades el header se achica (MainPadding
+          reserva pt-[52px] en vez de 76px) porque esas páginas ya traen
+          FilterBar + buscador propio — sin este flag la burbuja se
+          renderizaba igual y el header real quedaba más alto que el
+          padding reservado, tapando el contenido debajo (breadcrumbs). */}
       <MobileHeader
         mode={mode}
         onOpenMenu={() => setMobileOpen(true)}
         isScrolled={scrolled}
         isMenuOpen={mobileOpen}
+        showBubble={!isListingArchive}
       />
 
       {/* Mobile menu drawer */}

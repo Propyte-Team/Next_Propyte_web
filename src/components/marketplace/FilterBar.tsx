@@ -70,10 +70,17 @@ function PillDropdown({
       });
     };
     updateCoords();
+    
     // Cierra al scroll/resize del viewport — re-anclar al trigger sería
     // complejo y la UX estándar es "cerrar para que el usuario vea el
     // listado debajo". Ver Radix/Headless UI mismo patrón.
-    const onScrollResize = () => setOpen(false);
+    // Ignora el scroll interno del propio panel (overflow-y-auto en
+    // Ciudad/Zona/Tipo de desarrollo): al usar capture:true, ese scroll
+    // también llega aquí y cerraba el dropdown antes de poder desplazarse.
+    const onScrollResize = (e: Event) => {
+      if (panelRef.current?.contains(e.target as Node)) return;
+      setOpen(false);
+    };
     window.addEventListener('scroll', onScrollResize, { passive: true, capture: true });
     window.addEventListener('resize', onScrollResize, { passive: true });
     return () => {
