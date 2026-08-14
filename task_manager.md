@@ -1,6 +1,8 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
+> Última actualización: 2026-08-14 — **rediseño visual de la LP de lotes, solo local**. Rama `feat/lp-lotes-rediseno` (`fe189db`) en el worktree `~/Projects/_lp-rediseno`, basada en `origin/main` = `3ac1098`. **Sin pushear.** Sistema de movimiento propio, dos secciones nuevas sin un dato nuevo, y dos bugs de accesibilidad encontrados midiendo. Ver «En progreso».
+>
+> Anterior: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
 >
 > 🚨 **`/api/leads` estaba perdiendo leads COMPLETOS.** Validaba los UTMs con `.regex(/^[A-Za-z0-9._~-]{0,200}$/)` dentro del `z.object`: un valor con espacio o acento no se descartaba, tumbaba el `safeParse` entero y devolvía `400` **antes de cualquier escritura**. Sin fila en Supabase, sin push a Zoho, sin nada que reintentar. Una campaña «Restaurante Corazón» borraba todos sus propios leads, y aplica igual a cualquier campaña de Ads con acentos. **El daño histórico no se puede medir**: nunca tocó la base. Fix en `src/lib/leads/utm-sanitize.ts` — sanear, nunca rechazar. Ver [[feedback_zod_regex_en_objeto_tumba_el_parse]].
 >
@@ -27,6 +29,81 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+### LP Lotes PdC — rediseño visual «drástico» (sesión 2026-08-14)
+
+> Worktree `~/Projects/_lp-rediseno`, rama `feat/lp-lotes-rediseno`, commit **`fe189db`**,
+> basada en `origin/main` (`3ac1098`). **Commiteado en local, SIN pushear ni desplegar.**
+> `tsc --noEmit` limpio · `npm run build` verde · verificado en navegador (1440 y 390).
+> Servidores de la sesión: dev `:3101`, producción `:3102`.
+
+Luis pidió «rediseño drástico, más llegado a landing page, con súper animaciones y muy
+llamativa». Se acordó el alcance en replanteo visual completo **con el argumento intacto**:
+ni un disclosure quitado, acortado ni colapsado, y el copy sin cambios de sustancia.
+
+**Hecho — sistema de movimiento** (`_components/motion.tsx`, `EntradaHero.tsx`, `MotionProvider.tsx`)
+- Dos curvas y tres duraciones, no animaciones sueltas. Primitivas `Reveal`, `Escalonado`,
+  `Escalon`, `Contador`, `ParallaxHero`, `VeloScroll`.
+- El `Contador` sirve la cifra FINAL desde el servidor y escribe `textContent` a mano: si
+  el JS falla, en pantalla queda el precio correcto y no un cero.
+
+**Hecho — las cifras a escala de cartel** (`BandaCifras.tsx`)
+- Era un `<dl>` de 34 px justo después de un hero de 100vh. Ahora `clamp` hasta 4rem con
+  contador al entrar.
+- **En 2×2, no en 4 columnas**: a cuatro, cada celda medía ~280 px y `$1,010,880 MXN` se
+  montaba sobre la cifra vecina. Medido en pantalla, no estimado.
+- El número usa `mxnDesnudo()` y el «MXN» va al lado, más chico y con `whitespace-nowrap`:
+  nunca se separan, y la moneda sigue declarada en toda cifra.
+
+**Hecho — dos secciones nuevas, cero datos nuevos**
+- `DistanciaPlaya.tsx`: los 4.2 km a la playa (y los 2 km a la federal) se publicaban
+  enterrados a mitad de un párrafo. Ahora es un recorrido a escala, horizontal en desktop y
+  vertical en móvil. **No es Google Maps a propósito**: el registro no trae lat/lng y montar
+  el mapa añadiría API key y coste por carga en una página que se paga por clic.
+- `Aprovechamiento.tsx`: dibuja a escala real que lo construible (207.36 m²) es **mayor que
+  el terreno** (129.6 m²) — la tesis del titular, que hasta ahora el lector debía deducir de
+  la prosa. Los anchos salen de `superficie × COS/CUS`; ni uno escrito a mano.
+
+**Hecho — la tabla de servicios pasa a línea de tiempo** (`LineaTiempoServicios.tsx`)
+- Agrupada por el mes que declara el desarrollador: son **dos fechas**, no cinco promesas
+  sueltas. Primer nodo siempre «Hoy → ningún servicio conectado». Cada servicio conserva su
+  chip de estado individual, no lo hereda del grupo.
+
+**Hecho — reestructura del bloque más pesado**
+- «Qué estás comprando» + plan + ficha sumaban **3,971 px (31% del scroll)** con la mitad
+  derecha vacía cuatro pantallas, porque el formulario sticky es corto. El formulario bajó
+  junto a `PlanDePagos`, que es su contexto real («Ver mi plan de pagos» es el CTA de toda
+  la página). La reja de amenidades salió de la medida de 62ch y usa tres columnas.
+
+**🚨 Dos bugs de accesibilidad, encontrados midiendo y arreglados**
+- **Sin JS la página se servía con un tercio invisible**: Framer serializa `opacity:0` en el
+  HTML (22 nodos, incluidas las dos líneas de honestidad bajo las cifras). Red `<noscript>`
+  en el layout.
+- **Con `prefers-reduced-motion` quedaban 19 nodos en opacity 0, entre ellos LOS DOS BOTONES
+  DEL HERO.** Causa: `if (reduce) return <div/>` en cada primitiva — el hook vale `false` en
+  el servidor y React no limpia un `style` que escribió Framer. Ahora lo resuelve
+  `MotionConfig reducedMotion="user"` en el layout: **0 nodos**, verificado con
+  `page.emulateMedia`. Ver [[feedback_framer_ssr_opacity_cero_atascado]].
+
+**Medido en build de producción local**
+- LCP **~95 ms**, y el elemento del LCP es el **`H1`**, no la imagen de 1440×900. Por eso el
+  titular sólo se desplaza y nunca se funde. Ver [[feedback_lcp_h1_nunca_fundir_solo_mover]].
+- JS de origen propio **239 KB** contra **245 KB** del vivo: el movimiento **no costó
+  bundle**, porque `framer-motion` ya estaba en el grafo del sitio.
+- Sin desborde horizontal a 390 px.
+
+**No cumplido, y dicho a Luis**: prometí bajar de ~12 a ~7 pantallas y quedaron **13.2**
+(el vivo tiene 12.3). Comprimí ~520 px de estructura pero las dos secciones nuevas suman
+~1,280. Bajar a 7 exige cortar contenido, y lo único cortable de verdad son los disclosures.
+
+**Pendiente de decisión de Luis**
+- [ ] ¿Se despliega? La campaña de Google Ads apunta a esta URL **con tráfico pagado
+      corriendo** — desplegar esto es un cambio sobre una página que está convirtiendo.
+- [ ] Siguiente recorte posible sin tocar disclosures, ya medido: `ComparadorLotes` (1,142 px)
+      y `PruebaDeQueExistimos` (1,525 px).
+- [ ] Revisar si la frase de COS/CUS en `QueEstasComprando` se queda: ahora convive con el
+      diagrama de `Aprovechamiento`. Se dejó porque añade «tres recámaras, no dos», que el
+      diagrama no dice.
 
 ### LP Lotes PdC — arquitectura de persuasión, handoff 2026-08-13 (sesión 2026-08-13)
 
