@@ -6,6 +6,7 @@ import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/dev
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import type { Property } from '@/types/property';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -19,9 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       ? 'Explore new real estate developments in Cancun, Playa del Carmen, Tulum and Merida. Pre-sale prices, delivery dates, and investment analysis.'
       : 'Explora nuevos desarrollos inmobiliarios en Cancun, Playa del Carmen, Tulum y Merida. Precios de preventa, fechas de entrega y análisis de inversión.',
     openGraph: {
+      siteName: 'Propyte',
+      type: 'website',
       locale: isEn ? 'en_US' : 'es_MX',
       alternateLocale: isEn ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/desarrollos`,

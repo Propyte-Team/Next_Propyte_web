@@ -5,6 +5,7 @@ import { VISIBILITY_KEYS } from '@/lib/visibility';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import ArticulosDePilar from '@/components/blog/ArticulosDePilar';
 import { pilarPorCodigo } from '@/lib/blog/pilares';
+import { ogLocaleImages } from '@/lib/og/images';
 
 /**
  * Hub del pilar P6 (Producto: Costa y Branded).
@@ -51,12 +52,13 @@ export async function generateMetadata({ params }: PageProps) {
       },
     },
     openGraph: {
+      siteName: 'Propyte',
       type: 'website',
       title: `${t('metaTitle')} | Propyte`,
       description: t('metaDescription'),
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
   };
 }

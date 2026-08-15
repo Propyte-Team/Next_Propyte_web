@@ -10,6 +10,7 @@ import EquipoBios from './_components/EquipoBios';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
+import { ogImages } from '@/lib/og/images';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate desde Hub al editar miembros
 
@@ -23,12 +24,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       type: 'website',
       title,
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/nosotros/equipo-comercial/opengraph-image`],
+      images: ogImages(`/${locale}/nosotros/equipo-comercial/opengraph-image`),
     },
     twitter: { card: 'summary_large_image', title, description },
     alternates: {

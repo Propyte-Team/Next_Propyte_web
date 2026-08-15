@@ -20,6 +20,7 @@ import { formatDate } from '@/lib/helpers/format-date';
 import { resolvePostDates } from '@/lib/blog/post-dates';
 import { sanitizeRichHtml } from '@/lib/security/sanitizeHtml';
 import { Calendar, Clock, Tag, ChevronLeft, RefreshCw } from '@/lib/icons';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 3600;
 
@@ -64,6 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       type: 'article',
       title: brandedTitle,
       description,
@@ -72,7 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       publishedTime: post.published_at ?? undefined,
       authors: [post.author_name],
       tags: post.tags,
-      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : { images: [`/${locale}/opengraph-image`] }),
+      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : { images: ogLocaleImages(locale) }),
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
