@@ -3,6 +3,7 @@ import { Sparkles } from '@/lib/icons';
 import ProviderForm from './ProviderForm';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -11,9 +12,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: `${t('title')} — Propyte`,
     description: t('description'),
     openGraph: {
+      siteName: 'Propyte',
+      type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/proveedores`,

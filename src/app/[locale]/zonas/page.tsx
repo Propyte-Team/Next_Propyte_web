@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title,
     description,
-    openGraph: { title, description, type: 'website', locale: locale === 'en' ? 'en_US' : 'es_MX' },
+    openGraph: { siteName: 'Propyte', title, description, type: 'website', locale: locale === 'en' ? 'en_US' : 'es_MX' },
     alternates: {
       languages: { es: '/es/zonas', en: '/en/zonas', 'x-default': '/es/zonas' },
     },

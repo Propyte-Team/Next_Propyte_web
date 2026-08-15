@@ -17,6 +17,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { blogHref } from '@/lib/blog/blog-urls';
 import { robotsDeListado } from '@/lib/seo/robots-listado';
 import { PILARES, AUDIENCIAS, pilarPorSlug, esAudiencia } from '@/lib/blog/pilares';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -146,12 +147,13 @@ export async function generateMetadata({ params, searchParams }: BlogPageProps) 
     description,
     ...(robots ? { robots } : {}),
     openGraph: {
+      siteName: 'Propyte',
       type: 'website',
       title: brandedTitle,
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {
