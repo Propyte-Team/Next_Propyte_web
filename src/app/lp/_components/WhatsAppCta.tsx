@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { MessageCircle } from '@/lib/icons';
 import { trackWhatsAppClick } from '@/lib/analytics/track';
+import { getCapturedUTMs } from '@/hooks/useUTMCapture';
 
 // ============================================================
 // CTA de WhatsApp con atribución.
@@ -33,7 +35,46 @@ export default function WhatsAppCta({
   mensaje: string;
   surface: string;
 }) {
-  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}&utm_content=${encodeURIComponent(loteSlug)}`;
+  // Identificadores de clic de anuncio, leídos DESPUÉS de montar.
+  //
+  // No se pueden leer en render: el HTML lo pinta el servidor con ISR y la URL
+  // del visitante no existe ahí. Meterlos en el primer render produciría un
+  // mismatch de hidratación; en un `useEffect` el enlace nace sin ellos y se
+  // completa al hidratar.
+  //
+  // Por qué importa: WhatsApp es el objetivo primario de esta página y hasta
+  // ahora su `href` no llevaba NADA de atribución. Un lead que llega por
+  // WhatsApp era indistinguible de uno orgánico, así que Google Ads nunca supo
+  // qué clic pagado lo produjo. `wbraid` va incluido a propósito: sustituye al
+  // `gclid` justo cuando el visitante NO aceptó cookies, que es el segmento que
+  // más se estaba perdiendo.
+  const [atribucion, setAtribucion] = useState('');
+
+  useEffect(() => {
+    const enUrl = new URLSearchParams(window.location.search);
+    const salida = new URLSearchParams();
+
+    for (const clave of ['gclid', 'wbraid', 'gbraid', 'fbclid'] as const) {
+      const valor = enUrl.get(clave);
+      if (valor) salida.set(clave, valor);
+    }
+
+    // La URL manda, pero el visitante pudo navegar dentro del sitio y perderla.
+    // `useUTMCapture` ya la guardó en sessionStorage al aterrizar.
+    if ([...salida.keys()].length === 0) {
+      const capturado = getCapturedUTMs();
+      if (capturado.gclid) salida.set('gclid', capturado.gclid);
+      else if (capturado.wbraid) salida.set('wbraid', capturado.wbraid);
+      if (capturado.fbclid) salida.set('fbclid', capturado.fbclid);
+    }
+
+    setAtribucion(salida.toString());
+  }, []);
+
+  const url =
+    `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}` +
+    `&utm_content=${encodeURIComponent(loteSlug)}` +
+    (atribucion ? `&${atribucion}` : '');
 
   return (
     <a
