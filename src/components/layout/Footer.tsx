@@ -135,7 +135,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
               <li><Link href={`/${locale}/financiamiento`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('financing')}</Link></li>
               <li><Link href={`/${locale}/desarrolladores`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('developersLink')}</Link></li>
               <li><Link href={`/${locale}/brokers`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('brokersLink')}</Link></li>
-              <li><Link href={`/${locale}/unete`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('careers')}</Link></li>
+              <li><Link href={`/${locale}/unete`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('recruitment')}</Link></li>
             </ul>
           </div>
 

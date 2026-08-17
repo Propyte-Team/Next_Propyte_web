@@ -1348,7 +1348,7 @@
       "property": "Información de propiedad",
       "investment": "Asesoría de inversión",
       "developer": "Soy desarrollador",
-      "career": "Oportunidades laborales"
+      "recruitment": "Oportunidades laborales"
     },
     "labels": {
       "address": "Dirección",
@@ -1397,7 +1397,7 @@
     "developersLink": "Desarrolladores",
     "brokersLink": "Brokers",
     "builtLink": "Propyte Built",
-    "careers": "Carreras",
+    "recruitment": "Reclutamiento",
     "blogLink": "Blog",
     "legal": "Legal",
     "privacy": "Aviso de Privacidad",
