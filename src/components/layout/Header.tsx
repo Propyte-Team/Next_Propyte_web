@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import SearchBubble from './SearchBubble';
 import ActionsPill from './ActionsPill';
 import MobileHeader from './MobileHeader';
 import MobileMenu from './MobileMenu';
+import { useCssHeightVar } from '@/hooks/useCssHeightVar';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
 type HeaderMode = 'home' | 'dark' | 'default';
@@ -25,6 +26,12 @@ export default function Header({ siteConfig }: { siteConfig?: HubSiteConfig }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const mode = deriveMode(pathname);
+  const desktopHeaderRef = useRef<HTMLElement>(null);
+
+  // Publica el alto real del header flotante de escritorio en
+  // --desktop-header-height para que MainPadding reserve exactamente ese
+  // espacio, sin importar qué cambie aquí.
+  useCssHeightVar(desktopHeaderRef, '--desktop-header-height');
 
   // Listing archives = exactamente /desarrollos y /propiedades (sin /tipo,
   // /etapa, ciudades, ni detail). Aquí ocultamos burbuja porque la página
@@ -73,6 +80,7 @@ export default function Header({ siteConfig }: { siteConfig?: HubSiteConfig }) {
           cuando hay scroll para anclar visualmente la SearchBubble + Pill
           sobre fondos blancos. Solo desktop (Q6 del speckit cristalino-sitio-wide). */}
       <header
+        ref={desktopHeaderRef}
         className={`hidden lg:block fixed top-0 left-0 right-0 z-40 lg:ml-[72px]`}
         style={{ pointerEvents: 'none' }}
       >

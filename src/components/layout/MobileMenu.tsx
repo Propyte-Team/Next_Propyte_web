@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -189,10 +190,16 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/10">
-              <div className="flex items-baseline">
-                <span className="text-xl font-bold tracking-tight text-white">PROP</span>
-                <span className="text-xl font-bold tracking-tight text-[#5CE0D2]">YTE</span>
-              </div>
+              <Link href={`/${locale}`} onClick={onClose} className="flex items-center" aria-label="Propyte">
+                <Image
+                  src="/img/logos/logo-horizontal-white.png"
+                  alt="Propyte"
+                  width={2420}
+                  height={452}
+                  sizes="160px"
+                  className="h-7 w-auto object-contain"
+                />
+              </Link>
               <button
                 ref={closeButtonRef}
                 type="button"
