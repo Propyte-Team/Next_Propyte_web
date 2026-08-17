@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { Mail, Instagram, Facebook, MapPin } from '@/lib/icons';
 import { reopenBanner } from '@/lib/cookies/consent';
+import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
 // Pre-footer CTA copy varies per route to avoid generic repetition
@@ -171,9 +172,10 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
                 <MapPin size={14} className="mt-0.5 flex-shrink-0" />
                 <span>{address}</span>
               </li>
-              <li className="flex items-center gap-2 text-sm text-white/70">
+              <li className="flex items-center gap-2 text-sm text-white/70 flex-wrap">
                 <Mail size={14} className="flex-shrink-0" />
                 <a href={`mailto:${email}`} className="inline-flex items-center min-h-[44px] md:min-h-0 hover:text-white transition-colors">{email}</a>
+                <CopyEmailButton email={email} className="inline-flex items-center gap-1 text-xs text-white/50 hover:text-white underline underline-offset-2 transition-colors" />
               </li>
             </ul>
           </div>
