@@ -1,6 +1,16 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
+> Última actualización: 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
+>
+> 🚨 **3 de los 4 ❌ que se veían en la lista de PRs eran fósiles del 16 de junio**, de cuando `main` tenía 11 errores de lint ya corregidos. El PR #7 solo tocaba `playwright.yml` y aun así «fallaba» el job de `ci.yml` — imposible. El campo que lo delata es `completedAt` de cada check, que la UI de GitHub no pone delante. Ver [[feedback_dependabot_checks_fosiles]].
+>
+> 🚨 **El 403 «without workflow scope» al mergear los PRs de Actions NO era falta de permisos: era la base desfasada.** `@dependabot rebase` y entraron los cuatro. Cada merge desfasa a los siguientes, así que hay que rebasear uno por uno. Cuando `gh pr merge` (GraphQL) insiste, la API REST (`gh api -X PUT .../pulls/<n>/merge`) aceptó lo que GraphQL rechazaba. Ver [[feedback_dependabot_workflow_scope_se_cura_con_rebase]].
+>
+> **ESLint 10 es imposible hoy y TypeScript 7 rompe el lint; TypeScript 6 compila limpio.** `eslint-plugin-react@7.37.5` (la última) solo declara peer hasta `eslint ^9.7`, y `eslint-config-next@16.3.1` (la última) depende de ella. Nada que arreglar en nuestro código. Ver [[feedback_eslint10_typescript7_bloqueados_por_next]].
+>
+> ✅ **`jq` SÍ existe** en este git-bash (`/c/Users/ptoral/bin/jq`, v1.8.2) — se corrigió la memoria que afirmaba lo contrario y que llevaba a evitarlo.
+>
+> Anterior: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
 >
 > 🚨 **`/api/leads` estaba perdiendo leads COMPLETOS.** Validaba los UTMs con `.regex(/^[A-Za-z0-9._~-]{0,200}$/)` dentro del `z.object`: un valor con espacio o acento no se descartaba, tumbaba el `safeParse` entero y devolvía `400` **antes de cualquier escritura**. Sin fila en Supabase, sin push a Zoho, sin nada que reintentar. Una campaña «Restaurante Corazón» borraba todos sus propios leads, y aplica igual a cualquier campaña de Ads con acentos. **El daño histórico no se puede medir**: nunca tocó la base. Fix en `src/lib/leads/utm-sanitize.ts` — sanear, nunca rechazar. Ver [[feedback_zod_regex_en_objeto_tumba_el_parse]].
 >
@@ -27,6 +37,36 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+### Dependabot / tooling (sesión 2026-08-18)
+
+Los 12 PRs de Dependabot quedaron resueltos; el único abierto es **#32**, que es de una
+persona. Lo que sigue pendiente de ese barrido:
+
+- [ ] 🚨 **Mirar el primer build de Hostinger con `sharp` 0.35.3** — es el único riesgo que la
+      verificación local NO cubre: `sharp` es binario nativo, se validó en Windows y el
+      servidor compila en Linux. Ya está en `main` (`f5d75d8`).
+- [ ] **Arreglar los comentarios de versión de los workflows, que mienten** —
+      `actions/checkout@3d3c42e5… # v5` es en realidad **v7.0.1**, y
+      `actions/setup-node@82076278… # v6` es **v7.0.0** (verificado contra los tags del repo
+      de cada action). Dependabot actualizó el SHA y no el comentario en #25 y #26; en #22 y
+      #7 sí lo hizo. Los pins son correctos, es cosmético pero engaña al que lea el archivo.
+      **Requiere scope `workflow`**: `gh auth refresh -s workflow`.
+- [ ] **Subir TypeScript 5.9.3 → 6.0.3** — verificado: compila limpio, 0 errores, coste cero
+      de código. **NO intentar la 7**: `tsc` pasa pero rompe `eslint-config-next`.
+      (Se cerró el PR #16 porque estaba en conflicto y dos majors atrás, no porque fuera mala.)
+- [ ] **Subir `next` 16.2.6 → 16.3.1 junto con `@next/bundle-analyzer`** — por eso se cerró
+      #15: el analyzer debe ir pegado a la versión de `next`, no suelto.
+- [ ] **Decidir `@types/node`: quedó en `^26` pero el CI corre Node 22.** Los tipos van por
+      delante del runtime — compila, pero deja usar APIs que en Node 22 no existen. El repo
+      no tiene `.nvmrc` ni `engines`. Considerar alinear a `^22`.
+- [ ] **Evaluar `framer-motion` 13.x** (major). Nos quedamos en 12.40.0 a propósito. Ojo: el
+      SSR con `opacity:0` es frágil aquí — [[feedback_framer_ssr_opacity_cero_atascado]].
+- [ ] **Revisar ESLint 10 solo cuando `eslint-plugin-react` publique una major.** Chequeo de
+      5 s: `npm view eslint-plugin-react@latest peerDependencies` y
+      `npm view eslint-config-next@latest dependencies | grep react`.
+- [ ] **Borrar `~/Projects/_deps-bump`** — quedó vacía pero con un handle abierto de otro
+      proceso. **No matar los ~65 procesos `node`**: son de sesiones paralelas.
 
 ### LP Lotes PdC — arquitectura de persuasión, handoff 2026-08-13 (sesión 2026-08-13)
 
@@ -572,6 +612,8 @@ _Ninguna._
 
 ## Completadas recientes
 
+- [x] **Barrido completo de los 12 PRs de Dependabot** (2026-08-18) — Luis preguntó qué eran los 12 PRs abiertos y pidió descartar los innecesarios. Revisión de cada uno contra `origin/main` **real** (worktree aislado, no el repo principal, que tenía otra sesión dentro), no contra sus checks. **Mergeados (6):** #26 setup-node v7.0.0 · #9 @types/node 26.2.0 · #25 checkout v7.0.1 · **#33** (propio) · #22 cache v6.1.0 · #7 upload-artifact v7.0.1. **Cerrados (7)** con justificación escrita en cada uno: #30 eslint 10 (bloqueado aguas arriba por `eslint-plugin-react`, no por nuestro código) · #20/#19/#18/#17 (los cuatro `CONFLICTING` y pidiendo versiones ya obsoletas → sustituidos por #33) · #16 typescript 6 (en conflicto, dos majors atrás) · #15 bundle-analyzer (en conflicto y sin sentido suelto). **Ninguno era de seguridad**: cero alertas abiertas de Dependabot, nada urgente. Tres hallazgos no obvios, cada uno en su memoria: los ❌ fósiles de junio ([[feedback_dependabot_checks_fosiles]]), el 403 de scope que era base desfasada ([[feedback_dependabot_workflow_scope_se_cura_con_rebase]]) y el techo real del tooling ([[feedback_eslint10_typescript7_bloqueados_por_next]]). Se corrigió además la memoria que afirmaba que no hay `jq` en este git-bash — sí hay, v1.8.2.
+- [x] **PR #33 — subida de las 4 dependencias de app en un solo lockfile** (2026-08-18) — Creado para sustituir los 4 PRs de Dependabot en conflicto, con las versiones de HOY en vez de las de junio: `sharp` 0.34.5→**0.35.3**, `react-hook-form` 7.72.1→**7.85.0**, `next-intl` 4.11.2→**4.13.7**, `framer-motion` 12.38.0→**12.40.0** (nos quedamos en 12.x; la 13.1.0 es major y se evalúa aparte). Verificado en worktree limpio sobre `origin/main` antes de subir: `npx tsc --noEmit` exit 0, `npm run lint` 0 errores (21 warnings preexistentes de código de app), `npm run build` exit 0 y `sharp` procesando imágenes con libvips 8.18.3. **Verde en `CI` + `Playwright` sobre `main`.** El lockfile se reescribió limpio (−720/+254 líneas). Nota: `sharp` 0.35 eliminó `./package.json` de sus `exports`; nada en el código lo importaba. Squash `f5d75d8`, con los blobs de `package.json` y `package-lock.json` verificados idénticos al commit original antes de borrar la rama.
 - [x] **Meta Pixel instalado en propyte.com** (2026-06-01) — Código base del Píxel de Meta `808922354003079` (PageView) agregado a `src/app/layout.tsx` vía `next/script` + `<noscript>` fallback (ID público hardcodeado, no es secreto). Aplica a todas las rutas. Trabajado en **worktree aislado** sobre `main` para no tocar el WIP de `feat/editorial-markdown-render`. Commit `0c50f22` → push `main` → GitHub Actions → SCP Hostinger → PM2. **Verificado en vivo**: `window.fbq` ok, `#meta-pixel` presente, `fbevents.js` 200, request `facebook.com/tr?id=808922354003079&ev=PageView` → 200. Contexto: propyte.com sirve coming-soon (`page.tsx`→`ComingSoon.tsx`), solo PageView hasta que haya conversiones reales. Origen: revisión de píxeles/datasets del MCP de Meta (el píxel no estaba instalado en el sitio). Memory: `project_next_propyte_web_pixel_comingsoon`.
 - [x] **DiscountBadge: iconos descuento tag_3/tag_2_1 + fix bug ESM upstream dompurify** (2026-05-28) — Nuevo componente `src/components/ui/DiscountBadge.tsx` con 2 variants (`corner` para tag_3 inclinado sin número, `inline` para tag_2_1 horizontal con `−N%` cyan via span absolute encima del SVG). Icono `DiscountTagInclined` agregado a `src/lib/propyte-icons.tsx` con stroke-width strippeado (hereda 1.5 default del wrapper). tag_2_1 vive inline en DiscountBadge con viewBox crop `2 7 20 10` para forma horizontal. 6 puntos de reemplazo: `MarketplaceCard` (corner bottom-left + inline), `UnitDetailPage` (badgeTopRight + inline), `DevelopmentDetailPage` (badgeTopRight + rollup), `FloatingKeyData` (fila descuento), `UnitModelsTable` (columna + cards mobile). **Bug crítico no relacionado descubierto y fixeado**: TODAS las fichas SSR estaban en 500 latente (incluso desde 3 días atrás) por bug ESM upstream — `isomorphic-dompurify@3.12` → `jsdom@29` → `html-encoding-sniffer@6` → `require()` de `@exodus/bytes@1.x` (ESM-only). Fix: pin `isomorphic-dompurify` a `2.20.0` (usa `jsdom@26` + `html-encoding-sniffer@4` CJS-safe). API compatible, sin cambio de código. Deploy final `dpl_2swyj6274-propyte` → fichas 200 verificadas via curl. Memory: `feedback_exodus_bytes_esm_break.md`.
 - [x] **UI Fixes Bundle 2026-05-23** (2026-05-23) — Spec `specs/ui-fixes-bundle-2026-05-23.md` ejecutado 7 fixes + 1 bonus en branch `develop`, 3 deploys CLI a Vercel prod (`dev.propyte.com`), verificado por Luis. **F**: `PriceDisplay` prop `tone:'light'|'dark'` con texto referencial `text-white/75` y `(Referencial)` `text-white/55` sobre fondo `#1A2F3F` (WCAG AA). **E**: `/promociones` threshold `< 2` → `< 1` con schema gate ≥2 preservado + ICU plural en `countLabel`. **C**: `CurrencyToggle` eliminado del UI (archivo borrado), `CurrencyContext` API slim `{rate, rateUpdatedAt, formatMxn}`, refactor 5 consumers (MarketplaceCard usa `<PriceDisplay variant='dual'>` para precio de propiedad; MortgageCalculator/InvestmentComparison/ComparisonTable usan `formatMxn`). **B**: ComparePanel filas condicionales — devs 5 filas (Precio desde/hasta, Ubicación, # Amenidades, Tipo desarrollo), units 4 filas (Precio, Ubicación, # Amenidades, Tipo), mixto 5 con `—` en "Precio hasta". 7 i18n keys nuevas. **D**: WhatsApp `scrollY > 100` (antes 300) + `handleScroll()` se dispara al montar + `trackWhatsAppClick` en try/catch. **A**: `useFilters` instrumentado con debug logging gated por `localStorage.debug_filters==='1'` (zero-cost en prod). **Dropdown filtros — root cause encontrado**: el contenedor `overflow-x-auto no-scrollbar` del FilterBar forzaba `overflow-y` a clip por CSS spec, recortando el panel `absolute top-12`. Fix: `createPortal` a `document.body` con `position:fixed` computado via `getBoundingClientRect()` + `useLayoutEffect`, scroll/resize cierra dropdown, ESC también, outside-click chequea ambos refs. **Bonus CookieBanner**: `<AnimatePresence>` exterior retenía banner con opacity 0 pero pointer-events activos en esquina inferior derecha bloqueando WhatsApp + Comparar. Fix: `motion.aside` siempre montado, `pointer-events:none` vía `style` controlado por `open` (salta inmediato porque no es animable). Deploys: `dpl_ArH8yj7stB8tWVQBe5af2vJpyuD6` → `dpl_F4QWbEcww4qsxkNHZtcFw1YHiR3G` → `dpl_7Lt94nKJnryRPduxnzfMcNjZ5h9s`. Working tree uncommitted en develop.
