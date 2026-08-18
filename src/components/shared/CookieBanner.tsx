@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { ChevronDown, X, ShieldCheck } from '@/lib/icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,6 @@ export default function CookieBanner() {
   const [expanded, setExpanded] = useState(false);
   const [analytics, setAnalytics] = useState(false);
   const [marketing, setMarketing] = useState(false);
-  const [bootstrapped, setBootstrapped] = useState(false);
   // Tras aceptar/rechazar desmontamos el banner por completo (no solo
   // pointer-events:none) para garantizar que NADA quede tapando WhatsApp/CTAs.
   const [hidden, setHidden] = useState(false);
@@ -24,11 +23,21 @@ export default function CookieBanner() {
   // WhatsAppButton). Reportado en Mac 2026-05-22.
   const { count: compareCount } = useCompare();
   const bottomOffset = compareCount > 0 ? '5rem' : '1rem';
+  // `open` arranca en false tanto en servidor como en el primer render de
+  // cliente (ver efecto de abajo). Con `initial={false}`, Framer Motion trata
+  // ese primer frame en reposo como una animación ya "completada" y dispara
+  // `onAnimationComplete` de inmediato — sin este ref, `hidden` se pondría en
+  // true antes de que el efecto de consentimiento alcance a abrir el banner,
+  // y el banner jamás llegaría a mostrarse para un visitante nuevo.
+  const hasOpenedRef = useRef(false);
 
-  // Mount-time bootstrap via setState-during-render pattern (avoids
-  // react-hooks/set-state-in-effect; same approach used in useFilters).
-  if (!bootstrapped) {
-    setBootstrapped(true);
+  // readConsent() depende de localStorage (typeof window === 'undefined' en
+  // servidor), así que la lectura inicial debe ir en un efecto (solo corre en
+  // cliente, tras hidratar) y no durante el render — de lo contrario el HTML
+  // del servidor (siempre sin consentimiento) y el del cliente (que puede
+  // encontrar consentimiento ya guardado) divergen y React tira un hydration
+  // mismatch en `aria-hidden`.
+  useEffect(() => {
     const current = readConsent();
     if (!current) {
       setOpen(true);
@@ -36,7 +45,11 @@ export default function CookieBanner() {
       setAnalytics(current.analytics);
       setMarketing(current.marketing);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (open) hasOpenedRef.current = true;
+  }, [open]);
 
   useEffect(() => {
     const onReopen = () => {
@@ -86,7 +99,7 @@ export default function CookieBanner() {
       initial={false}
       animate={open ? { y: 0, opacity: 1 } : { y: 24, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-      onAnimationComplete={() => { if (!open) setHidden(true); }}
+      onAnimationComplete={() => { if (!open && hasOpenedRef.current) setHidden(true); }}
       className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
