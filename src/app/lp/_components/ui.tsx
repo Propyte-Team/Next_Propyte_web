@@ -222,7 +222,7 @@ export function BotonPrimario({
   return (
     <a
       href={href}
-      className="inline-flex min-h-[52px] cursor-pointer items-center justify-center whitespace-nowrap rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--lp-accent-strong)] active:translate-y-px"
+      className="inline-flex min-h-[56px] cursor-pointer items-center justify-center whitespace-nowrap rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-base font-semibold text-white shadow-[0_2px_10px_rgb(168_64_42/0.28)] transition-all duration-200 hover:bg-[var(--lp-accent-strong)] hover:shadow-[0_4px_16px_rgb(168_64_42/0.38)] active:translate-y-px"
     >
       {children}
     </a>

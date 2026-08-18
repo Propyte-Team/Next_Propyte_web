@@ -107,6 +107,49 @@ test.describe('LP lotes PdC · relevancia para Quality Score', () => {
     }
   });
 
+  test('el banner de cookies no tapa los CTA del hero en móvil', async ({ page }) => {
+    // Regresión medida el 2026-08-18. El banner iba en `bottom-20` para dejar
+    // libre la barra de CTA fija, y en 390x844 eso lo colocaba en y 616–764:
+    // encima de los DOS botones del hero (y 636–692 y y 704–756). Al cargar la
+    // página no había un solo CTA visible hasta decidir las cookies.
+    //
+    // Este aserto existe porque el fallo es invisible en revisión de código:
+    // depende de la altura acumulada del titular y del subtítulo, así que
+    // cualquier cambio de copy en el hero puede reintroducirlo sin tocar el
+    // banner. Un `tsc` limpio y un build verde no lo detectan.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(RUTA, { waitUntil: 'networkidle' });
+
+    const caja = async (loc: ReturnType<typeof page.locator>) => {
+      if ((await loc.count()) === 0) return null;
+      return loc.first().boundingBox();
+    };
+
+    const banner = await caja(page.locator('[role="dialog"]'));
+    // Si el visitante ya decidió, el banner no se monta y no hay nada que medir.
+    test.skip(banner === null, 'el banner no está visible en esta sesión');
+
+    for (const [nombre, sel] of [
+      ['CTA primario', 'a[href="#solicitar"]'],
+      ['WhatsApp', 'a[href*="wa.me"]'],
+    ] as const) {
+      const b = await caja(page.locator(sel));
+      expect(b, `${nombre} debe existir`).not.toBeNull();
+
+      const seSolapan = b!.y < banner!.y + banner!.height && banner!.y < b!.y + b!.height;
+      expect(
+        seSolapan,
+        `${nombre} (y ${Math.round(b!.y)}–${Math.round(b!.y + b!.height)}) queda tapado ` +
+          `por el banner de cookies (y ${Math.round(banner!.y)}–${Math.round(banner!.y + banner!.height)})`,
+      ).toBe(false);
+
+      expect(
+        b!.y + b!.height,
+        `${nombre} debe caber en el primer pliegue de 844 px`,
+      ).toBeLessThanOrEqual(844);
+    }
+  });
+
   test('el enlace de WhatsApp conserva el identificador de clic del anuncio', async ({
     page,
   }) => {

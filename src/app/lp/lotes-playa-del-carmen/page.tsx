@@ -193,17 +193,15 @@ export default async function LandingLotesPlayaDelCarmen() {
             )}
           </h1>
 
-          <p className="mt-6 max-w-[48ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
+          {/* Recortado de cinco líneas a dos. Cada línea de aquí empuja los CTA
+              hacia abajo, y medido en 390x844 los dos botones quedaban fuera de
+              alcance visual. El dato de la privada de 310 lotes y el aviso de
+              que abajo hay más terrenos no se pierden: viven en la banda de
+              cifras y en el comparador, que ahora está a dos pantallas. */}
+          <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
             Lotes en privada a 4.2 km de la playa. Este mide{' '}
             {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'}
-            {lote.lotesTotalesPrivada && (
-              <> dentro de una privada de {lote.lotesTotalesPrivada} lotes</>
-            )}
-            .
-            {apr && (
-              <> El uso de suelo permite hasta {m2(apr.construibleM2)} construidos.</>
-            )}{' '}
-            Abajo están los demás terrenos que tenemos publicados en la zona.
+            {apr && <>, con hasta {m2(apr.construibleM2)} construibles</>}.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -544,12 +542,13 @@ export default async function LandingLotesPlayaDelCarmen() {
               : 'Te mandamos el detalle completo del lote y el paquete documental.'}
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#solicitar"
-              className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--lp-accent-strong)] active:translate-y-px"
-            >
+            {/* Usa el componente, no una copia de sus clases. Estas clases
+                estaban duplicadas a mano y al reforzar `BotonPrimario` este CTA
+                se quedó atrás: 14px/500 sin elevación contra 16px/600 con ella,
+                o sea el botón del cierre pesaba MENOS que el del hero. */}
+            <BotonPrimario href="#solicitar">
               {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle del lote'}
-            </a>
+            </BotonPrimario>
             <WhatsAppCta
               loteSlug={lote.slug}
               telefono={FALLBACK_WHATSAPP}

@@ -66,7 +66,7 @@ function emitirPaso(evento: string) {
 }
 
 const OPCION =
-  'group flex min-h-[52px] w-full cursor-pointer items-center justify-between gap-3 border border-[var(--lp-line)] bg-white px-4 text-left text-sm text-[var(--lp-ink-soft)] transition-colors duration-200 hover:border-[var(--lp-accent)] hover:bg-[var(--lp-accent)]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lp-accent)]';
+  'group flex min-h-[56px] w-full cursor-pointer items-center justify-between gap-3 border border-[var(--lp-accent)]/35 bg-white px-4 text-left text-base font-medium text-[var(--lp-ink)] transition-colors duration-200 hover:border-[var(--lp-accent)] hover:bg-[var(--lp-accent)]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lp-accent)]';
 
 const INPUT =
   'min-h-[52px] w-full border border-[var(--lp-line)] bg-white px-4 font-mono text-sm text-[var(--lp-ink-soft)] transition-colors duration-200 placeholder:font-sans placeholder:text-[var(--lp-ink-soft)]/35 focus:border-[var(--lp-accent)] focus:outline-2 focus:outline-offset-0 focus:outline-[var(--lp-accent)]';
@@ -187,7 +187,7 @@ export default function LeadFormLotes({
   }
 
   return (
-    <div className="border-t-2 border-[var(--lp-accent)] bg-white">
+    <div className="border-t-[3px] border-[var(--lp-accent)] bg-white shadow-[0_8px_28px_rgb(22_25_28/0.10)]">
       <div className="border-x border-b border-[var(--lp-line)] p-5 sm:p-6">
         <div className="flex items-baseline justify-between gap-4">
           {/* `p` y no `h3`: `globals.css` pisa el font-size de los headings
@@ -352,7 +352,7 @@ export default function LeadFormLotes({
             <button
               type="submit"
               disabled={enviando}
-              className="flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 bg-[var(--lp-accent)] px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)] disabled:cursor-default disabled:opacity-60"
+              className="flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-2 bg-[var(--lp-accent)] px-5 text-base font-semibold text-white shadow-[0_2px_10px_rgb(168_64_42/0.28)] transition-colors duration-200 hover:bg-[var(--lp-accent-strong)] disabled:cursor-default disabled:opacity-60"
             >
               {enviando ? 'Enviando' : 'Enviarme el plan y los documentos'}
               {!enviando && <ArrowRight className="size-4" aria-hidden="true" />}
