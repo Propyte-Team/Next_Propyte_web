@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ChevronDown, X } from '@/lib/icons';
 import { blogHref, type BlogUrlState } from '@/lib/blog/blog-urls';
 import { PILARES, AUDIENCIAS, pilarPorCodigo } from '@/lib/blog/pilares';
+import BlogFilterEnhancer from './BlogFilterEnhancer';
 
 /**
  * Barra de filtros del blog. Mismo lenguaje visual que la de `/desarrollos`
@@ -64,6 +65,12 @@ const ITEM_BASE = 'block w-full text-left px-3 py-2 rounded-lg text-sm transitio
 const ITEM_ON = 'bg-propyte-cyan-100 text-[#0E7490] font-semibold';
 const ITEM_OFF = 'hover:bg-gray-50 text-[#2C2C2C]';
 
+// +2ch de respiro sobre el label activo más largo entre ES/EN (pilares.json,
+// audiencias.json) — evita que el trigger (y el popover que cuelga de él)
+// salte de posición al pasar de "Tema"/"Público" a un pilar/audiencia activa.
+const TEMA_MIN_WIDTH_CH = 36; // "Beachfront and branded residences" (EN, 34)
+const PUBLICO_MIN_WIDTH_CH = 22; // "Para inversionistas" (ES, 20)
+
 /**
  * Pill desplegable sin JS. `group` + `group-open:` mueve el chevron.
  *
@@ -73,20 +80,39 @@ const ITEM_OFF = 'hover:bg-gray-50 text-[#2C2C2C]';
  * 2026-05-23 obligó a portar el dropdown del marketplace a `body` con posición
  * fixed. Aquí se evita con `flex-wrap` en vez de scroll horizontal, que con dos
  * pills es de sobra.
+ *
+ * `name="blog-filter-group"` agrupa los `<details>` como acordeón exclusivo
+ * NATIVO (sin JS): el navegador cierra el otro popover al abrir este. Soportado
+ * desde Chrome 120/Safari 17.2 — en versiones más viejas del browserslist del
+ * proyecto simplemente no excluye (degrada al comportamiento de hoy: ambos
+ * pueden quedar abiertos), no se rompe nada. `BlogFilterEnhancer` cubre esos
+ * navegadores más viejos por JS.
+ *
+ * `minWidthChars`: ancho mínimo del trigger en `ch` (escala con el font-size,
+ * no con una fuente específica), calculado sobre el label más largo posible
+ * entre ambos locales — evita que el pill (y por tanto el popover que cuelga
+ * de él) salte de posición al pasar de "Tema"/"Público" a un label activo
+ * mucho más largo.
  */
 function PillDetails({
   label,
   activeLabel,
+  minWidthChars,
   children,
 }: {
   label: string;
   activeLabel?: string;
+  minWidthChars: number;
   children: React.ReactNode;
 }) {
   const isActive = Boolean(activeLabel);
   return (
-    <details className="group relative flex-shrink-0">
-      <summary className={`${PILL_BASE} ${isActive ? PILL_ON : PILL_OFF}`} aria-label={label}>
+    <details name="blog-filter-group" data-blog-filter className="group relative flex-shrink-0">
+      <summary
+        className={`${PILL_BASE} justify-center ${isActive ? PILL_ON : PILL_OFF}`}
+        style={{ minWidth: `${minWidthChars}ch` }}
+        aria-label={label}
+      >
         {activeLabel || label}
         <ChevronDown size={14} className="transition-transform group-open:rotate-180" />
       </summary>
@@ -140,6 +166,11 @@ export default function BlogFilterBar({
 
   return (
     <div className="border-y border-gray-200 bg-white">
+      {/* Client Component aparte — ver su comentario de cabecera. BlogFilterBar
+          en sí sigue siendo Server Component: si este script no carga, los
+          <details>/<a href> de abajo siguen siendo 100% funcionales y
+          crawleables. */}
+      <BlogFilterEnhancer />
       <div className="mx-auto max-w-[1280px] px-4 py-3 md:px-6">
         <nav
           className="flex flex-wrap items-center gap-2"
@@ -156,9 +187,11 @@ export default function BlogFilterBar({
           <PillDetails
             label={labels.tema}
             activeLabel={pilarActivo ? labels.pilares[pilarActivo.code] : undefined}
+            minWidthChars={TEMA_MIN_WIDTH_CH}
           >
             <Link
               href={blogHref(locale, { ...keep, pilar: null, page: null })}
+              data-blog-filter-option
               className={`${ITEM_BASE} ${!pilarActivo ? ITEM_ON : ITEM_OFF}`}
             >
               {labels.allPilares}
@@ -170,6 +203,7 @@ export default function BlogFilterBar({
                 <Link
                   key={p.code}
                   href={blogHref(locale, { ...keep, pilar: p.slug, page: null })}
+                  data-blog-filter-option
                   aria-current={activePilar === p.code ? 'page' : undefined}
                   aria-label={`${nombre} — ${labels.pilarCounts[p.code] ?? n}`}
                   className={`${ITEM_BASE} flex items-center justify-between gap-3 ${
@@ -194,9 +228,11 @@ export default function BlogFilterBar({
           <PillDetails
             label={labels.publico}
             activeLabel={activeAudiencia ? labels.audiencias[activeAudiencia] : undefined}
+            minWidthChars={PUBLICO_MIN_WIDTH_CH}
           >
             <Link
               href={blogHref(locale, { ...keep, audiencia: null, page: null })}
+              data-blog-filter-option
               className={`${ITEM_BASE} ${!activeAudiencia ? ITEM_ON : ITEM_OFF}`}
             >
               {labels.allAudiencias}
@@ -205,6 +241,7 @@ export default function BlogFilterBar({
               <Link
                 key={a}
                 href={blogHref(locale, { ...keep, audiencia: a, page: null })}
+                data-blog-filter-option
                 aria-current={activeAudiencia === a ? 'page' : undefined}
                 className={`${ITEM_BASE} ${activeAudiencia === a ? ITEM_ON : ITEM_OFF}`}
               >
@@ -220,7 +257,7 @@ export default function BlogFilterBar({
           </span>
         </nav>
 
-        {(chips.length > 0 || filtrosActivos > 1) && (
+        {filtrosActivos > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label={labels.activeFilters}>
             {chips.map((chip) => (
               <Link
@@ -233,7 +270,7 @@ export default function BlogFilterBar({
                 <X size={12} strokeWidth={2.5} aria-hidden="true" />
               </Link>
             ))}
-            {filtrosActivos > 1 && (
+            {filtrosActivos > 0 && (
               <Link
                 href={blogHref(locale)}
                 className="inline-flex h-7 items-center rounded-full px-3 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#1A2F3F]"

@@ -82,7 +82,7 @@ export default async function LocaleLayout({
         <div className="lg:ml-[72px]">
           <main
             id="main-content"
-            className="flex-1 pb-20 md:pb-0"
+            className="flex-1"
             tabIndex={-1}
           >
             <MainPadding>{children}</MainPadding>
