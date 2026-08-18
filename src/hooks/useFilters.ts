@@ -113,16 +113,19 @@ export function useFilters(properties: Property[]) {
     ...parseFiltersFromParams(searchParams),
   }));
 
-  // Re-apply URL params if they change (e.g. AI redirect).
+  // Re-derive filters from the URL if it changes (e.g. footer link, AI redirect).
   // React docs pattern "Adjusting state when a prop changes": setState during render,
-  // gated by tracking the previous searchParams reference so we only re-merge once per change.
+  // gated by tracking the previous searchParams reference so we only re-sync once per change.
+  // Reemplaza el estado completo (no lo mezcla con `prev`): cada navegación con
+  // querystring propio debe reflejar SOLO esos filtros, igual que el useState
+  // inicial de arriba — de lo contrario un link a /propiedades?stage=preventa
+  // conserva el city/type de la navegación anterior en vez de reemplazarlos, y
+  // /propiedades (sin querystring) nunca limpiaba nada porque el bloque se
+  // saltaba entero cuando `fromUrl` salía vacío.
   const [prevSearchParams, setPrevSearchParams] = useState(searchParams);
   if (searchParams !== prevSearchParams) {
     setPrevSearchParams(searchParams);
-    const fromUrl = parseFiltersFromParams(searchParams);
-    if (Object.keys(fromUrl).length > 0) {
-      setFilters(prev => ({ ...prev, ...fromUrl }));
-    }
+    setFilters({ ...defaultFilters, priceMax: priceCeiling, ...parseFiltersFromParams(searchParams) });
   }
   const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date'>('relevance');
 
