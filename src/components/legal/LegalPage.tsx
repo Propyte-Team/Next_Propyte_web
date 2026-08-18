@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { FileText, AlertCircle, Mail } from '@/lib/icons';
 import { PRIVACY_EMAIL } from '@/lib/legal/contacts';
+import CopyEmailButton from '@/components/shared/CopyEmailButton';
 
 interface LegalPageProps {
   locale: string;
@@ -62,6 +63,10 @@ export default async function LegalPage({
                 <Mail size={14} />
                 {PRIVACY_EMAIL}
               </a>
+              <CopyEmailButton
+                email={PRIVACY_EMAIL}
+                className="inline-flex items-center gap-2 h-10 px-5 border border-gray-200 text-[#1A2F3F] hover:bg-gray-50 text-sm font-semibold rounded-lg transition-colors"
+              />
               <Link
                 href={`/${locale}/contacto`}
                 className="inline-flex items-center h-10 px-5 border border-gray-200 text-[#1A2F3F] hover:bg-gray-50 text-sm font-semibold rounded-lg transition-colors"

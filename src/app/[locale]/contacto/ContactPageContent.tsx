@@ -11,6 +11,7 @@ import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 import type { HubSiteConfig } from '@/lib/hub-content';
 import SiteMediaView from '@/components/shared/SiteMediaView';
+import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import type { SiteMediaMap } from '@/lib/hub-content';
 
 function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
@@ -117,7 +118,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
     { value: 'property', label: t('subjectOptions.property') },
     { value: 'investment', label: t('subjectOptions.investment') },
     { value: 'developer', label: t('subjectOptions.developer') },
-    { value: 'career', label: t('subjectOptions.career') },
+    { value: 'career', label: t('subjectOptions.recruitment') },
   ];
 
   const mapQuery = encodeURIComponent(address);
@@ -330,18 +331,24 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   </div>
                 </a>
 
-                <a
-                  href={mailHref}
-                  className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
-                    <Mail size={18} className="text-[#0E7490]" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.email')}</p>
-                    <p className="text-sm text-gray-600 mt-0.5 break-words">{email}</p>
-                  </div>
-                </a>
+                <div className="relative group">
+                  <a
+                    href={mailHref}
+                    className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
+                      <Mail size={18} className="text-[#0E7490]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-[#1A2F3F] text-sm">{t('labels.email')}</p>
+                      <p className="text-sm text-gray-600 mt-0.5 break-words">{email}</p>
+                    </div>
+                  </a>
+                  <CopyEmailButton
+                    email={email}
+                    className="absolute top-3 right-3 inline-flex items-center gap-1 text-xs text-gray-500 hover:text-[#1A2F3F] underline underline-offset-2 transition-colors"
+                  />
+                </div>
 
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">
                   <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0">

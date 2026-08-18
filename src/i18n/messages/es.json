@@ -1331,7 +1331,7 @@
     "formSubmit": "Enviar mensaje",
     "formSubjectPlaceholder": "Selecciona una opción",
     "formSuccessToast": "Mensaje enviado. Te contactamos en menos de 2 horas hábiles.",
-    "formErrorToast": "No se pudo enviar tu mensaje. Intenta de nuevo o escríbenos a hola@propyte.com.",
+    "formErrorToast": "No se pudo enviar tu mensaje. Intenta de nuevo o escríbenos a contacto@propyte.com.",
     "whatsappResponseTime": "Respondemos en menos de 2 horas hábiles",
     "calendlyCta": "Agendar videollamada (30 min)",
     "calendlySoon": "Próximamente — escríbenos por WhatsApp",
@@ -1348,7 +1348,7 @@
       "property": "Información de propiedad",
       "investment": "Asesoría de inversión",
       "developer": "Soy desarrollador",
-      "career": "Oportunidades laborales"
+      "recruitment": "Oportunidades laborales"
     },
     "labels": {
       "address": "Dirección",
@@ -1361,7 +1361,7 @@
     "info": {
       "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, México",
       "phone": "+52 984 463 8032",
-      "email": "hola@propyte.com",
+      "email": "contacto@propyte.com",
       "hours": "Lunes a Viernes 9:00 – 18:00, Sábado 10:00 – 14:00"
     },
     "whatsappCta": "Escríbenos por WhatsApp",
@@ -1382,7 +1382,10 @@
     "close": "Cerrar",
     "back": "Volver",
     "next": "Siguiente",
-    "previous": "Anterior"
+    "previous": "Anterior",
+    "copyEmail": "Copiar dirección",
+    "emailCopied": "Dirección copiada",
+    "copyFailed": "No se pudo copiar"
   },
   "footer": {
     "description": "Comercializadora inmobiliaria con datos, tecnología y transparencia. Riviera Maya y Yucatán.",
@@ -1397,7 +1400,7 @@
     "developersLink": "Desarrolladores",
     "brokersLink": "Brokers",
     "builtLink": "Propyte Built",
-    "careers": "Carreras",
+    "recruitment": "Reclutamiento",
     "blogLink": "Blog",
     "legal": "Legal",
     "privacy": "Aviso de Privacidad",
@@ -1475,7 +1478,7 @@
     "formSubmitting": "Enviando...",
     "formSuccessTitle": "¡Aplicación enviada!",
     "formSuccess": "Recibimos tu información. Un miembro del equipo Propyte te contactará en los próximos 3 días hábiles.",
-    "formError": "Hubo un problema enviando tu aplicación. Inténtalo de nuevo o escríbenos a hola@propyte.com.",
+    "formError": "Hubo un problema enviando tu aplicación. Inténtalo de nuevo o escríbenos a contacto@propyte.com.",
     "formRequired": "Campo obligatorio",
     "formInvalidEmail": "Correo inválido",
     "formInvalidUrl": "URL inválida (incluye https://)",
@@ -2430,7 +2433,7 @@
     "gateSubmitting": "Enviando…",
     "gateClose": "Cerrar",
     "gateSuccess": "¡Listo! Tu PDF se está descargando.",
-    "gateError": "No se pudo procesar. Intenta de nuevo o escríbenos a hola@propyte.com",
+    "gateError": "No se pudo procesar. Intenta de nuevo o escríbenos a contacto@propyte.com",
     "gatePrivacy": "Tu información está protegida según nuestro Aviso de Privacidad",
     "term1Name": "ADR (Tarifa promedio diaria)",
     "term1Def": "Tarifa promedio diaria de renta vacacional. Se calcula dividiendo el ingreso total entre las noches ocupadas.",
