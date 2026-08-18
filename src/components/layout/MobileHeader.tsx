@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { Menu, ChevronDown } from '@/lib/icons';
+import { useCssHeightVar } from '@/hooks/useCssHeightVar';
 import SearchBubble from './SearchBubble';
 
 interface MobileHeaderProps {
@@ -26,6 +27,11 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
   const langRef = useRef<HTMLDivElement>(null);
   const langButtonRef = useRef<HTMLButtonElement>(null);
   const langPanelRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // Publica el alto real del header en --mobile-header-height para que
+  // MainPadding reserve exactamente ese espacio, sin importar qué cambie aquí.
+  useCssHeightVar(headerRef, '--mobile-header-height');
 
   useEffect(() => {
     function onOutside(e: MouseEvent) {
@@ -76,7 +82,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
   const darkTopRow = (mode === 'home' || mode === 'dark') && !isScrolled;
 
   return (
-    <header className={`lg:hidden fixed top-0 left-0 right-0 z-50 ${darkTopRow ? '' : 'propyte-mobile-header-bg'}`} role="banner" aria-label={t('openMenu')}>
+    <header ref={headerRef} className={`lg:hidden fixed top-0 left-0 right-0 z-50 ${darkTopRow ? '' : 'propyte-mobile-header-bg'}`} role="banner" aria-label={t('openMenu')}>
       {/* Row 1: Logo | Lang | Hamburger. pt-5 empuja el contenido hacia abajo
           para que no quede pegado al borde, pero el fondo (propyte-mobile-header-bg)
           arranca en top-0 y cubre ese espacio en vez de dejarlo transparente. */}

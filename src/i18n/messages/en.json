@@ -19,7 +19,7 @@
     "advertise": "List your Development",
     "brokers": "Brokers",
     "providers": "Providers",
-    "recruitment": "Careers",
+    "recruitment": "Recruitment",
     "blog": "Blog",
     "built": "Propyte Built",
     "filters": "Filters",
@@ -1331,7 +1331,7 @@
     "formSubmit": "Send message",
     "formSubjectPlaceholder": "Select an option",
     "formSuccessToast": "Message sent. We'll reach out within 2 business hours.",
-    "formErrorToast": "Could not send your message. Try again or email us at hola@propyte.com.",
+    "formErrorToast": "Could not send your message. Try again or email us at contacto@propyte.com.",
     "whatsappResponseTime": "We reply within 2 business hours",
     "calendlyCta": "Schedule a 30-min video call",
     "calendlySoon": "Coming soon — message us on WhatsApp",
@@ -1348,7 +1348,7 @@
       "property": "Property information",
       "investment": "Investment advisory",
       "developer": "I'm a developer",
-      "career": "Career opportunities"
+      "recruitment": "Career opportunities"
     },
     "labels": {
       "address": "Address",
@@ -1361,7 +1361,7 @@
     "info": {
       "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, Mexico",
       "phone": "+52 984 463 8032",
-      "email": "hola@propyte.com",
+      "email": "contacto@propyte.com",
       "hours": "Monday to Friday 9:00 AM – 6:00 PM, Saturday 10:00 AM – 2:00 PM"
     },
     "whatsappCta": "Message us on WhatsApp",
@@ -1382,7 +1382,10 @@
     "close": "Close",
     "back": "Back",
     "next": "Next",
-    "previous": "Previous"
+    "previous": "Previous",
+    "copyEmail": "Copy address",
+    "emailCopied": "Address copied",
+    "copyFailed": "Could not copy"
   },
   "footer": {
     "description": "Real estate brokerage with data, technology and transparency. Riviera Maya and Yucatán.",
@@ -1397,7 +1400,7 @@
     "developersLink": "Developers",
     "brokersLink": "Brokers",
     "builtLink": "Propyte Built",
-    "careers": "Careers",
+    "recruitment": "Recruitment",
     "blogLink": "Blog",
     "legal": "Legal",
     "privacy": "Privacy Policy",
@@ -1475,7 +1478,7 @@
     "formSubmitting": "Sending...",
     "formSuccessTitle": "Application sent!",
     "formSuccess": "We received your information. A Propyte team member will contact you within 3 business days.",
-    "formError": "There was a problem sending your application. Try again or email us at hello@propyte.com.",
+    "formError": "There was a problem sending your application. Try again or email us at contacto@propyte.com.",
     "formRequired": "Required field",
     "formInvalidEmail": "Invalid email",
     "formInvalidUrl": "Invalid URL (include https://)",
@@ -2430,7 +2433,7 @@
     "gateSubmitting": "Sending…",
     "gateClose": "Close",
     "gateSuccess": "Done! Your PDF is downloading.",
-    "gateError": "Could not process. Try again or email hello@propyte.com",
+    "gateError": "Could not process. Try again or email contacto@propyte.com",
     "gatePrivacy": "Your information is protected by our Privacy Notice",
     "term1Name": "ADR (Average Daily Rate)",
     "term1Def": "Average vacation rental rate per night. Calculated by dividing total income by occupied nights.",

@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { submitLead } from '@/lib/leads/submit-lead';
 import SiteMediaView from '@/components/shared/SiteMediaView';
+import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import { isExternalVideo } from '@/lib/site-media/embed';
 import type { SiteMediaEntry } from '@/lib/hub-content';
 import {
@@ -585,13 +586,19 @@ function OtherRoles() {
           <span className="text-[#0E7490] font-bold text-sm uppercase tracking-wider">{t('otherEyebrow')}</span>
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mt-3 mb-4">{t('otherTitle')}</h2>
           <p className="text-gray-600 leading-relaxed max-w-2xl mx-auto mb-7">{t('otherBody')}</p>
-          <a
-            href={`mailto:${email}?subject=${encodeURIComponent('CV — Otros puestos Propyte')}`}
-            className="inline-flex items-center justify-center gap-2 min-h-[44px] px-7 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-bold rounded-xl transition-colors text-sm"
-          >
-            <Mail size={16} />
-            {t('otherCta')}
-          </a>
+          <div className="flex flex-col items-center gap-3">
+            <a
+              href={`mailto:${email}?subject=${encodeURIComponent('CV — Otros puestos Propyte')}`}
+              className="inline-flex items-center justify-center gap-2 min-h-[44px] px-7 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-bold rounded-xl transition-colors text-sm"
+            >
+              <Mail size={16} />
+              {t('otherCta')}
+            </a>
+            <CopyEmailButton
+              email={email}
+              className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-[#1A2F3F] underline underline-offset-2 transition-colors"
+            />
+          </div>
         </div>
       </div>
     </section>

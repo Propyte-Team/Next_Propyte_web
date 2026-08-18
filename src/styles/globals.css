@@ -329,8 +329,9 @@ html {
    ───────────────────────────────────────────────────────── */
 .propyte-search-bubble {
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(24px);
+  /* backdrop filter debe ir después de -webkit */
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.55);
   /* Cristalino: 2 capas inset (top dim, bottom highlight) + drop suave +
      drop largo — replica el lenguaje Ficha 02 a escala pill. */
@@ -430,8 +431,9 @@ html {
     rgba(255, 255, 255, 0.4) 75%,
     rgba(255, 255, 255, 0) 100%
   );
-  backdrop-filter: blur(8px);
+  /* backdrop filter debe ir después de -webkit */
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   padding-bottom: 16px;
   
 }
