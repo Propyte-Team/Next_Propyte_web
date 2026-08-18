@@ -1,4 +1,7 @@
 import Script from 'next/script';
+import { OPENAI_PIXEL_ID } from '@/lib/analytics/openai-ads';
+import { STORAGE_KEY, CONSENT_VERSION } from '@/lib/cookies/consent';
+import OpenAiPageView from './OpenAiPageView';
 
 export default function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA4_ID;
@@ -7,6 +10,9 @@ export default function Analytics() {
   const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
   const hotjarId = process.env.NEXT_PUBLIC_HOTJAR_ID;
   const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  // `debug: true` solo fuera de produccion: en prod ensucia la consola del
+  // visitante y expone el detalle de cada evento medido.
+  const openAiDebug = process.env.NODE_ENV === 'production' ? '' : ', debug: true';
   // Skip Meta Pixel when env var is missing or still set to the placeholder.
   const metaPixelEnabled =
     !!metaPixelId && metaPixelId !== 'XXXXXXXXXXXXXXXXX' && /^\d+$/.test(metaPixelId);
@@ -82,6 +88,45 @@ export default function Analytics() {
               alt=""
             />
           </noscript>
+        </>
+      )}
+
+      {/* OpenAI Ads Pixel (oaiq) — campañas dentro de ChatGPT.
+          `afterInteractive`, no `lazyOnload` como Meta/Hotjar: el snippet
+          define la cola `window.oaiq` de forma sincrónica y de ella depende
+          <OpenAiPageView />. Con lazyOnload, un page_viewed disparado durante
+          una navegación temprana caería al vacío. El fetch del SDK sigue
+          siendo async, así que no bloquea el render. */}
+      {OPENAI_PIXEL_ID && (
+        <>
+          <Script id="openai-pixel-init" strategy="afterInteractive">
+            {`
+              !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
+              (function(){
+                // El consentimiento del SDK arranca CONCEDIDO. Hay que fijarlo
+                // antes del init o el píxel mediría sin permiso. Se lee del
+                // mismo localStorage que escribe el banner de cookies, así el
+                // visitante que ya aceptó en una visita anterior no tiene que
+                // volver a aceptar (el banner solo re-aplica al guardar).
+                var granted = false;
+                try {
+                  var raw = window.localStorage.getItem('${STORAGE_KEY}');
+                  if (raw) {
+                    var c = JSON.parse(raw);
+                    granted = !!c && c.v === ${CONSENT_VERSION} && c.marketing === true;
+                  }
+                } catch (e) {}
+                oaiq("consent", granted);
+                oaiq("init", { pixelId: "${OPENAI_PIXEL_ID}"${openAiDebug} });
+                // page_viewed NO se dispara solo con el init.
+                oaiq("measure", "page_viewed", {
+                  type: "contents",
+                  contents: [{ id: window.location.pathname, name: document.title || window.location.pathname, content_type: "page" }]
+                });
+              })();
+            `}
+          </Script>
+          <OpenAiPageView />
         </>
       )}
 
