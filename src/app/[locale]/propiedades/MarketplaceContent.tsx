@@ -194,10 +194,11 @@ export default function MarketplaceContent({
       // para que el split map+list quepa entero en el viewport y muestre 4 cards
       // completas sin scroll del listado.
       //
-      // Auditoría 2026-08-06: la altura fija es intencional en `lg`, donde hay
-      // split mapa+lista. En móvil encerraba el catálogo entero en el alto del
-      // viewport, así que ahí el shell crece con su contenido.
-      <div className="flex flex-col lg:h-[calc(100dvh-100px)]">
+      // Auditoría 2026-08-06: la altura fija es intencional en `lg` y en móvil
+      // cuando mobileView==='map' (el mapa necesita un ancestro con alto real,
+      // sino Google Maps colapsa a 0px sin lanzar error). En mobileView==='list'
+      // se quita para que el catálogo fluya en el documento sin quedar atrapado.
+      <div className={`flex flex-col ${!isMobile || mobileView === 'map' ? 'h-[calc(100dvh-100px)]' : ''}`}>
         {heroHidden ? (
           <h1 className="sr-only">{heading}</h1>
         ) : (

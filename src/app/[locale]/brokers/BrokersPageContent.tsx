@@ -299,8 +299,14 @@ function HowItWorks() {
 
 // ─────────────────────────────────────────────────────
 // 6. PLATAFORMA — EN DESARROLLO (preview)
+// Comentada de la composición a pedido de negocio 2026-08-19 (prefijo `_`
+// para el linter, ver eslint.config.mjs) — se deja intacta por si se retoma.
 // ─────────────────────────────────────────────────────
-function PlatformPreview() {
+
+
+// cuando se vaya a usar lo de "próximamente..." quitar el guión bajo de la función _
+// ir a línea 634 para descomentar la "imagen" preview del próximamente
+function _PlatformPreview() {
   const t = useTranslations('brokers');
   const features = [
     { title: t('platformFeature1Title'), desc: t('platformFeature1Desc') },
@@ -626,7 +632,9 @@ export default function BrokersPageContent({ hubData, siteMedia }: { hubData?: B
         <WhyPropyte />
         <TwoModels />
         <HowItWorks />
-        <PlatformPreview />
+        {/* PlatformPreview (mockup "app.propyte.com/dashboard") — comentado a
+            pedido de negocio 2026-08-19. El componente se deja intacto por si
+            se retoma más adelante. */}
         <FAQ />
         <BrokerForm siteMedia={siteMedia} />
       </div>

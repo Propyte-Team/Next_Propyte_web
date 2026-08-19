@@ -30,7 +30,7 @@ export default function HomeFAQ() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-white">
+    <section className="py-16 md:py-20 bg-white">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
           <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">

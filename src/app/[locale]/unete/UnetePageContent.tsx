@@ -187,8 +187,13 @@ function HeroSection() {
                 </div>
               )}
             </div>
-            <div className="absolute -bottom-4 -left-4 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
+            <div className="hidden lg:block absolute -bottom-4 -left-4 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
               {t('heroTopBadge')}
+            </div>
+            <div className="lg:hidden absolute -bottom-4 inset-x-0 flex justify-center px-4 pointer-events-none">
+              <div className="translate-x-3 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg pointer-events-auto">
+                {t('heroTopBadge')}
+              </div>
             </div>
           </div>
         </div>
