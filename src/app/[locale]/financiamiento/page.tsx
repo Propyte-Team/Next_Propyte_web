@@ -316,7 +316,13 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
           <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-8 text-center">
             {t('tableTitle')}
           </h2>
-          <div className="overflow-x-auto rounded-xl border border-gray-100">
+          {/* `relative`: sin esto, el `<span className="sr-only">` de la columna
+              Rapidez (position:absolute) no tiene contenedor de posicionamiento
+              antes de este div, así que su hypothetical position (calculada
+              sobre la tabla ancha de 640px) escapa el overflow-x-auto y filtra
+              hasta inflar el ancho de TODO el documento — la página se veía
+              "con zoom" en mobile por esto, no por la tabla en sí. */}
+          <div className="relative overflow-x-auto rounded-xl border border-gray-100">
             <table className="w-full min-w-[640px] text-sm bg-white">
               <thead>
                 <tr className="bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">

@@ -3,13 +3,14 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { ChevronRight } from '@/lib/icons';
+import { ChevronLeft, ChevronRight } from '@/lib/icons';
 import { formatPrice } from '@/lib/formatters';
 import type { AmortSchedule } from '@/lib/calculator';
 import { aggregateByYear, type AnnualRow } from '@/lib/corrida-anual';
 
 const COLOR_CAPITAL = '#5CE0D2';
 const COLOR_INTEREST = '#1A2F3F';
+const MONTHS_PER_PAGE = 12;
 
 interface CorridaCompactaProps {
   schedule: AmortSchedule;
@@ -20,7 +21,18 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
   const t = useTranslations('corrida');
   const [byYear, setByYear] = useState(true);
   const [openYears, setOpenYears] = useState<Set<number>>(new Set());
+  const [monthPage, setMonthPage] = useState(0);
   const fmt = (n: number) => formatPrice(Math.round(n), currency);
+
+  const totalMonthPages = Math.max(1, Math.ceil(schedule.rows.length / MONTHS_PER_PAGE));
+  // Clamp en vez de useEffect: si `schedule` cambia (otro precio/plazo) y la
+  // página guardada queda fuera de rango, se recorta al render siguiente sin
+  // necesitar un efecto solo para sincronizar este estado derivado.
+  const currentMonthPage = Math.min(monthPage, totalMonthPages - 1);
+  const monthRows = useMemo(
+    () => schedule.rows.slice(currentMonthPage * MONTHS_PER_PAGE, (currentMonthPage + 1) * MONTHS_PER_PAGE),
+    [schedule, currentMonthPage],
+  );
 
   const annual = useMemo(() => aggregateByYear(schedule.rows), [schedule]);
   const chartData = useMemo(
@@ -106,7 +118,7 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
                   yearLabel={t('year', { n: y.anio })}
                 />
               ))
-              : schedule.rows.map((r, idx) => (
+              : monthRows.map((r, idx) => (
                 <tr key={r.mes} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="px-3 py-2 text-gray-700 font-medium">{r.mes}</td>
                   <td className="px-3 py-2 text-right">{fmt(r.cuota)}</td>
@@ -118,6 +130,34 @@ export default function CorridaCompacta({ schedule, currency = 'MXN' }: CorridaC
           </tbody>
         </table>
       </div>
+
+      {!byYear && totalMonthPages > 1 && (
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setMonthPage((p) => Math.max(0, p - 1))}
+            disabled={currentMonthPage === 0}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm border border-gray-200 text-gray-700 hover:border-propyte-brand disabled:opacity-40 disabled:hover:border-gray-200 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft size={14} /> {t('monthPagePrev')}
+          </button>
+          <span className="text-2xs text-gray-500">
+            {t('monthPageRange', {
+              from: currentMonthPage * MONTHS_PER_PAGE + 1,
+              to: Math.min((currentMonthPage + 1) * MONTHS_PER_PAGE, schedule.rows.length),
+              total: schedule.rows.length,
+            })}
+          </span>
+          <button
+            type="button"
+            onClick={() => setMonthPage((p) => Math.min(totalMonthPages - 1, p + 1))}
+            disabled={currentMonthPage >= totalMonthPages - 1}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm border border-gray-200 text-gray-700 hover:border-propyte-brand disabled:opacity-40 disabled:hover:border-gray-200 disabled:cursor-not-allowed"
+          >
+            {t('monthPageNext')} <ChevronRight size={14} />
+          </button>
+        </div>
+      )}
 
       <p className="text-2xs text-gray-500 leading-relaxed">{t('disclaimer')}</p>
     </div>

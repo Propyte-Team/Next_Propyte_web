@@ -2406,7 +2406,10 @@
     "viewByMonth": "By month",
     "colYear": "Year",
     "year": "Year {n}",
-    "years": "Years"
+    "years": "Years",
+    "monthPagePrev": "Previous",
+    "monthPageNext": "Next",
+    "monthPageRange": "Months {from}–{to} of {total}"
   },
   "glosario": {
     "heroEyebrow": "Glossary",

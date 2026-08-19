@@ -2406,7 +2406,10 @@
     "viewByMonth": "Ver por mes",
     "colYear": "Año",
     "year": "Año {n}",
-    "years": "Años"
+    "years": "Años",
+    "monthPagePrev": "Anterior",
+    "monthPageNext": "Siguiente",
+    "monthPageRange": "Meses {from}–{to} de {total}"
   },
   "glosario": {
     "heroEyebrow": "Glosario",
