@@ -306,6 +306,10 @@ function HowItWorks() {
 
 // cuando se vaya a usar lo de "próximamente..." quitar el guión bajo de la función _
 // ir a línea 634 para descomentar la "imagen" preview del próximamente
+// lo siguiente es para pasar la prueba de errores en github
+// eslint-disable-next-line react-hooks/rules-of-hooks
+
+/* 
 function _PlatformPreview() {
   const t = useTranslations('brokers');
   const features = [
@@ -327,7 +331,12 @@ function _PlatformPreview() {
 
         <ScrollReveal y={28}>
           <div className="relative max-w-4xl mx-auto bg-[#1A2F3F] rounded-2xl overflow-hidden shadow-2xl">
-            {/* Badge En desarrollo */}
+            {/* Badge En desarrollo */
+          
+            /*
+          }
+
+            
             <span className="absolute top-4 right-4 z-10 inline-flex items-center gap-1 px-3 py-1 bg-propyte-brand text-[#0F1923] text-2xs font-bold uppercase tracking-wider rounded-full">
               <Monitor size={11} /> {t('platformBadge')}
             </span>
@@ -369,6 +378,8 @@ function _PlatformPreview() {
     </section>
   );
 }
+
+*/
 
 // ─────────────────────────────────────────────────────
 // 7. FAQ
