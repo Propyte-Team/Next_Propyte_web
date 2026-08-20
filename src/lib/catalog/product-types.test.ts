@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { PRODUCT_TYPES, PRODUCT_TYPE_SPELLINGS, resolveProductType } from './product-types';
 import type { Property } from '@/types/property';
+import { normalizeUnitType } from '@/lib/mappers/unit-to-property';
 
 describe('catálogo de tipos de producto', () => {
   it('son exactamente siete, en orden de presentación', () => {
@@ -85,5 +86,14 @@ describe('el union de Property se alinea al catálogo', () => {
     // Prueba de tipos: si el union no creció, esto no compila.
     const tipos: Array<Property['specs']['type']> = [...PRODUCT_TYPES];
     expect(tipos).toHaveLength(7);
+  });
+});
+
+describe('normalizeUnitType', () => {
+  it('delega en el catálogo y ya no inventa un tipo', () => {
+    expect(normalizeUnitType('Oficina')).toBe('comercial');
+    expect(normalizeUnitType('Villa')).toBe('villa');
+    expect(normalizeUnitType(null)).toBeNull();
+    expect(normalizeUnitType('Nave industrial')).toBeNull();
   });
 });

@@ -1,8 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { normalizeUnitType } from '@/lib/mappers/unit-to-property';
 import type { DevelopmentRow } from '@/lib/mappers/development-to-property';
 import type { Property } from '@/types/property';
-import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
+import { PRODUCT_TYPES, resolveProductType } from '@/lib/catalog/product-types';
 
 // Mismo alias que usa lib/supabase/queries.ts.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,12 +97,11 @@ export async function attachDevelopmentUnitAggregates(
         acc.bedMax = acc.bedMax === null ? beds : Math.max(acc.bedMax, beds);
       }
 
-      // unit_type crudo de Zoho ("Terreno", "Lote", "Estudio", "2 Recámaras").
-      // Sólo cuenta si hay texto: sin él normalizeUnitType cae a 'departamento'
-      // y anunciaríamos departamentos en un desarrollo de lotes.
-      if (typeof u.unit_type === 'string' && u.unit_type.trim()) {
-        acc.types.add(normalizeUnitType(u.unit_type));
-      }
+      // unit_type crudo de Zoho ("Terreno", "Lote", "Estudio", "Oficina").
+      // Lo que el catálogo no reconoce NO aporta un tipo: antes caía en
+      // 'departamento' y anunciábamos departamentos donde había oficinas.
+      const tipo = resolveProductType(u.unit_type);
+      if (tipo) acc.types.add(tipo);
 
       // Mismo fallback que usa el mapper de unidades: construcción, luego lote.
       const area = toPositiveNumber(u.area_m2) ?? toPositiveNumber(u.lot_area_m2);
