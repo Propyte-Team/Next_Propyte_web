@@ -8,6 +8,7 @@ import {
 } from './taxonomy-values';
 import { STAGE_URL_SLUGS } from '@/app/[locale]/desarrollos/_components/stageConfig';
 import { TYPE_SLUGS } from '@/app/[locale]/desarrollos/_components/typeConfig';
+import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
 
 describe('contrato de taxonomía de facetas', () => {
   it('toda etapa expuesta en una URL resuelve a al menos una grafía del dato', () => {
@@ -100,5 +101,18 @@ describe('getDevelopments traduce el slug antes de filtrar', () => {
     const typeCall = calls.find((c) => c.args[0] === 'property_types');
     expect(typeCall!.args[1]).toEqual(TYPE_DB_VALUES.terreno);
     expect(typeCall!.args[1] as string[]).toContain('Lotes');
+  });
+});
+
+describe('TYPE_DB_VALUES deriva del catálogo', () => {
+  it('cubre los siete canónicos', () => {
+    expect(Object.keys(TYPE_DB_VALUES).sort()).toEqual([...PRODUCT_TYPES].sort());
+  });
+
+  it('las grafías nuevas están: sin ellas la faceta se vacía en silencio', () => {
+    expect(TYPE_DB_VALUES.villa).toContain('Villa');
+    expect(TYPE_DB_VALUES.comercial).toContain('Local comercial');
+    expect(TYPE_DB_VALUES.comercial).toContain('Oficina');
+    expect(TYPE_DB_VALUES.terreno).toContain('Lotes');
   });
 });

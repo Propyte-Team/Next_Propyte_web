@@ -17,6 +17,8 @@
  * atrapa los typos, pero no puede saber que el Hub cambió.
  */
 
+import { PRODUCT_TYPES, PRODUCT_TYPE_SPELLINGS } from '@/lib/catalog/product-types';
+
 /** Slug canónico de etapa → grafías aceptadas en la columna `stage`. */
 export const STAGE_DB_VALUES: Record<string, string[]> = {
   preventa: ['Preventa'],
@@ -27,17 +29,16 @@ export const STAGE_DB_VALUES: Record<string, string[]> = {
 /**
  * Slug de tipo → grafías aceptadas dentro del array `property_types`.
  *
- * `terreno` cubre cuatro grafías porque el inventario distingue lote y terreno
- * sin criterio estable, y en singular y plural. Para quien compra son el mismo
- * producto, así que la faceta los unifica.
+ * Deriva del catálogo. Antes se declaraba a mano aquí y había que acordarse de
+ * tocar los dos lugares: si alguien añadía una grafía en un sitio y no en el
+ * otro, la faceta devolvía menos resultados sin dar ningún error.
+ *
+ * `terreno` cubre lote y terreno, singular y plural, porque el inventario los
+ * distingue sin criterio estable y para quien compra son el mismo producto.
  */
-export const TYPE_DB_VALUES: Record<string, string[]> = {
-  departamento: ['Departamento'],
-  casa: ['Casa', 'Residencia'],
-  penthouse: ['Penthouse'],
-  terreno: ['Terrenos', 'Terreno', 'Lotes', 'Lote'],
-  macrolote: ['Macrolote', 'Macrolotes'],
-};
+export const TYPE_DB_VALUES: Record<string, string[]> = Object.fromEntries(
+  PRODUCT_TYPES.map((t) => [t, [...PRODUCT_TYPE_SPELLINGS[t]]]),
+);
 
 /**
  * Grafías observadas en el inventario el 2026-08-06 (todas las filas, no solo
@@ -56,20 +57,23 @@ export const OBSERVED_TYPE_VALUES = [
   'Casa',
   'Penthouse',
   'Villa',
-  'Condominio',
   'Residencia',
   'Terrenos',
+  'Terreno',
   'Lote',
   'Lotes',
   'Local comercial',
   'Lote comercial',
+  'Oficina',
+  'Estudio',
+  '2 Recámaras',
 ];
 
-/**
- * Grafías que los mapas declaran y que el inventario NO tenía el 2026-08-06.
- * Se aceptan a propósito: la faceta existe en la URL y quedará vacía hasta que
- * haya producto de ese tipo. `/desarrollos/tipo/macrolote` es el caso vivo —su
- * vacío no es un fallo del filtro, es falta de inventario, y qué hacer con esa
- * página (retirarla o declararla vacía) es decisión de negocio.
- */
-export const VALUES_NOT_IN_INVENTORY = ['Terreno', 'Macrolote', 'Macrolotes'];
+/** Grafías que el catálogo declara y que el inventario NO tenía el 2026-08-20.
+ *  Se aceptan a propósito: la faceta existe y quedará vacía hasta que haya
+ *  producto de ese tipo. */
+export const VALUES_NOT_IN_INVENTORY = [
+  'Macrolote', 'Macrolotes', 'Townhouse', 'Departamentos', 'Casas',
+  'Residencias', 'Villas', 'Penthouses', 'Local', 'Locales comerciales',
+  'Oficinas', 'Studio', 'Loft',
+];

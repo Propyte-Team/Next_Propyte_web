@@ -818,14 +818,17 @@
     "oficina": "Office",
     "townhouse": "Townhouse",
     "local_comercial": "Commercial",
+    "comercial": "Commercial",
     "departamentoShort": "Apt"
   },
   "unitTypesPlural": {
     "departamento": "Apartments",
     "penthouse": "Penthouses",
     "casa": "Houses",
+    "villa": "Villas",
     "terreno": "Land",
-    "macrolote": "Large lots"
+    "macrolote": "Large lots",
+    "comercial": "Commercial"
   },
   "developmentTypes": {
     "residencial-vertical": "Vertical residential",
