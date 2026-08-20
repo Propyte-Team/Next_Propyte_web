@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import es from '@/i18n/messages/es.json';
 import { isStale, MAX_DATA_AGE_DAYS } from './zone-metrics';
@@ -14,6 +14,13 @@ import { findForbiddenProviderNames } from '../compliance/provider-names';
  *
  * Corren contra datos de muestra congelados (no contra la BD viva) para que
  * sean deterministas: la BD es un entorno, no una aserción.
+ *
+ * Fix round 1 (revisión de código): las dos primeras versiones de "ninguna
+ * cifra publicada es un punto único" y "data_through es independiente de
+ * computed_at" comparaban dos literales hardcodeados dentro de FILA, sin
+ * importar nada de producción — pasaban con o sin el bug. Se retiraron.
+ * Quedan reemplazadas por el escaneo de columnas deprecadas más abajo, que sí
+ * puede fallar contra código real.
  */
 
 // Fila real de zone_scores tal como la escribe el pipeline corregido.
@@ -28,27 +35,30 @@ const FILA = {
   computed_at: '2026-08-20',
 };
 
-// Último punto de la serie del submercado: el valor que se publicaba antes
-// (el bug: pico de febrero mostrado como si fuera la mediana TTM).
-const ULTIMO_PUNTO_DE_LA_SERIE = 72.46;
+// Sibling worktrees donde puede vivir el pipeline Python en este entorno,
+// en orden de preferencia. `_mercado-ttm-pipeline` es el checkout vigente;
+// `propyte-monorepo` es el que asume el brief original, pero en este entorno
+// es un checkout de mayo sin `publication_gates.py` ni el fix de
+// `compute_derived.py`. Se prueban ambas rutas y, si ninguna existe, el test
+// afectado se salta con un mensaje explícito en vez de fallar o desaparecer.
+const PROJECTS_DIR = path.resolve(__dirname, '../../../..');
+const PIPELINE_ROOTS = ['_mercado-ttm-pipeline', 'propyte-monorepo'];
 
-describe('ninguna cifra publicada es un punto único', () => {
-  it('occupancy_p50_ttm no es el último punto de la serie', () => {
-    expect(FILA.occupancy_p50_ttm).not.toBe(ULTIMO_PUNTO_DE_LA_SERIE);
-  });
-});
+function resolvePipelineFile(relativePath: string): string | undefined {
+  return PIPELINE_ROOTS
+    .map((root) => path.resolve(PROJECTS_DIR, root, relativePath))
+    .find((p) => existsSync(p));
+}
 
 describe('data_through es independiente de computed_at', () => {
-  it('la fecha del dato no es la fecha de la corrida', () => {
-    expect(FILA.data_through).not.toBe(FILA.computed_at);
-  });
-
   it('la brecha entre data_through y computed_at de esta fila excede MAX_DATA_AGE_DAYS', () => {
     // No es un detalle incidental de la fixture: es la prueba de por qué
     // `data_through` y `computed_at` deben tratarse como independientes. Esta
     // fila describe una corrida de agosto sobre datos de febrero — si el
     // código tratara "corrida reciente" como sinónimo de "dato fresco", este
     // ejemplo publicaría una cifra de 6+ meses de antigüedad como si fuera de hoy.
+    // A diferencia de una comparación entre dos literales de la fixture, esto
+    // ejercita `isStale()` real, importada de `zone-metrics.ts`.
     const dataThrough = new Date(`${FILA.data_through}T00:00:00Z`);
     const computedAt = new Date(`${FILA.computed_at}T00:00:00Z`);
     const gapDays = (computedAt.getTime() - dataThrough.getTime()) / 86_400_000;
@@ -60,45 +70,86 @@ describe('data_through es independiente de computed_at', () => {
 describe('la metodología publicada coincide con las constantes del código', () => {
   const metodologia = es.methodology as Record<string, string>;
 
-  it('los pesos del índice suman 100% y son los que la página declara', () => {
-    const resumen = metodologia.summaryStr;
-    // Los pesos se extraen del propio string publicado, no de una lista
-    // aparte: si alguien cambia una cifra en el copy sin ajustar las demás,
-    // la suma deja de dar 100 y este test lo detecta. Una lista hardcodeada
-    // al lado pasaría siempre, sin importar lo que diga el string real.
-    const pesos = [...resumen.matchAll(/(\d+)%/g)].map((m) => Number(m[1]));
-    expect(pesos.length).toBe(4);
-    expect(pesos.reduce((a, b) => a + b, 0)).toBe(100);
-    expect(resumen).toContain('30%');
-    expect(resumen).toContain('25%');
-    expect(resumen).toContain('20%');
-  });
+  // Revisado 2026-08-20 (fix round 1): la primera versión de este test sumaba
+  // los porcentajes extraídos del propio string y comprobaba que dieran 100 —
+  // pero nada los ataba a los pesos reales del pipeline. Cambiar
+  // WEIGHTS['occupancy'] de 0.30 a 0.40 en compute_derived.py sin tocar el
+  // texto habría dejado este test en verde: exactamente la divergencia
+  // texto-vs-código que esta tarea existe para cazar. Ahora se leen los
+  // cuatro pesos de WEIGHTS en compute_derived.py (worktree hermano del
+  // pipeline) y se comparan contra los cuatro porcentajes publicados.
+  const computeDerivedPath = resolvePipelineFile(
+    'crawlers/glowing-spork/analytics/compute_derived.py',
+  );
 
-  // Revisado 2026-08-20: en este checkout el pipeline vive en un worktree
-  // hermano (`_mercado-ttm-pipeline`), no en la ruta del monorepo que asume
-  // el brief original (`propyte-monorepo` existe como sibling pero es un
-  // checkout viejo, de mayo, sin publication_gates.py). Se prueban ambas
-  // rutas, en ese orden, y si ninguna existe el test se salta con un mensaje
-  // explícito en vez de fallar o desaparecer.
-  const PROJECTS_DIR = path.resolve(__dirname, '../../../..');
-  const PIPELINE_CANDIDATES = [
-    path.resolve(
-      PROJECTS_DIR,
-      '_mercado-ttm-pipeline/crawlers/glowing-spork/analytics/publication_gates.py',
-    ),
-    path.resolve(
-      PROJECTS_DIR,
-      'propyte-monorepo/crawlers/glowing-spork/analytics/publication_gates.py',
-    ),
-  ];
-  const pipelinePath = PIPELINE_CANDIDATES.find((p) => existsSync(p));
+  it.skipIf(!computeDerivedPath)(
+    computeDerivedPath
+      ? `los pesos publicados coinciden con WEIGHTS del pipeline (${path.relative(PROJECTS_DIR, computeDerivedPath)})`
+      : 'los pesos publicados coinciden con WEIGHTS del pipeline (SALTADO: no se encontró compute_derived.py en ninguna ruta candidata — ni el worktree hermano _mercado-ttm-pipeline ni propyte-monorepo)',
+    () => {
+      const source = readFileSync(computeDerivedPath!, 'utf8');
 
-  it.skipIf(!pipelinePath)(
-    pipelinePath
-      ? `el umbral de muestra que la página afirma está implementado en el pipeline (${path.relative(PROJECTS_DIR, pipelinePath!)})`
+      // Acotado al bloque literal `WEIGHTS = { ... }` y no a la primera
+      // ocurrencia de cada clave en el archivo: "revpar" y "occupancy"
+      // también aparecen como claves de fila más abajo en el mismo archivo
+      // (`"revpar": float(row["revpar"])`, etc.), y un match sin acotar
+      // arriesga leer el valor equivocado si el orden del archivo cambia.
+      const blockStart = source.indexOf('WEIGHTS = {');
+      expect(blockStart).toBeGreaterThan(-1);
+      const blockEnd = source.indexOf('}', blockStart);
+      const weightsBlock = source.slice(blockStart, blockEnd + 1);
+
+      const readWeight = (key: string): number => {
+        const match = weightsBlock.match(new RegExp(`"${key}":\\s*([\\d.]+)`));
+        expect(match, `no se encontró "${key}" en el bloque WEIGHTS`).not.toBeNull();
+        return Number(match![1]);
+      };
+
+      const pipelineWeights = {
+        occupancy: readWeight('occupancy'),
+        adr_growth: readWeight('adr_growth'),
+        revpar: readWeight('revpar'),
+        competition: readWeight('competition'),
+      };
+
+      // Ancla de valor: si el pipeline cambia un peso sin avisar, esto falla
+      // aunque el texto publicado no se haya tocado.
+      expect(pipelineWeights).toEqual({
+        occupancy: 0.30,
+        adr_growth: 0.25,
+        revpar: 0.25,
+        competition: 0.20,
+      });
+
+      // Ancla de coincidencia: los cuatro porcentajes publicados en
+      // `summaryStr` (es.json, otro repo) deben ser los mismos cuatro pesos,
+      // en el mismo orden en que la página los declara: Ocupación,
+      // Crecimiento de tarifa (= adr_growth), RevPAR, Competencia.
+      const resumen = metodologia.summaryStr;
+      const publishedPercents = [...resumen.matchAll(/(\d+)%/g)].map((m) => Number(m[1]));
+      expect(publishedPercents).toEqual([
+        pipelineWeights.occupancy * 100,
+        pipelineWeights.adr_growth * 100,
+        pipelineWeights.revpar * 100,
+        pipelineWeights.competition * 100,
+      ]);
+    },
+  );
+});
+
+describe('el umbral de muestra publicado coincide con el pipeline', () => {
+  const metodologia = es.methodology as Record<string, string>;
+
+  const gatesPath = resolvePipelineFile(
+    'crawlers/glowing-spork/analytics/publication_gates.py',
+  );
+
+  it.skipIf(!gatesPath)(
+    gatesPath
+      ? `el umbral de muestra que la página afirma está implementado en el pipeline (${path.relative(PROJECTS_DIR, gatesPath)})`
       : 'el umbral de muestra que la página afirma está implementado en el pipeline (SALTADO: no se encontró publication_gates.py en ninguna de las rutas candidatas — ni el worktree hermano _mercado-ttm-pipeline ni propyte-monorepo)',
     () => {
-      const gates = readFileSync(pipelinePath!, 'utf8');
+      const gates = readFileSync(gatesPath!, 'utf8');
       const minIndexMatch = gates.match(/MIN_SAMPLE_INDEX\s*=\s*(\d+)/);
       const minOccupancyMatch = gates.match(/MIN_SAMPLE_OCCUPANCY\s*=\s*(\d+)/);
       expect(minIndexMatch).not.toBeNull();
@@ -116,6 +167,93 @@ describe('la metodología publicada coincide con las constantes del código', ()
       // repos distintos. Si diverge uno sin el otro, esto falla.
       expect(metodologia.methodSample).toContain(String(minIndex));
       expect(metodologia.methodSample).toContain(String(minOccupancy));
+    },
+  );
+});
+
+describe('las columnas deprecadas no se leen fuera de los carve-outs conocidos', () => {
+  // median_occupancy/median_adr son las columnas del bug de ago-2026: un
+  // punto único publicado como si fuera la mediana TTM. queries.ts las
+  // mantiene vivas a propósito para el tipo angosto `CityStrBenchmark`, con
+  // dos carve-outs conocidos que las leen. Cualquier otro archivo que las lea
+  // es el camino exacto por el que alguien reintroduce la cifra inflada en un
+  // componente nuevo.
+  const SRC_ROOT = path.resolve(__dirname, '../..');
+  const DEPRECATED_COLUMNS = ['median_occupancy', 'median_adr'];
+  const ALLOWED_RELATIVE_PATHS = new Set([
+    'lib/supabase/queries.ts',
+    'app/[locale]/zonas/[slug]/page.tsx',
+    'lib/pdf/LeadMagnetPDFDocument.tsx',
+  ]);
+
+  function walk(dir: string, out: string[] = []): string[] {
+    for (const entry of readdirSync(dir)) {
+      const full = path.join(dir, entry);
+      if (statSync(full).isDirectory()) {
+        walk(full, out);
+      } else if (/\.tsx?$/.test(entry)) {
+        out.push(full);
+      }
+    }
+    return out;
+  }
+
+  it('median_occupancy y median_adr solo aparecen en queries.ts, los dos carve-outs de CityStrBenchmark, o en tests', () => {
+    const offenders: string[] = [];
+
+    for (const file of walk(SRC_ROOT)) {
+      const relPath = path.relative(SRC_ROOT, file).split(path.sep).join('/');
+      if (ALLOWED_RELATIVE_PATHS.has(relPath)) continue;
+      if (/\.test\.tsx?$/.test(relPath)) continue;
+
+      const contents = readFileSync(file, 'utf8');
+      const hits = DEPRECATED_COLUMNS.filter((col) => contents.includes(col));
+      if (hits.length) {
+        offenders.push(`${relPath} → ${hits.join(', ')}`);
+      }
+    }
+
+    expect(
+      offenders,
+      'median_occupancy/median_adr son columnas deprecadas (el bug de "punto único ' +
+        'publicado como mediana"). Solo se leen en src/lib/supabase/queries.ts, en los ' +
+        'dos carve-outs de CityStrBenchmark (zonas/[slug]/page.tsx y ' +
+        'LeadMagnetPDFDocument.tsx), o en archivos de test. Archivo(s) que las ' +
+        `reintrodujeron fuera de esos lugares:\n${offenders.join('\n')}`,
+    ).toEqual([]);
+  });
+});
+
+describe('invariantes del pipeline aún no corregidos (Python)', () => {
+  // No hay intérprete de Python en este entorno para ejecutar el pipeline, así
+  // que estos dos hechos quedan documentados pero sin ejercitar de forma
+  // activa. Hoy (2026-08-20), en compute_derived.py AMBOS siguen siendo el
+  // comportamiento viejo:
+  //   - fetch_airdna_occupancy() SIGUE llamando drop_duplicates("submarket")
+  //     (línea 223): toma el último punto por submercado, no una mediana TTM.
+  //   - build_zone_score_rows() SIGUE escribiendo "median_occupancy" (línea 648).
+  // BLOQUEADO por Task 2R: es quien corrige compute_derived.py. Cuando esa
+  // tarea cierre, quitar el `.skip` — las aserciones ya están escritas para
+  // el estado correcto y deberían pasar solas si el fix es completo.
+  const computeDerivedPath = resolvePipelineFile(
+    'crawlers/glowing-spork/analytics/compute_derived.py',
+  );
+
+  it.skip(
+    'fetch_airdna_occupancy ya no llama drop_duplicates y build_zone_score_rows ya no escribe median_occupancy (BLOQUEADO por Task 2R — ver nota arriba del describe)',
+    () => {
+      expect(computeDerivedPath, 'no se encontró compute_derived.py en ninguna ruta candidata').toBeTruthy();
+      const source = readFileSync(computeDerivedPath!, 'utf8');
+
+      const fetchStart = source.indexOf('def fetch_airdna_occupancy');
+      const fetchEnd = source.indexOf('\ndef ', fetchStart + 1);
+      const fetchBody = source.slice(fetchStart, fetchEnd === -1 ? undefined : fetchEnd);
+      expect(fetchBody).not.toContain('drop_duplicates');
+
+      const buildStart = source.indexOf('def build_zone_score_rows');
+      const buildEnd = source.indexOf('\ndef ', buildStart + 1);
+      const buildBody = source.slice(buildStart, buildEnd === -1 ? undefined : buildEnd);
+      expect(buildBody).not.toContain('"median_occupancy"');
     },
   );
 });
