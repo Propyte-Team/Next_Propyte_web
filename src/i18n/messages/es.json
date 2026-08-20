@@ -2970,12 +2970,13 @@
     "monthly": "Mensual",
     "update": "actualización",
     "ltrComparables": "comparables",
-    "ltrSources": "fuentes de datos",
-    "daily": "Diaria",
+    "ltrDevelopments": "desarrollos analizados",
+    "noRecentData": "Sin dato reciente",
     "badge": "Inteligencia de mercado con +385K registros de renta",
     "title": "Analiza el mercado de rentas en México",
     "subtitle": "Datos reales de ocupación, tarifas y precios de renta por zona. Compara antes de invertir.",
-    "updating": "Actualizando datos de mercado…"
+    "updating": "Actualizando datos de mercado…",
+    "benchmarkFootnote": "Más {count} propiedades de Ciudad de México, incluidas solo como mercado de referencia."
   },
   "marketIndicator": {
     "excellent": "Excelente",

@@ -3,12 +3,20 @@
 import { useTranslations } from 'next-intl';
 import { Activity } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
+import { formatDataThroughDate } from '@/lib/rental-data/zone-metrics';
 
 interface MercadoHeroProps {
   activeTab: TabId;
   locale: string;
-  strStats?: { zones: number; listings: number; cities: number; updatedAt: string };
-  ltrStats?: { comparables: number; cities: number; sources: number; updatedAt: string };
+  strStats?: {
+    zones: number;
+    listings: number;
+    cities: number;
+    /** Propiedades de CDMX excluidas del ranking — solo referencia, no oferta. */
+    benchmarkListings: number;
+    updatedAt: string;
+  };
+  ltrStats?: { comparables: number; cities: number; developments: number; updatedAt: string };
 }
 
 /**
@@ -23,8 +31,9 @@ interface MercadoHeroProps {
  * vs filter-empty (data sí existe pero el filtro no encontró match — eso vive en
  * VacacionalKPIs).
  */
-export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: MercadoHeroProps) {
+export function MercadoHero({ activeTab, locale, strStats, ltrStats }: MercadoHeroProps) {
   const t = useTranslations('mercadoHero');
+  const dateLocale: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
 
   const stats = activeTab === 'vacacional' ? strStats : ltrStats;
   const trustItems: { value: string; label: string }[] = [];
@@ -36,11 +45,19 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
       { value: t('monthly'), label: t('update') },
     );
   } else if (activeTab !== 'vacacional' && ltrStats) {
+    // Antes esta tila mostraba el string fijo "Diaria" — la frecuencia
+    // nominal, no un dato real. `updatedAt` es `data_freshness`
+    // (max(scraped_at) de los comparables limpios); se trunca a
+    // 'YYYY-MM-DD' y se formatea con la misma función que ya evita el
+    // salto de mes en huso negativo (formatDataThroughDate).
+    const updatedLabel = ltrStats.updatedAt
+      ? formatDataThroughDate(ltrStats.updatedAt.slice(0, 10), dateLocale)
+      : t('noRecentData');
     trustItems.push(
       { value: ltrStats.comparables.toLocaleString(), label: t('ltrComparables') },
       { value: ltrStats.cities.toString(), label: t('cities') },
-      { value: ltrStats.sources.toString(), label: t('ltrSources') },
-      { value: t('daily'), label: t('update') },
+      { value: ltrStats.developments.toString(), label: t('ltrDevelopments') },
+      { value: updatedLabel, label: t('update') },
     );
   }
 
@@ -141,6 +158,19 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
               </span>
             </div>
           )
+        )}
+
+        {/* CDMX no es oferta de Propyte: es mercado de referencia (ver
+            src/lib/rental-data/pools.ts). Los tiles de arriba solo cuentan el
+            ranking regional; esta nota declara lo excluido en vez de
+            esconderlo. */}
+        {activeTab === 'vacacional' && strStats && strStats.benchmarkListings > 0 && (
+          <p
+            className="mt-4 text-2xs text-white/40 max-w-2xl mx-auto propyte-hero-rise"
+            style={{ animationDelay: '420ms' }}
+          >
+            {t('benchmarkFootnote', { count: strStats.benchmarkListings.toLocaleString() })}
+          </p>
         )}
       </div>
     </section>

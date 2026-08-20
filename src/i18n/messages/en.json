@@ -2970,12 +2970,13 @@
     "monthly": "Monthly",
     "update": "update",
     "ltrComparables": "comparables",
-    "ltrSources": "data sources",
-    "daily": "Daily",
+    "ltrDevelopments": "developments analyzed",
+    "noRecentData": "No recent data",
     "badge": "Market intelligence with +385K rental records",
     "title": "Analyze the rental market in Mexico",
     "subtitle": "Real data on occupancy, nightly rates and rental prices by zone. Compare before investing.",
-    "updating": "Updating market data…"
+    "updating": "Updating market data…",
+    "benchmarkFootnote": "Plus {count} properties in Mexico City, included only as a reference market."
   },
   "marketIndicator": {
     "excellent": "Excellent",
