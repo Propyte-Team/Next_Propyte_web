@@ -108,6 +108,22 @@ describe('occupancyTrend', () => {
   it('sin dato es flat', () => {
     expect(occupancyTrend(null)).toBe('flat');
   });
+
+  it('en 54 exactos ya es up (umbral no estricto >=)', () => {
+    expect(occupancyTrend(54)).toBe('up');
+  });
+
+  it('en 53.9 todavia no es up', () => {
+    expect(occupancyTrend(53.9)).toBe('flat');
+  });
+
+  it('en 45 exactos ya es down (umbral no estricto <=)', () => {
+    expect(occupancyTrend(45)).toBe('down');
+  });
+
+  it('en 45.1 todavia no es down', () => {
+    expect(occupancyTrend(45.1)).toBe('flat');
+  });
 });
 
 describe('omissionLabelKey', () => {
