@@ -64,8 +64,9 @@ interface UnitDetailPageProps {
 
 export default async function UnitDetailPage({ locale, slug }: UnitDetailPageProps) {
   const supabase = createPublicSupabaseClient();
-  const [tProp, visibility] = await Promise.all([
+  const [tProp, tTypes, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
+    getTranslations({ locale, namespace: 'types' }),
     getVisibility(),
   ]);
 
@@ -214,8 +215,10 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     departamento: tProp('typeApartmentSingular'),
     penthouse: 'Penthouse',
     casa: tProp('typeHouseSingular'),
+    villa: tTypes('villa'),
     terreno: tProp('typeLandSingular'),
     macrolote: tProp('typeMacrolote'),
+    comercial: tTypes('comercial'),
   };
   const typeLabel = typeLabelMap[property.specs.type] || property.specs.type;
 
