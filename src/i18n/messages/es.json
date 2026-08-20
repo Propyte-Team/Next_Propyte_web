@@ -2938,7 +2938,14 @@
     "colCompetition": "Competencia",
     "grossIncomeNote": "El ingreso mostrado es bruto: antes de comisiones de plataforma, administración, mantenimiento e impuestos. El neto suele ser sustancialmente menor.",
     "lowSampleBadge": "muestra baja",
-    "lowSampleTitle": "Muestra insuficiente para publicar índice. Las métricas de esta zona son indicativas."
+    "lowSampleTitle": "Muestra insuficiente para publicar índice. Las métricas de esta zona son indicativas.",
+    "missingAdrBadge": "sin tarifa publicada",
+    "missingAdrTitle": "La zona tiene muestra suficiente pero no hay tarifa por noche publicada, así que no se calcula índice ni ingreso.",
+    "incompleteDataBadge": "dato incompleto",
+    "incompleteDataTitle": "Falta uno de los componentes ponderados del índice, así que no se publica.",
+    "thinCycleBadge": "serie incompleta",
+    "thinCycleTitle": "La serie tiene menos de 6 meses observados: no alcanza para una mediana anual.",
+    "occupancyRangeLabel": "temporada baja {low}% – alta {high}%"
   },
   "leadMagnet": {
     "freeReport": "REPORTE GRATUITO",

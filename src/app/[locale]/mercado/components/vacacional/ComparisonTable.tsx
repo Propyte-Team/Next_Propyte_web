@@ -6,6 +6,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/icons';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
+import { grossMonthlyIncome, omissionLabelKey } from '@/lib/rental-data/zone-metrics';
 
 type TableSortField = 'zone' | 'score' | 'adr' | 'occupancy' | 'monthly' | 'listings' | 'competition';
 type SortDir = 'asc' | 'desc';
@@ -61,16 +62,16 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
           vb = b.score ?? 0;
           break;
         case 'adr':
-          va = a.median_adr ?? 0;
-          vb = b.median_adr ?? 0;
+          va = a.adr_p50_ttm ?? 0;
+          vb = b.adr_p50_ttm ?? 0;
           break;
         case 'occupancy':
-          va = a.median_occupancy ?? 0;
-          vb = b.median_occupancy ?? 0;
+          va = a.occupancy_p50_ttm ?? 0;
+          vb = b.occupancy_p50_ttm ?? 0;
           break;
         case 'monthly':
-          va = (a.median_adr ?? 0) * ((a.median_occupancy ?? 0) / 100) * 30;
-          vb = (b.median_adr ?? 0) * ((b.median_occupancy ?? 0) / 100) * 30;
+          va = grossMonthlyIncome(a.adr_p50_ttm, a.occupancy_p50_ttm) ?? 0;
+          vb = grossMonthlyIncome(b.adr_p50_ttm, b.occupancy_p50_ttm) ?? 0;
           break;
         case 'listings':
           va = a.active_listings ?? 0;
@@ -143,8 +144,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
           </thead>
           <tbody className="divide-y divide-gray-100">
             {sorted.map((score) => {
-              const monthlyIncome =
-                (score.median_adr ?? 0) * ((score.median_occupancy ?? 0) / 100) * 30;
+              const monthlyIncome = grossMonthlyIncome(score.adr_p50_ttm, score.occupancy_p50_ttm);
               const listings = score.active_listings ?? 0;
 
               return (
@@ -170,28 +170,42 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                         {Math.round(score.score)}
                       </span>
                     ) : (
-                      // score null = el pipeline decidió que la muestra no sostiene un
-                      // índice. El sitio NO reevalúa el umbral: solo lo rotula.
-                      <span
-                        className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
-                        title={t('lowSampleTitle')}
-                      >
-                        {t('lowSampleBadge')}
+                      // El pipeline decidió y dijo por qué. El sitio solo rotula: no reevalúa
+                      // el umbral ni colapsa las razones en una sola etiqueta.
+                      (() => {
+                        const key = omissionLabelKey(score.index_omission_reason);
+                        if (!key) return <span className="text-gray-600">—</span>;
+                        return (
+                          <span
+                            className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
+                            title={t(`${key.replace('Badge', 'Title')}`)}
+                          >
+                            {t(key)}
+                          </span>
+                        );
+                      })()
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono">
+                    {score.adr_p50_ttm != null
+                      ? format(Math.round(score.adr_p50_ttm))
+                      : '—'}
+                  </td>
+                  <td className="px-4 py-3 text-right font-mono">
+                    {score.occupancy_p50_ttm != null
+                      ? `${Math.round(score.occupancy_p50_ttm)}%`
+                      : '—'}
+                    {score.occupancy_low_season != null && score.occupancy_high_season != null && (
+                      <span className="block text-2xs text-gray-600">
+                        {t('occupancyRangeLabel', {
+                          low: Math.round(score.occupancy_low_season),
+                          high: Math.round(score.occupancy_high_season),
+                        })}
                       </span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
-                    {score.median_adr != null
-                      ? format(Math.round(score.median_adr))
-                      : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono">
-                    {score.median_occupancy != null
-                      ? `${Math.round(score.median_occupancy)}%`
-                      : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right font-mono">
-                    {monthlyIncome > 0 ? format(Math.round(monthlyIncome)) : '—'}
+                    {monthlyIncome != null ? format(monthlyIncome) : '—'}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
                     {listings > 0 ? listings.toLocaleString() : '—'}

@@ -2938,7 +2938,14 @@
     "colCompetition": "Competition",
     "grossIncomeNote": "The income shown is gross: before platform fees, management, maintenance and taxes. Net income is usually substantially lower.",
     "lowSampleBadge": "small sample",
-    "lowSampleTitle": "Sample too small to publish an index. This zone's metrics are indicative."
+    "lowSampleTitle": "Sample too small to publish an index. This zone's metrics are indicative.",
+    "missingAdrBadge": "no published rate",
+    "missingAdrTitle": "The zone has enough sample but no published nightly rate, so no index or income is calculated.",
+    "incompleteDataBadge": "incomplete data",
+    "incompleteDataTitle": "One of the index's weighted components is missing, so it isn't published.",
+    "thinCycleBadge": "incomplete series",
+    "thinCycleTitle": "The series has fewer than 6 months observed: not enough for an annual median.",
+    "occupancyRangeLabel": "low season {low}% – high {high}%"
   },
   "leadMagnet": {
     "freeReport": "FREE REPORT",
