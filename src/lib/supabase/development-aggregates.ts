@@ -1,7 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { DevelopmentRow } from '@/lib/mappers/development-to-property';
-import type { Property } from '@/types/property';
-import { PRODUCT_TYPES, resolveProductType, type ProductType } from '@/lib/catalog/product-types';
+import { resolveProductType, type ProductType } from '@/lib/catalog/product-types';
 
 // Mismo alias que usa lib/supabase/queries.ts.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,8 +12,6 @@ type Client = SupabaseClient<any, any, any>;
 export interface DevelopmentUnitAggregates {
   bedrooms_min?: number;
   bedrooms_max?: number;
-  /** Tipos canónicos presentes en el inventario, dedup y en orden fijo. */
-  unit_types?: Array<Property['specs']['type']>;
   /** Mínimo de area_m2 || lot_area_m2 entre las unidades cargadas. */
   area_min_m2?: number;
   /** Mínimos de precio y área POR tipo de producto. Alimenta el «desde» de la
@@ -26,14 +23,6 @@ export interface DevelopmentUnitAggregates {
 }
 
 export type DevelopmentRowWithAggregates = DevelopmentRow & DevelopmentUnitAggregates;
-
-/**
- * Orden de presentación de los tipos de unidad. FIJO a propósito: `v_units` es
- * un SUBCONJUNTO del inventario (Ancestral: total_units=221 vs 5 filas), así que
- * ordenar por frecuencia inventaría una jerarquía que el dato no respalda.
- * Sale del catálogo, que ya lo declara en el orden correcto.
- */
-const TYPE_ORDER: ReadonlyArray<Property['specs']['type']> = PRODUCT_TYPES;
 
 type UnitAggRow = {
   development_id: string | null;
@@ -87,8 +76,13 @@ export function accumulateUnitStats(rows: UnitStatRow[]): UnitTypeStats {
 
 /**
  * Inyecta en cada row de `v_developments` los agregados que sólo existen a nivel
- * unidad: rango de recámaras, tipos de unidad y área mínima. Una sola query bulk
- * a `v_units` para todos los desarrollos.
+ * unidad: rango de recámaras, área mínima y mínimos de precio/área por tipo de
+ * producto (`unit_type_stats`). Una sola query bulk a `v_units` para todos los
+ * desarrollos.
+ *
+ * NO calcula `unitTypes` — esa pregunta la resuelve `property_types` en
+ * `mapDevelopmentToProperty`, porque ese campo ya implementa el override
+ * manual y este agregador de inventario no lo respeta. Ver defecto 2026-08-20.
  *
  * Muta las rows in place (mismo patrón que tenía inline `desarrollos/page.tsx`)
  * y las devuelve tipadas para conveniencia del caller.
@@ -120,14 +114,14 @@ export async function attachDevelopmentUnitAggregates(
 
     const byDev = new Map<
       string,
-      { bedMin: number | null; bedMax: number | null; types: Set<Property['specs']['type']>; areaMin: number | null; rows: UnitAggRow[] }
+      { bedMin: number | null; bedMax: number | null; areaMin: number | null; rows: UnitAggRow[] }
     >();
 
     (data as UnitAggRow[] | null)?.forEach((u) => {
       if (!u.development_id) return;
       let acc = byDev.get(u.development_id);
       if (!acc) {
-        acc = { bedMin: null, bedMax: null, types: new Set(), areaMin: null, rows: [] };
+        acc = { bedMin: null, bedMax: null, areaMin: null, rows: [] };
         byDev.set(u.development_id, acc);
       }
       acc.rows.push(u);
@@ -137,12 +131,6 @@ export async function attachDevelopmentUnitAggregates(
         acc.bedMin = acc.bedMin === null ? beds : Math.min(acc.bedMin, beds);
         acc.bedMax = acc.bedMax === null ? beds : Math.max(acc.bedMax, beds);
       }
-
-      // unit_type crudo de Zoho ("Terreno", "Lote", "Estudio", "Oficina").
-      // Lo que el catálogo no reconoce NO aporta un tipo: antes caía en
-      // 'departamento' y anunciábamos departamentos donde había oficinas.
-      const tipo = resolveProductType(u.unit_type);
-      if (tipo) acc.types.add(tipo);
 
       // Mismo fallback que usa el mapper de unidades: construcción, luego lote.
       const area = toPositiveNumber(u.area_m2) ?? toPositiveNumber(u.lot_area_m2);
@@ -156,7 +144,6 @@ export async function attachDevelopmentUnitAggregates(
       if (!acc) return;
       if (acc.bedMin !== null) d.bedrooms_min = acc.bedMin;
       if (acc.bedMax !== null) d.bedrooms_max = acc.bedMax;
-      if (acc.types.size > 0) d.unit_types = TYPE_ORDER.filter((t) => acc.types.has(t));
       if (acc.areaMin !== null) d.area_min_m2 = acc.areaMin;
 
       const stats = accumulateUnitStats(acc.rows);

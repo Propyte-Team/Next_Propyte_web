@@ -148,10 +148,6 @@ function normalizeStage(raw: string | null | undefined): PropertyStage | null {
 }
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
-/** Union canónico de `specs.type`. Guard para los `unit_types` agregados desde
- *  v_units, que llegan como `unknown` por el index signature de DevelopmentRow.
- *  Deriva del catálogo: enumerarlos aquí garantizaba que se quedaran atrás. */
-const VALID_SPEC_TYPES: ReadonlyArray<Property['specs']['type']> = PRODUCT_TYPES;
 
 /**
  * Normaliza `development_type` (texto sucio en BD: 'vertical', 'preventa',
@@ -244,19 +240,32 @@ export function mapDevelopmentToProperty(
 
   const specType = resolveSpecType(row.property_types, row.development_type);
 
-  // Tipos de unidad del INVENTARIO (v_units.unit_type agregado por
-  // attachDevelopmentUnitAggregates). `row.unit_types` es `unknown` porque
-  // DevelopmentRow tiene index signature — se valida item por item contra el
-  // union canónico antes de exponerlo.
+  // Tipos de unidad declarados en `property_types` — la columna de
+  // `v_developments` que YA resuelve el override manual (prioriza
+  // `ext_property_types` cuando trae algo, cae al inventario solo si no).
+  // Normalizamos cada grafía cruda con `resolveProductType`, la MISMA función
+  // que usa la vista SQL, para que cliente y servidor concuerden POR
+  // CONSTRUCCIÓN y no por dos implementaciones que hoy coinciden.
   //
-  // Fallback: cuando el caller no corrió el helper, o el desarrollo no tiene
-  // unidades cargadas (1 de 19 en prod al 2026-08-05: Nubba), cae a `specType`,
-  // que ya deriva de property_types → development_type.
-  const rawUnitTypes = Array.isArray(row.unit_types) ? row.unit_types : [];
-  const inventoryUnitTypes = rawUnitTypes.filter(
-    (t): t is Property['specs']['type'] => typeof t === 'string' && VALID_SPEC_TYPES.includes(t as Property['specs']['type']),
-  );
-  const unitTypes = inventoryUnitTypes.length > 0 ? inventoryUnitTypes : [specType];
+  // Antes esto leía `row.unit_types` (agregado de v_units, sin pasar por el
+  // override): un desarrollo con override ['Departamento','Casa','Villa'] pero
+  // solo departamentos cargados mostraba 1 chip en la tarjeta y 3 en la faceta
+  // SEO server-side — la misma pregunta con dos respuestas. Defecto 2026-08-20,
+  // desarrollos be171d56-df41-48d4-9bdb-d70bf6f62b00 y
+  // e539ee7c-4a7e-4b0b-b26c-2bc73260593a.
+  //
+  // Fallback: cuando property_types no resuelve ningún tipo (NULL, vacío,
+  // grafía no catalogada), cae a `specType`, que ya deriva de
+  // property_types → development_type.
+  const rawPropertyTypes = Array.isArray(row.property_types) ? row.property_types : [];
+  const resolvedPropertyTypes = new Set<Property['specs']['type']>();
+  for (const raw of rawPropertyTypes) {
+    const resolved = resolveProductType(typeof raw === 'string' ? raw : null);
+    if (resolved) resolvedPropertyTypes.add(resolved);
+  }
+  const unitTypes = resolvedPropertyTypes.size > 0
+    ? PRODUCT_TYPES.filter((t) => resolvedPropertyTypes.has(t))
+    : [specType];
 
   // Área mínima del inventario. NUMERIC de Supabase puede llegar como string.
   const areaMinNum = Number(row.area_min_m2);
