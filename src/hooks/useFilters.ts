@@ -81,6 +81,31 @@ export function matchesProductType(property: Property, filterType: string): bool
   return property.specs.type === filterType;
 }
 
+/**
+ * Con un filtro de producto activo, devuelve una copia del desarrollo cuyo
+ * «desde» corresponde a ese producto.
+ *
+ * Sin esto, un comprador que filtra Casa en un desarrollo con lotes desde $1M
+ * y casas desde $5M lee «desde $1,000,000». El filtro dice casa y el precio
+ * dice desarrollo; nadie mintió a propósito y aun así el número es falso para
+ * la pregunta que se hizo.
+ *
+ * Devuelve la MISMA referencia cuando no hay nada que proyectar, para no
+ * romper las comparaciones por identidad de React río abajo.
+ */
+export function projectForProductType(property: Property, filterType: string): Property {
+  if (!filterType || property.kind !== 'development') return property;
+  const stat = property.unitTypeStats?.[filterType as Property['specs']['type']];
+  if (!stat) return property;
+  if (stat.priceMin === null && stat.areaMin === null) return property;
+
+  return {
+    ...property,
+    price: stat.priceMin !== null ? { ...property.price, mxn: stat.priceMin } : property.price,
+    areaMin: stat.areaMin !== null ? stat.areaMin : property.areaMin,
+  };
+}
+
 function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const parsed: Partial<Filters> = {};
 
@@ -251,30 +276,35 @@ export function useFilters(properties: Property[]) {
       return true;
     });
 
+    // El «desde» de precio/área debe responder al tipo filtrado, no al
+    // desarrollo completo — de lo contrario filtrar Casa en un desarrollo con
+    // lotes desde $1M y casas desde $5M sigue leyendo el precio del lote.
+    const projected = result.map(p => projectForProductType(p, filters.type));
+
     if (debug) {
       console.debug('[useFilters] output', {
-        filteredCount: result.length,
+        filteredCount: projected.length,
         discardReasons: reasons,
       });
     }
 
     switch (sortBy) {
       case 'price_asc':
-        result.sort((a, b) => a.price.mxn - b.price.mxn);
+        projected.sort((a, b) => a.price.mxn - b.price.mxn);
         break;
       case 'price_desc':
-        result.sort((a, b) => b.price.mxn - a.price.mxn);
+        projected.sort((a, b) => b.price.mxn - a.price.mxn);
         break;
       case 'roi':
         // Sin dato va al final por decisión, no por coerción de null a 0.
-        result.sort((a, b) => (b.roi.projected ?? -Infinity) - (a.roi.projected ?? -Infinity));
+        projected.sort((a, b) => (b.roi.projected ?? -Infinity) - (a.roi.projected ?? -Infinity));
         break;
       case 'date':
-        result.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        projected.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
     }
 
-    return result;
+    return projected;
   }, [properties, filters, sortBy]);
 
   return { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling };

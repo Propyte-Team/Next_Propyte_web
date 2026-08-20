@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { passesRoiMin, matchesProductType } from './useFilters';
+import { passesRoiMin, matchesProductType, projectForProductType } from './useFilters';
 import type { Property } from '@/types/property';
 
 /** Property mínima para probar el predicado de tipo. Solo los campos que
@@ -65,5 +65,61 @@ describe('matchesProductType', () => {
     const unidad = { kind: 'unit', specs: { type: 'penthouse' } } as unknown as Property;
     expect(matchesProductType(unidad, 'penthouse')).toBe(true);
     expect(matchesProductType(unidad, 'casa')).toBe(false);
+  });
+});
+
+function devMixto(): Property {
+  return {
+    kind: 'development',
+    specs: { type: 'terreno' },
+    unitTypes: ['casa', 'terreno'],
+    price: { mxn: 1_000_000 },
+    areaMin: 200,
+    unitTypeStats: {
+      terreno: { priceMin: 1_000_000, areaMin: 200 },
+      casa: { priceMin: 5_000_000, areaMin: 150 },
+    },
+  } as unknown as Property;
+}
+
+describe('projectForProductType', () => {
+  it('sin filtro activo devuelve la misma property, sin copiar', () => {
+    const p = devMixto();
+    expect(projectForProductType(p, '')).toBe(p);
+  });
+
+  it('con filtro activo el «desde» pasa a ser el del producto filtrado', () => {
+    const casa = projectForProductType(devMixto(), 'casa');
+    expect(casa.price.mxn).toBe(5_000_000);
+    expect(casa.areaMin).toBe(150);
+  });
+
+  it('no muta la property original', () => {
+    const p = devMixto();
+    projectForProductType(p, 'casa');
+    expect(p.price.mxn).toBe(1_000_000);
+  });
+
+  it('sin agregado para ese tipo, deja los números del desarrollo', () => {
+    const p = devMixto();
+    const ph = projectForProductType(p, 'penthouse');
+    expect(ph.price.mxn).toBe(1_000_000);
+    expect(ph.areaMin).toBe(200);
+  });
+
+  it('un precio nulo en el agregado no borra el del desarrollo', () => {
+    const p = {
+      ...devMixto(),
+      unitTypeStats: { villa: { priceMin: null, areaMin: 180 } },
+      unitTypes: ['villa'],
+    } as unknown as Property;
+    const v = projectForProductType(p, 'villa');
+    expect(v.price.mxn).toBe(1_000_000);
+    expect(v.areaMin).toBe(180);
+  });
+
+  it('a una unidad suelta no le toca nada', () => {
+    const u = { kind: 'unit', specs: { type: 'casa' }, price: { mxn: 3_000_000 } } as unknown as Property;
+    expect(projectForProductType(u, 'casa')).toBe(u);
   });
 });
