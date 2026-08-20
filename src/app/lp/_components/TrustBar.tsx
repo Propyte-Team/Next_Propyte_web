@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import { ClipboardCheck, Eye, MapPin } from '@/lib/icons';
+import { ClipboardCheck, Eye, MapPin, Users } from '@/lib/icons';
 import { ANCLA_PRUEBA } from './PruebaDeQueExistimos';
 import { ANCLA_URBANIZACION } from './UrbanizacionReal';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
@@ -17,16 +16,18 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // completa. El bloque del final se queda intacto: aquí no se argumenta, aquí
 // se declara que hay algo que se puede ir a verificar.
 //
-// SIN STOCK Y SIN CARRUSEL. La única imagen es la foto real del asesor que ya
-// publica el Hub. Los otros tres llevan un icono de línea del vocabulario de
-// la página, no una ilustración.
+// SIN STOCK Y SIN RETRATOS. La barra no nombra a un asesor concreto: quien
+// atiende un lead depende de la asignación, así que poner una cara aquí
+// promete una persona que puede no ser la que conteste. La celda lleva al
+// equipo comercial completo. Las cuatro celdas usan un icono de línea del
+// vocabulario de la página, no una ilustración.
 //
 // LAS CELDAS SON EL ENLACE COMPLETO, no un «leer más» de 12px al final: en
 // 390px el objetivo táctil es la tarjeta entera.
 //
-// Oficina y asesor vienen del Hub y pueden faltar. Cuando faltan, la celda no
-// se renderiza vacía: desaparece, y la reja se recompone al número real de
-// celdas. Una fila de cuatro con dos huecos es peor que una fila de dos.
+// La oficina viene del Hub y puede faltar. Cuando falta, la celda no se
+// renderiza vacía: desaparece, y la reja se recompone al número real de
+// celdas. Una fila de cuatro con un hueco es peor que una fila de tres.
 // ============================================================
 
 /** Rejas por número de celdas. Tailwind no admite clases compuestas en runtime. */
@@ -38,7 +39,7 @@ const REJA: Record<number, string> = {
 };
 
 export default function TrustBar({ lote }: { lote: LoteLanding }) {
-  const { asesor, oficina } = lote;
+  const { oficina } = lote;
 
   const celdas = [
     oficina && {
@@ -49,13 +50,14 @@ export default function TrustBar({ lote }: { lote: LoteLanding }) {
       cuerpo: oficina.direccion,
       pie: 'Ven a revisar los documentos en papel.',
     },
-    asesor && {
-      clave: 'asesor',
-      href: `#${ANCLA_PRUEBA}`,
+    {
+      clave: 'equipo',
+      href: '/es/nosotros/equipo-comercial',
+      externo: true,
       etiqueta: 'Quién te atiende',
-      foto: asesor.fotoUrl,
-      cuerpo: asesor.nombre,
-      pie: asesor.rol,
+      Icono: Users,
+      cuerpo: 'Conoce al equipo completo',
+      pie: 'Nombre, cargo y cara de cada asesor comercial.',
     },
     {
       clave: 'metodologia',
@@ -91,7 +93,6 @@ export default function TrustBar({ lote }: { lote: LoteLanding }) {
         >
           {celdas.map((c) => {
             const Icono = 'Icono' in c ? c.Icono : null;
-            const foto = 'foto' in c ? c.foto : null;
 
             return (
               <a
@@ -103,22 +104,11 @@ export default function TrustBar({ lote }: { lote: LoteLanding }) {
                 className="group flex flex-col gap-2 bg-[var(--lp-paper)] p-4 transition-colors duration-200 hover:bg-[var(--lp-paper-2)] sm:p-5"
               >
                 <div className="flex items-center gap-2">
-                  {foto ? (
-                    <Image
-                      src={foto}
-                      alt=""
-                      width={28}
-                      height={28}
-                      loading="lazy"
-                      className="size-7 shrink-0 rounded-full object-cover"
+                  {Icono && (
+                    <Icono
+                      className="size-3.5 shrink-0 text-[var(--lp-accent)]"
+                      aria-hidden="true"
                     />
-                  ) : (
-                    Icono && (
-                      <Icono
-                        className="size-3.5 shrink-0 text-[var(--lp-accent)]"
-                        aria-hidden="true"
-                      />
-                    )
                   )}
                   {/* `span` y no `h3`, por dos razones. La semántica: el
                       encabezado de la celda es el cuerpo, no esta etiqueta, y
