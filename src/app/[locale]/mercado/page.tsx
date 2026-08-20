@@ -5,6 +5,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
 import { getRentalAnalysis } from '@/lib/rental-data/analysis';
 import { partitionByPool } from '@/lib/rental-data/pools';
+import { oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { MercadoHero } from './components/MercadoHero';
 import { TabBar } from './components/TabBar';
@@ -82,27 +83,31 @@ export default async function MercadoPage({
         cities: new Set(strRanking.map((z) => z.city)).size,
         benchmarkListings: strBenchmark.reduce((s, z) => s + (z.active_listings ?? 0), 0),
         // data_through es lo que el dato realmente cubre; computed_at es solo
-        // cuando corrió el pipeline (Task 8 review).
-        updatedAt: strRanking
-          .map((z) => z.data_through)
-          .filter((d): d is string => Boolean(d))
-          .sort()
-          .reverse()[0] ?? '',
+        // cuando corrió el pipeline (Task 8 review). Y se toma la fecha MÁS
+        // ANTIGUA del ranking, no la más reciente: con el máximo, una sola zona
+        // refrescada rotulaba el hero entero y apagaba el aviso de serie rancia
+        // de las otras 25 todavía congeladas en febrero.
+        updatedAt: oldestDataThrough(strRanking),
       }
     : undefined;
 
   // LTR stats for hero — antes nunca se calculaba, así que en ?tab=tradicional
   // el hero mostraba "Actualizando datos de mercado…" sobre una tabla con
   // 10,695 resultados ya cargados.
+  // `getRentalAnalysis` puede devolver un objeto DEGRADADO (no null) cuando la
+  // consulta trae cero comparables: con `?? 0` el hero publicaba
+  // "0 comparables · 0 desarrollos analizados" como si fueran mediciones. null
+  // = sin dato, y MercadoHero oculta la tila (mismo criterio que VacacionalKPIs).
+  const nonZero = (n: number | undefined) => (n != null && n > 0 ? n : null);
   const ltrStats = tradicionalData
     ? {
-        comparables: tradicionalData.total_comparables ?? 0,
-        cities: tradicionalData.city_stats?.length ?? 0,
-        developments: tradicionalData.developments?.length ?? 0,
+        comparables: nonZero(tradicionalData.total_comparables),
+        cities: nonZero(tradicionalData.city_stats?.length),
+        developments: nonZero(tradicionalData.developments?.length),
         // data_freshness YA es el max(scraped_at) de los comparables limpios
         // (ver getRentalAnalysis en src/lib/rental-data/analysis.ts) — no hace
         // falta un campo nuevo en AnalysisData.
-        updatedAt: tradicionalData.data_freshness ?? '',
+        updatedAt: tradicionalData.data_freshness ?? null,
       }
     : undefined;
 

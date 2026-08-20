@@ -6,7 +6,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/icons';
 import { useCurrency } from '@/context/CurrencyContext';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
-import { grossMonthlyIncome, omissionLabelKey } from '@/lib/rental-data/zone-metrics';
+import { grossMonthlyIncome, omissionBadge } from '@/lib/rental-data/zone-metrics';
 
 type TableSortField = 'zone' | 'score' | 'adr' | 'occupancy' | 'monthly' | 'listings' | 'competition';
 type SortDir = 'asc' | 'desc';
@@ -173,14 +173,17 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                       // El pipeline decidió y dijo por qué. El sitio solo rotula: no reevalúa
                       // el umbral ni colapsa las razones en una sola etiqueta.
                       (() => {
-                        const key = omissionLabelKey(score.index_omission_reason);
-                        if (!key) return <span className="text-gray-600">—</span>;
+                        const badge = omissionBadge(
+                          score.index_omission_reason,
+                          score.ttm_months_observed,
+                        );
+                        if (!badge) return <span className="text-gray-600">—</span>;
                         return (
                           <span
                             className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600"
-                            title={t(`${key.replace('Badge', 'Title')}`)}
+                            title={t(badge.titleKey)}
                           >
-                            {t(key)}
+                            {t(badge.labelKey, badge.values)}
                           </span>
                         );
                       })()

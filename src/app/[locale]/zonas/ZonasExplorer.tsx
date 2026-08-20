@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { MapPin, Search, BarChart3, SortAsc, SortDesc } from '@/lib/icons';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { averageIndex, partitionByPool } from '@/lib/rental-data/pools';
+import { formatDataThroughDate, isStale, oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 import { zoneSlug } from '@/lib/utils';
 
 interface ZonasExplorerProps {
@@ -50,6 +52,9 @@ const CITY_REGIONS: Record<string, string[]> = {
 
 export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
   const t = useTranslations('zonas');
+  // El aviso de serie rancia se reusa del namespace 'mercado': misma redacción en
+  // /mercado y en /zonas, una sola frase que mantener.
+  const tMer = useTranslations('mercado');
   const isEn = locale === 'en';
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [search, setSearch] = useState('');
@@ -104,11 +109,22 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
   const cityStats = useMemo(() => {
     const target = selectedCity === 'all' ? scores : scores.filter((s) => s.city === selectedCity);
     if (target.length === 0) return null;
-    const avgScore = target.reduce((s, z) => s + (z.score ?? 0), 0) / target.length;
+    // averageIndex descarta las zonas SIN índice en vez de contarlas como cero:
+    // sumar `score ?? 0` hundía el promedio publicado (8 de 44 zonas publican
+    // score = null por umbral de muestra). Misma función que usa /mercado.
+    const avgScoreVal = averageIndex(target);
     const avgOcc = target.filter((z) => z.occupancy_p50_ttm != null);
-    const avgOccVal = avgOcc.length > 0 ? avgOcc.reduce((s, z) => s + (z.occupancy_p50_ttm ?? 0), 0) / avgOcc.length : 0;
+    const avgOccVal = avgOcc.length > 0
+      ? avgOcc.reduce((s, z) => s + (z.occupancy_p50_ttm ?? 0), 0) / avgOcc.length
+      : null;
     const totalListings = target.reduce((s, z) => s + (z.active_listings ?? 0), 0);
-    return { zones: target.length, avgScore: Math.round(avgScore), avgOcc: Math.round(avgOccVal), totalListings };
+    // null, no 0: el `: 0` publicaba "0/100" y "0%" como si fueran mediciones.
+    return {
+      zones: target.length,
+      avgScore: avgScoreVal != null ? Math.round(avgScoreVal) : null,
+      avgOcc: avgOccVal != null ? Math.round(avgOccVal) : null,
+      totalListings,
+    };
   }, [scores, selectedCity]);
 
   const toggleSort = (field: SortField) => {
@@ -122,14 +138,22 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
 
   const SortIcon = sortDir === 'asc' ? SortAsc : SortDesc;
 
-  // Compute latest data date
-  const latestDate = useMemo(() => {
-    if (scores.length === 0) return null;
-    const dates = scores.map((s) => s.computed_at).filter(Boolean).sort().reverse();
-    if (dates.length === 0) return null;
-    const d = new Date(dates[0]);
-    return d.toLocaleDateString(isEn ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' });
-  }, [scores, isEn]);
+  // Corte de los datos. `data_through` (lo que el dato CUBRE), no `computed_at`
+  // (cuándo corrió el pipeline): computed_at decía "agosto de 2026" sobre una
+  // serie cerrada en febrero. Se toma la fecha MÁS ANTIGUA del pool de ranking:
+  // el máximo dejaba que una sola zona refrescada rotulara todo el tablero, y
+  // CDMX (mercado de referencia, no oferta) no debe decidir la frescura del
+  // Caribe. El formateo va por formatDataThroughDate, que ancla el parseo a UTC
+  // para no correr el mes hacia atrás en huso negativo (UTC-6).
+  const oldestThrough = useMemo(
+    () => oldestDataThrough(partitionByPool(scores).ranking),
+    [scores],
+  );
+  const latestDate = useMemo(
+    () => formatDataThroughDate(oldestThrough, isEn ? 'en' : 'es'),
+    [oldestThrough, isEn],
+  );
+  const seriesIsStale = useMemo(() => isStale(oldestThrough, new Date()), [oldestThrough]);
 
   return (
     <div className="space-y-6">
@@ -137,6 +161,15 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       <p className="text-xs text-gray-600 text-center">
         {t('dataSource')}{latestDate ? t('dataSourceUpdated', { date: latestDate }) : ''}
       </p>
+
+      {/* Aviso de antigüedad: la serie puede haber quedado congelada aunque el
+          pipeline haya corrido después. Es una advertencia, no un reemplazo: las
+          cifras se siguen mostrando (mismo tratamiento que VacacionalTab). */}
+      {scores.length > 0 && seriesIsStale && (
+        <p className="text-xs text-amber-800 text-center">
+          {tMer('staleSeriesNotice', { date: latestDate ?? '—' })}
+        </p>
+      )}
 
       {/* Filters Bar */}
       <div className="flex flex-wrap gap-3 items-center">
@@ -224,18 +257,26 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
             <div className="text-2xl font-bold text-gray-900">{cityStats.zones}</div>
             <div className="text-xs text-gray-600">{t('statZones')}</div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-teal-700">{cityStats.avgScore}/100</div>
-            <div className="text-xs text-gray-600">{t('statAvgIndex')}</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-gray-900">{cityStats.avgOcc}%</div>
-            <div className="text-xs text-gray-600">{t('statAvgOccupancy')}</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-gray-900">{cityStats.totalListings.toLocaleString()}</div>
-            <div className="text-xs text-gray-600">{t('statActiveProperties')}</div>
-          </div>
+          {/* Se ocultan cuando no hay valor positivo, igual que VacacionalKPIs en
+              /mercado: "0/100" y "0%" son afirmaciones, no marcadores de ausencia. */}
+          {cityStats.avgScore != null && cityStats.avgScore > 0 && (
+            <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-teal-700">{cityStats.avgScore}/100</div>
+              <div className="text-xs text-gray-600">{t('statAvgIndex')}</div>
+            </div>
+          )}
+          {cityStats.avgOcc != null && cityStats.avgOcc > 0 && (
+            <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-gray-900">{cityStats.avgOcc}%</div>
+              <div className="text-xs text-gray-600">{t('statAvgOccupancy')}</div>
+            </div>
+          )}
+          {cityStats.totalListings > 0 && (
+            <div className="bg-white border border-gray-200 rounded-lg p-3 text-center">
+              <div className="text-2xl font-bold text-gray-900">{cityStats.totalListings.toLocaleString()}</div>
+              <div className="text-xs text-gray-600">{t('statActiveProperties')}</div>
+            </div>
+          )}
         </div>
       )}
 

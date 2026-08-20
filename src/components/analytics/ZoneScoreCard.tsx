@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, Minus } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
-import { occupancyTrend } from '@/lib/rental-data/zone-metrics';
+import { occupancyTrend, omissionBadge } from '@/lib/rental-data/zone-metrics';
 
 interface ZoneScoreCardProps {
   score: ZoneScore;
@@ -60,8 +60,8 @@ function MetricRow({ label, value, context, trend }: {
 
 export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
   const t = useTranslations('zoneScoreCard');
-  // La etiqueta de muestra baja se reusa de comparisonTable: mismo texto en la tabla y
-  // en la tarjeta, una sola redacción que mantener.
+  // Las etiquetas de omisión se reusan de comparisonTable: mismo texto en la tabla
+  // y en la tarjeta, una sola redacción que mantener.
   const tTable = useTranslations('comparisonTable');
 
   const adrGrowth = score.adr_growth_component;
@@ -88,12 +88,23 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         {score.score != null ? (
           <IndexBadge value={score.score} />
         ) : (
-          <span
-            className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap"
-            title={tTable('lowSampleTitle')}
-          >
-            {tTable('lowSampleBadge')}
-          </span>
+          // Antes esta tarjeta colapsaba TODA omisión a "muestra baja": Playacar
+          // (922 anuncios, sin tarifa publicada) leía "sin tarifa publicada" en
+          // la tabla de /mercado y "muestra baja" en la tarjeta de al lado, en la
+          // misma pantalla. Ahora las dos superficies resuelven la etiqueta con
+          // la misma función.
+          (() => {
+            const badge = omissionBadge(score.index_omission_reason, score.ttm_months_observed);
+            if (!badge) return null;
+            return (
+              <span
+                className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap"
+                title={tTable(badge.titleKey)}
+              >
+                {tTable(badge.labelKey, badge.values)}
+              </span>
+            );
+          })()
         )}
       </div>
 

@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import es from '@/i18n/messages/es.json';
+import en from '@/i18n/messages/en.json';
 import { isStale, MAX_DATA_AGE_DAYS } from './zone-metrics';
+import {
+  MIN_SAMPLE_INDEX,
+  MIN_SAMPLE_OCCUPANCY,
+  PIPELINE_INDEX_WEIGHTS,
+  PIPELINE_INDEX_WEIGHT_ORDER,
+} from './pipeline-contract';
 import { findForbiddenProviderNames } from '../compliance/provider-names';
 
 /**
@@ -67,9 +74,95 @@ describe('data_through es independiente de computed_at', () => {
   });
 });
 
-describe('la metodología publicada coincide con las constantes del código', () => {
-  const metodologia = es.methodology as Record<string, string>;
+/**
+ * Las dos invariantes cruzadas resolvían el pipeline por worktrees hermanos, así
+ * que en CI (o en cualquier máquina sin ese checkout al lado) SE SALTABAN las
+ * dos. Una guardia que no corre donde se aprueban los merges no protege nada.
+ *
+ * Ahora se asevera en dos capas:
+ *   Capa 1 — texto publicado contra `pipeline-contract.ts` (copia versionada en
+ *            este repo). Corre SIEMPRE, en cualquier máquina.
+ *   Capa 2 — `pipeline-contract.ts` contra el archivo Python real. Se salta
+ *            cuando el repo del pipeline no está presente; cuando sí lo está,
+ *            detecta que la copia se quedó atrás.
+ * Editar solo la copia para poner la capa 1 en verde rompe la capa 2.
+ */
+describe('la metodología publicada coincide con el contrato del pipeline (capa 1: siempre corre)', () => {
+  const metodologiaEs = es.methodology as Record<string, string>;
+  const metodologiaEn = en.methodology as Record<string, string>;
+  const zonasEs = es.zonas as Record<string, string>;
+  const zonasEn = en.zonas as Record<string, string>;
 
+  const pesosEsperados = PIPELINE_INDEX_WEIGHT_ORDER.map(
+    (k) => PIPELINE_INDEX_WEIGHTS[k] * 100,
+  );
+
+  it('los cuatro pesos del contrato suman 1', () => {
+    const suma = PIPELINE_INDEX_WEIGHT_ORDER.reduce(
+      (acc, k) => acc + PIPELINE_INDEX_WEIGHTS[k],
+      0,
+    );
+    expect(suma).toBeCloseTo(1, 10);
+  });
+
+  it.each([
+    ['es methodology.summaryStr', () => metodologiaEs.summaryStr],
+    ['en methodology.summaryStr', () => metodologiaEn.summaryStr],
+    // /zonas publicaba CINCO componentes ponderados, uno de ellos inexistente
+    // ("liquidez de mercado (10%)"), con pesos que no coincidían con ningún
+    // código. Misma clase de divergencia texto-vs-código que summaryStr.
+    ['es zonas.methodologyText', () => zonasEs.methodologyText],
+    ['en zonas.methodologyText', () => zonasEn.methodologyText],
+  ])('%s declara exactamente los cuatro pesos del contrato, en orden', (_label, getter) => {
+    const publicados = [...getter().matchAll(/(\d+)%/g)].map((m) => Number(m[1]));
+    expect(publicados).toEqual(pesosEsperados);
+  });
+
+  it('los umbrales de muestra publicados son los del contrato, en ambos locales', () => {
+    for (const metodologia of [metodologiaEs, metodologiaEn]) {
+      expect(metodologia.methodSample).toContain(String(MIN_SAMPLE_INDEX));
+      expect(metodologia.methodSample).toContain(String(MIN_SAMPLE_OCCUPANCY));
+    }
+  });
+
+  it('ningún texto de mercado afirma una frecuencia de actualización que el dataset no sostiene', () => {
+    // Solo 1,045 de 15,472 comparables (6.8%) tienen menos de 30 días, y la
+    // ventana es de 12 meses: "diariamente" / "semanalmente" eran afirmaciones
+    // sin dato detrás.
+    // Acotado a la FRECUENCIA, no a la palabra "diaria" sola: "Tarifa Diaria
+    // Promedio" / "Average daily rate" son nombres de métrica, no promesas de
+    // actualización, y prohibirlos dejaría el test en rojo por un falso positivo.
+    const prohibido = [
+      /diariamente/i,
+      /semanalmente/i,
+      /actualizaci[oó]n\s+(diaria|semanal)/i,
+      /se\s+actualiza\w*\s+(diaria|semanal)/i,
+      /recopilaci[oó]n\s+(diaria|semanal)/i,
+      /\b(daily|weekly)\s+(updates?|collection|refresh\w*)/i,
+      /\b(updated|refreshed|collected)\s+(daily|weekly)/i,
+      /\bdata is refreshed\b/i,
+    ];
+    const superficies: [string, unknown][] = [
+      ['es.methodology', es.methodology],
+      ['en.methodology', en.methodology],
+      ['es.zonas', es.zonas],
+      ['en.zonas', en.zonas],
+      ['es.mercadoMeta', es.mercadoMeta],
+      ['en.mercadoMeta', en.mercadoMeta],
+      ['es.mercadoHero', es.mercadoHero],
+      ['en.mercadoHero', en.mercadoHero],
+    ];
+    const ofensores = superficies
+      .filter(([, valor]) => {
+        const texto = JSON.stringify(valor);
+        return prohibido.some((re) => re.test(texto));
+      })
+      .map(([nombre]) => nombre);
+    expect(ofensores).toEqual([]);
+  });
+});
+
+describe('el contrato versionado coincide con el pipeline (capa 2: se salta sin el repo)', () => {
   // Revisado 2026-08-20 (fix round 1): la primera versión de este test sumaba
   // los porcentajes extraídos del propio string y comprobaba que dieran 100 —
   // pero nada los ataba a los pesos reales del pipeline. Cambiar
@@ -112,27 +205,15 @@ describe('la metodología publicada coincide con las constantes del código', ()
         competition: readWeight('competition'),
       };
 
-      // Ancla de valor: si el pipeline cambia un peso sin avisar, esto falla
-      // aunque el texto publicado no se haya tocado.
+      // Contra el contrato versionado, no contra literales sueltos: la capa 1 ya
+      // ató el texto publicado (los dos locales, /mercado y /zonas) a ese
+      // contrato, así que aquí basta cerrar el eslabón contrato-vs-Python.
       expect(pipelineWeights).toEqual({
-        occupancy: 0.30,
-        adr_growth: 0.25,
-        revpar: 0.25,
-        competition: 0.20,
+        occupancy: PIPELINE_INDEX_WEIGHTS.occupancy,
+        adr_growth: PIPELINE_INDEX_WEIGHTS.adr_growth,
+        revpar: PIPELINE_INDEX_WEIGHTS.revpar,
+        competition: PIPELINE_INDEX_WEIGHTS.competition,
       });
-
-      // Ancla de coincidencia: los cuatro porcentajes publicados en
-      // `summaryStr` (es.json, otro repo) deben ser los mismos cuatro pesos,
-      // en el mismo orden en que la página los declara: Ocupación,
-      // Crecimiento de tarifa (= adr_growth), RevPAR, Competencia.
-      const resumen = metodologia.summaryStr;
-      const publishedPercents = [...resumen.matchAll(/(\d+)%/g)].map((m) => Number(m[1]));
-      expect(publishedPercents).toEqual([
-        pipelineWeights.occupancy * 100,
-        pipelineWeights.adr_growth * 100,
-        pipelineWeights.revpar * 100,
-        pipelineWeights.competition * 100,
-      ]);
     },
   );
 });
@@ -157,16 +238,11 @@ describe('el umbral de muestra publicado coincide con el pipeline', () => {
       const minIndex = Number(minIndexMatch![1]);
       const minOccupancy = Number(minOccupancyMatch![1]);
 
-      // Ancla de valor: si alguien cambia el umbral en el pipeline sin
-      // avisar, esto falla aunque el texto publicado no se haya tocado.
-      expect(minIndex).toBe(30);
-      expect(minOccupancy).toBe(15);
-
-      // Ancla de coincidencia: el texto publicado (es.json) y la constante
-      // del pipeline (publication_gates.py) son archivos distintos en
-      // repos distintos. Si diverge uno sin el otro, esto falla.
+      // Contra el contrato versionado. La capa 1 ya ató el texto publicado a
+      // esas mismas constantes en ambos locales.
+      expect(minIndex).toBe(MIN_SAMPLE_INDEX);
+      expect(minOccupancy).toBe(MIN_SAMPLE_OCCUPANCY);
       expect(metodologia.methodSample).toContain(String(minIndex));
-      expect(metodologia.methodSample).toContain(String(minOccupancy));
     },
   );
 });
@@ -198,7 +274,11 @@ describe('las columnas deprecadas no se leen fuera de los carve-outs conocidos',
     return out;
   }
 
-  it('median_occupancy y median_adr solo aparecen en queries.ts, los dos carve-outs de CityStrBenchmark, o en tests', () => {
+  // El recorrido completo de src/ (cientos de archivos, lectura sincrónica) se
+  // pasaba de los 5000 ms por defecto en una corrida en frío y el test fallaba
+  // por timeout, no por un hallazgo. Timeout holgado y explícito: esta guardia
+  // debe fallar solo cuando alguien reintroduce la columna.
+  it('median_occupancy y median_adr solo aparecen en queries.ts, los dos carve-outs de CityStrBenchmark, o en tests', { timeout: 60_000 }, () => {
     const offenders: string[] = [];
 
     for (const file of walk(SRC_ROOT)) {
@@ -256,6 +336,40 @@ describe('invariantes del pipeline aún no corregidos (Python)', () => {
       expect(buildBody).not.toContain('"median_occupancy"');
     },
   );
+});
+
+describe('es.json y en.json tienen exactamente las mismas claves', () => {
+  // Los dos archivos son TODO el solapamiento de merge de esta rama con
+  // origin/main. Nada atrapaba un hunk mal resuelto que borrara una clave de un
+  // solo locale: next-intl responde con la clave cruda o revienta en runtime,
+  // según la superficie, y ninguna de las dos cosas la ve un test.
+  function rutasDeClaves(valor: unknown, prefijo = ''): string[] {
+    if (valor === null || typeof valor !== 'object' || Array.isArray(valor)) return [prefijo];
+    const rutas: string[] = [];
+    for (const [k, v] of Object.entries(valor as Record<string, unknown>)) {
+      rutas.push(...rutasDeClaves(v, prefijo ? `${prefijo}.${k}` : k));
+    }
+    return rutas;
+  }
+
+  const rutasEs = rutasDeClaves(es).sort();
+  const rutasEn = rutasDeClaves(en).sort();
+
+  it('ninguna clave existe solo en es.json', () => {
+    const soloEs = rutasEs.filter((r) => !rutasEn.includes(r));
+    expect(
+      soloEs,
+      `claves presentes en es.json y ausentes en en.json:\n${soloEs.join('\n')}`,
+    ).toEqual([]);
+  });
+
+  it('ninguna clave existe solo en en.json', () => {
+    const soloEn = rutasEn.filter((r) => !rutasEs.includes(r));
+    expect(
+      soloEn,
+      `claves presentes en en.json y ausentes en es.json:\n${soloEn.join('\n')}`,
+    ).toEqual([]);
+  });
 });
 
 describe('sin nombres de proveedor en texto visible', () => {

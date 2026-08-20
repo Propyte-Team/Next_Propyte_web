@@ -8,6 +8,8 @@
  * `src/lib/investment/resolve.ts`, donde el 0 como sentinela ya está prohibido.
  */
 
+import { TTM_WINDOW_MONTHS } from './pipeline-contract';
+
 /** Mismo umbral que `pipeline_health` usa para `airroi_str_zonal`. */
 export const MAX_DATA_AGE_DAYS = 35;
 
@@ -69,14 +71,50 @@ export function occupancyTrend(occP50: number | null): 'up' | 'down' | 'flat' {
  * interpreta como medianoche UTC, y `toLocaleDateString` sin zona explicita usa
  * la zona local, que cae en el dia anterior — enero en vez de febrero. Anclar
  * el parseo a T00:00:00Z y fijar `timeZone: 'UTC'` en el formateo evita el salto.
+ *
+ * Devuelve `null` cuando la entrada no es una fecha parseable: sin la guarda,
+ * `toLocaleDateString` sobre un Date invalido publica el literal "Invalid Date"
+ * como si fuera el corte de los datos. Mismo criterio que `isStale`, que ante una
+ * fecha ilegible responde lo conservador en vez de inventar. El tipo obliga a
+ * cada llamador a decidir el texto de ausencia; ninguno puede ignorarlo.
  */
-export function formatDataThroughDate(dataThrough: string, locale: 'es' | 'en'): string {
+export function formatDataThroughDate(
+  dataThrough: string | null | undefined,
+  locale: 'es' | 'en',
+): string | null {
+  if (!dataThrough) return null;
   const d = new Date(`${dataThrough}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
     month: 'long',
     year: 'numeric',
     timeZone: 'UTC',
   });
+}
+
+/**
+ * Corte comun de un conjunto de zonas: el `data_through` MAS ANTIGUO.
+ *
+ * Antes cada superficie hacia `.sort().reverse()[0]` — el mas RECIENTE — y una
+ * sola zona refrescada bastaba para rotular todo el tablero con esa fecha y
+ * apagar el aviso de serie rancia de las otras 25, todavia congeladas en
+ * febrero. La unica fecha que el conjunto entero sostiene es la mas antigua:
+ * hasta ahi cubren TODAS las zonas.
+ *
+ * Nota de alcance: al llamador le toca pasar solo el pool que se publica. El
+ * benchmark de CDMX no es oferta (ver `pools.ts`) y su frescura no dice nada
+ * sobre las zonas del Caribe, asi que no debe entrar aqui.
+ */
+export function oldestDataThrough(
+  zones: readonly { data_through: string | null }[],
+): string | null {
+  let oldest: string | null = null;
+  for (const z of zones) {
+    const d = z.data_through;
+    if (!d) continue;
+    if (oldest == null || d < oldest) oldest = d;
+  }
+  return oldest;
 }
 
 /** Antigüedad de la serie. Rotula la cifra; nunca la oculta. */
@@ -108,4 +146,40 @@ const OMISSION_LABEL_KEYS: Record<Exclude<OmissionReason, null>, string> = {
  */
 export function omissionLabelKey(reason: OmissionReason): string | null {
   return reason ? OMISSION_LABEL_KEYS[reason] : null;
+}
+
+/** Etiqueta lista para renderizar: clave, tooltip y valores de interpolación. */
+export interface OmissionBadge {
+  /** Clave i18n de la etiqueta corta (namespace `comparisonTable`). */
+  labelKey: string;
+  /** Clave i18n del tooltip. */
+  titleKey: string;
+  /** Valores de interpolación. Vacío cuando la clave no pide ninguno. */
+  values: Record<string, number>;
+}
+
+/**
+ * Resuelve la etiqueta de omisión en un solo lugar, para que la tabla y la
+ * tarjeta de zona no puedan divergir: hasta ahora ZoneScoreCard colapsaba TODA
+ * omisión a "muestra baja" mientras la tabla de al lado, en la misma pantalla,
+ * decía "sin tarifa publicada" para la misma zona (Playacar, 922 anuncios).
+ *
+ * `thin_cycle` interpola los meses observados — la cifra que el spec pide y que
+ * `ttm_months_observed` escribía sin que nadie la leyera. Si esa columna llega
+ * vacía se usa la variante SIN número: "serie incompleta (0 de 12 meses)" sería
+ * inventar una medición a partir de un dato ausente.
+ */
+export function omissionBadge(
+  reason: OmissionReason,
+  monthsObserved: number | null | undefined,
+): OmissionBadge | null {
+  const labelKey = omissionLabelKey(reason);
+  if (!labelKey) return null;
+  if (labelKey === 'thinCycleBadge') {
+    const n = usable(monthsObserved);
+    return n != null && Number.isInteger(n) && n < TTM_WINDOW_MONTHS
+      ? { labelKey, titleKey: 'thinCycleTitle', values: { n, total: TTM_WINDOW_MONTHS } }
+      : { labelKey: 'thinCycleBadgeUnknown', titleKey: 'thinCycleTitle', values: {} };
+  }
+  return { labelKey, titleKey: labelKey.replace('Badge', 'Title'), values: {} };
 }

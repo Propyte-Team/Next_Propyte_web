@@ -2114,7 +2114,7 @@
     "summaryLtr": "Nuestro análisis de renta tradicional agrega datos de 7 fuentes inmobiliarias que cubren Yucatán y Quintana Roo. Las rentas se normalizan, se filtran valores atípicos, y se segmentan por zona, tipo de propiedad y recámaras para proveer benchmarks precisos del mercado.",
     "strFormulaTitle": "Fórmula del Índice Propyte",
     "strFactorOccupancy": "Ocupación (30%)",
-    "strFactorOccupancyDesc": "Tasa de ocupación promedio anual relativa a la mediana del mercado. Zonas con ocupación alta sostenida puntúan mejor.",
+    "strFactorOccupancyDesc": "Mediana de la ocupación mensual de los últimos 12 meses, relativa a la mediana del mercado. Zonas con ocupación alta sostenida puntúan mejor.",
     "strFactorRateGrowth": "Crecimiento de tarifa (25%)",
     "strFactorRateGrowthDesc": "Crecimiento interanual del ADR (Tarifa Diaria Promedio). Captura zonas con poder de fijación de precios creciente.",
     "strFactorRevparDesc": "Ingreso por Habitación Disponible, combinando ocupación y tarifa en una sola métrica de potencial de ingresos.",
@@ -2139,13 +2139,13 @@
     "ltrSource6": "Red MLS de agentes",
     "ltrSource7": "Agregador de listados sindicados",
     "ltrPipelineTitle": "Proceso de datos",
-    "ltrStep1": "Recopilación diaria de listados de renta activos de fuentes públicas de mercado",
+    "ltrStep1": "Recopilación de listados de renta activos de fuentes públicas de mercado",
     "ltrStep2": "Normalización de zonas usando mapeo canónico (150+ zonas)",
     "ltrStep3": "Eliminación de valores atípicos: rentas por debajo de $5,000 o arriba de $500,000 MXN/mes excluidas",
     "ltrStep4": "Cálculo estadístico: mediana, promedio, percentiles por segmento",
     "ltrStep5": "Estimación de renta con ML para cada desarrollo usando comparables similares",
     "ltrStep6": "ROI, TIR, cap rate y proyecciones de flujo calculadas por propiedad",
-    "ltrFooter": "Los datos se actualizan diariamente. Las proyecciones financieras son estimaciones y no garantizan rendimientos."
+    "ltrFooter": "Las proyecciones financieras son estimaciones y no garantizan rendimientos."
   },
   "comoComprar": {
     "heroEyebrow": "Guía práctica",
@@ -2719,7 +2719,7 @@
   },
   "mercadoMeta": {
     "title": "Inteligencia de mercado — Rentas vacacionales y tradicionales",
-    "description": "Analiza el mercado de rentas vacacionales y tradicionales en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. +385K registros, 10,000+ comparables, actualización diaria."
+    "description": "Analiza el mercado de rentas vacacionales y tradicionales en Cancún, Playa del Carmen, Tulum, CDMX y Mérida. +385K registros y 10,000+ comparables de renta."
   },
   "pdf": {
     "snapshotProperty": "Ficha de inversión — Propiedad",
@@ -2828,7 +2828,7 @@
   },
   "zonas": {
     "dataSource": "Análisis Propyte basado en +385K registros de renta vacacional en México",
-    "dataSourceUpdated": " · Actualizado {date}",
+    "dataSourceUpdated": " · Datos a {date}",
     "allCities": "Todas las Ciudades",
     "searchZone": "Buscar zona...",
     "allProfiles": "Todos los Perfiles",
@@ -2852,7 +2852,7 @@
     "h1": "Mapa de Rentabilidad",
     "subtitle": "Compara ocupación, ingreso por noche y competencia entre zonas antes de invertir",
     "methodology": "Metodología",
-    "methodologyText": "Los Zone Intelligence Scores (0-100) combinan cinco componentes ponderados: yield de renta (30%), tasa de ocupación (25%), crecimiento de ADR (20%), presión de oferta (15%) y liquidez de mercado (10%). Las fuentes incluyen 140K+ comparables públicos de renta de 8+ portales inmobiliarios. Los scores se actualizan semanalmente.",
+    "methodologyText": "El Índice Propyte (0-100) combina cuatro factores ponderados: Ocupación (30%), Crecimiento de tarifa (25%), RevPAR (25%) y Competencia (20%). Se calcula sobre registros públicos de plataformas de renta vacacional y solo se publica en zonas con muestra suficiente. El corte de los datos se indica arriba.",
     "contextTitle": "Contexto del municipio",
     "contextIntro": "Datos oficiales del municipio de {municipio}, {state} (INEGI · SNIIV). La granularidad es municipal, no por colonia.",
     "contextPopulation": "Población (censo {year})",
@@ -2877,7 +2877,7 @@
     "zone": "Zona",
     "zonePerformance": "Desempeño de la zona",
     "basedOn": "Basado en análisis de inversión de {zone}",
-    "lastUpdated": "Actualizado",
+    "lastUpdated": "Datos a",
     "indexFactorsTitle": "Factores del índice (0-100)",
     "zoneMarketDataTitle": "Datos de mercado de la zona",
     "compositeScore": "Puntaje compuesto de zona",
@@ -2942,7 +2942,8 @@
     "missingAdrTitle": "La zona tiene muestra suficiente pero no hay tarifa por noche publicada, así que no se calcula índice ni ingreso.",
     "incompleteDataBadge": "dato incompleto",
     "incompleteDataTitle": "Falta uno de los componentes ponderados del índice, así que no se publica.",
-    "thinCycleBadge": "serie incompleta",
+    "thinCycleBadge": "serie incompleta ({n} de {total} meses)",
+    "thinCycleBadgeUnknown": "serie incompleta",
     "thinCycleTitle": "La serie tiene menos de 6 meses observados: no alcanza para una mediana anual.",
     "occupancyRangeLabel": "temporada baja {low}% – alta {high}%"
   },
@@ -2966,7 +2967,6 @@
     "strProperties": "propiedades mapeadas",
     "cities": "ciudades",
     "strZones": "zonas analizadas",
-    "monthly": "Mensual",
     "update": "actualización",
     "ltrComparables": "comparables",
     "ltrDevelopments": "desarrollos analizados",

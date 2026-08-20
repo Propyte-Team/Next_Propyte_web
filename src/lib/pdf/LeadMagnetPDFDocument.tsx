@@ -5,7 +5,7 @@
 import { Document, Page, Text, View, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import type { ScoredUnit } from '@/lib/lead-magnet/score';
 import type { EditionData } from '@/lib/lead-magnet/edition-data';
-import { formatDataThroughDate } from '@/lib/rental-data/zone-metrics';
+import { formatDataThroughDate, oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 
 const C = {
   navy: '#1A2F3F', aztec: '#0F1923', teal: '#5CE0D2', ice: '#A2F9FF',
@@ -188,6 +188,15 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
 
         {data.cityBenchmarks.length > 0 && (
           <>
+            {/* CARVE-OUT de CityStrBenchmark: median_occupancy / median_adr siguen aqui a
+                proposito. Estas filas las escribe OTRO builder del pipeline
+                (build_city_benchmark_rows, no build_zone_score_rows) y el select de
+                getCityStrBenchmarks es angosto: NO pide occupancy_p50_ttm ni adr_p50_ttm,
+                asi que renombrarlas devolveria undefined. Ademas, la ocupacion de ciudad
+                SI es un promedio de 12 meses, pero el ADR es un ultimo punto (adr[0] de un
+                fetch con limit=2) y el RevPAR mezcla los dos: defecto conocido, latente
+                solo porque zone_scores no tiene ninguna fila zone='_ciudad'. Detalle en el
+                tipo CityStrBenchmark de src/lib/supabase/queries.ts. */}
             <Text style={[styles.cardTitle, { marginBottom: 6 }]}>{L.strTitle}</Text>
             <View style={styles.table}>
               <View style={styles.tHead}>
@@ -232,15 +241,23 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
                   <Text style={[styles.tCell, { fontFamily: 'Helvetica-Bold', flex: 2 }]}>{z.zone} · {z.city}</Text>
                   <Text style={styles.tCell}>{L.zoneScore}: {z.score == null ? '—' : Math.round(z.score)}</Text>
                   <Text style={styles.tCell}>{L.occupancy}: {fmtPct(z.occupancy_p50_ttm, 0)}</Text>
+                  {/* adr_p50_ttm ya venia seleccionado y no se renderizaba: la nota al pie
+                      prometia "Ocupacion y tarifa" sobre una tabla sin tarifa. */}
+                  <Text style={styles.tCell}>{L.adr}: {fmtMoney(z.adr_p50_ttm)}</Text>
                 </View>
               ))}
             </View>
             {(() => {
-              const dataThrough = data.topZones.find((z) => z.data_through)?.data_through;
-              if (!dataThrough) return null;
+              // La fecha MAS ANTIGUA de las cinco, no la de la primera fila con
+              // fecha: la nota rotula una tabla completa, y solo el corte mas
+              // antiguo es cierto para todas sus filas. Con .find(), una zona
+              // recien refrescada en la posicion 1 fechaba las otras cuatro.
+              const dataThrough = oldestDataThrough(data.topZones);
+              const formatted = formatDataThroughDate(dataThrough, locale);
+              if (!formatted) return null;
               return (
                 <Text style={styles.smallNote}>
-                  {L.zonesDataThrough} {formatDataThroughDate(dataThrough, locale)}.
+                  {L.zonesDataThrough} {formatted}.
                 </Text>
               );
             })()}

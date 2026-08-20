@@ -14,9 +14,16 @@ interface MercadoHeroProps {
     cities: number;
     /** Propiedades de CDMX excluidas del ranking — solo referencia, no oferta. */
     benchmarkListings: number;
-    updatedAt: string;
+    /** Corte real de la serie (`data_through` más antiguo del ranking). null = sin dato. */
+    updatedAt: string | null;
   };
-  ltrStats?: { comparables: number; cities: number; developments: number; updatedAt: string };
+  /** null en cualquier cifra = sin dato. Nunca 0: un 0 es una afirmación. */
+  ltrStats?: {
+    comparables: number | null;
+    cities: number | null;
+    developments: number | null;
+    updatedAt: string | null;
+  };
 }
 
 /**
@@ -37,28 +44,38 @@ export function MercadoHero({ activeTab, locale, strStats, ltrStats }: MercadoHe
 
   const stats = activeTab === 'vacacional' ? strStats : ltrStats;
   const trustItems: { value: string; label: string }[] = [];
+  // Una cifra ausente (null) o no positiva no genera tila: publicar "0 zonas
+  // analizadas" es afirmar algo falso, no dejar un hueco.
+  const pushCount = (n: number | null, label: string) => {
+    if (n == null || n <= 0) return;
+    trustItems.push({ value: n.toLocaleString(), label });
+  };
   if (activeTab === 'vacacional' && strStats) {
-    trustItems.push(
-      { value: strStats.listings.toLocaleString(), label: t('strProperties') },
-      { value: strStats.cities.toString(), label: t('cities') },
-      { value: strStats.zones.toString(), label: t('strZones') },
-      { value: t('monthly'), label: t('update') },
-    );
+    pushCount(strStats.listings, t('strProperties'));
+    pushCount(strStats.cities, t('cities'));
+    pushCount(strStats.zones, t('strZones'));
+    // Antes esta tila mostraba el string fijo t('monthly') = "Mensual", una
+    // frecuencia nominal puesta justo encima del aviso de que la serie no se
+    // actualiza desde febrero. `strStats.updatedAt` ya venía calculado desde
+    // `data_through` en page.tsx y nadie lo leía: ahora se rinde igual que la
+    // tila de renta larga.
+    trustItems.push({
+      value: formatDataThroughDate(strStats.updatedAt, dateLocale) ?? t('noRecentData'),
+      label: t('update'),
+    });
   } else if (activeTab !== 'vacacional' && ltrStats) {
+    pushCount(ltrStats.comparables, t('ltrComparables'));
+    pushCount(ltrStats.cities, t('cities'));
+    pushCount(ltrStats.developments, t('ltrDevelopments'));
     // Antes esta tila mostraba el string fijo "Diaria" — la frecuencia
     // nominal, no un dato real. `updatedAt` es `data_freshness`
     // (max(scraped_at) de los comparables limpios); se trunca a
     // 'YYYY-MM-DD' y se formatea con la misma función que ya evita el
     // salto de mes en huso negativo (formatDataThroughDate).
-    const updatedLabel = ltrStats.updatedAt
-      ? formatDataThroughDate(ltrStats.updatedAt.slice(0, 10), dateLocale)
-      : t('noRecentData');
-    trustItems.push(
-      { value: ltrStats.comparables.toLocaleString(), label: t('ltrComparables') },
-      { value: ltrStats.cities.toString(), label: t('cities') },
-      { value: ltrStats.developments.toString(), label: t('ltrDevelopments') },
-      { value: updatedLabel, label: t('update') },
-    );
+    trustItems.push({
+      value: formatDataThroughDate(ltrStats.updatedAt?.slice(0, 10), dateLocale) ?? t('noRecentData'),
+      label: t('update'),
+    });
   }
 
   return (

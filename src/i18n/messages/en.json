@@ -2114,7 +2114,7 @@
     "summaryLtr": "Our traditional rental analysis aggregates data from 7 real estate sources covering Yucatán and Quintana Roo. Rents are normalized, filtered for outliers, and segmented by zone, property type, and bedrooms to provide accurate market benchmarks.",
     "strFormulaTitle": "Propyte Index Formula",
     "strFactorOccupancy": "Occupancy (30%)",
-    "strFactorOccupancyDesc": "Average annual occupancy rate relative to the market median. Zones with sustained high occupancy score better.",
+    "strFactorOccupancyDesc": "Median monthly occupancy over the last 12 months, relative to the market median. Zones with sustained high occupancy score better.",
     "strFactorRateGrowth": "Rate Growth (25%)",
     "strFactorRateGrowthDesc": "Year-over-year ADR (Average Daily Rate) growth. Captures zones with increasing pricing power.",
     "strFactorRevparDesc": "Revenue Per Available Room, combining occupancy and rate into a single metric of revenue potential.",
@@ -2139,13 +2139,13 @@
     "ltrSource6": "MLS agent network",
     "ltrSource7": "Syndicated listing aggregator",
     "ltrPipelineTitle": "Processing Pipeline",
-    "ltrStep1": "Daily collection of active rental listings from public market sources",
+    "ltrStep1": "Collection of active rental listings from public market sources",
     "ltrStep2": "Zone normalization using canonical zone mapping (150+ zones)",
     "ltrStep3": "Outlier removal: rentals below $5,000 or above $500,000 MXN/month excluded",
     "ltrStep4": "Statistical computation: median, average, percentiles by segment",
     "ltrStep5": "ML-based rent estimation for each development using comparable matching",
     "ltrStep6": "ROI, IRR, cap rate and cash flow projections computed per property",
-    "ltrFooter": "Data is refreshed daily. Financial projections are estimates and do not guarantee returns."
+    "ltrFooter": "Financial projections are estimates and do not guarantee returns."
   },
   "comoComprar": {
     "heroEyebrow": "Practical guide",
@@ -2719,7 +2719,7 @@
   },
   "mercadoMeta": {
     "title": "Market intelligence — Vacation and traditional rentals",
-    "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +385K records, 10,000+ comparables, daily updates."
+    "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +385K records and 10,000+ rental comparables."
   },
   "pdf": {
     "snapshotProperty": "Investment snapshot — Property",
@@ -2828,7 +2828,7 @@
   },
   "zonas": {
     "dataSource": "Propyte analysis based on +385K short-term rental records in Mexico",
-    "dataSourceUpdated": " · Updated {date}",
+    "dataSourceUpdated": " · Data through {date}",
     "allCities": "All Cities",
     "searchZone": "Search zone...",
     "allProfiles": "All Profiles",
@@ -2852,7 +2852,7 @@
     "h1": "Profitability Map",
     "subtitle": "Compare occupancy, nightly rates and competition across zones before investing",
     "methodology": "Methodology",
-    "methodologyText": "Zone Intelligence Scores (0-100) combine five weighted components: rental yield (30%), occupancy rate (25%), ADR growth (20%), supply pressure (15%), and market liquidity (10%). Data sources include 140K+ public rental comparables from 8+ real estate portals. Scores are updated weekly.",
+    "methodologyText": "The Propyte Index (0-100) combines four weighted factors: Occupancy (30%), Rate Growth (25%), RevPAR (25%) and Competition (20%). It is computed from public short-term rental platform records and is published only for zones with a sufficient sample. The data cut-off is shown above.",
     "contextTitle": "Municipality context",
     "contextIntro": "Official data for the municipality of {municipio}, {state} (INEGI · SNIIV). Granularity is municipal, not by neighborhood.",
     "contextPopulation": "Population (census {year})",
@@ -2877,7 +2877,7 @@
     "zone": "Zone",
     "zonePerformance": "Zone performance",
     "basedOn": "Based on investment analytics for {zone}",
-    "lastUpdated": "Updated",
+    "lastUpdated": "Data through",
     "indexFactorsTitle": "Index factors (0-100)",
     "zoneMarketDataTitle": "Zone market data",
     "compositeScore": "Composite zone score",
@@ -2942,7 +2942,8 @@
     "missingAdrTitle": "The zone has enough sample but no published nightly rate, so no index or income is calculated.",
     "incompleteDataBadge": "incomplete data",
     "incompleteDataTitle": "One of the index's weighted components is missing, so it isn't published.",
-    "thinCycleBadge": "incomplete series",
+    "thinCycleBadge": "incomplete series ({n} of {total} months)",
+    "thinCycleBadgeUnknown": "incomplete series",
     "thinCycleTitle": "The series has fewer than 6 months observed: not enough for an annual median.",
     "occupancyRangeLabel": "low season {low}% – high {high}%"
   },
@@ -2966,7 +2967,6 @@
     "strProperties": "properties mapped",
     "cities": "cities",
     "strZones": "zones analyzed",
-    "monthly": "Monthly",
     "update": "update",
     "ltrComparables": "comparables",
     "ltrDevelopments": "developments analyzed",

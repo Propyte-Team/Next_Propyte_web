@@ -5,6 +5,8 @@ import {
   grossMonthlyIncome,
   isStale,
   occupancyTrend,
+  oldestDataThrough,
+  omissionBadge,
   omissionLabelKey,
 } from '@/lib/rental-data/zone-metrics';
 
@@ -143,5 +145,116 @@ describe('omissionLabelKey', () => {
 
   it('sin razon no hay etiqueta', () => {
     expect(omissionLabelKey(null)).toBeNull();
+  });
+});
+
+describe('formatDataThroughDate: fechas ilegibles', () => {
+  // Sin la guarda, toLocaleDateString sobre un Date invalido devuelve el
+  // literal "Invalid Date" y la pagina lo publica como si fuera el corte de los
+  // datos. Mismo criterio que isStale: ante una fecha ilegible, no inventar.
+  it('devuelve null con un string que no es fecha', () => {
+    expect(formatDataThroughDate('no-es-fecha', 'es')).toBeNull();
+    expect(formatDataThroughDate('no-es-fecha', 'en')).toBeNull();
+  });
+
+  it('devuelve null con un mes fuera de rango', () => {
+    expect(formatDataThroughDate('2026-13-01', 'es')).toBeNull();
+  });
+
+  it('devuelve null con string vacio, null y undefined', () => {
+    expect(formatDataThroughDate('', 'es')).toBeNull();
+    expect(formatDataThroughDate(null, 'es')).toBeNull();
+    expect(formatDataThroughDate(undefined, 'es')).toBeNull();
+  });
+
+  it('nunca devuelve el literal "Invalid Date"', () => {
+    for (const entrada of ['', 'ayer', '0000-00-00', '2026-02-31T', 'null']) {
+      expect(formatDataThroughDate(entrada, 'es') ?? '').not.toContain('Invalid');
+    }
+  });
+});
+
+describe('oldestDataThrough', () => {
+  // El maximo dejaba que una sola zona refrescada rotulara el tablero entero y
+  // apagara el aviso de rancio de las demas. La unica fecha que el conjunto
+  // sostiene es la mas antigua.
+  it('devuelve la fecha mas antigua, no la mas reciente', () => {
+    expect(
+      oldestDataThrough([
+        { data_through: '2026-08-01' },
+        { data_through: '2026-02-01' },
+        { data_through: '2026-06-01' },
+      ]),
+    ).toBe('2026-02-01');
+  });
+
+  it('una sola zona refrescada NO puede rotular el conjunto', () => {
+    const zonas = [{ data_through: '2026-08-01' }, ...Array(25).fill({ data_through: '2026-02-01' })];
+    expect(oldestDataThrough(zonas)).toBe('2026-02-01');
+    // Y con la fecha correcta el aviso de serie rancia SI se dispara.
+    expect(isStale(oldestDataThrough(zonas), new Date('2026-08-20T00:00:00Z'))).toBe(true);
+  });
+
+  it('ignora las zonas sin fecha', () => {
+    expect(
+      oldestDataThrough([
+        { data_through: null },
+        { data_through: '2026-05-01' },
+        { data_through: null },
+      ]),
+    ).toBe('2026-05-01');
+  });
+
+  it('devuelve null sin ninguna fecha y con lista vacia', () => {
+    expect(oldestDataThrough([{ data_through: null }])).toBeNull();
+    expect(oldestDataThrough([])).toBeNull();
+  });
+});
+
+describe('omissionBadge', () => {
+  it('interpola los meses observados en la etiqueta de serie incompleta', () => {
+    expect(omissionBadge('thin_cycle', 4)).toEqual({
+      labelKey: 'thinCycleBadge',
+      titleKey: 'thinCycleTitle',
+      values: { n: 4, total: 12 },
+    });
+  });
+
+  it('sin meses observados usa la variante SIN numero, no un 0 inventado', () => {
+    for (const n of [null, undefined, 0, -3]) {
+      expect(omissionBadge('thin_cycle', n)).toEqual({
+        labelKey: 'thinCycleBadgeUnknown',
+        titleKey: 'thinCycleTitle',
+        values: {},
+      });
+    }
+  });
+
+  it('un conteo que no es una serie incompleta cae a la variante sin numero', () => {
+    // 12 de 12 no es una serie incompleta, y 7.5 meses no existe.
+    expect(omissionBadge('thin_cycle', 12)?.labelKey).toBe('thinCycleBadgeUnknown');
+    expect(omissionBadge('thin_cycle', 7.5)?.labelKey).toBe('thinCycleBadgeUnknown');
+  });
+
+  it('cada razon trae su propio tooltip, no todas "muestra baja"', () => {
+    expect(omissionBadge('missing:adr', null)).toEqual({
+      labelKey: 'missingAdrBadge',
+      titleKey: 'missingAdrTitle',
+      values: {},
+    });
+    expect(omissionBadge('sample_below_30', null)).toEqual({
+      labelKey: 'lowSampleBadge',
+      titleKey: 'lowSampleTitle',
+      values: {},
+    });
+    expect(omissionBadge('missing:revpar', null)).toEqual({
+      labelKey: 'incompleteDataBadge',
+      titleKey: 'incompleteDataTitle',
+      values: {},
+    });
+  });
+
+  it('sin razon no hay etiqueta', () => {
+    expect(omissionBadge(null, 3)).toBeNull();
   });
 });

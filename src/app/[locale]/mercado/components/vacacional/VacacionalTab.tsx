@@ -5,7 +5,7 @@ import { MapPin, Search } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { averageIndex, partitionByPool } from '@/lib/rental-data/pools';
-import { formatDataThroughDate, isStale } from '@/lib/rental-data/zone-metrics';
+import { formatDataThroughDate, isStale, oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 import { VacacionalKPIs } from './VacacionalKPIs';
 import { ZoneCards } from './ZoneCards';
 import { ComparisonTable } from './ComparisonTable';
@@ -130,15 +130,27 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
     };
   }, [ranking, scores]);
 
-  // Latest data date. data_through, NO computed_at: computed_at es la fecha de la
-  // corrida del pipeline y decia "julio de 2026" sobre una serie que cerro en
+  // Corte de los datos. data_through, NO computed_at: computed_at es la fecha de
+  // la corrida del pipeline y decia "julio de 2026" sobre una serie que cerro en
   // febrero. formatDataThroughDate ancla el parseo a UTC para no correr el mes
   // hacia atras en husos negativos (UTC-6).
-  const latestDate = useMemo(() => {
-    const dates = scores.map((s) => s.data_through).filter(Boolean).sort().reverse();
-    if (dates.length === 0) return null;
-    return formatDataThroughDate(dates[0] as string, isEn ? 'en' : 'es');
-  }, [scores, isEn]);
+  //
+  // Se toma la fecha MAS ANTIGUA del pool de RANKING, no la mas reciente de
+  // todas las filas. Dos correcciones en una:
+  //   - el maximo dejaba que una sola zona refrescada rotulara el tablero entero
+  //     y apagara el aviso de rancio de las otras 25 congeladas en febrero;
+  //   - incluir todas las filas metia CDMX, que es mercado de referencia y no
+  //     oferta (ver pools.ts): su frescura no dice nada del Caribe.
+  // Este es el mismo pool que usa el hero en page.tsx, asi que ambos coinciden
+  // por construccion.
+  const oldestThrough = useMemo(
+    () => oldestDataThrough(partitionByPool(scores).ranking),
+    [scores],
+  );
+  const latestDate = useMemo(
+    () => formatDataThroughDate(oldestThrough, isEn ? 'en' : 'es'),
+    [oldestThrough, isEn],
+  );
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -161,15 +173,11 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       {/* Aviso de antigüedad: la serie puede haber quedado congelada en una corrida
           anterior aunque el pipeline haya corrido despues. Es una advertencia, no un
           reemplazo: las cifras se siguen mostrando. */}
-      {(() => {
-        const newest = scores.map((s) => s.data_through).filter(Boolean).sort().reverse()[0] ?? null;
-        if (!isStale(newest, new Date())) return null;
-        return (
-          <p className="text-xs text-amber-800 text-center">
-            {tMer('staleSeriesNotice', { date: latestDate ?? '—' })}
-          </p>
-        );
-      })()}
+      {isStale(oldestThrough, new Date()) && (
+        <p className="text-xs text-amber-800 text-center">
+          {tMer('staleSeriesNotice', { date: latestDate ?? '—' })}
+        </p>
+      )}
 
       {/* Search bar + City filter */}
       <div className="flex flex-wrap gap-3 items-center">

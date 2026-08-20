@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { TrendingUp, BarChart3, DollarSign, Building2, ArrowUpRight } from '@/lib/icons';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { averageIndex } from '@/lib/rental-data/pools';
 
 interface TrendingZone {
   zone: string;
@@ -19,12 +20,16 @@ export default function TrendingMarket() {
   const t = useTranslations('trending');
   const locale = useLocale();
   const [zones, setZones] = useState<TrendingZone[]>([]);
-  const [stats, setStats] = useState({
-    avgScore: '—',
-    avgOccupancy: '—',
-    avgADR: '—',
-    totalListings: '—',
-  });
+  // null = sin dato. Antes el estado guardaba strings y los promedios caían a 0,
+  // así que la portada publicaba una tarjeta con "0%" de ocupación y "$0" de
+  // tarifa mientras las filas de zona de abajo, correctamente, decían "—". Un 0
+  // es una cifra: afirma que el mercado no se renta. La ausencia se oculta.
+  const [stats, setStats] = useState<{
+    avgScore: number | null;
+    avgOccupancy: number | null;
+    avgADR: number | null;
+    totalListings: number | null;
+  }>({ avgScore: null, avgOccupancy: null, avgADR: null, totalListings: null });
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -49,25 +54,24 @@ export default function TrendingMarket() {
             adr: s.adr_p50_ttm != null ? `$${Math.round(s.adr_p50_ttm).toLocaleString()}` : '—',
           })));
 
-          const validScores = scores.filter((s) => s.score != null);
-          const avgScore = validScores.length > 0
-            ? Math.round(validScores.reduce((sum, s) => sum + (s.score ?? 0), 0) / validScores.length)
-            : 0;
+          // averageIndex ignora las zonas sin índice en vez de contarlas como
+          // cero (misma regla que /mercado, ver src/lib/rental-data/pools.ts).
+          const avgScore = averageIndex(scores);
           const validOcc = scores.filter((s) => s.occupancy_p50_ttm != null);
           const avgOcc = validOcc.length > 0
-            ? Math.round(validOcc.reduce((sum, s) => sum + (s.occupancy_p50_ttm ?? 0), 0) / validOcc.length)
-            : 0;
+            ? validOcc.reduce((sum, s) => sum + (s.occupancy_p50_ttm ?? 0), 0) / validOcc.length
+            : null;
           const validAdr = scores.filter((s) => s.adr_p50_ttm != null);
           const avgAdr = validAdr.length > 0
-            ? Math.round(validAdr.reduce((sum, s) => sum + (s.adr_p50_ttm ?? 0), 0) / validAdr.length)
-            : 0;
+            ? validAdr.reduce((sum, s) => sum + (s.adr_p50_ttm ?? 0), 0) / validAdr.length
+            : null;
           const totalListings = scores.reduce((sum, s) => sum + (s.active_listings ?? 0), 0);
 
           setStats({
-            avgScore: `${avgScore}/100`,
-            avgOccupancy: `${avgOcc}%`,
-            avgADR: `$${avgAdr.toLocaleString()}`,
-            totalListings: totalListings.toLocaleString(),
+            avgScore: avgScore != null ? Math.round(avgScore) : null,
+            avgOccupancy: avgOcc != null ? Math.round(avgOcc) : null,
+            avgADR: avgAdr != null ? Math.round(avgAdr) : null,
+            totalListings,
           });
         }
         setLoaded(true);
@@ -79,12 +83,14 @@ export default function TrendingMarket() {
     return () => controller.abort();
   }, []);
 
+  // Mismo criterio que VacacionalKPIs en /mercado: la tarjeta se oculta cuando
+  // el valor no es positivo. Un dato ausente nunca se renderiza como figura.
   const statCards = [
-    { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
-    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0E7490]' },
-    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#0E7490]' },
-    { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
-  ];
+    { icon: TrendingUp, value: stats.avgScore, format: (n: number) => `${n}/100`, label: t('stat1Label'), color: 'text-[#15803D]' },
+    { icon: DollarSign, value: stats.avgADR, format: (n: number) => `$${n.toLocaleString()}`, label: t('stat2Label'), color: 'text-[#0E7490]' },
+    { icon: BarChart3, value: stats.avgOccupancy, format: (n: number) => `${n}%`, label: t('stat3Label'), color: 'text-[#0E7490]' },
+    { icon: Building2, value: stats.totalListings, format: (n: number) => n.toLocaleString(), label: t('stat4Label'), color: 'text-[#1A2F3F]' },
+  ].filter((c): c is typeof c & { value: number } => c.value != null && c.value > 0);
 
   // Hide entire section when loaded with no zone data — empty stats + fake zones
   // create distrust, not neutrality (audit §CRÍTICO)
@@ -101,17 +107,19 @@ export default function TrendingMarket() {
         </div>
 
         {/* Stats grid — glass cristalino light sobre bg blanco */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          {statCards.map((stat, i) => (
-            <div key={i} className="propyte-card-glass-light p-5 text-center transition-transform hover:-translate-y-0.5">
-              <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm mb-3 ${stat.color}`}>
-                <stat.icon size={20} />
+        {statCards.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            {statCards.map((stat, i) => (
+              <div key={i} className="propyte-card-glass-light p-5 text-center transition-transform hover:-translate-y-0.5">
+                <div className={`inline-flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm mb-3 ${stat.color}`}>
+                  <stat.icon size={20} />
+                </div>
+                <div className={`text-3xl font-bold mb-1 ${stat.color}`}>{stat.format(stat.value)}</div>
+                <p className="text-sm text-gray-600">{stat.label}</p>
               </div>
-              <div className={`text-3xl font-bold mb-1 ${stat.color}`}>{stat.value}</div>
-              <p className="text-sm text-gray-600">{stat.label}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Trending zones — surface dark brand */}
         <div className="bg-[#0B1C1E] rounded-2xl p-6 md:p-8 border border-white/10">
