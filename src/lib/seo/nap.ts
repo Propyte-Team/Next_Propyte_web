@@ -77,21 +77,32 @@ export const NAP_SAME_AS = [
   GBP_URL,
 ] as const;
 
-/** Horario de atención — debe coincidir con el publicado en la ficha. */
+/**
+ * Horario de atención — debe coincidir con el publicado en la ficha.
+ *
+ * Abre los SIETE días de 10:00 a 19:00 (confirmado por Luis, 2026-08-20). Antes
+ * de esa confirmación el sitio declaraba Lun–Vie 9:00–18:00 y Sáb 10:00–14:00:
+ * apertura y cierre equivocados, y el domingo publicado como cerrado.
+ */
 export const NAP_OPENING_HOURS = [
   {
     '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    opens: '09:00',
-    closes: '18:00',
-  },
-  {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Saturday'],
+    dayOfWeek: [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ],
     opens: '10:00',
-    closes: '14:00',
+    closes: '19:00',
   },
 ] as const;
+// El horario en texto visible vive en los mensajes de i18n
+// (`dondeEstamos.labHours` y `contact.info.hours`); `nap.test.ts` vigila que no
+// reaparezcan los valores viejos ahí.
 
 /** Zonas donde Propyte comercializa — alimenta `areaServed` del JSON-LD. */
 export const NAP_AREA_SERVED = [

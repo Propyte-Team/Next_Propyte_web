@@ -7,6 +7,7 @@ import {
   NAP_ADDRESS_LINE_EN,
   NAP_EMAIL,
   NAP_GEO,
+  NAP_OPENING_HOURS,
   NAP_SAME_AS,
   GBP_CID,
   GBP_URL,
@@ -14,10 +15,12 @@ import {
 } from './nap';
 
 /**
- * El NAP vivía en cuatro lugares y divergió sin que nadie lo notara: el JSON-LD
- * publicaba una calle y un CP que no eran los de la ficha, y un email que no era
- * el público. El daño es silencioso — no rompe el build ni la página, solo
- * debilita la señal que Google usa para rankear en Maps.
+ * El NAP vivía en cinco lugares y divergió sin que nadie lo notara: el JSON-LD
+ * publicaba una calle y un CP que no eran los de la ficha, un email que no era
+ * el público, y un horario que cerraba en domingo cuando la oficina abre los
+ * siete días. El daño es silencioso — no rompe el build ni la página, solo
+ * debilita la señal que Google usa para rankear en Maps y manda gente a una
+ * puerta que cree cerrada.
  *
  * Estas pruebas fijan los valores contra la ficha verificada y vigilan que
  * nadie vuelva a hardcodear un NAP paralelo en el código.
@@ -31,6 +34,8 @@ const VALORES_OBSOLETOS = [
   { patron: 'Calle 5 Norte 95', porque: 'dirección que nunca fue la de la ficha' },
   { patron: 'Av. 10 Norte', porque: 'tercera calle inventada, vivía en los mensajes de i18n' },
   { patron: 'info@propyte.com', porque: 'buzón no público; el correcto es contacto@propyte.com' },
+  { patron: '9:00 – 18:00', porque: 'horario viejo; abre todos los días 10:00–19:00' },
+  { patron: '10:00 – 14:00', porque: 'sábado corto que ya no existe' },
 ];
 
 /**
@@ -81,6 +86,18 @@ describe('NAP canónico', () => {
     // El embed por búsqueda de texto no ata el sitio a la ficha.
     expect(GBP_EMBED_URL).not.toContain('?q=');
     expect(NAP_SAME_AS).toContain(GBP_URL);
+  });
+
+  it('declara los siete días de 10:00 a 19:00', () => {
+    // Publicar un día como cerrado cuando sí abre le cuesta visitas reales:
+    // quien consulta en domingo ve "cerrado" y no viene.
+    expect(NAP_OPENING_HOURS).toHaveLength(1);
+    const [tramo] = NAP_OPENING_HOURS;
+    expect(tramo.dayOfWeek).toHaveLength(7);
+    expect(tramo.dayOfWeek).toContain('Sunday');
+    expect(tramo.dayOfWeek).toContain('Saturday');
+    expect(tramo.opens).toBe('10:00');
+    expect(tramo.closes).toBe('19:00');
   });
 
   it('mantiene el CP y la esquina en la dirección de una línea', () => {
