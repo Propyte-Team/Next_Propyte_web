@@ -11,10 +11,13 @@
  * Por qué no se renombran los slugs con la grafía de la base: la URL es un
  * contrato público y no debe atarse a un texto editable desde el Hub.
  *
- * MANTENIMIENTO: los valores de la derecha son grafías del dato, verificadas
- * contra la vista el 2026-08-06. Si alguien renombra un valor en el Hub, hay
- * que tocar este archivo o la faceta se vacía en silencio. `taxonomy-values.test.ts`
- * atrapa los typos, pero no puede saber que el Hub cambió.
+ * MANTENIMIENTO: los valores de STAGE_DB_VALUES son grafías del dato,
+ * verificadas contra la vista el 2026-08-06. Si alguien renombra un stage en
+ * el Hub, hay que tocar este archivo a mano o la faceta se vacía en silencio.
+ * `taxonomy-values.test.ts` atrapa los typos, pero no puede saber que el Hub
+ * cambió. Para TYPE_DB_VALUES esto ya no aplica igual: deriva de
+ * `PRODUCT_TYPE_SPELLINGS` en `product-types.ts`, así que una grafía nueva se
+ * agrega ahí (única fuente) y este archivo la recibe solo.
  */
 
 import { PRODUCT_TYPES, PRODUCT_TYPE_SPELLINGS } from '@/lib/catalog/product-types';

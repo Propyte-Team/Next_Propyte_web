@@ -193,9 +193,15 @@ function normalizeDevelopmentType(raw: string | null | undefined): DevelopmentTy
 /**
  * Resuelve el tipo canónico de specs desde `property_types` (texto sucio en
  * BD: "Lotes", "Terrenos", "Lote comercial") con fallback a `development_type`
- * cuando el array viene null/vacío (~95% de los rows de v_developments).
- * Sin el fallback, todo desarrollo sin property_types caía a 'departamento' —
- * bug visible en Datos Clave de desarrollos de lotes.
+ * cuando el array viene null/vacío. Antes de la migración de property_types
+ * (2026-08-20) ese fallback disparaba en la mayoría de las filas CRUDAS de
+ * v_developments (draft/sin aprobar incluidas); en el catálogo PUBLICADO de
+ * hoy dispara en 0 de 22 (verificado por consulta directa 2026-08-20), porque
+ * la vista ya resuelve property_types también desde el inventario cargado
+ * cuando no hay override manual. El fallback se conserva igual: sigue siendo
+ * la única defensa para cuando property_types resuelve a null/vacío/grafía
+ * no catalogada. Sin él, todo desarrollo sin property_types caía a
+ * 'departamento' — bug visible en Datos Clave de desarrollos de lotes.
  */
 export function resolveSpecType(
   propertyTypes: string[] | string | null | undefined,
