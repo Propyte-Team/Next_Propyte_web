@@ -138,9 +138,15 @@ export default function MarketplaceCard({
 
   // Tipos de unidad del inventario — qué se vende aquí (departamentos, casas,
   // terrenos…). Sin conteos: v_units es un subconjunto del inventario real.
-  const unitTypeLabels = property.kind === 'development' && property.unitTypes?.length
-    ? property.unitTypes.map((t) => ({ key: t, label: safeUnitTypePlural(t) }))
-    : [];
+  // Tope de 3: con siete canónicos posibles un desarrollo grande desbordaría
+  // la fila y empujaría el precio fuera del primer vistazo. Vienen ya en el
+  // orden del catálogo desde el agregador.
+  const MAX_CHIPS = 3;
+  const allUnitTypes = property.kind === 'development' ? (property.unitTypes ?? []) : [];
+  const unitTypeLabels = allUnitTypes
+    .slice(0, MAX_CHIPS)
+    .map((t) => ({ key: t, label: safeUnitTypePlural(t) }));
+  const extraUnitTypes = Math.max(0, allUnitTypes.length - MAX_CHIPS);
 
   return (
     <div
@@ -433,6 +439,9 @@ export default function MarketplaceCard({
                   {label}
                 </span>
               ))}
+              {extraUnitTypes > 0 && (
+                <span className="text-2xs text-gray-500">+{extraUnitTypes}</span>
+              )}
             </div>
           )}
 
