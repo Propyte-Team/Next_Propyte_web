@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -49,9 +48,15 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
   // Preselect subject from ?asunto= param. Maps external slugs (used by other
   // pages: /financiamiento ?asunto=financiamiento-m1, /promociones ?asunto=
   // promos, blog/equipo CTAs, etc.) to the 5 internal subjectOptions values.
-  const searchParams = useSearchParams();
+  //
+  // El parámetro se lee de `window.location.search`, NO con `useSearchParams()`.
+  // Ese hook opta a todo el árbol hasta el `<Suspense>` más cercano fuera del
+  // prerender, y aquí no hay ninguno: /contacto llegaba al HTML como cascarón de
+  // layout, sin <h1>, sin dirección y sin el JSON-LD de RealEstateAgent. Como el
+  // valor solo se necesita después de hidratar, leerlo aquí es equivalente y
+  // mantiene la página estática. Lo vigila `tests/prerender-seo.mjs`.
   useEffect(() => {
-    const asunto = searchParams.get('asunto') ?? '';
+    const asunto = new URLSearchParams(window.location.search).get('asunto') ?? '';
     if (!asunto) return;
     const direct: Record<string, string> = {
       general: 'general',
@@ -70,7 +75,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
         ? 'property'
         : direct[asunto];
     if (target) setValue('subject', target);
-  }, [searchParams, setValue]);
+  }, [setValue]);
 
   async function onSubmit(data: FormData) {
     // Honeypot: silently drop bot submissions.

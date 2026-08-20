@@ -83,6 +83,10 @@ describe('NAP canónico', () => {
     expect(GBP_URL).toBe(`https://maps.google.com/?cid=${GBP_CID}`);
     expect(GBP_EMBED_URL).toContain(`cid=${GBP_CID}`);
     expect(GBP_EMBED_URL).toContain('output=embed');
+    // El CSP solo permite www.google.com en frame-src; maps.google.com se
+    // bloquea, y hoy en report-only el fallo sería invisible.
+    expect(GBP_EMBED_URL).toContain('https://www.google.com/');
+    expect(GBP_EMBED_URL).not.toContain('https://maps.google.com');
     // El embed por búsqueda de texto no ata el sitio a la ficha.
     expect(GBP_EMBED_URL).not.toContain('?q=');
     expect(NAP_SAME_AS).toContain(GBP_URL);

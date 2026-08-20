@@ -68,8 +68,14 @@ export const GBP_URL = `https://maps.google.com/?cid=${GBP_CID}`;
 /**
  * Embed por CID, no por búsqueda de texto (`?q=<dirección>`). Un query de texto
  * es una búsqueda cualquiera; el CID incrusta LA ficha.
+ *
+ * Ojo con el host: va por `www.google.com` y NO por `maps.google.com`. El CSP
+ * del sitio solo lista `https://www.google.com` en `frame-src`, así que un embed
+ * desde `maps.google.com` se bloquea. Hoy el CSP es report-only y el mapa carga
+ * igual, por lo que el fallo sería invisible hasta que pase a enforcing y el
+ * mapa de /contacto desaparezca sin más.
  */
-export const GBP_EMBED_URL = `https://maps.google.com/maps?cid=${GBP_CID}&output=embed`;
+export const GBP_EMBED_URL = `https://www.google.com/maps?cid=${GBP_CID}&output=embed`;
 
 export const NAP_SAME_AS = [
   'https://www.instagram.com/propyte.mx/',
