@@ -7,6 +7,8 @@
 // para la misma unidad. Cualquier consumidor del "yield" del sitio debe pasar
 // por aquí para pedir la renta.
 
+import type { ProductType } from '@/lib/catalog/product-types';
+
 /** Combinación por la que se busca comparables. `propertyType` ya normalizado
  *  (ver normalizeUnitType en lib/mappers/unit-to-property.ts). */
 export interface MarketRentTarget {
@@ -26,10 +28,18 @@ export interface MarketRentEstimate {
  *  vivienda: `getRentalEstimate` no encuentra comparables de su tipo y cae al
  *  nivel ciudad, devolviendo renta de departamento. Aplicada a un lote de
  *  $300k eso daba yields de 107% (visto 2026-07-28 en los `lote-*` de Región 11). */
-const RENTABLE_PROPERTY_TYPES = new Set(['departamento', 'penthouse', 'casa']);
+// 'villa' entra al abrirse como canónico propio: antes caía en 'casa' y sí
+// estimaba renta. Sin esta línea, separar villa apagaría en silencio la
+// estimación de renta de esos desarrollos.
+//
+// Set<ProductType> en vez de Set<string>: si alguien renombra o quita un
+// canónico de PRODUCT_TYPES sin revisar esta lista, el build falla en vez de
+// apagar la estimación de renta en silencio para ese tipo — el mismo defecto
+// que hubo que reparar a mano una vez para 'villa'.
+const RENTABLE_PROPERTY_TYPES = new Set<ProductType>(['departamento', 'penthouse', 'casa', 'villa']);
 
 export function isRentableType(propertyType: string | null | undefined): boolean {
-  return RENTABLE_PROPERTY_TYPES.has((propertyType ?? '').toLowerCase().trim());
+  return RENTABLE_PROPERTY_TYPES.has((propertyType ?? '').toLowerCase().trim() as ProductType);
 }
 
 /** Clave estable para deduplicar targets. Sin acentos ni caso: dos unidades que

@@ -26,6 +26,7 @@ import VirtualTour from '@/components/property/VirtualTour';
 import VideoPlayer from '@/components/property/VideoPlayer';
 import GeoAnalysis from '@/components/property/GeoAnalysis';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import type { ProductType } from '@/lib/catalog/product-types';
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
@@ -64,8 +65,9 @@ interface UnitDetailPageProps {
 
 export default async function UnitDetailPage({ locale, slug }: UnitDetailPageProps) {
   const supabase = createPublicSupabaseClient();
-  const [tProp, visibility] = await Promise.all([
+  const [tProp, tTypes, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
+    getTranslations({ locale, namespace: 'types' }),
     getVisibility(),
   ]);
 
@@ -210,12 +212,18 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
       : property.stage === 'construccion' ? tProp('stageConstruction')
         : tProp('stageReady');
 
-  const typeLabelMap: Record<string, string> = {
+  // Record<ProductType, string> en vez de Record<string, string>: si alguien
+  // agrega un canónico a PRODUCT_TYPES sin tocar este mapa, el build falla en
+  // vez de mostrar el fallback silencioso `|| property.specs.type` (la clave
+  // cruda sin traducir) para ese tipo nuevo.
+  const typeLabelMap: Record<ProductType, string> = {
     departamento: tProp('typeApartmentSingular'),
     penthouse: 'Penthouse',
     casa: tProp('typeHouseSingular'),
+    villa: tTypes('villa'),
     terreno: tProp('typeLandSingular'),
     macrolote: tProp('typeMacrolote'),
+    comercial: tTypes('comercial'),
   };
   const typeLabel = typeLabelMap[property.specs.type] || property.specs.type;
 

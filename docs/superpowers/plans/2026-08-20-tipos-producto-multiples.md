@@ -397,9 +397,20 @@ Aplicar el contenido de `scripts/sql/property-types-derivados.sql` contra el pro
 
 - [ ] **Step 5: Volver a correr el medidor y exigir que ahora dé positivo**
 
-Correr de nuevo `scripts/sql/audit-property-types-drift.sql`.
+Correr de nuevo `scripts/sql/audit-property-types-drift.sql`, **las dos consultas
+que trae**.
 
-Esperado: **cero filas con `GANA TIPOS`** — porque el «después» ya es el «hoy». Cero filas con `PIERDE TIPOS`.
+**La primera consulta (predicción) NO cambia y no debe cambiar.** Lee las tablas
+base, no la vista, así que devuelve las mismas 12 filas `GANA TIPOS` antes y
+después de migrar. Eso es correcto: es la predicción, no la medición.
+
+**La segunda consulta (contraste contra la vista viva) es la que se mueve.**
+Antes de migrar reporta `desalineados = 12`. Después de migrar debe reportar
+`desalineados = 0`: la vista real ya coincide con lo que la regla predice.
+
+Ese cero es la única evidencia de que la migración hizo lo que dice. Si sigue
+en 12, la vista no se reemplazó; si da un número intermedio, la vista aplicada
+no es la que se escribió.
 
 Y verificar el conteo real de la vista:
 
@@ -1061,7 +1072,9 @@ export const PRODUCT_TYPE_SPELLINGS: Record<ProductType, readonly string[]> = {
   villa: ['Villa', 'Villas'],
   terreno: ['Terreno', 'Terrenos', 'Lote', 'Lotes'],
   macrolote: ['Macrolote', 'Macrolotes'],
-  comercial: ['Local comercial', 'Locales comerciales', 'Lote comercial', 'Oficina', 'Oficinas'],
+  // `Local` es la grafía del picklist de Zoho (verificado 2026-08-20), y es la
+  // que el Hub escribe. `Local comercial` está en el dato histórico.
+  comercial: ['Local', 'Local comercial', 'Locales comerciales', 'Lote comercial', 'Oficina', 'Oficinas'],
 };
 
 /** Índice grafía-en-minúsculas → canónico, construido una vez. */
@@ -1582,8 +1595,8 @@ Y `VALUES_NOT_IN_INVENTORY` (línea 75):
  *  producto de ese tipo. */
 export const VALUES_NOT_IN_INVENTORY = [
   'Macrolote', 'Macrolotes', 'Townhouse', 'Departamentos', 'Casas',
-  'Residencias', 'Villas', 'Penthouses', 'Locales comerciales', 'Oficinas',
-  'Studio', 'Loft',
+  'Residencias', 'Villas', 'Penthouses', 'Local', 'Locales comerciales',
+  'Oficinas', 'Studio', 'Loft',
 ];
 ```
 

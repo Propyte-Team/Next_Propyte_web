@@ -136,11 +136,23 @@ export default function MarketplaceCard({
     });
   })();
 
-  // Tipos de unidad del inventario — qué se vende aquí (departamentos, casas,
-  // terrenos…). Sin conteos: v_units es un subconjunto del inventario real.
-  const unitTypeLabels = property.kind === 'development' && property.unitTypes?.length
-    ? property.unitTypes.map((t) => ({ key: t, label: safeUnitTypePlural(t) }))
-    : [];
+  // Tipos de PRODUCTO que vende este desarrollo (departamentos, casas,
+  // terrenos…) — property.unitTypes, que sale de la columna `property_types`
+  // de v_developments ya resuelta por mapDevelopmentToProperty (override
+  // manual `ext_property_types` si trae algo, inventario cargado si no). Ya
+  // NO es un agregado de v_units: ese fue el defecto que esta spec corrigió
+  // (2026-08-20-tipos-producto-multiples-design.md). Sin conteos: a este
+  // nivel no hay una fuente única de "cuántas unidades de cada tipo". Tope de
+  // 3: con siete canónicos posibles un desarrollo grande desbordaría la fila
+  // y empujaría el precio fuera del primer vistazo. Vienen ya en el orden del
+  // catálogo (PRODUCT_TYPES) porque el mapper los filtra en ese orden, no por
+  // ningún agregador.
+  const MAX_CHIPS = 3;
+  const allUnitTypes = property.kind === 'development' ? (property.unitTypes ?? []) : [];
+  const unitTypeLabels = allUnitTypes
+    .slice(0, MAX_CHIPS)
+    .map((t) => ({ key: t, label: safeUnitTypePlural(t) }));
+  const extraUnitTypes = Math.max(0, allUnitTypes.length - MAX_CHIPS);
 
   return (
     <div
@@ -417,11 +429,13 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Row 3 — Tipos de unidad del inventario: qué se vende aquí.
+          {/* Row 3 — Tipos de PRODUCTO que vende este desarrollo.
               Antes había encima un chip cyan de tipo de desarrollo
               (RESIDENCIAL HORIZONTAL, LOTES). Se quitó: decía casi lo mismo por
               otra vía y dos filas de chips saturaban la card. Este gana porque
-              sale del inventario real de v_units, no del campo declarado. */}
+              viene del campo declarado (`property_types`, override manual
+              incluido) — leer v_units directamente sería repetir el error que
+              esta spec ya corrigió una vez. */}
           {unitTypeLabels.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {unitTypeLabels.map(({ key, label }) => (
@@ -433,6 +447,9 @@ export default function MarketplaceCard({
                   {label}
                 </span>
               ))}
+              {extraUnitTypes > 0 && (
+                <span className="text-2xs text-gray-500">+{extraUnitTypes}</span>
+              )}
             </div>
           )}
 
