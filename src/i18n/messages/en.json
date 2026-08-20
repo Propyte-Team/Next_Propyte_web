@@ -2018,7 +2018,7 @@
   },
   "mercado": {
     "navLabel": "Market",
-    "badge": "Market intelligence with +2M rental records",
+    "badge": "Market intelligence with +385K rental records",
     "heroTitle": "Analyze the rental market in Mexico",
     "heroSubtitle": "Real data on occupancy, nightly rates and rental prices by zone. Compare before investing.",
     "tabVacacional": "Vacation rental (short-term)",
@@ -2112,7 +2112,7 @@
     "title": "Methodology",
     "seeFull": "See full methodology",
     "summaryStr": "The Propyte Index ranks each zone on a 0-100 scale using four weighted factors: Occupancy (30%), Rate Growth (25%), RevPAR (25%), and Competition (20%). Higher scores indicate stronger rental markets for short-term vacation rentals.",
-    "summaryLtr": "Our traditional rental analysis aggregates data from 7 real estate sources covering 62+ cities in Mexico. Rents are normalized, filtered for outliers, and segmented by zone, property type, and bedrooms to provide accurate market benchmarks.",
+    "summaryLtr": "Our traditional rental analysis aggregates data from 7 real estate sources covering 62 locations in Yucatán and Quintana Roo. Rents are normalized, filtered for outliers, and segmented by zone, property type, and bedrooms to provide accurate market benchmarks.",
     "strFormulaTitle": "Propyte Index Formula",
     "strFactorOccupancy": "Occupancy (30%)",
     "strFactorOccupancyDesc": "Average annual occupancy rate relative to the market median. Zones with sustained high occupancy score better.",
@@ -2121,7 +2121,6 @@
     "strFactorRevparDesc": "Revenue Per Available Room, combining occupancy and rate into a single metric of revenue potential.",
     "strFactorCompetition": "Competition (20%)",
     "strFactorCompetitionDesc": "Inverse supply saturation score. Fewer active listings relative to demand results in a higher score.",
-    "strFooter": "Data based on public comparables from real estate portals with monthly updates. Scores are recalculated on the 1st of each month.",
     "indexSectionTitle": "How the Propyte Index is built",
     "methodPoolTitle": "What it is compared against",
     "methodPool": "The Propyte Index is a percentile within the region, not within the city. All zones in the Riviera Maya and Yucatán are compared against each other; Mexico City is normalized separately as a reference market. This criterion changed in July 2026: values published before that date are not comparable with later ones.",
@@ -2721,7 +2720,7 @@
   },
   "mercadoMeta": {
     "title": "Market intelligence — Vacation and traditional rentals",
-    "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +2M records, 10,000+ comparables, daily updates."
+    "description": "Analyze vacation and traditional rental markets in Cancun, Playa del Carmen, Tulum, CDMX and Merida. +385K records, 10,000+ comparables, daily updates."
   },
   "pdf": {
     "snapshotProperty": "Investment snapshot — Property",
@@ -2829,7 +2828,7 @@
     "bedsPlural": "{n} beds"
   },
   "zonas": {
-    "dataSource": "Propyte analysis based on +2M short-term rental records in Mexico",
+    "dataSource": "Propyte analysis based on +385K short-term rental records in Mexico",
     "dataSourceUpdated": " · Updated {date}",
     "allCities": "All Cities",
     "searchZone": "Search zone...",
@@ -2847,7 +2846,7 @@
     "noZonesFound": "No zones found with the current filters.",
     "showingOf": "Showing {visible} of {total} zones",
     "metaTitle": "Profitability Map — Compare Vacation Rental Zones in Mexico",
-    "metaDescription": "Compare occupancy, nightly rates and competition across investment zones in Cancun, Playa del Carmen, Tulum, CDMX and Merida. Based on +2M rental records.",
+    "metaDescription": "Compare occupancy, nightly rates and competition across investment zones in Cancun, Playa del Carmen, Tulum, CDMX and Merida. Based on +385K rental records.",
     "schemaName": "Investment Zone Rankings",
     "breadcrumbHome": "Home",
     "breadcrumbZones": "Zones",
@@ -2973,7 +2972,7 @@
     "ltrComparables": "comparables",
     "ltrSources": "data sources",
     "daily": "Daily",
-    "badge": "Market intelligence with +2M rental records",
+    "badge": "Market intelligence with +385K rental records",
     "title": "Analyze the rental market in Mexico",
     "subtitle": "Real data on occupancy, nightly rates and rental prices by zone. Compare before investing.",
     "updating": "Updating market data…"

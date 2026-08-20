@@ -70,9 +70,6 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
                 <p>{t('methodGross')}</p>
                 <p className="font-semibold text-[#1A2F3F] pt-2">{t('methodProvenanceTitle')}</p>
                 <p>{t('methodProvenance')}</p>
-                <p className="text-xs text-gray-600">
-                  {t('strFooter')}
-                </p>
               </>
             ) : (
               <>
