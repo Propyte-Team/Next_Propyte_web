@@ -62,6 +62,25 @@ export function passesRoiMin(projected: number | null, roiMin: number): boolean 
   return projected != null && projected >= roiMin;
 }
 
+/**
+ * ¿Este inmueble ofrece el producto que el comprador pidió?
+ *
+ * Antes el predicado comparaba `p.specs.type !== filters.type` — un escalar
+ * que sale del PRIMER elemento de `property_types`. Un desarrollo con lotes y
+ * casas mostraba los dos chips en la tarjeta y aun así desaparecía al filtrar
+ * por Casa. Ver spec 2026-08-20-tipos-producto-multiples-design.md.
+ *
+ * `unitTypes` es el inventario real (tipos distintos de las unidades cargadas).
+ * Cuando viene vacío —desarrollo sin unidades— se respalda en `specs.type`,
+ * que ya deriva de property_types → development_type.
+ */
+export function matchesProductType(property: Property, filterType: string): boolean {
+  if (!filterType) return true;
+  const types = property.kind === 'development' ? property.unitTypes : undefined;
+  if (types && types.length > 0) return types.includes(filterType as Property['specs']['type']);
+  return property.specs.type === filterType;
+}
+
 function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const parsed: Partial<Filters> = {};
 
@@ -198,7 +217,8 @@ export function useFilters(properties: Property[]) {
       }
       if (filters.city && p.location.city !== filters.city) return fail(`city:'${p.location.city}'≠'${filters.city}'`);
       if (filters.zone && p.location.zone !== filters.zone) return fail(`zone:'${p.location.zone}'≠'${filters.zone}'`);
-      if (filters.type && p.specs.type !== filters.type) return fail(`type:'${p.specs.type}'≠'${filters.type}'`);
+      if (!matchesProductType(p, filters.type))
+        return fail(`type:[${p.unitTypes?.join(',') ?? p.specs.type}]∌'${filters.type}'`);
       if (p.price.mxn < filters.priceMin) return fail('priceMin');
       if (p.price.mxn > filters.priceMax) return fail('priceMax');
       if (!passesRoiMin(p.roi.projected, filters.roiMin)) return fail('roiMin');
