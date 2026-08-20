@@ -123,7 +123,7 @@ function PillDropdown({
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive
             ? 'bg-propyte-cyan-100 border-propyte-brand text-[#0E7490]'
-            : 'bg-white border-gray-300 text-[#2C2C2C] hover:border-gray-400'
+            : 'bg-white border-gray-300 text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400'
         }`}
       >
         {activeLabel || label}
@@ -304,7 +304,7 @@ export default function FilterBar({
           onClick={onOpenAdvanced}
           aria-haspopup="dialog"
           aria-expanded={advancedOpen}
-          className="min-h-[44px] px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors flex-shrink-0 touch-manipulation"
+          className="min-h-[44px] px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400 transition-colors flex-shrink-0 touch-manipulation"
         >
           <SlidersHorizontal size={14} />
           {t('mobileFiltersButton')}
@@ -594,7 +594,7 @@ export default function FilterBar({
           aria-expanded={advancedOpen}
           aria-haspopup="dialog"
           aria-controls="advanced-filters-dialog"
-          className="h-10 px-4 flex items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0"
+          className="h-10 px-4 flex items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0"
         >
           <SlidersHorizontal size={14} />
           {t('moreFilters')}
