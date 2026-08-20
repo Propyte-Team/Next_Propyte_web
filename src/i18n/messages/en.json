@@ -290,8 +290,8 @@
     "title": "Coverage in Riviera Maya and Yucatán",
     "subtitle": "We operate from Playa del Carmen and cover the main markets of the Caribbean coast and the Yucatán peninsula.",
     "labTitle": "Real Estate Lab",
-    "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
-    "labHours": "Monday to Friday, 9:00 – 18:00",
+    "labAddress": "5th Avenue & 40th Street North, C.P. 77720, Playa del Carmen, Q. Roo",
+    "labHours": "Monday to Friday, 9:00 – 18:00 · Saturday, 10:00 – 14:00",
     "labCta": "Schedule a visit to the Lab",
     "zonesTitle": "Zones we cover",
     "zone1": "Tulum",
@@ -379,7 +379,7 @@
     "section6Title": "Limitations and liability",
     "section6Body": "Propyte operates as a real estate marketplace and commercial advisor. We do not guarantee specific returns, appreciation or occupancy. Data is subject to update. The final purchase decision and verification of information are the responsibility of the buyer and the professionals supporting them (notary, accountant, legal advisor).",
     "section7Title": "Compliance contact",
-    "section7Body": "If you detect inaccurate information, a figure without a source or a missing disclaimer, write to info@propyte.com with subject \"Compliance\". We review every report and publish a correction if applicable."
+    "section7Body": "If you detect inaccurate information, a figure without a source or a missing disclaimer, write to contacto@propyte.com with subject \"Compliance\". We review every report and publish a correction if applicable."
   },
   "homeFAQ": {
     "eyebrow": "Frequently asked",
@@ -1356,10 +1356,11 @@
       "email": "Email",
       "hours": "Business hours",
       "contactInfo": "Contact information",
-      "mapTitle": "Map of our location"
+      "mapTitle": "Map of our location",
+      "viewOnMaps": "View on Google Maps"
     },
     "info": {
-      "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, Mexico",
+      "address": "5th Avenue & 40th Street North, C.P. 77720, Playa del Carmen, Q. Roo",
       "phone": "+52 984 463 8032",
       "email": "contacto@propyte.com",
       "hours": "Monday to Friday 9:00 AM – 6:00 PM, Saturday 10:00 AM – 2:00 PM"
@@ -1577,18 +1578,6 @@
     "step3Desc": "You get access to the vetted portfolio, per-development materials, and your backing Propyte advisor.",
     "step4Title": "Register and sell",
     "step4Desc": "You register your clients —protected under your name— and share the properties. We back you all the way to closing.",
-    "platformEyebrow": "Coming soon — Your platform",
-    "platformBadge": "Preview · In development",
-    "platformTitle": "We're building your operations hub",
-    "platformSubtitle": "A platform to manage inventory, clients, and commissions in one place — no scattered spreadsheets or WhatsApp threads. Coming in the next few months; in the meantime, your Account Manager gives you everything you need.",
-    "platformFeature1Title": "Live inventory",
-    "platformFeature1Desc": "Availability and pricing kept current, by development.",
-    "platformFeature2Title": "Sales pipeline",
-    "platformFeature2Desc": "Your clients and their stage, on a clear board.",
-    "platformFeature3Title": "Commissions and payouts",
-    "platformFeature3Desc": "What you've earned and what's pending.",
-    "platformFeature4Title": "Management tools",
-    "platformFeature4Desc": "Materials, sheets, and follow-up in one place.",
     "faqEyebrow": "Frequently asked questions",
     "faqTitle": "What brokers ask us before joining",
     "faq1Q": "Do I need to live in the Riviera Maya to join?",

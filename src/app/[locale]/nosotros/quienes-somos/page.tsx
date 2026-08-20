@@ -17,6 +17,7 @@ import {
   Handshake,
   Home,
 } from '@/lib/icons';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -30,12 +31,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       type: 'website',
       title,
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     twitter: { card: 'summary_large_image', title, description },
     alternates: {

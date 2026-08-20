@@ -38,14 +38,24 @@ export default function ConsentBannerLp() {
     <div
       role="dialog"
       aria-label="Consentimiento de cookies"
-      // bottom-20 en móvil: la barra de CTA fija ocupa la parte inferior y no
-      // puede quedar tapada: es el objetivo primario de la página.
-      className="fixed inset-x-0 bottom-20 z-50 mx-auto max-w-3xl rounded-[var(--lp-r-media)] border border-[var(--lp-line)] bg-[var(--lp-paper)] p-4 shadow-[0_12px_40px_rgb(22_25_28/0.14)] lg:bottom-4"
+      // ANTES iba en `bottom-20` para dejar libre la barra de CTA fija. Medido
+      // en 390x844, ese hueco de 80 px colocaba el banner en y 616–764, encima
+      // de los DOS CTA del hero (y 636–692 y y 704–756): al cargar la página
+      // NO había un solo botón visible hasta decidir las cookies.
+      //
+      // Ahora va pegado abajo y más compacto. Puede solaparse con la barra
+      // fija, sí — pero esa barra no aparece hasta el 20% del scroll y el
+      // banner se va con un tap, mientras que tapar los CTA del hero pasaba en
+      // CADA primera carga. Se protege lo permanente, no lo transitorio.
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-3xl border-t border-[var(--lp-line)] bg-[var(--lp-paper)] px-4 py-3 shadow-[0_-8px_32px_rgb(22_25_28/0.16)] lg:bottom-4 lg:rounded-[var(--lp-r-media)] lg:border"
     >
+      {/* Copy recortado: decía en tres líneas lo que cabe en dos. Cada línea
+          aquí es altura robada al primer pliegue. Se conserva lo que importa
+          —que se pueden rechazar sin romper la página—, que es la parte
+          honesta y la que de verdad reduce el rechazo por desconfianza. */}
       <p className="text-xs leading-relaxed text-[var(--lp-ink-soft)]">
-        Usamos cookies de medición para saber qué anuncios traen visitantes que
-        de verdad encuentran lo que buscan. Puedes rechazarlas y la página
-        funciona igual.
+        Usamos cookies de medición. Puedes rechazarlas y la página funciona
+        igual.
       </p>
       <div className="mt-3 flex gap-2">
         <button

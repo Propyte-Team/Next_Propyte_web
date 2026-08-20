@@ -78,7 +78,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    openGraph: { title, description, type: 'website', locale: isEn ? 'en_US' : 'es_MX' },
+    openGraph: { siteName: 'Propyte', title, description, type: 'website', locale: isEn ? 'en_US' : 'es_MX' },
     alternates: {
       languages: {
         es: `/es/zonas/${slug}`,

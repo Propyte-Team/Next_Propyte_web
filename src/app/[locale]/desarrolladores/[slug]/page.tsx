@@ -3,6 +3,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopers } from '@/lib/supabase/queries';
 import type { DeveloperRow } from '@/lib/supabase/types';
 import DeveloperProfilePage from '../_components/DeveloperProfilePage';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 3600;
 
@@ -44,11 +45,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       title: `${title} | Propyte`,
       description,
       type: 'profile',
       locale: locale === 'en' ? 'en_US' : 'es_MX',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/desarrolladores/${slug}`,

@@ -31,6 +31,7 @@ export async function buildDetailMetadata(slug: string, locale: string): Promise
       title,
       description: description.slice(0, 155),
       openGraph: {
+        siteName: 'Propyte',
         title: property.name,
         description,
         type: 'website',

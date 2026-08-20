@@ -86,7 +86,7 @@ export default function StickyCta({
           // Ancla real, no botón con scrollIntoView: funciona sin JS y el foco
           // aterriza en el formulario. Tap target de 48px con padding real.
           tabIndex={mostrar ? undefined : -1}
-          className="inline-flex min-h-[48px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-6 py-3 text-sm font-medium text-white transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
+          className="inline-flex min-h-[48px] shrink-0 cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-6 py-3 text-base font-semibold text-white shadow-[0_2px_10px_rgb(168_64_42/0.28)] transition-colors duration-200 hover:bg-[var(--lp-accent-strong)]"
         >
           {mensualidad ? 'Ver mi plan' : 'Pedir el detalle'}
         </a>

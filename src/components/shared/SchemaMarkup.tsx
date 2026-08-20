@@ -5,8 +5,12 @@
  *   - organization (root del Home)
  *   - website (search action — habilita Sitelinks Search Box)
  *   - realEstateListing / apartment / house (detail de propiedades)
- *   - localBusiness (contacto, Real Estate Lab address per SOP Hostess §2.1)
+ *   - localBusiness (contacto — emite RealEstateAgent, subtipo de LocalBusiness)
  *   - professionalService (Propyte MasterBroker)
+ *
+ * El NAP (nombre, dirección, teléfono, geo, ficha de Maps) NO se hardcodea aquí:
+ * sale de `@/lib/seo/nap`, la fuente única. Ver ese módulo antes de tocar
+ * cualquier dato de contacto.
  *   - breadcrumb (delegado a Breadcrumbs.tsx — emite su propio JSON-LD)
  *   - faq (FAQPage genérico)
  *   - blogPosting (artículos del blog)
@@ -15,6 +19,19 @@
  * MasterBroker firmado, Manual §7.1). Por ahora no se emite rating en
  * organization para evitar fabricar reseñas inexistentes.
  */
+import {
+  NAP_NAME,
+  NAP_LEGAL_NAME,
+  NAP_PHONE,
+  NAP_EMAIL,
+  NAP_ADDRESS,
+  NAP_GEO,
+  NAP_SAME_AS,
+  NAP_OPENING_HOURS,
+  NAP_AREA_SERVED,
+  GBP_URL,
+} from '@/lib/seo/nap';
+
 interface SchemaMarkupProps {
   type:
     | 'organization'
@@ -28,30 +45,20 @@ interface SchemaMarkupProps {
   data?: Record<string, unknown>;
 }
 
-const ORG_NAME = 'Propyte';
+const ORG_NAME = NAP_NAME;
 const ORG_URL = 'https://propyte.com';
 const ORG_LOGO = 'https://propyte.com/logo.png';
-const ORG_PHONE = '+52 984 463 8032';
-const ORG_EMAIL = 'info@propyte.com';
+const ORG_PHONE = NAP_PHONE;
+const ORG_EMAIL = NAP_EMAIL;
 const ORG_DESCRIPTION =
   'Marketplace inmobiliario en la Riviera Maya con herramientas de análisis para inversionistas.';
-const ORG_SAME_AS = [
-  'https://www.instagram.com/propyte.mx/',
-  'https://www.facebook.com/propyte',
-];
+const ORG_SAME_AS = [...NAP_SAME_AS];
 
-// Real Estate Lab — domicilio canónico SOP Hostess §2.1
-const REAL_ESTATE_LAB_ADDRESS = {
-  '@type': 'PostalAddress',
-  streetAddress: 'Calle 5 Norte 95',
-  addressLocality: 'Playa del Carmen',
-  addressRegion: 'Quintana Roo',
-  postalCode: '77710',
-  addressCountry: 'MX',
-} as const;
+// Domicilio canónico — espejo de la ficha verificada. Ver `@/lib/seo/nap`.
+const REAL_ESTATE_LAB_ADDRESS = NAP_ADDRESS;
 
 // Razón social oficial (SOP-4.2-01 §3) — se usa en LocalBusiness.legalName
-const LEGAL_NAME = 'Nativa Tulum';
+const LEGAL_NAME = NAP_LEGAL_NAME;
 
 export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
   let schema: Record<string, unknown> = {};
@@ -109,29 +116,35 @@ export default function SchemaMarkup({ type, data }: SchemaMarkupProps) {
       break;
 
     case 'localBusiness':
-      // LocalBusiness — Real Estate Lab como punto físico, con parentOrganization
-      // apuntando a Organization (graph-aware). legalName = Nativa Tulum (SOP).
+      // RealEstateAgent — subtipo de LocalBusiness. Es más específico y le dice
+      // a Google QUÉ somos, no solo que existimos. parentOrganization enlaza al
+      // nodo Organization (graph-aware). legalName = Nativa Tulum (SOP).
+      //
+      // `geo` + `hasMap` + `sameAs` → ficha de Google Business Profile son las
+      // señales que atan este sitio a ese pin de Maps. Sin ellas Google tiene
+      // que adivinar que la web y la ficha son la misma entidad.
       schema = {
         '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
+        '@type': 'RealEstateAgent',
         '@id': `${ORG_URL}#localbusiness`,
         name: `${ORG_NAME} · Real Estate Lab`,
         legalName: LEGAL_NAME,
         description:
-          'Oficina física de Propyte (Real Estate Lab) en 5ta Avenida, Playa del Carmen, Quintana Roo.',
+          'Oficina física de Propyte (Real Estate Lab) en 5ta Avenida esquina Calle 40 Norte, Playa del Carmen, Quintana Roo.',
         url: `${ORG_URL}/es/contacto`,
+        image: ORG_LOGO,
         telephone: ORG_PHONE,
         email: ORG_EMAIL,
         address: REAL_ESTATE_LAB_ADDRESS,
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: NAP_GEO.latitude,
+          longitude: NAP_GEO.longitude,
+        },
+        hasMap: GBP_URL,
+        areaServed: NAP_AREA_SERVED.map((name) => ({ '@type': 'Place', name })),
         parentOrganization: { '@id': `${ORG_URL}#organization` },
-        openingHoursSpecification: [
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            opens: '09:00',
-            closes: '18:00',
-          },
-        ],
+        openingHoursSpecification: NAP_OPENING_HOURS,
         sameAs: ORG_SAME_AS,
         ...data,
       };

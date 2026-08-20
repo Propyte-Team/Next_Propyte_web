@@ -1,7 +1,7 @@
 /**
- * Client-side event tracking — fires both GA4 (gtag) and Meta Pixel (fbq)
- * with consistent payloads. Each helper covers one of the 7 events the
- * speckit defines as canonical for propyte.com:
+ * Client-side event tracking — fires GA4 (gtag), Meta Pixel (fbq) y el pixel
+ * de OpenAI Ads (oaiq) con payloads consistentes. Each helper covers one of
+ * the 7 events the speckit defines as canonical for propyte.com:
  *
  *   1. whatsapp_click      → CTA on every WhatsApp surface
  *   2. view_item           → property detail page mount
@@ -13,7 +13,25 @@
  *
  * Both gtag and fbq queue calls before scripts load, so it's safe to fire
  * these synchronously during click handlers / mount effects.
+ *
+ * Los tres destinos NO cubren los mismos eventos. Reparto actual:
+ *
+ *   evento           GA4  Meta  OpenAI Ads
+ *   whatsapp_click    x    x    custom "whatsapp_click"
+ *   view_item         x    x    contents_viewed
+ *   generate_lead     x    x    lead_created  ← conversion registrada
+ *   search            x    x    —
+ *   select_content    x    —    —
+ *   file_download     x    —    —
+ *   add_to_wishlist   x    x    —
+ *
+ * Los huecos de OpenAI son deliberados: su taxonomia no tiene equivalente
+ * limpio (add_to_wishlist NO es items_added, que significa anadir al carrito)
+ * y mapearlos a la fuerza ensucia el dataset con el que optimiza la campana.
+ * page_viewed lo dispara <Analytics /> + <OpenAiPageView />, no este archivo.
  */
+
+import { oaiqMeasure } from '@/lib/analytics/openai-ads';
 
 type GtagFn = (...args: unknown[]) => void;
 type FbqFn = (...args: unknown[]) => void;
@@ -84,15 +102,30 @@ function emit(
   name: string,
   gaParams: Record<string, unknown>,
   fbqEvent?: { name: string; params?: Record<string, unknown>; capi?: boolean; eventId?: string },
+  oaiqEvent?: { name: string; data: Record<string, unknown>; options?: Record<string, unknown> },
 ) {
   const gtag = getGtag();
   if (gtag) gtag('event', name, gaParams);
+
+  // Un solo id por llamada a emit(): Meta y OpenAI lo usan cada uno para su
+  // propia deduplicacion pixel/servidor. Se genera perezosamente para no
+  // gastar un crypto.randomUUID() en los eventos que solo van a GA4.
+  let sharedEventId: string | null = fbqEvent?.eventId ?? null;
+  const ensureEventId = () => (sharedEventId ??= newEventId());
+
   if (fbqEvent) {
-    const eventId = fbqEvent.eventId ?? newEventId();
+    const eventId = ensureEventId();
     const params = fbqEvent.params ?? {};
     const fbq = getFbq();
     if (fbq) fbq('track', fbqEvent.name, params, { eventID: eventId });
     if (fbqEvent.capi !== false) mirrorToCAPI(fbqEvent.name, eventId, params);
+  }
+
+  if (oaiqEvent) {
+    oaiqMeasure(oaiqEvent.name, oaiqEvent.data, {
+      event_id: ensureEventId(),
+      ...(oaiqEvent.options ?? {}),
+    });
   }
 }
 
@@ -118,7 +151,16 @@ export function trackWhatsAppClick(payload: {
   propertyId?: string;
   propertySlug?: string;
 }) {
-  emit('whatsapp_click', payload, { name: 'Contact', params: { method: 'whatsapp', surface: payload.surface } });
+  emit(
+    'whatsapp_click',
+    payload,
+    { name: 'Contact', params: { method: 'whatsapp', surface: payload.surface } },
+    // OpenAI Ads no tiene evento estandar para "contacto por WhatsApp", asi que
+    // va como evento a medida. En Ads Manager hay que darlo de alta con este
+    // mismo nombre para que cuente como conversion; mientras tanto queda
+    // registrado en el dataset sin optimizar nada.
+    { name: 'custom', data: { type: 'custom' }, options: { custom_event_name: 'whatsapp_click' } },
+  );
 
   // Google Ads — acción "WhatsApp click (propyte.com)". En las landings de
   // pago el WhatsApp es la vía de contacto de menor fricción; sin esto el
@@ -154,6 +196,15 @@ export function trackViewItem(payload: {
       ],
     },
     { name: 'ViewContent', params: { content_ids: [payload.itemId], content_type: payload.itemKind, value: payload.priceMxn, currency: 'MXN' } },
+    {
+      name: 'contents_viewed',
+      data: {
+        type: 'contents',
+        contents: [
+          { id: payload.itemId, name: payload.itemName, content_type: payload.itemKind },
+        ],
+      },
+    },
   );
 }
 
@@ -208,6 +259,19 @@ export function trackGenerateLead(payload: {
       // /api/leads ya manda este Lead por CAPI con email/teléfono hasheados;
       // espejarlo aquí lo mandaría dos veces con peor match quality.
       capi: false,
+    },
+    // OpenAI Ads — evento de conversion "Lead Created" de la fuente de datos
+    // Propyte.com. Es el UNICO evento dado de alta como conversion en Ads
+    // Manager: si cambia el nombre aqui, las campanas dejan de registrar.
+    // `amount` va en MXN; hoy ningun formulario estima valor, asi que sale 0
+    // y la conversion cuenta por volumen, igual que en Google Ads.
+    {
+      name: 'lead_created',
+      data: {
+        type: 'customer_action',
+        amount: payload.valueMxn ?? 0,
+        currency: 'MXN',
+      },
     },
   );
 
