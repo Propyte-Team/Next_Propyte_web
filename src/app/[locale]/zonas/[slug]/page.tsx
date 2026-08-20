@@ -191,9 +191,9 @@ export default async function ZonePage({
     ? [
         {
           label: isEn ? 'Median occupancy' : 'Ocupación media',
-          value: zs.median_occupancy != null ? `${Math.round(zs.median_occupancy)}%` : null,
+          value: zs.occupancy_p50_ttm != null ? `${Math.round(zs.occupancy_p50_ttm)}%` : null,
         },
-        { label: isEn ? 'Average daily rate (ADR)' : 'Tarifa diaria promedio (ADR)', value: fmtMoney(zs.median_adr) },
+        { label: isEn ? 'Average daily rate (ADR)' : 'Tarifa diaria promedio (ADR)', value: fmtMoney(zs.adr_p50_ttm) },
         { label: 'RevPAR', value: fmtMoney(zs.revpar) },
         {
           label: isEn ? 'Active listings' : 'Propiedades activas',

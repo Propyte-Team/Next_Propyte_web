@@ -85,8 +85,8 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
       let vb: number | string = 0;
       switch (sortField) {
         case 'score': va = a.score ?? 0; vb = b.score ?? 0; break;
-        case 'occupancy': va = a.median_occupancy ?? 0; vb = b.median_occupancy ?? 0; break;
-        case 'adr': va = a.median_adr ?? 0; vb = b.median_adr ?? 0; break;
+        case 'occupancy': va = a.occupancy_p50_ttm ?? 0; vb = b.occupancy_p50_ttm ?? 0; break;
+        case 'adr': va = a.adr_p50_ttm ?? 0; vb = b.adr_p50_ttm ?? 0; break;
         case 'revpar': va = a.revpar ?? 0; vb = b.revpar ?? 0; break;
         case 'listings': va = a.active_listings ?? 0; vb = b.active_listings ?? 0; break;
         case 'zone': va = a.zone; vb = b.zone; break;
@@ -105,8 +105,8 @@ export function ZonasExplorer({ scores, cities, locale }: ZonasExplorerProps) {
     const target = selectedCity === 'all' ? scores : scores.filter((s) => s.city === selectedCity);
     if (target.length === 0) return null;
     const avgScore = target.reduce((s, z) => s + (z.score ?? 0), 0) / target.length;
-    const avgOcc = target.filter((z) => z.median_occupancy != null);
-    const avgOccVal = avgOcc.length > 0 ? avgOcc.reduce((s, z) => s + (z.median_occupancy ?? 0), 0) / avgOcc.length : 0;
+    const avgOcc = target.filter((z) => z.occupancy_p50_ttm != null);
+    const avgOccVal = avgOcc.length > 0 ? avgOcc.reduce((s, z) => s + (z.occupancy_p50_ttm ?? 0), 0) / avgOcc.length : 0;
     const totalListings = target.reduce((s, z) => s + (z.active_listings ?? 0), 0);
     return { zones: target.length, avgScore: Math.round(avgScore), avgOcc: Math.round(avgOccVal), totalListings };
   }, [scores, selectedCity]);

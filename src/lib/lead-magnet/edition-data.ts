@@ -25,7 +25,7 @@ export interface EditionData {
   topUnits: ScoredUnit[];
   cityBenchmarks: CityStrBenchmark[];
   ltrByCity: LtrCityMedian[];
-  topZones: Pick<ZoneScore, 'city' | 'zone' | 'score' | 'median_occupancy' | 'median_adr'>[];
+  topZones: Pick<ZoneScore, 'city' | 'zone' | 'score' | 'occupancy_p50_ttm' | 'adr_p50_ttm' | 'data_through'>[];
 }
 
 /** 'YYYY-MM' con corte en America/Cancun (regla de reportes Propyte). */
@@ -90,6 +90,31 @@ export function fillEstimatedRent(
   });
 }
 
+/**
+ * Top 5 zonas por score, restringidas a las ciudades que cubre el benchmark STR
+ * ("Caribe Mexicano"; sin esto se cuelan CDMX/Mérida) y sin slugs crudos tipo
+ * AKUMAL_BAY_AREA (mayúsculas+guiones bajos = slug de BD, no nombre).
+ *
+ * Publica `occupancy_p50_ttm`/`adr_p50_ttm` (mediana de los últimos 12 meses),
+ * nunca los campos deprecados equivalentes (el último punto de la serie — pico
+ * de temporada alta si el corte cae en febrero).
+ */
+export function selectTopZones(
+  zoneScores: ZoneScore[],
+  benchmarks: CityStrBenchmark[],
+): Pick<ZoneScore, 'city' | 'zone' | 'score' | 'occupancy_p50_ttm' | 'adr_p50_ttm' | 'data_through'>[] {
+  const reportCities = new Set(benchmarks.map((b) => b.city.toLowerCase()));
+  const isRawSlug = (zone: string) => /^[A-Z0-9_]+$/.test(zone) || zone.includes('_');
+  return zoneScores
+    .filter((z) => z.score != null)
+    .filter((z) => reportCities.has((z.city ?? '').toLowerCase()))
+    .filter((z) => !isRawSlug(z.zone ?? ''))
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+    .slice(0, 5)
+    .map(({ city, zone, score, occupancy_p50_ttm, adr_p50_ttm, data_through }) =>
+      ({ city, zone, score, occupancy_p50_ttm, adr_p50_ttm, data_through }));
+}
+
 export async function buildEditionData(client: Client, now = new Date()): Promise<EditionData> {
   const [unitsRes, benchmarks, zoneScores, ltrRows, mlRents] = await Promise.all([
     getUnitsForLeadMagnet(client),
@@ -114,19 +139,7 @@ export async function buildEditionData(client: Client, now = new Date()): Promis
     zoneScores.map((z) => ({ city: z.city, zone: z.zone, score: z.score })),
   );
 
-  // Solo zonas de las ciudades que el reporte cubre (las del benchmark STR —
-  // "Caribe Mexicano"; sin esto se cuelan CDMX/Mérida) y sin slugs crudos
-  // tipo AKUMAL_BAY_AREA (mayúsculas+guiones bajos = slug de BD, no nombre).
-  const reportCities = new Set(benchmarks.map((b) => b.city.toLowerCase()));
-  const isRawSlug = (zone: string) => /^[A-Z0-9_]+$/.test(zone) || zone.includes('_');
-  const topZones = zoneScores
-    .filter((z) => z.score != null)
-    .filter((z) => reportCities.has((z.city ?? '').toLowerCase()))
-    .filter((z) => !isRawSlug(z.zone ?? ''))
-    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
-    .slice(0, 5)
-    .map(({ city, zone, score, median_occupancy, median_adr }) =>
-      ({ city, zone, score, median_occupancy, median_adr }));
+  const topZones = selectTopZones(zoneScores, benchmarks);
 
   return {
     edition: computeEditionId(now),

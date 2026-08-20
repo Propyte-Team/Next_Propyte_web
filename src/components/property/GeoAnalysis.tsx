@@ -161,16 +161,16 @@ export default function GeoAnalysis({
           {/* Raw metrics — datos de mercado reales de la zona (no el índice 0-100) */}
           <p className="text-2xs uppercase tracking-wider font-semibold text-gray-500 mb-2 mt-4">{t('zoneMarketDataTitle')}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {zoneScore.median_occupancy != null && (
+            {zoneScore.occupancy_p50_ttm != null && (
               <RawMetric
                 label={t('medianOccupancy')}
-                value={`${Math.round(zoneScore.median_occupancy)}%`}
+                value={`${Math.round(zoneScore.occupancy_p50_ttm)}%`}
               />
             )}
-            {zoneScore.median_adr != null && (
+            {zoneScore.adr_p50_ttm != null && (
               <RawMetric
                 label={t('medianAdr')}
-                value={`$${Math.round(zoneScore.median_adr).toLocaleString()} MXN`}
+                value={`$${Math.round(zoneScore.adr_p50_ttm).toLocaleString()} MXN`}
               />
             )}
             {zoneScore.active_listings != null && (

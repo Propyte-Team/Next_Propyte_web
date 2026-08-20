@@ -45,21 +45,21 @@ export default function TrendingMarket() {
             city: s.city,
             score: Math.round(s.score ?? 0),
             slug: s.zone.toLowerCase().replace(/\s+/g, '-').replace(/[\/]/g, '-'),
-            occupancy: s.median_occupancy ? `${Math.round(s.median_occupancy)}%` : '—',
-            adr: s.median_adr ? `$${Math.round(s.median_adr).toLocaleString()}` : '—',
+            occupancy: s.occupancy_p50_ttm != null ? `${Math.round(s.occupancy_p50_ttm)}%` : '—',
+            adr: s.adr_p50_ttm != null ? `$${Math.round(s.adr_p50_ttm).toLocaleString()}` : '—',
           })));
 
           const validScores = scores.filter((s) => s.score != null);
           const avgScore = validScores.length > 0
             ? Math.round(validScores.reduce((sum, s) => sum + (s.score ?? 0), 0) / validScores.length)
             : 0;
-          const validOcc = scores.filter((s) => s.median_occupancy != null);
+          const validOcc = scores.filter((s) => s.occupancy_p50_ttm != null);
           const avgOcc = validOcc.length > 0
-            ? Math.round(validOcc.reduce((sum, s) => sum + (s.median_occupancy ?? 0), 0) / validOcc.length)
+            ? Math.round(validOcc.reduce((sum, s) => sum + (s.occupancy_p50_ttm ?? 0), 0) / validOcc.length)
             : 0;
-          const validAdr = scores.filter((s) => s.median_adr != null);
+          const validAdr = scores.filter((s) => s.adr_p50_ttm != null);
           const avgAdr = validAdr.length > 0
-            ? Math.round(validAdr.reduce((sum, s) => sum + (s.median_adr ?? 0), 0) / validAdr.length)
+            ? Math.round(validAdr.reduce((sum, s) => sum + (s.adr_p50_ttm ?? 0), 0) / validAdr.length)
             : 0;
           const totalListings = scores.reduce((sum, s) => sum + (s.active_listings ?? 0), 0);
 
