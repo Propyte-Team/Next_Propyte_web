@@ -73,8 +73,16 @@ describe('isStale', () => {
 describe('omissionLabelKey', () => {
   it('distingue muestra chica de tarifa ausente', () => {
     expect(omissionLabelKey('sample_below_30')).toBe('lowSampleBadge');
-    expect(omissionLabelKey('missing_adr')).toBe('missingAdrBadge');
+    expect(omissionLabelKey('missing:adr')).toBe('missingAdrBadge');
     expect(omissionLabelKey('thin_cycle')).toBe('thinCycleBadge');
+  });
+
+  it('los otros tres missing:* colapsan a incompleteDataBadge', () => {
+    // occupancy, adr_growth_pct y revpar no traen etiqueta propia: al lector
+    // no le hace falta saber cual componente interno falto.
+    expect(omissionLabelKey('missing:occupancy')).toBe('incompleteDataBadge');
+    expect(omissionLabelKey('missing:adr_growth_pct')).toBe('incompleteDataBadge');
+    expect(omissionLabelKey('missing:revpar')).toBe('incompleteDataBadge');
   });
 
   it('sin razon no hay etiqueta', () => {

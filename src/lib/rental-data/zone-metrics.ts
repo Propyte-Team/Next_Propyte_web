@@ -11,10 +11,17 @@
 /** Mismo umbral que `pipeline_health` usa para `airroi_str_zonal`. */
 export const MAX_DATA_AGE_DAYS = 35;
 
+// Vocabulario real de analytics/publication_gates.py:gate_zone(). El componente
+// faltante llega como 'missing:<component>' (dos puntos), no como
+// 'missing_<component>'. 'sample_below_15' no aparece aqui: gate_zone lo
+// resuelve a "drop" y esa fila nunca se escribe en zone_scores.
 export type OmissionReason =
-  | 'thin_cycle'
   | 'sample_below_30'
-  | 'missing_adr'
+  | 'missing:occupancy'
+  | 'missing:adr'
+  | 'missing:adr_growth_pct'
+  | 'missing:revpar'
+  | 'thin_cycle'
   | null;
 
 /** Un valor sirve solo si es finito y > 0. */
@@ -46,9 +53,17 @@ export function isStale(dataThrough: string | null, asOf: Date): boolean {
   return days > MAX_DATA_AGE_DAYS;
 }
 
+// missing:adr conserva su propia etiqueta porque "sin tarifa nocturna
+// publicada" es un hecho que el inversionista puede accionar. Los otros tres
+// missing:* colapsan a incompleteDataBadge a proposito: al lector no le hace
+// falta saber cual componente interno falto, solo que el indice no se pudo
+// calcular.
 const OMISSION_LABEL_KEYS: Record<Exclude<OmissionReason, null>, string> = {
   sample_below_30: 'lowSampleBadge',
-  missing_adr: 'missingAdrBadge',
+  'missing:adr': 'missingAdrBadge',
+  'missing:occupancy': 'incompleteDataBadge',
+  'missing:adr_growth_pct': 'incompleteDataBadge',
+  'missing:revpar': 'incompleteDataBadge',
   thin_cycle: 'thinCycleBadge',
 };
 

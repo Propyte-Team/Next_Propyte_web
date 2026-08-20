@@ -20,10 +20,24 @@ alter table public.zone_scores
 alter table public.zone_scores
   drop constraint if exists zone_scores_index_omission_reason_check;
 
+-- Vocabulario real de analytics/publication_gates.py:gate_zone(). El componente
+-- faltante se codifica como 'missing:<component>' (dos puntos, no guion bajo)
+-- para cada uno de REQUIRED_COMPONENTS = ("occupancy", "adr", "adr_growth_pct",
+-- "revpar"). 'sample_below_15' NO esta en esta lista a proposito: gate_zone lo
+-- resuelve a "drop" y la fila nunca se escribe, asi que si algun dia aparece
+-- aqui, el CHECK debe fallar ruidosamente en vez de dejar publicar una zona
+-- que debio descartarse.
 alter table public.zone_scores
   add constraint zone_scores_index_omission_reason_check
   check (index_omission_reason is null
-         or index_omission_reason in ('thin_cycle', 'sample_below_30', 'missing_adr'));
+         or index_omission_reason in (
+           'sample_below_30',
+           'missing:occupancy',
+           'missing:adr',
+           'missing:adr_growth_pct',
+           'missing:revpar',
+           'thin_cycle'
+         ));
 
 comment on column public.zone_scores.occupancy_p50_ttm is
   'Mediana de ocupacion sobre los ultimos 12 meses de metric_date. Cifra principal.';
