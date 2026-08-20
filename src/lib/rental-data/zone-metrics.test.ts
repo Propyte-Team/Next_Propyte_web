@@ -49,6 +49,25 @@ describe('isStale', () => {
   it('el umbral es el mismo que usa pipeline_health', () => {
     expect(MAX_DATA_AGE_DAYS).toBe(35);
   });
+
+  it('a los 35 dias exactos todavia NO es rancia (umbral estricto >)', () => {
+    // 2026-01-01 + 35 dias = 2026-02-05, calculado a mano (no con aritmetica
+    // de fechas dentro del test, para no heredar el bug que esto detecta).
+    expect(isStale('2026-01-01', new Date('2026-02-05T00:00:00Z'))).toBe(false);
+  });
+
+  it('a los 36 dias ya es rancia', () => {
+    // 2026-01-01 + 36 dias = 2026-02-06, calculado a mano.
+    expect(isStale('2026-01-01', new Date('2026-02-06T00:00:00Z'))).toBe(true);
+  });
+
+  it('una fecha no parseable se considera rancia', () => {
+    expect(isStale('no-es-fecha', hoy)).toBe(true);
+  });
+
+  it('un string vacio se considera rancio', () => {
+    expect(isStale('', hoy)).toBe(true);
+  });
 });
 
 describe('omissionLabelKey', () => {
