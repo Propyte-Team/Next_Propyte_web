@@ -113,6 +113,18 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   // construimos aquí desde el row para que el editorial (prioridad) aparezca.
   property.richContent = buildRichContent(property);
 
+  // resolveSpecType cae a development_type ("Lotes", "Residencial horizontal")
+  // cuando property_types viene null — la mayoría del catálogo. Hoisted aquí
+  // (antes se recalculaba en la línea ~420) porque getRentalEstimate también
+  // lo necesita: property.property_types?.[0] es la grafía CRUDA de la vista
+  // ("Departamento", "Lote", "2 Recámaras"), y rental_comparables.property_type
+  // solo guarda 'departamento'/'casa' en minúsculas. Pasar la grafía cruda hacía
+  // fallar las tres consultas type-filtradas de getRentalEstimate para los 12
+  // desarrollos sin ext_property_types, cayendo al bucket solo-ciudad sin que
+  // nadie lo notara (isFallback se descartaba en el destructuring de abajo).
+  // Ver Important 1, revisión final de rama 2026-08-20.
+  const mainType = resolveSpecType(property.property_types ?? property.property_type, property.development_type);
+
   const [tProp, tTypes, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
     getTranslations({ locale, namespace: 'types' }),
@@ -168,10 +180,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const marketCode = CITY_TO_MARKET_CODE[property.city] || '';
   try {
     if (supabase) {
-      const propType = property.property_types?.[0] || property.property_type || 'departamento';
       const [rentalResult, vacResult, financialsResult, mlEstimatesResult, airdnaResult, zoneResult] = await Promise.all([
-        getRentalEstimate(supabase, property.city, propType, null, property.zone, 'residencial'),
-        getRentalEstimate(supabase, property.city, propType, null, property.zone, 'vacacional'),
+        getRentalEstimate(supabase, property.city, mainType, null, property.zone, 'residencial'),
+        getRentalEstimate(supabase, property.city, mainType, null, property.zone, 'vacacional'),
         getDevelopmentFinancials(supabase, property.id),
         getMlRentalEstimates(supabase, property.id),
         marketCode ? getAirdnaMarketSummary(supabase, marketCode) : Promise.resolve(null),
@@ -415,9 +426,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       : property.stage === 'construccion' ? tProp('stageConstruction')
         : tProp('stageReady');
 
-  // resolveSpecType cae a development_type ("Lotes", "Residencial horizontal")
-  // cuando property_types viene null — la mayoría del catálogo.
-  const mainType = resolveSpecType(property.property_types ?? property.property_type, property.development_type);
+  // mainType hoisted arriba (justo tras buildRichContent) para que
+  // getRentalEstimate reciba el canónico en vez de la grafía cruda.
   const typeLabel = tTypes(mainType);
 
   // ── Share/Download modal data ──
@@ -822,7 +832,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       <RentalEstimate
                         city={property.city}
                         zone={property.zone}
-                        propertyType={property.property_types?.[0] || property.property_type || 'departamento'}
+                        propertyType={mainType}
                         bedrooms={null}
                         locale={locale}
                         areaM2={representativeArea}
