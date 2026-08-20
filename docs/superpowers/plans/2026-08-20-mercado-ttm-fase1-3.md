@@ -992,12 +992,16 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>"
 
 **Contexto:** el badge de las líneas 172-180 hoy renderiza `lowSampleBadge` para **toda** omisión. Playacar (922 anuncios, sin tarifa) sale "muestra baja".
 
+⚠️ **Corrección de vocabulario (2026-08-20).** `OmissionReason` ya NO es `'missing_adr'`. Los valores reales, que son los que `publication_gates.gate_zone()` emite, son: `'sample_below_30'`, `'missing:occupancy'`, `'missing:adr'`, `'missing:adr_growth_pct'`, `'missing:revpar'`, `'thin_cycle'`. Los tres `missing:*` que no son `adr` colapsan a una sola etiqueta `incompleteDataBadge`: al lector no le sirve saber qué componente interno faltó, solo que el índice no se pudo calcular. `missing:adr` conserva etiqueta propia porque "sin tarifa publicada" sí es un hecho sobre el que el inversionista puede actuar. La clave del badge sale de `omissionLabelKey()` (`@/lib/rental-data/zone-metrics`), que ya tiene el mapa exhaustivo tipado — **no** la reconstruyas a partir del valor de `index_omission_reason`. Para el `title`, el `key.replace('Badge', 'Title')` del snippet funciona con las cuatro claves, pero es frágil: si prefieres un segundo mapa explícito, hazlo y dilo en el reporte.
+
 - [ ] **Step 1: Agregar los strings i18n**
 
 En `src/i18n/messages/es.json`, namespace de la tabla (junto a `lowSampleBadge`):
 ```json
 "missingAdrBadge": "sin tarifa publicada",
 "missingAdrTitle": "La zona tiene muestra suficiente pero no hay tarifa por noche publicada, así que no se calcula índice ni ingreso.",
+"incompleteDataBadge": "dato incompleto",
+"incompleteDataTitle": "Falta uno de los componentes ponderados del índice, así que no se publica.",
 "thinCycleBadge": "serie incompleta",
 "thinCycleTitle": "La serie tiene menos de 6 meses observados: no alcanza para una mediana anual.",
 "occupancyRangeLabel": "temporada baja {low}% – alta {high}%",
