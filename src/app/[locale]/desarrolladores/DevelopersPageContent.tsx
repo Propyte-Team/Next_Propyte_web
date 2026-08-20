@@ -15,6 +15,7 @@ import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
 import HeroAtmosphere from '@/components/home/HeroAtmosphere';
 import { useSiteContact } from '@/context/SiteConfigContext';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 // ─────────────────────────────────────────────────────
 // 1 · HERO — angled bottom edge (calca page-desarrolladores.php WP)
@@ -531,9 +532,6 @@ function DeveloperForm() {
     }
   };
 
-  // MX phone: optional +52, 10 digits with optional spaces/dashes/parens.
-  const isValidMxPhone = (v: string) => /^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3,4}[\s-]?\d{4}$/.test(v.trim());
-
   const validate = (): Record<string, string> => {
     const next: Record<string, string> = {};
     if (!formData.name.trim()) next.name = tCommon('required');
@@ -541,9 +539,30 @@ function DeveloperForm() {
     if (!formData.email.trim()) next.email = tCommon('required');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
     if (!formData.phone.trim()) next.phone = tCommon('required');
-    else if (!isValidMxPhone(formData.phone)) next.phone = tCommon('invalidPhone');
+    else if (!isValidPhoneNumber(formData.phone)) next.phone = tCommon('invalidPhone');
     if (!formData.location.trim()) next.location = tCommon('required');
     return next;
+  };
+
+  const handlePhoneChange = (value: string | undefined) => {
+    setFormData((prev) => ({ ...prev, phone: value || '' }));
+    if (errors.phone) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.phone;
+        return next;
+      });
+    }
+  };
+
+  // Valida en blur (no en cada tecla) — evita marcar error mientras el
+  // usuario todavía está escribiendo el número.
+  const handlePhoneBlur = () => {
+    if (!formData.phone.trim()) {
+      setErrors((prev) => ({ ...prev, phone: tCommon('required') }));
+    } else if (!isValidPhoneNumber(formData.phone)) {
+      setErrors((prev) => ({ ...prev, phone: tCommon('invalidPhone') }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -574,7 +593,7 @@ function DeveloperForm() {
     }
   };
 
-  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors";
+  const inputClass = "w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus-within:border-propyte-brand focus-within:ring-2 focus-within:ring-propyte-brand/20 outline-none transition-colors";
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = "block text-sm font-semibold text-[#1A2F3F] mb-1.5";
 
@@ -634,8 +653,19 @@ function DeveloperForm() {
                   </div>
                   <div>
                     <label htmlFor="dev-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="dev-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} className={inputClass} toolparamdescription="Teléfono de contacto en México." />
-                    {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+                    <PhoneInputField
+                      id="dev-form-phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      onBlur={handlePhoneBlur}
+                      invalid={!!errors.phone}
+                      describedBy={errors.phone ? 'dev-form-phone-error' : undefined}
+                      required
+                      className={inputClass}
+                      toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                    />
+                    {errors.phone && <p id="dev-form-phone-error" aria-live="polite" className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                 </div>
                 <div>

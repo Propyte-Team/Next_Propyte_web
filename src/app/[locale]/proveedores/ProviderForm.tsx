@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { Check, Loader2 } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 const CATEGORIES = [
   'Notary',
@@ -25,6 +26,7 @@ type _Category = (typeof CATEGORIES)[number];
 
 export default function ProviderForm({ locale }: { locale: string }) {
   const t = useTranslations('providers');
+  const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
   const schema = z.object({
@@ -34,7 +36,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
     companyWebsite: z.string().url(t('formInvalidUrl')).optional().or(z.literal('')),
     contactName: z.string().min(2, t('formRequired')),
     email: z.string().email(t('formInvalidEmail')),
-    phone: z.string().min(8, t('formRequired')),
+    phone: z.string().min(1, t('formRequired')).refine(isValidPhoneNumber, { message: tCommon('invalidPhone') }),
     message: z.string().min(10, t('formRequired')),
     // Honeypot — el endpoint trata `website` populado como bot (REQ-F-02).
     // Mantiene nombre canónico `website` (= los otros 8 forms usan el mismo).
@@ -46,6 +48,8 @@ export default function ProviderForm({ locale }: { locale: string }) {
   const {
     register,
     handleSubmit,
+    control,
+    trigger,
     formState: { errors },
     reset,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
@@ -90,7 +94,7 @@ export default function ProviderForm({ locale }: { locale: string }) {
   }
 
   const inputBase =
-    'w-full h-11 px-4 bg-white/5 border border-white/15 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-propyte-brand focus:bg-white/10 transition-colors';
+    'w-full h-11 px-4 bg-white/5 border border-white/15 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-propyte-brand focus:bg-white/10 focus-within:border-propyte-brand focus-within:bg-white/10 transition-colors';
   const labelBase = 'block text-white/80 text-sm font-medium mb-2';
   const errorBase = 'text-red-400 text-xs mt-1';
 
@@ -203,18 +207,26 @@ export default function ProviderForm({ locale }: { locale: string }) {
 
         <div>
           <label htmlFor="phone" className={labelBase}>{t('formPhone')}</label>
-          <input
-            id="phone"
-            type="tel"
-            placeholder={t('formPhonePlaceholder')}
-            className={inputBase}
-            aria-invalid={!!errors.phone}
-            aria-describedby={errors.phone ? 'phone-error' : undefined}
-            aria-required={true}
-            toolparamdescription="Teléfono de contacto del proveedor."
-            {...register('phone')}
+          <Controller
+            name="phone"
+            control={control}
+            render={({ field }) => (
+              <PhoneInputField
+                id="phone"
+                name={field.name}
+                value={field.value || ''}
+                onChange={(value) => field.onChange(value || '')}
+                onBlur={() => { field.onBlur(); trigger('phone'); }}
+                placeholder={t('formPhonePlaceholder')}
+                invalid={!!errors.phone}
+                describedBy={errors.phone ? 'phone-error' : undefined}
+                required
+                className={inputBase}
+                toolParamDescription="Teléfono de contacto del proveedor, con selector de lada de país."
+              />
+            )}
           />
-          {errors.phone && <p id="phone-error" role="alert" className={errorBase}>{errors.phone.message}</p>}
+          {errors.phone && <p id="phone-error" aria-live="polite" className={errorBase}>{errors.phone.message}</p>}
         </div>
 
         <div className="md:col-span-2">
