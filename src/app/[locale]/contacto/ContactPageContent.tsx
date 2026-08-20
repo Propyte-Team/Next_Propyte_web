@@ -13,6 +13,7 @@ import type { HubSiteConfig } from '@/lib/hub-content';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import type { SiteMediaMap } from '@/lib/hub-content';
+import { GBP_EMBED_URL, GBP_URL } from '@/lib/seo/nap';
 
 function pickString(config: HubSiteConfig | undefined, key: string, fallback: string): string {
   const v = config?.[key];
@@ -121,8 +122,10 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
     { value: 'career', label: t('subjectOptions.recruitment') },
   ];
 
-  const mapQuery = encodeURIComponent(address);
-  const mapEmbedUrl = `https://www.google.com/maps?q=${mapQuery}&output=embed`;
+  // Embed por CID de la ficha, NO por búsqueda de texto (`?q=<dirección>`). Un
+  // query de texto es una búsqueda cualquiera y depende de que el string del Hub
+  // geocodifique bien; el CID incrusta LA ficha y refuerza la señal de entidad.
+  const mapEmbedUrl = GBP_EMBED_URL;
 
   return (
     <>
@@ -403,6 +406,19 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
+
+              {/* Enlace explícito a la ficha de Google Business Profile. Además
+                  de ser útil ("cómo llegar"), es una señal de entidad: ata este
+                  sitio a ese pin de Maps. */}
+              <a
+                href={GBP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0D9488] hover:text-[#1A2F3F] transition-colors"
+              >
+                <MapPin className="w-4 h-4" aria-hidden="true" />
+                {t('labels.viewOnMaps')}
+              </a>
             </aside>
           </div>
         </div>

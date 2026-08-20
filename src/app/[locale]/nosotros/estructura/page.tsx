@@ -8,6 +8,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getOrgStructure, getPageContent } from '@/lib/supabase/queries';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import { getCompanyStats, localizedStatLabel, getSiteMedia } from '@/lib/hub-content';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 600; // 10 min ISR; on-demand revalidate from Hub
 
@@ -27,12 +28,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       type: 'website',
       title,
       description,
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     twitter: { card: 'summary_large_image', title, description },
     alternates: {

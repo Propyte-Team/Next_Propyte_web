@@ -12,6 +12,7 @@ import { TradicionalTab } from './components/tradicional/TradicionalTab';
 import { MethodologySection } from './components/shared/MethodologySection';
 import { AdvisorCTA } from './components/shared/AdvisorCTA';
 import type { TabId } from '@/lib/rental-data/types';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,12 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
       title: brandedTitle,
       description,
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     twitter: { card: 'summary_large_image', title: brandedTitle, description },
     alternates: {

@@ -290,8 +290,8 @@
     "title": "Cobertura en Riviera Maya y Yucatán",
     "subtitle": "Operamos desde Playa del Carmen y cubrimos los principales mercados de la costa caribe y la península de Yucatán.",
     "labTitle": "Real Estate Lab",
-    "labAddress": "Calle 5 Norte 95, Playa del Carmen, Q. Roo",
-    "labHours": "Lunes a viernes, 9:00 – 18:00",
+    "labAddress": "5ta Avenida esq. Calle 40 Norte, C.P. 77720, Playa del Carmen, Q. Roo",
+    "labHours": "Lunes a viernes, 9:00 – 18:00 · Sábado, 10:00 – 14:00",
     "labCta": "Agendar visita al Lab",
     "zonesTitle": "Zonas que cubrimos",
     "zone1": "Tulum",
@@ -379,7 +379,7 @@
     "section6Title": "Limitaciones y responsabilidad",
     "section6Body": "Propyte opera como marketplace inmobiliario y asesor comercial. No garantizamos retornos específicos, plusvalía ni ocupación. Los datos están sujetos a actualización. La decisión final de compra y la verificación de la información son responsabilidad del comprador y de los profesionales que lo acompañen (notario, contador, asesor legal).",
     "section7Title": "Contacto de cumplimiento",
-    "section7Body": "Si detectas información inexacta, una cifra sin fuente o un disclaimer ausente, escríbenos a info@propyte.com con asunto \"Cumplimiento\". Revisamos cada reporte y publicamos corrección si procede."
+    "section7Body": "Si detectas información inexacta, una cifra sin fuente o un disclaimer ausente, escríbenos a contacto@propyte.com con asunto \"Cumplimiento\". Revisamos cada reporte y publicamos corrección si procede."
   },
   "homeFAQ": {
     "eyebrow": "Preguntas frecuentes",
@@ -1356,10 +1356,11 @@
       "email": "Email",
       "hours": "Horario",
       "contactInfo": "Información de contacto",
-      "mapTitle": "Mapa de nuestra ubicación"
+      "mapTitle": "Mapa de nuestra ubicación",
+      "viewOnMaps": "Ver en Google Maps"
     },
     "info": {
-      "address": "Av. 10 Norte, Playa del Carmen, Quintana Roo 77710, México",
+      "address": "5ta Avenida esq. Calle 40 Norte, C.P. 77720, Playa del Carmen, Q. Roo",
       "phone": "+52 984 463 8032",
       "email": "contacto@propyte.com",
       "hours": "Lunes a Viernes 9:00 – 18:00, Sábado 10:00 – 14:00"
@@ -1577,18 +1578,6 @@
     "step3Desc": "Recibes acceso al portafolio validado, al material por desarrollo y a tu asesor Propyte de respaldo.",
     "step4Title": "Registra y vende",
     "step4Desc": "Registras a tus clientes —quedan protegidos a tu nombre— y compartes las propiedades. Nosotros te respaldamos hasta el cierre.",
-    "platformEyebrow": "Próximamente — Tu plataforma",
-    "platformBadge": "Vista previa · En desarrollo",
-    "platformTitle": "Estamos construyendo tu centro de operaciones",
-    "platformSubtitle": "Una plataforma para gestionar inventario, clientes y comisiones en un solo lugar — sin hojas de cálculo sueltas ni cadenas de WhatsApp. Llega en los próximos meses; mientras tanto, tu Account Manager te da todo lo que necesitas.",
-    "platformFeature1Title": "Inventario actualizado",
-    "platformFeature1Desc": "Disponibilidad y precios al día, por desarrollo.",
-    "platformFeature2Title": "Pipeline de ventas",
-    "platformFeature2Desc": "Tus clientes y su etapa, en un tablero claro.",
-    "platformFeature3Title": "Comisiones y pagos",
-    "platformFeature3Desc": "Lo que has ganado y lo que está por liquidar.",
-    "platformFeature4Title": "Herramientas de gestión",
-    "platformFeature4Desc": "Material, fichas y seguimiento en un lugar.",
     "faqEyebrow": "Preguntas frecuentes",
     "faqTitle": "Lo que los brokers nos preguntan antes de entrar",
     "faq1Q": "¿Necesito vivir en Riviera Maya para unirme?",

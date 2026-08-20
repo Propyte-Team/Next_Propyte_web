@@ -4,6 +4,7 @@ import BuiltPageContent from './BuiltPageContent';
 import { getCompanyStats, localizedStatLabel, getSiteMedia } from '@/lib/hub-content';
 import { assertPageVisible } from '@/lib/page-visibility';
 import { VISIBILITY_KEYS } from '@/lib/visibility';
+import { ogImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -13,11 +14,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: t('builtTitle'),
     description: t('builtDescription'),
     openGraph: {
+      siteName: 'Propyte',
       title: t('builtTitle'),
       description: t('builtDescription'),
       type: 'website',
       locale: locale === 'es' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/built/opengraph-image`],
+      images: ogImages(`/${locale}/built/opengraph-image`),
     },
     alternates: {
       canonical: `/${locale}/built`,

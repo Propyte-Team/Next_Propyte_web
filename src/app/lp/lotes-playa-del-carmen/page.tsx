@@ -24,10 +24,18 @@ import { mxn, mxnExacto, m2 } from '../_components/format';
 // Supabase en cada impresión pagada.
 export const revalidate = 300;
 
+// El título y la descripción hablan en PLURAL a propósito.
+//
+// Las cinco keywords que compra esta campaña son plurales —«terrenos
+// residenciales», «lotes residenciales», «terrenos en playa del carmen»— y
+// todas traían `post_click_quality_score = BELOW_AVERAGE`. La página describía
+// un solo lote, así que Google leía una ficha de producto único contra una
+// consulta de exploración. El inventario real que se puede ofrecer aquí son
+// varios lotes publicados en Playa del Carmen, y el texto ahora lo dice.
 export const metadata: Metadata = {
-  title: 'Lote residencial en privada · Playa del Carmen',
+  title: 'Terrenos residenciales en Playa del Carmen · Lotes en privada',
   description:
-    'Lote residencial en privada sobre Av. Universidades, Playa del Carmen. Enganche, mensualidades y el estatus real de urbanización, servicio por servicio.',
+    'Terrenos y lotes residenciales en venta en Playa del Carmen, con enganche, mensualidades y el estatus real de urbanización servicio por servicio. Comparamos los que tenemos publicados y conseguimos cualquier otro de la zona.',
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
 
@@ -164,29 +172,36 @@ export default async function LandingLotesPlayaDelCarmen() {
             />
           </div>
 
-          {/* H1. Nombra la consecuencia, no la categoría. No es una promesa:
-              «puedes construir una casa de dos niveles» es aritmética de COS y
-              CUS que cualquiera puede verificar. Es a la vez el dato más duro y
-              el más emocional de la página, y por eso es el titular. */}
-          <h1 className="lp-display mt-5 max-w-[19ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
+          {/* H1. Antes abría con «Aquí puedes construir una casa de dos
+              niveles»: la consecuencia, no la categoría. Era buen copy y mal
+              anuncio — la palabra que la persona acababa de teclear
+              («terrenos», «Playa del Carmen») no aparecía en el primer pliegue,
+              y la primera que sí aparecía era «casa», que es otro producto.
+
+              Ahora la categoría y la ciudad van delante, y la consecuencia
+              —que sigue siendo aritmética verificable de COS y CUS, no una
+              promesa— queda inmediatamente después, en la misma frase. Se gana
+              relevancia sin perder el gancho. */}
+          <h1 className="lp-display mt-5 max-w-[22ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
             {apr ? (
               <>
-                Aquí puedes construir una casa de{' '}
-                {apr.niveles === 2 ? 'dos' : apr.niveles} niveles, a 4.2 km de la
-                playa
+                Terrenos residenciales en Playa del Carmen donde puedes construir
+                una casa de {apr.niveles === 2 ? 'dos' : apr.niveles} niveles
               </>
             ) : (
-              <>Un lote en privada en Playa del Carmen, a 4.2 km de la playa</>
+              <>Terrenos residenciales en privada en Playa del Carmen</>
             )}
           </h1>
 
+          {/* Recortado de cinco líneas a dos. Cada línea de aquí empuja los CTA
+              hacia abajo, y medido en 390x844 los dos botones quedaban fuera de
+              alcance visual. El dato de la privada de 310 lotes y el aviso de
+              que abajo hay más terrenos no se pierden: viven en la banda de
+              cifras y en el comparador, que ahora está a dos pantallas. */}
           <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
-            {lote.superficieM2 ? m2(lote.superficieM2) : 'Superficie por confirmar'}{' '}
-            en una privada
-            {lote.lotesTotalesPrivada && <> de {lote.lotesTotalesPrivada} lotes</>}.
-            {apr && (
-              <> El uso de suelo permite hasta {m2(apr.construibleM2)} construidos.</>
-            )}
+            Lotes en privada a 4.2 km de la playa. Este mide{' '}
+            {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'}
+            {apr && <>, con hasta {m2(apr.construibleM2)} construibles</>}.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -310,6 +325,29 @@ export default async function LandingLotesPlayaDelCarmen() {
           scroll y que nadie que dude de nosotros alcanza a leer. Ese bloque no
           se toca: aquí solo se declara que hay algo verificable, con enlace. */}
       <TrustBar lote={lote} />
+
+      {/* ═══════════ 2.6 · Los demás terrenos de Playa del Carmen ═══════════
+          SUBIDO desde el final de la página (iba tras el cierre, a ~2,900
+          palabras del hero).
+
+          El razonamiento original para ponerlo abajo era bueno para conversión:
+          la página no tiene rutas de salida a propósito, y el comparador se
+          colocó después del cierre para captar solo a quien ya había descartado
+          este lote, sin desviar a quien iba a convertir.
+
+          Lo que ese razonamiento no contemplaba es de dónde llega el tráfico.
+          La campaña compra términos en PLURAL —«terrenos residenciales»,
+          «terrenos en playa del carmen»— y las cinco keywords traían
+          `post_click_quality_score = BELOW_AVERAGE`. Quien busca en plural y
+          aterriza en la ficha de UN lote ve un callejón sin salida, y eso es
+          exactamente lo que mide Google. El inventario existía; estaba
+          enterrado.
+
+          Sigue siendo el mismo componente, con los mismos datos y el mismo gate
+          Camino A: `getLotesComparables` no selecciona `development_name` ni
+          `developer_name`, así que ningún nombre interno puede llegar al HTML.
+          Se oculta solo si hay menos de dos lotes que comparar. */}
+      <ComparadorLotes lotes={lotesComparables} />
 
       {/* ═══════════ 2.5 · Un domingo aquí ═══════════
           Va inmediatamente después de la respuesta directa, antes de cualquier
@@ -504,12 +542,13 @@ export default async function LandingLotesPlayaDelCarmen() {
               : 'Te mandamos el detalle completo del lote y el paquete documental.'}
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#solicitar"
-              className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] bg-[var(--lp-accent)] px-7 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--lp-accent-strong)] active:translate-y-px"
-            >
+            {/* Usa el componente, no una copia de sus clases. Estas clases
+                estaban duplicadas a mano y al reforzar `BotonPrimario` este CTA
+                se quedó atrás: 14px/500 sin elevación contra 16px/600 con ella,
+                o sea el botón del cierre pesaba MENOS que el del hero. */}
+            <BotonPrimario href="#solicitar">
               {plan ? 'Ver mi plan de pagos' : 'Pedir el detalle del lote'}
-            </a>
+            </BotonPrimario>
             <WhatsAppCta
               loteSlug={lote.slug}
               telefono={FALLBACK_WHATSAPP}
@@ -519,13 +558,6 @@ export default async function LandingLotesPlayaDelCarmen() {
           </div>
         </div>
       </section>
-
-      {/* ═══════════ 12b · Otros lotes de Playa del Carmen ═══════════
-          DESPUÉS del cierre, nunca antes: la página no tiene rutas de salida a
-          propósito. Esto captura a quien ya decidió que este lote no era el
-          suyo, en vez de desviar a quien iba a convertir. Se oculta solo si no
-          hay con qué comparar. */}
-      <ComparadorLotes lotes={lotesComparables} />
 
       {/* ═══════════ 13 · Pie legal ═══════════ */}
       <footer className="border-t border-[var(--lp-line-dark)] bg-[var(--lp-dark)]">

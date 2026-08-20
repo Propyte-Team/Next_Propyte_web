@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { pickLang } from '@/lib/i18n/pickLang';
 import { STAGE_MAP, STAGE_URL_SLUGS, STAGE_SLUGS_URL } from '../../_components/stageConfig';
 import TaxonomyDevelopmentsPage from '../../_components/TaxonomyDevelopmentsPage';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 3600;
 
@@ -32,11 +33,13 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
+      siteName: 'Propyte',
+      type: 'website',
       title,
       description,
       locale: isEn ? 'en_US' : 'es_MX',
       alternateLocale: isEn ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/desarrollos/etapa/${stage}`,

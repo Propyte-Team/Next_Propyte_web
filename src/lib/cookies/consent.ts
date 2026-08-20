@@ -4,6 +4,8 @@
  * marketing default to denied, user opts in via banner.
  */
 
+import { getOaiq, oaiqPageViewed } from '@/lib/analytics/openai-ads';
+
 export const STORAGE_KEY = 'propyte:cookies';
 export const REOPEN_EVENT = 'propyte:cookies-reopen';
 export const CHANGED_EVENT = 'propyte:cookies-changed';
@@ -39,6 +41,10 @@ export function readConsent(): CookieConsent | null {
 
 export function writeConsent(consent: Omit<CookieConsent, 'v' | 'necessary' | 'ts'>) {
   if (typeof window === 'undefined') return;
+  // Se lee ANTES de escribir: applyConsentToOpenAiPixel necesita saber si
+  // marketing pasa de denegado a concedido, y readConsent() ya devolveria
+  // el valor nuevo una vez hecho el setItem.
+  const previousMarketing = readConsent()?.marketing === true;
   const full: CookieConsent = {
     v: CONSENT_VERSION,
     necessary: true,
@@ -50,6 +56,7 @@ export function writeConsent(consent: Omit<CookieConsent, 'v' | 'necessary' | 't
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(full));
     applyConsentToGtag(full);
     applyConsentToMetaPixel(full);
+    applyConsentToOpenAiPixel(full, previousMarketing);
     window.dispatchEvent(new CustomEvent(CHANGED_EVENT, { detail: full }));
   } catch {
     // localStorage may be unavailable
@@ -89,6 +96,29 @@ export function applyConsentToMetaPixel(consent: CookieConsent) {
   const w = window as GtagWindow;
   if (typeof w.fbq !== 'function') return;
   w.fbq('consent', consent.marketing ? 'grant' : 'revoke');
+}
+
+/**
+ * Espeja el toggle de marketing en el pixel de OpenAI Ads (oaiq).
+ *
+ * A diferencia de fbq, el SDK de oaiq NO encola lo que llega con el
+ * consentimiento denegado: lo descarta. Por eso, en el salto denegado →
+ * concedido hay que reponer el page_viewed del arranque; si no, la visita en
+ * la que el usuario acepta las cookies no existe para OpenAI y el pixel se ve
+ * muerto justo con los visitantes que si dieron permiso.
+ *
+ * Las conversiones (lead_created) no necesitan reposicion: ocurren siempre
+ * despues del banner.
+ */
+export function applyConsentToOpenAiPixel(
+  consent: CookieConsent,
+  previouslyGranted = false,
+) {
+  if (typeof window === 'undefined') return;
+  const oaiq = getOaiq();
+  if (!oaiq) return;
+  oaiq('consent', consent.marketing);
+  if (consent.marketing && !previouslyGranted) oaiqPageViewed();
 }
 
 export function reopenBanner() {

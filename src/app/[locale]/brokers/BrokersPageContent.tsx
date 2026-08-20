@@ -298,7 +298,7 @@ function HowItWorks() {
 }
 
 // ─────────────────────────────────────────────────────
-// 7. FAQ
+// 6. FAQ
 // ─────────────────────────────────────────────────────
 function FAQ() {
   const t = useTranslations('brokers');
@@ -351,7 +351,7 @@ function FAQ() {
 }
 
 // ─────────────────────────────────────────────────────
-// 8. FORMULARIO — Solicita acceso
+// 7. FORMULARIO — Solicita acceso
 // ─────────────────────────────────────────────────────
 function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
   const t = useTranslations('brokers');

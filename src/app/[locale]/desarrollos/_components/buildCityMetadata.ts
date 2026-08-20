@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { pickLang } from '@/lib/i18n/pickLang';
 import { CITY_MAP } from './cityConfig';
+import { ogLocaleImages } from '@/lib/og/images';
 
 /**
  * Metadata builder shared by the 4 city thin-wrapper pages
@@ -16,9 +17,11 @@ export function buildCityMetadata(citySlug: string, locale: string): Metadata {
       : `Nuevos Desarrollos en ${city.name}, ${city.state} | Preventas y Precios`,
     description: pickLang(locale, city.descEn, city.descEs),
     openGraph: {
+      siteName: 'Propyte',
+      type: 'website',
       locale: isEn ? 'en_US' : 'es_MX',
       alternateLocale: isEn ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/desarrollos/${citySlug}`,

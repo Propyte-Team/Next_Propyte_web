@@ -68,12 +68,29 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
   return (
     <section aria-labelledby="comparador-titulo" className="bg-[var(--lp-dark-2)]">
       <div className="mx-auto max-w-6xl px-5 py-16">
+        {/* El título estaba en clave de descarte —«Si este lote no es el
+            tuyo»— porque el bloque vivía al final, después del cierre. Al
+            subirlo a la primera mitad de la página ese encuadre deja de servir:
+            quien acaba de llegar buscando «terrenos residenciales en playa del
+            carmen» no ha descartado nada todavía. Ahora nombra la categoría en
+            plural, que es además el término exacto que compra la campaña. */}
         <h2
           id="comparador-titulo"
           className="max-w-[24ch] lp-display text-[clamp(1.5rem,1.2rem+1.1vw,2.125rem)] leading-tight tracking-[-0.02em] text-balance text-[var(--lp-on-dark)]"
         >
-          Si este lote no es el tuyo, tenemos otros en Playa del Carmen
+          Terrenos residenciales en Playa del Carmen
         </h2>
+        {/* La línea de comercializadora. Propyte no es la desarrolladora de
+            estos lotes: los comercializa, y puede conseguir cualquier otro de
+            la zona. Decirlo cambia la pregunta del visitante de «¿me sirve
+            ESTE?» a «¿me consiguen el que me sirve?», que es la que de verdad
+            queremos contestar. No promete inventario concreto: promete
+            búsqueda, que es lo que sí se puede sostener. */}
+        <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-on-dark-soft)]">
+          Estos son los terrenos que tenemos publicados hoy en Playa del Carmen.
+          Somos comercializadora, no desarrolladora: si ninguno encaja con tu
+          presupuesto o tu superficie, dínoslo y te buscamos otro en la zona.
+        </p>
         <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-on-dark-soft)]">
           Mismas reglas que en el resto de la página: solo publicamos la
           mensualidad donde el desarrollador tiene el esquema declarado. Donde no

@@ -8,6 +8,7 @@ import { Mail, Instagram, Facebook, MapPin } from '@/lib/icons';
 import { reopenBanner } from '@/lib/cookies/consent';
 import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import type { HubSiteConfig } from '@/lib/hub-content';
+import { NAP_ADDRESS_LINE_ES, NAP_ADDRESS_LINE_EN, NAP_EMAIL } from '@/lib/seo/nap';
 
 // Pre-footer CTA copy varies per route to avoid generic repetition
 const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
@@ -18,9 +19,11 @@ const ROUTE_CTA_KEY: Record<string, { title: string; subtitle?: string }> = {
   financiamiento: { title: 'ctaTitleFinanciamiento', subtitle: 'ctaSubtitleFinanciamiento' },
 };
 
-const FALLBACK_ADDRESS_ES = '5ta Avenida, Playa del Carmen, Q.Roo';
-const FALLBACK_ADDRESS_EN = '5th Avenue, Playa del Carmen, Q.Roo';
-const FALLBACK_EMAIL = 'info@propyte.com';
+// NAP: fuente única en `@/lib/seo/nap`. Si el Hub no responde, estos fallbacks
+// deben seguir coincidiendo con la ficha de Maps — `nap.test.ts` lo vigila.
+const FALLBACK_ADDRESS_ES = NAP_ADDRESS_LINE_ES;
+const FALLBACK_ADDRESS_EN = NAP_ADDRESS_LINE_EN;
+const FALLBACK_EMAIL = NAP_EMAIL;
 const FALLBACK_INSTAGRAM = 'https://www.instagram.com/propyte.mx/';
 const FALLBACK_FACEBOOK = 'https://www.facebook.com/propyte';
 

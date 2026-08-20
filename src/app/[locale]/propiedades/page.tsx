@@ -6,6 +6,7 @@ import { resolveInvestmentForRows } from '@/lib/investment/resolve-rows';
 import MarketplaceContent from './MarketplaceContent';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import type { Property } from '@/types/property';
+import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -14,9 +15,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: t('marketplaceTitle'),
     description: t('marketplaceDescription'),
     openGraph: {
+      siteName: 'Propyte',
+      type: 'website',
       locale: locale === 'en' ? 'en_US' : 'es_MX',
       alternateLocale: locale === 'en' ? 'es_MX' : 'en_US',
-      images: [`/${locale}/opengraph-image`],
+      images: ogLocaleImages(locale),
     },
     alternates: {
       canonical: `/${locale}/propiedades`,
