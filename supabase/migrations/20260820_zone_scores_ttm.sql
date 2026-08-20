@@ -27,6 +27,15 @@ alter table public.zone_scores
 -- resuelve a "drop" y la fila nunca se escribe, asi que si algun dia aparece
 -- aqui, el CHECK debe fallar ruidosamente en vez de dejar publicar una zona
 -- que debio descartarse.
+--
+-- 'identical_scores' es la UNICA excepcion a "todo viene de gate_zone": la pone
+-- analytics/compute_derived.py:score_pool() (via
+-- df["gate_reason"] = df["gate_reason"].fillna("identical_scores"), justo antes
+-- de MAX_IDENTICAL_SCORE_RATIO = 0.50 en compute_derived.py), no gate_zone().
+-- Se dispara cuando mas de la mitad de las zonas de un pool comparten el mismo
+-- score: se anula el indice del pool entero pero las metricas SI se conservan.
+-- Los otros seis motivos de esta lista los decide gate_zone(); este lo decide
+-- el paso de scoring.
 alter table public.zone_scores
   add constraint zone_scores_index_omission_reason_check
   check (index_omission_reason is null
@@ -36,7 +45,8 @@ alter table public.zone_scores
            'missing:adr',
            'missing:adr_growth_pct',
            'missing:revpar',
-           'thin_cycle'
+           'thin_cycle',
+           'identical_scores'
          ));
 
 comment on column public.zone_scores.occupancy_p50_ttm is
