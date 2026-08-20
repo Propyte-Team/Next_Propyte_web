@@ -45,6 +45,23 @@ export function grossMonthlyIncome(
 }
 
 /**
+ * Umbrales calibrados sobre la distribución de medianas TTM (39.7–60.7, mediana ~50).
+ * Los anteriores (58/40) venían de la escala inflada por los picos de febrero: con
+ * medianas reales dejaban casi todas las zonas en 'flat'.
+ */
+const TREND_UP = 54;
+const TREND_DOWN = 45;
+
+/** Sin dato no implica mercado a la baja: es 'flat', no 'down'. */
+export function occupancyTrend(occP50: number | null): 'up' | 'down' | 'flat' {
+  const occ = usable(occP50);
+  if (occ == null) return 'flat';
+  if (occ >= TREND_UP) return 'up';
+  if (occ <= TREND_DOWN) return 'down';
+  return 'flat';
+}
+
+/**
  * Formatea un `data_through` ('YYYY-MM-DD' plano) como "mes de año" localizado.
  *
  * Parsear con `new Date('2026-02-01')` y formatear sin `timeZone: 'UTC'` corre

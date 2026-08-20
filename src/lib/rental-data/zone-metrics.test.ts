@@ -4,6 +4,7 @@ import {
   formatDataThroughDate,
   grossMonthlyIncome,
   isStale,
+  occupancyTrend,
   omissionLabelKey,
 } from '@/lib/rental-data/zone-metrics';
 
@@ -87,6 +88,25 @@ describe('formatDataThroughDate', () => {
 
   it('respeta el limite de fin de anio (2025-12-31 sigue siendo diciembre 2025)', () => {
     expect(formatDataThroughDate('2025-12-31', 'es')).toBe('diciembre de 2025');
+  });
+});
+
+describe('occupancyTrend', () => {
+  it('recalibrado a la distribucion TTM, no a la de picos de febrero', () => {
+    // La distribucion TTM real de las 16 zonas va de 39.7 a 60.7, mediana ~50.
+    expect(occupancyTrend(60.7)).toBe('up');    // Aqua/Cumbres, la mas alta
+    expect(occupancyTrend(39.7)).toBe('down');  // Zona de Resorts, la mas baja
+    expect(occupancyTrend(50)).toBe('flat');
+  });
+
+  it('con los umbrales viejos (58/40) casi todo caia a flat', () => {
+    // 47.4 = Bahia de Akumal. Con >58/<40 era 'flat'; ahora informa.
+    expect(occupancyTrend(47.4)).not.toBe('up');
+    expect(occupancyTrend(55.5)).toBe('up');
+  });
+
+  it('sin dato es flat', () => {
+    expect(occupancyTrend(null)).toBe('flat');
   });
 });
 

@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Minus } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
+import { occupancyTrend } from '@/lib/rental-data/zone-metrics';
 
 interface ZoneScoreCardProps {
   score: ZoneScore;
@@ -100,12 +101,12 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         <div className="border-t border-gray-100 pt-3 space-y-0.5">
           <MetricRow
             label={t('occupancy')}
-            value={score.median_occupancy != null ? `${Math.round(score.median_occupancy)}%` : '—'}
-            trend={score.median_occupancy != null && score.median_occupancy > 58 ? 'up' : score.median_occupancy != null && score.median_occupancy < 40 ? 'down' : 'flat'}
+            value={score.occupancy_p50_ttm != null ? `${Math.round(score.occupancy_p50_ttm)}%` : '—'}
+            trend={occupancyTrend(score.occupancy_p50_ttm)}
           />
           <MetricRow
             label={t('avgRateNight')}
-            value={score.median_adr != null ? `$${Math.round(score.median_adr).toLocaleString()} MXN` : '—'}
+            value={score.adr_p50_ttm != null ? `$${Math.round(score.adr_p50_ttm).toLocaleString()} MXN` : '—'}
             trend={adrTrend}
           />
           <MetricRow
