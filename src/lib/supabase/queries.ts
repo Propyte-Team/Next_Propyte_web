@@ -5,6 +5,7 @@ import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
 import { analystWindowStart } from '@/lib/analyst-window';
 import { marketComboKey, isRentableType, type MarketRentTarget } from '@/lib/investment/market-rent';
 import { STAGE_DB_VALUES, TYPE_DB_VALUES } from './taxonomy-values';
+import type { OmissionReason } from '@/lib/rental-data/zone-metrics';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -1707,6 +1708,8 @@ const ZONE_SCORE_NUMERIC_KEYS = [
   'supply_pressure_component', 'revpar', 'price_to_rent_ratio', 'yield_spread',
   'supply_demand_ratio', 'active_listings', 'median_adr', 'median_occupancy',
   'median_rent',
+  'occupancy_p50_ttm', 'occupancy_low_season', 'occupancy_high_season',
+  'adr_p50_ttm', 'ttm_months_observed',
 ] as const;
 
 export async function getDevelopmentFinancials(client: Client, developmentId: string) {
@@ -2010,10 +2013,19 @@ export interface ZoneScore {
   yield_spread: number | null;
   supply_demand_ratio: number | null;
   active_listings: number | null;
+  /** @deprecated Último punto de la serie. Usar `adr_p50_ttm`. */
   median_adr: number | null;
+  /** @deprecated No es una mediana: es el último punto de la serie. Usar `occupancy_p50_ttm`. */
   median_occupancy: number | null;
   median_rent: number | null;
   cluster_label: string | null;
+  occupancy_p50_ttm: number | null;
+  occupancy_low_season: number | null;
+  occupancy_high_season: number | null;
+  adr_p50_ttm: number | null;
+  data_through: string | null;
+  ttm_months_observed: number | null;
+  index_omission_reason: OmissionReason;
   computed_at: string;
 }
 
