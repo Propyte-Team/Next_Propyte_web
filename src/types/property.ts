@@ -193,6 +193,9 @@ export interface Property {
    * área de otra — métrica fabricada.
    */
   areaMin?: number;
+  /** Mínimos de precio y área por tipo de producto (kind='development' only).
+   *  Alimenta la proyección de la tarjeta cuando hay filtro de tipo activo. */
+  unitTypeStats?: Partial<Record<ProductType, { priceMin: number | null; areaMin: number | null }>>;
   stage: PropertyStage;
   usage: PropertyUsage[];
   amenities: string[];

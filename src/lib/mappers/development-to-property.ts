@@ -333,6 +333,7 @@ export function mapDevelopmentToProperty(
     bedroomsMax: typeof row.bedrooms_max === 'number' && row.bedrooms_max > 0 ? row.bedrooms_max : undefined,
     unitTypes,
     areaMin,
+    unitTypeStats: (row as { unit_type_stats?: Property['unitTypeStats'] }).unit_type_stats,
     specs: {
       // Developments have no single unit's specs — surfaced only for units
       bedrooms: 0,

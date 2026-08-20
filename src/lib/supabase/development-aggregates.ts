@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { DevelopmentRow } from '@/lib/mappers/development-to-property';
 import type { Property } from '@/types/property';
-import { PRODUCT_TYPES, resolveProductType } from '@/lib/catalog/product-types';
+import { PRODUCT_TYPES, resolveProductType, type ProductType } from '@/lib/catalog/product-types';
 
 // Mismo alias que usa lib/supabase/queries.ts.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,6 +17,12 @@ export interface DevelopmentUnitAggregates {
   unit_types?: Array<Property['specs']['type']>;
   /** Mínimo de area_m2 || lot_area_m2 entre las unidades cargadas. */
   area_min_m2?: number;
+  /** Mínimos de precio y área POR tipo de producto. Alimenta el «desde» de la
+   *  tarjeta cuando hay un filtro de tipo activo: sin esto, un desarrollo con
+   *  lotes desde $1M y casas desde $5M muestra «desde $1,000,000» al filtrar
+   *  Casa. Nadie miente a propósito — el número simplemente no responde a la
+   *  pregunta que hizo el comprador. */
+  unit_type_stats?: UnitTypeStats;
 }
 
 export type DevelopmentRowWithAggregates = DevelopmentRow & DevelopmentUnitAggregates;
@@ -35,6 +41,7 @@ type UnitAggRow = {
   unit_type: string | null;
   area_m2: number | string | null;
   lot_area_m2: number | string | null;
+  price_mxn: number | string | null;
 };
 
 /** Supabase serializa NUMERIC como string ("43.60"). Sin esta coerción,
@@ -43,6 +50,39 @@ function toPositiveNumber(raw: unknown): number | null {
   if (raw === null || raw === undefined) return null;
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+export type UnitTypeStat = { priceMin: number | null; areaMin: number | null };
+export type UnitTypeStats = Partial<Record<ProductType, UnitTypeStat>>;
+
+type UnitStatRow = {
+  unit_type: string | null;
+  price_mxn: number | string | null;
+  area_m2: number | string | null;
+  lot_area_m2: number | string | null;
+};
+
+/**
+ * Mínimos de precio y área agrupados por tipo de producto.
+ *
+ * Pura y exportada a propósito: es la lógica que decide qué número ve el
+ * comprador, y probarla contra la base sería probar la base.
+ */
+export function accumulateUnitStats(rows: UnitStatRow[]): UnitTypeStats {
+  const out: UnitTypeStats = {};
+  for (const u of rows) {
+    const tipo = resolveProductType(u.unit_type);
+    if (!tipo) continue;
+
+    const price = toPositiveNumber(u.price_mxn);
+    const area = toPositiveNumber(u.area_m2) ?? toPositiveNumber(u.lot_area_m2);
+
+    const acc = out[tipo] ?? { priceMin: null, areaMin: null };
+    if (price !== null) acc.priceMin = acc.priceMin === null ? price : Math.min(acc.priceMin, price);
+    if (area !== null) acc.areaMin = acc.areaMin === null ? area : Math.min(acc.areaMin, area);
+    out[tipo] = acc;
+  }
+  return out;
 }
 
 /**
@@ -68,7 +108,7 @@ export async function attachDevelopmentUnitAggregates(
     const { data, error } = await client
       .schema('real_estate_hub' as 'public')
       .from('v_units')
-      .select('development_id, bedrooms, unit_type, area_m2, lot_area_m2')
+      .select('development_id, bedrooms, unit_type, area_m2, lot_area_m2, price_mxn')
       .in('development_id', devIds)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -80,16 +120,17 @@ export async function attachDevelopmentUnitAggregates(
 
     const byDev = new Map<
       string,
-      { bedMin: number | null; bedMax: number | null; types: Set<Property['specs']['type']>; areaMin: number | null }
+      { bedMin: number | null; bedMax: number | null; types: Set<Property['specs']['type']>; areaMin: number | null; rows: UnitAggRow[] }
     >();
 
     (data as UnitAggRow[] | null)?.forEach((u) => {
       if (!u.development_id) return;
       let acc = byDev.get(u.development_id);
       if (!acc) {
-        acc = { bedMin: null, bedMax: null, types: new Set(), areaMin: null };
+        acc = { bedMin: null, bedMax: null, types: new Set(), areaMin: null, rows: [] };
         byDev.set(u.development_id, acc);
       }
+      acc.rows.push(u);
 
       const beds = toPositiveNumber(u.bedrooms);
       if (beds !== null) {
@@ -117,6 +158,9 @@ export async function attachDevelopmentUnitAggregates(
       if (acc.bedMax !== null) d.bedrooms_max = acc.bedMax;
       if (acc.types.size > 0) d.unit_types = TYPE_ORDER.filter((t) => acc.types.has(t));
       if (acc.areaMin !== null) d.area_min_m2 = acc.areaMin;
+
+      const stats = accumulateUnitStats(acc.rows);
+      if (Object.keys(stats).length > 0) d.unit_type_stats = stats;
     });
   } catch (err) {
     console.error('[attachDevelopmentUnitAggregates] exception:', err);
