@@ -44,6 +44,24 @@ export function grossMonthlyIncome(
   return Math.round(adr * (occ / 100) * 30);
 }
 
+/**
+ * Formatea un `data_through` ('YYYY-MM-DD' plano) como "mes de año" localizado.
+ *
+ * Parsear con `new Date('2026-02-01')` y formatear sin `timeZone: 'UTC'` corre
+ * el mes hacia atras en cualquier huso negativo (UTC-6 incluido): el string se
+ * interpreta como medianoche UTC, y `toLocaleDateString` sin zona explicita usa
+ * la zona local, que cae en el dia anterior — enero en vez de febrero. Anclar
+ * el parseo a T00:00:00Z y fijar `timeZone: 'UTC'` en el formateo evita el salto.
+ */
+export function formatDataThroughDate(dataThrough: string, locale: 'es' | 'en'): string {
+  const d = new Date(`${dataThrough}T00:00:00Z`);
+  return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
 /** Antigüedad de la serie. Rotula la cifra; nunca la oculta. */
 export function isStale(dataThrough: string | null, asOf: Date): boolean {
   if (!dataThrough) return true;

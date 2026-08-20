@@ -2080,6 +2080,7 @@
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
     "provenanceLine": "Elaboración propia sobre registros públicos de plataformas de renta vacacional · Corte {date}",
+    "staleSeriesNotice": "Esta serie no se ha actualizado desde {date}: las cifras pueden no reflejar el mercado actual.",
     "benchmarkHeading": "Mercado de referencia",
     "benchmarkNote": "Ciudad de México no forma parte de la oferta de Propyte. Se incluye como conjunto de comparación: sirve para contrastar los rendimientos del Caribe mexicano contra un mercado urbano maduro.",
     "openFinancingCalculator": "Abrir calculadora de financiamiento",

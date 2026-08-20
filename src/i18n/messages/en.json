@@ -2080,6 +2080,7 @@
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",
     "provenanceLine": "Propyte's own analysis of public short-term rental platform records · Data as of {date}",
+    "staleSeriesNotice": "This series has not been updated since {date}: figures may not reflect current market conditions.",
     "benchmarkHeading": "Reference market",
     "benchmarkNote": "Mexico City is not part of Propyte's portfolio. It is included as a comparison set: it contrasts Mexican Caribbean returns against a mature urban market.",
     "openFinancingCalculator": "Open financing calculator",

@@ -5,6 +5,7 @@ import { MapPin, Search } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { averageIndex, partitionByPool } from '@/lib/rental-data/pools';
+import { formatDataThroughDate, isStale } from '@/lib/rental-data/zone-metrics';
 import { VacacionalKPIs } from './VacacionalKPIs';
 import { ZoneCards } from './ZoneCards';
 import { ComparisonTable } from './ComparisonTable';
@@ -83,8 +84,8 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       let vb: number | string = 0;
       switch (sortField) {
         case 'score': va = a.score ?? 0; vb = b.score ?? 0; break;
-        case 'occupancy': va = a.median_occupancy ?? 0; vb = b.median_occupancy ?? 0; break;
-        case 'adr': va = a.median_adr ?? 0; vb = b.median_adr ?? 0; break;
+        case 'occupancy': va = a.occupancy_p50_ttm ?? 0; vb = b.occupancy_p50_ttm ?? 0; break;
+        case 'adr': va = a.adr_p50_ttm ?? 0; vb = b.adr_p50_ttm ?? 0; break;
         case 'listings': va = a.active_listings ?? 0; vb = b.active_listings ?? 0; break;
         case 'zone': va = a.zone; vb = b.zone; break;
       }
@@ -115,9 +116,9 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
     // promedio: con el umbral de muestra activo, 8 de 44 zonas publican score = null.
     const avg = averageIndex(target);
     const avgIndex = avg ?? 0;
-    const occZones = target.filter((z) => z.median_occupancy != null);
+    const occZones = target.filter((z) => z.occupancy_p50_ttm != null);
     const avgOcc = occZones.length > 0
-      ? occZones.reduce((s, z) => s + (z.median_occupancy ?? 0), 0) / occZones.length
+      ? occZones.reduce((s, z) => s + (z.occupancy_p50_ttm ?? 0), 0) / occZones.length
       : 0;
     const totalListings = target.reduce((s, z) => s + (z.active_listings ?? 0), 0);
 
@@ -129,13 +130,14 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
     };
   }, [ranking, scores]);
 
-  // Latest data date
+  // Latest data date. data_through, NO computed_at: computed_at es la fecha de la
+  // corrida del pipeline y decia "julio de 2026" sobre una serie que cerro en
+  // febrero. formatDataThroughDate ancla el parseo a UTC para no correr el mes
+  // hacia atras en husos negativos (UTC-6).
   const latestDate = useMemo(() => {
-    if (scores.length === 0) return null;
-    const dates = scores.map((s) => s.computed_at).filter(Boolean).sort().reverse();
+    const dates = scores.map((s) => s.data_through).filter(Boolean).sort().reverse();
     if (dates.length === 0) return null;
-    const d = new Date(dates[0]);
-    return d.toLocaleDateString(isEn ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' });
+    return formatDataThroughDate(dates[0] as string, isEn ? 'en' : 'es');
   }, [scores, isEn]);
 
   const handleSort = (field: SortField) => {
@@ -155,6 +157,19 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
       <p className="text-xs text-gray-600 text-center">
         {tMer('provenanceLine', { date: latestDate ?? '—' })}
       </p>
+
+      {/* Aviso de antigüedad: la serie puede haber quedado congelada en una corrida
+          anterior aunque el pipeline haya corrido despues. Es una advertencia, no un
+          reemplazo: las cifras se siguen mostrando. */}
+      {(() => {
+        const newest = scores.map((s) => s.data_through).filter(Boolean).sort().reverse()[0] ?? null;
+        if (!isStale(newest, new Date())) return null;
+        return (
+          <p className="text-xs text-amber-800 text-center">
+            {tMer('staleSeriesNotice', { date: latestDate ?? '—' })}
+          </p>
+        );
+      })()}
 
       {/* Search bar + City filter */}
       <div className="flex flex-wrap gap-3 items-center">

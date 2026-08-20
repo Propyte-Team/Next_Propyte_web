@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   MAX_DATA_AGE_DAYS,
+  formatDataThroughDate,
   grossMonthlyIncome,
   isStale,
   omissionLabelKey,
@@ -67,6 +68,25 @@ describe('isStale', () => {
 
   it('un string vacio se considera rancio', () => {
     expect(isStale('', hoy)).toBe(true);
+  });
+});
+
+describe('formatDataThroughDate', () => {
+  it('no corre el mes hacia atras en un huso UTC-6 (trampa de zona horaria)', () => {
+    // Esta maquina corre en UTC-6. new Date('2026-02-01') sin anclar a
+    // T00:00:00Z, formateado sin timeZone: 'UTC', cae al dia anterior en la
+    // zona local: enero en vez de febrero. Esto reprodujo el bug original
+    // ("Corte julio de 2026" sobre una serie que cerro en febrero).
+    expect(formatDataThroughDate('2026-02-01', 'es')).toBe('febrero de 2026');
+    expect(formatDataThroughDate('2026-02-01', 'en')).toBe('February 2026');
+  });
+
+  it('respeta el limite de fin de mes (2026-01-31 sigue siendo enero)', () => {
+    expect(formatDataThroughDate('2026-01-31', 'es')).toBe('enero de 2026');
+  });
+
+  it('respeta el limite de fin de anio (2025-12-31 sigue siendo diciembre 2025)', () => {
+    expect(formatDataThroughDate('2025-12-31', 'es')).toBe('diciembre de 2025');
   });
 });
 
