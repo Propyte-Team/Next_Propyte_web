@@ -2112,7 +2112,7 @@
     "title": "Methodology",
     "seeFull": "See full methodology",
     "summaryStr": "The Propyte Index ranks each zone on a 0-100 scale using four weighted factors: Occupancy (30%), Rate Growth (25%), RevPAR (25%), and Competition (20%). Higher scores indicate stronger rental markets for short-term vacation rentals.",
-    "summaryLtr": "Our traditional rental analysis aggregates data from 7 real estate sources covering 62 locations in Yucatán and Quintana Roo. Rents are normalized, filtered for outliers, and segmented by zone, property type, and bedrooms to provide accurate market benchmarks.",
+    "summaryLtr": "Our traditional rental analysis aggregates data from 7 real estate sources covering Yucatán and Quintana Roo. Rents are normalized, filtered for outliers, and segmented by zone, property type, and bedrooms to provide accurate market benchmarks.",
     "strFormulaTitle": "Propyte Index Formula",
     "strFactorOccupancy": "Occupancy (30%)",
     "strFactorOccupancyDesc": "Average annual occupancy rate relative to the market median. Zones with sustained high occupancy score better.",

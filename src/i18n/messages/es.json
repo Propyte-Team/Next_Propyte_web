@@ -2112,7 +2112,7 @@
     "title": "Metodología",
     "seeFull": "Ver metodología completa",
     "summaryStr": "El Índice Propyte clasifica cada zona en una escala de 0 a 100 usando cuatro factores ponderados: Ocupación (30%), Crecimiento de tarifa (25%), RevPAR (25%) y Competencia (20%). Puntuaciones más altas indican mercados de renta vacacional más fuertes.",
-    "summaryLtr": "Nuestro análisis de renta tradicional agrega datos de 7 fuentes inmobiliarias que cubren 62 localidades de Yucatán y Quintana Roo. Las rentas se normalizan, se filtran valores atípicos, y se segmentan por zona, tipo de propiedad y recámaras para proveer benchmarks precisos del mercado.",
+    "summaryLtr": "Nuestro análisis de renta tradicional agrega datos de 7 fuentes inmobiliarias que cubren Yucatán y Quintana Roo. Las rentas se normalizan, se filtran valores atípicos, y se segmentan por zona, tipo de propiedad y recámaras para proveer benchmarks precisos del mercado.",
     "strFormulaTitle": "Fórmula del Índice Propyte",
     "strFactorOccupancy": "Ocupación (30%)",
     "strFactorOccupancyDesc": "Tasa de ocupación promedio anual relativa a la mediana del mercado. Zonas con ocupación alta sostenida puntúan mejor.",
