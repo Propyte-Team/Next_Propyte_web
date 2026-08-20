@@ -61,7 +61,7 @@ const METHOD_ICONS = [Landmark, Banknote, Building2, ArrowLeftRight] as const;
  * hipotecario · contado · desarrollador · puente.
  */
 const METHOD_SPEED = ['slow', 'fastest', 'fast', 'slow'] as const;
-const SPEED_ICON = { fastest: '⚡⚡⚡', fast: '⚡⚡', slow: '🕐' } as const;
+const SPEED_ICON = { fastest: '⚡⚡⚡⚡⚡', fast: '⚡⚡⚡', slow: '⚡' } as const;
 
 /** Solo el método 3 lleva nota aclaratoria del costo real (regla DATA-GATE). */
 const METHOD_NOTE_KEY: Record<number, 'method3RateNote' | undefined> = { 3: 'method3RateNote' };
