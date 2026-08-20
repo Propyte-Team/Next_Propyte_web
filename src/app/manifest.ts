@@ -14,20 +14,20 @@ export default function manifest(): MetadataRoute.Manifest {
     // `/apple-icon.png`. Sin la extensión el manifest pedía `/apple-icon` y el
     // navegador cobraba un 404 en cada carga de página.
     //
-    // `sizes` declara la dimensión REAL de los archivos (698x699, los dos son
-    // el mismo activo). Antes decían 32x32 y 180x180, que era falso: con eso el
-    // navegador elige el icono equivocado creyendo que tiene dos resoluciones
-    // distintas donde solo hay una. Pendiente de diseño: activos cuadrados de
-    // verdad (180x180 y 512x512) para instalación en móvil.
+    // Activos cuadrados dedicados para instalación en móvil (192x192 y
+    // 512x512, fondo sólido #0F1923 — Apple/Android no recomiendan
+    // transparencia en estos íconos), separados de `/icon.png` y
+    // `/apple-icon.png` (que siguen la convención de Next para el favicon de
+    // pestaña y el apple-touch-icon respectivamente).
     icons: [
       {
-        src: '/icon.png',
-        sizes: '698x699',
+        src: '/icons/icon-192.png',
+        sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/apple-icon.png',
-        sizes: '698x699',
+        src: '/icons/icon-512.png',
+        sizes: '512x512',
         type: 'image/png',
       },
     ],
