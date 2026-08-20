@@ -3,11 +3,12 @@
 import { useMemo, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid, LabelList,
 } from 'recharts';
 import { TrendingUp, ArrowRight } from '@/lib/icons';
 import Link from 'next/link';
 import { useCurrency } from '@/context/CurrencyContext';
+import { useIsMobile } from '@/hooks/useMediaQuery';
 import type { ComparatorRates } from '@/lib/market-stats';
 
 /**
@@ -32,6 +33,7 @@ export default function InvestmentComparison({ rates }: { rates: ComparatorRates
   const { formatMxn } = useCurrency();
   const format = formatMxn;
   const currency = 'MXN';
+  const isMobile = useIsMobile();
 
   const [capital, setCapital] = useState(1_000_000);
   const [years, setYears] = useState(10);
@@ -109,9 +111,14 @@ export default function InvestmentComparison({ rates }: { rates: ComparatorRates
 
           {/* Chart */}
           <div className="lg:col-span-2 bg-white/5 border border-white/10 backdrop-blur-sm rounded-2xl p-4 md:p-6">
-            <div className="h-80 md:h-96">
+            <div className={isMobile ? 'h-[360px]' : 'h-80 md:h-96'}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data} layout="vertical" margin={{ top: 10, right: 30, left: 60, bottom: 10 }}>
+                <BarChart
+                  data={data}
+                  layout="vertical"
+                  margin={isMobile ? { top: 24, right: 12, left: 4, bottom: 10 } : { top: 10, right: 30, left: 60, bottom: 10 }}
+                  barCategoryGap={isMobile ? '34%' : '10%'}
+                >
                   <CartesianGrid horizontal={false} stroke="rgba(255,255,255,0.10)" />
                   <XAxis
                     type="number"
@@ -121,8 +128,10 @@ export default function InvestmentComparison({ rates }: { rates: ComparatorRates
                   <YAxis
                     type="category"
                     dataKey="name"
-                    tick={{ fontSize: 12, fill: 'rgba(255,255,255,0.85)', fontWeight: 600 }}
-                    width={120}
+                    tick={isMobile ? false : { fontSize: 12, fill: 'rgba(255,255,255,0.85)', fontWeight: 600 }}
+                    width={isMobile ? 2 : 120}
+                    axisLine={!isMobile}
+                    tickLine={!isMobile}
                   />
                   <Tooltip
                     cursor={{ fill: 'rgba(255,255,255,0.06)' }}
@@ -143,6 +152,51 @@ export default function InvestmentComparison({ rates }: { rates: ComparatorRates
                         style={d.highlight ? { filter: 'drop-shadow(0 0 6px rgba(92,224,210,0.7))' } : undefined}
                       />
                     ))}
+                    {isMobile && (
+                      <LabelList
+                        dataKey="name"
+                        content={(props) => {
+                          const { x, y, value } = props as { x: number; y: number; value: string };
+                          return (
+                            <text
+                              x={x}
+                              y={y - 6}
+                              textAnchor="start"
+                              fontSize={11}
+                              fontWeight={600}
+                              fill="rgba(255,255,255,0.85)"
+                            >
+                              {value}
+                            </text>
+                          );
+                        }}
+                      />
+                    )}
+                    {isMobile && (
+                      <LabelList
+                        dataKey="fv"
+                        content={(props) => {
+                          const { x, y, width: w, height: h, index } = props as {
+                            x: number; y: number; width: number; height: number; index: number;
+                          };
+                          const item = data[index];
+                          if (!item || item.id !== winner.id) return null;
+                          return (
+                            <text
+                              x={x + w - 8}
+                              y={y + h / 2}
+                              dy={4}
+                              textAnchor="end"
+                              fontSize={12}
+                              fontWeight={700}
+                              fill="#0F1923"
+                            >
+                              {format(item.fv)}
+                            </text>
+                          );
+                        }}
+                      />
+                    )}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

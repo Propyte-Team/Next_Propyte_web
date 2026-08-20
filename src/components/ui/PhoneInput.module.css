@@ -1,0 +1,29 @@
+/* Overrides para el <input>/select nativos de react-phone-number-input: el
+   borde/alto/fondo/padding vive en el div contenedor (clase pasada por el
+   formulario vía prop `className`, igual que un <input> normal), así que el
+   input interno debe quedar "desnudo" para no dibujar un doble borde. */
+.phoneInput {
+  display: flex;
+  align-items: center;
+}
+
+.phoneInput :global(.PhoneInputInput) {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+}
+
+.phoneInput :global(.PhoneInputInput)::placeholder {
+  color: inherit;
+  opacity: 0.4;
+}
+
+.phoneInput :global(.PhoneInputCountry) {
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}

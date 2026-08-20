@@ -17,6 +17,7 @@ import ScrollReveal from '@/components/shared/ScrollReveal';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import { useSiteContact } from '@/context/SiteConfigContext';
 import type { SiteMediaMap } from '@/lib/hub-content';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 interface BrokerFaqItem { q: string; a: string }
 interface BrokersHubData { faqs: BrokerFaqItem[] }
@@ -375,16 +376,35 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
     }
   };
 
-  const isValidMxPhone = (v: string) => /^(\+?52[\s-]?)?\(?\d{2,3}\)?[\s-]?\d{3,4}[\s-]?\d{4}$/.test(v.trim());
-
   const validate = (): Record<string, string> => {
     const next: Record<string, string> = {};
     if (!formData.name.trim()) next.name = tCommon('required');
     if (!formData.email.trim()) next.email = tCommon('required');
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
     if (!formData.phone.trim()) next.phone = tCommon('required');
-    else if (!isValidMxPhone(formData.phone)) next.phone = tCommon('invalidPhone');
+    else if (!isValidPhoneNumber(formData.phone)) next.phone = tCommon('invalidPhone');
     return next;
+  };
+
+  const handlePhoneChange = (value: string | undefined) => {
+    setFormData((prev) => ({ ...prev, phone: value || '' }));
+    if (errors.phone) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.phone;
+        return next;
+      });
+    }
+  };
+
+  // Valida en blur (no en cada tecla) — evita marcar error mientras el
+  // usuario todavía está escribiendo el número.
+  const handlePhoneBlur = () => {
+    if (!formData.phone.trim()) {
+      setErrors((prev) => ({ ...prev, phone: tCommon('required') }));
+    } else if (!isValidPhoneNumber(formData.phone)) {
+      setErrors((prev) => ({ ...prev, phone: tCommon('invalidPhone') }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -414,7 +434,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
     }
   };
 
-  const inputClass = 'w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 outline-none transition-colors';
+  const inputClass = 'w-full h-12 px-4 bg-white border border-gray-200 rounded-xl text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus-within:border-propyte-brand focus-within:ring-2 focus-within:ring-propyte-brand/20 outline-none transition-colors';
   const selectClass = `${inputClass} appearance-none`;
   const labelClass = 'block text-sm font-semibold text-[#1A2F3F] mb-1.5';
 
@@ -473,8 +493,19 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="brk-form-phone" className={labelClass}>{t('formPhone')} *</label>
-                    <input id="brk-form-phone" type="tel" name="phone" value={formData.phone} onChange={handleChange} aria-invalid={!!errors.phone} aria-describedby={errors.phone ? 'brk-form-phone-error' : undefined} aria-required={true} className={inputClass} toolparamdescription="Teléfono de contacto en México." />
-                    {errors.phone && <p id="brk-form-phone-error" role="alert" className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+                    <PhoneInputField
+                      id="brk-form-phone"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                      onBlur={handlePhoneBlur}
+                      invalid={!!errors.phone}
+                      describedBy={errors.phone ? 'brk-form-phone-error' : undefined}
+                      required
+                      className={inputClass}
+                      toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                    />
+                    {errors.phone && <p id="brk-form-phone-error" aria-live="polite" className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                   <div>
                     <label htmlFor="brk-form-company" className={labelClass}>{t('formCompany')}</label>

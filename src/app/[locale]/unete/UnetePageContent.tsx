@@ -1,11 +1,12 @@
 'use client';
 
 import { createContext, useContext, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import CopyEmailButton from '@/components/shared/CopyEmailButton';
 import { isExternalVideo } from '@/lib/site-media/embed';
@@ -187,8 +188,13 @@ function HeroSection() {
                 </div>
               )}
             </div>
-            <div className="absolute -bottom-4 -left-4 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
+            <div className="hidden lg:block absolute -bottom-4 -left-4 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg">
               {t('heroTopBadge')}
+            </div>
+            <div className="lg:hidden absolute -bottom-4 inset-x-0 flex justify-center px-4 pointer-events-none">
+              <div className="translate-x-3 bg-[#A2F9FF] text-[#0F1923] font-bold text-sm px-4 py-2 rounded-xl shadow-lg pointer-events-auto">
+                {t('heroTopBadge')}
+              </div>
             </div>
           </div>
         </div>
@@ -628,7 +634,7 @@ function ApplicationForm() {
 
   const schema = z.object({
     name: z.string().trim().min(2, tCommon('required')),
-    whatsapp: z.string().trim().min(8, tCommon('required')),
+    whatsapp: z.string().trim().min(1, tCommon('required')).refine(isValidPhoneNumber, { message: tCommon('invalidPhone') }),
     email: z.string().trim().email(tCommon('invalidEmail')),
     city: z.string().min(1, tCommon('required')),
     experience: z.string().optional().or(z.literal('')),
@@ -641,6 +647,8 @@ function ApplicationForm() {
   const {
     register,
     handleSubmit,
+    control,
+    trigger,
     formState: { isSubmitting, errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
 
@@ -732,19 +740,26 @@ function ApplicationForm() {
                     </div>
                     <div>
                       <label htmlFor="unete-whatsapp" className="block text-sm font-semibold text-[#2C2C2C] mb-1.5">{t('formWhatsappLabel')}</label>
-                      <input
-                        id="unete-whatsapp"
-                        type="tel"
-                        autoComplete="tel"
-                        className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-propyte-brand/20 focus:border-propyte-brand"
-                        placeholder={t('formWhatsappPlaceholder')}
-                        aria-invalid={!!errors.whatsapp}
-                        aria-describedby={errors.whatsapp ? 'unete-whatsapp-error' : undefined}
-                        aria-required={true}
-                        toolparamdescription="Número de WhatsApp de contacto."
-                        {...register('whatsapp')}
+                      <Controller
+                        name="whatsapp"
+                        control={control}
+                        render={({ field }) => (
+                          <PhoneInputField
+                            id="unete-whatsapp"
+                            name={field.name}
+                            value={field.value || ''}
+                            onChange={(value) => field.onChange(value || '')}
+                            onBlur={() => { field.onBlur(); trigger('whatsapp'); }}
+                            placeholder={t('formWhatsappPlaceholder')}
+                            invalid={!!errors.whatsapp}
+                            describedBy={errors.whatsapp ? 'unete-whatsapp-error' : undefined}
+                            required
+                            className="w-full h-11 px-4 border border-gray-200 rounded-lg text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-propyte-brand/20 focus-within:border-propyte-brand"
+                            toolParamDescription="Número de WhatsApp de contacto, con selector de lada de país."
+                          />
+                        )}
                       />
-                      {errors.whatsapp && <p id="unete-whatsapp-error" role="alert" className="text-xs text-red-500 mt-1">{errors.whatsapp.message}</p>}
+                      {errors.whatsapp && <p id="unete-whatsapp-error" aria-live="polite" className="text-xs text-red-500 mt-1">{errors.whatsapp.message}</p>}
                     </div>
                   </div>
 

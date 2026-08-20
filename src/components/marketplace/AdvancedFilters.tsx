@@ -72,7 +72,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
           <button onClick={onClear} className="flex-1 h-11 border border-gray-200 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
             {t('clearAll')}
           </button>
-          <button onClick={onClose} className="flex-1 h-11 bg-propyte-brand text-[#0F1923] rounded-lg text-sm font-medium hover:bg-propyte-cyan-200 transition-colors">
+          <button onClick={onClose} className="flex-1 h-11 bg-propyte-brand text-[#0F1923] rounded-lg text-sm font-medium hover:bg-propyte-cyan-300! transition-colors">
             OK
           </button>
         </div>
