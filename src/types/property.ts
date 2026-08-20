@@ -1,3 +1,5 @@
+import type { ProductType } from '@/lib/catalog/product-types';
+
 export interface PropertyLocation {
   city: string;
   zone: string;
@@ -22,7 +24,8 @@ export interface PropertySpecs {
   bedrooms: number;
   bathrooms: number;
   area: number;
-  type: 'departamento' | 'penthouse' | 'terreno' | 'macrolote' | 'casa';
+  /** Catálogo canónico de producto. Fuente: lib/catalog/product-types.ts. */
+  type: ProductType;
   tipoEntrega?: string | null;
 }
 

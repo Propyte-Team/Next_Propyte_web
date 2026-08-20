@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { normalizeUnitType } from '@/lib/mappers/unit-to-property';
 import type { DevelopmentRow } from '@/lib/mappers/development-to-property';
 import type { Property } from '@/types/property';
+import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
 
 // Mismo alias que usa lib/supabase/queries.ts.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,14 +26,9 @@ export type DevelopmentRowWithAggregates = DevelopmentRow & DevelopmentUnitAggre
  * Orden de presentación de los tipos de unidad. FIJO a propósito: `v_units` es
  * un SUBCONJUNTO del inventario (Ancestral: total_units=221 vs 5 filas), así que
  * ordenar por frecuencia inventaría una jerarquía que el dato no respalda.
+ * Sale del catálogo, que ya lo declara en el orden correcto.
  */
-const TYPE_ORDER: ReadonlyArray<Property['specs']['type']> = [
-  'departamento',
-  'penthouse',
-  'casa',
-  'terreno',
-  'macrolote',
-];
+const TYPE_ORDER: ReadonlyArray<Property['specs']['type']> = PRODUCT_TYPES;
 
 type UnitAggRow = {
   development_id: string | null;

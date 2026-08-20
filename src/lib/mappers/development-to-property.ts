@@ -7,6 +7,7 @@ import type {
   PropertyPromo,
   DevelopmentType,
 } from '@/types/property';
+import { PRODUCT_TYPES, resolveProductType } from '@/lib/catalog/product-types';
 
 /**
  * Raw row from `real_estate_hub.v_developments`.
@@ -148,10 +149,9 @@ function normalizeStage(raw: string | null | undefined): PropertyStage | null {
 const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional', 'renta', 'mixto'];
 const VALID_BADGES: ReadonlyArray<Exclude<PropertyBadge, null>> = ['preventa', 'nuevo', 'entrega_inmediata'];
 /** Union canónico de `specs.type`. Guard para los `unit_types` agregados desde
- *  v_units, que llegan como `unknown` por el index signature de DevelopmentRow. */
-const VALID_SPEC_TYPES: ReadonlyArray<Property['specs']['type']> = [
-  'departamento', 'penthouse', 'casa', 'terreno', 'macrolote',
-];
+ *  v_units, que llegan como `unknown` por el index signature de DevelopmentRow.
+ *  Deriva del catálogo: enumerarlos aquí garantizaba que se quedaran atrás. */
+const VALID_SPEC_TYPES: ReadonlyArray<Property['specs']['type']> = PRODUCT_TYPES;
 
 /**
  * Normaliza `development_type` (texto sucio en BD: 'vertical', 'preventa',
@@ -205,14 +205,10 @@ export function resolveSpecType(
   propertyTypes: string[] | string | null | undefined,
   developmentType?: string | null,
 ): Property['specs']['type'] {
-  const first = Array.isArray(propertyTypes) ? propertyTypes[0] : propertyTypes;
-  const firstType = (first || '').toLowerCase().trim();
-  if (firstType) {
-    return firstType.startsWith('macrolote') || firstType.startsWith('megalote') ? 'macrolote'
-      : firstType.startsWith('terreno') || firstType.startsWith('lote') ? 'terreno'
-      : firstType.startsWith('penthouse') ? 'penthouse'
-      : firstType.startsWith('casa') || firstType.startsWith('villa') || firstType.startsWith('townhouse') ? 'casa'
-      : 'departamento';
+  const list = Array.isArray(propertyTypes) ? propertyTypes : [propertyTypes];
+  for (const candidato of list) {
+    const t = resolveProductType(candidato);
+    if (t) return t;
   }
   switch (normalizeDevelopmentType(developmentType)) {
     case 'lotes': return 'terreno';

@@ -26,7 +26,10 @@ export interface MarketRentEstimate {
  *  vivienda: `getRentalEstimate` no encuentra comparables de su tipo y cae al
  *  nivel ciudad, devolviendo renta de departamento. Aplicada a un lote de
  *  $300k eso daba yields de 107% (visto 2026-07-28 en los `lote-*` de Región 11). */
-const RENTABLE_PROPERTY_TYPES = new Set(['departamento', 'penthouse', 'casa']);
+// 'villa' entra al abrirse como canónico propio: antes caía en 'casa' y sí
+// estimaba renta. Sin esta línea, separar villa apagaría en silencio la
+// estimación de renta de esos desarrollos.
+const RENTABLE_PROPERTY_TYPES = new Set(['departamento', 'penthouse', 'casa', 'villa']);
 
 export function isRentableType(propertyType: string | null | undefined): boolean {
   return RENTABLE_PROPERTY_TYPES.has((propertyType ?? '').toLowerCase().trim());

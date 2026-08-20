@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { PRODUCT_TYPES, PRODUCT_TYPE_SPELLINGS, resolveProductType } from './product-types';
+import type { Property } from '@/types/property';
 
 describe('catálogo de tipos de producto', () => {
   it('son exactamente siete, en orden de presentación', () => {
@@ -76,5 +77,13 @@ describe('resolveProductType', () => {
   it('«Lote comercial» gana comercial, no terreno: el orden importa', () => {
     expect(resolveProductType('Lote comercial')).toBe('comercial');
     expect(resolveProductType('Lote')).toBe('terreno');
+  });
+});
+
+describe('el union de Property se alinea al catálogo', () => {
+  it('specs.type acepta los siete canónicos', () => {
+    // Prueba de tipos: si el union no creció, esto no compila.
+    const tipos: Array<Property['specs']['type']> = [...PRODUCT_TYPES];
+    expect(tipos).toHaveLength(7);
   });
 });
