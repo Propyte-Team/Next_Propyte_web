@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
 import { ChevronRight } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -64,7 +65,9 @@ export default async function TaxonomyDevelopmentsPage({
     mainEntity: {
       '@type': 'ItemList',
       numberOfItems: rawDevs.length,
-      itemListElement: rawDevs.slice(0, 30).map((dev, i) => ({
+      itemListElement: rawDevs.slice(0, 30).map((dev, i) => {
+        const precio = precioDesarrollo(dev as FilaPrecioDesarrollo);
+        return {
         '@type': 'ListItem',
         position: i + 1,
         item: {
@@ -77,12 +80,15 @@ export default async function TaxonomyDevelopmentsPage({
             addressRegion: dev.zone || undefined,
             addressCountry: 'MX',
           },
-          ...(dev.price_min_mxn && dev.price_min_mxn > 0
-            ? { offers: { '@type': 'Offer', price: dev.price_min_mxn, priceCurrency: 'MXN' } }
+          // La moneda sale del dato, no de una constante: un priceCurrency fijo
+          // en 'MXN' publicaba los desarrollos en USD con la moneda equivocada.
+          ...(precio.min != null
+            ? { offers: { '@type': 'Offer', price: precio.min, priceCurrency: precio.moneda } }
             : {}),
           ...(dev.images?.[0] ? { image: dev.images[0] } : {}),
         },
-      })),
+        };
+      }),
     },
   };
 

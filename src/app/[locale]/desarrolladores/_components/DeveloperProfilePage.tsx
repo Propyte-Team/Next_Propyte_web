@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';
@@ -26,7 +27,7 @@ function formatPrice(n: number) {
 
 function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string }) {
   const img = dev.images?.[0];
-  const priceFrom = dev.min_price_mxn || dev.price_mxn;
+  const precio = precioDesarrollo(dev as FilaPrecioDesarrollo);
   const stageMap: Record<string, string> = {
     preventa: 'Preventa', construccion: 'En construcción', entrega_inmediata: 'Entrega inmediata',
   };
@@ -67,9 +68,9 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
             <span>{[dev.zone, dev.city].filter(Boolean).join(', ')}</span>
           </div>
         )}
-        {priceFrom && (
+        {precio.min != null && (
           <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            Desde {formatPrice(priceFrom)} MXN
+            Desde {formatPrice(precio.min)} {precio.moneda}
           </div>
         )}
       </div>

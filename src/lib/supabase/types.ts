@@ -60,7 +60,9 @@ export interface DevelopmentRow {
   stage: DevelopmentStage;
   badge: string | null;
   price_min_mxn: number | null;
+  price_min_usd: number | null;
   price_max_mxn: number | null;
+  price_max_usd: number | null;
   currency: string;
   total_units: number | null;
   available_units: number | null;

@@ -51,6 +51,7 @@ import EsquemasDePagoTab from './EsquemasDePagoTab';
 import MarketIndicator from './MarketIndicator';
 import AmenityList from '@/components/property/AmenityList';
 import FloatingKeyData from '@/components/property/FloatingKeyData';
+import { montoCotizado } from '@/lib/precio-moneda';
 import Highlights from '@/components/property/Highlights';
 import Proximity from '@/components/property/Proximity';
 import RichContentSections from '@/components/property/RichContentSections';
@@ -134,6 +135,9 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
     : property.richContent?.editorial?.es);
   // Moneda en que se cotizó originalmente (moneda_principal en BD). Default MXN.
   const originalCurrency: Currency = (row.currency || '').toUpperCase() === 'USD' ? 'USD' : 'MXN';
+  // Monto tal como se cotizó. Antes se leía property.price.mxn siempre, que en una
+  // unidad en dólares vale 0 (precio_mxn está NULL): la ficha mostraba "—".
+  const montoUnidad = montoCotizado(property.price);
   const _citySlug = slugify(property.location.city); void _citySlug;
 
   // ── Parent development data (amenities + developer) ──
@@ -403,14 +407,15 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
 
               {/* Precio (full width) — sin Share aquí, el título lo lleva arriba.
                   Con descuento: precio lista tachado encima, post-descuento abajo + badge %. */}
-              {property.price.mxn > 0 && (
+              {montoUnidad != null && (
                 <div className="mt-4 space-y-1">
                   {property.discount && property.priceOriginal && (
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-gray-600">{tProp('listPriceLabel')}:</span>
                       <span className="line-through decoration-[#0E7490] decoration-2 text-gray-600 tabular-nums">
                         <PriceDisplay
-                          mxn={property.priceOriginal}
+                          amount={property.priceOriginal}
+                          currency="MXN"
                           variant="single"
                           size="sm"
                         />
@@ -419,11 +424,11 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                   )}
                   <div className="flex items-baseline gap-4 flex-wrap">
                     <PriceDisplay
-                      mxn={property.price.mxn}
+                      amount={montoUnidad}
+                      currency={originalCurrency}
                       variant="dual"
                       size="xl"
                       showRateNote
-                      originalCurrency={originalCurrency}
                     />
                     {property.discount && (
                       <DiscountBadge variant="inline" pct={property.discount.pct} />
@@ -431,7 +436,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
                     {property.specs.area > 0 && (
                       <div className="text-sm text-gray-600">
                         <PriceDisplay
-                          mxn={Math.round(property.price.mxn / property.specs.area)}
+                          amount={Math.round(montoUnidad / property.specs.area)}
+                          currency={originalCurrency}
                           variant="single"
                           size="sm"
                           suffix="/m²"
@@ -669,8 +675,8 @@ export default async function UnitDetailPage({ locale, slug }: UnitDetailPagePro
             <div className="sticky top-24 space-y-6">
               {/* Datos clave (cuadro azul) — siempre arriba del formulario (decisión Luis 2026-05-11). */}
               <FloatingKeyData
-                priceMxn={property.price.mxn > 0 ? property.price.mxn : null}
-                originalCurrency={originalCurrency}
+                price={montoUnidad}
+                currency={originalCurrency}
                 areaM2={property.specs.area > 0 ? property.specs.area : null}
                 bedrooms={property.specs.bedrooms > 0 ? String(property.specs.bedrooms) : null}
                 bathrooms={property.specs.bathrooms > 0 ? String(property.specs.bathrooms) : null}

@@ -9,6 +9,7 @@ import type { Property, PropertyBadge } from '@/types/property';
 import { useCompare } from '@/hooks/useCompare';
 import { useCurrency } from '@/context/CurrencyContext';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import { montoCotizado } from '@/lib/precio-moneda';
 import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
@@ -63,6 +64,8 @@ export default function MarketplaceCard({
 
   const hasPrice = property.price.mxn > 0;
   const originalCurrency = property.price.currency;
+  // Monto cotizado: en un desarrollo/unidad en dolares, price.mxn vale 0.
+  const montoTarjeta = montoCotizado(property.price);
   const pricePerM2 = property.specs.area > 0 ? Math.round(property.price.mxn / property.specs.area) : null;
 
   // Sistema de descuentos (2026-05-22):
@@ -357,10 +360,10 @@ export default function MarketplaceCard({
                   className={`font-bold text-[var(--propyte-dark-900)] tabular-nums leading-none ${variant === 'compact' ? 'text-lg' : 'text-xl'}`}
                 >
                   <PriceDisplay
-                    mxn={property.price.mxn}
+                    amount={montoTarjeta}
                     variant="dual"
                     size={variant === 'compact' ? 'sm' : 'md'}
-                    originalCurrency={originalCurrency}
+                    currency={originalCurrency}
                   />
                 </span>
               </>

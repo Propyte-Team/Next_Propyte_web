@@ -1,4 +1,5 @@
 import type { ResolvedInvestment } from '@/lib/investment/resolve';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
 import type {
   Property,
   PropertyStage,
@@ -35,9 +36,11 @@ export interface DevelopmentRow {
   beach_distance: number | null;
   airport_name: string | null;
   airport_distance: number | null;
-  // Price
+  // Price. El par canónico lo decide `currency`; ver src/lib/precio-moneda.ts.
   price_min_mxn: number | null;
   price_max_mxn: number | null;
+  price_min_usd: number | null;
+  price_max_usd: number | null;
   currency: string | null;
   // Meta/classification
   stage: string | null;
@@ -300,6 +303,10 @@ export function mapDevelopmentToProperty(
   };
   const hasAssets = Object.values(assets).some((v) => v !== undefined);
 
+  // Precio canónico: la moneda del desarrollo decide qué par de columnas se lee.
+  // Si `currency` dice USD, el par en pesos NO se mira aunque traiga número.
+  const precio = precioDesarrollo(row as FilaPrecioDesarrollo);
+
   // Promo / discount fields are optional in v_developments — read defensively.
   // When Supabase doesn't have these columns, the card simply doesn't render them.
   // Number() defensive: Supabase NUMERIC se serializa como string.
@@ -338,11 +345,17 @@ export function mapDevelopmentToProperty(
       lng: row.lng ?? null,
       address: row.address || '',
     },
+    // `price.mxn` sigue llevando SÓLO pesos: es lo que usan orden y filtros, y
+    // meterle dólares ahí los mezclaría sin tipo de cambio. Cuando el desarrollo
+    // cotiza en dólares, la cifra va en `price.usd` y `price.mxn` queda en 0 —
+    // ausencia de precio en pesos, que es la verdad, no un cero de precio.
     price: {
-      mxn: row.price_min_mxn || 0,
-      currency: (row.currency || 'MXN').toUpperCase() === 'USD' ? 'USD' : 'MXN',
+      mxn: precio.moneda === 'MXN' ? (precio.min ?? 0) : 0,
+      currency: precio.moneda,
+      usd: precio.moneda === 'USD' ? (precio.min ?? undefined) : undefined,
     },
-    priceMax: row.price_max_mxn ?? undefined,
+    priceMax: precio.moneda === 'MXN' ? (precio.max ?? undefined) : undefined,
+    priceMaxUsd: precio.moneda === 'USD' ? (precio.max ?? undefined) : undefined,
     developmentType: normalizeDevelopmentType(row.development_type as string | null | undefined),
     bedroomsMin: typeof row.bedrooms_min === 'number' && row.bedrooms_min > 0 ? row.bedrooms_min : undefined,
     bedroomsMax: typeof row.bedrooms_max === 'number' && row.bedrooms_max > 0 ? row.bedrooms_max : undefined,

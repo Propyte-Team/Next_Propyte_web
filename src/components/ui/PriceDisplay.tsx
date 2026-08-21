@@ -1,10 +1,19 @@
 'use client';
 
 import { useCurrency, type Currency } from '@/context/CurrencyContext';
+import { carasDelPrecio } from '@/lib/precio-moneda';
 
 interface PriceDisplayProps {
-  /** Precio en MXN (fuente de verdad almacenada en BD). */
-  mxn: number | string | null | undefined;
+  /**
+   * El monto tal como se cotizó, en la moneda que dice `currency`.
+   *
+   * Antes esta prop se llamaba `mxn` y se asumía SIEMPRE en pesos: la otra moneda
+   * salía de dividir por el TC, y `originalCurrency` sólo decidía cuál de los dos
+   * se mostraba grande. Con un desarrollo cotizado en dólares eso publicaba
+   * "$145,000 MXN" y, si se marcaba USD, "$8,550 USD" — el monto dividido por un
+   * TC que nunca debió aplicarse. El monto y su moneda viajan juntos.
+   */
+  amount: number | string | null | undefined;
   /** Variante visual (default: dual). */
   variant?: 'dual' | 'single' | 'inline';
   /** Tamaño de la unidad principal */
@@ -13,10 +22,14 @@ interface PriceDisplayProps {
   showRateNote?: boolean;
   /** Sufijo opcional (ej. "/m²") */
   suffix?: string;
-  /** Moneda en que se cotizó originalmente la unidad. Siempre se muestra ARRIBA
-   *  grande, marcada como (Original). La otra moneda calculada va ABAJO chiquita
-   *  marcada como (Referencial). Default: 'MXN'. */
-  originalCurrency?: Currency;
+  /**
+   * Moneda EN LA QUE ESTÁ `amount`. Se muestra arriba grande; la otra se calcula
+   * con el TC y va abajo chiquita marcada como (Referencial).
+   *
+   * Obligatoria a propósito: un default 'MXN' es exactamente lo que hacía que la
+   * ficha de desarrollo rotulara dólares como pesos sin que nada fallara.
+   */
+  currency: Currency;
   /** Tono visual del contexto. 'light' (default) para fondos claros, 'dark'
    *  para fondos oscuros como FloatingKeyData/DevelopmentKeyData (#1A2F3F).
    *  En 'dark' sube el contraste del precio referencial a WCAG AA. */
@@ -46,12 +59,12 @@ function formatCurrency(amount: number, currency: Currency): string {
 }
 
 export default function PriceDisplay({
-  mxn,
+  amount,
   variant = 'dual',
   size = 'md',
   showRateNote = false,
   suffix,
-  originalCurrency = 'MXN',
+  currency,
   tone = 'light',
   className = '',
 }: PriceDisplayProps) {
@@ -64,19 +77,18 @@ export default function PriceDisplay({
   const rateNoteCls = isDark ? 'text-white/60' : 'text-gray-400';
   const inlineSecondaryCls = isDark ? 'text-white/70 text-xs' : 'text-gray-500 text-xs';
   const { rate, rateUpdatedAt } = useCurrency();
-  if (mxn == null) return <span className={className}>—</span>;
-  const n = typeof mxn === 'string' ? Number(mxn) : mxn;
+  if (amount == null) return <span className={className}>—</span>;
+  const n = typeof amount === 'string' ? Number(amount) : amount;
   if (!Number.isFinite(n) || n <= 0) return <span className={className}>—</span>;
 
-  // n viene en MXN (BD). Si la moneda original es USD, el valor "original"
-  // que el comercial cotizó realmente es n/rate (rounded). Si original es MXN,
-  // el valor original es n directo.
-  const usdValue = Math.round(n / rate);
-  const mxnValue = n;
-  const originalValue = originalCurrency === 'MXN' ? mxnValue : usdValue;
-  const referencialValue = originalCurrency === 'MXN' ? usdValue : mxnValue;
-  const referencialCurrency: Currency = originalCurrency === 'MXN' ? 'USD' : 'MXN';
-  const originalLabel = `${formatCurrency(originalValue, originalCurrency)}${suffix ?? ''}`;
+  // `n` está en `currency`: es la cifra que el desarrollador cotizó, sin tocar.
+  // La OTRA moneda es la calculada, y es la única que lleva el TC encima.
+  // La fórmula vive en @/lib/precio-moneda para poder testearla sin React.
+  const caras = carasDelPrecio(n, currency, rate);
+  const originalValue = caras.original;
+  const referencialValue = caras.referencial;
+  const referencialCurrency: Currency = caras.referencialMoneda;
+  const originalLabel = `${formatCurrency(originalValue, currency)}${suffix ?? ''}`;
   const referencialLabel = `${formatCurrency(referencialValue, referencialCurrency)}${suffix ?? ''}`;
 
   const tcDate = new Date(rateUpdatedAt).toLocaleDateString('es-MX', {

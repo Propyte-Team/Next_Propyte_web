@@ -308,7 +308,7 @@ export async function getSimilarDevelopments(
       .from('v_developments')
       // publication_title/meta_title se necesitan para applyDisplayName: las cards
       // de "Más desarrollos" deben mostrar el título público, NUNCA nombre_desarrollo.
-      .select('id, slug, name, publication_title, meta_title, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name, discounted_units_count')
+      .select('id, slug, name, publication_title, meta_title, city, zone, images, price_min_mxn, price_max_mxn, price_min_usd, price_max_usd, currency, stage, property_types, developer_name, discounted_units_count')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
       .neq('id', seed.id)
@@ -483,7 +483,7 @@ export async function getDevelopmentsByIds(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn, development_type')
+      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn, price_min_usd, currency, development_type')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -523,7 +523,7 @@ export async function getDevelopmentsForRanking(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, publication_title, meta_title, city, zone, stage, price_min_mxn, price_max_mxn, images')
+      .select('id, slug, name, publication_title, meta_title, city, zone, stage, price_min_mxn, price_max_mxn, price_min_usd, price_max_usd, currency, images')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -1026,8 +1026,11 @@ export interface DeveloperDevelopment {
   slug: string;
   name: string;
   images: string[] | null;
-  min_price_mxn: number | null;
-  price_mxn: number | null;
+  // Los nombres correctos de v_developments. Antes decia min_price_mxn/price_mxn,
+  // que no existen: PostgREST devolvia 42703 y la query caia a [] en silencio.
+  price_min_mxn: number | null;
+  price_min_usd: number | null;
+  currency: string | null;
   stage: string | null;
   city: string | null;
   zone: string | null;
@@ -1041,7 +1044,7 @@ export async function getDeveloperDevelopments(
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, images, min_price_mxn, price_mxn, stage, city, zone')
+      .select('id, slug, name, images, price_min_mxn, price_min_usd, currency, stage, city, zone')
       .eq('developer_id', developerId)
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
