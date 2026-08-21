@@ -452,7 +452,7 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
             <div className="space-y-4">
               {[Briefcase, CheckCircle, Users, FileText].map((Icon, i) => (
                 <div key={badges[i]} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-propyte-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-[#1A2F3F] rounded-lg flex items-center justify-center flex-shrink-0">
                     <Icon size={16} className="text-propyte-brand" />
                   </div>
                   <span className="text-white/70 text-sm">{badges[i]}</span>

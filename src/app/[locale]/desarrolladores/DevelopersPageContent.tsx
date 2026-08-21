@@ -613,7 +613,7 @@ function DeveloperForm() {
                 { icon: CheckCircle, text: t('formBullet4') },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-propyte-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-[#1A2F3F] rounded-lg flex items-center justify-center flex-shrink-0">
                     <Icon size={16} className="text-propyte-brand" />
                   </div>
                   <span className="text-white/70 text-sm">{text}</span>
