@@ -7,6 +7,7 @@ import {
   NAP_ADDRESS_LINE_EN,
   NAP_EMAIL,
   NAP_GEO,
+  NAP_OPENING_HOURS,
   NAP_SAME_AS,
   GBP_CID,
   GBP_URL,
@@ -14,10 +15,12 @@ import {
 } from './nap';
 
 /**
- * El NAP vivía en cuatro lugares y divergió sin que nadie lo notara: el JSON-LD
- * publicaba una calle y un CP que no eran los de la ficha, y un email que no era
- * el público. El daño es silencioso — no rompe el build ni la página, solo
- * debilita la señal que Google usa para rankear en Maps.
+ * El NAP vivía en cinco lugares y divergió sin que nadie lo notara: el JSON-LD
+ * publicaba una calle y un CP que no eran los de la ficha, un email que no era
+ * el público, y un horario que cerraba en domingo cuando la oficina abre los
+ * siete días. El daño es silencioso — no rompe el build ni la página, solo
+ * debilita la señal que Google usa para rankear en Maps y manda gente a una
+ * puerta que cree cerrada.
  *
  * Estas pruebas fijan los valores contra la ficha verificada y vigilan que
  * nadie vuelva a hardcodear un NAP paralelo en el código.
@@ -30,7 +33,8 @@ const VALORES_OBSOLETOS = [
   { patron: '77710', porque: 'CP viejo; el de la ficha es 77720' },
   { patron: 'Calle 5 Norte 95', porque: 'dirección que nunca fue la de la ficha' },
   { patron: 'Av. 10 Norte', porque: 'tercera calle inventada, vivía en los mensajes de i18n' },
-  { patron: 'info@propyte.com', porque: 'buzón no público; el correcto es contacto@propyte.com' },
+  { patron: '9:00 – 18:00', porque: 'horario viejo; abre todos los días 10:00–19:00' },
+  { patron: '10:00 – 14:00', porque: 'sábado corto que ya no existe' },
 ];
 
 /**
@@ -78,9 +82,25 @@ describe('NAP canónico', () => {
     expect(GBP_URL).toBe(`https://maps.google.com/?cid=${GBP_CID}`);
     expect(GBP_EMBED_URL).toContain(`cid=${GBP_CID}`);
     expect(GBP_EMBED_URL).toContain('output=embed');
+    // El CSP solo permite www.google.com en frame-src; maps.google.com se
+    // bloquea, y hoy en report-only el fallo sería invisible.
+    expect(GBP_EMBED_URL).toContain('https://www.google.com/');
+    expect(GBP_EMBED_URL).not.toContain('https://maps.google.com');
     // El embed por búsqueda de texto no ata el sitio a la ficha.
     expect(GBP_EMBED_URL).not.toContain('?q=');
     expect(NAP_SAME_AS).toContain(GBP_URL);
+  });
+
+  it('declara los siete días de 10:00 a 19:00', () => {
+    // Publicar un día como cerrado cuando sí abre le cuesta visitas reales:
+    // quien consulta en domingo ve "cerrado" y no viene.
+    expect(NAP_OPENING_HOURS).toHaveLength(1);
+    const [tramo] = NAP_OPENING_HOURS;
+    expect(tramo.dayOfWeek).toHaveLength(7);
+    expect(tramo.dayOfWeek).toContain('Sunday');
+    expect(tramo.dayOfWeek).toContain('Saturday');
+    expect(tramo.opens).toBe('10:00');
+    expect(tramo.closes).toBe('19:00');
   });
 
   it('mantiene el CP y la esquina en la dirección de una línea', () => {
@@ -104,4 +124,42 @@ describe('ningún NAP paralelo en el código', () => {
       expect(culpables.map((f) => f.replace(SRC, 'src'))).toEqual([]);
     });
   }
+});
+
+/**
+ * `info@propyte.com` NO es un valor muerto: es un buzón real, alternativo al
+ * público. Su único uso legítimo es el contacto de cumplimiento del aviso legal.
+ * Lo que no puede volver a pasar es que se cuele como el correo de contacto
+ * general — ahí es `contacto@propyte.com`, el que sirve el Hub y el que va en el
+ * JSON-LD. Un ban a secas lo prohibiría también donde sí corresponde, así que se
+ * comprueba la ruta exacta en vez del string suelto.
+ */
+describe('info@propyte.com solo vive en el aviso de cumplimiento', () => {
+  const RUTA_PERMITIDA = 'avisoLegalPage.section7Body';
+
+  function rutasCon(valor: unknown, aguja: string, prefijo = ''): string[] {
+    if (typeof valor === 'string') return valor.includes(aguja) ? [prefijo] : [];
+    if (Array.isArray(valor)) return valor.flatMap((v, i) => rutasCon(v, aguja, `${prefijo}[${i}]`));
+    if (valor && typeof valor === 'object') {
+      return Object.entries(valor).flatMap(([k, v]) =>
+        rutasCon(v, aguja, prefijo ? `${prefijo}.${k}` : k),
+      );
+    }
+    return [];
+  }
+
+  for (const locale of ['es', 'en']) {
+    it(`${locale}.json lo usa solo en ${RUTA_PERMITIDA}`, () => {
+      const mensajes = JSON.parse(
+        readFileSync(join(SRC, 'i18n', 'messages', `${locale}.json`), 'utf8'),
+      );
+      expect(rutasCon(mensajes, 'info@propyte.com')).toEqual([RUTA_PERMITIDA]);
+    });
+  }
+
+  it('nunca aparece en código TypeScript', () => {
+    const ts = archivosFuente(SRC).filter((f) => /\.tsx?$/.test(f));
+    const culpables = ts.filter((f) => readFileSync(f, 'utf8').includes('info@propyte.com'));
+    expect(culpables.map((f) => f.replace(SRC, 'src'))).toEqual([]);
+  });
 });

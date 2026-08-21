@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
+import { PRODUCT_TYPES, type ProductType } from '@/lib/catalog/product-types';
 
 export interface Filters {
   search: string;
@@ -37,6 +38,7 @@ const defaultFilters: Filters = {
 
 const VALID_STAGES: PropertyStage[] = ['preventa', 'construccion', 'entrega_inmediata'];
 const VALID_USAGES: PropertyUsage[] = ['residencial', 'vacacional', 'renta', 'mixto'];
+const VALID_TYPES: ProductType[] = [...PRODUCT_TYPES];
 
 /**
  * Tope de precio dinámico para el filtro: el inmueble más caro del catálogo
@@ -62,6 +64,56 @@ export function passesRoiMin(projected: number | null, roiMin: number): boolean 
   return projected != null && projected >= roiMin;
 }
 
+/**
+ * ¿Este inmueble ofrece el producto que el comprador pidió?
+ *
+ * Antes el predicado comparaba `p.specs.type !== filters.type` — un escalar
+ * que sale del PRIMER elemento de `property_types`. Un desarrollo con lotes y
+ * casas mostraba los dos chips en la tarjeta y aun así desaparecía al filtrar
+ * por Casa. Ver spec 2026-08-20-tipos-producto-multiples-design.md.
+ *
+ * `unitTypes` viene de la columna `property_types` de v_developments, ya
+ * resuelta por `mapDevelopmentToProperty` (override manual
+ * `ext_property_types` si trae algo, inventario cargado si no) — no es un
+ * agregado directo de `v_units`. Ese resuelto es la ÚNICA fuente de la regla
+ * en todo el sitio; volver a leer `v_units` aquí sería repetir el error que
+ * esta spec ya corrigió una vez (2026-08-20-tipos-producto-multiples-design.md).
+ * El fallback a `specs.type` dispara cuando `property_types` no resuelve
+ * ningún tipo canónico (null, vacío, o solo grafías no catalogadas) — no
+ * cuando el desarrollo carece de unidades cargadas.
+ */
+export function matchesProductType(property: Property, filterType: string): boolean {
+  if (!filterType) return true;
+  const types = property.kind === 'development' ? property.unitTypes : undefined;
+  if (types && types.length > 0) return types.includes(filterType as Property['specs']['type']);
+  return property.specs.type === filterType;
+}
+
+/**
+ * Con un filtro de producto activo, devuelve una copia del desarrollo cuyo
+ * «desde» corresponde a ese producto.
+ *
+ * Sin esto, un comprador que filtra Casa en un desarrollo con lotes desde $1M
+ * y casas desde $5M lee «desde $1,000,000». El filtro dice casa y el precio
+ * dice desarrollo; nadie mintió a propósito y aun así el número es falso para
+ * la pregunta que se hizo.
+ *
+ * Devuelve la MISMA referencia cuando no hay nada que proyectar, para no
+ * romper las comparaciones por identidad de React río abajo.
+ */
+export function projectForProductType(property: Property, filterType: string): Property {
+  if (!filterType || property.kind !== 'development') return property;
+  const stat = property.unitTypeStats?.[filterType as Property['specs']['type']];
+  if (!stat) return property;
+  if (stat.priceMin === null && stat.areaMin === null) return property;
+
+  return {
+    ...property,
+    price: stat.priceMin !== null ? { ...property.price, mxn: stat.priceMin } : property.price,
+    areaMin: stat.areaMin !== null ? stat.areaMin : property.areaMin,
+  };
+}
+
 function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const parsed: Partial<Filters> = {};
 
@@ -74,8 +126,14 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   const zone = params.get('zone');
   if (zone) parsed.zone = zone;
 
+  // Sin validar, `?type=bogus` matchesProductType(p, 'bogus') siempre false
+  // → listado vacío en silencio, sin feedback de que el parámetro era inválido.
+  // Mismo patrón que VALID_STAGES/VALID_USAGES abajo. Validar aquí es también
+  // lo que justifica los `filterType as Property['specs']['type']` en
+  // matchesProductType/projectForProductType: para cuando llegan ahí, ya
+  // pasaron este filtro (o vinieron de un <select> que solo ofrece PRODUCT_TYPES).
   const type = params.get('type');
-  if (type) parsed.type = type;
+  if (type && VALID_TYPES.includes(type as ProductType)) parsed.type = type;
 
   const bedrooms = params.get('bedrooms');
   if (bedrooms) { const n = Number(bedrooms); if (n > 0) parsed.bedroomsMin = n; }
@@ -186,7 +244,21 @@ export function useFilters(properties: Property[]) {
       if (debug) reasons[reason] = (reasons[reason] ?? 0) + 1;
       return false;
     };
-    const result = properties.filter(p => {
+    // Proyectar ANTES de filtrar: el predicado de precio debe leer el «desde»
+    // del TIPO filtrado, no el mínimo del desarrollo completo. Filtrar primero
+    // y proyectar después (el orden que tenía este memo) reintroducía el
+    // defecto que projectForProductType existe para prevenir, un paso más
+    // arriba en el pipeline: con type=casa y el slider en 3M, un desarrollo
+    // con casas desde $5,211,926 pero mínimo de desarrollo en $2,630,000
+    // pasaba el predicado por el mínimo del desarrollo y la card mostraba
+    // «desde $5,211,926» — por encima del techo que el comprador puso.
+    // (Important 2, revisión final de rama 2026-08-20, caso real
+    // ef05cd3a-fc1e-41de-a16b-b5f129c833cd.) projectForProductType devuelve la
+    // MISMA referencia cuando no hay tipo activo, así que mapear todo el
+    // catálogo aquí es gratis fuera del filtro de producto.
+    const projectedProperties = properties.map(p => projectForProductType(p, filters.type));
+
+    const result = projectedProperties.filter(p => {
       if (filters.search) {
         const q = filters.search.toLowerCase();
         const match =
@@ -198,7 +270,8 @@ export function useFilters(properties: Property[]) {
       }
       if (filters.city && p.location.city !== filters.city) return fail(`city:'${p.location.city}'≠'${filters.city}'`);
       if (filters.zone && p.location.zone !== filters.zone) return fail(`zone:'${p.location.zone}'≠'${filters.zone}'`);
-      if (filters.type && p.specs.type !== filters.type) return fail(`type:'${p.specs.type}'≠'${filters.type}'`);
+      if (!matchesProductType(p, filters.type))
+        return fail(`type:[${p.unitTypes?.join(',') ?? p.specs.type}]∌'${filters.type}'`);
       if (p.price.mxn < filters.priceMin) return fail('priceMin');
       if (p.price.mxn > filters.priceMax) return fail('priceMax');
       if (!passesRoiMin(p.roi.projected, filters.roiMin)) return fail('roiMin');

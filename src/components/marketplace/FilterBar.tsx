@@ -9,6 +9,7 @@ import type { Filters } from '@/hooks/useFilters';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import { normalizeI18nKey, normalizeDevTypeKey } from '@/lib/i18n/normalizeKey';
 import { CITY_MAP } from '@/app/[locale]/desarrollos/_components/cityConfig';
+import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
 
 interface FilterBarProps {
   filters: Filters;
@@ -185,13 +186,9 @@ export default function FilterBar({
     ? `$${(filters.priceMin / 1_000_000).toFixed(1)}M – $${filters.priceMax >= priceCeiling ? 'Max' : (filters.priceMax / 1_000_000).toFixed(1) + 'M'}`
     : undefined;
 
-  const typeOptions = [
-    { value: 'departamento', label: tTypes('departamento') },
-    { value: 'penthouse', label: tTypes('penthouse') },
-    { value: 'casa', label: tTypes('casa') },
-    { value: 'terreno', label: tTypes('terreno') },
-    { value: 'macrolote', label: tTypes('macrolote') },
-  ];
+  // Del catálogo, no a mano: escritas aquí, un producto nuevo en el inventario
+  // no tenía opción bajo la cual filtrarse y nadie se enteraba.
+  const typeOptions = PRODUCT_TYPES.map((t) => ({ value: t, label: tTypes(t) }));
 
   const activeCount =
     (filters.city ? 1 : 0) +

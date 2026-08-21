@@ -308,7 +308,7 @@ export async function getSimilarDevelopments(
       .from('v_developments')
       // publication_title/meta_title se necesitan para applyDisplayName: las cards
       // de "Más desarrollos" deben mostrar el título público, NUNCA nombre_desarrollo.
-      .select('id, slug, name, publication_title, meta_title, city, zone, images, price_min_mxn, price_max_mxn, stage, property_types, developer_name, discounted_units_count')
+      .select('id, slug, name, publication_title, meta_title, city, zone, images, price_min_mxn, price_max_mxn, price_min_usd, price_max_usd, currency, stage, property_types, developer_name, discounted_units_count')
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
       .neq('id', seed.id)
@@ -483,7 +483,7 @@ export async function getDevelopmentsByIds(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn, development_type')
+      .select('id, slug, name, publication_title, meta_title, city, zone, price_min_mxn, price_min_usd, currency, development_type')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -523,7 +523,7 @@ export async function getDevelopmentsForRanking(client: Client, ids: string[]) {
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, publication_title, meta_title, city, zone, stage, price_min_mxn, price_max_mxn, images')
+      .select('id, slug, name, publication_title, meta_title, city, zone, stage, price_min_mxn, price_max_mxn, price_min_usd, price_max_usd, currency, images')
       .in('id', ids)
       .not('approved_at', 'is', null)
       .is('deleted_at', null);
@@ -1026,8 +1026,11 @@ export interface DeveloperDevelopment {
   slug: string;
   name: string;
   images: string[] | null;
-  min_price_mxn: number | null;
-  price_mxn: number | null;
+  // Los nombres correctos de v_developments. Antes decia min_price_mxn/price_mxn,
+  // que no existen: PostgREST devolvia 42703 y la query caia a [] en silencio.
+  price_min_mxn: number | null;
+  price_min_usd: number | null;
+  currency: string | null;
   stage: string | null;
   city: string | null;
   zone: string | null;
@@ -1041,7 +1044,7 @@ export async function getDeveloperDevelopments(
   try {
     const { data, error } = await hub(client)
       .from('v_developments')
-      .select('id, slug, name, images, min_price_mxn, price_mxn, stage, city, zone')
+      .select('id, slug, name, images, price_min_mxn, price_min_usd, currency, stage, city, zone')
       .eq('developer_id', developerId)
       .not('approved_at', 'is', null)
       .is('deleted_at', null)
@@ -1473,6 +1476,28 @@ export interface RentalEstimate {
 }
 
 /**
+ * Traduce el tipo canónico al que existe de verdad en `rental_comparables`
+ * antes de buscar comparables. La tabla solo tiene filas de 'departamento'
+ * (9,348) y 'casa' (6,124) — verificado 2026-08-20 — así que esto es un mapeo
+ * de FORMA DEL DATO, no una reclamación de taxonomía: una villa sigue siendo
+ * su propio tipo canónico en todo lo demás del sitio (specs.type, filtros,
+ * agregados), esto solo dice "búscale renta entre las comparables de casa".
+ *
+ * `villa` es nuevo (2026-08-20): antes de separarse del canónico 'casa' ya
+ * encontraba comparables por venir clasificada como 'casa'. Sin este mapeo,
+ * las tres consultas type-filtradas fallan y `getRentalEstimate` cae al
+ * fallback más burdo (solo ciudad, sin tipo ni recámaras) — no truena, solo
+ * empeora el número en silencio y lo marca `isFallback`.
+ */
+export function normalizeTypeForRentalComparables(
+  propertyType: string | null | undefined,
+): string | null | undefined {
+  if (propertyType === 'penthouse') return 'departamento';
+  if (propertyType === 'villa') return 'casa';
+  return propertyType;
+}
+
+/**
  * Get rental estimate by querying rental_comparables directly.
  * Computes aggregates in JS since Supabase REST doesn't support percentile_cont.
  * Falls back: zone+type+beds → city+type+beds → city+type → city.
@@ -1487,8 +1512,7 @@ export async function getRentalEstimate(
 ): Promise<{ data: RentalEstimate | null; fallback: boolean }> {
   const MIN_SAMPLE = 3;
 
-  // Normalize property type: penthouse → departamento for comparables search
-  const normalizedType = propertyType === 'penthouse' ? 'departamento' : propertyType;
+  const normalizedType = normalizeTypeForRentalComparables(propertyType);
 
   // Build queries in fallback order
   const attempts: Array<{ filter: Record<string, unknown>; isFallback: boolean }> = [];

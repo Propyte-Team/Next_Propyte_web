@@ -1,6 +1,6 @@
 import Script from 'next/script';
 import { OPENAI_PIXEL_ID } from '@/lib/analytics/openai-ads';
-import { STORAGE_KEY, CONSENT_VERSION } from '@/lib/cookies/consent';
+import { CONSENT_BOOT_JS } from '@/lib/cookies/consent';
 import OpenAiPageView from './OpenAiPageView';
 
 export default function Analytics() {
@@ -23,7 +23,15 @@ export default function Analytics() {
         <>
           {/* Consent Mode v2 default: deny analytics+ads until user opts in.
               functionality + security stay granted (essential). The cookie
-              banner dispatches gtag('consent', 'update', {...}) on accept. */}
+              banner dispatches gtag('consent', 'update', {...}) on accept.
+
+              Y justo despues, si el visitante YA decidio en una visita
+              anterior, se re-aplica esa decision aqui mismo. Sin esto el
+              recurrente se queda en denied toda la sesion porque el banner no
+              se le muestra y nadie comunica su consentimiento (ver
+              CONSENT_BOOT_JS). El update va en el mismo script que el default,
+              asi que entra en dataLayer en orden y antes de que gtag.js cargue
+              (lazyOnload). */}
           <Script id="ga4-consent-default" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
@@ -38,6 +46,16 @@ export default function Analytics() {
                 security_storage: 'granted',
                 wait_for_update: 500
               });
+              (function(){
+                ${CONSENT_BOOT_JS}
+                if (!__propyteConsent.decided) return;
+                gtag('consent', 'update', {
+                  analytics_storage: __propyteConsent.analytics ? 'granted' : 'denied',
+                  ad_storage: __propyteConsent.marketing ? 'granted' : 'denied',
+                  ad_user_data: __propyteConsent.marketing ? 'granted' : 'denied',
+                  ad_personalization: __propyteConsent.marketing ? 'granted' : 'denied'
+                });
+              })();
             `}
           </Script>
           <Script
@@ -71,7 +89,14 @@ export default function Analytics() {
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('consent', 'revoke');
+              (function(){
+                ${CONSENT_BOOT_JS}
+                // Antes iba 'revoke' fijo y solo el banner lo levantaba al
+                // GUARDAR: el recurrente que ya habia aceptado quedaba revocado
+                // toda la sesion. fbq() encola, asi que esto se aplica aunque
+                // fbevents.js todavia no haya cargado.
+                fbq('consent', __propyteConsent.marketing ? 'grant' : 'revoke');
+              })();
               fbq('init', '${metaPixelId}');
               fbq('track', 'PageView');
             `}
@@ -104,19 +129,11 @@ export default function Analytics() {
               !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];f.parentNode.insertBefore(j,f)}(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
               (function(){
                 // El consentimiento del SDK arranca CONCEDIDO. Hay que fijarlo
-                // antes del init o el píxel mediría sin permiso. Se lee del
-                // mismo localStorage que escribe el banner de cookies, así el
-                // visitante que ya aceptó en una visita anterior no tiene que
-                // volver a aceptar (el banner solo re-aplica al guardar).
-                var granted = false;
-                try {
-                  var raw = window.localStorage.getItem('${STORAGE_KEY}');
-                  if (raw) {
-                    var c = JSON.parse(raw);
-                    granted = !!c && c.v === ${CONSENT_VERSION} && c.marketing === true;
-                  }
-                } catch (e) {}
-                oaiq("consent", granted);
+                // antes del init o el píxel mediría sin permiso. Este pixel ya
+                // leía localStorage por su cuenta; ahora usa el MISMO snippet
+                // que GA4 y Meta para que las tres lecturas no divergan.
+                ${CONSENT_BOOT_JS}
+                oaiq("consent", __propyteConsent.marketing);
                 oaiq("init", { pixelId: "${OPENAI_PIXEL_ID}"${openAiDebug} });
                 // page_viewed NO se dispara solo con el init.
                 oaiq("measure", "page_viewed", {

@@ -13,6 +13,7 @@ import {
   getRentalEstimate,
 } from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
+import { resolveSpecType } from '@/lib/mappers/development-to-property';
 import { resolveUnitInvestment } from '@/lib/investment/resolve';
 import {
   CITY_TO_MARKET_CODE,
@@ -291,13 +292,17 @@ async function buildDevelopmentPdfData(supabase: any, slug: string, locale: 'es'
   };
 
   // Financials + rental
+  // Canónico, no la grafía cruda de property_types: rental_comparables solo
+  // guarda 'departamento'/'casa' en minúsculas (mismo defecto que
+  // DevelopmentDetailPage — Important 1, revisión final de rama 2026-08-20).
+  const mainType = resolveSpecType(property.property_types, property.development_type);
   let capRate: number | null = null;
   let roiPct: number | null = property.roi_projected ?? null;
   let estRent: number | null = null;
   try {
     const [fin, rent] = await Promise.all([
       getDevelopmentFinancials(supabase, property.id),
-      getRentalEstimate(supabase, property.city, property.property_types?.[0] || 'departamento', null, property.zone, 'residencial'),
+      getRentalEstimate(supabase, property.city, mainType, null, property.zone, 'residencial'),
     ]);
     if (fin) {
       capRate = fin.cap_rate ?? capRate;
