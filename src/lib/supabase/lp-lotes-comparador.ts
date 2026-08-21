@@ -37,6 +37,7 @@
 // ============================================================
 
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
 
 /** De dónde salieron las condiciones. Cambia cómo se cuentan los pagos. */
 export type FuenteEsquema = 'ext_planos' | 'esquemas_jsonb' | 'prosa_desarrollo';
@@ -459,14 +460,18 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
   const { data: devs } = devIds.length
     ? await hub
         .from('Propyte_desarrollos')
-        .select('id, ext_precio_min_mxn')
+        .select('id, ext_moneda, ext_precio_min_mxn, ext_precio_min_usd')
         .in('id', devIds)
     : { data: null };
+  // La cifra de control se compara contra precios de lista EN PESOS, así que sólo
+  // sirve si el desarrollo cotiza en pesos. Un desarrollo en USD daría un control
+  // de 145,000 contra lotes de millones y marcaría todo como discrepante; se deja
+  // en null (sin control) antes que validar contra una moneda distinta.
   const precioMinDev = new Map(
-    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => [
-      d.id as string,
-      numeroONull(d.ext_precio_min_mxn),
-    ]),
+    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => {
+      const precio = precioDesarrollo(d as FilaPrecioDesarrollo);
+      return [d.id as string, precio.moneda === 'MXN' ? precio.min : null] as const;
+    }),
   );
 
   const lotes: LoteComparable[] = [];

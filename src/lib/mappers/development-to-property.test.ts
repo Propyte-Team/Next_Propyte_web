@@ -29,6 +29,8 @@ function baseRow(overrides: Partial<DevelopmentRow> = {}): DevelopmentRow {
     airport_distance: null,
     price_min_mxn: 1_000_000,
     price_max_mxn: null,
+    price_min_usd: null,
+    price_max_usd: null,
     currency: 'MXN',
     stage: 'preventa',
     development_type: null,
@@ -121,5 +123,66 @@ describe('mapDevelopmentToProperty — unitTypes', () => {
     const property = mapDevelopmentToProperty(row);
 
     expect(property.unitTypes).toEqual(['casa']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Precio por moneda del desarrollo
+//
+// Antes existia UNA sola columna de precio, denominada en pesos, y `currency` no
+// se usaba para nada: un desarrollo cotizado en dolares publicaba su cifra como
+// "$145,000 MXN" mas una conversion inventada a "$8,550 USD (Referencial)".
+// ---------------------------------------------------------------------------
+
+describe('precio segun la moneda del desarrollo', () => {
+  it('un desarrollo en MXN lee el par en pesos', () => {
+    const property = mapDevelopmentToProperty(baseRow({
+      currency: 'MXN',
+      price_min_mxn: 2_400_000,
+      price_max_mxn: 3_900_000,
+    }));
+    expect(property.price.currency).toBe('MXN');
+    expect(property.price.mxn).toBe(2_400_000);
+    expect(property.price.usd).toBeUndefined();
+    expect(property.priceMax).toBe(3_900_000);
+    expect(property.priceMaxUsd).toBeUndefined();
+  });
+
+  it('un desarrollo en USD lee el par en dolares, sin convertir', () => {
+    const property = mapDevelopmentToProperty(baseRow({
+      currency: 'USD',
+      price_min_mxn: null,
+      price_max_mxn: null,
+      price_min_usd: 145_000,
+      price_max_usd: 217_700,
+    }));
+    expect(property.price.currency).toBe('USD');
+    expect(property.price.usd).toBe(145_000);
+    expect(property.priceMaxUsd).toBe(217_700);
+    // price.mxn queda en 0: NO hay precio en pesos. Es lo que usan orden y
+    // filtros, y meterle dolares los mezclaria sin tipo de cambio.
+    expect(property.price.mxn).toBe(0);
+    expect(property.priceMax).toBeUndefined();
+  });
+
+  it('NO lee la columna de pesos cuando la moneda es USD', () => {
+    // La fila de Amares antes del arreglo: moneda USD con la cifra en la columna
+    // de pesos. Leerla habria publicado "$145,000 MXN" otra vez.
+    const property = mapDevelopmentToProperty(baseRow({
+      currency: 'USD',
+      price_min_mxn: 145_000,
+      price_max_mxn: 217_700,
+      price_min_usd: null,
+      price_max_usd: null,
+    }));
+    expect(property.price.currency).toBe('USD');
+    expect(property.price.mxn).toBe(0);
+    expect(property.price.usd).toBeUndefined();
+  });
+
+  it('sin moneda declarada se asume MXN', () => {
+    const property = mapDevelopmentToProperty(baseRow({ currency: null, price_min_mxn: 900_000 }));
+    expect(property.price.currency).toBe('MXN');
+    expect(property.price.mxn).toBe(900_000);
   });
 });

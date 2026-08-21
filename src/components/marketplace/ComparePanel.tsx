@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { GitCompare, X, ChevronUp } from '@/lib/icons';
 import { useCompare, MAX_COMPARE } from '@/hooks/useCompare';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import { montoCotizado } from '@/lib/precio-moneda';
 import Skeleton from '@/components/ui/Skeleton';
 import type { Property } from '@/types/property';
 import type { ComparisonPayload, ComparisonItem } from '@/types/compare';
@@ -321,12 +322,12 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                           </td>
                           {selected.map((p) => (
                             <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
-                              {p.price.mxn > 0 ? (
+                              {montoCotizado(p.price) != null ? (
                                 <PriceDisplay
-                                  mxn={p.price.mxn}
+                                  amount={montoCotizado(p.price)}
+                                  currency={p.price.currency}
                                   variant="dual"
                                   size="sm"
-                                  originalCurrency={p.price.currency}
                                 />
                               ) : (
                                 '—'
@@ -342,12 +343,19 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                             </td>
                             {selected.map((p) => (
                               <td key={p.id} className="px-4 py-3 font-bold text-[#1A2F3F] tabular-nums">
-                                {p.kind === 'development' && p.priceMax && p.priceMax > p.price.mxn ? (
+                                {(() => {
+                                  // El techo vive en priceMax (pesos) o priceMaxUsd (dolares),
+                                  // segun la moneda del desarrollo. Comparar priceMax contra
+                                  // price.mxn daba siempre falso en un desarrollo en USD.
+                                  const desde = montoCotizado(p.price);
+                                  const techo = p.price.currency === 'USD' ? p.priceMaxUsd : p.priceMax;
+                                  return p.kind === 'development' && techo && desde && techo > desde;
+                                })() ? (
                                   <PriceDisplay
-                                    mxn={p.priceMax}
+                                    amount={p.price.currency === 'USD' ? p.priceMaxUsd : p.priceMax}
+                                    currency={p.price.currency}
                                     variant="dual"
                                     size="sm"
-                                    originalCurrency={p.price.currency}
                                   />
                                 ) : (
                                   '—'
@@ -440,7 +448,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                                     {showMetricsSkeleton ? (
                                       <Skeleton className="h-4 w-20" />
                                     ) : value != null ? (
-                                      <PriceDisplay mxn={value} variant="dual" size="sm" suffix="/m²" />
+                                      <PriceDisplay amount={value} currency="MXN" variant="dual" size="sm" suffix="/m²" />
                                     ) : (
                                       metricUnavailable
                                     )}
@@ -480,7 +488,7 @@ export default function ComparePanel({ properties }: ComparePanelProps) {
                                     {showMetricsSkeleton ? (
                                       <Skeleton className="h-4 w-20" />
                                     ) : value != null ? (
-                                      <PriceDisplay mxn={value} variant="dual" size="sm" />
+                                      <PriceDisplay amount={value} currency="MXN" variant="dual" size="sm" />
                                     ) : (
                                       metricUnavailable
                                     )}
