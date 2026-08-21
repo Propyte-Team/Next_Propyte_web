@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
 import { CITY_TO_MARKET_CODE } from '@/lib/calculator';
 import {
   getAirdnaMarketSummary,
@@ -46,6 +47,8 @@ interface RawDevelopmentRow {
   city: string | null;
   zone: string | null;
   price_min_mxn: number | string | null;
+  price_min_usd: number | string | null;
+  currency: string | null;
   development_type: string | null;
 }
 
@@ -221,7 +224,14 @@ export async function buildComparison(
           slug: d.slug ?? null,
           city: d.city ?? null,
           zone: d.zone ?? null,
-          priceBaseMxn: num(d.price_min_mxn),
+          // Las metricas de comparacion (precio/m2, ADR de zona) estan denominadas
+          // en PESOS, asi que solo un desarrollo cotizado en pesos las alimenta.
+          // Pasar los dolares de uno en USD las dejaria 17x abajo sin fallar; que
+          // queden como "no disponible" es el fallback correcto. Explicito y no por
+          // el accidente de que la columna en pesos venga NULL.
+          priceBaseMxn: precioDesarrollo(d as FilaPrecioDesarrollo).moneda === 'MXN'
+            ? num(d.price_min_mxn)
+            : null,
           pricePerM2,
           isLand: isLandType(d.development_type),
         });

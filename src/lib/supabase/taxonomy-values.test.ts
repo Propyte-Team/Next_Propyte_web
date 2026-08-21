@@ -8,6 +8,7 @@ import {
 } from './taxonomy-values';
 import { STAGE_URL_SLUGS } from '@/app/[locale]/desarrollos/_components/stageConfig';
 import { TYPE_SLUGS } from '@/app/[locale]/desarrollos/_components/typeConfig';
+import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
 
 describe('contrato de taxonomía de facetas', () => {
   it('toda etapa expuesta en una URL resuelve a al menos una grafía del dato', () => {
@@ -33,6 +34,21 @@ describe('contrato de taxonomía de facetas', () => {
     const typeAllowed = [...OBSERVED_TYPE_VALUES, ...VALUES_NOT_IN_INVENTORY];
     for (const values of Object.values(TYPE_DB_VALUES)) {
       for (const v of values) expect(typeAllowed, `"${v}" no está en el inventario ni declarada como ausente`).toContain(v);
+    }
+  });
+
+  it('toda grafía OBSERVADA del inventario está cubierta por algún canónico de TYPE_DB_VALUES', () => {
+    // La prueba de arriba solo muerde en una dirección (mapa→observado): un
+    // canónico que se queda CORTO — porque el Hub o Zoho empezaron a escribir
+    // una grafía nueva que nadie agregó a PRODUCT_TYPE_SPELLINGS — pasaría
+    // igual, porque no reclama nada que no esté declarado. Esa es la ausencia
+    // silenciosa que product-types.ts advierte en su propio docblock: "si
+    // alguien captura una grafía nueva en el Hub y no está aquí, ese
+    // desarrollo deja de aparecer en su filtro — sin error, solo un resultado
+    // menos". Esta prueba muerde en la dirección opuesta (observado→mapa).
+    const allDbValues = Object.values(TYPE_DB_VALUES).flat();
+    for (const observed of OBSERVED_TYPE_VALUES) {
+      expect(allDbValues, `"${observed}" se observó en el inventario pero ningún canónico de TYPE_DB_VALUES la reclama`).toContain(observed);
     }
   });
 
@@ -100,5 +116,18 @@ describe('getDevelopments traduce el slug antes de filtrar', () => {
     const typeCall = calls.find((c) => c.args[0] === 'property_types');
     expect(typeCall!.args[1]).toEqual(TYPE_DB_VALUES.terreno);
     expect(typeCall!.args[1] as string[]).toContain('Lotes');
+  });
+});
+
+describe('TYPE_DB_VALUES deriva del catálogo', () => {
+  it('cubre los siete canónicos', () => {
+    expect(Object.keys(TYPE_DB_VALUES).sort()).toEqual([...PRODUCT_TYPES].sort());
+  });
+
+  it('las grafías nuevas están: sin ellas la faceta se vacía en silencio', () => {
+    expect(TYPE_DB_VALUES.villa).toContain('Villa');
+    expect(TYPE_DB_VALUES.comercial).toContain('Local comercial');
+    expect(TYPE_DB_VALUES.comercial).toContain('Oficina');
+    expect(TYPE_DB_VALUES.terreno).toContain('Lotes');
   });
 });

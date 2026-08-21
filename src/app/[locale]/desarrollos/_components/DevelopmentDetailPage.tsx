@@ -43,6 +43,8 @@ import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import PriceDisplay from '@/components/ui/PriceDisplay';
+import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
+import { fetchUsdMxnRate } from '@/lib/banxico/fetchUsdMxnRate';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
 import DiscountBadge from '@/components/ui/DiscountBadge';
 import DevelopmentKeyData from '@/components/property/DevelopmentKeyData';
@@ -114,6 +116,18 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   // construimos aquí desde el row para que el editorial (prioridad) aparezca.
   property.richContent = buildRichContent(property);
 
+  // resolveSpecType cae a development_type ("Lotes", "Residencial horizontal")
+  // cuando property_types viene null — la mayoría del catálogo. Hoisted aquí
+  // (antes se recalculaba en la línea ~420) porque getRentalEstimate también
+  // lo necesita: property.property_types?.[0] es la grafía CRUDA de la vista
+  // ("Departamento", "Lote", "2 Recámaras"), y rental_comparables.property_type
+  // solo guarda 'departamento'/'casa' en minúsculas. Pasar la grafía cruda hacía
+  // fallar las tres consultas type-filtradas de getRentalEstimate para los 12
+  // desarrollos sin ext_property_types, cayendo al bucket solo-ciudad sin que
+  // nadie lo notara (isFallback se descartaba en el destructuring de abajo).
+  // Ver Important 1, revisión final de rama 2026-08-20.
+  const mainType = resolveSpecType(property.property_types ?? property.property_type, property.development_type);
+
   const [tProp, tTypes, visibility] = await Promise.all([
     getTranslations({ locale, namespace: 'property' }),
     getTranslations({ locale, namespace: 'types' }),
@@ -150,7 +164,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         city: d.city,
         zone: d.zone,
         images: d.images,
-        price: d.price_min_mxn || null,
+        price: precioDesarrollo(d as FilaPrecioDesarrollo).min,
+        currency: precioDesarrollo(d as FilaPrecioDesarrollo).moneda,
       }));
     }
   } catch (err) {
@@ -169,10 +184,9 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const marketCode = CITY_TO_MARKET_CODE[property.city] || '';
   try {
     if (supabase) {
-      const propType = property.property_types?.[0] || property.property_type || 'departamento';
       const [rentalResult, vacResult, financialsResult, mlEstimatesResult, airdnaResult, zoneResult] = await Promise.all([
-        getRentalEstimate(supabase, property.city, propType, null, property.zone, 'residencial'),
-        getRentalEstimate(supabase, property.city, propType, null, property.zone, 'vacacional'),
+        getRentalEstimate(supabase, property.city, mainType, null, property.zone, 'residencial'),
+        getRentalEstimate(supabase, property.city, mainType, null, property.zone, 'vacacional'),
         getDevelopmentFinancials(supabase, property.id),
         getMlRentalEstimates(supabase, property.id),
         marketCode ? getAirdnaMarketSummary(supabase, marketCode) : Promise.resolve(null),
@@ -222,7 +236,17 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     : null;
 
   const propertyState = property.state || 'Quintana Roo';
-  const propertyPrice = property.price_min_mxn || property.price_mxn || 0;
+
+  // Precio cotizado: la moneda del desarrollo decide qué columna se lee. Antes
+  // esto era `price_min_mxn || price_mxn`, que para un desarrollo en USD tomaba
+  // dólares de una columna de pesos y los publicaba como "$145,000 MXN".
+  const precio = precioDesarrollo(property as FilaPrecioDesarrollo);
+
+  // Los modelos financieros de más abajo (gastos de cierre e ISR por estado,
+  // mensualidad, TIR) están denominados en PESOS. Para un desarrollo en dólares se
+  // convierte SÓLO para alimentarlos — lo que se muestra sigue siendo lo cotizado.
+  const tcUsdMxn = precio.moneda === 'USD' ? (await fetchUsdMxnRate()).rate : 1;
+  const propertyPrice = precio.min != null ? Math.round(precio.min * tcUsdMxn) : 0;
   const representativeArea = property.area_m2 || property.area_min || null;
 
   // ── Discount rollup desde units ─────────────────────────────────────────
@@ -417,9 +441,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
       : property.stage === 'construccion' ? tProp('stageConstruction')
         : tProp('stageReady');
 
-  // resolveSpecType cae a development_type ("Lotes", "Residencial horizontal")
-  // cuando property_types viene null — la mayoría del catálogo.
-  const mainType = resolveSpecType(property.property_types ?? property.property_type, property.development_type);
+  // mainType hoisted arriba (justo tras buildRichContent) para que
+  // getRentalEstimate reciba el canónico en vez de la grafía cruda.
   const typeLabel = tTypes(mainType);
 
   // ── Share/Download modal data ──
@@ -455,7 +478,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         itemKind="development"
         city={property.city || undefined}
         zone={property.zone || undefined}
-        priceMxn={property.price_min_mxn || property.price_mxn || undefined}
+        priceMxn={precio.moneda === 'MXN' ? (precio.min ?? undefined) : (propertyPrice > 0 ? propertyPrice : undefined)}
       />
       <SchemaMarkup
         type="realEstateListing"
@@ -468,11 +491,13 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
           ...(developerDisplay.name && {
             brand: { '@type': 'Organization', name: developerDisplay.name },
           }),
-          ...((property.price_min_mxn || property.price_mxn) > 0 && {
+          ...(precio.min != null && {
             offers: {
               '@type': 'Offer',
-              price: property.price_min_mxn || property.price_mxn,
-              priceCurrency: 'MXN',
+              // La moneda sale del dato: un priceCurrency fijo en 'MXN' publicaba
+              // 145,000 dolares como 145,000 pesos en el dato estructurado.
+              price: precio.min,
+              priceCurrency: precio.moneda,
               availability: 'https://schema.org/InStock',
             },
           }),
@@ -549,7 +574,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 </span>
               </div>
               <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
-                {(property.price_min_mxn || property.price_mxn) > 0 ? (
+                {precio.min != null ? (
                   <div>
                     {/* "Desde" como label arriba del precio para no desalinear
                         los componentes adyacentes (feedback Luis 2026-05-22). */}
@@ -558,7 +583,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                         descuento al lado del precio (no del label "desde"). */}
                     <div className="flex items-center gap-3 flex-wrap">
                       <PriceDisplay
-                        mxn={property.price_min_mxn || property.price_mxn}
+                        amount={precio.min}
+                        currency={precio.moneda}
                         variant="dual"
                         size="xl"
                         showRateNote
@@ -824,7 +850,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       <RentalEstimate
                         city={property.city}
                         zone={property.zone}
-                        propertyType={property.property_types?.[0] || property.property_type || 'departamento'}
+                        propertyType={mainType}
                         bedrooms={null}
                         locale={locale}
                         areaM2={representativeArea}
@@ -872,7 +898,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 bedrooms/bathrooms del cuadrito de unidades. Client component
                 completo (los iconos LucideIcon no cruzan server→client). */}
             <DevelopmentKeyData
-              priceMxn={propertyPrice > 0 ? propertyPrice : null}
+              price={precio.min}
+              currency={precio.moneda}
               areaM2={areaRange ? areaRange.min : representativeArea ?? null}
               totalUnits={totalUnits ?? null}
               mainType={typeLabel}

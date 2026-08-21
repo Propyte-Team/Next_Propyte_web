@@ -37,6 +37,12 @@ export default function CookieBanner() {
   // del servidor (siempre sin consentimiento) y el del cliente (que puede
   // encontrar consentimiento ya guardado) divergen y React tira un hydration
   // mismatch en `aria-hidden`.
+  // OJO: aquí solo se pinta la UI a propósito. Comunicar el consentimiento
+  // guardado a gtag/fbq/oaiq lo hace `CONSENT_BOOT_JS` en <Analytics />, en el
+  // arranque de cada pixel — no aquí. Se movió allí porque un efecto de React
+  // llega tarde para `fbq`/`oaiq` (salen sin hacer nada si el snippet del pixel
+  // aún no existe) y porque este banner no se monta en todas las rutas.
+  // No añadir un applyConsentTo* aquí: sería una segunda fuente de verdad.
   useEffect(() => {
     const current = readConsent();
     if (!current) {

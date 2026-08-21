@@ -19,6 +19,29 @@ export interface CookieConsent {
   ts: string;
 }
 
+/**
+ * Código JS que se INLINEA en los snippets de arranque de `Analytics.tsx`.
+ *
+ * Deja `__propyteConsent = { decided, analytics, marketing }` en el ámbito del
+ * IIFE que lo contiene. No usa `readConsent()` a propósito: estos snippets se
+ * ejecutan antes de que exista bundle de React, y tienen que leer el
+ * consentimiento de forma SINCRÓNICA, antes del `init` de cada pixel.
+ *
+ * Por qué existe: el banner solo aplicaba el consentimiento al GUARDAR, así que
+ * el visitante que aceptó ayer volvía hoy, no veía el banner —ya hay decisión
+ * guardada— y nadie se lo comunicaba a los scripts. Medido en producción el
+ * 2026-08-20: segunda visita con `{analytics:true,marketing:true}` en
+ * localStorage y GA4 seguía mandando `gcs=G100` (denegado), con CERO entradas
+ * `consent` en el dataLayer. Es medición perdida justo con el recurrente, que ya
+ * dijo que sí.
+ *
+ * Se arregla en el arranque y no en un efecto de React por dos razones: cubre
+ * las páginas donde el banner no se monta, y evita la carrera con `fbq`/`oaiq`
+ * —un `useEffect` puede correr antes de que el snippet del pixel exista, y
+ * `applyConsentToMetaPixel` sale sin hacer nada si `fbq` todavía no es función.
+ */
+export const CONSENT_BOOT_JS = `var __propyteConsent={decided:false,analytics:false,marketing:false};try{var __raw=window.localStorage.getItem(${JSON.stringify(STORAGE_KEY)});if(__raw){var __c=JSON.parse(__raw);if(__c&&typeof __c==='object'&&__c.v===${CONSENT_VERSION}){__propyteConsent={decided:true,analytics:__c.analytics===true,marketing:__c.marketing===true};}}}catch(e){}`;
+
 export function readConsent(): CookieConsent | null {
   if (typeof window === 'undefined') return null;
   try {

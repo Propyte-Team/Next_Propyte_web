@@ -2,6 +2,7 @@ import type { Property, PropertyStage, PropertyUsage, PropertyBadge, PropertyPro
 import type { ResolvedInvestment } from '@/lib/investment/resolve';
 import { parseEsquemas, type EsquemaPago } from '@/lib/esquemas-pago';
 import { parsePreventa } from '@/lib/preventa';
+import { resolveProductType, type ProductType } from '@/lib/catalog/product-types';
 
 /**
  * Raw row from `real_estate_hub.v_units`.
@@ -109,14 +110,8 @@ const VALID_USAGES: ReadonlyArray<PropertyUsage> = ['residencial', 'vacacional',
  */
 /** Exportada para que los llamadores puedan derivar el tipo ANTES de mapear —
  *  lo necesita el target de renta de mercado (ver lib/investment/market-rent.ts). */
-export function normalizeUnitType(raw: string | null | undefined): Property['specs']['type'] {
-  const lower = (raw || '').toLowerCase().trim();
-  if (!lower) return 'departamento';
-  if (lower.startsWith('macrolote') || lower.startsWith('megalote')) return 'macrolote';
-  if (lower.startsWith('terreno') || lower.startsWith('lote')) return 'terreno';
-  if (lower.startsWith('penthouse')) return 'penthouse';
-  if (lower.startsWith('casa') || lower.startsWith('villa') || lower.startsWith('townhouse')) return 'casa';
-  return 'departamento';
+export function normalizeUnitType(raw: string | null | undefined): ProductType | null {
+  return resolveProductType(raw);
 }
 
 /**
@@ -215,7 +210,11 @@ export function mapUnitToProperty(
     .filter((u): u is string => typeof u === 'string')
     .filter((u) => VALID_USAGES.includes(u as PropertyUsage)) as PropertyUsage[];
 
-  const specType: Property['specs']['type'] = normalizeUnitType(row.unit_type);
+  // Una unidad SIEMPRE tiene que mostrar algo en su ficha, así que aquí sí hay
+  // respaldo. La deuda que queda: 162 filas tienen tipo_unidad NULL y se verán
+  // como departamento. Es el comportamiento de hoy, y arreglarlo es capturar
+  // el dato, no adivinarlo mejor. Fuera de alcance del spec 2026-08-20.
+  const specType: Property['specs']['type'] = normalizeUnitType(row.unit_type) ?? 'departamento';
 
   // Availability → badge. AVAILABILITY_TO_BADGE solo aplica para 'reservado'/
   // 'vendido' (visualización). 'disponible' no necesita badge — el stage ya

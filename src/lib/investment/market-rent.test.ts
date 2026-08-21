@@ -42,9 +42,16 @@ describe('marketRentForUnit', () => {
 
 describe('isRentableType', () => {
   it('vivienda sí', () => {
-    for (const t of ['departamento', 'penthouse', 'casa', 'Departamento']) {
+    for (const t of ['departamento', 'penthouse', 'casa', 'villa', 'Departamento']) {
       expect(isRentableType(t), t).toBe(true);
     }
+  });
+
+  it('villa sí: se separó de casa pero sigue rentando como vivienda', () => {
+    // Task 9 la agregó a RENTABLE_PROPERTY_TYPES sin esta prueba. Sin ella, el
+    // apagón de renta al abrir villa como canónico propio no lo detecta nadie.
+    expect(isRentableType('villa')).toBe(true);
+    expect(isRentableType('Villa')).toBe(true);
   });
 
   it('terreno y macrolote NO: no rentan como vivienda y el fallback les asigna renta de departamento', () => {

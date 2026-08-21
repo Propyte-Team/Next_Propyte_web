@@ -1,3 +1,5 @@
+import type { ProductType } from '@/lib/catalog/product-types';
+
 export interface PropertyLocation {
   city: string;
   zone: string;
@@ -22,7 +24,8 @@ export interface PropertySpecs {
   bedrooms: number;
   bathrooms: number;
   area: number;
-  type: 'departamento' | 'penthouse' | 'terreno' | 'macrolote' | 'casa';
+  /** Catálogo canónico de producto. Fuente: lib/catalog/product-types.ts. */
+  type: ProductType;
   tipoEntrega?: string | null;
 }
 
@@ -171,13 +174,22 @@ export interface Property {
   bedroomsMin?: number;
   bedroomsMax?: number;
   /**
-   * Tipos de unidad presentes en el INVENTARIO del desarrollo (kind='development'
-   * only), canónicos y dedup. Contestan la pregunta que el chip `developmentType`
-   * no contesta: qué se vende aquí (departamentos, casas, terrenos…).
+   * Tipos de producto que vende el desarrollo (kind='development' only),
+   * canónicos, dedup y en orden de catálogo. Contestan la pregunta que el chip
+   * `developmentType` no contesta: qué se vende aquí (departamentos, casas,
+   * terrenos…).
    *
-   * Salen de `attachDevelopmentUnitAggregates` (agregado de v_units.unit_type),
-   * con fallback a `resolveSpecType(property_types, development_type)` cuando el
-   * desarrollo no tiene unidades cargadas.
+   * Salen de `row.property_types` (columna de `v_developments`), normalizado
+   * grafía por grafía con `resolveProductType`. Esa columna YA implementa la
+   * única regla de resolución del feature (`ext_property_types` cuando trae
+   * algo — override manual —, si no los tipos derivados del inventario) — una
+   * regla, un lugar. Fallback a `resolveSpecType(property_types,
+   * development_type)` cuando la columna no resuelve ningún tipo.
+   *
+   * A propósito NO se deriva del inventario cargado (v_units.unit_type): eso
+   * ignora el override manual y hacía que la faceta SEO server-side (que sí
+   * respeta la vista) y el chip del cliente contaran desarrollos distintos
+   * para el mismo tipo. Ver defecto 2026-08-20.
    *
    * SIN conteos a propósito: v_units es un subconjunto del inventario real, así
    * que "3 departamentos" sería falso. Ver spec 2026-08-05.
@@ -190,6 +202,9 @@ export interface Property {
    * área de otra — métrica fabricada.
    */
   areaMin?: number;
+  /** Mínimos de precio y área por tipo de producto (kind='development' only).
+   *  Alimenta la proyección de la tarjeta cuando hay filtro de tipo activo. */
+  unitTypeStats?: Partial<Record<ProductType, { priceMin: number | null; areaMin: number | null }>>;
   stage: PropertyStage;
   usage: PropertyUsage[];
   amenities: string[];

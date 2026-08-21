@@ -291,7 +291,7 @@
     "subtitle": "We operate from Playa del Carmen and cover the main markets of the Caribbean coast and the Yucatán peninsula.",
     "labTitle": "Real Estate Lab",
     "labAddress": "5th Avenue & 40th Street North, C.P. 77720, Playa del Carmen, Q. Roo",
-    "labHours": "Monday to Friday, 9:00 – 18:00 · Saturday, 10:00 – 14:00",
+    "labHours": "Every day, 10:00 AM – 7:00 PM",
     "labCta": "Schedule a visit to the Lab",
     "zonesTitle": "Zones we cover",
     "zone1": "Tulum",
@@ -379,7 +379,7 @@
     "section6Title": "Limitations and liability",
     "section6Body": "Propyte operates as a real estate marketplace and commercial advisor. We do not guarantee specific returns, appreciation or occupancy. Data is subject to update. The final purchase decision and verification of information are the responsibility of the buyer and the professionals supporting them (notary, accountant, legal advisor).",
     "section7Title": "Compliance contact",
-    "section7Body": "If you detect inaccurate information, a figure without a source or a missing disclaimer, write to contacto@propyte.com with subject \"Compliance\". We review every report and publish a correction if applicable."
+    "section7Body": "If you detect inaccurate information, a figure without a source or a missing disclaimer, write to info@propyte.com with subject \"Compliance\". We review every report and publish a correction if applicable."
   },
   "homeFAQ": {
     "eyebrow": "Frequently asked",
@@ -600,7 +600,7 @@
     "filterStage": "Stage",
     "filterUsage": "Usage",
     "filterBedrooms": "Bedrooms",
-    "filterDevType": "Dev. type",
+    "filterDevType": "Format",
     "filterAmenities": "Amenities",
     "filterDeveloper": "Developer",
     "mapView": "Map",
@@ -818,14 +818,17 @@
     "oficina": "Office",
     "townhouse": "Townhouse",
     "local_comercial": "Commercial",
+    "comercial": "Commercial",
     "departamentoShort": "Apt"
   },
   "unitTypesPlural": {
     "departamento": "Apartments",
     "penthouse": "Penthouses",
     "casa": "Houses",
+    "villa": "Villas",
     "terreno": "Land",
-    "macrolote": "Large lots"
+    "macrolote": "Large lots",
+    "comercial": "Commercial"
   },
   "developmentTypes": {
     "residencial-vertical": "Vertical residential",
@@ -1363,7 +1366,7 @@
       "address": "5th Avenue & 40th Street North, C.P. 77720, Playa del Carmen, Q. Roo",
       "phone": "+52 984 463 8032",
       "email": "contacto@propyte.com",
-      "hours": "Monday to Friday 9:00 AM – 6:00 PM, Saturday 10:00 AM – 2:00 PM"
+      "hours": "Every day, 10:00 AM – 7:00 PM"
     },
     "whatsappCta": "Message us on WhatsApp",
     "whatsappMessage": "Hi Propyte, I'd like to receive information about real estate investment in the Riviera Maya."

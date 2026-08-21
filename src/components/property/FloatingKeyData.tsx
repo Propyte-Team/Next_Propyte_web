@@ -16,10 +16,12 @@ export interface ExtraKeyDataItem {
 }
 
 interface FloatingKeyDataProps {
-  /** Precio en MXN (fuente de verdad). Si null, omite la fila precio. */
-  priceMxn?: number | null;
-  /** Moneda en que se cotizó originalmente. Default 'MXN'. */
-  originalCurrency?: Currency;
+  /** Monto cotizado, en la moneda de `currency`. NO se convierte. Si null,
+   *  omite la fila precio. */
+  price?: number | null;
+  /** Moneda en la que está `price`. Obligatoria: un default 'MXN' es lo que
+   *  rotulaba dólares como pesos. */
+  currency: Currency;
   /** Área en m² (fuente de verdad). Si null/0, omite la fila área. */
   areaM2?: number | null;
   /** Recámaras (string ya formateado). Default usa fila Bed icon. Omitir si extraItems se usa. */
@@ -31,7 +33,7 @@ interface FloatingKeyDataProps {
    *  bedrooms/bathrooms es null, esos no aparecen. */
   extraItems?: ExtraKeyDataItem[];
   /** Cuando hay descuento activo: muestra precio lista (tachado encima) +
-   *  el `priceMxn` ya es el precio post-descuento + chip −%.
+   *  el `price` ya es el precio post-descuento + chip −%.
    *  Si null/0/undefined, la card render sin tratamiento de descuento. */
   discount?: {
     listPriceMxn: number;
@@ -51,8 +53,8 @@ interface FloatingKeyDataProps {
 }
 
 export default function FloatingKeyData({
-  priceMxn,
-  originalCurrency = 'MXN',
+  price,
+  currency,
   areaM2,
   bedrooms,
   bathrooms,
@@ -61,7 +63,7 @@ export default function FloatingKeyData({
   labels,
 }: FloatingKeyDataProps) {
   const t = useTranslations('property');
-  const hasPrice = priceMxn != null && priceMxn > 0;
+  const hasPrice = price != null && price > 0;
   const hasArea = areaM2 != null && areaM2 > 0;
   const hasDiscount = !!discount && discount.listPriceMxn > 0 && discount.pct > 0;
   const items: ExtraKeyDataItem[] = [];
@@ -73,8 +75,10 @@ export default function FloatingKeyData({
         <div className="flex flex-col items-end gap-0.5">
           {hasDiscount && (
             <span className="text-2xs text-white/60 line-through decoration-propyte-brand decoration-2 tabular-nums">
+              {/* El precio de lista tachado viene de precio_mxn: siempre pesos. */}
               <PriceDisplay
-                mxn={discount!.listPriceMxn}
+                amount={discount!.listPriceMxn}
+                currency="MXN"
                 variant="single"
                 size="sm"
                 className="text-white/60"
@@ -82,10 +86,10 @@ export default function FloatingKeyData({
             </span>
           )}
           <PriceDisplay
-            mxn={priceMxn}
+            amount={price}
+            currency={currency}
             variant="dual"
             size="md"
-            originalCurrency={originalCurrency}
             tone="dark"
             className="text-white"
           />

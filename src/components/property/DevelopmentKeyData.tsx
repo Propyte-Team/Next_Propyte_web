@@ -7,8 +7,11 @@ import DiscountBadge from '@/components/ui/DiscountBadge';
 import type { Currency } from '@/context/CurrencyContext';
 
 interface DevelopmentKeyDataProps {
-  priceMxn?: number | null;
-  originalCurrency?: Currency;
+  /** Monto cotizado, en la moneda de `currency`. NO se convierte. */
+  price?: number | null;
+  /** Moneda en la que esta `price`. Obligatoria: un default 'MXN' es lo que
+   *  rotulaba dolares como pesos en la ficha de desarrollo. */
+  currency: Currency;
   areaM2?: number | null;
   totalUnits?: number | null;
   mainType?: string | null;
@@ -38,8 +41,8 @@ interface DevelopmentKeyDataProps {
  * boundary server→client desde DevelopmentDetailPage.
  */
 export default function DevelopmentKeyData({
-  priceMxn,
-  originalCurrency = 'MXN',
+  price,
+  currency,
   areaM2,
   totalUnits,
   mainType,
@@ -48,7 +51,7 @@ export default function DevelopmentKeyData({
   discountPct,
   labels,
 }: DevelopmentKeyDataProps) {
-  const hasPrice = priceMxn != null && priceMxn > 0;
+  const hasPrice = price != null && price > 0;
   const hasDiscount = discountPct != null && discountPct > 0;
   const hasArea = areaM2 != null && areaM2 > 0;
   const hasUnits = totalUnits != null && totalUnits > 0;
@@ -69,10 +72,10 @@ export default function DevelopmentKeyData({
       label: labels.price,
       value: (
         <PriceDisplay
-          mxn={priceMxn}
+          amount={price}
           variant="dual"
           size="md"
-          originalCurrency={originalCurrency}
+          currency={currency}
           tone="dark"
           className="text-white"
         />

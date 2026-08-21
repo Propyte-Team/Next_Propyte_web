@@ -11,6 +11,9 @@ export interface SimilarListingItem {
   zone: string | null;
   images: string[] | null;
   price: number | null;
+  /** Moneda de `price`. Sin esto formatPrice rotula todo como MXN, y un
+   *  desarrollo cotizado en dolares saldria con sus dolares etiquetados en pesos. */
+  currency?: 'MXN' | 'USD';
   // Unit-only extras
   bedrooms?: number | null;
   bathrooms?: number | null;
@@ -84,8 +87,8 @@ export default async function SimilarListings({ items, kind, locale, title }: Si
               {item.price != null && item.price > 0 && (
                 <div className="mt-2 font-bold text-[#2C2C2C] text-sm">
                   {kind === 'development'
-                    ? t('fromPrice', { price: formatPrice(item.price) })
-                    : formatPrice(item.price)}
+                    ? t('fromPrice', { price: formatPrice(item.price, item.currency ?? 'MXN') })
+                    : formatPrice(item.price, item.currency ?? 'MXN')}
                 </div>
               )}
             </div>
