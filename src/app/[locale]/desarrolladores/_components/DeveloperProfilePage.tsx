@@ -24,11 +24,11 @@ function formatPrice(n: number) {
   return `$${n.toLocaleString()}`;
 }
 
-function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string }) {
+function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
   const img = dev.images?.[0];
   const priceFrom = dev.min_price_mxn || dev.price_mxn;
   const stageMap: Record<string, string> = {
-    preventa: 'Preventa', construccion: 'En construcción', entrega_inmediata: 'Entrega inmediata',
+    preventa: t('stagePresale'), construccion: t('stageConstruction'), entrega_inmediata: t('stageReady'),
   };
   const stageLabel = dev.stage ? (stageMap[dev.stage] || dev.stage) : null;
 
@@ -69,7 +69,7 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
         )}
         {priceFrom && (
           <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            Desde {formatPrice(priceFrom)} MXN
+            {t('fromPrice', { price: `${formatPrice(priceFrom)} MXN` })}
           </div>
         )}
       </div>
@@ -79,9 +79,10 @@ function DevCard({ dev, locale }: { dev: DeveloperDevelopment; locale: string })
 
 export default async function DeveloperProfilePage({ locale, slug }: Props) {
   const supabase = createPublicSupabaseClient();
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, tProp] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getTranslations({ locale, namespace: 'property' }),
   ]);
 
   if (!supabase) notFound();
@@ -216,7 +217,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {developments.map((dev) => (
-                <DevCard key={dev.id} dev={dev} locale={locale} />
+                <DevCard key={dev.id} dev={dev} locale={locale} t={tProp} />
               ))}
             </div>
           </section>

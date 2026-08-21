@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Clock, ArrowRight } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDateShort } from '@/lib/helpers/format-date';
+import { categoryLabel } from '@/lib/blog/category-labels';
 
 interface PilarArticlesProps {
   locale: string;
@@ -62,7 +63,7 @@ export default function PilarArticles({ locale, posts, viewAllHref, t }: PilarAr
               </div>
               <div className="p-4">
                 <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
-                  <span>{post.category}</span>
+                  <span>{categoryLabel(post.category, locale)}</span>
                   <span className="flex items-center gap-1">
                     <Clock size={12} /> {post.read_time_min} {t.minRead}
                   </span>

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Clock, Calendar } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDateShort } from '@/lib/helpers/format-date';
+import { categoryLabel } from '@/lib/blog/category-labels';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -44,7 +45,7 @@ export default function BlogCard({ post, locale, t, priority = false, author }: 
           )}
           <div className="absolute top-3 left-3">
             <span className="px-2 py-1 text-xs font-semibold bg-[#5CE0D2] text-[#0F1923] rounded">
-              {post.category}
+              {categoryLabel(post.category, locale)}
             </span>
           </div>
         </div>

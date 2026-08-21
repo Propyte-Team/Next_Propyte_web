@@ -3004,7 +3004,27 @@
     "competitionHigh": "Alta",
     "competitionModerate": "Moderada",
     "competitionLow": "Baja",
-    "properties": "propiedades"
+    "properties": "propiedades",
+    "indexLabel": "Índice Propyte",
+    "potentialHigh": "Alto potencial",
+    "potentialModerate": "Potencial moderado",
+    "potentialLow": "En observación"
+  },
+  "supplyDemandIndicator": {
+    "title": "Oferta vs Demanda",
+    "insufficientData": "Datos insuficientes",
+    "highDemand": "Alta Demanda",
+    "balanced": "Equilibrado",
+    "highSupply": "Alta Oferta",
+    "excessSupply": "Exceso oferta",
+    "activeListings": "Listings activos",
+    "occupancy": "Ocupación",
+    "ratioSD": "Ratio S/D"
+  },
+  "priceDisclaimerBox": {
+    "ariaLabel": "Aviso de tipo de cambio",
+    "title": "Aviso de precio y tipo de cambio",
+    "body": "Los precios convertidos entre <b>MXN ↔ USD</b> son únicamente <b>referenciales</b> y se calculan al tipo de cambio publicado por Banco de México (<b>{rate} MXN/USD</b>, actualizado al {date}). El precio final de la operación está sujeto al tipo de cambio acordado en la negociación al momento del cierre. Los precios marcados como <b>(Original)</b> son la moneda en que se cotizó la propiedad; los marcados como <b>(Referencial)</b> son la conversión calculada."
   },
   "cookieBanner": {
     "ariaLabel": "Configuración de cookies",

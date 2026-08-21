@@ -3004,7 +3004,27 @@
     "competitionHigh": "High",
     "competitionModerate": "Moderate",
     "competitionLow": "Low",
-    "properties": "properties"
+    "properties": "properties",
+    "indexLabel": "Propyte Index",
+    "potentialHigh": "High potential",
+    "potentialModerate": "Moderate potential",
+    "potentialLow": "Under observation"
+  },
+  "supplyDemandIndicator": {
+    "title": "Supply vs Demand",
+    "insufficientData": "Insufficient data",
+    "highDemand": "High Demand",
+    "balanced": "Balanced",
+    "highSupply": "High Supply",
+    "excessSupply": "Excess supply",
+    "activeListings": "Active listings",
+    "occupancy": "Occupancy",
+    "ratioSD": "S/D Ratio"
+  },
+  "priceDisclaimerBox": {
+    "ariaLabel": "Exchange rate notice",
+    "title": "Price and exchange rate notice",
+    "body": "Prices converted between <b>MXN ↔ USD</b> are for <b>reference only</b> and are calculated using the exchange rate published by Banco de México (<b>{rate} MXN/USD</b>, updated as of {date}). The final transaction price is subject to the exchange rate agreed upon in the negotiation at closing. Prices marked <b>(Original)</b> reflect the currency the property was listed in; those marked <b>(Reference)</b> are the calculated conversion."
   },
   "cookieBanner": {
     "ariaLabel": "Cookie settings",

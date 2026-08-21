@@ -30,6 +30,7 @@ import {
   getCta,
   getExploreCategories,
   localizedExploreLabel,
+  localizedTestimonialLocation,
 } from '@/lib/hub-content';
 import { ogLocaleImages } from '@/lib/og/images';
 
@@ -167,7 +168,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const homeTestimonials = hubTestimonials.map((t) => ({
     name: t.name,
-    city: t.location ?? '',
+    city: localizedTestimonialLocation(t.location, locale),
     rating: t.rating ?? 5,
     text: locale === 'en' ? t.quote_en : t.quote_es,
   }));

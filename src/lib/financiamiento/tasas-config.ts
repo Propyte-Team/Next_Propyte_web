@@ -88,8 +88,11 @@ export const TASAS_CADENCIA = 'monthly' as const;
  * tales. Para publicar un rango de mercado hace falta el dato de CONDUSEF.
  * Formato esperado al llenarlo: `Tasas publicadas por <institución>, consultadas <YYYY-MM-DD>.`
  */
-export const TASAS_FUENTES: Record<1 | 2 | 3 | 4, string | null> = {
-  1: `Tasas ordinarias anuales fijas publicadas por BBVA, Banorte, Santander, HSBC y Citibanamex en sus sitios oficiales, consultadas ${TASAS_UPDATED_AT}. CAT promedio publicado: ${TASAS_MERCADO_HIPOTECARIO.catMin}%–${TASAS_MERCADO_HIPOTECARIO.catMax}%. El CAT es el indicador comparable entre bancos; la tasa "desde" depende del enganche y del perfil.`,
+export const TASAS_FUENTES: Record<1 | 2 | 3 | 4, { es: string; en: string } | null> = {
+  1: {
+    es: `Tasas ordinarias anuales fijas publicadas por BBVA, Banorte, Santander, HSBC y Citibanamex en sus sitios oficiales, consultadas ${TASAS_UPDATED_AT}. CAT promedio publicado: ${TASAS_MERCADO_HIPOTECARIO.catMin}%–${TASAS_MERCADO_HIPOTECARIO.catMax}%. El CAT es el indicador comparable entre bancos; la tasa "desde" depende del enganche y del perfil.`,
+    en: `Fixed ordinary annual rates published by BBVA, Banorte, Santander, HSBC, and Citibanamex on their official websites, checked ${TASAS_UPDATED_AT}. Average published APR (CAT): ${TASAS_MERCADO_HIPOTECARIO.catMin}%–${TASAS_MERCADO_HIPOTECARIO.catMax}%. The APR is the comparable indicator across banks; the "starting from" rate depends on the down payment and borrower profile.`,
+  },
   // 2 y 3 no llevan fuente porque ya no publican cifra (ver arriba).
   2: null,
   3: null,
