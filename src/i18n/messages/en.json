@@ -2289,6 +2289,7 @@
     "inputYears": "Horizon",
     "yearsSuffix": "years",
     "winnerLabel": "Best performer",
+    "finalCapitalLabel": "Final capital",
     "ctaAdvisor": "Talk to an advisor",
     "disclaimer": "Reference rates in {currency}, updated with market data. Comparisons are illustrative and don't constitute investment recommendation or financial advice. Past returns don't guarantee future results. Each instrument has a different risk and liquidity profile.",
     "referentialNote": "* The real estate rate is an illustrative reference; it will be updated with verifiable market data. CETES, REITs, stocks and bank deposit use public market references.",

@@ -144,7 +144,7 @@ export default function InvestmentComparison({ rates }: { rates: ComparatorRates
                     labelStyle={{ color: '#fff', fontWeight: 600 }}
                     itemStyle={{ color: 'rgba(255,255,255,0.85)' }}
                   />
-                  <Bar dataKey="fv" radius={[0, 6, 6, 0]}>
+                  <Bar dataKey="fv" name={t('finalCapitalLabel')} radius={[0, 6, 6, 0]}>
                     {data.map((d) => (
                       <Cell
                         key={d.id}
