@@ -552,6 +552,7 @@
     "newsletterCta": "Suscribirse",
     "newsletterSuccess": "¡Listo! Te suscribiste correctamente.",
     "newsletterError": "Hubo un problema. Inténtalo de nuevo.",
+    "newsletterInvalidEmail": "Ingresa un correo válido.",
     "homeEmptyTitle": "Próximamente: análisis de mercado y guías de inversión",
     "homeEmptyBody": "Estamos preparando contenido editorial sobre inversión en Riviera Maya. Suscríbete y te llega directo cuando se publique.",
     "homeEmptyCta": "Suscribirme",

@@ -25,7 +25,7 @@ export default function NewsletterCTA() {
       return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error(t('newsletterError'));
+      toast.error(t('newsletterInvalidEmail'));
       return;
     }
     setStatus('sending');
@@ -48,6 +48,7 @@ export default function NewsletterCTA() {
         <p className="text-gray-600 text-sm mb-6">{t('newsletterDesc')}</p>
         <form
           onSubmit={handleSubmit}
+          noValidate
           className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
           toolname="suscribir_newsletter"
           tooldescription="Suscribe un correo al newsletter de Propyte."
