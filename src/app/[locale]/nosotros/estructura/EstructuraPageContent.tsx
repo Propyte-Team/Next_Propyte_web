@@ -10,6 +10,8 @@ import type { OrgNodeRow } from '@/lib/supabase/queries';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import type { SiteMediaMap } from '@/lib/hub-content';
 import { pickBio, type TeamBioPerson } from '@/lib/team-bio';
+import { localizedDepartmentName } from '@/lib/team/department-labels';
+import { splitBilingualRole } from '@/lib/team/bilingual-role';
 import TeamBioModal from '@/components/shared/TeamBioModal';
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -145,7 +147,7 @@ function DeptSection({ dept }: { dept: DeptView }) {
       <div className="flex items-center gap-3 p-4 pb-2">
         <Icon size={18} className="text-[#1A2F3F]" />
         <h3 className="font-bold text-sm uppercase tracking-wider text-[#1A2F3F]">
-          {dept.name}
+          {localizedDepartmentName(dept.name, locale)}
           {dept.isCorporate && <span className="ml-2 text-xs font-normal text-gray-600">(Corp.)</span>}
         </h3>
       </div>
@@ -158,7 +160,7 @@ function DeptSection({ dept }: { dept: DeptView }) {
         )}
         {dept.members.map((m) => (
           <div key={m.id} className="flex justify-between text-sm py-1">
-            <span className="text-gray-600">{m.role}</span>
+            <span className="text-gray-600">{splitBilingualRole(m.role, locale)}</span>
             {m.is_vacant ? (
               <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
             ) : (
@@ -197,7 +199,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
     return () =>
       setSelected({
         name: node.name,
-        role: node.role,
+        role: splitBilingualRole(node.role, locale),
         city: node.city,
         photoUrl: node.photo_url,
         bio,
@@ -232,7 +234,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   <div className="flex justify-center mb-8">
                     <OrgCard
                       role={ceo.role_code ?? 'CEO'}
-                      title={ceo.role}
+                      title={splitBilingualRole(ceo.role, locale)}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
                       summary={leaderSummary(ceo)}
@@ -252,8 +254,8 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                       <div key={d.id} className="relative pt-4">
                         <div className="absolute top-0 left-1/2 w-px h-4 bg-gray-300" />
                         <OrgCard
-                          role={d.role_code ?? d.role}
-                          title={d.role}
+                          role={d.role_code ?? splitBilingualRole(d.role, locale)}
+                          title={splitBilingualRole(d.role, locale)}
                           name={d.name}
                           color={d.role_color ?? '#1A2F3F'}
                           summary={leaderSummary(d)}
@@ -280,7 +282,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   {ceo && (
                     <OrgCard
                       role={ceo.role_code ?? 'CEO'}
-                      title={ceo.role}
+                      title={splitBilingualRole(ceo.role, locale)}
                       name={ceo.name}
                       color={ceo.role_color ?? '#1D4ED8'}
                       summary={leaderSummary(ceo)}
@@ -290,8 +292,8 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   {directors.map((d) => (
                     <OrgCard
                       key={d.id}
-                      role={d.role_code ?? d.role}
-                      title={d.role}
+                      role={d.role_code ?? splitBilingualRole(d.role, locale)}
+                      title={splitBilingualRole(d.role, locale)}
                       name={d.name}
                       color={d.role_color ?? '#1A2F3F'}
                       summary={leaderSummary(d)}

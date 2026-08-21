@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Users, MapPin, MessageCircle } from '@/lib/icons';
 import type { TeamMemberRow } from '@/lib/supabase/queries';
 import { pickBio, getInitials, pickAvatarColor, type TeamBioPerson } from '@/lib/team-bio';
+import { splitBilingualRole } from '@/lib/team/bilingual-role';
 import { teamAnchorId } from '@/lib/blog/post-author';
 import TeamBioModal from '@/components/shared/TeamBioModal';
 
@@ -69,7 +70,7 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
           const openProfile = () =>
             setSelected({
               name: m.name,
-              role: m.role,
+              role: splitBilingualRole(m.role, locale),
               city: m.city,
               photoUrl: m.photo_url,
               bio: bio ?? '',
@@ -86,7 +87,7 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
             >
               <Avatar photoUrl={m.photo_url} name={m.name} />
               <h3 className="font-bold text-[#1A2F3F] text-lg">{m.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{m.role}</p>
+              <p className="text-sm text-gray-600 mt-1">{splitBilingualRole(m.role, locale)}</p>
               {m.city && (
                 <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
                   <MapPin size={11} aria-hidden="true" /> {m.city}
