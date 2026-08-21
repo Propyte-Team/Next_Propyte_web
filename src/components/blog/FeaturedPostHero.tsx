@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Clock, Calendar, ArrowRight } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
 import { formatDate } from '@/lib/helpers/format-date';
+import { categoryLabel } from '@/lib/blog/category-labels';
 
 interface FeaturedPostHeroProps {
   post: BlogPost;
@@ -43,7 +44,7 @@ export default function FeaturedPostHero({ post, locale, t }: FeaturedPostHeroPr
                 {t.featured}
               </span>
               <span className="text-xs bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
-                {post.category}
+                {categoryLabel(post.category, locale)}
               </span>
             </div>
             <h2 className="text-xl md:text-3xl font-bold leading-tight line-clamp-2 mb-3">

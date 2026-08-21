@@ -27,6 +27,7 @@ interface DevelopmentKeyDataProps {
     type: string;
     location: string;
     discount?: string;
+    disclaimer: string;
   };
 }
 
@@ -153,8 +154,7 @@ export default function DevelopmentKeyData({
       </div>
       {hasPrice && (
         <p className="mt-2 px-1 text-[10px] text-gray-600 leading-snug italic">
-          El precio referencial se calcula con TC Banxico. Precio final depende
-          del tipo de cambio acordado en la negociación.
+          {labels.disclaimer}
         </p>
       )}
     </div>

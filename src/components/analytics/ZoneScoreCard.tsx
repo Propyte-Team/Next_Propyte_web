@@ -12,10 +12,11 @@ interface ZoneScoreCardProps {
 }
 
 function IndexBadge({ value }: { value: number }) {
+  const t = useTranslations('zoneScoreCard');
   const label =
-    value >= 70 ? 'Alto potencial' :
-    value >= 50 ? 'Potencial moderado' :
-    'En observación';
+    value >= 70 ? t('potentialHigh') :
+    value >= 50 ? t('potentialModerate') :
+    t('potentialLow');
   const colors =
     value >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
     value >= 50 ? 'bg-amber-50 text-amber-700 border-amber-200' :
@@ -27,7 +28,7 @@ function IndexBadge({ value }: { value: number }) {
         {Math.round(value)}
       </span>
       <div className="flex flex-col">
-        <span className="text-2xs text-gray-600 uppercase tracking-wide leading-tight">Índice Propyte</span>
+        <span className="text-2xs text-gray-600 uppercase tracking-wide leading-tight">{t('indexLabel')}</span>
         <span className={`text-xs font-medium px-1.5 py-0.5 rounded border ${colors}`}>
           {label}
         </span>

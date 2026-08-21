@@ -99,6 +99,25 @@ export async function getTestimonials(
   return r?.items ?? [];
 }
 
+// Fix temporal: el Hub aún no tiene location_es/location_en (a diferencia de
+// quote_es/quote_en, role_es/role_en). Mientras no exista esa columna, se
+// traducen aquí los valores descriptivos conocidos; nombres de ciudad no
+// listados se muestran tal cual en ambos idiomas.
+const TESTIMONIAL_LOCATION_EN: Record<string, string> = {
+  "Cliente internacional": "International client",
+  "EE.UU.": "USA",
+  "Estados Unidos": "United States",
+};
+
+export function localizedTestimonialLocation(
+  location: string | null,
+  locale: string,
+): string {
+  if (!location) return "";
+  if (locale !== "en") return location;
+  return TESTIMONIAL_LOCATION_EN[location] ?? location;
+}
+
 export async function getFaqs(
   context: HubFaq["context"],
   category?: string,

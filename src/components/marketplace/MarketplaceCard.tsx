@@ -14,6 +14,7 @@ import DiscountBadge from '@/components/ui/DiscountBadge';
 import { toast } from 'sonner';
 import { trackSelectContent } from '@/lib/analytics/track';
 import { normalizeI18nKey } from '@/lib/i18n/normalizeKey';
+import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import { useUnits, m2ToSqft } from '@/lib/units-context';
 
 interface MarketplaceCardProps {
@@ -471,7 +472,7 @@ export default function MarketplaceCard({
                     <span className="text-gray-300">·</span>
                   )}
                   <span>
-                    {tMkt('cardDeliveryLabel')}: {property.delivery.text || property.delivery.estimated}
+                    {tMkt('cardDeliveryLabel')}: {translateDateWords(property.delivery.text || property.delivery.estimated || '', locale)}
                   </span>
                 </>
               )}

@@ -2,7 +2,7 @@ import {
   Waves, Dumbbell, Shield, Car, Users, Wifi, Coffee,
   ChefHat, Wind, Sun, Building, Bike, Heart, Gamepad2,
   ParkingCircle, UtensilsCrossed, Flame, PawPrint, CheckCircle2,
-  Spa, Plant,
+  Spa, Plant, Flower2, Activity,
   type LucideIcon,
 } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
@@ -47,6 +47,8 @@ const AMENITIES: AmenityDef[] = [
   { key: 'restaurante', es: 'Restaurante / Club', en: 'Restaurant / Club', icon: UtensilsCrossed, match: /restaurant|club|beach club/i },
   { key: 'asador', es: 'Asadores', en: 'BBQ Grills', icon: Flame, match: /asador|bbq|parrilla|grill/i },
   { key: 'pet_friendly', es: 'Pet friendly', en: 'Pet Friendly', icon: PawPrint, match: /pet|mascot/i },
+  { key: 'yoga', es: 'Área de Yoga', en: 'Yoga Area', icon: Flower2, match: /yoga/i },
+  { key: 'cancha', es: 'Cancha deportiva', en: 'Sports Court', icon: Activity, match: /cancha|court|tenis|tennis|padel|pádel|basquetbol|basketball|volibol|voleibol|volleyball/i },
 ];
 
 /**

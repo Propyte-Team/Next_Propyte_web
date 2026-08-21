@@ -131,7 +131,7 @@ export default async function FinanciamientoPage({ params }: { params: Promise<{
       note: noteKey ? t(noteKey) : null,
       // DATA-GATE: `null` mientras el rango no tenga atribución trazable. La UI
       // omite el renglón en vez de publicar una fuente inventada.
-      source: TASAS_FUENTES[n as 1 | 2 | 3 | 4],
+      source: TASAS_FUENTES[n as 1 | 2 | 3 | 4]?.[locale === 'en' ? 'en' : 'es'] ?? null,
       speed: METHOD_SPEED[i],
     };
   });

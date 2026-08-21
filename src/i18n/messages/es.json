@@ -552,6 +552,7 @@
     "newsletterCta": "Suscribirse",
     "newsletterSuccess": "¡Listo! Te suscribiste correctamente.",
     "newsletterError": "Hubo un problema. Inténtalo de nuevo.",
+    "newsletterInvalidEmail": "Ingresa un correo válido.",
     "homeEmptyTitle": "Próximamente: análisis de mercado y guías de inversión",
     "homeEmptyBody": "Estamos preparando contenido editorial sobre inversión en Riviera Maya. Suscríbete y te llega directo cuando se publique.",
     "homeEmptyCta": "Suscribirme",
@@ -2288,6 +2289,7 @@
     "inputYears": "Plazo",
     "yearsSuffix": "años",
     "winnerLabel": "Mejor rendimiento",
+    "finalCapitalLabel": "Capital final",
     "ctaAdvisor": "Hablar con un asesor",
     "disclaimer": "Tasas referenciales en {currency}, actualizadas con datos de mercado. Las comparaciones son ilustrativas y no constituyen recomendación de inversión ni asesoría financiera. Los rendimientos pasados no garantizan resultados futuros. Cada instrumento tiene un perfil de riesgo y liquidez distinto.",
     "referentialNote": "* La tasa de bienes raíces es una referencia ilustrativa; se actualizará con datos de mercado verificables. CETES, Fibras, Bolsa y depósito bancario usan referencias públicas de mercado.",
@@ -3007,7 +3009,27 @@
     "competitionHigh": "Alta",
     "competitionModerate": "Moderada",
     "competitionLow": "Baja",
-    "properties": "propiedades"
+    "properties": "propiedades",
+    "indexLabel": "Índice Propyte",
+    "potentialHigh": "Alto potencial",
+    "potentialModerate": "Potencial moderado",
+    "potentialLow": "En observación"
+  },
+  "supplyDemandIndicator": {
+    "title": "Oferta vs Demanda",
+    "insufficientData": "Datos insuficientes",
+    "highDemand": "Alta Demanda",
+    "balanced": "Equilibrado",
+    "highSupply": "Alta Oferta",
+    "excessSupply": "Exceso oferta",
+    "activeListings": "Listings activos",
+    "occupancy": "Ocupación",
+    "ratioSD": "Ratio S/D"
+  },
+  "priceDisclaimerBox": {
+    "ariaLabel": "Aviso de tipo de cambio",
+    "title": "Aviso de precio y tipo de cambio",
+    "body": "Los precios convertidos entre <b>MXN ↔ USD</b> son únicamente <b>referenciales</b> y se calculan al tipo de cambio publicado por Banco de México (<b>{rate} MXN/USD</b>, actualizado al {date}). El precio final de la operación está sujeto al tipo de cambio acordado en la negociación al momento del cierre. Los precios marcados como <b>(Original)</b> son la moneda en que se cotizó la propiedad; los marcados como <b>(Referencial)</b> son la conversión calculada."
   },
   "cookieBanner": {
     "ariaLabel": "Configuración de cookies",

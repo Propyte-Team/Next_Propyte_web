@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Clock } from '@/lib/icons';
 import type { BlogPost } from '@/lib/supabase/queries';
+import { categoryLabel } from '@/lib/blog/category-labels';
 
 interface RelatedPostsProps {
   posts: BlogPost[];
@@ -37,7 +38,7 @@ export default function RelatedPosts({ posts, locale, title, minRead }: RelatedP
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <span className="text-xs font-medium text-[#0E7490]">{post.category}</span>
+              <span className="text-xs font-medium text-[#0E7490]">{categoryLabel(post.category, locale)}</span>
               <h3 className="text-sm font-medium text-[#1A2F3F] line-clamp-2 mt-0.5 group-hover:text-[#0E7490] transition-colors">
                 {post.title}
               </h3>

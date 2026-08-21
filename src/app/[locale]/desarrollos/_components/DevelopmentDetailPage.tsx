@@ -35,6 +35,7 @@ import {
   calculateRemainingBalanceActuarial,
 } from '@/lib/calculator';
 import { pickLang } from '@/lib/i18n/pickLang';
+import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
@@ -321,9 +322,10 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   const totalUnits = property.total_units || unitList.length || null;
 
   // ── Delivery display ──
-  const deliveryDisplay = property.delivery_text
-    || property.estimated_delivery
-    || (property.construction_progress != null
+  const rawDeliveryText = property.delivery_text || property.estimated_delivery;
+  const deliveryDisplay = rawDeliveryText
+    ? translateDateWords(rawDeliveryText, locale)
+    : (property.construction_progress != null
         ? tProp('progressComplete', { n: property.construction_progress })
         : null);
 
@@ -912,6 +914,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                 type: tProp('type'),
                 location: tProp('location'),
                 discount: tProp('discount'),
+                disclaimer: tProp('priceDisclaimer'),
               }}
             />
 

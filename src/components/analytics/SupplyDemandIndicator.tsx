@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 interface SupplyDemandIndicatorProps {
   supplyDemandRatio: number | null;
   activeListings: number | null;
@@ -11,10 +13,12 @@ export function SupplyDemandIndicator({
   activeListings,
   occupancy,
 }: SupplyDemandIndicatorProps) {
+  const t = useTranslations('supplyDemandIndicator');
+
   if (supplyDemandRatio == null) {
     return (
       <div className="text-sm text-gray-600 text-center py-4">
-        Datos insuficientes
+        {t('insufficientData')}
       </div>
     );
   }
@@ -24,9 +28,9 @@ export function SupplyDemandIndicator({
   const normalizedPosition = Math.min(100, Math.max(0, (1 - supplyDemandRatio / 100) * 100));
 
   const label =
-    normalizedPosition >= 70 ? 'Alta Demanda' :
-    normalizedPosition >= 40 ? 'Equilibrado' :
-    'Alta Oferta';
+    normalizedPosition >= 70 ? t('highDemand') :
+    normalizedPosition >= 40 ? t('balanced') :
+    t('highSupply');
 
   const color =
     normalizedPosition >= 70 ? 'text-green-600' :
@@ -42,7 +46,7 @@ export function SupplyDemandIndicator({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-600">Oferta vs Demanda</h3>
+        <h3 className="text-sm font-medium text-gray-600">{t('title')}</h3>
         <span className={`text-sm font-semibold ${color}`}>{label}</span>
       </div>
 
@@ -59,8 +63,8 @@ export function SupplyDemandIndicator({
         />
       </div>
       <div className="flex justify-between text-xs text-gray-600">
-        <span>Exceso oferta</span>
-        <span>Alta demanda</span>
+        <span>{t('excessSupply')}</span>
+        <span>{t('highDemand')}</span>
       </div>
 
       {/* Detail metrics */}
@@ -68,18 +72,18 @@ export function SupplyDemandIndicator({
         {activeListings != null && (
           <div className="flex-1 bg-gray-50 rounded-lg p-2">
             <div className="text-lg font-semibold text-gray-900">{activeListings.toLocaleString()}</div>
-            <div className="text-xs text-gray-600">Listings activos</div>
+            <div className="text-xs text-gray-600">{t('activeListings')}</div>
           </div>
         )}
         {occupancy != null && (
           <div className="flex-1 bg-gray-50 rounded-lg p-2">
             <div className="text-lg font-semibold text-gray-900">{Math.round(occupancy)}%</div>
-            <div className="text-xs text-gray-600">Ocupación</div>
+            <div className="text-xs text-gray-600">{t('occupancy')}</div>
           </div>
         )}
         <div className="flex-1 bg-gray-50 rounded-lg p-2">
           <div className="text-lg font-semibold text-gray-900">{supplyDemandRatio.toFixed(1)}</div>
-          <div className="text-xs text-gray-600">Ratio S/D</div>
+          <div className="text-xs text-gray-600">{t('ratioSD')}</div>
         </div>
       </div>
     </div>
