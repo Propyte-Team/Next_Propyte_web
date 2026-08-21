@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 export interface OGFrameProps {
   title: string;
   location?: string;
@@ -5,6 +8,12 @@ export interface OGFrameProps {
   badge?: string;
   imageUrl?: string;
 }
+
+// Satori (next/og) no puede resolver rutas relativas de /public — hay que
+// pasarle el binario ya en memoria, igual que loadOGFonts() con las fuentes.
+const LOGO_ICON = `data:image/png;base64,${fs
+  .readFileSync(path.join(process.cwd(), 'public/img/logos/logo-icon-white.png'))
+  .toString('base64')}`;
 
 export default function OGFrame({ title, location, price, badge, imageUrl }: OGFrameProps) {
   const titleSize = title.length > 50 ? 34 : title.length > 35 ? 40 : title.length > 20 ? 46 : 54;
@@ -32,19 +41,8 @@ export default function OGFrame({ title, location, price, badge, imageUrl }: OGF
       >
         {/* Logo row */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              background: '#5CE0D2',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span style={{ color: '#1A2F3F', fontWeight: 700, fontSize: 20, lineHeight: 1 }}>P</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element -- Satori OG runtime can't use next/image, only DOM <img> */}
+          <img src={LOGO_ICON} alt="" width={36} height={36} style={{ objectFit: 'contain' }} />
           <span style={{ color: 'rgba(255,255,255,0.85)', fontWeight: 600, fontSize: 18 }}>
             propyte.com
           </span>
