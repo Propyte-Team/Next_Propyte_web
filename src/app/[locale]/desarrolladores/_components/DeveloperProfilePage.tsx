@@ -70,7 +70,7 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
         )}
         {precio.min != null && (
           <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            {t('fromPrice', { price: `${formatPrice(priceFrom)} MXN` })}
+            {t('fromPrice', { price: `${formatPrice(precio.min)} MXN` })}
           </div>
         )}
       </div>
