@@ -55,25 +55,32 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
   const override = ROUTE_CTA_KEY[route];
   const titleKey = override?.title ?? 'ctaTitle';
   const subtitleKey = override?.subtitle ?? 'ctaSubtitle';
+  // El CTA enlaza a /contacto — en la propia página de Contacto sería
+  // redundante y el link no navegaría a ningún lado (misma URL).
+  const isContactPage = route === 'contacto';
 
   return (
     <footer className="bg-[var(--propyte-dark-900)] text-white">
       {/* Top CTA strip — audit 2026-05-15: navy genérico (#1A2F3F) reemplazado
           por dark-800 brand para alinear con paleta corporativa. */}
-      <div className="bg-[var(--propyte-dark-800)]">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-bold">{t(titleKey)}</h3>
-            <p className="text-white/75 text-sm">{t(subtitleKey)}</p>
+
+          {/* en todo menos contactPage, que haga tal cosa */}
+      {!isContactPage && (
+        <div className="bg-[var(--propyte-dark-800)]">
+          <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold">{t(titleKey)}</h3>
+              <p className="text-white/75 text-sm">{t(subtitleKey)}</p>
+            </div>
+            <Link
+              href={`/${locale}/contacto`}
+              className="h-11 px-6 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-lg transition-colors flex items-center"
+            >
+              {t('ctaButton')}
+            </Link>
           </div>
-          <Link
-            href={`/${locale}/contacto`}
-            className="h-11 px-6 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-bold text-sm rounded-lg transition-colors flex items-center"
-          >
-            {t('ctaButton')}
-          </Link>
         </div>
-      </div>
+      )}
 
       {/* Main footer */}
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16">
