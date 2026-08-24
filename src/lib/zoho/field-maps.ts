@@ -487,9 +487,15 @@ export function sourceToZohoPayload(
 
   // Campos comunes — solo si están poblados
   if (data.email) lead.Email = data.email;
-  // Phone vs Mobile — Form 8 usa Mobile (whatsapp); resto usa Phone
+  // Phone vs Mobile — Form 8 usa Mobile (whatsapp); resto usa Phone.
+  // El fallback a phone NO es cosmetico: el cron /api/cron/zoho-retry
+  // reconstruye el FormData desde public.leads, donde el whatsapp del Form 8
+  // vive en la columna phone (leads/route.ts: data.phone || data.whatsapp).
+  // Sin el fallback, todo lead de reclutamiento sincronizado por el cron llega
+  // a Zoho sin Mobile Y sin Phone — medido: 10 de los 15 leads mas recientes.
   if (source === "affiliate_request") {
-    if (data.whatsapp) lead.Mobile = data.whatsapp;
+    const mobile = data.whatsapp || data.phone;
+    if (mobile) lead.Mobile = mobile;
   } else {
     if (data.phone) lead.Phone = data.phone;
   }
