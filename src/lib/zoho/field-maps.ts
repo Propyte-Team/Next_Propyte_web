@@ -168,6 +168,104 @@ export function truncateDescription(
   return text.slice(0, max - 20) + "… [truncado]";
 }
 
+/**
+ * Topes REALES de los campos de Zoho CRM (módulo Leads), leídos de la metadata
+ * del módulo el 2026-08-24. Zoho NO trunca: si el valor excede el tope devuelve
+ * INVALID_DATA y **rechaza el record entero**, así que el lead no llega.
+ *
+ * Medido contra producción:
+ *   Nombre_anuncio de 240 chars → SUCCESS
+ *   Nombre_anuncio de 330 chars → INVALID_DATA · maximum_length: 255
+ *
+ * Ese era el bug: `Nombre_anuncio = data.page` sin recortar, con `page` validado
+ * a 2000 chars en Zod. Toda URL de anuncio de Meta (utm_* + fbclid) mide 325-359
+ * chars y tumbaba el push directo. El cron lo rescataba hasta 58 min después
+ * porque `rebuildPayload()` reconstruye el payload SIN `page` — y de paso sin
+ * City, Description ni Mensaje. 13 de 13 leads con campaña de Meta fallaron.
+ */
+export const ZOHO_LEAD_LIMITS = {
+  First_Name: 40,
+  Last_Name: 80,
+  Email: 100,
+  Phone: 30,
+  Mobile: 30,
+  City: 100,
+  Company: 200,
+  Country: 100,
+  Inmobiliaria: 120,
+  Presupuesto: 255,
+  Nombre_anuncio: 255,
+  Nombre_del_formulario: 255,
+  GCLID: 150,
+  Ad_Campaign_Name: 250,
+  AdGroup_Name: 250,
+  QR_de_origen: 50,
+} as const;
+
+/** Topes del módulo Accounts (misma metadata, mismo 2026-08-24). */
+export const ZOHO_ACCOUNT_LIMITS = {
+  Account_Name: 200,
+  Phone: 30,
+  Website: 255,
+  Billing_City: 100,
+  Billing_Country: 100,
+} as const;
+
+const ALL_LIMITS = { ...ZOHO_LEAD_LIMITS, ...ZOHO_ACCOUNT_LIMITS };
+
+export type ZohoLimitedField = keyof typeof ALL_LIMITS;
+
+/**
+ * Recorta al tope del campo. Para texto descriptivo (nombre, ciudad, empresa,
+ * URL) donde una versión corta sigue siendo verdad. NO agrega "… [truncado]"
+ * como `truncateDescription`: estos campos son cortos e indexables y el sufijo
+ * los corrompería. Devuelve undefined si no queda nada, para que el caller omita.
+ */
+export function fitZoho(
+  field: ZohoLimitedField,
+  value: string | null | undefined,
+): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.slice(0, ALL_LIMITS[field]) || undefined;
+}
+
+/**
+ * Omite el campo si no cabe, en vez de recortarlo. Para IDENTIFICADORES —
+ * email, teléfono, gclid — donde media cadena no es un dato parcial sino un
+ * dato FALSO: un email recortado le escribe a un desconocido. Mejor que Zoho
+ * no lo tenga (el valor íntegro vive en `public.leads`) a que tenga uno falso.
+ */
+export function onlyIfFits(
+  field: ZohoLimitedField,
+  value: string | null | undefined,
+): string | undefined {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length <= ALL_LIMITS[field] ? trimmed : undefined;
+}
+
+/**
+ * `Nombre_anuncio` responde "¿qué página envió el form?". El query string no
+ * aporta a esa pregunta — `fbclid`, `utm_*` y `gclid` ya viajan a Zoho en sus
+ * propios campos y quedan persistidos en `public.leads` — y es exactamente lo
+ * que desborda los 255. Nos quedamos con origin+pathname y recortamos por si
+ * acaso. Si la URL no parsea, recorte crudo en vez de perder el dato.
+ */
+export function pageToNombreAnuncio(
+  page: string | null | undefined,
+): string | undefined {
+  if (!page) return undefined;
+  try {
+    const u = new URL(page);
+    return fitZoho("Nombre_anuncio", `${u.origin}${u.pathname}`);
+  } catch {
+    return fitZoho("Nombre_anuncio", page);
+  }
+}
+
 /** zoho_sync_error ≤ 1KB para no inflar la columna text con retries. REQ-F-21. */
 export function truncateError(
   msg: string | null | undefined,
@@ -257,6 +355,12 @@ function baseLeadFields(
   locale: Locale,
   utms: UtmData,
 ): Partial<ZohoLead> {
+  // Identificadores: se omiten si no caben. Descriptivos: se recortan.
+  const gclid = onlyIfFits("GCLID", utms.gclid);
+  const qr = onlyIfFits("QR_de_origen", utms.qr);
+  const adCampaign = fitZoho("Ad_Campaign_Name", utms.utm_campaign);
+  const adGroup = fitZoho("AdGroup_Name", utms.utm_content);
+
   return {
     Lead_Source: "Sitio web",
     Lead_Status: "Nuevo",
@@ -268,13 +372,13 @@ function baseLeadFields(
       const base = `Propyte web - ${campaignSlug(source)} - ${campaignTag(source)}`;
       return subtag ? `${base} ${subtag}` : base;
     })(),
-    Nombre_del_formulario: formDescription(source, locale),
+    Nombre_del_formulario: fitZoho("Nombre_del_formulario", formDescription(source, locale)),
     // UTM tracking — solo si vienen poblados (Zoho no acepta string vacío en algunos picklists)
-    ...(utms.gclid ? { GCLID: utms.gclid } : {}),
-    ...(utms.utm_campaign ? { Ad_Campaign_Name: utms.utm_campaign } : {}),
-    ...(utms.utm_content ? { AdGroup_Name: utms.utm_content } : {}),
+    ...(gclid ? { GCLID: gclid } : {}),
+    ...(adCampaign ? { Ad_Campaign_Name: adCampaign } : {}),
+    ...(adGroup ? { AdGroup_Name: adGroup } : {}),
     // Campo custom dedicado: identifica el QR físico concreto, no su campaña.
-    ...(utms.qr ? { QR_de_origen: utms.qr } : {}),
+    ...(qr ? { QR_de_origen: qr } : {}),
     // Owner OMITIDO — Zoho Assignment Rule rota
   };
 }
@@ -474,19 +578,21 @@ export function sourceToZohoPayload(
 
   const lead: ZohoLead = {
     ...base,
-    Last_Name: parsed.lastName,
-    ...(parsed.firstName ? { First_Name: parsed.firstName } : {}),
+    Last_Name: fitZoho("Last_Name", parsed.lastName) ?? fallback,
+    ...(parsed.firstName ? { First_Name: fitZoho("First_Name", parsed.firstName) } : {}),
     Tipo_de_Contacto: tipoDeContacto(source),
   };
 
   // Newsletter sin nombre: intenta parsear First_Name del email
   if (useFallbackName && !parsed.firstName) {
     const fromEmail = parseFirstNameFromEmail(data.email);
-    if (fromEmail) lead.First_Name = fromEmail;
+    if (fromEmail) lead.First_Name = fitZoho("First_Name", fromEmail);
   }
 
   // Campos comunes — solo si están poblados
-  if (data.email) lead.Email = data.email;
+  // Identificadores: omitir si no caben, nunca recortar (ver onlyIfFits).
+  const email = onlyIfFits("Email", data.email);
+  if (email) lead.Email = email;
   // Phone vs Mobile — Form 8 usa Mobile (whatsapp); resto usa Phone.
   // El fallback a phone NO es cosmetico: el cron /api/cron/zoho-retry
   // reconstruye el FormData desde public.leads, donde el whatsapp del Form 8
@@ -494,26 +600,30 @@ export function sourceToZohoPayload(
   // Sin el fallback, todo lead de reclutamiento sincronizado por el cron llega
   // a Zoho sin Mobile Y sin Phone — medido: 10 de los 15 leads mas recientes.
   if (source === "affiliate_request") {
-    const mobile = data.whatsapp || data.phone;
+    const mobile = onlyIfFits("Mobile", data.whatsapp || data.phone);
     if (mobile) lead.Mobile = mobile;
   } else {
-    if (data.phone) lead.Phone = data.phone;
+    const phone = onlyIfFits("Phone", data.phone);
+    if (phone) lead.Phone = phone;
   }
-  if (data.company) lead.Company = data.company;
-  if (data.city) lead.City = data.city;
-  if (data.location && !data.city) lead.City = data.location;
+  const company = fitZoho("Company", data.company);
+  if (company) lead.Company = company;
+  // city gana; location solo cubre cuando no vino city (igual que antes).
+  const city = fitZoho("City", data.city || data.location);
+  if (city) lead.City = city;
   // Country default Mexico para web (todos nuestros forms son MX-centric)
   lead.Country = "Mexico";
 
   // Broker registration: marker boolean + Inmobiliaria
   if (source === "broker_registration") {
     lead.Broker = true;
-    if (data.company) lead.Inmobiliaria = data.company;
+    const inmobiliaria = fitZoho("Inmobiliaria", data.company);
+    if (inmobiliaria) lead.Inmobiliaria = inmobiliaria;
   }
 
   // Built consultation: Presupuesto text libre
   if (source === "built_consultation" && data.budget) {
-    lead.Presupuesto = data.budget;
+    lead.Presupuesto = fitZoho("Presupuesto", data.budget);
   }
 
   // Property inquiry: lookup zoho_developmentId
@@ -532,8 +642,11 @@ export function sourceToZohoPayload(
   const mensaje = composeMensaje(source, data);
   if (mensaje) lead.Mensaje = mensaje;
 
-  // Nombre_anuncio = URL exacta donde se envió el form (más confiable que slug/título).
-  if (data.page) lead.Nombre_anuncio = data.page;
+  // Nombre_anuncio = la página donde se envió el form (más confiable que slug/título).
+  // Sin query string: es lo que desbordaba los 255 chars de Zoho y tumbaba el
+  // push entero con INVALID_DATA. La atribución no se pierde — va en sus campos.
+  const nombreAnuncio = pageToNombreAnuncio(data.page);
+  if (nombreAnuncio) lead.Nombre_anuncio = nombreAnuncio;
 
   // Forms con Account asociado: F6 (Proveedor), F3/F4/F7 (Desarrolladora) — doble llamada Lead + Account.
   // F7 (built_consultation): company es OPCIONAL en el form — solo creamos Account si el usuario la llenó.
@@ -551,14 +664,18 @@ export function sourceToZohoPayload(
     const accountDesc = accountDescriptionParts.length > 0
       ? truncateDescription(accountDescriptionParts.join("\n"))
       : undefined;
-    const billingCity = data.city || data.location;
+    const billingCity = fitZoho("Billing_City", data.city || data.location);
+    // Phone y Website son identificadores: media cadena es un dato falso, no
+    // parcial. Un Website recortado es un enlace roto. Mejor omitirlos.
+    const accountPhone = onlyIfFits("Phone", data.phone);
+    const accountWebsite = onlyIfFits("Website", data.companyWebsite);
     account = {
-      Account_Name: data.company || fallbackName,
+      Account_Name: fitZoho("Account_Name", data.company) ?? fallbackName,
       Industry: industry,
       Fuente_de_Empresa: "Sitio web",
       Estado_de_Empresa: "NUEVO",
-      ...(data.phone ? { Phone: data.phone } : {}),
-      ...(data.companyWebsite ? { Website: data.companyWebsite } : {}),
+      ...(accountPhone ? { Phone: accountPhone } : {}),
+      ...(accountWebsite ? { Website: accountWebsite } : {}),
       ...(billingCity ? { Billing_City: billingCity } : {}),
       Billing_Country: "Mexico",
       ...(accountDesc ? { Description: accountDesc } : {}),

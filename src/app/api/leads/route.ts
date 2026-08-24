@@ -171,6 +171,22 @@ async function updateLeadLocal(
   return false;
 }
 
+/**
+ * Body del form, sin las claves vacías, para persistir en `leads.form_data`.
+ *
+ * Sin esto el cron reconstruye el payload solo desde las columnas top-level y
+ * manda a Zoho un lead mutilado: medido el 2026-08-24, 12 de 14 leads de
+ * reclutamiento rescatados por el cron llegaron sin City, sin experiencia y sin
+ * el texto libre de por qué aplican. El honeypot `website` NUNCA entra: no
+ * forma parte de FormData por construcción.
+ */
+function compactFormData(data: FormData): Record<string, unknown> | null {
+  const entries = Object.entries(data).filter(
+    ([, v]) => v !== null && v !== undefined && v !== '',
+  );
+  return entries.length > 0 ? Object.fromEntries(entries) : null;
+}
+
 /** URL firmada de la edición activa del lead magnet. Fail-soft: cualquier
  *  fallo (sin tabla, sin edición activa, sin service key) → null y el
  *  submit responde igual que siempre. */
@@ -484,6 +500,8 @@ export async function POST(request: NextRequest) {
       qr_code: utms.qr,
       nombre_campana: zohoPayload.lead.Nombre_de_Campa_a ?? null,
       nombre_formulario: zohoPayload.lead.Nombre_del_formulario ?? null,
+      // El body crudo — el cron lo necesita para reintentar con el MISMO payload.
+      form_data: compactFormData(formData),
       zoho_sync_error: 'PENDING_SYNC',
     })
     .select('id')

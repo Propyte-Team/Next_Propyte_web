@@ -73,6 +73,27 @@ interface RetryLeadRow {
   zoho_account_id: string | null;
   zoho_sync_error: string | null;
   zoho_retry_count: number | null;
+  /** Body del form tal como llegó a /api/leads. Null en filas anteriores a la columna. */
+  form_data: Partial<FormData> | null;
+  /** Primer `zoho_sync_error` visto por el cron. Ver preservarError(). */
+  zoho_sync_error_prev: string | null;
+}
+
+/**
+ * Al rescatar un lead, el cron pisaba `zoho_sync_error` con null y BORRABA la
+ * única pista de por qué había fallado el push directo.
+ *
+ * Eso volvió casi indiagnosticable el fallo de agosto de 2026: las 14 filas
+ * rescatadas mostraban `zoho_sync_error = null` y parecían no haber fallado
+ * nunca. La causa (INVALID_DATA por Nombre_anuncio > 255) hubo que reconstruirla
+ * de rebote, comparando Created_Time en Zoho contra created_at en Supabase.
+ *
+ * Guardamos el PRIMER valor y no lo volvemos a tocar: el primer intento es el
+ * que lleva la causa; los siguientes ya son consecuencia.
+ */
+function preservarError(row: RetryLeadRow): Record<string, unknown> {
+  if (row.zoho_sync_error_prev || !row.zoho_sync_error) return {};
+  return { zoho_sync_error_prev: truncateError(row.zoho_sync_error) };
 }
 
 async function updateLeadLocal(
@@ -92,11 +113,16 @@ async function updateLeadLocal(
 
 /**
  * Reconstruye un payload Zoho desde la fila persistida en public.leads.
- * Las columnas top-level tienen lo mínimo (name/email/phone/message/property_id);
- * el resto de campos por-form (subject/company/category/etc.) NO se persistió
- * en la primera versión — el cron retry trabaja con lo que hay. Si en el
- * futuro queremos retry "perfecto", agregamos una columna `form_data jsonb`
- * con el body crudo. Por ahora, mejor 80% de leads recuperados que 0%.
+ *
+ * Prefiere `form_data` (el body crudo del submit) para que el reintento mande
+ * a Zoho EXACTAMENTE el mismo payload que el push directo. Antes de esa columna
+ * el cron solo leía las columnas top-level (name/email/phone/message/property_id)
+ * y el lead rescatado llegaba mutilado: medido el 2026-08-24, 12 de 14 leads de
+ * reclutamiento rescatados por el cron entraron a Zoho sin City, sin la
+ * experiencia y sin el texto libre. El asesor recibía una ficha vacía.
+ *
+ * Las columnas top-level siguen como fallback: las filas creadas antes de la
+ * migración tienen `form_data` en null y deben poder reintentarse igual.
  */
 async function rebuildPayload(
   supabase: Awaited<ReturnType<typeof createServiceRoleClient>>,
@@ -114,12 +140,16 @@ async function rebuildPayload(
 
   const locale = (row.locale === 'en' ? 'en' : 'es') as Locale;
 
+  const saved = row.form_data ?? null;
   const formData: FormData = {
-    name: row.name,
-    email: row.email,
-    phone: row.phone,
-    message: row.message,
-    propertyId: row.property_id,
+    ...(saved ?? {}),
+    // Las columnas top-level ganan solo si form_data no trae el dato: son la
+    // única fuente en filas viejas, pero form_data es la fuente fiel.
+    name: saved?.name ?? row.name,
+    email: saved?.email ?? row.email,
+    phone: saved?.phone ?? row.phone,
+    message: saved?.message ?? row.message,
+    propertyId: saved?.propertyId ?? row.property_id,
   };
 
   const utms: UtmData = {
@@ -175,6 +205,7 @@ async function retryOne(
         zoho_lead_id: m[1],
         zoho_synced_at: new Date().toISOString(),
         zoho_sync_error: null,
+        ...preservarError(row),
       });
       return ok ? 'success' : 'failed';
     }
@@ -200,6 +231,7 @@ async function retryOne(
           zoho_lead_id: existing.id,
           zoho_synced_at: new Date().toISOString(),
           zoho_sync_error: null,
+          ...preservarError(row),
         });
         return ok ? 'success' : 'failed';
       }
@@ -269,6 +301,7 @@ async function retryOne(
     zoho_lead_id: zohoLeadId,
     zoho_account_id: zohoAccountId ?? null,
     zoho_synced_at: new Date().toISOString(),
+    ...preservarError(row),
     zoho_sync_error: attachedAsNote
       ? truncateError(`DUPLICATE_NOTE: anexado como Nota al Lead existente ${zohoLeadId}`)
       : accountError
