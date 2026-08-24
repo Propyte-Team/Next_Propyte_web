@@ -216,6 +216,21 @@ export default async function LandingLotesPlayaDelCarmen() {
             />
           </div>
 
+          {/* Captura arriba del documento. Los dos CTA de encima son ancla y
+              enlace: sirven a quien los pulsa, pero el formulario real vivía a
+              y ≈ 3,374 px — tres pantallas y media de scroll— y la campaña de
+              Ads gastó $991 MXN en 72 clics sin un solo envío. Esto no
+              sustituye al de la columna: lo adelanta para quien ya se convenció
+              con el titular y el precio. */}
+          <div className="mt-8 max-w-[26rem]">
+            <LeadFormLotes
+              variante="hero"
+              loteNombre={lote.titulo}
+              loteRef={lote.slug}
+              plazosDisponibles={lote.mesesOpciones}
+            />
+          </div>
+
           {/* El render más grande de la página era el único sin rotular. No
               puede ir en un `<figure>` —es el fondo, con el texto encima— así
               que el rótulo va aquí, discreto y al pie, como en una publicación:
