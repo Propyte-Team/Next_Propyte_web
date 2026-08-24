@@ -12,6 +12,7 @@ interface SiteMediaProps {
   locale?: string;
   sizes?: string;
   priority?: boolean;
+  quality?: number;
 }
 
 /**

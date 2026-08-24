@@ -14,6 +14,7 @@ interface SiteMediaViewProps {
   locale?: string;
   sizes?: string;
   priority?: boolean;
+  quality?: number;
 }
 
 /**
@@ -30,6 +31,7 @@ export default function SiteMediaView({
   locale = 'es',
   sizes = '100vw',
   priority,
+  quality = 90,
 }: SiteMediaViewProps) {
   if (!entry?.url) {
     return <ImagePlaceholder label={label} className={className} tone={tone} icon={icon} />;
@@ -69,7 +71,7 @@ export default function SiteMediaView({
 
   return (
     <div className={`relative overflow-hidden rounded-2xl ${className}`}>
-      <Image src={entry.url} alt={alt} fill className="object-cover" sizes={sizes} priority={priority} />
+      <Image src={entry.url} alt={alt} fill className="object-cover" sizes={sizes} priority={priority} quality={quality} />
     </div>
   );
 }

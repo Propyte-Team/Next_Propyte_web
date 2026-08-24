@@ -30,6 +30,10 @@ const nextConfig: NextConfig = {
     // NEXT_PUBLIC_DISABLE_IMAGE_OPT=true en el panel + rebuild para revertir.
     unoptimized: process.env.NEXT_PUBLIC_DISABLE_IMAGE_OPT === 'true',
     formats: ['image/avif', 'image/webp'],
+    // Next 16 exige lista blanca para el prop `quality` de <Image>. 75 es el
+    // default histórico; 90 se usa en SiteMediaView para fotos con texto/detalle
+    // fino (letreros, arquitectura) donde AVIF a 75 se ve notablemente suave.
+    qualities: [75, 90],
     // Cache de 31 días para los assets optimizados (atiende "Usar tiempos de
     // vida de caché eficientes" del PSI en las imágenes servidas por /_next/image).
     minimumCacheTTL: 2_678_400,
