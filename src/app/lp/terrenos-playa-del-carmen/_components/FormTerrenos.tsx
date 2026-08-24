@@ -100,6 +100,8 @@ export default function FormTerrenos({
   const [enviado, setEnviado] = useState(false);
   const atribucion = useRef<Atribucion>({});
   const honeypot = useRef<HTMLInputElement>(null);
+  const refNombre = useRef<HTMLInputElement>(null);
+  const refWhatsapp = useRef<HTMLInputElement>(null);
 
   // Atribución leída una vez, al montar. Deliberadamente sin sessionStorage:
   // el POST sale de esta misma vista, no hay navegación que sobrevivir.
@@ -111,6 +113,41 @@ export default function FormTerrenos({
       if (valor) captura[clave] = valor;
     }
     atribucion.current = captura;
+  }, []);
+
+  /**
+   * ═══ RESCATE DE LO QUE SE ESCRIBIÓ ANTES DE HIDRATAR ═══
+   *
+   * El bug que esto arregla, medido contra producción el 2026-08-21:
+   *
+   *   El HTML del servidor pinta el formulario a los ~600 ms, pero React no
+   *   hidrata hasta ~2.2 s —más en un móvil con 4G, porque compiten GA4, el
+   *   Pixel de Meta, Hotjar y el de OpenAI por el hilo principal—. Quien
+   *   escribe en esa ventana deja su texto en el DOM, pero `nombre` y
+   *   `whatsapp` siguen valiendo `''`: React nunca lee de vuelta un input
+   *   controlado al hidratar.
+   *
+   *   El resultado en pantalla es el peor posible. El campo SE VE lleno, con
+   *   el nombre y el teléfono a la vista, y al pulsar enviar sale «Falta tu
+   *   nombre o tu WhatsApp». No hay error de consola, no hay POST, no hay
+   *   lead. Y no se cura solo: el estado sigue vacío hasta que la persona
+   *   vuelve a teclear en el campo.
+   *
+   *   El disparador más común NO es teclear rápido: es el AUTOCOMPLETADO del
+   *   navegador, que rellena los dos campos de golpe y en muchos navegadores
+   *   no dispara el `onChange` que React escucha. Es decir, le pasa
+   *   justo a quien tiene sus datos guardados y venía con la menor fricción.
+   *
+   * Un efecto que sincroniza el DOM hacia React es exactamente el caso de uso
+   * legítimo de `useEffect`: leer un sistema externo que cambió por fuera. Solo
+   * escribe estado si de verdad hay divergencia, así que en el camino normal
+   * —React hidrata antes de que nadie toque nada— no provoca ni un render.
+   */
+  useEffect(() => {
+    const delDom = refNombre.current?.value ?? '';
+    const waDom = refWhatsapp.current?.value ?? '';
+    if (delDom) setNombre((actual) => (actual === delDom ? actual : delDom));
+    if (waDom) setWhatsapp((actual) => (actual === waDom ? actual : waDom));
   }, []);
 
   async function enviar(e: React.FormEvent) {
@@ -250,6 +287,7 @@ export default function FormTerrenos({
           </label>
           <input
             id={`${uid}-nombre`}
+            ref={refNombre}
             name="name"
             type="text"
             autoComplete="name"
@@ -265,6 +303,7 @@ export default function FormTerrenos({
           </label>
           <input
             id={`${uid}-wa`}
+            ref={refWhatsapp}
             name="phone"
             type="tel"
             inputMode="tel"
