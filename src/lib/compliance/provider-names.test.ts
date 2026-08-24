@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import {
   findForbiddenProviderNames,
@@ -12,29 +12,43 @@ const SRC = path.resolve(__dirname, '../..');
 /** Este archivo declara la lista, así que se excluye de su propio barrido. */
 const SELF = ['provider-names.ts', 'provider-names.test.ts'];
 
+/**
+ * `withFileTypes` en vez de un `statSync` por entrada: el dirent ya dice si es
+ * carpeta y el barrido se ahorra ~695 syscalls. En caliente da igual, pero con
+ * la caché de FS fría cada `statSync` pega al disco y esta prueba se caía por
+ * timeout de forma intermitente, pareciendo una regresión que no era.
+ */
 function walk(dir: string, out: string[] = []): string[] {
-  for (const entry of readdirSync(dir)) {
-    const full = path.join(dir, entry);
-    if (statSync(full).isDirectory()) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
       walk(full, out);
-    } else if (/\.(ts|tsx|json)$/.test(entry) && !SELF.includes(entry)) {
+    } else if (/\.(ts|tsx|json)$/.test(entry.name) && !SELF.includes(entry.name)) {
       out.push(full);
     }
   }
   return out;
 }
 
+/** Barrido único, fuera del `it`, para no pagarlo dentro del timeout. */
+const FUENTES = walk(SRC).map((ruta) => ({
+  ruta,
+  texto: readFileSync(ruta, 'utf8'),
+  tipo: (ruta.endsWith('.json') ? 'json' : 'code') as 'json' | 'code',
+}));
+
 describe('nombres de proveedores de datos', () => {
+  it('encuentra archivos que revisar', () => {
+    expect(FUENTES.length).toBeGreaterThan(0);
+  });
+
   it('no aparecen en ningún archivo de src', () => {
     const offenders: string[] = [];
 
-    for (const file of walk(SRC)) {
-      const hits = findForbiddenProviderNames(
-        readFileSync(file, 'utf8'),
-        file.endsWith('.json') ? 'json' : 'code',
-      );
+    for (const { ruta, texto, tipo } of FUENTES) {
+      const hits = findForbiddenProviderNames(texto, tipo);
       if (hits.length) {
-        offenders.push(`${path.relative(SRC, file)} → ${hits.join(', ')}`);
+        offenders.push(`${path.relative(SRC, ruta)} → ${hits.join(', ')}`);
       }
     }
 
