@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { submitForm } from '@/lib/submitForm';
+import { AlertCircle } from '@/lib/icons';
 
 const schema = z.object({
   name: z.string().min(1, 'required'),
@@ -70,25 +71,51 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
 
       <div>
         <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-1">{tContact('formName')}</label>
-        <input
-          id="contact-name"
-          {...register('name')}
-          toolparamdescription="Nombre completo del interesado."
-          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-        />
-        {errors.name && <p className="text-xs text-red-500 mt-1">{t('required')}</p>}
+        <div className="relative">
+          <input
+            id="contact-name"
+            {...register('name')}
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? 'contact-name-error' : undefined}
+            aria-required={true}
+            toolparamdescription="Nombre completo del interesado."
+            className="w-full h-11 pl-3 pr-9 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none aria-invalid:border-error aria-invalid:focus:border-error"
+          />
+          {errors.name && (
+            <AlertCircle size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-error pointer-events-none" />
+          )}
+        </div>
+        {errors.name && (
+          <p id="contact-name-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+            <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+            {t('required')}
+          </p>
+        )}
       </div>
 
       <div>
         <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input
-          id="contact-email"
-          type="email"
-          {...register('email')}
-          toolparamdescription="Correo electrónico del interesado."
-          className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-        />
-        {errors.email && <p className="text-xs text-red-500 mt-1">{t('invalidEmail')}</p>}
+        <div className="relative">
+          <input
+            id="contact-email"
+            type="email"
+            {...register('email')}
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? 'contact-email-error' : undefined}
+            aria-required={true}
+            toolparamdescription="Correo electrónico del interesado."
+            className="w-full h-11 pl-3 pr-9 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none aria-invalid:border-error aria-invalid:focus:border-error"
+          />
+          {errors.email && (
+            <AlertCircle size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-error pointer-events-none" />
+          )}
+        </div>
+        {errors.email && (
+          <p id="contact-email-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+            <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+            {t('invalidEmail')}
+          </p>
+        )}
       </div>
 
       {!showPhone ? (
