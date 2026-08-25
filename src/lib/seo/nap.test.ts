@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import {
   NAP_ADDRESS,
@@ -43,16 +43,22 @@ const VALORES_OBSOLETOS = [
  */
 const EXCEPTUADOS = ['nap.ts'];
 
+/**
+ * `withFileTypes` en vez de un `statSync` por entrada: el dirent ya dice si es
+ * carpeta, así que el barrido de `src/` se ahorra ~695 syscalls. En caliente da
+ * igual (20 ms → 6 ms), pero con la caché de FS fría cada `statSync` pega al
+ * disco y este test se caía por timeout de forma intermitente.
+ */
 function archivosFuente(dir: string): string[] {
   const salida: string[] = [];
-  for (const entrada of readdirSync(dir)) {
-    const ruta = join(dir, entrada);
-    if (statSync(ruta).isDirectory()) {
+  for (const entrada of readdirSync(dir, { withFileTypes: true })) {
+    const ruta = join(dir, entrada.name);
+    if (entrada.isDirectory()) {
       salida.push(...archivosFuente(ruta));
     } else if (
-      /\.(ts|tsx|json)$/.test(entrada) &&
-      !entrada.endsWith('.test.ts') &&
-      !EXCEPTUADOS.includes(entrada)
+      /\.(ts|tsx|json)$/.test(entrada.name) &&
+      !entrada.name.endsWith('.test.ts') &&
+      !EXCEPTUADOS.includes(entrada.name)
     ) {
       // Los .json entran a propósito: los mensajes de i18n escondían dos
       // direcciones más (una calle distinta en `contact.info.address` y otra en
@@ -111,17 +117,25 @@ describe('NAP canónico', () => {
   });
 });
 
-describe('ningún NAP paralelo en el código', () => {
-  const fuentes = archivosFuente(SRC);
+/**
+ * Se lee el árbol UNA vez y se reparte a todas las pruebas. Antes cada patrón
+ * volvía a abrir los ~525 archivos: 5 patrones = ~2.625 lecturas para responder
+ * cinco preguntas sobre el mismo texto. Con la caché de FS fría eso se salía del
+ * timeout de 5 s y el fallo parecía una regresión que no era.
+ */
+const FUENTES: ReadonlyArray<{ ruta: string; texto: string }> = archivosFuente(SRC).map(
+  (ruta) => ({ ruta, texto: readFileSync(ruta, 'utf8') }),
+);
 
+describe('ningún NAP paralelo en el código', () => {
   it('encuentra archivos que revisar', () => {
-    expect(fuentes.length).toBeGreaterThan(0);
+    expect(FUENTES.length).toBeGreaterThan(0);
   });
 
   for (const { patron, porque } of VALORES_OBSOLETOS) {
     it(`no reaparece "${patron}" (${porque})`, () => {
-      const culpables = fuentes.filter((f) => readFileSync(f, 'utf8').includes(patron));
-      expect(culpables.map((f) => f.replace(SRC, 'src'))).toEqual([]);
+      const culpables = FUENTES.filter((f) => f.texto.includes(patron));
+      expect(culpables.map((f) => f.ruta.replace(SRC, 'src'))).toEqual([]);
     });
   }
 });
@@ -158,8 +172,11 @@ describe('info@propyte.com solo vive en el aviso de cumplimiento', () => {
   }
 
   it('nunca aparece en código TypeScript', () => {
-    const ts = archivosFuente(SRC).filter((f) => /\.tsx?$/.test(f));
-    const culpables = ts.filter((f) => readFileSync(f, 'utf8').includes('info@propyte.com'));
-    expect(culpables.map((f) => f.replace(SRC, 'src'))).toEqual([]);
+    // Reusa FUENTES: antes esto disparaba un SEGUNDO barrido completo del árbol
+    // más otra ronda de lecturas.
+    const culpables = FUENTES.filter(
+      (f) => /\.tsx?$/.test(f.ruta) && f.texto.includes('info@propyte.com'),
+    );
+    expect(culpables.map((f) => f.ruta.replace(SRC, 'src'))).toEqual([]);
   });
 });
