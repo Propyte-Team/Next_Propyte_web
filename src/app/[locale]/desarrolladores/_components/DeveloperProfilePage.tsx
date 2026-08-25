@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
+import { formatPriceShort } from '@/lib/formatters';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';
@@ -17,12 +18,6 @@ import { safeExternalUrl } from '@/lib/security/safeUrl';
 interface Props {
   locale: string;
   slug: string;
-}
-
-function formatPrice(n: number) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n.toLocaleString()}`;
 }
 
 function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
@@ -70,7 +65,7 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
         )}
         {precio.min != null && (
           <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            {t('fromPrice', { price: `${formatPrice(precio.min)} MXN` })}
+            {t('fromPrice', { price: formatPriceShort(precio.min, precio.moneda) })}
           </div>
         )}
       </div>
