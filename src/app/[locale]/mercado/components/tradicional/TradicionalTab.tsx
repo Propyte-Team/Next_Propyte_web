@@ -731,11 +731,16 @@ function RentHistogram({ rents }: { rents: number[] }) {
     buckets[idx]++;
   }
   const maxCount = Math.max(...buckets);
+  const titleId = 'ltr-distribution-title';
 
   return (
     <div className="mt-6 bg-white rounded-xl border border-gray-100 p-4">
-      <div className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">{t('ltrDistributionTitle')}</div>
-      <div className="flex items-end gap-1 h-24">
+      <div id={titleId} className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">{t('ltrDistributionTitle')}</div>
+
+      {/* Barras: solo visuales — su único canal de dato hoy es `title` (mouse
+          únicamente). aria-hidden porque la data real vive en la tabla
+          sr-only de abajo, que sí es navegable por teclado/lector de pantalla. */}
+      <div aria-hidden="true" className="flex items-end gap-1 h-24">
         {buckets.map((count, i) => {
           const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
           const bucketMin = min + i * bucketSize;
@@ -750,11 +755,33 @@ function RentHistogram({ rents }: { rents: number[] }) {
           );
         })}
       </div>
-      <div className="flex justify-between text-2xs text-gray-600 mt-1">
+      <div aria-hidden="true" className="flex justify-between text-2xs text-gray-600 mt-1">
         <span>${Math.round(min / 1000)}K</span>
         <span>${Math.round((min + max) / 2000)}K</span>
         <span>${Math.round(max / 1000)}K</span>
       </div>
+
+      <table className="sr-only" aria-labelledby={titleId}>
+        <caption className="sr-only">{t('ltrDistributionCaption')}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{t('ltrDistributionRangeCol')}</th>
+            <th scope="col">{t('ltrDistributionCountCol')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {buckets.map((count, i) => {
+            const bucketMin = min + i * bucketSize;
+            const bucketMax = bucketMin + bucketSize;
+            return (
+              <tr key={i}>
+                <td>${Math.round(bucketMin / 1000)}K–${Math.round(bucketMax / 1000)}K</td>
+                <td>{count}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
