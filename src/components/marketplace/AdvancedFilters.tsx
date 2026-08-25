@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { X } from '@/lib/icons';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import type { Filters } from '@/hooks/useFilters';
 import type { PropertyStage, PropertyUsage } from '@/types/property';
 
@@ -17,6 +18,7 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
   const t = useTranslations('marketplace');
   const tStages = useTranslations('stages');
   const tUsages = useTranslations('usages');
+  const { containerRef, initialFocusRef } = useFocusTrap<HTMLDivElement>({ isOpen, onEscape: onClose });
 
   if (!isOpen) return null;
 
@@ -28,10 +30,10 @@ export default function AdvancedFilters({ isOpen, onClose, filters, onFilterChan
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div id="advanced-filters-dialog" className="relative bg-white rounded-xl w-full max-w-md mx-4 p-6 shadow-xl" role="dialog" aria-modal="true">
+      <div ref={containerRef} id="advanced-filters-dialog" className="relative bg-white rounded-xl w-full max-w-md mx-4 p-6 shadow-xl" role="dialog" aria-modal="true" aria-labelledby="advanced-filters-title">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">{t('moreFilters')}</h3>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Close">
+          <h3 id="advanced-filters-title" className="text-lg font-semibold">{t('moreFilters')}</h3>
+          <button ref={initialFocusRef} onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg min-w-[48px] min-h-[48px] flex items-center justify-center" aria-label="Close">
             <X size={20} />
           </button>
         </div>
