@@ -20,6 +20,12 @@ interface Props {
   slug: string;
 }
 
+function formatPrice(n: number) {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
+  return `$${n.toLocaleString()}`;
+}
+
 function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
   const img = dev.images?.[0];
   const precio = precioDesarrollo(dev as FilaPrecioDesarrollo);
@@ -65,7 +71,7 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
         )}
         {precio.min != null && (
           <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            {t('fromPrice', { price: formatPriceShort(precio.min, precio.moneda) })}
+            {t('fromPrice', { price: `${formatPrice(precio.min)} MXN` })}
           </div>
         )}
       </div>

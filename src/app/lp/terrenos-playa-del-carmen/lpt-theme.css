@@ -1,0 +1,203 @@
+/* ============================================================
+   Tema de la LP corta de terrenos — variante B del A/B contra
+   /lp/lotes-playa-del-carmen.
+
+   ALCANCE: todo vive bajo `.lpt-root`. La LP larga usa `.lp-root` y las dos
+   comparten el layout de `app/lp/`, así que un token sin prefijar se filtraría
+   de una variante a la otra y arruinaría la prueba. Ni un selector de este
+   archivo puede tocar nada fuera de esta ruta.
+
+   POR QUÉ ESTA PALETA Y NO OTRA. Dos reflejos de categoría, rechazados a
+   propósito:
+
+     · Primer reflejo: Riviera Maya ⇒ turquesa, blanco y palmera. Es el fondo de
+       pantalla de cada anuncio de terrenos del mercado. Ser el sexto turquesa
+       de la página de resultados es ser invisible.
+     · Segundo reflejo: «inmobiliaria que no es turquesa» ⇒ crema con serif
+       editorial. Ese es exactamente el look de la variante A. Repetirlo aquí
+       haría que el A/B midiera ruido en vez de dos propuestas distintas.
+
+   Lo que queda es el material real de la operación: la selva sobre caliza del
+   interior de Playa del Carmen, y el naranja de la estaca con que un topógrafo
+   marca un vértice de lote. La página es una hoja de campo, no un folleto.
+
+   UNA SOLA SUPERFICIE CLARA EN TODA LA PÁGINA: el panel del formulario. En un
+   documento drenado en oscuro, la caliza es el único sitio donde el ojo
+   descansa, y ahí es donde está la conversión. La jerarquía la hace el
+   material, no una flecha.
+   ============================================================ */
+
+.lpt-root {
+  /* Selva sobre caliza. Verde desaturado y CÁLIDO: un gris-verde frío haría
+     que la fotografía de hora dorada se leyera pegada encima, no dentro. */
+  --lpt-abismo: oklch(0.14 0.018 155);
+  --lpt-selva: oklch(0.19 0.022 155);
+  --lpt-selva-2: oklch(0.245 0.024 155);
+
+  /* Retícula del plano. Dos pesos: la trama de fondo y la cota que sí se lee. */
+  --lpt-linea: oklch(0.96 0.01 85 / 0.1);
+  --lpt-linea-fuerte: oklch(0.96 0.01 85 / 0.26);
+
+  /* Caliza: la ÚNICA superficie clara. Reservada al formulario. */
+  --lpt-caliza: oklch(0.965 0.008 85);
+  --lpt-caliza-2: oklch(0.925 0.01 85);
+  --lpt-tinta: oklch(0.21 0.015 155);
+  --lpt-tinta-2: oklch(0.44 0.012 155);
+
+  /* Texto sobre oscuro. Nunca blanco puro: aplana la profundidad. */
+  --lpt-claro: oklch(0.95 0.008 90);
+  --lpt-claro-2: oklch(0.95 0.008 90 / 0.66);
+  --lpt-claro-3: oklch(0.95 0.008 90 / 0.42);
+
+  /* ACENTO ÚNICO: naranja de estaca de topógrafo.
+     Sobre --lpt-selva da 8.4:1. La tinta encima da 7.9:1, así que el botón
+     sólido va con texto OSCURO: más contraste que el blanco y además lo
+     distingue del CTA naranja-con-blanco que usa todo el sector. */
+  --lpt-estaca: oklch(0.755 0.17 58);
+  --lpt-estaca-2: oklch(0.68 0.18 52);
+
+  /* Verde de WhatsApp: marca de un tercero, no se repinta. */
+  --lpt-wa: #25d366;
+
+  /* Radios: 4px en controles, 0 en bloques. Una hoja de campo no tiene
+     esquinas redondeadas; los controles sí, porque se tocan. */
+  --lpt-r: 4px;
+}
+
+/* Trama del plano de lotificación. Va en el fondo de las bandas oscuras.
+   Es CSS puro: cero nodos, cero imágenes, cero coste de red. */
+.lpt-plano {
+  background-image:
+    linear-gradient(to right, var(--lpt-linea) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--lpt-linea) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center;
+}
+
+/* Cotas y cifras medidas. Mono con cifras tabulares: las columnas de dinero
+   tienen que cuadrar verticalmente o la tabla deja de leerse como una tabla. */
+.lpt-cota {
+  font-family: var(--font-lpt-mono), ui-monospace, "Cascadia Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Voz de titular: la grotesca ensanchada. El eje de ancho es lo que da el
+   carácter de rotulación de plano; sin él es una sans más. */
+.lpt-titular {
+  font-family: var(--font-lpt-sans), ui-sans-serif, system-ui, sans-serif;
+  font-stretch: 112%;
+  font-weight: 700;
+  letter-spacing: -0.028em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+.lpt-cuerpo {
+  font-family: var(--font-lpt-sans), ui-sans-serif, system-ui, sans-serif;
+  text-wrap: pretty;
+}
+
+/* Rótulo de sección: mayúsculas cortas con guía. Se usa UNA vez por sección y
+   siempre acompañado de su número de referencia, como la leyenda de un plano.
+   Sin el número sería el rotulito genérico que lleva toda landing generada. */
+.lpt-rotulo {
+  font-family: var(--font-lpt-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ── Entrada del primer pliegue ─────────────────────────────────────────────
+   SOLO transform, jamás opacity. El H1 es el elemento del LCP de una página
+   que se paga por clic: un fundido lo retrasa, y un `opacity:0` que se atasque
+   —por JS caído, por hidratación fallida— la deja sin titular para siempre.
+   Mover es gratis y no puede dejar nada invisible. */
+@keyframes lpt-subir {
+  from {
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.lpt-entra {
+  animation: lpt-subir 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* La retícula sí puede fundirse: es decoración, y si se queda a cero no falta
+   ninguna información. */
+@keyframes lpt-trama {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lpt-entra-trama {
+  animation: lpt-trama 1.6s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpt-entra,
+  .lpt-entra-trama {
+    animation: none;
+  }
+}
+
+/* Marca de esquina: la escuadra naranja del vértice de un lote. Es el motivo
+   que se repite en toda la página en vez de un icono redondeado por bloque. */
+.lpt-vertice {
+  position: relative;
+}
+
+.lpt-vertice::before,
+.lpt-vertice::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--lpt-estaca);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.lpt-vertice::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1.5px 0 0 1.5px;
+}
+
+.lpt-vertice::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+/* El foco nunca se hereda del navegador en superficie oscura: se pierde. */
+.lpt-root :focus-visible {
+  outline: 2px solid var(--lpt-estaca);
+  outline-offset: 2px;
+}
+
+/* ── El banner de cookies, retintado SOLO en esta variante ──────────────────
+   `ConsentBannerLp` vive en el layout compartido de /lp, fuera de `.lpt-root`,
+   así que se pinta con los tokens de la variante A: terracota. Sobre esta
+   página salía un botón rojo compitiendo con el naranja del CTA, y en el mismo
+   pliegue.
+
+   El problema no era solo que chocara de color. Era jerárquico: el botón más
+   saturado de la pantalla decía «Aceptar» cookies, no «Ver mi plan de pagos».
+   Aquí el banner se vuelve TINTA NEUTRA. Sigue siendo perfectamente legible y
+   accionable —hace falta que se acepte, porque sin consentimiento la conversión
+   no se atribuye en Ads— pero deja de disputarle el ojo a la conversión.
+
+   `:has()` acota el retinte a las páginas que montan `.lpt-root`: la variante A
+   no se entera de que este archivo existe. */
+.lp-root:has(.lpt-root) {
+  --lp-accent: oklch(0.21 0.015 155);
+  --lp-accent-strong: oklch(0.3 0.018 155);
+}
