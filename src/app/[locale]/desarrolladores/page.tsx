@@ -8,11 +8,13 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getPartners,
   getCaseStudies,
+  getDevelopers,
   type PartnerRow,
   type CaseStudyRow,
 } from '@/lib/supabase/queries';
 import PartnersLogos from '@/components/shared/PartnersLogos';
 import CaseStudies from '@/components/shared/CaseStudies';
+import DeveloperLogos from '@/components/home/DeveloperLogos';
 import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -69,15 +71,22 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
 
   let partners: PartnerRow[] = [];
   let caseStudies: CaseStudyRow[] = [];
+  type DeveloperRow = { name: string; logo_url: string | null; slug: string; city: string | null; state: string | null };
+  let developers: DeveloperRow[] = [];
   try {
     const supabase = createPublicSupabaseClient();
     if (supabase) {
-      const [partnerRows, caseRows] = await Promise.all([
+      const [partnerRows, caseRows, devsRes] = await Promise.all([
         getPartners(supabase),
         getCaseStudies(supabase, 'developer'),
+        getDevelopers(supabase),
       ]);
       partners = partnerRows;
       caseStudies = caseRows;
+      // Sin esto la página no enlazaba a ningún perfil /desarrolladores/[slug] —
+      // solo a sitios externos de partners (audit moderado 2026-08-26).
+      developers = ((devsRes.data || []) as DeveloperRow[])
+        .filter((d) => Boolean(d.logo_url) && Boolean(d.slug));
     }
   } catch (error) {
     console.error('[DevelopersPage] queries failed:', error);
@@ -116,6 +125,14 @@ export default async function DevelopersPage({ params }: { params: Promise<{ loc
         title={locale === 'es' ? 'Trabajamos con desarrolladoras líderes' : 'We work with leading developers'}
         subtitle={locale === 'es' ? 'Aliados estratégicos en Riviera Maya y Yucatán' : 'Strategic partners across Riviera Maya and Yucatán'}
       />
+      {developers.length > 0 && (
+        <DeveloperLogos
+          developers={developers}
+          locale={locale}
+          linkToProfile
+          title={locale === 'es' ? 'Conoce a nuestros desarrolladores' : 'Meet our developers'}
+        />
+      )}
     </>
   );
 }

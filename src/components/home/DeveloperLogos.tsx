@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { MapPin } from '@/lib/icons';
 
@@ -10,6 +11,15 @@ interface DeveloperLogosProps {
     city: string | null;
     state: string | null;
   }>;
+  /** Override del heading por defecto (`developerBanner.logosTitle`). */
+  title?: string;
+  /**
+   * Cuando es true, cada card enlaza a `/${locale}/desarrolladores/{slug}`.
+   * Requiere `locale`. Default false para no alterar el uso actual en Home
+   * (esta grilla ahí es "marcas que confían en nosotros", no un directorio).
+   */
+  linkToProfile?: boolean;
+  locale?: string;
 }
 
 function formatLocation(city: string | null, state: string | null): string | null {
@@ -17,49 +27,64 @@ function formatLocation(city: string | null, state: string | null): string | nul
   return city ?? state ?? null;
 }
 
-export default function DeveloperLogos({ developers }: DeveloperLogosProps) {
+export default function DeveloperLogos({ developers, title, linkToProfile = false, locale }: DeveloperLogosProps) {
   const t = useTranslations('developerBanner');
   if (developers.length === 0) return null;
+
+  const cardClass = 'flex flex-col items-center justify-between gap-4 p-6 md:p-8 bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.10)] transition-shadow duration-300 min-w-[200px] md:min-w-[220px]';
 
   return (
     <section className="py-16 md:py-20 bg-gray-light">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <h2 className="text-center text-2xl md:text-3xl font-bold text-navy mb-10">
-          {t('logosTitle')}
+          {title ?? t('logosTitle')}
         </h2>
         <div className="flex flex-wrap items-stretch justify-center gap-6 md:gap-8">
-          {developers.map((dev) => (
-            <div
-              key={dev.slug}
-              className="flex flex-col items-center justify-between gap-4 p-6 md:p-8 bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.10)] transition-shadow duration-300 min-w-[200px] md:min-w-[220px]"
-            >
-              {dev.logo_url ? (
-                <Image
-                  src={dev.logo_url}
-                  alt={dev.name}
-                  width={200}
-                  height={96}
-                  unoptimized
-                  className="h-20 md:h-24 w-auto max-w-[180px] object-contain"
-                />
-              ) : (
-                <div className="h-20 md:h-24 flex items-center justify-center">
-                  <span className="text-lg font-bold text-gray-600">{dev.name}</span>
-                </div>
-              )}
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="text-sm md:text-base font-semibold text-navy text-center leading-tight">
-                  {dev.name}
-                </span>
-                {formatLocation(dev.city, dev.state) && (
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-600">
-                    <MapPin size={12} strokeWidth={1.75} className="text-teal-a11y" />
-                    {formatLocation(dev.city, dev.state)}
-                  </span>
+          {developers.map((dev) => {
+            const content = (
+              <>
+                {dev.logo_url ? (
+                  <Image
+                    src={dev.logo_url}
+                    alt={dev.name}
+                    width={200}
+                    height={96}
+                    unoptimized
+                    className="h-20 md:h-24 w-auto max-w-[180px] object-contain"
+                  />
+                ) : (
+                  <div className="h-20 md:h-24 flex items-center justify-center">
+                    <span className="text-lg font-bold text-gray-600">{dev.name}</span>
+                  </div>
                 )}
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className="text-sm md:text-base font-semibold text-navy text-center leading-tight">
+                    {dev.name}
+                  </span>
+                  {formatLocation(dev.city, dev.state) && (
+                    <span className="inline-flex items-center gap-1 text-xs text-gray-600">
+                      <MapPin size={12} strokeWidth={1.75} className="text-teal-a11y" />
+                      {formatLocation(dev.city, dev.state)}
+                    </span>
+                  )}
+                </div>
+              </>
+            );
+
+            return linkToProfile && locale ? (
+              <Link
+                key={dev.slug}
+                href={`/${locale}/desarrolladores/${dev.slug}`}
+                className={`${cardClass} hover:-translate-y-0.5 hover:border-propyte-brand border border-transparent`}
+              >
+                {content}
+              </Link>
+            ) : (
+              <div key={dev.slug} className={cardClass}>
+                {content}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

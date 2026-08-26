@@ -3,7 +3,7 @@ import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda
 import { formatPriceShort } from '@/lib/formatters';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';
+import { Building2, Globe, ChevronRight, MapPin, ArrowLeft, ShieldCheck } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
@@ -18,12 +18,6 @@ import { safeExternalUrl } from '@/lib/security/safeUrl';
 interface Props {
   locale: string;
   slug: string;
-}
-
-function formatPrice(n: number) {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n.toLocaleString()}`;
 }
 
 function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string; t: (key: string, values?: Record<string, string | number | Date>) => string }) {
@@ -54,13 +48,13 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
           </div>
         )}
         {stageLabel && (
-          <span className="absolute top-3 left-3 px-2 py-0.5 bg-propyte-brand text-[#1A2332] text-2xs font-bold rounded-full uppercase tracking-wider">
+          <span className="absolute top-3 left-3 px-2 py-0.5 bg-propyte-brand text-navy text-2xs font-bold rounded-full uppercase tracking-wider">
             {stageLabel}
           </span>
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-[#0E7490] transition-colors">
+        <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-teal-a11y transition-colors">
           {dev.name}
         </h3>
         {(dev.city || dev.zone) && (
@@ -70,8 +64,8 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
           </div>
         )}
         {precio.min != null && (
-          <div className="mt-2 text-sm font-semibold text-[#0E7490]">
-            {t('fromPrice', { price: `${formatPrice(precio.min)} MXN` })}
+          <div className="mt-2 text-sm font-semibold text-teal-a11y">
+            {t('fromPrice', { price: formatPriceShort(precio.min, precio.moneda) })}
           </div>
         )}
       </div>
@@ -143,7 +137,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
         {/* Back link */}
         <Link
           href={`/${locale}/desarrolladores`}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0E7490] transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-teal-a11y transition-colors"
         >
           <ArrowLeft size={15} />
           {locale === 'es' ? 'Todos los desarrolladores' : 'All developers'}
@@ -163,14 +157,20 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
                   className="w-full h-full object-contain p-2"
                 />
               ) : (
-                <span className="text-2xl font-extrabold text-[#0E7490] tracking-tight">{initials}</span>
+                <span className="text-2xl font-extrabold text-teal-a11y tracking-tight">{initials}</span>
               )}
             </div>
 
             {/* Name + badges + website */}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1A2332] leading-tight">{developer.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-navy leading-tight">{developer.name}</h1>
+                {developer.verified && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-teal-a11y/10 border border-teal-a11y/30 text-teal-a11y text-xs font-bold rounded-full">
+                    <ShieldCheck size={13} />
+                    {locale === 'es' ? 'Verificado' : 'Verified'}
+                  </span>
+                )}
               </div>
               {(() => {
                 const safeDevWebsite = safeExternalUrl(developer.website);
@@ -180,7 +180,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
                     href={safeDevWebsite}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-[#0E7490] hover:underline"
+                    className="inline-flex items-center gap-1.5 mt-2 text-sm text-teal-a11y hover:underline"
                   >
                     <Globe size={13} />
                     {safeDevWebsite.replace(/^https?:\/\//, '').replace(/\/$/, '')}
@@ -195,7 +195,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
             <div className="mt-6 pt-6 border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-4">
               {stats.map(({ label, value }) => (
                 <div key={label} className="text-center">
-                  <div className="text-2xl font-extrabold text-[#1A2332]">{value}</div>
+                  <div className="text-2xl font-extrabold text-navy">{value}</div>
                   <div className="text-xs text-gray-500 mt-0.5 leading-tight">{label}</div>
                 </div>
               ))}
@@ -213,7 +213,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
         {/* Developments */}
         {developments.length > 0 && (
           <section>
-            <h2 className="text-xl font-bold text-[#1A2332] mb-5">
+            <h2 className="text-xl font-bold text-navy mb-5">
               {locale === 'es' ? 'Sus proyectos en Propyte' : 'Their projects on Propyte'}
               <span className="ml-2 text-base font-normal text-gray-400">({developments.length})</span>
             </h2>
@@ -236,7 +236,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
         )}
 
         {/* CTA */}
-        <div className="bg-[#1A2332] rounded-3xl p-8 text-center text-white">
+        <div className="bg-navy rounded-3xl p-8 text-center text-white">
           <h3 className="text-xl font-bold mb-2">
             {locale === 'es' ? `¿Interesado en proyectos de ${developer.name}?` : `Interested in ${developer.name} projects?`}
           </h3>
@@ -248,7 +248,7 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href={`/${locale}/contacto?desarrollador=${encodeURIComponent(developer.name)}`}
-              className="px-6 py-3 bg-propyte-brand text-[#1A2332] font-bold rounded-xl text-sm hover:bg-propyte-cyan-200 transition-colors"
+              className="px-6 py-3 bg-propyte-brand text-navy font-bold rounded-xl text-sm hover:bg-propyte-cyan-200 transition-colors"
             >
               {locale === 'es' ? 'Contactar asesor' : 'Contact advisor'}
             </Link>
