@@ -129,6 +129,7 @@ export {
 import { forwardRef } from 'react';
 import * as Lucide from 'lucide-react';
 import type { LucideIcon, LucideProps } from 'lucide-react';
+import * as Brand from './brand-icons';
 
 const withDefaultStroke = (Icon: LucideIcon, displayName: string): LucideIcon => {
   const Wrapped = forwardRef<SVGSVGElement, LucideProps>(function LucideWithStroke(
@@ -173,7 +174,7 @@ export const Gem = withDefaultStroke(Lucide.Gem, 'Gem');
 export const ExternalLink = withDefaultStroke(Lucide.ExternalLink, 'ExternalLink');
 export const Eye = withDefaultStroke(Lucide.Eye, 'Eye');
 export const EyeOff = withDefaultStroke(Lucide.EyeOff, 'EyeOff');
-export const Facebook = withDefaultStroke(Lucide.Facebook, 'Facebook');
+export const Facebook = withDefaultStroke(Brand.Facebook, 'Facebook');
 export const FileCheck = withDefaultStroke(Lucide.FileCheck, 'FileCheck');
 export const FileCode = withDefaultStroke(Lucide.FileCode, 'FileCode');
 export const FileImage = withDefaultStroke(Lucide.FileImage, 'FileImage');
@@ -190,14 +191,14 @@ export const HardHat = withDefaultStroke(Lucide.HardHat, 'HardHat');
 export const Image = withDefaultStroke(Lucide.Image, 'Image');
 export const ImageIcon = withDefaultStroke(Lucide.Image, 'ImageIcon');
 export const Info = withDefaultStroke(Lucide.Info, 'Info');
-export const Instagram = withDefaultStroke(Lucide.Instagram, 'Instagram');
+export const Instagram = withDefaultStroke(Brand.Instagram, 'Instagram');
 export const Landmark = withDefaultStroke(Lucide.Landmark, 'Landmark');
 export const Layers = withDefaultStroke(Lucide.Layers, 'Layers');
 export const Layout = withDefaultStroke(Lucide.Layout, 'Layout');
 export const LayoutGrid = withDefaultStroke(Lucide.LayoutGrid, 'LayoutGrid');
 export const Leaf = withDefaultStroke(Lucide.Leaf, 'Leaf');
 export const Link2 = withDefaultStroke(Lucide.Link2, 'Link2');
-export const Linkedin = withDefaultStroke(Lucide.Linkedin, 'Linkedin');
+export const Linkedin = withDefaultStroke(Brand.Linkedin, 'Linkedin');
 export const List = withDefaultStroke(Lucide.List, 'List');
 export const Loader2 = withDefaultStroke(Lucide.Loader2, 'Loader2');
 export const Map = withDefaultStroke(Lucide.Map, 'Map');
@@ -238,7 +239,7 @@ export const Trash2 = withDefaultStroke(Lucide.Trash2, 'Trash2');
 export const Trees = withDefaultStroke(Lucide.Trees, 'Trees');
 export const TreePine = withDefaultStroke(Lucide.TreePine, 'TreePine');
 export const Truck = withDefaultStroke(Lucide.Truck, 'Truck');
-export const Twitter = withDefaultStroke(Lucide.Twitter, 'Twitter');
+export const Twitter = withDefaultStroke(Brand.Twitter, 'Twitter');
 export const Undo2 = withDefaultStroke(Lucide.Undo2, 'Undo2');
 export const Unlock = withDefaultStroke(Lucide.Unlock, 'Unlock');
 export const Upload = withDefaultStroke(Lucide.Upload, 'Upload');
@@ -249,7 +250,7 @@ export const Volume2 = withDefaultStroke(Lucide.Volume2, 'Volume2');
 export const VolumeX = withDefaultStroke(Lucide.VolumeX, 'VolumeX');
 // Wifi → Propyte (re-export arriba)
 export const Wrench = withDefaultStroke(Lucide.Wrench, 'Wrench');
-export const Youtube = withDefaultStroke(Lucide.Youtube, 'Youtube');
+export const Youtube = withDefaultStroke(Brand.Youtube, 'Youtube');
 
 // ---------------------------------------------------------------------------
 // Types
