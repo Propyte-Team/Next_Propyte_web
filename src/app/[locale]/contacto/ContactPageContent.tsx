@@ -293,9 +293,18 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
               </div>
 
               {status === 'sent' ? (
-                <div className="mt-6 flex items-center gap-3 bg-propyte-cyan-100 border border-propyte-brand/30 text-[#0E7490] rounded-lg px-4 py-3">
-                  <CheckCircle2 size={20} />
-                  <span className="text-sm font-medium">{tCommon('sent')}</span>
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-3 bg-propyte-cyan-100 border border-propyte-brand/30 text-[#0E7490] rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 size={20} />
+                    <span className="text-sm font-medium">{tCommon('sent')}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('idle')}
+                    className="text-sm font-semibold underline underline-offset-2 hover:no-underline"
+                  >
+                    {t('formSendAnother')}
+                  </button>
                 </div>
               ) : (
                 <button
@@ -454,7 +463,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                 href={GBP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#0D9488] hover:text-[#1A2F3F] transition-colors"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-teal-a11y hover:text-[#1A2F3F] transition-colors"
               >
                 <MapPin className="w-4 h-4" aria-hidden="true" />
                 {t('labels.viewOnMaps')}

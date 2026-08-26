@@ -138,7 +138,10 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
       <div className={whatsappUrl ? 'grid grid-cols-2 gap-2' : ''}>
         <button
           type="submit"
-          disabled={status === 'sending'}
+          // status === 'sent' también deshabilita: los campos ya se resetearon
+          // (reset() en onSubmit), así que un segundo clic aquí antes disparaba
+          // validación contra name/email vacíos justo después de un envío exitoso.
+          disabled={status === 'sending' || status === 'sent'}
           className="h-12 bg-propyte-brand hover:bg-propyte-cyan-200 text-[#0F1923] font-semibold rounded-lg transition-colors disabled:opacity-50"
         >
           {status === 'sending' ? t('sending') : status === 'sent' ? t('sent') : t('send')}
