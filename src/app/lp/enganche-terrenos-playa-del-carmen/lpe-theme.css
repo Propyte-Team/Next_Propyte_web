@@ -1,0 +1,226 @@
+/* ============================================================
+   Tema de la VARIANTE C — el enganche como protagonista.
+
+   ALCANCE: todo vive bajo `.lpe-root`. Las otras dos landings usan `.lp-root`
+   (A) y `.lpt-root` (B) y las tres comparten el layout de `app/lp/`, así que un
+   token sin prefijar se filtraría entre variantes y arruinaría la medición.
+   Ni un selector de este archivo puede tocar nada fuera de esta ruta.
+
+   ═══ DE DÓNDE SALE ESTE ESTILO ═══
+
+   Se pidió copiar el estilo de la landing de la competencia que sí convierte
+   (Ciudad Mayakoba / Bosques). Se midió la página real, no se copió de memoria:
+
+     · Poppins en todo el texto (205 nodos), con una SERIF EN ITÁLICA para la
+       palabra de acento del titular. Ese cruce —geométrica + itálica de
+       antigua— es la firma de su tipografía y es lo más reconocible del estilo.
+     · Fondo BLANCO dominante (8 superficies) con gris muy claro para bandas.
+     · `border-radius: 32px` en 79 nodos. Todo son cápsulas.
+     · Un verde saturado para los CTA (7 nodos) y un verde pálido para paneles
+       de acento (5 nodos).
+     · Titular a 48 px en peso 400: el número es grande por CONTRASTE con el
+       texto ligero de al lado, no por tamaño absoluto.
+     · 86 imágenes, 15 secciones, 10,668 px de alto.
+
+   ═══ QUÉ NO SE COPIA, Y POR QUÉ NO ES UN DETALLE ═══
+
+   Su logotipo, sus fotografías, sus textos y su verde de marca NO se usan. La
+   estructura, la densidad y el tratamiento tipográfico son práctica común del
+   sector y se copian sin problema; la identidad visual concreta es de ellos, y
+   una página que se le parece hasta el color de marca confunde al comprador
+   sobre con quién está hablando, que es justo lo contrario de lo que esta
+   landing tiene que lograr.
+
+   Así que la estructura es la suya y el color es NUESTRO: la paleta canónica de
+   Propyte de `src/styles/globals.css`. Su verde CTA lo ocupa el teal de marca,
+   y su verde pálido de paneles lo ocupa el aqua de marca.
+
+   ⚠️ NOTA PARA QUIEN VENGA DE LA VARIANTE B: `lpt-theme.css` rechaza a
+   propósito el turquesa «reflejo de categoría». Aquí el turquesa entra, y no es
+   una contradicción: allí se rechazó el turquesa GENÉRICO de playa como cliché;
+   este es el #5CE0D2 del manual de identidad. Y la apuesta de esta variante es
+   la contraria a la de la B, que es el sentido de tener una tercera.
+   ============================================================ */
+
+.lpe-root {
+  /* ── Superficies. Blanco dominante, como el original. ── */
+  --lpe-blanco: #ffffff;
+  /* Gris muy claro para alternar bandas sin dibujar bordes. */
+  --lpe-hueso: #f4f6f8;
+  /* El azul profundo de la marca. Se usa en DOS sitios y solo dos: el marco del
+     hero (para que el logotipo blanco del layout compartido siga legible) y la
+     banda de cifras. */
+  --lpe-aztec: #0f1923;
+  --lpe-navy: #1a2f3f;
+
+  /* ── Tinta. Casi negro, nunca negro puro. ── */
+  --lpe-tinta: #17212b;
+  --lpe-tinta-2: #4a5b68;
+  --lpe-tinta-3: #7d8b96;
+  --lpe-linea: rgb(23 33 43 / 0.1);
+
+  /* ── Acento. El teal de marca hace el trabajo de su verde. ──
+     ⚠️ #5CE0D2 sobre blanco da 1.7:1: es un color de RELLENO, jamás de texto.
+     El botón sólido va con tinta oscura encima (13.9:1), que además lo separa
+     del CTA-naranja-con-blanco que usa todo el sector inmobiliario.
+     Para texto de acento sobre blanco existe --lpe-teal-texto, que es el
+     teal-a11y del manual y pasa AA (5.66:1). */
+  --lpe-teal: #5ce0d2;
+  --lpe-teal-hover: #4bcec0;
+  --lpe-teal-texto: #0e7490;
+  /* Aqua de marca: el panel pálido de acento. */
+  --lpe-aqua: #a2f9ff;
+  --lpe-aqua-suave: #e8feff;
+
+  --lpe-wa: #25d366;
+
+  /* ── Radios. La cápsula de 32 px es LA firma del estilo copiado. ── */
+  --lpe-r: 32px;
+  /* Radio interior, para lo que vive dentro de una cápsula. */
+  --lpe-r-int: 20px;
+  /* Controles: píldora completa, como su botón de brochure. */
+  --lpe-r-pill: 999px;
+
+  color: var(--lpe-tinta);
+  background: var(--lpe-blanco);
+}
+
+/* ── Tipografía ────────────────────────────────────────────────────────────
+   Dos voces y nada más. La geométrica hace todo el trabajo; la serif en
+   itálica aparece SOLO en la palabra de acento de un titular, nunca en un
+   párrafo. Si la itálica se usa en dos sitios de la misma pantalla deja de ser
+   un acento y se vuelve decoración. */
+
+.lpe-sans {
+  font-family: var(--font-lpe-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Titular. Peso LIGERO a propósito: en el original el número no destaca por
+   tamaño sino por contraste contra el texto ligero que lo rodea. Un titular
+   entero en bold deja el número sin dónde crecer. */
+.lpe-titular {
+  font-family: var(--font-lpe-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+/* La palabra de acento: serif en itálica. `--font-lp-display` es Newsreader y
+   YA lo carga el layout compartido de /lp con su itálica, así que este acento
+   cuesta CERO bytes de red en una página que se paga por clic. */
+.lpe-italica {
+  font-family: var(--font-lp-display), ui-serif, Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* La cifra. Es la protagonista de la página entera: peso alto, tracking
+   cerrado y cifras tabulares para que las columnas del desglose cuadren. */
+.lpe-cifra {
+  font-family: var(--font-lpe-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.lpe-rotulo {
+  font-family: var(--font-lpe-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lpe-cuerpo {
+  font-family: var(--font-lpe-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+
+/* ── Cápsulas ──────────────────────────────────────────────────────────────
+   El contenedor de imagen del estilo copiado: esquina de 32 px y recorte duro.
+   `isolate` para que el radio recorte de verdad al `<Image fill>` de dentro. */
+.lpe-capsula {
+  border-radius: var(--lpe-r);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── Entrada del primer pliegue ────────────────────────────────────────────
+   MISMA REGLA QUE LAS OTRAS DOS VARIANTES: el H1 es el elemento del LCP de una
+   página que se paga por clic. Solo se MUEVE, jamás se funde. Un `opacity: 0`
+   aquí retrasa el LCP y, si se atasca, deja la página sin titular para
+   siempre. */
+@keyframes lpe-subir {
+  from {
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.lpe-entra {
+  animation: lpe-subir 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── Entrada de las imágenes ───────────────────────────────────────────────
+   Conducida por el SCROLL, no por un observer de JS: `animation-timeline:
+   view()`. No hay estado que se pueda quedar atascado en cero, y dentro del
+   `@supports` el navegador que no lo soporta pinta la imagen sin más.
+   Ver la misma decisión, con su motivo largo, en `lpt-theme.css`. */
+@keyframes lpe-lamina {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lpe-aparece {
+      animation: lpe-lamina 1ms linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 22%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpe-entra {
+    animation: none;
+  }
+}
+
+/* El foco, visible sobre blanco y sobre el aztec del hero. */
+.lpe-root :focus-visible {
+  outline: 2px solid var(--lpe-teal-texto);
+  outline-offset: 2px;
+}
+
+.lpe-root .lpe-sobre-oscuro :focus-visible {
+  outline-color: var(--lpe-teal);
+}
+
+/* ── El banner de cookies, retintado SOLO en esta variante ─────────────────
+   `ConsentBannerLp` vive en el layout compartido, fuera de `.lpe-root`, así que
+   se pinta con los tokens de la variante A (terracota). Sobre esta página
+   saldría un botón rojo compitiendo con el CTA teal en el mismo pliegue, y —lo
+   que importa— el botón más saturado de la pantalla diría «Aceptar» cookies en
+   vez de «Recibe el plan». Aquí se vuelve tinta neutra: sigue perfectamente
+   legible y accionable —hace falta el consentimiento para que Ads atribuya la
+   conversión— pero deja de disputarle el ojo a la conversión.
+
+   `:has()` acota el retinte a las páginas que montan `.lpe-root`. */
+.lp-root:has(.lpe-root) {
+  --lp-accent: #17212b;
+  --lp-accent-strong: #1a2f3f;
+}
