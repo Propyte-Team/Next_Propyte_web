@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
-import { ChevronRight } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getDevelopments } from '@/lib/supabase/queries';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import type { Property } from '@/types/property';
 
@@ -31,7 +30,10 @@ export default async function TaxonomyDevelopmentsPage({
   filter,
   canonicalPath,
 }: TaxonomyDevelopmentsPageProps) {
-  const tBC = await getTranslations({ locale, namespace: 'breadcrumbs' });
+  const [tBC, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'breadcrumbs' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
 
   let properties: Property[] = [];
   let rawDevs: DevelopmentRow[] = [];
@@ -98,19 +100,15 @@ export default async function TaxonomyDevelopmentsPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
       />
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4">
-        <nav className="flex items-center gap-1 text-xs text-gray-600">
-          <Link href={`/${locale}`} className="hover:text-[#0E7490]">
-            {tBC('home')}
-          </Link>
-          <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">
-            {tBC('developments')}
-          </Link>
-          <ChevronRight size={12} />
-          <span className="text-gray-700 font-medium">{termLabel}</span>
-        </nav>
-      </div>
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tBC('home')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[
+          { label: tBC('developments'), href: `/${locale}/desarrollos` },
+          { label: termLabel },
+        ]}
+      />
       <MarketplaceContent
         properties={properties}
         customTitle={title}

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, type MotionStyle, type Transition } from 'framer-motion';
+import { motion, useReducedMotion, type MotionStyle, type Transition } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 
@@ -31,6 +31,11 @@ export const BorderBeam = ({
   initialOffset = 0,
   borderWidth = 1,
 }: BorderBeamProps) => {
+  // Mismo patrón que HeroAtmosphere: con reduced-motion se apaga el loop pero
+  // se conserva el beam como acento estático en su posición inicial, en vez
+  // de desaparecer del todo.
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <div
       className="pointer-events-none absolute inset-0 rounded-[inherit] border-(length:--border-beam-width) border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]"
@@ -52,11 +57,15 @@ export const BorderBeam = ({
           } as MotionStyle
         }
         initial={{ offsetDistance: `${initialOffset}%` }}
-        animate={{
-          offsetDistance: reverse
-            ? [`${100 - initialOffset}%`, `${-initialOffset}%`]
-            : [`${initialOffset}%`, `${100 + initialOffset}%`],
-        }}
+        animate={
+          prefersReducedMotion
+            ? undefined
+            : {
+                offsetDistance: reverse
+                  ? [`${100 - initialOffset}%`, `${-initialOffset}%`]
+                  : [`${initialOffset}%`, `${100 + initialOffset}%`],
+              }
+        }
         transition={{
           repeat: Infinity,
           ease: 'linear',

@@ -1,10 +1,9 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronRight, MapPin } from '@/lib/icons';
+import { MapPin } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { pickLang } from '@/lib/i18n/pickLang';
-import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
 import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
@@ -21,7 +20,10 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
   const cityInfo = CITY_MAP[citySlug];
   if (!cityInfo) notFound();
 
-  const t = await getTranslations({ locale, namespace: 'cityDevelopments' });
+  const [t, tA11y] = await Promise.all([
+    getTranslations({ locale, namespace: 'cityDevelopments' }),
+    getTranslations({ locale, namespace: 'a11y' }),
+  ]);
   const supabase = createPublicSupabaseClient();
 
   let properties: Property[] = [];
@@ -68,35 +70,17 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
 
   return (
     <>
-      <SchemaMarkup
-        type="breadcrumb"
-        data={{
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: t('breadcrumbHome'), item: `https://propyte.com/${locale}` },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: t('breadcrumbDevelopments'),
-              item: `https://propyte.com/${locale}/desarrollos`,
-            },
-            { '@type': 'ListItem', position: 3, name: cityInfo.name },
-          ],
-        }}
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={t('breadcrumbHome')}
+        ariaLabel={tA11y('breadcrumbLabel')}
+        items={[
+          { label: t('breadcrumbDevelopments'), href: `/${locale}/desarrollos` },
+          { label: cityInfo.name },
+        ]}
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4">
-        <nav className="flex items-center gap-1 text-xs text-gray-600 mb-4">
-          <Link href={`/${locale}`} className="hover:text-[#0E7490]">
-            {t('breadcrumbHome')}
-          </Link>
-          <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">
-            {t('breadcrumbDevelopments')}
-          </Link>
-          <ChevronRight size={12} />
-          <span className="text-gray-700 font-medium">{cityInfo.name}</span>
-        </nav>
-
         {/* Foto de la ciudad — gestionada en Hub › Materiales (slot city.<slug>); fallback a placeholder */}
         <SiteMedia
           mediaKey={`city.${citySlug}`}
