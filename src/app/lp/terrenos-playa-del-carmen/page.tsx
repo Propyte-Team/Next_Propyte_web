@@ -9,6 +9,9 @@ import FormTerrenos from './_components/FormTerrenos';
 import Mensualidad from './_components/Mensualidad';
 import BarraMovil from './_components/BarraMovil';
 import WhatsAppTerrenos from './_components/WhatsAppTerrenos';
+import EstadoDelSitio from './_components/EstadoDelSitio';
+import Privada from './_components/Privada';
+import { numerarLaminas } from './_components/laminas';
 import './lpt-theme.css';
 
 // ============================================================
@@ -48,6 +51,37 @@ import './lpt-theme.css';
 //   3. Toda cifra en pesos lleva «MXN» pegada. El `$` de es-MX se lee como
 //      dólar, y aquí se publican precios de siete cifras.
 //   4. Cada imagen va rotulada por lo que es. Un render se rotula como render.
+//
+// ═══ REVISIÓN DEL 2026-08-26 — POR QUÉ ESTA PÁGINA CRECIÓ ═══
+//
+// Se pidió «más imágenes y que sí convierta», con una landing de la competencia
+// como referencia: más de treinta imágenes, galería de amenidades, testimonios
+// y el formulario repetido cinco veces.
+//
+// Lo que se tomó de ahí, y lo que no:
+//
+//   · SÍ, las imágenes. Esta variante se publicaba con UNA. Detrás del primer
+//     pliegue eran cuatro pantallas de cifras sobre verde, y quien busca
+//     «terrenos en playa del carmen» quiere ver el sitio. Ahora son 13, las 13
+//     revisadas a ojo una por una contra la regla 1 — dos archivos de la
+//     galería quedaron FUERA por llevar rótulos dentro de la imagen. Ver
+//     `IMAGENES_CURADAS` en `lp-lotes.ts`.
+//   · SÍ, la galería de amenidades — pero atada al dato. Las 10 amenidades
+//     salen de columnas booleanas del registro, y solo 6 tienen render. Las
+//     otras 4 se publican SIN imagen en vez de emparejarlas con una parecida.
+//   · SÍ, repetir el formulario: tres instancias, no dos. La nueva va detrás
+//     del mosaico, que es donde la intención es máxima.
+//   · NO, los testimonios. No tenemos. Inventarlos es exactamente lo que esta
+//     página existe para no hacer.
+//   · NO, la urgencia. El competidor publica «80% vendido»; aquí son 81 de 310,
+//     y se publica 81 de 310. Es tracción, no escasez, y se dice como es.
+//
+// ⚠️ CONSECUENCIA PARA EL A/B, DICHA EN VOZ ALTA: la variante B se construyó
+// como la hipótesis «3.6 pantallas contra 12.3». Con esto deja de ser eso. Lo
+// que sigue midiendo, y es lo que importa, es CONVERSIÓN — y la propiedad que
+// justificaba la hipótesis se conservó intacta: el formulario sigue dentro del
+// primer viewport, y todo lo que se añadió está por DEBAJO de él. La página no
+// creció delante del campo de teléfono; creció detrás.
 // ============================================================
 
 /**
@@ -133,6 +167,22 @@ export default async function LandingTerrenosPlayaDelCarmen() {
   const plan = lote.plan;
   const apr = lote.aprovechamiento;
   const hero = lote.imagenes.hero;
+  // Índice de láminas, numerado en orden de documento y solo con las que de
+  // verdad resolvieron. La leyenda de amenidades referencia estos números, así
+  // que se calcula UNA vez aquí y se pasa hacia abajo. Ver `laminas.ts`.
+  const laminas = numerarLaminas(lote.imagenes);
+  // Conteo por tipo de LO QUE SE VA A SERVIR, para el aviso del pie.
+  //
+  // Son las láminas del índice MÁS el hero, que se pinta aparte y por eso no
+  // está en `ORDEN_LAMINAS` (ver `laminas.ts`). Se cuenta sobre lo que resolvió,
+  // no sobre el tamaño de la lista blanca: si un archivo desaparece de la
+  // galería del Hub no se pinta, y el pie no puede decir que sí.
+  const laminasServidas = [
+    ...(hero ? [hero] : []),
+    ...Object.keys(laminas).map((k) => lote.imagenes[k as keyof typeof lote.imagenes]!),
+  ];
+  const laminasRender = laminasServidas.filter((i) => i.tipo === 'render').length;
+  const laminasFoto = laminasServidas.filter((i) => i.tipo === 'foto').length;
   // Const local, no propiedad: TypeScript conserva el estrechamiento de un
   // const dentro de un closure, y la seccion 03 lee la superficie dentro de
   // un .map().
@@ -385,12 +435,26 @@ export default async function LandingTerrenosPlayaDelCarmen() {
           <div id="lpt-sentinela" aria-hidden="true" className="h-px w-full" />
         </section>
 
-        {/* ═══════════ 02 · La mensualidad ═══════════ */}
+        {/* ═══════════ 02 · El sitio ═══════════
+            Dos láminas: la fotografía aérea real del polígono HOY y el render
+            de lotes ya construidos. Va aquí, antes del dinero, porque la
+            primera pregunta de quien acaba de hacer clic en un anuncio de
+            terrenos no es cuánto: es QUÉ. */}
+        <EstadoDelSitio
+          imagenes={lote.imagenes}
+          laminas={laminas}
+          numeroSeccion="02"
+          superficieTexto={superficieM2 ? m2(superficieM2) : null}
+          disponibles={lote.lotesDisponiblesPrivada}
+          totales={lote.lotesTotalesPrivada}
+        />
+
+        {/* ═══════════ 03 · La mensualidad ═══════════ */}
         {plan && lote.precioMxn && (
           <section className="lpt-plano border-t border-[var(--lpt-linea-fuerte)] bg-[var(--lpt-selva)]">
             <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
               <Reveal>
-                <p className="lpt-rotulo text-[var(--lpt-estaca)]">02 · El plan</p>
+                <p className="lpt-rotulo text-[var(--lpt-estaca)]">03 · El plan</p>
               </Reveal>
               <Reveal delay={0.06}>
                 <div className="mt-10">
@@ -413,7 +477,7 @@ export default async function LandingTerrenosPlayaDelCarmen() {
           </section>
         )}
 
-        {/* ═══════════ 03 · El lote ═══════════
+        {/* ═══════════ 04 · El lote ═══════════
             Una sola banda donde antes había dos. Arriba la cifra que responde
             la segunda pregunta real de quien compra terreno para construir
             —«¿me cabe la casa que quiero?»— y que no es dato nuevo, sino
@@ -423,7 +487,7 @@ export default async function LandingTerrenosPlayaDelCarmen() {
           <section className="lpt-plano border-t border-[var(--lpt-linea-fuerte)] bg-[var(--lpt-selva)]">
             <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
               <Reveal>
-                <p className="lpt-rotulo text-[var(--lpt-estaca)]">03 · El lote</p>
+                <p className="lpt-rotulo text-[var(--lpt-estaca)]">04 · El lote</p>
               </Reveal>
 
               {apr && superficieM2 && (
@@ -500,15 +564,66 @@ export default async function LandingTerrenosPlayaDelCarmen() {
           </section>
         ) : null}
 
-        {/* ═══════════ 04 · Cierre ═══════════
-            Segunda y última instancia del formulario. Quien llegó hasta aquí ya
+        {/* ═══════════ 05 · La privada ═══════════
+            El mosaico de láminas y la leyenda de amenidades. Es lo más largo
+            que se añadió, y va deliberadamente DESPUÉS del dinero y de lo
+            verificable: primero se contesta cuánto y si es legal, y solo
+            entonces se enseña dónde. Diez imágenes son diferidas, así que no
+            entran en el LCP. */}
+        <Privada
+          imagenes={lote.imagenes}
+          amenidades={lote.amenidades}
+          laminas={laminas}
+          numeroSeccion="05"
+        />
+
+        {/* ═══════════ 06 · Solicitud · 02 ═══════════
+            LA INSTANCIA NUEVA DEL FORMULARIO, y el sitio importa: viene
+            inmediatamente después del mosaico. Antes, quien acababa de ver las
+            láminas tenía que volver a subir cinco secciones o seguir bajando
+            hasta el cierre. Ahora el campo está donde queda la ganas.
+
+            No repite argumento —eso es trabajo de la sección anterior—, solo
+            nombra lo que se manda. */}
+        <section className="lpt-plano border-t border-[var(--lpt-linea-fuerte)] bg-[var(--lpt-selva-2)]">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-20">
+            <div className="lg:col-span-6">
+              <Reveal>
+                <h2 className="lpt-titular text-[clamp(1.75rem,1.35rem+2vw,2.75rem)] text-[var(--lpt-claro)]">
+                  ¿Te mandamos el calendario de obra?
+                </h2>
+              </Reveal>
+              <Reveal delay={0.06}>
+                <p className="lpt-cuerpo mt-5 max-w-[50ch] text-[1.0625rem] leading-relaxed text-[var(--lpt-claro-2)]">
+                  Va junto al plan de pagos: en qué mes entrega el desarrollador
+                  cada amenidad de la lista de arriba, cuáles ya están
+                  contratadas y cuáles siguen en proyecto. Con fechas, no con
+                  «próximamente».
+                </p>
+              </Reveal>
+            </div>
+            <div className="lg:col-span-6">
+              <Reveal delay={0.1}>
+                <FormTerrenos
+                  variante="medio"
+                  plazos={plazos}
+                  loteRef={lote.slug}
+                  loteTitulo={lote.titulo}
+                />
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════ 07 · Cierre ═══════════
+            Tercera y última instancia del formulario. Quien llegó hasta aquí ya
             leyó los números y lo verificable: no hay nada nuevo que decirle,
             solo el campo donde escribir. */}
         <section className="border-t border-[var(--lpt-linea-fuerte)] bg-[var(--lpt-abismo)]">
           <div className="mx-auto grid max-w-6xl gap-12 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:gap-16 lg:py-28">
             <div className="lg:col-span-6">
               <Reveal>
-                <p className="lpt-rotulo text-[var(--lpt-estaca)]">04 · Siguiente paso</p>
+                <p className="lpt-rotulo text-[var(--lpt-estaca)]">07 · Siguiente paso</p>
               </Reveal>
               <Reveal delay={0.06}>
                 <h2 className="lpt-titular mt-4 text-[clamp(2rem,1.4rem+2.8vw,3.5rem)] text-[var(--lpt-claro)]">
@@ -550,8 +665,16 @@ export default async function LandingTerrenosPlayaDelCarmen() {
               sin rotular en una página de preventa es una promesa implícita. */}
           <div className="mx-auto max-w-6xl px-5 pb-16 sm:px-8">
             <p className="lpt-cota border-t border-[var(--lpt-linea)] pt-6 text-[0.6875rem] leading-relaxed text-[var(--lpt-claro-3)]">
-              {hero?.tipo === 'render'
-                ? 'La imagen es un render del proyecto del desarrollador, no obra existente. '
+              {/* Se cuentan las imágenes REALMENTE servidas y por tipo, en vez
+                  de escribir «13 renders»: si un archivo desaparece de la
+                  galería del Hub, la página resuelve ese hueco a null y este
+                  pie diría un número falso. */}
+              {laminasRender > 0
+                ? `${laminasRender === 1 ? 'La imagen es un render' : `${laminasRender} de las imágenes de esta página son renders`} del proyecto del desarrollador, no obra existente${
+                    laminasFoto > 0
+                      ? `; ${laminasFoto === 1 ? 'la restante es fotografía real del terreno' : `las otras ${laminasFoto} son fotografía real del terreno`}`
+                      : ''
+                  }. Cada una va rotulada. `
                 : ''}
               {lote.estadoComercial ? `Estado: ${lote.estadoComercial}. ` : ''}
               {lote.lotesDisponiblesPrivada && lote.lotesTotalesPrivada

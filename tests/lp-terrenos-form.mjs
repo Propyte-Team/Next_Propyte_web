@@ -20,8 +20,15 @@ const RUTA = '.next/server/app/lp/terrenos-playa-del-carmen.html';
 /** Sin el honeypot el formulario se renderizó a medias y el anti-bot no cubre nada. */
 const CAMPOS = ['name="name"', 'name="phone"', 'name="website"'];
 
-/** Las dos instancias del formulario: la del hero y la del cierre. */
-const BLOQUES = ['data-lpt-form="hero"', 'data-lpt-form="cierre"'];
+/**
+ * Las TRES instancias del formulario: hero, la del medio (detrás del mosaico de
+ * láminas, añadida el 2026-08-26) y la del cierre.
+ */
+const BLOQUES = [
+  'data-lpt-form="hero"',
+  'data-lpt-form="medio"',
+  'data-lpt-form="cierre"',
+];
 
 const fallos = [];
 
