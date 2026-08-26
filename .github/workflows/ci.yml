@@ -21,3 +21,38 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npm run lint
+
+  unit-tests:
+    # 356 tests en 36 archivos que hasta ahora NINGUN check de PR ejecutaba.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:unit
+
+  build:
+    # CRITICO: el deploy de Hostinger compila EN EL SERVIDOR al hacer push a
+    # main. Sin este job, un build roto llega a produccion con todos los checks
+    # en verde — `tsc --noEmit` no ejecuta el pipeline de Next (RSC, generacion
+    # estatica, bundling), asi que no lo detecta.
+    #
+    # Sin secretos: los clientes de Supabase devuelven null cuando faltan las
+    # env (ver src/lib/supabase/{client,server}.ts) y las paginas caen al
+    # camino de estado vacio. El objetivo aqui es que COMPILE, no que traiga
+    # datos reales.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://propyte.com
