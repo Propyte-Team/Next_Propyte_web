@@ -20,10 +20,10 @@ export default function NosotrosTeaser() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           {/* Left: copy */}
           <div className="lg:col-span-7">
-            <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
+            <span className="inline-block text-teal-a11y text-xs font-bold tracking-widest uppercase mb-4">
               {t('eyebrow')}
             </span>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1A2F3F] leading-snug mb-5">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-navy leading-snug mb-5">
               {t('title')}
             </h2>
             <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-4 max-w-xl">
@@ -34,7 +34,7 @@ export default function NosotrosTeaser() {
             </p>
             <Link
               href={`/${locale}/nosotros/equipo-comercial`}
-              className="inline-flex items-center gap-2 min-h-[44px] px-6 bg-[#1A2F3F] hover:bg-[#0F1923] text-white font-semibold rounded-lg transition-colors text-sm"
+              className="inline-flex items-center gap-2 min-h-[44px] px-6 bg-navy hover:bg-aztec text-white font-semibold rounded-lg transition-colors text-sm"
             >
               {t('cta')}
               <ArrowRight size={16} />
@@ -42,7 +42,7 @@ export default function NosotrosTeaser() {
           </div>
 
           {/* Right: stats verticales */}
-          <div className="lg:col-span-5 lg:pl-10 lg:border-l lg:border-[#1A2F3F]/10 flex flex-col gap-5">
+          <div className="lg:col-span-5 lg:pl-10 lg:border-l lg:border-navy/10 flex flex-col gap-5">
             {stats.map((stat, i) => {
               const Icon = stat.icon;
               return (
@@ -50,10 +50,10 @@ export default function NosotrosTeaser() {
                   key={i}
                   className="propyte-card-glass-light p-5 flex items-center gap-4"
                 >
-                  <div className="w-11 h-11 shrink-0 bg-[#A2F9FF]/20 rounded-lg flex items-center justify-center">
-                    <Icon size={22} strokeWidth={1.75} className="text-[#0E7490]" />
+                  <div className="w-11 h-11 shrink-0 bg-propyte-brand/20 rounded-lg flex items-center justify-center">
+                    <Icon size={22} strokeWidth={1.75} className="text-teal-a11y" />
                   </div>
-                  <p className="text-sm md:text-base font-semibold text-[#1A2F3F] leading-snug">
+                  <p className="text-sm md:text-base font-semibold text-navy leading-snug">
                     {stat.label}
                   </p>
                 </div>

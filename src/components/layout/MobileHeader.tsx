@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { Menu, ChevronDown } from '@/lib/icons';
 import { useCssHeightVar } from '@/hooks/useCssHeightVar';
+import { useLocaleSwitcher } from '@/hooks/useLocaleSwitcher';
+import { useDropdownMenu } from '@/hooks/useDropdownMenu';
 import SearchBubble from './SearchBubble';
 
 interface MobileHeaderProps {
@@ -18,61 +19,14 @@ interface MobileHeaderProps {
 }
 
 export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble = true, isMenuOpen = false }: MobileHeaderProps) {
-  const locale = useLocale();
   const t = useTranslations('nav');
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
-  const langButtonRef = useRef<HTMLButtonElement>(null);
-  const langPanelRef = useRef<HTMLDivElement>(null);
+  const { locale, switchLocale } = useLocaleSwitcher();
+  const { open: langOpen, setOpen: setLangOpen, containerRef: langRef, triggerRef: langButtonRef, panelRef: langPanelRef } = useDropdownMenu();
   const headerRef = useRef<HTMLElement>(null);
 
   // Publica el alto real del header en --mobile-header-height para que
   // MainPadding reserve exactamente ese espacio, sin importar qué cambie aquí.
   useCssHeightVar(headerRef, '--mobile-header-height');
-
-  useEffect(() => {
-    function onOutside(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', onOutside);
-    return () => document.removeEventListener('mousedown', onOutside);
-  }, []);
-
-  // Escape closes the language dropdown and returns focus to its trigger.
-  useEffect(() => {
-    if (!langOpen) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        setLangOpen(false);
-        langButtonRef.current?.focus({ preventScroll: true });
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [langOpen]);
-
-  // Move focus into the panel when it opens.
-  useEffect(() => {
-    if (!langOpen) return;
-    const firstItem = langPanelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
-    firstItem?.focus({ preventScroll: true });
-  }, [langOpen]);
-
-  function switchLocale(newLocale: 'es' | 'en') {
-    if (newLocale === locale) {
-      setLangOpen(false);
-      return;
-    }
-    const pathWithoutLocale = pathname.replace(/^\/(es|en)/, '') || '/';
-    router.push(`/${newLocale}${pathWithoutLocale}`);
-    setLangOpen(false);
-  }
 
   // In home/dark mode, show bubble only after scroll (hero has its own search)
   const hideBubbleInHero = mode === 'home' && !isScrolled;
@@ -125,7 +79,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => switchLocale('es')}
+                  onClick={() => { switchLocale('es'); setLangOpen(false); }}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                     locale === 'es' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
                   }`}
@@ -135,7 +89,7 @@ export default function MobileHeader({ mode, onOpenMenu, isScrolled, showBubble 
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => switchLocale('en')}
+                  onClick={() => { switchLocale('en'); setLangOpen(false); }}
                   className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                     locale === 'en' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
                   }`}

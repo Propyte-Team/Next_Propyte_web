@@ -31,20 +31,20 @@ export default async function DiscountedUnitsSection({ units }: Props) {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between mb-8">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#0E7490]/10 border border-[#0E7490]/30 rounded-full mb-2">
-              <Tag size={12} strokeWidth={2.25} className="text-[#0E7490]" />
-              <span className="text-[#0E7490] text-2xs font-bold tracking-[0.18em] uppercase">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-a11y/10 border border-teal-a11y/30 rounded-full mb-2">
+              <Tag size={12} strokeWidth={2.25} className="text-teal-a11y" />
+              <span className="text-teal-a11y text-2xs font-bold tracking-[0.18em] uppercase">
                 {t('eyebrow')}
               </span>
             </div>
-            <h2 className="text-base md:text-xl font-bold text-[#2C2C2C] leading-tight tracking-tight">
+            <h2 className="text-base md:text-xl font-bold text-graphite leading-tight tracking-tight">
               {t('title')}
             </h2>
             <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           <Link
             href={`/${locale}/promociones`}
-            className="hidden md:flex items-center gap-1.5 text-[#0E7490] font-semibold hover:underline"
+            className="hidden md:flex items-center gap-1.5 text-teal-a11y font-semibold hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
@@ -60,7 +60,7 @@ export default async function DiscountedUnitsSection({ units }: Props) {
         <div className="mt-6 md:hidden text-center">
           <Link
             href={`/${locale}/promociones`}
-            className="inline-flex items-center gap-1.5 text-[#0E7490] font-semibold hover:underline"
+            className="inline-flex items-center gap-1.5 text-teal-a11y font-semibold hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>

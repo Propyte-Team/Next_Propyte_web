@@ -81,9 +81,9 @@ export default function TrendingMarket() {
 
   const statCards = [
     { icon: TrendingUp, value: stats.avgScore, label: t('stat1Label'), color: 'text-[#15803D]' },
-    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-[#0E7490]' },
-    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-[#0E7490]' },
-    { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-[#1A2F3F]' },
+    { icon: DollarSign, value: stats.avgADR, label: t('stat2Label'), color: 'text-teal-a11y' },
+    { icon: BarChart3, value: stats.avgOccupancy, label: t('stat3Label'), color: 'text-teal-a11y' },
+    { icon: Building2, value: stats.totalListings, label: t('stat4Label'), color: 'text-navy' },
   ];
 
   // Hide entire section when loaded with no zone data — empty stats + fake zones
@@ -95,7 +95,7 @@ export default function TrendingMarket() {
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between mb-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-graphite">{t('title')}</h2>
             <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
         </div>
@@ -114,30 +114,41 @@ export default function TrendingMarket() {
         </div>
 
         {/* Trending zones — surface dark brand */}
-        <div className="bg-[#0B1C1E] rounded-2xl p-6 md:p-8 border border-white/10">
+        <div className="bg-propyte-dark-900 rounded-2xl p-6 md:p-8 border border-white/10">
           <h3 className="text-lg font-bold text-white mb-4">{t('zonesTitle')}</h3>
           <div className="space-y-3">
-            {zones.map((zone) => (
-              <Link
-                key={zone.zone}
-                href={`/${locale}/zonas/${zone.slug}`}
-                className="flex items-center justify-between p-3 bg-white/5 hover:bg-[#A2F9FF]/10 rounded-lg transition-colors group border border-transparent hover:border-[#A2F9FF]/30"
-              >
-                <div>
-                  <span className="text-white font-semibold">{zone.zone}</span>
-                  <span className="text-white/60 text-sm ml-3">{zone.city}</span>
+            {!loaded ? (
+              // Evita el flash en blanco entre el heading y las filas mientras
+              // /api/zone-scores resuelve — mismas dimensiones que una fila real.
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg animate-pulse">
+                  <div className="h-4 w-40 bg-white/10 rounded" />
+                  <div className="h-4 w-12 bg-white/10 rounded" />
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-white/70 text-xs hidden sm:inline">
-                    {t('occupancy')}: {zone.occupancy} · {t('adr')}: {zone.adr}
-                  </span>
-                  {zone.score > 0 && (
-                    <span className="text-[#A2F9FF] font-bold text-sm">{zone.score}/100</span>
-                  )}
-                  <ArrowUpRight size={16} className="text-[#A2F9FF] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </div>
-              </Link>
-            ))}
+              ))
+            ) : (
+              zones.map((zone) => (
+                <Link
+                  key={zone.zone}
+                  href={`/${locale}/zonas/${zone.slug}`}
+                  className="flex items-center justify-between p-3 bg-white/5 hover:bg-propyte-brand/10 rounded-lg transition-colors group border border-transparent hover:border-propyte-brand/30"
+                >
+                  <div>
+                    <span className="text-white font-semibold">{zone.zone}</span>
+                    <span className="text-white/60 text-sm ml-3">{zone.city}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white/70 text-xs hidden sm:inline">
+                      {t('occupancy')}: {zone.occupancy} · {t('adr')}: {zone.adr}
+                    </span>
+                    {zone.score > 0 && (
+                      <span className="text-propyte-brand font-bold text-sm">{zone.score}/100</span>
+                    )}
+                    <ArrowUpRight size={16} className="text-propyte-brand group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
         </div>
         <p className="text-xs text-gray-600 mt-6 text-center">

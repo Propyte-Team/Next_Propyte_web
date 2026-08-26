@@ -33,10 +33,10 @@ export default function HomeFAQ() {
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-3xl mx-auto px-4 md:px-6">
         <div className="text-center mb-10">
-          <span className="inline-block text-[#0E7490] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-teal-a11y text-xs font-bold tracking-widest uppercase mb-4">
             {t('eyebrow')}
           </span>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1A2F3F] leading-snug">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-navy leading-snug">
             {t('title')}
           </h2>
         </div>
@@ -47,26 +47,28 @@ export default function HomeFAQ() {
             return (
               <div
                 key={idx}
-                className="border border-[#1A2F3F]/10 rounded-xl bg-white overflow-hidden transition-shadow hover:shadow-sm"
+                className="border border-navy/10 rounded-xl bg-white overflow-hidden transition-shadow hover:shadow-sm"
               >
                 <button
                   type="button"
+                  id={`faq-button-${idx}`}
                   onClick={() => setOpenIdx(isOpen ? null : idx)}
                   className="w-full flex items-center justify-between gap-4 px-5 py-4 min-h-[60px] text-left"
                   aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${idx}`}
                 >
-                  <span className="text-base md:text-lg font-semibold text-[#1A2F3F] leading-snug">
+                  <span className="text-base md:text-lg font-semibold text-navy leading-snug">
                     {item.q}
                   </span>
                   <ChevronDown
                     size={20}
-                    className={`shrink-0 text-[#0E7490] transition-transform ${
+                    className={`shrink-0 text-teal-a11y transition-transform ${
                       isOpen ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5">
+                  <div id={`faq-panel-${idx}`} role="region" aria-labelledby={`faq-button-${idx}`} className="px-5 pb-5">
                     <p className="text-sm md:text-base text-gray-700 leading-relaxed">
                       {item.a}
                     </p>

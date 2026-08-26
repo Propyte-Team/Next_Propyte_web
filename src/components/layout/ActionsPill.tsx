@@ -1,63 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
 import { Building2, ChevronDown, Mail } from '@/lib/icons';
 import AreaToggle from '@/components/ui/AreaToggle';
+import { useLocaleSwitcher } from '@/hooks/useLocaleSwitcher';
+import { useDropdownMenu } from '@/hooks/useDropdownMenu';
 
 export default function ActionsPill() {
-  const locale = useLocale();
   const t = useTranslations('nav');
-  const pathname = usePathname();
-  const router = useRouter();
-
-  const [langOpen, setLangOpen] = useState(false);
-  const langRef = useRef<HTMLDivElement>(null);
-  const langButtonRef = useRef<HTMLButtonElement>(null);
-  const langPanelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onOutside(e: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', onOutside);
-    return () => document.removeEventListener('mousedown', onOutside);
-  }, []);
-
-  // Escape closes the language dropdown and returns focus to its trigger.
-  useEffect(() => {
-    if (!langOpen) return;
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        setLangOpen(false);
-        langButtonRef.current?.focus({ preventScroll: true });
-      }
-    }
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [langOpen]);
-
-  // Move focus into the panel when it opens.
-  useEffect(() => {
-    if (!langOpen) return;
-    const firstItem = langPanelRef.current?.querySelector<HTMLElement>('[role="menuitem"]');
-    firstItem?.focus({ preventScroll: true });
-  }, [langOpen]);
-
-  function switchLocale(newLocale: 'es' | 'en') {
-    if (newLocale === locale) {
-      setLangOpen(false);
-      return;
-    }
-    const pathWithoutLocale = pathname.replace(/^\/(es|en)/, '') || '/';
-    router.push(`/${newLocale}${pathWithoutLocale}`);
-    setLangOpen(false);
-  }
+  const { locale, switchLocale } = useLocaleSwitcher();
+  const { open: langOpen, setOpen: setLangOpen, containerRef: langRef, triggerRef: langButtonRef, panelRef: langPanelRef } = useDropdownMenu();
 
   return (
     <div className="propyte-actions-pill-inner flex items-center gap-2 px-3 py-1.5 bg-white/90 backdrop-blur-md rounded-full shadow-sm border border-gray-100/80">
@@ -97,7 +50,7 @@ export default function ActionsPill() {
             <button
               type="button"
               role="menuitem"
-              onClick={() => switchLocale('es')}
+              onClick={() => { switchLocale('es'); setLangOpen(false); }}
               className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                 locale === 'es' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
               }`}
@@ -107,7 +60,7 @@ export default function ActionsPill() {
             <button
               type="button"
               role="menuitem"
-              onClick={() => switchLocale('en')}
+              onClick={() => { switchLocale('en'); setLangOpen(false); }}
               className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors ${
                 locale === 'en' ? 'text-[#0E7490] font-semibold' : 'text-[#2C2C2C]'
               }`}

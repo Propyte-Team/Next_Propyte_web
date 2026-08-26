@@ -47,7 +47,7 @@ export default function WhyPropyte() {
   ];
 
   return (
-    <section className="py-20 md:py-28 bg-[#F4F6F8]">
+    <section className="py-20 md:py-28 bg-gray-light">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         {/* Audience cards */}
         <h2 className="sr-only">{t('audienceHeading')}</h2>
@@ -59,14 +59,14 @@ export default function WhyPropyte() {
                 key={aud.titleKey}
                 className="propyte-card-glass-light p-6 md:p-8 transition-transform hover:-translate-y-1"
               >
-                <div className="w-12 h-12 mb-4 bg-[#A2F9FF]/20 rounded-lg flex items-center justify-center">
-                  <Icon size={24} strokeWidth={1.75} className="text-[#0E7490]" />
+                <div className="w-12 h-12 mb-4 bg-propyte-brand/20 rounded-lg flex items-center justify-center">
+                  <Icon size={24} strokeWidth={1.75} className="text-teal-a11y" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#2C2C2C] mb-2">{t(aud.titleKey)}</h3>
+                <h3 className="text-lg font-semibold text-graphite mb-2">{t(aud.titleKey)}</h3>
                 <p className="text-gray-600 mb-4">{t(aud.descKey)}</p>
                 <Link
                   href={aud.href}
-                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0E7490] font-medium hover:underline"
+                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-teal-a11y font-medium hover:underline"
                 >
                   {t(aud.ctaKey)}
                   <ArrowRight size={14} />
@@ -78,7 +78,7 @@ export default function WhyPropyte() {
 
         {/* Feature cards heading */}
         <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#2C2C2C]">{t('title')}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-graphite">{t('title')}</h2>
           <p className="text-gray-600 mt-2 max-w-xl mx-auto">{t('subtitle')}</p>
         </div>
 
@@ -90,14 +90,14 @@ export default function WhyPropyte() {
                 key={i}
                 className="propyte-card-glass-light p-6 transition-transform hover:-translate-y-0.5 flex flex-col"
               >
-                <div className="w-12 h-12 bg-[#A2F9FF]/20 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={24} strokeWidth={1.75} className="text-[#0E7490]" />
+                <div className="w-12 h-12 bg-propyte-brand/20 rounded-xl flex items-center justify-center mb-4">
+                  <Icon size={24} strokeWidth={1.75} className="text-teal-a11y" />
                 </div>
-                <h3 className="text-lg font-bold text-[#2C2C2C] mb-2">{feat.title}</h3>
+                <h3 className="text-lg font-bold text-graphite mb-2">{feat.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed mb-4 flex-1">{feat.desc}</p>
                 <Link
                   href={feat.href}
-                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-[#0E7490] font-medium text-sm hover:underline mt-auto"
+                  className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 text-teal-a11y font-medium text-sm hover:underline mt-auto"
                 >
                   {feat.cta}
                   <ArrowRight size={14} />

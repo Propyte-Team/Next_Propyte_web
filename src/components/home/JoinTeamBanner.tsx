@@ -18,7 +18,7 @@ export default function JoinTeamBanner({ cta }: { cta?: JoinTeamBannerCta | null
   const href = cta?.buttonHref ?? `/${locale}/unete`;
 
   return (
-    <section className="relative bg-[#0B1C1E] py-16 md:py-20 overflow-hidden">
+    <section className="relative bg-propyte-dark-900 py-16 md:py-20 overflow-hidden">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -34,7 +34,7 @@ export default function JoinTeamBanner({ cta }: { cta?: JoinTeamBannerCta | null
         </p>
         <Link
           href={href}
-          className="inline-flex items-center h-12 px-8 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-semibold rounded-[8px] transition-colors"
+          className="inline-flex items-center h-12 px-8 bg-propyte-brand hover:bg-propyte-cyan-300 text-propyte-dark-900 font-semibold rounded-[8px] transition-colors"
         >
           {ctaLabel}
         </Link>

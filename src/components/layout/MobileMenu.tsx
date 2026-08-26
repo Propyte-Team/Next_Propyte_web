@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useLocale, useTranslations } from 'next-intl';
+import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   X,
   Home,
@@ -24,6 +24,7 @@ import {
   Megaphone,
 } from '@/lib/icons';
 import { isNavActive } from '@/lib/nav/isActive';
+import { useLocaleSwitcher } from '@/hooks/useLocaleSwitcher';
 import type { HubSiteConfig } from '@/lib/hub-content';
 
 interface MobileMenuProps {
@@ -42,10 +43,9 @@ function normalizePhone(raw: string): string {
 }
 
 export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuProps) {
-  const locale = useLocale();
   const t = useTranslations('nav');
   const pathname = usePathname();
-  const router = useRouter();
+  const { locale, switchLocale } = useLocaleSwitcher();
 
   function isActive(id: string, href: string): boolean {
     return isNavActive(pathname, id, href, locale);
@@ -136,13 +136,6 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
-
-  function switchLocale(newLocale: 'es' | 'en') {
-    if (newLocale === locale) return;
-    const pathWithoutLocale = pathname.replace(/^\/(es|en)/, '') || '/';
-    router.push(`/${newLocale}${pathWithoutLocale}`);
-    onClose();
-  }
 
   const allItems = [
     { id: 'home', labelKey: 'home', href: `/${locale}`, icon: Home },
@@ -257,7 +250,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                 </p>
                 <button
                   type="button"
-                  onClick={() => switchLocale('es')}
+                  onClick={() => { switchLocale('es'); onClose(); }}
                   className={`flex items-center gap-3 w-full py-2.5 px-3 text-sm text-left rounded-lg transition-colors ${
                     locale === 'es'
                       ? 'text-[#5CE0D2] bg-white/10 font-semibold'
@@ -268,7 +261,7 @@ export default function MobileMenu({ isOpen, onClose, siteConfig }: MobileMenuPr
                 </button>
                 <button
                   type="button"
-                  onClick={() => switchLocale('en')}
+                  onClick={() => { switchLocale('en'); onClose(); }}
                   className={`flex items-center gap-3 w-full py-2.5 px-3 text-sm text-left rounded-lg transition-colors ${
                     locale === 'en'
                       ? 'text-[#5CE0D2] bg-white/10 font-semibold'

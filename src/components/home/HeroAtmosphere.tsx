@@ -160,7 +160,7 @@ export default function HeroAtmosphere() {
 
       {/* Coordinate marker — estático. Detalle arquitectónico/editorial. */}
       <div className="hidden md:flex absolute bottom-6 left-6 items-center gap-3 opacity-70">
-        <span className="block h-px w-6 bg-[#A2F9FF]" />
+        <span className="block h-px w-6 bg-propyte-brand" />
         <span
           className="text-[10px] tracking-[0.18em] uppercase text-white/65"
           style={{ fontFamily: 'var(--font-mono), ui-monospace, monospace', fontVariantNumeric: 'tabular-nums' }}

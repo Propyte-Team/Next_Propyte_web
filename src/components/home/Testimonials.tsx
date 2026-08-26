@@ -24,7 +24,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
   const canNext = startIndex + visibleCount < testimonials.length;
 
   return (
-    <section className="relative py-16 md:py-20 bg-[#132B2E] overflow-hidden">
+    <section className="relative py-16 md:py-20 bg-propyte-dark-800 overflow-hidden">
       {/* Glow brand sutil — radial superior derecha + suave bottom-left teal. */}
       <div
         aria-hidden="true"
@@ -46,7 +46,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canPrev && setStartIndex(startIndex - 1)}
               disabled={!canPrev}
               aria-label={t('prev')}
-              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-propyte-brand hover:text-propyte-brand disabled:opacity-30 transition-colors"
             >
               <ChevronLeft size={18} />
             </button>
@@ -55,7 +55,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               onClick={() => canNext && setStartIndex(startIndex + 1)}
               disabled={!canNext}
               aria-label={t('next')}
-              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-[#A2F9FF] hover:text-[#A2F9FF] disabled:opacity-30 transition-colors"
+              className="w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white hover:border-propyte-brand hover:text-propyte-brand disabled:opacity-30 transition-colors"
             >
               <ChevronRight size={18} />
             </button>
@@ -72,7 +72,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
             >
               <div className="flex gap-0.5 mb-3">
                 {Array.from({ length: item.rating }).map((_, j) => (
-                  <Star key={j} size={16} className="fill-[#A2F9FF] text-[#A2F9FF]" />
+                  <Star key={j} size={16} className="fill-propyte-brand text-propyte-brand" />
                 ))}
               </div>
 
@@ -85,7 +85,7 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
                   <div className="font-bold text-white text-sm">{item.name}</div>
                   <div className="text-xs text-white/60">{item.city}</div>
                 </div>
-                <div className="flex items-center gap-1 text-2xs font-semibold text-[#A2F9FF]">
+                <div className="flex items-center gap-1 text-2xs font-semibold text-propyte-brand">
                   <ShieldCheck size={12} />
                   {t('verified')}
                 </div>
@@ -106,12 +106,12 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
                   setStartIndex(Math.min(i, Math.max(0, testimonials.length - visibleCount)))
                 }
                 aria-label={`${i + 1}`}
-                className="relative flex items-center justify-center w-11 h-11 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A2F9FF]"
+                className="relative flex items-center justify-center w-11 h-11 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
               >
                 <span
                   aria-hidden="true"
                   className={`block w-2 h-2 rounded-full transition-colors ${
-                    active ? 'bg-[#A2F9FF]' : 'bg-white/25'
+                    active ? 'bg-propyte-brand' : 'bg-white/25'
                   }`}
                 />
               </button>
