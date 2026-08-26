@@ -111,8 +111,13 @@ async function esperarHidratacion(pagina) {
   const respuesta = await pagina.goto(url, { waitUntil: 'domcontentloaded' });
   ok(respuesta?.status() === 200, `A: la página respondió ${respuesta?.status()}`);
 
+  // Tres desde el 2026-08-26: hero, `medio` (detrás del mosaico de láminas) y
+  // cierre. Se fija el número exacto y no un mínimo a propósito: un cuarto
+  // formulario que aparezca sin querer —por un componente duplicado— tiene que
+  // salir en rojo, porque cada instancia manda su propio `bloque` al CRM y una
+  // de más ensucia la atribución.
   const formularios = await pagina.locator('form[data-lpt-form]').count();
-  ok(formularios === 2, `A: se esperaban 2 formularios, hay ${formularios}`);
+  ok(formularios === 3, `A: se esperaban 3 formularios, hay ${formularios}`);
 
   const hero = pagina.locator('form[data-lpt-form="hero"]');
   ok(await hero.isVisible(), 'A: el formulario del hero no es visible al cargar');
