@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X, Camera } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface ImageGalleryProps {
   images: string[];
@@ -27,6 +28,13 @@ export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight 
   const [current, setCurrent] = useState(0);
   const [modal, setModal] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  // Escape/arrow-key nav and scroll-lock stay in the effect below (they also
+  // drive the inline hero, not just the modal) — this hook only adds the
+  // Tab-trap + focus-in/focus-restore the modal was missing.
+  const { containerRef, initialFocusRef } = useFocusTrap<HTMLDivElement>({
+    isOpen: modal,
+    lockScroll: false,
+  });
 
   const safeImages = images.filter(Boolean);
   const count = safeImages.length;
@@ -163,6 +171,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight 
       {/* Fullscreen modal */}
       {modal && (
         <div
+          ref={containerRef}
           className="fixed inset-0 z-50 bg-black/95 flex flex-col"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
@@ -173,6 +182,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight 
           <div className="flex items-center justify-between px-4 py-3 text-white">
             <span className="text-sm font-medium">{current + 1} / {count}</span>
             <button
+              ref={initialFocusRef}
               type="button"
               onClick={() => setModal(false)}
               className="w-11 h-11 hover:bg-white/10 rounded-full flex items-center justify-center"

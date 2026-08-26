@@ -28,21 +28,29 @@ export function TabBar({ activeTab, locale }: TabBarProps) {
   return (
     <div className="border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-0 justify-center">
-          {TABS.map(({ id, labelEs, labelEn, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => handleTabChange(id)}
-              className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
-                activeTab === id
-                  ? 'text-[#0E7490] font-semibold border-[#0E7490]'
-                  : 'text-gray-600 border-transparent hover:text-[#1A2F3F]'
-              }`}
-            >
-              <Icon className="w-4 h-4" />
-              {pickLang(locale, labelEn, labelEs)}
-            </button>
-          ))}
+        <div role="tablist" aria-label={pickLang(locale, 'Market view', 'Vista de mercado')} className="flex gap-0 justify-center">
+          {TABS.map(({ id, labelEs, labelEn, icon: Icon }) => {
+            const selected = activeTab === id;
+            return (
+              <button
+                key={id}
+                id={`mercado-tab-${id}`}
+                role="tab"
+                aria-selected={selected}
+                aria-controls={`mercado-tabpanel-${id}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => handleTabChange(id)}
+                className={`flex items-center gap-2 px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+                  selected
+                    ? 'text-[#0E7490] font-semibold border-[#0E7490]'
+                    : 'text-gray-600 border-transparent hover:text-[#1A2F3F]'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {pickLang(locale, labelEn, labelEs)}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

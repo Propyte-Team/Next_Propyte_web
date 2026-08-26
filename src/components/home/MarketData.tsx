@@ -14,18 +14,18 @@ export default function MarketData() {
   return (
     <section className="py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-        <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#2C2C2C] mb-12">{t('title')}</h2>
+        <h2 className="text-2xl md:text-3xl font-semibold text-center text-graphite mb-12">{t('title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat, i) => (
-            <div key={i} className="p-6 bg-white border border-[#1A2F3F]/15 rounded-xl text-center">
-              <div className="text-4xl font-bold text-[#1A2F3F] mb-2">{stat.value}</div>
-              <p className="text-[#2C2C2C] font-medium mb-2">{stat.label}</p>
+            <div key={i} className="p-6 bg-white border border-navy/15 rounded-xl text-center">
+              <div className="text-4xl font-bold text-navy mb-2">{stat.value}</div>
+              <p className="text-graphite font-medium mb-2">{stat.label}</p>
               <p className="text-xs text-gray-600">{stat.source}</p>
             </div>
           ))}
         </div>
         <div className="text-center mt-8">
-          <Link href={`/${locale}/blog?category=analisis-mercado`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-[#0E7490] font-medium hover:underline">
+          <Link href={`/${locale}/blog?category=analisis-mercado`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-teal-a11y font-medium hover:underline">
             {t('cta')} →
           </Link>
         </div>

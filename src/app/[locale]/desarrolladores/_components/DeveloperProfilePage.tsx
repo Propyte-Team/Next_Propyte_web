@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
+import { formatPriceShort } from '@/lib/formatters';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Building2, Globe, ChevronRight, MapPin, ArrowLeft } from '@/lib/icons';

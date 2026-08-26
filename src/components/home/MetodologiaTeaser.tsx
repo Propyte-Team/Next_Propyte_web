@@ -15,13 +15,13 @@ export default function MetodologiaTeaser() {
   ];
 
   return (
-    <section className="py-20 md:py-28 bg-[#0B1C1E] relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-propyte-dark-900 relative overflow-hidden">
       {/* Decorative blob — sutil */}
-      <div className="absolute top-1/2 -translate-y-1/2 right-0 w-96 h-96 bg-[#A2F9FF]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 -translate-y-1/2 right-0 w-96 h-96 bg-propyte-brand/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="text-center mb-12 max-w-3xl mx-auto">
-          <span className="inline-block text-[#A2F9FF] text-xs font-bold tracking-widest uppercase mb-4">
+          <span className="inline-block text-propyte-brand text-xs font-bold tracking-widest uppercase mb-4">
             {t('eyebrow')}
           </span>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-snug mb-5">
@@ -38,13 +38,13 @@ export default function MetodologiaTeaser() {
             return (
               <div
                 key={c.num}
-                className="bg-[#132B2E]/80 border border-white/10 rounded-2xl p-6 hover:border-[#A2F9FF]/40 transition-colors backdrop-blur-sm"
+                className="bg-propyte-dark-800/80 border border-white/10 rounded-2xl p-6 hover:border-propyte-brand/40 transition-colors backdrop-blur-sm"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-[#A2F9FF]/70 text-xs font-bold tracking-widest">
+                  <span className="text-propyte-brand/70 text-xs font-bold tracking-widest">
                     {c.num}
                   </span>
-                  <Icon size={20} strokeWidth={1.75} className="text-[#A2F9FF]" />
+                  <Icon size={20} strokeWidth={1.75} className="text-propyte-brand" />
                 </div>
                 <h3 className="text-base font-bold text-white mb-2 leading-snug">{c.title}</h3>
                 <p className="text-xs text-white/60 leading-relaxed">{c.desc}</p>
@@ -56,7 +56,7 @@ export default function MetodologiaTeaser() {
         <div className="flex justify-center">
           <Link
             href={`/${locale}/metodologia`}
-            className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors text-sm"
+            className="inline-flex items-center gap-2 min-h-[44px] px-7 bg-propyte-brand hover:bg-propyte-cyan-300 text-propyte-dark-900 font-bold rounded-lg transition-colors text-sm"
           >
             {t('cta')}
             <ArrowRight size={16} />

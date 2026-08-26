@@ -978,6 +978,19 @@ html {
   );
 }
 
+/* Variante home: hero de video/imagen full-bleed con H1 centrado verticalmente,
+   no una foto con caption al pie. Curva propia (70/55/90, no 55/65/85) fijada
+   en audit 2026-05-15 "propuesta dos" para el contraste del H1+subtitle sobre
+   cualquier video/imagen — no la colapses en la variante base de arriba. */
+.propyte-hero-overlay--home {
+  background: linear-gradient(
+    180deg,
+    rgba(11, 28, 30, 0.70) 0%,
+    rgba(11, 28, 30, 0.55) 50%,
+    rgba(11, 28, 30, 0.90) 100%
+  );
+}
+
 /* ─── Brand editorial type scale ──────────────────────────────────────────
    Clases reutilizables que replican la jerarquía tipográfica de los posts
    de redes (Neue Haas Grotesk Display Pro / Space Grotesk / Normalidad VF).

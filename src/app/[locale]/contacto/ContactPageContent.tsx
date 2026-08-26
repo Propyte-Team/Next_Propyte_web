@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
-import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, Calendar, ShieldCheck } from '@/lib/icons';
+import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, Calendar, ShieldCheck, AlertCircle } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
 import type { HubSiteConfig } from '@/lib/hub-content';
@@ -176,33 +176,53 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   <label htmlFor="name" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                     {t('formName')}
                   </label>
-                  <input
-                    id="name"
-                    {...register('name')}
-                    aria-invalid={!!errors.name}
-                    aria-describedby={errors.name ? 'name-error' : undefined}
-                    aria-required={true}
-                    toolparamdescription="Nombre completo de la persona que contacta."
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
-                  />
-                  {errors.name && <p id="name-error" role="alert" className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                  <div className="relative">
+                    <input
+                      id="name"
+                      {...register('name')}
+                      aria-invalid={!!errors.name}
+                      aria-describedby={errors.name ? 'name-error' : undefined}
+                      aria-required={true}
+                      toolparamdescription="Nombre completo de la persona que contacta."
+                      className="w-full h-11 pl-3 pr-9 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/20"
+                    />
+                    {errors.name && (
+                      <AlertCircle size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-error pointer-events-none" />
+                    )}
+                  </div>
+                  {errors.name && (
+                    <p id="name-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+                      <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                     {t('formEmail')}
                   </label>
-                  <input
-                    id="email"
-                    type="email"
-                    {...register('email')}
-                    aria-invalid={!!errors.email}
-                    aria-describedby={errors.email ? 'email-error' : undefined}
-                    aria-required={true}
-                    toolparamdescription="Correo electrónico de contacto."
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
-                  />
-                  {errors.email && <p id="email-error" role="alert" className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+                  <div className="relative">
+                    <input
+                      id="email"
+                      type="email"
+                      {...register('email')}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
+                      aria-required={true}
+                      toolparamdescription="Correo electrónico de contacto."
+                      className="w-full h-11 pl-3 pr-9 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/20"
+                    />
+                    {errors.email && (
+                      <AlertCircle size={16} aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 text-error pointer-events-none" />
+                    )}
+                  </div>
+                  {errors.email && (
+                    <p id="email-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+                      <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
@@ -217,31 +237,46 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                     aria-describedby={errors.subject ? 'subject-error' : undefined}
                     aria-required={true}
                     toolparamdescription="Asunto del mensaje: general, propiedad, inversión, desarrollador o carrera."
-                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors"
+                    className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none transition-colors aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/20"
                   >
                     <option value="" disabled>{t('formSubjectPlaceholder')}</option>
                     {subjectOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-                  {errors.subject && <p id="subject-error" role="alert" className="text-xs text-red-500 mt-1">{errors.subject.message}</p>}
+                  {errors.subject && (
+                    <p id="subject-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+                      <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+                      {errors.subject.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">
                   <label htmlFor="message" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                     {t('formMessage')}
                   </label>
-                  <textarea
-                    id="message"
-                    rows={6}
-                    {...register('message')}
-                    aria-invalid={!!errors.message}
-                    aria-describedby={errors.message ? 'message-error' : undefined}
-                    aria-required={true}
-                    toolparamdescription="Mensaje o consulta detallada de la persona."
-                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none resize-none transition-colors"
-                  />
-                  {errors.message && <p id="message-error" role="alert" className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
+                  <div className="relative">
+                    <textarea
+                      id="message"
+                      rows={6}
+                      {...register('message')}
+                      aria-invalid={!!errors.message}
+                      aria-describedby={errors.message ? 'message-error' : undefined}
+                      aria-required={true}
+                      toolparamdescription="Mensaje o consulta detallada de la persona."
+                      className="w-full pl-3 pr-9 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:ring-2 focus:ring-propyte-brand/20 focus:outline-none resize-none transition-colors aria-invalid:border-error aria-invalid:focus:border-error aria-invalid:focus:ring-error/20"
+                    />
+                    {errors.message && (
+                      <AlertCircle size={16} aria-hidden="true" className="absolute right-3 top-3 text-error pointer-events-none" />
+                    )}
+                  </div>
+                  {errors.message && (
+                    <p id="message-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+                      <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+                      {errors.message.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* Honeypot anti-spam: hidden from humans, visible to bots. */}

@@ -103,11 +103,13 @@ export default function Hero({ stats }: HeroProps) {
       {/* Overlay vertical aztec — sigue Brand Identity Oficial (#0B1C1E) en
           lugar de negro puro, para preservar warmth del azul-teal corporativo.
           Audit 2026-05-15 (propuesta dos): reforzar opacidad central para que
-          el H1 + subtitle tengan contraste legible sobre cualquier foto. */}
-      <div className="absolute inset-0 z-[2] bg-gradient-to-b from-[#0B1C1E]/70 via-[#0B1C1E]/55 to-[#0B1C1E]/90" />
+          el H1 + subtitle tengan contraste legible sobre cualquier foto.
+          Curva propia vive en .propyte-hero-overlay--home (globals.css) en vez
+          de repetirse aquí como gradiente Tailwind ad hoc. */}
+      <div className="absolute inset-0 z-[2] propyte-hero-overlay propyte-hero-overlay--home" />
 
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 md:px-6 text-center py-16 md:py-24 pt-24 md:pt-32">
-        <span className="brand-eyebrow inline-block mb-4 px-4 py-1.5 rounded-full border border-[#A2F9FF]/40 text-[#A2F9FF] bg-[#A2F9FF]/[0.06] backdrop-blur-sm">
+        <span className="brand-eyebrow inline-block mb-4 px-4 py-1.5 rounded-full border border-propyte-brand/40 text-propyte-brand bg-propyte-brand/[0.06] backdrop-blur-sm">
           {t('eyebrow')}
         </span>
         <h1 className="text-h1 text-white leading-tight mb-3 drop-shadow-lg">
@@ -115,14 +117,14 @@ export default function Hero({ stats }: HeroProps) {
           {titleAccent && (
             <>
               {' '}
-              <span className="text-[#A2F9FF]">{titleAccent}</span>
+              <span className="text-propyte-brand">{titleAccent}</span>
             </>
           )}
         </h1>
         <p className="text-lg md:text-xl lg:text-2xl font-medium text-white/90 mb-2 max-w-2xl mx-auto drop-shadow-md">
           {t('subtitle')}
         </p>
-        <p className="text-sm md:text-base font-semibold tracking-[0.18em] uppercase text-[#A2F9FF] mb-10 drop-shadow-md">
+        <p className="text-sm md:text-base font-semibold tracking-[0.18em] uppercase text-propyte-brand mb-10 drop-shadow-md">
           {t('tagline')}
         </p>
 
@@ -136,7 +138,7 @@ export default function Hero({ stats }: HeroProps) {
               onClick={() => setTab('desarrollos')}
               className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'desarrollos'
-                  ? 'bg-[#A2F9FF] text-[#0B1C1E] shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
+                  ? 'bg-propyte-brand text-propyte-dark-900 shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
                   : 'propyte-glass-pill text-white'
               }`}
             >
@@ -150,7 +152,7 @@ export default function Hero({ stats }: HeroProps) {
               onClick={() => setTab('propiedades')}
               className={`inline-flex items-center gap-2 min-h-[44px] px-6 text-sm font-bold rounded-full transition-all ${
                 tab === 'propiedades'
-                  ? 'bg-[#A2F9FF] text-[#0B1C1E] shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
+                  ? 'bg-propyte-brand text-propyte-dark-900 shadow-[0_8px_24px_rgba(162,249,255,0.35)]'
                   : 'propyte-glass-pill text-white'
               }`}
             >
@@ -180,7 +182,7 @@ export default function Hero({ stats }: HeroProps) {
             <button
               type="submit"
               aria-label={tNav('search')}
-              className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] rounded-full shrink-0 transition-all hover:scale-105"
+              className="search-bubble-btn flex items-center justify-center w-11 h-11 md:w-12 md:h-12 bg-propyte-brand hover:bg-propyte-cyan-300 text-propyte-dark-900 rounded-full shrink-0 transition-all hover:scale-105"
             >
               <Search size={18} />
             </button>
@@ -197,7 +199,7 @@ export default function Hero({ stats }: HeroProps) {
                 <StatCounter
                   to={stat.value}
                   suffix={stat.value >= 10 ? '+' : ''}
-                  className="text-[#A2F9FF] text-xl md:text-2xl font-bold"
+                  className="text-propyte-brand text-xl md:text-2xl font-bold"
                 />
                 <span className="text-white/80 text-sm font-medium">{stat.label}</span>
               </div>

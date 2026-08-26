@@ -75,16 +75,16 @@ export default async function FeaturedProperties({ developments = [] }: Featured
   if (items.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16 bg-[#F4F6F8]">
+    <section className="py-12 md:py-16 bg-gray-light">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-base md:text-xl font-bold text-[#2C2C2C] leading-tight tracking-tight">{t('title')}</h2>
+            <h2 className="text-base md:text-xl font-bold text-graphite leading-tight tracking-tight">{t('title')}</h2>
             <p className="text-gray-600 mt-1">{t('subtitle')}</p>
           </div>
           <Link
             href={`/${locale}/desarrollos`}
-            className="hidden md:flex items-center gap-1.5 text-[#0E7490] font-semibold hover:underline"
+            className="hidden md:flex items-center gap-1.5 text-teal-a11y font-semibold hover:underline"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>
@@ -128,10 +128,10 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                       <div className="absolute top-3 left-3">
                         <span className={`px-2.5 py-1 text-xs font-bold uppercase rounded-md shadow-sm ${
                           stageKey === 'preventa'
-                            ? 'bg-[#A2F9FF] text-[#0B1C1E]'
+                            ? 'bg-propyte-brand text-propyte-dark-900'
                             : stageKey === 'construccion' || stageKey === 'en construcción' || stageKey === 'en construccion'
-                            ? 'bg-[#22C55E] text-white'
-                            : 'bg-[#0E7490] text-white'
+                            ? 'bg-success text-white'
+                            : 'bg-teal-a11y text-white'
                         }`}>
                           {stageLabel}
                         </span>
@@ -154,7 +154,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                         <span className="text-2xs font-semibold text-gray-500 uppercase tracking-wider">
                           {t('from')}
                         </span>
-                        <span className="text-xl font-bold text-[#2C2C2C] tabular-nums leading-none">
+                        <span className="text-xl font-bold text-graphite tabular-nums leading-none">
                           {formatPrice(dev.price_min_mxn)}
                         </span>
                         <span className="text-2xs font-semibold text-gray-500 tabular-nums">
@@ -166,7 +166,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                     {/* Row 2 — Chip tipo desarrollo */}
                     {devTypeLabel && (
                       <div>
-                        <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-[#0E7490] border border-propyte-brand/30">
+                        <span className="inline-flex items-center px-2 py-0.5 text-2xs font-bold uppercase tracking-wider rounded bg-propyte-cyan-100/60 text-teal-a11y border border-propyte-brand/30">
                           {devTypeLabel}
                         </span>
                       </div>
@@ -174,7 +174,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
 
                     {/* Row 3 — Rango bedrooms (agregado desde v_units) */}
                     {bedroomsLabel && (
-                      <div className="text-sm text-[#2C2C2C] font-semibold tabular-nums">
+                      <div className="text-sm text-graphite font-semibold tabular-nums">
                         {bedroomsLabel}
                       </div>
                     )}
@@ -202,7 +202,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
 
                     {/* Row 5 — Título (text-xs + line-clamp-2 para que nunca se corte;
                         fluye a una segunda línea cuando el título es largo). */}
-                    <h3 className="font-semibold text-[#2C2C2C] text-xs leading-snug line-clamp-2 break-words">
+                    <h3 className="font-semibold text-graphite text-xs leading-snug line-clamp-2 break-words">
                       {displayTitle}
                     </h3>
 
@@ -213,7 +213,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
                         <span className="truncate">{dev.zone ? `${dev.zone}, ` : ''}{dev.city}</span>
                       </div>
                       {roiValue > 0 && (
-                        <span className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0">
+                        <span className="inline-flex items-center px-2 py-0.5 bg-teal/10 text-teal-a11y text-2xs font-bold rounded-full tabular-nums flex-shrink-0">
                           ROI {roiValue}%
                         </span>
                       )}
@@ -228,7 +228,7 @@ export default async function FeaturedProperties({ developments = [] }: Featured
         <div className="mt-8 text-center md:hidden">
           <Link
             href={`/${locale}/desarrollos`}
-            className="inline-flex items-center gap-1 min-h-[44px] text-[#0E7490] font-semibold"
+            className="inline-flex items-center gap-1 min-h-[44px] text-teal-a11y font-semibold"
           >
             {t('viewAll')} <ArrowRight size={16} />
           </Link>

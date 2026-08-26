@@ -119,7 +119,13 @@ export default async function MercadoPage({
         </Suspense>
 
         <main>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div
+            id={`mercado-tabpanel-${activeTab}`}
+            role="tabpanel"
+            aria-labelledby={`mercado-tab-${activeTab}`}
+            tabIndex={0}
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+          >
           {activeTab === 'vacacional' && (
             <VacacionalTab scores={strScores} locale={locale} initialCity={city} />
           )}

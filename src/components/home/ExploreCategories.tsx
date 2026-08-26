@@ -95,7 +95,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
     : 'sm:grid-cols-2 md:grid-cols-2';
 
   return (
-    <section className="relative py-16 md:py-20 bg-[#0B1C1E] overflow-hidden">
+    <section className="relative py-16 md:py-20 bg-propyte-dark-900 overflow-hidden">
       {/* Glow ambient — radial sutil del color brand para profundidad. */}
       <div
         aria-hidden="true"
@@ -111,7 +111,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
           {titleAccent && (
             <>
               {' '}
-              <span className="text-[#A2F9FF]">{titleAccent}</span>
+              <span className="text-propyte-brand">{titleAccent}</span>
             </>
           )}
         </h2>
@@ -125,7 +125,7 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
               // que la imagen tenga más protagonismo y matchee el feel del
               // listado. Glass background detrás de la imagen suaviza el
               // contacto con el grid oscuro.
-              className="group relative aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden border border-white/15 bg-[rgba(72,115,121,0.40)] backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-[#A2F9FF]/50 hover:shadow-[0_12px_36px_rgba(162,249,255,0.20)] transition-all duration-300"
+              className="group relative aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden border border-white/15 bg-[rgba(72,115,121,0.40)] backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:border-propyte-brand/50 hover:shadow-[0_12px_36px_rgba(162,249,255,0.20)] transition-all duration-300"
             >
               <Image
                 src={cat.image}
@@ -136,13 +136,13 @@ export default function ExploreCategories({ typeCounts, override }: ExploreCateg
               />
               {/* Overlay aztec gradient — preserva legibilidad del label sobre
                   cualquier imagen de catálogo y se mantiene en cromaticidad brand. */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0B1C1E]/85 via-[#0B1C1E]/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-propyte-dark-900/85 via-propyte-dark-900/30 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
                 <span className="text-white font-bold text-sm md:text-base drop-shadow-md">
                   {cat.label}
                 </span>
                 {typeCounts && typeCounts[cat.typeKey] > 0 && (
-                  <span className="bg-[#A2F9FF] text-[#0B1C1E] text-2xs font-bold px-2 py-0.5 rounded-full">
+                  <span className="bg-propyte-brand text-propyte-dark-900 text-2xs font-bold px-2 py-0.5 rounded-full">
                     {typeCounts[cat.typeKey]}
                   </span>
                 )}

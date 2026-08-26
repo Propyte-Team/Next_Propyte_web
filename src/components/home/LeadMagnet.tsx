@@ -41,12 +41,12 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   }
 
   return (
-    <section className="bg-[#0B1C1E] py-16 md:py-20">
+    <section className="bg-propyte-dark-900 py-16 md:py-20">
       <div className="max-w-[1280px] mx-auto px-4 md:px-6">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left: Copy */}
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#A2F9FF]/15 text-[#A2F9FF] border border-[#A2F9FF]/30 rounded-full text-xs font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-propyte-brand/15 text-propyte-brand border border-propyte-brand/30 rounded-full text-xs font-bold mb-4">
               <FileDown size={14} />
               {eyebrow}
             </div>
@@ -58,14 +58,14 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
             {status === 'success' ? (
               <div className="text-center py-6">
-                <CheckCircle size={48} className="mx-auto text-[#22C55E] mb-4" />
+                <CheckCircle size={48} className="mx-auto text-success mb-4" />
                 {downloadUrl ? (
                   <>
                     <h3 className="text-xl font-bold text-white mb-2">{t('reportReady')}</h3>
                     <p className="text-white/75 text-sm mb-4">{t('reportReadyDesc')}</p>
                     <a
                       href={downloadUrl}
-                      className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors"
+                      className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-propyte-brand hover:bg-propyte-cyan-300 text-propyte-dark-900 font-bold rounded-lg transition-colors"
                     >
                       <FileDown size={18} />
                       {t('downloadNow')}
@@ -106,7 +106,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
                     placeholder={t('namePlaceholder')}
                     toolparamdescription="Nombre completo del interesado."
                   />
@@ -119,7 +119,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-[#A2F9FF] focus:outline-none"
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
                     placeholder={t('emailPlaceholder')}
                     toolparamdescription="Correo electrónico del interesado."
                   />
@@ -127,7 +127,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                 <button
                   type="submit"
                   disabled={status === 'sending'}
-                  className="w-full h-12 bg-[#A2F9FF] hover:bg-[#81EAF1] text-[#0B1C1E] font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full h-12 bg-propyte-brand hover:bg-propyte-cyan-300 text-propyte-dark-900 font-bold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <FileDown size={18} />
                   {status === 'sending' ? t('sending') : ctaLabel}

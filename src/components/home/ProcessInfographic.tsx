@@ -35,9 +35,14 @@ type Step = { n: string; title: string; desc: string; key?: boolean; win?: strin
 type Pillar = { before: string; strong: string; after: string };
 
 // ─── Color palette (canónica Propyte sobre bg-white) ─────────────────────
-const NAVY = '#1A2F3F';
-const BRAND = '#A2F9FF';
-const EYEBROW_TEAL = '#0E7490';
+// Apuntan a los tokens de globals.css (no a hex sueltos) para que un futuro
+// rename de token (como el de teal-a11y del 2026-05-18) también actualice
+// este archivo. DANGER_DEEP se queda en hex: es un rojo a11y-safe deliberado
+// sin token propio — igualarlo a --color-error sería un cambio de color, no
+// una simple tokenización.
+const NAVY = 'var(--color-navy)';
+const BRAND = 'var(--color-propyte-brand)';
+const EYEBROW_TEAL = 'var(--color-teal-a11y)';
 const DANGER_DEEP = '#B91C1C';
 
 // ─── Icon catalogue ──────────────────────────────────────────────────────
