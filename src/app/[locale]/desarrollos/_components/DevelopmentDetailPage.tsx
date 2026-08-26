@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
 import {
-  ChevronRight, MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
+  MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
   Users, Zap, Download,
 } from '@/lib/icons';
 import ExpandableText from '@/components/ui/ExpandableText';
@@ -37,6 +36,7 @@ import {
 import { pickLang } from '@/lib/i18n/pickLang';
 import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
 import ContactForm from '@/components/property/ContactForm';
 import ImageGallery from '@/components/property/ImageGallery';
@@ -520,29 +520,18 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         }}
       />
 
-      <SchemaMarkup
-        type="breadcrumb"
-        data={{
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: tProp('breadcrumbHome'), item: `https://propyte.com/${locale}` },
-            { '@type': 'ListItem', position: 2, name: tProp('breadcrumbDevelopments'), item: `https://propyte.com/${locale}/desarrollos` },
-            { '@type': 'ListItem', position: 3, name: property.city, item: `https://propyte.com/${locale}/desarrollos/${citySlug}` },
-            { '@type': 'ListItem', position: 4, name: property.name },
-          ],
-        }}
+      <Breadcrumbs
+        locale={locale}
+        homeLabel={tProp('breadcrumbHome')}
+        ariaLabel={tProp('breadcrumbAriaLabel')}
+        items={[
+          { label: tProp('breadcrumbDevelopments'), href: `/${locale}/desarrollos` },
+          { label: property.city, href: `/${locale}/desarrollos/${citySlug}` },
+          { label: property.name },
+        ]}
       />
 
       <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
-        <nav aria-label={tProp('breadcrumbAriaLabel')} className="flex items-center gap-1 text-xs text-gray-600 mb-6">
-          <Link href={`/${locale}`} className="hover:text-[#0E7490]">{tProp('breadcrumbHome')}</Link>
-          <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos`} className="hover:text-[#0E7490]">{tProp('breadcrumbDevelopments')}</Link>
-          <ChevronRight size={12} />
-          <Link href={`/${locale}/desarrollos/${citySlug}`} className="hover:text-[#0E7490]">{property.city}</Link>
-          <ChevronRight size={12} />
-          <span className="text-gray-700 font-medium truncate max-w-[200px]">{property.name}</span>
-        </nav>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">

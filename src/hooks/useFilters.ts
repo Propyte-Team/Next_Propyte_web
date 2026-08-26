@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/catalog/product-types';
@@ -159,8 +159,32 @@ function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
   return parsed;
 }
 
+/**
+ * Inverso exacto de `parseFiltersFromParams`: solo escribe un param cuando el
+ * filtro se aparta de su default, para que la URL se quede limpia y el
+ * round-trip URL→filters→URL sea estable (si no, cada carga inicial reescribe
+ * la URL aunque el usuario no haya tocado nada).
+ */
+function filtersToSearchParams(filters: Filters, priceCeiling: number): URLSearchParams {
+  const params = new URLSearchParams();
+  if (filters.search) params.set('search', filters.search);
+  if (filters.city) params.set('city', filters.city);
+  if (filters.zone) params.set('zone', filters.zone);
+  if (filters.type) params.set('type', filters.type);
+  if (filters.bedroomsMin > 0) params.set('bedrooms', String(filters.bedroomsMin));
+  if (filters.developmentType) params.set('devType', filters.developmentType);
+  if (filters.priceMin > 0) params.set('priceMin', String(filters.priceMin));
+  if (filters.priceMax < priceCeiling) params.set('priceMax', String(filters.priceMax));
+  if (filters.roiMin > 0) params.set('roiMin', String(filters.roiMin));
+  if (filters.stage) params.set('stage', filters.stage);
+  if (filters.usage) params.set('usage', filters.usage);
+  return params;
+}
+
 export function useFilters(properties: Property[]) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Tope dinámico según el catálogo cargado (estable por carga de página).
   const priceCeiling = useMemo(() => computePriceCeiling(properties), [properties]);
@@ -187,13 +211,21 @@ export function useFilters(properties: Property[]) {
   }
   const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc' | 'roi' | 'date'>('relevance');
 
+  // Escribe cada cambio a la URL (router.replace, sin entrada nueva en el
+  // historial) para que /desarrollos?stage=preventa sea copiable/compartible
+  // y sobreviva back/forward/refresh — antes solo se leía la URL al montar,
+  // nunca se le escribía de vuelta.
   const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }, []);
+    const next = { ...filters, [key]: value };
+    setFilters(next);
+    const qs = filtersToSearchParams(next, priceCeiling).toString();
+    router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
+  }, [filters, priceCeiling, pathname, router]);
 
   const clearFilters = useCallback(() => {
     setFilters({ ...defaultFilters, priceMax: priceCeiling });
-  }, [priceCeiling]);
+    router.replace(pathname, { scroll: false });
+  }, [priceCeiling, pathname, router]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;

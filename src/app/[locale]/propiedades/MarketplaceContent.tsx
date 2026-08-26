@@ -99,7 +99,7 @@ export default function MarketplaceContent({
   // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
   // guardamos los IDs de las unidades agrupadas y restringimos el listado.
   const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
-  const { filters, filtered, updateFilter, clearFilters, sortBy, setSortBy, priceCeiling } = useFilters(properties);
+  const { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling } = useFilters(properties);
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
@@ -272,6 +272,8 @@ export default function MarketplaceContent({
                   onSortChange={setSortBy}
                   hoveredId={hoveredId}
                   onHover={setHoveredId}
+                  hasActiveFilters={activeFilterCount > 0}
+                  onClearFilters={clearFilters}
                 />
               </div>
             </>
@@ -287,7 +289,13 @@ export default function MarketplaceContent({
                    donde la lista fluye en el documento en vez de vivir en una
                    ventana de scroll propia. */
                 <div className="w-full">
-                  <PropertyList properties={displayed} sortBy={sortBy} onSortChange={setSortBy} />
+                  <PropertyList
+                    properties={displayed}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    hasActiveFilters={activeFilterCount > 0}
+                    onClearFilters={clearFilters}
+                  />
                 </div>
               )}
             </>
@@ -334,6 +342,8 @@ export default function MarketplaceContent({
           sortBy={sortBy}
           onSortChange={setSortBy}
           variant="grid"
+          hasActiveFilters={activeFilterCount > 0}
+          onClearFilters={clearFilters}
         />
       </div>
 

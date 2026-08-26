@@ -17,6 +17,9 @@ interface PropertyListProps {
   /** Hover sync map↔card (solo split /propiedades). */
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
+  /** Presente solo cuando hay filtros activos — habilita el CTA del empty state. */
+  hasActiveFilters?: boolean;
+  onClearFilters?: () => void;
 }
 
 export default function PropertyList({
@@ -26,8 +29,26 @@ export default function PropertyList({
   variant = 'compact',
   hoveredId,
   onHover,
+  hasActiveFilters,
+  onClearFilters,
 }: PropertyListProps) {
   const t = useTranslations('marketplace');
+
+  const emptyState = (
+    <>
+      <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>
+      <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
+      {hasActiveFilters && onClearFilters && (
+        <button
+          type="button"
+          onClick={onClearFilters}
+          className="inline-flex items-center min-h-[44px] px-5 mt-5 text-sm font-semibold text-white bg-navy hover:bg-aztec rounded-lg transition-colors"
+        >
+          {t('clearAll')}
+        </button>
+      )}
+    </>
+  );
 
   if (variant === 'grid') {
     return (
@@ -54,10 +75,7 @@ export default function PropertyList({
         </div>
 
         {properties.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>
-            <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
-          </div>
+          <div className="text-center py-20">{emptyState}</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-7">
             {properties.map((property, i) => (
@@ -115,10 +133,7 @@ export default function PropertyList({
       */}
       <div className="lg:flex-1 lg:overflow-y-auto lg:overscroll-contain" data-lenis-prevent>
         {properties.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-600 font-semibold text-lg">{t('noResults')}</p>
-            <p className="text-sm text-gray-600 mt-2">{t('noResultsSuggestion')}</p>
-          </div>
+          <div className="text-center py-16">{emptyState}</div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-2">
             {properties.map((property, i) => (
