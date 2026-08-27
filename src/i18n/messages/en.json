@@ -412,6 +412,8 @@
     "verified": "Verified",
     "prev": "Previous",
     "next": "Next",
+    "ratingLabel": "{rating} out of 5 stars",
+    "slideAnnouncement": "Showing testimonials {from} to {to} of {total}",
     "items": [
       {
         "name": "Carlos M.",
