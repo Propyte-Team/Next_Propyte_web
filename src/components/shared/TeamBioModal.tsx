@@ -101,7 +101,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
           {person.photoUrl ? (
             <Image
               src={person.photoUrl}
-              alt={person.name}
+              alt={`${person.name}, ${person.role}`}
               width={128}
               height={128}
               className="w-32 h-32 rounded-full object-cover object-top mb-4"
@@ -138,7 +138,7 @@ export default function TeamBioModal({ open, onClose, person }: Props) {
               href={person.whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-5 bg-[#25D366]/10 text-[#075E54] text-sm font-semibold rounded-full hover:bg-[#25D366]/20 transition-colors"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-5 bg-whatsapp/10 text-whatsapp-text text-sm font-semibold rounded-full hover:bg-whatsapp/20 transition-colors"
             >
               <MessageCircle size={14} aria-hidden="true" /> {t('whatsapp')}
             </a>

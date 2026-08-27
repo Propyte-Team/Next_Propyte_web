@@ -103,7 +103,7 @@ function OrgCard({
   summary?: string;
   onSelect?: () => void;
 }) {
-  const base = 'bg-white rounded-xl shadow-md p-5 text-center min-w-[180px]';
+  const base = 'propyte-card-glass-light-sm p-5 text-center min-w-[180px]';
   const content = (
     <>
       <span className="text-xs font-bold uppercase tracking-wider" style={{ color }}>
@@ -119,7 +119,7 @@ function OrgCard({
       <button
         type="button"
         onClick={onSelect}
-        className={`${base} block w-full cursor-pointer transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]`}
+        className={`${base} propyte-card-hover-glow block w-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2]`}
         style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}
       >
         {content}
@@ -136,7 +136,14 @@ function OrgCard({
   );
 }
 
-function DeptSection({ dept }: { dept: DeptView }) {
+function DeptSection({
+  dept,
+  leaderSelect,
+}: {
+  dept: DeptView;
+  /** Mismo resolver que usan CEO/directores — abre TeamBioModal si hay bio. */
+  leaderSelect: (node: OrgNodeRow) => (() => void) | undefined;
+}) {
   const Icon = resolveIcon(dept.iconName);
   const t = useTranslations('about');
   const locale = useLocale();
@@ -158,19 +165,31 @@ function DeptSection({ dept }: { dept: DeptView }) {
         {dept.members.length === 0 && (
           <p className="text-xs text-gray-500 italic py-2">{t('hiring')}</p>
         )}
-        {dept.members.map((m) => (
-          <div key={m.id} className="flex justify-between text-sm py-1">
-            <span className="text-gray-600">{splitBilingualRole(m.role, locale)}</span>
-            {m.is_vacant ? (
-              <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
-            ) : (
-              <span className="font-medium text-gray-900">
-                {m.name}
-                {m.is_corporate && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
-              </span>
-            )}
-          </div>
-        ))}
+        {dept.members.map((m) => {
+          const onSelect = m.is_vacant ? undefined : leaderSelect(m);
+          return (
+            <div key={m.id} className="flex justify-between text-sm py-1">
+              <span className="text-gray-600">{splitBilingualRole(m.role, locale)}</span>
+              {m.is_vacant ? (
+                <span className="text-[#0E7490] text-xs font-medium">{t('hiring')}</span>
+              ) : onSelect ? (
+                <button
+                  type="button"
+                  onClick={onSelect}
+                  className="font-medium text-[#0E7490] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] rounded"
+                >
+                  {m.name}
+                  {m.is_corporate && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
+                </button>
+              ) : (
+                <span className="font-medium text-gray-900">
+                  {m.name}
+                  {m.is_corporate && <span className="ml-1 text-xs text-gray-600">(Corp.)</span>}
+                </span>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -269,7 +288,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   {directorRoleCodes.map((code) => (
                     <div key={code} className="space-y-3">
                       {depts.filter((d) => d.directorRoleCode === code).map((dept) => (
-                        <DeptSection key={dept.id} dept={dept} />
+                        <DeptSection key={dept.id} dept={dept} leaderSelect={leaderSelect} />
                       ))}
                     </div>
                   ))}
@@ -302,7 +321,7 @@ export default function EstructuraPageContent({ nodes, content, fallback, siteMe
                   ))}
                 </div>
                 <div className="space-y-3">
-                  {depts.map((dept) => <DeptSection key={dept.id} dept={dept} />)}
+                  {depts.map((dept) => <DeptSection key={dept.id} dept={dept} leaderSelect={leaderSelect} />)}
                 </div>
               </div>
             </>
