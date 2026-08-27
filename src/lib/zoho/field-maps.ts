@@ -20,7 +20,9 @@ export type LeadSource =
   | "lead_magnet"
   | "glossary_pdf"
   /** Landing de pago de lotes, Playa del Carmen (Google Ads). */
-  | "lp_lotes_pdc";
+  | "lp_lotes_pdc"
+  /** Landing de pago de casas, Riviera Maya — PDC + Tulum (Google/Meta Ads). */
+  | "lp_casas_riviera";
 
 export interface FormData {
   // Identidad
@@ -293,6 +295,7 @@ function campaignSlug(source: LeadSource): string {
     case "lead_magnet":           return "home/lead-magnet";
     case "glossary_pdf":          return "glosario/pdf-gate";
     case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
+    case "lp_casas_riviera":      return "lp/casas-riviera-maya";
   }
 }
 
@@ -344,6 +347,7 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "lead_magnet":         return "Lead Magnet Home";
       case "glossary_pdf":        return "Glosario PDF";
       case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
+      case "lp_casas_riviera":    return "Landing casas Riviera Maya (Ads)";
     }
   })();
   return `Formulario Propyte web ${langTag} - ${desc}`;
@@ -452,6 +456,14 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       if (data.investmentType) parts.push(`Objetivo: ${data.investmentType}`);
       if (data.budget) parts.push(`Presupuesto total: ${data.budget}`);
       if (data.propertyName) parts.push(`Lote de interés: ${data.propertyName}`);
+      break;
+    case "lp_casas_riviera":
+      // `propertyName` va SIEMPRE: el form manda «Riviera Maya (sin casa
+      // específica)» cuando el visitante no eligió una, para que el asesor
+      // sepa que debe abrir con el inventario completo y no que el dato se
+      // perdió por el camino.
+      if (data.propertyName) parts.push(`Casa de interés: ${data.propertyName}`);
+      if (data.budget) parts.push(`Presupuesto: ${data.budget}`);
       break;
   }
 

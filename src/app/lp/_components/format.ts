@@ -73,3 +73,50 @@ export function fechaLarga(valor: string): string | null {
   const mes = meses[Number(m[2]) - 1];
   return mes ? `${Number(m[3])} de ${mes} de ${m[1]}` : null;
 }
+
+// ------------------------------------------------------------
+// Moneda explícita para inventario mixto.
+//
+// Añadido por la landing de casas, donde conviven precios en pesos y en
+// dólares en la MISMA cuadrícula: dos casas de Puerto Aventuras se publican en
+// USD y las otras nueve en MXN. `mxn()` ya resolvía la ambigüedad del `$`
+// cuando toda la página iba en pesos; aquí la ambigüedad es peor, porque el
+// visitante compara dos tarjetas contiguas y la diferencia entre 412,800 y
+// 4,404,750 solo tiene sentido si la moneda está impresa en ambas.
+//
+// No hay conversión. Cada precio se publica en la moneda en que el
+// desarrollador lo declaró. Un tipo de cambio en una página de conversión es
+// una cifra que el asesor tiene que desmentir en la primera llamada.
+// ------------------------------------------------------------
+
+const USD = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0,
+});
+
+export function usd(valor: number): string {
+  return `${USD.format(valor)} USD`;
+}
+
+/** Formatea respetando la moneda declarada. Siempre imprime el código. */
+export function dinero(precio: { monto: number; moneda: 'MXN' | 'USD' }): string {
+  return precio.moneda === 'USD' ? usd(precio.monto) : mxn(precio.monto);
+}
+
+/**
+ * Versión compacta para titulares: «$4.4 M MXN», «$419.8 K USD».
+ *
+ * Solo para el titular y la barra fija, donde la cifra exacta compite con el
+ * mensaje. En tarjetas y ficha va SIEMPRE `dinero()` completo: el precio exacto
+ * es la promesa central de la página.
+ */
+export function dineroCompacto(precio: { monto: number; moneda: 'MXN' | 'USD' }): string {
+  const { monto, moneda } = precio;
+  if (moneda === 'USD') {
+    return monto >= 1_000_000
+      ? `$${(monto / 1_000_000).toFixed(1).replace(/\.0$/, '')} M USD`
+      : `$${Math.round(monto / 1000)} K USD`;
+  }
+  return `$${(monto / 1_000_000).toFixed(2).replace(/\.?0+$/, '')} M MXN`;
+}

@@ -44,6 +44,7 @@ const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
   'lead_magnet',
   'glossary_pdf',
   'lp_lotes_pdc',
+  'lp_casas_riviera',
 ];
 
 // Saneo defensivo de UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).

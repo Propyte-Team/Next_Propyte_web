@@ -1,0 +1,283 @@
+/* ============================================================
+   Tema de la landing de casas — Riviera Maya.
+
+   ALCANCE: todo cuelga de `.lpc-root`. Las otras dos landings de pago usan
+   `.lp-root` (lotes) y `.lpt-root` (terrenos) y las tres comparten el layout de
+   `app/lp/`. Un token sin prefijar se filtraría entre campañas y arruinaría la
+   lectura de cualquier A/B en curso. Ni un selector de este archivo puede tocar
+   nada fuera de esta ruta.
+
+   POR QUÉ MONOCROMO, Y POR QUÉ ES LO CORRECTO AQUÍ.
+
+   Las otras dos landings venden SUELO: terreno, lote, urbanización. Ahí el
+   argumento es de números y de estatus de obra, y ambas paletas salen del
+   material del sitio (terracota en una, selva y estaca de topógrafo en la
+   otra). Esta vende CASAS TERMINADAS, y once fotos de arquitectura reales son
+   el argumento. Cualquier paleta que se ponga alrededor compite con ellas.
+
+   El blanco puro y el negro tinta no son una ausencia de decisión: son la
+   decisión de que el color de la página lo pongan las casas. Es la convención
+   de la revista de arquitectura —El Croquis, 2G, Dezeen— y funciona porque
+   suprime todo lo que no es fotografía o cifra.
+
+   CERO RADIO. En toda la página. Una esquina redondeada es un gesto de
+   software; el plano arquitectónico y la revista impresa no las tienen. La
+   coherencia es más barata que la excepción.
+
+   UN SOLO COLOR EN TODA LA PÁGINA: el bermellón, y SOLO para estado
+   (disponibilidad, escasez, la barra fija). No toca ni un CTA. El botón
+   primario es negro sólido sobre blanco, o blanco sólido sobre negro: en un
+   documento monocromo la INVERSIÓN es el recurso de énfasis, no el color. Un
+   CTA naranja aquí sería el mismo botón que tiene cualquier otra inmobiliaria
+   y perdería justo la distinción que la paleta compró.
+   ============================================================ */
+
+.lpc-root {
+  /* Tinta. Nunca #000 puro: sobre blanco a tamaños grandes vibra y cansa.
+     #0b0b0c mantiene 19.8:1 y se lee como negro sin serlo. */
+  --lpc-ink: #0b0b0c;
+  --lpc-ink-2: #4a4d51;
+  --lpc-ink-3: #7c8085;
+
+  /* Blanco PURO, sin calidez. Es el fondo de la lámina impresa: cualquier
+     tinte hace que las fotos de arquitectura se lean amarillentas. */
+  --lpc-paper: #ffffff;
+  /* Único gris de superficie, para separar bandas sin dibujar una caja. */
+  --lpc-paper-2: #f2f2f3;
+
+  /* Superficie invertida: el formulario y el cierre. */
+  --lpc-dark: #0b0b0c;
+  --lpc-dark-2: #17181a;
+  --lpc-on-dark: #f7f7f8;
+  --lpc-on-dark-2: rgb(247 247 248 / 0.64);
+  --lpc-on-dark-3: rgb(247 247 248 / 0.40);
+
+  /* Reglas. Dos pesos y nada más: la fina que ordena, la fuerte que separa. */
+  --lpc-line: rgb(11 11 12 / 0.14);
+  --lpc-line-strong: rgb(11 11 12 / 0.42);
+  --lpc-line-dark: rgb(247 247 248 / 0.18);
+
+  /* SEÑAL. Bermellón de anotación editorial. Reservado a estado y escasez.
+     #c4321d sobre blanco = 5.9:1 (AA en texto normal).
+     Sobre --lpc-dark el mismo tono cae a 3.1:1, así que ahí se usa #ff6a4d
+     (7.4:1). Dos valores porque el contraste manda, no la coherencia de hex. */
+  --lpc-signal: #c4321d;
+  --lpc-signal-on-dark: #ff6a4d;
+
+  /* Verde de WhatsApp: marca de un tercero. No se repinta. */
+  --lpc-wa: #25d366;
+
+  /* Cero radio, dicho una vez y usado en todas partes. */
+  --lpc-r: 0px;
+}
+
+/* ------------------------------------------------------------
+   TIPOGRAFÍA
+
+   Dos registros y ninguno más:
+
+     · TITULAR — Archivo, muy grande, tracking negativo fuerte. Es un grotesco
+       de asta cerrada diseñado para tamaños de display; a 5rem con -0.045em
+       las palabras se compactan en un bloque de tinta, que es exactamente el
+       gesto de portada de revista de arquitectura.
+     · ETIQUETA — el grotesk del sitio, pequeñísimo, versalitas, tracking muy
+       abierto. Numera, clasifica y fecha. Es la letra del pie de plano.
+
+   El cuerpo de texto va con la tipografía del sitio a tamaño normal. No hay un
+   tercer registro: en una landing de un solo objetivo, cada estilo nuevo es
+   una decisión más que el ojo tiene que resolver antes de llegar al formulario.
+   ------------------------------------------------------------ */
+
+.lpc-root .lpc-display {
+  font-family: var(--font-lpc-display), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+  /* Los títulos llevan cifras y m²; las tabulares evitan el baile de anchos. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Titular de sección: mismo grotesco, un peso menos y sin el tracking extremo,
+   que a 2rem cerraría las contraformas. */
+.lpc-root .lpc-titulo {
+  font-family: var(--font-lpc-display), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+}
+
+/* Pie de plano: numeración, categoría, ubicación. */
+.lpc-root .lpc-etiqueta {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 500;
+}
+
+/* Cifras en tabla y ficha: tabulares SIEMPRE. Once precios en una cuadrícula
+   con anchos de dígito variables se leen como once tipografías distintas. */
+.lpc-root .lpc-cifra {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ------------------------------------------------------------
+   REGLAS Y RETÍCULA
+   ------------------------------------------------------------ */
+
+/* Filete superior: el recurso que convierte una sección en una lámina. */
+.lpc-root .lpc-regla {
+  border-top: 1px solid var(--lpc-line-strong);
+}
+
+.lpc-root .lpc-regla-fina {
+  border-top: 1px solid var(--lpc-line);
+}
+
+/* ------------------------------------------------------------
+   FOTOGRAFÍA
+
+   Escala de grises al 100% en reposo, color al pasar el cursor. NO es un
+   efecto: es la jerarquía del documento. En la cuadrícula el ojo compara
+   composición y volumen (que el gris aísla), y el color entra solo en la casa
+   que el visitante está mirando. En táctil no hay hover, así que ahí la
+   cuadrícula va a color desde el inicio — la regla vive dentro de
+   `hover: hover`, nunca al revés.
+   ------------------------------------------------------------ */
+
+@media (hover: hover) and (pointer: fine) {
+  .lpc-root .lpc-foto {
+    filter: grayscale(1) contrast(1.04);
+    transition: filter 420ms cubic-bezier(0.2, 0, 0, 1), transform 620ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .lpc-root .lpc-ficha:hover .lpc-foto,
+  .lpc-root .lpc-ficha:focus-within .lpc-foto {
+    filter: grayscale(0) contrast(1);
+    transform: scale(1.03);
+  }
+}
+
+/* El hero nunca va en gris: es la primera prueba de que las casas existen. */
+.lpc-root .lpc-foto-hero {
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpc-root .lpc-foto {
+    transition: none;
+  }
+  .lpc-root .lpc-ficha:hover .lpc-foto,
+  .lpc-root .lpc-ficha:focus-within .lpc-foto {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------
+   CONTROLES
+   ------------------------------------------------------------ */
+
+/* Foco visible y consistente en toda la página. El outline es de tinta sobre
+   claro y de papel sobre oscuro: en monocromo no hay color de foco que valga
+   para ambos fondos. */
+.lpc-root :focus-visible {
+  outline: 2px solid var(--lpc-ink);
+  outline-offset: 2px;
+}
+
+.lpc-root .lpc-invertido :focus-visible,
+.lpc-root .lpc-panel-oscuro :focus-visible {
+  outline-color: var(--lpc-on-dark);
+}
+
+/* Campo de formulario sobre superficie oscura. Fondo transparente y regla
+   inferior: un input con caja y borde completo dentro de un panel negro se lee
+   como un widget pegado encima. La línea sola se lee como un formulario
+   impreso, que es el registro de toda la página. */
+.lpc-root .lpc-campo {
+  width: 100%;
+  min-height: 52px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--lpc-line-dark);
+  color: var(--lpc-on-dark);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 200ms ease;
+}
+
+.lpc-root .lpc-campo::placeholder {
+  color: var(--lpc-on-dark-3);
+}
+
+.lpc-root .lpc-campo:hover {
+  border-bottom-color: var(--lpc-on-dark-2);
+}
+
+.lpc-root .lpc-campo:focus {
+  border-bottom-color: var(--lpc-on-dark);
+  outline: 0;
+}
+
+/* Autofill de Chrome: pinta un fondo azul claro que destruye el panel negro.
+   El truco del inset-shadow gigante es la única forma que respeta el navegador. */
+.lpc-root .lpc-campo:-webkit-autofill,
+.lpc-root .lpc-campo:-webkit-autofill:hover,
+.lpc-root .lpc-campo:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--lpc-on-dark);
+  -webkit-box-shadow: 0 0 0 1000px var(--lpc-dark-2) inset;
+  caret-color: var(--lpc-on-dark);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Campo inválido: bermellón, el único uso del color fuera de estado. */
+.lpc-root .lpc-campo[aria-invalid='true'] {
+  border-bottom-color: var(--lpc-signal-on-dark);
+}
+
+/* ============================================================
+   NEUTRALIZACIÓN DEL LAYOUT COMPARTIDO
+
+   `app/lp/layout.tsx` sirve a las tres landings de pago y da por supuesto un
+   hero OSCURO: monta el logo en su variante blanca, con `drop-shadow`, y el
+   rótulo lateral en `--lp-on-dark`. Las otras dos landings abren con foto a
+   sangre o con verde drenado, así que ahí funciona.
+
+   Esta abre en BLANCO PURO. Sin esto, la cabecera es un logo blanco sobre
+   papel blanco: invisible, y con una sombra difusa alrededor delatando dónde
+   está.
+
+   `invert(1)` sobre un PNG blanco da un logo negro exacto. Se prefiere a
+   servir otro archivo porque el layout es compartido: cambiar el `src` obligaría
+   a que el layout supiera qué landing está renderizando, y ese acoplamiento es
+   justo lo que el archivo evita hoy. La declaración `filter` además pisa entera
+   la utilidad `drop-shadow-[...]` de Tailwind —es la misma propiedad— y quita
+   la sombra sin tener que tocar el marcado.
+
+   `:has()` acota todo a las páginas que montan `.lpc-root`: las otras dos
+   landings no se enteran de que este archivo existe.
+   ============================================================ */
+
+.lp-root:has(.lpc-root) {
+  background: var(--lpc-paper);
+}
+
+.lp-root:has(.lpc-root) header img {
+  filter: invert(1);
+}
+
+.lp-root:has(.lpc-root) header span {
+  color: var(--lpc-ink-3);
+  filter: none;
+  text-shadow: none;
+}
+
+/* Banner de consentimiento. Lo pinta `ConsentBannerLp` con los tokens de la
+   variante A —terracota—, y aquí saldría el único elemento saturado de una
+   página monocroma diciendo «Aceptar» cookies en vez de «Recibir el dossier».
+   Se vuelve tinta: igual de legible y accionable (sin consentimiento la
+   conversión no se atribuye en Ads) pero deja de disputarle el ojo al CTA. */
+.lp-root:has(.lpc-root) {
+  --lp-accent: #0b0b0c;
+  --lp-accent-strong: #2c2e31;
+}
