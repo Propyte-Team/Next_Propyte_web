@@ -1,7 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { ChevronRight, Info } from '@/lib/icons';
+import Link from 'next/link';
+import { ArrowRight, ChevronRight, Info } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
 
 interface MethodologySectionProps {
@@ -9,7 +10,7 @@ interface MethodologySectionProps {
   locale: string;
 }
 
-export function MethodologySection({ activeTab }: MethodologySectionProps) {
+export function MethodologySection({ activeTab, locale }: MethodologySectionProps) {
   const t = useTranslations('methodology');
 
   return (
@@ -106,6 +107,14 @@ export function MethodologySection({ activeTab }: MethodologySectionProps) {
             )}
           </div>
         </details>
+
+        <Link
+          href={`/${locale}/metodologia`}
+          className="inline-flex items-center gap-1.5 min-h-[44px] md:min-h-0 mt-4 ml-7 text-sm font-semibold text-teal-a11y hover:underline"
+        >
+          {t('fullPageCta')}
+          <ArrowRight size={14} />
+        </Link>
       </div>
     </section>
   );

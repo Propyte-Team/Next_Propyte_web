@@ -205,6 +205,11 @@ export function VacacionalTab({ scores, locale, initialCity }: VacacionalTabProp
         locale={locale}
       />
 
+      {/* H2 propio del tab — antes saltaba del H1 de página directo a los H3 de
+          ZoneCards/ComparisonTable/MethodologySection, sin nada intermedio.
+          TradicionalTab sí tiene su H2 (rankingTitle) delante de su tabla. */}
+      <h2 className="text-2xl font-bold text-[#1A2F3F]">{tMer('zonesRankingTitle')}</h2>
+
       {/* Zone cards grid with sort pills */}
       <ZoneCards
         scores={ranking}

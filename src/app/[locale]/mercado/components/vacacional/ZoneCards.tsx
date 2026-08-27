@@ -62,14 +62,15 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallba
           <button
             key={field}
             onClick={() => onSort(field)}
+            aria-pressed={sortField === field}
             className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-full border transition-colors ${
               sortField === field
-                ? 'bg-teal-50 border-teal-300 text-teal-800 font-semibold'
+                ? 'bg-teal-a11y/10 border-teal-a11y/30 text-teal-a11y font-semibold'
                 : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
             }`}
           >
             {label}
-            {sortField === field && <SortIcon className="w-3 h-3" />}
+            {sortField === field && <SortIcon className="w-3 h-3" aria-hidden="true" />}
           </button>
         ))}
       </div>
