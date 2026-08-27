@@ -618,6 +618,7 @@
     "cardBathShort": "ba",
     "cardPrevImage": "Imagen anterior",
     "cardNextImage": "Imagen siguiente",
+    "cardGoToImage": "Ver imagen {n}",
     "cardSave": "Guardar",
     "cardBrochure": "Descargar brochure",
     "cardCompare": "Comparar",

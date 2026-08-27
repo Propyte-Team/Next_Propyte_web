@@ -540,7 +540,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
               images={(property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0)}
               alt={property.name}
               badgeTopLeft={
-                <span className="px-3 py-1.5 bg-propyte-brand text-[#0F1923] text-sm font-bold rounded-full">{stageLabel}</span>
+                <span className="px-3 py-1.5 bg-propyte-brand text-aztec text-sm font-bold rounded-full">{stageLabel}</span>
               }
               badgeTopRight={hasUnitsWithDiscount ? (
                 <DiscountBadge variant="corner" size={56} ariaLabel={tProp('discountUpTo', { pct: maxDiscountPct })} />
@@ -581,7 +581,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                       {hasUnitsWithDiscount && (
                         <span className="inline-flex items-center gap-1.5">
                           <DiscountBadge variant="inline" pct={maxDiscountPct} />
-                          <span className="text-2xs font-semibold uppercase tracking-wider text-[#0E7490]">{tProp('discountInUnits')}</span>
+                          <span className="text-2xs font-semibold uppercase tracking-wider text-teal-a11y">{tProp('discountInUnits')}</span>
                         </span>
                       )}
                     </div>
@@ -724,8 +724,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                             rel="noopener noreferrer"
                             className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
                           >
-                            <div className="w-12 h-12 rounded-lg bg-[#1A2F3F] flex items-center justify-center shrink-0">
-                              <FileText size={22} className="text-[#0E7490]" />
+                            <div className="w-12 h-12 rounded-lg bg-navy flex items-center justify-center shrink-0">
+                              <FileText size={22} className="text-teal-a11y" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="font-bold text-gray-900 truncate">
@@ -735,7 +735,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                 {deriveFilenameFromUrl(safeBrochureUrl, 'brochure.pdf')}
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-sm font-semibold text-[#0E7490] group-hover:text-[#0E7490] shrink-0">
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-teal-a11y group-hover:text-teal-a11y shrink-0">
                               <Download size={16} />
                               {tProp('download')}
                             </div>
@@ -760,7 +760,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
                                   className="w-full h-full object-contain"
                                 />
                               ) : developerInitials ? (
-                                <span className="text-xl font-extrabold text-[#0E7490] tracking-tight">
+                                <span className="text-xl font-extrabold text-teal-a11y tracking-tight">
                                   {developerInitials}
                                 </span>
                               ) : (
@@ -951,7 +951,7 @@ function MetricCard({
 }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="propyte-card-glass-light-sm p-4 text-center">
-      <span className="flex justify-center text-[#0E7490] mb-2">{icon}</span>
+      <span className="flex justify-center text-teal-a11y mb-2">{icon}</span>
       <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
       <div className="text-xs text-gray-600 mt-0.5">{label}</div>
     </div>

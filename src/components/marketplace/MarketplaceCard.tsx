@@ -103,11 +103,11 @@ export default function MarketplaceCard({
   // Preventa: dark + brand (destaca como CTA). Entrega Inmediata: brand + dark.
   const badgeStyles: Record<Exclude<PropertyBadge, null>, string> = {
     preventa: 'bg-[var(--propyte-dark-900)] text-[var(--propyte-brand)]',
-    nuevo: 'bg-[#22C55E] text-white',
-    construccion: 'bg-[#1A2F3F] text-white',
+    nuevo: 'bg-success text-white',
+    construccion: 'bg-navy text-white',
     entrega_inmediata: 'bg-[var(--propyte-brand)] text-[var(--propyte-dark-900)]',
     proximamente: 'bg-[#6366F1] text-white',
-    reservado: 'bg-[#0E7490]/80 text-white',
+    reservado: 'bg-teal-a11y/80 text-white',
     vendido: 'bg-gray-500 text-white',
   };
 
@@ -266,12 +266,12 @@ export default function MarketplaceCard({
                 }
               }}
               aria-disabled={!comparing && compareFull}
-              className={`w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5CE0D2] ${
+              className={`w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal ${
                 comparing
-                  ? 'bg-[#5CE0D2] text-[#0F1923]'
+                  ? 'bg-teal text-aztec'
                   : compareFull
-                    ? 'bg-white/60 text-[#1A2F3F] opacity-60 hover:bg-white/80'
-                    : 'bg-white/85 hover:bg-white text-[#1A2F3F]'
+                    ? 'bg-white/60 text-navy opacity-60 hover:bg-white/80'
+                    : 'bg-white/85 hover:bg-white text-navy'
               }`}
               aria-label={tMkt('cardCompare')}
               aria-pressed={comparing}
@@ -295,14 +295,14 @@ export default function MarketplaceCard({
               </span>
             )}
             {property.kind === 'unit' && property.specs.type && (
-              <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-[#1A2F3F] backdrop-blur-sm shadow-sm">
+              <span className="px-2 py-0.5 text-2xs font-bold uppercase rounded bg-white/95 text-navy backdrop-blur-sm shadow-sm">
                 {safeType(property.specs.type)}
               </span>
             )}
             {/* Rollup descuento desarrollo — solo kind='development' con ≥1
                 unidad con descuento activo (v_developments.discounted_units_count). */}
             {hasDiscountedUnitsRollup && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-[#0E7490] text-white shadow-sm">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-2xs font-bold uppercase rounded bg-teal-a11y text-white shadow-sm">
                 {tMkt('cardWithDiscounts')}
               </span>
             )}
@@ -322,21 +322,35 @@ export default function MarketplaceCard({
             </div>
           )}
 
-          {/* Photo indicator dots */}
+          {/* Photo indicator dots — antes eran <div> puramente visuales junto a
+              flechas que sí son clicables; misma afordancia en toda la fila. */}
           {property.images.length > 1 && (
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
               {property.images.slice(0, 5).map((_, i) => (
-                <div
+                <button
                   key={i}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${i === currentImg ? 'bg-white' : 'bg-white/50'}`}
-                />
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setCurrentImg(i);
+                  }}
+                  aria-label={tMkt('cardGoToImage', { n: i + 1 })}
+                  aria-current={i === currentImg}
+                  className="p-1.5 -m-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-full"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`block w-1.5 h-1.5 rounded-full transition-colors ${i === currentImg ? 'bg-white' : 'bg-white/50'}`}
+                  />
+                </button>
               ))}
             </div>
           )}
 
           {/* Promo banner — overlays bottom strip when active */}
           {showPromo && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-[#0E7490] to-[#0B7A6E] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-teal-a11y to-[#0B7A6E] px-3 py-1.5 text-white text-2xs font-bold uppercase tracking-wider text-center line-clamp-1">
               {promoText}
             </div>
           )}
@@ -373,7 +387,7 @@ export default function MarketplaceCard({
               <>
                 {/* Strikethrough en brand cyan (#0E7490 teal-700, a11y) — la línea
                     azul sobre el precio de lista pedida por Luis 2026-05-22. */}
-                <span className="text-xs text-gray-600 line-through decoration-[#0E7490] decoration-2 tabular-nums">
+                <span className="text-xs text-gray-600 line-through decoration-teal-a11y decoration-2 tabular-nums">
                   {formattedOriginal}
                 </span>
                 <DiscountBadge variant="inline" pct={discountPct} />
@@ -490,7 +504,7 @@ export default function MarketplaceCard({
             {variant === 'compact' && property.roi.projected != null && (
               <span
                 title={property.roi.projectedKind === 'yield' ? tMkt('cardGrossYieldTooltip') : undefined}
-                className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums flex-shrink-0"
+                className="inline-flex items-center px-2 py-0.5 bg-teal/10 text-teal-a11y text-2xs font-bold rounded-full tabular-nums flex-shrink-0"
               >
                 {property.roi.projectedKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {property.roi.projected.toFixed(1)}%
               </span>
@@ -503,13 +517,13 @@ export default function MarketplaceCard({
               {property.roi.projected != null && (
                 <span
                   title={property.roi.projectedKind === 'yield' ? tMkt('cardGrossYieldTooltip') : undefined}
-                  className="inline-flex items-center px-2 py-0.5 bg-[#5CE0D2]/10 text-[#0E7490] text-2xs font-bold rounded-full tabular-nums"
+                  className="inline-flex items-center px-2 py-0.5 bg-teal/10 text-teal-a11y text-2xs font-bold rounded-full tabular-nums"
                 >
                   {property.roi.projectedKind === 'yield' ? tMkt('cardGrossYield') : 'ROI'} {property.roi.projected.toFixed(1)}%
                 </span>
               )}
               {property.capRate != null && property.capRate > 0 && (
-                <span className="inline-flex items-center px-2 py-0.5 bg-[#1A2F3F]/8 text-[#1A2F3F] text-2xs font-bold rounded-full tabular-nums">
+                <span className="inline-flex items-center px-2 py-0.5 bg-navy/8 text-navy text-2xs font-bold rounded-full tabular-nums">
                   Cap {property.capRate.toFixed(1)}%
                 </span>
               )}
