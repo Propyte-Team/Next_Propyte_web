@@ -87,7 +87,7 @@ propyte.com (this repo)
     → crm.propyte.com (leads webhook)
 ```
 
-- **Hosting prod:** Hostinger VPS (standalone + PM2 + Nginx) — auto-deploy via GitHub Actions en push a `main`
+- **Hosting prod:** Hostinger VPS (standalone + PM2 + Nginx) — el VPS tiene el repo Git conectado y **compila EN EL SERVIDOR** en cada push a `main`. NO hay workflow de deploy: `.github/workflows/` solo tiene `ci.yml` y `playwright.yml`.
 - **Hosting staging:** Vercel (manual CLI — `vercel --prod` desde rama `develop`) — dev.propyte.com. GitHub auto-deploy desconectado.
 - **Database:** Supabase (oaijxdpevakashxshhvm)
 - **Schemas:** real_estate_hub (R/W), investment_analytics (R), public (R)
@@ -192,12 +192,38 @@ npm run dev
 # Build (standalone for Hostinger)
 npm run build
 
-# Producción: push a main → GitHub Actions → SCP a Hostinger → PM2 restart
+# Producción: push a main → Hostinger detecta el push y compila EN SU PROPIO VPS
+# (git pull + npm ci + next build + restart). No hay nada que ejecutar a mano.
 # Staging (dev.propyte.com): manual via Vercel CLI
 git checkout develop
 # hacer cambios, commit + push a origin/develop
 vercel --prod --yes
 ```
+
+### El deploy de producción NO pasa por GitHub Actions
+
+Este archivo afirmaba lo contrario («GitHub Actions → SCP a Hostinger → PM2
+restart»). Es falso y despista: `.github/workflows/deploy.yml` **nunca ha
+existido** (`git log --diff-filter=AD` lo confirma). El `§23.3` del
+SPECKIT especifica ese workflow, pero se quedó en plan.
+
+Lo que hay de verdad es la integración Git nativa de Hostinger, configurada en
+el panel del hosting y fuera de control de versiones. Consecuencias operativas
+que sí importan al trabajar aquí:
+
+- **Los builds concurrentes se matan entre ellos.** Dos merges a `main` muy
+  seguidos = deploy roto. Por eso el commit `3bff04f` consolidó 8 PRs de
+  dependabot en un solo merge en vez de mergearlos por separado. Si vas a
+  meter varias cosas, agrúpalas.
+- **Compila en la máquina que está sirviendo tráfico**, compitiendo con PM2
+  por CPU y RAM (206 páginas estáticas, ~950 MB de `node_modules`).
+- **No hay rollback.** El build es in-place: si revienta a media generación,
+  no hay release anterior a la que volver.
+- **CI verde no garantiza deploy verde.** El job `build` de `ci.yml` corre en
+  un runner de GitHub con otro CPU y otra RAM. Prueba que el código compila,
+  no que el VPS pueda compilarlo.
+
+Si el deploy falla, el log está en el panel de Hostinger, no en Actions.
 
 ## Related Repos
 
