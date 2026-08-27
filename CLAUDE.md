@@ -88,7 +88,7 @@ propyte.com (this repo)
 ```
 
 - **Hosting prod:** Hostinger VPS (standalone + PM2 + Nginx) — el VPS tiene el repo Git conectado y **compila EN EL SERVIDOR** en cada push a `main`. NO hay workflow de deploy: `.github/workflows/` solo tiene `ci.yml` y `playwright.yml`.
-- **Hosting staging:** Vercel (manual CLI — `vercel --prod` desde rama `develop`) — dev.propyte.com. GitHub auto-deploy desconectado.
+- **Staging:** NO HAY. El Vercel de `dev.propyte.com` se eliminó el 2026-06-17 (fuente: `next.config.ts:25`). `main` es el único entorno desplegado — lo que se mergea sale a producción sin escala intermedia.
 - **Database:** Supabase (oaijxdpevakashxshhvm)
 - **Schemas:** real_estate_hub (R/W), investment_analytics (R), public (R)
 
@@ -99,7 +99,7 @@ Supabase (source of truth)
     ↓ queries via lib/supabase/
 Next.js ISR pages (revalidate via hub trigger)
     ↓
-Hostinger (prod) / Vercel CDN (staging)
+Hostinger VPS (prod) — único entorno desplegado
 ```
 
 ## Quick Reference
@@ -194,11 +194,28 @@ npm run build
 
 # Producción: push a main → Hostinger detecta el push y compila EN SU PROPIO VPS
 # (git pull + npm ci + next build + restart). No hay nada que ejecutar a mano.
-# Staging (dev.propyte.com): manual via Vercel CLI
-git checkout develop
-# hacer cambios, commit + push a origin/develop
-vercel --prod --yes
+#
+# NO hay staging. Vercel/dev.propyte.com se eliminó el 2026-06-17.
+# main es el único entorno desplegado.
 ```
+
+### No hay staging: `main` va directo a producción
+
+El Vercel de `dev.propyte.com` se eliminó el **2026-06-17** (fuente:
+`next.config.ts:25`, en el comentario que reactivó el optimizador de imágenes).
+Los scripts `vercel:*` de `package.json` y `docs/VERCEL-DEPLOY.md` son
+residuales de esa época.
+
+Consecuencia práctica, y es la que manda al trabajar aquí: **no existe un sitio
+donde mirar un cambio antes de que lo vea el público.** Lo único que hay entre
+tu commit y propyte.com es `npm run dev` en local y los checks de `ci.yml`. Por
+eso conviene, antes de mergear a `main`:
+
+- Correr `npm run build` en local, no solo `tsc --noEmit`. El build es lo que
+  ejecuta el VPS, y `tsc` no ve el pipeline de Next (RSC, generación estática).
+- Levantar la página en `npm run dev` y mirarla de verdad si toca UI.
+- Agrupar cambios en un solo merge (ver más abajo: los builds concurrentes de
+  Hostinger se matan entre ellos).
 
 ### El deploy de producción NO pasa por GitHub Actions
 

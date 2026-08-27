@@ -4,7 +4,7 @@
 > **Versión:** 3.0 | **Fecha:** 2026-04-17 | **Revisión:** 2026-04-17  
 > **Tipo:** Documento de Especificación Completa — Activo  
 > **Objetivo:** Migrar propyte.com de WordPress a Next.js con calca exacta del diseño y funcionalidad, consolidando el backend del plugin y el sistema de aprobación del CRM en hub.propyte.com  
-> **Deploy:** Producción en Hostinger (standalone) · Staging en Vercel  
+> **Deploy:** Producción en Hostinger (standalone) · ~~Staging en Vercel~~ — **el staging se eliminó el 2026-06-17**; `main` es el único entorno desplegado (ver §23.1)  
 > **Repos:** `Next_Propyte_web` (frontend público) · `Propyte_hub` (backend admin) — repos separados  
 > **Base:** Scaffold desde HERO-SITE-ZILLOW, diseño canónico de WordPress actual
 
@@ -246,7 +246,7 @@ Cualquier otra diferencia visual con WP sí cuenta como bug/pendiente de revisi�
 | Storage | Supabase Storage | Bucket existente |
 | AI | Anthropic SDK (@anthropic-ai/sdk) | Blog generation |
 | Email | Nodemailer + SMTP Hostinger | Notificaciones (NO Resend) |
-| Cron | Vercel Cron / GitHub Actions | Scheduled sync |
+| Cron | ~~Vercel Cron~~ / GitHub Actions | Scheduled sync — Vercel Cron dejó de ser opción al eliminarse el staging (2026-06-17). Hoy los crons son rutas en `src/app/api/cron/*` |
 | UI | Radix UI + Tailwind | Panel admin |
 | File Upload | presigned URLs + Sharp pipeline | Image optimization |
 
@@ -2111,11 +2111,31 @@ SMTP_PASS=...
 | App | Entorno | Host | Justificación |
 |-----|---------|------|---------------|
 | propyte.com | **Producción** | **Hostinger VPS** | Control total, sin vendor lock-in, output `standalone` de Next.js |
-| propyte.com | **Staging** | **Vercel** | Preview deployments, ISR nativo, fácil QA |
+| ~~propyte.com~~ | ~~Staging~~ | ~~Vercel~~ | ⚠️ **ELIMINADO 2026-06-17** — ver nota abajo |
 | hub.propyte.com | **Producción** | **Hostinger VPS** | Mismo servidor, reducir costos |
-| hub.propyte.com | **Staging** | **Vercel** | Preview deployments |
+| ~~hub.propyte.com~~ | ~~Staging~~ | ~~Vercel~~ | ⚠️ **ELIMINADO 2026-06-17** |
 | crm.propyte.com | Ambos | Se mantiene | Sin cambios |
 | Supabase | — | Supabase Cloud | Ya existente, sin migrar |
+
+> **⚠️ YA NO HAY STAGING — verificado 2026-08-27**
+>
+> El Vercel de `dev.propyte.com` se eliminó el **2026-06-17**. La fuente en el
+> repo es `next.config.ts:25`: *«Vercel staging se eliminó (2026-06-17); prod
+> es Hostinger standalone»* — el comentario que documenta por qué se reactivó
+> el optimizador de imágenes de Next.
+>
+> **`main` es el único entorno desplegado.** No existe un sitio intermedio
+> donde revisar un cambio antes de que lo vea el público: entre un merge a
+> `main` y propyte.com solo están `npm run dev` en local y los checks de
+> `ci.yml`.
+>
+> Quedan residuos de esa etapa que NO son señal de que el staging exista:
+> los scripts `vercel:*` de `package.json`, el documento
+> `docs/VERCEL-DEPLOY.md` (marcado como obsoleto en su cabecera), la entrada
+> `https://dev.propyte.com` del allowlist de `src/app/api/leads/route.ts`, y
+> las rutas de código que distinguen staging vía `NEXT_PUBLIC_NOINDEX`
+> (`src/lib/seo/noindex.ts`) — estas últimas siguen siendo un mecanismo
+> válido para cualquier despliegue no productivo futuro.
 
 **Next.js Standalone Build (Hostinger):**
 ```javascript
@@ -2141,9 +2161,9 @@ export default {
 
 ```
 propyte.com            → Hostinger VPS IP (A record) [PRODUCCIÓN]
-staging.propyte.com    → Vercel (CNAME) [STAGING]
+staging.propyte.com    → ELIMINADO 2026-06-17 (nunca llegó a usarse; el staging vivía en dev.propyte.com)
 hub.propyte.com        → Hostinger VPS IP (A record) [PRODUCCIÓN]
-hub-staging.propyte.com → Vercel (CNAME) [STAGING]
+hub-staging.propyte.com → ELIMINADO 2026-06-17
 crm.propyte.com        → Se mantiene como está
 ```
 
@@ -2199,6 +2219,11 @@ crm.propyte.com        → Se mantiene como está
 > **Al activar el workflow hay que DESACTIVAR el auto-deploy de Git en el
 > panel de Hostinger.** Si no, disparan los dos en cada push y el problema de
 > concurrencia empeora en vez de arreglarse.
+>
+> **La mitad de staging del workflow ya no aplica en absoluto.** El job
+> `deploy-staging` (rama `develop` → Vercel) apunta a un entorno que se
+> eliminó el 2026-06-17: si algún día se implementa este workflow, ese job se
+> borra entero, no se adapta. Ver la nota de §23.1.
 
 ```yaml
 # ⚠️ PLAN NO IMPLEMENTADO — ver la nota de estado de arriba antes de copiar nada.
@@ -2379,7 +2404,7 @@ export default {
 - [ ] Verificar Supabase client apunta a instancia correcta (`oaijxdpevakashxshhvm`)
 - [ ] Revisar/adaptar migraciones SQL de HERO-SITE vs schema actual de Supabase
 - [ ] Configurar next-intl (ya existe en HERO, fusionar strings: HERO 49KB + WP 1,231)
-- [ ] Setup CI/CD: Vercel staging (develop branch), Hostinger prod (main branch)
+- [ ] Setup CI/CD: ~~Vercel staging (develop branch)~~ **eliminado 2026-06-17**, Hostinger prod (main branch) — el deploy de prod existe vía integración Git de Hostinger, no vía Actions (ver §23.3)
 - [ ] Configurar slug_redirects table en Supabase
 - [ ] Instalar Google Maps (`@vis.gl/react-google-maps`) en lugar de Mapbox
 - [ ] Verificar Framer Motion ya instalado (viene de HERO-SITE)
@@ -2546,7 +2571,7 @@ export default {
 
 - [ ] DNS TTL bajar a 300s (5 min) 48h antes
 - [ ] Deploy propyte.com (Next.js) a Hostinger producción
-- [ ] Deploy staging a Vercel
+- [x] ~~Deploy staging a Vercel~~ — **cancelado**: el staging se eliminó el 2026-06-17 (ver §23.1)
 - [ ] DNS switch (propyte.com A record → Hostinger VPS IP)
 - [ ] 301 redirects active (verificar con curl)
 - [ ] Monitor 48h (Search Console, GA4, error logs)
@@ -2587,7 +2612,7 @@ export default {
 | Supabase rate limits | Bajo | Caching, batched queries, connection pooling |
 | Downtime durante DNS switch | **Medio** | **Blue/green: WP en dev.propyte.com sigue vivo. Bajar TTL a 300s 48h antes. DNS switch es atómico. Si falla → revertir A record a Hostinger WP IP** |
 | WP database como backup | Medio | **Exportar full WP DB dump + wp-content/ tar antes de cutover. Guardar 90 días en Supabase Storage bucket `backups/`** |
-| Dependencia de Vercel (staging) | Bajo | Solo staging usa Vercel. Producción en Hostinger = control total. Si Vercel falla, staging se cae pero producción no |
+| ~~Dependencia de Vercel (staging)~~ | — | **Riesgo extinto**: el staging se eliminó el 2026-06-17. Producción nunca dependió de Vercel. El riesgo que lo sustituye es el inverso — compilar en el propio VPS de producción, ver §23.3 |
 | Image optimization delta | Medio | **WP usa WP media library + Hostinger CDN. Next.js sin Vercel Image Opt → usar Sharp middleware custom o servir desde Supabase Storage CDN directamente. Benchmark tiempos de carga pre/post** |
 | next/image en standalone | Medio | **`next/image` requiere Sharp como dependency. Instalar Sharp en Hostinger VPS. Fallback: `<img>` con Supabase Storage transforms** |
 
@@ -2626,7 +2651,7 @@ PASO 3 — Rollback a WordPress (10 min)
   └────────────────────────────────────────────────────────┘
 
 PASO 4 — Debug y fix (horas/días)
-  • Diagnosticar en staging (Vercel)
+  • Diagnosticar en local (`npm run dev`) — YA NO hay staging donde diagnosticar (eliminado 2026-06-17)
   • Fix + test + re-deploy a Hostinger
   • Re-switch DNS cuando esté listo
 
@@ -3719,7 +3744,7 @@ import { MapPin, Bed, Bath } from 'lucide-react';
 ### 31.2 Test Adaptations Required
 
 **URL changes:**
-- Base URL: `dev.propyte.com` → `staging.propyte.com` (Vercel) or `localhost:3000` (local)
+- Base URL: `localhost:3000` (local) o `propyte.com` (prod). ⚠️ `dev.propyte.com` y `staging.propyte.com` ya no existen (staging eliminado 2026-06-17)
 - Slug format: `/desarrollos/nativa-tulum` → `/desarrollos/tulum/departamento/nativa-tulum`
 - API endpoints: `admin-ajax.php?action=propyte_lead` → `/api/leads`
 

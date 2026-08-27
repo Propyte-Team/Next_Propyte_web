@@ -1,4 +1,22 @@
-# Deploy a Vercel (staging — `dev.propyte.com`)
+# [OBSOLETO] Deploy a Vercel (staging — `dev.propyte.com`)
+
+> **⛔ DOCUMENTO OBSOLETO — no seguir estas instrucciones**
+>
+> **Este staging ya no existe.** El Vercel de `dev.propyte.com` se eliminó el
+> **2026-06-17**; la fuente en el repo es `next.config.ts:25`. Nada de lo que
+> hay debajo describe la infraestructura actual: no hay proyecto en Vercel al
+> que linkear, ni entorno al que hacer `vercel --prod`, ni variables que
+> `vercel env pull` pueda traer.
+>
+> **La topología real, hoy:** `main` → Hostinger VPS (`propyte.com`). El VPS
+> tiene el repo Git conectado y compila en su propio servidor al detectar el
+> push. **No hay ningún otro entorno desplegado.** Ver la sección *Deploy* de
+> `CLAUDE.md` y el §23.1 del SPECKIT.
+>
+> Se conserva el archivo como registro histórico de cómo estuvo montado el
+> staging entre su creación y el 2026-06-17, por si algún día se vuelve a
+> levantar uno. Los scripts `vercel:*` de `package.json` son residuo de la
+> misma etapa.
 
 **Topología del proyecto:**
 - `main` → **Hostinger VPS** (productivo `propyte.com`). Hostinger tiene el
