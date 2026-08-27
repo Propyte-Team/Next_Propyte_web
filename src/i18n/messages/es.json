@@ -2021,6 +2021,7 @@
     "count": "Resultados",
     "ofTotal": "de {total} comparables",
     "dataFreshness": "Actualización",
+    "dataFreshnessTitle": "Verde: actualizado hace 7 días o menos · Amarillo: 8-30 días · Rojo: más de 30 días",
     "today": "hoy",
     "methodology": "Metodología",
     "methodologyBody": "Los datos se recopilan de portales inmobiliarios y plataformas de renta públicas mediante recopilación automatizada de datos de mercado. Las métricas (mediana, P25, P75, renta/m²) se calculan en tiempo real sobre los comparables filtrados. El modelo ML entrena sobre estos datos para generar estimaciones por desarrollo. Los datos se actualizan semanalmente."

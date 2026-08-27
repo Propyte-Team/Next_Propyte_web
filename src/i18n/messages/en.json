@@ -2021,6 +2021,7 @@
     "count": "Results",
     "ofTotal": "of {total} comparables",
     "dataFreshness": "Updated",
+    "dataFreshnessTitle": "Green: updated 7 days ago or less · Yellow: 8-30 days · Red: more than 30 days",
     "today": "today",
     "methodology": "Methodology",
     "methodologyBody": "Data is collected from public real estate portals and rental platforms through automated market-data collection. Metrics (median, P25, P75, rent/m²) are computed in real time on filtered comparables. The ML model trains on this data to generate per-development estimates. Data is updated weekly."

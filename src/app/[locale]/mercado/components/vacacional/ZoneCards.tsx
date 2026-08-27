@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { SortAsc, SortDesc, BarChart3, ChevronDown } from '@/lib/icons';
 import { ZoneScoreCard } from '@/components/analytics/ZoneScoreCard';
@@ -80,9 +81,9 @@ export function ZoneCards({ scores, locale, sortField, sortDir, onSort, isFallba
         {visible.map((score) => {
           const slug = zoneSlug(score.zone);
           return (
-            <a key={score.id} href={`/${locale}/zonas/${slug}`} className="block">
+            <Link key={score.id} href={`/${locale}/zonas/${slug}`} className="block">
               <ZoneScoreCard score={score} locale={locale} />
-            </a>
+            </Link>
           );
         })}
       </div>
