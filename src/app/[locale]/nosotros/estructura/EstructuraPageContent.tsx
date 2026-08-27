@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import {
   Building2, Users, Monitor, DollarSign, Briefcase, Megaphone,
-  HelpCircle, type LucideIcon,
+  HelpCircle, ChevronRight, type LucideIcon,
 } from '@/lib/icons';
 import type { OrgNodeRow } from '@/lib/supabase/queries';
 import SiteMediaView from '@/components/shared/SiteMediaView';
@@ -103,6 +103,7 @@ function OrgCard({
   summary?: string;
   onSelect?: () => void;
 }) {
+  const tBio = useTranslations('teamBio');
   const base = 'propyte-card-glass-light-sm p-5 text-center min-w-[180px]';
   const content = (
     <>
@@ -123,6 +124,13 @@ function OrgCard({
         style={{ borderTopWidth: 4, borderTopColor: color, borderTopStyle: 'solid' }}
       >
         {content}
+        {/* Afordancia SIEMPRE visible, no solo al :hover — antes esta card y
+            la no-clicable de abajo se veían idénticas hasta que el mouse
+            pasaba por encima (inútil para touch/teclado). */}
+        <span className="inline-flex items-center gap-0.5 mt-2 text-2xs font-semibold" style={{ color }}>
+          {tBio('viewProfile')}
+          <ChevronRight size={12} aria-hidden="true" />
+        </span>
       </button>
     );
   }
