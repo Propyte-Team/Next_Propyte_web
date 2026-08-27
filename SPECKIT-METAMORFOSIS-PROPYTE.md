@@ -2149,7 +2149,59 @@ crm.propyte.com        → Se mantiene como está
 
 ### 23.3 CI/CD
 
+> **⚠️ NO IMPLEMENTADO — estado verificado 2026-08-27**
+>
+> **El `deploy.yml` que especifica esta sección nunca se creó.** No es que se
+> haya borrado: `git log --all --diff-filter=AD -- '**/deploy*.yml'` no
+> devuelve nada, así que el archivo no ha existido jamás en la historia del
+> repo. `.github/workflows/` contiene solo `ci.yml` y `playwright.yml`.
+>
+> **Lo que hay de verdad en producción** es la integración Git nativa de
+> Hostinger: el VPS tiene el repo conectado, detecta el push a `main` y hace
+> `git pull` + `npm ci` + `next build` + restart **en su propio servidor**. La
+> configuración vive en el panel del hosting, fuera de control de versiones.
+> Fuentes: `docs/VERCEL-DEPLOY.md` y el mensaje del commit `3bff04f`.
+>
+> **Por qué importa que esto siga sin hacerse.** Compilar en la máquina que
+> sirve tráfico tiene cuatro consecuencias medidas, no teóricas:
+>
+> 1. **Los builds concurrentes se matan entre ellos.** El commit `3bff04f`
+>    consolidó 8 PRs de dependabot en un solo merge exactamente por esto. El
+>    historial de `main` muestra merges a 7, 8 y 16 minutos de distancia el
+>    2026-08-24 — dentro de la ventana de build.
+> 2. **Compite por CPU y RAM con el PM2 que está sirviendo.** 206 páginas
+>    estáticas con 3 workers y ~950 MB de `node_modules`.
+> 3. **No hay rollback.** El build es in-place; si revienta a media
+>    generación no hay release anterior a la que volver.
+> 4. **CI verde no garantiza deploy verde.** El job `build` de `ci.yml` corre
+>    en un runner de GitHub con otro CPU y otra RAM.
+>
+> **Si se implementa, el bloque de abajo NO se puede copiar tal cual.** Le
+> faltan cuatro cosas que son justamente las que arreglan lo de arriba:
+>
+> - `concurrency: {group: deploy-prod, cancel-in-progress: false}` — es EL
+>   arreglo del punto 1 y el sketch no lo tiene.
+> - Reconstruye el proyecto dos veces: los jobs de Actions no comparten disco,
+>   así que `needs: build` no hereda el `.next`. Hay que pasar artifact.
+> - `scp -r` sobre el directorio vivo no es atómico. Debe ir a
+>   `releases/<sha>/` y mover un symlink `current` al final (eso además da
+>   rollback instantáneo).
+> - No fija la host key (`ssh-keyscan` → `known_hosts`): tal cual, o cuelga en
+>   el prompt interactivo o queda expuesto a MITM.
+>
+> **Y un requisito que esta sección nunca menciona:** las **15 variables
+> `NEXT_PUBLIC_*` se inlinean en tiempo de build**. Hoy las aporta el entorno
+> del VPS. Si el build se mueve a un runner, GitHub necesita las 15 o el sitio
+> sale a producción sin GA4, sin Meta Pixel, sin Google Maps y **sin las
+> conversiones de Google Ads**. Las otras 21 vars son server-only y se quedan
+> en el VPS.
+>
+> **Al activar el workflow hay que DESACTIVAR el auto-deploy de Git en el
+> panel de Hostinger.** Si no, disparan los dos en cada push y el problema de
+> concurrencia empeora en vez de arreglarse.
+
 ```yaml
+# ⚠️ PLAN NO IMPLEMENTADO — ver la nota de estado de arriba antes de copiar nada.
 # .github/workflows/deploy.yml (repo: Next_Propyte_web)
 name: Deploy propyte.com
 on:
@@ -2217,6 +2269,11 @@ on:
 ```
 
 **NOTA:** Se usa SCP directo en vez de rsync porque Hostinger tiene problemas con SSH commands + banner (ver feedback_hostgator_deploy.md). El patrón está probado.
+
+> ⚠️ `feedback_hostgator_deploy.md` **no existe en este repo**, así que la
+> afirmación «el patrón está probado» no es verificable desde aquí. Se probó
+> en otro proyecto, no en éste: en `Next_Propyte_web` nunca se ha ejecutado un
+> deploy por SCP.
 
 ### 23.4 Nuevo Sistema de Slugs Programáticos
 
