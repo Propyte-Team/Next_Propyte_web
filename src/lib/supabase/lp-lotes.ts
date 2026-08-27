@@ -130,8 +130,15 @@ export interface ImagenLanding {
 }
 
 /**
- * Las cuatro imágenes que usa la página, por rol narrativo. Cada una es null si
- * el archivo curado ya no está en la galería del desarrollo.
+ * Las imágenes que usan las páginas, por rol narrativo. Cada una es null si el
+ * archivo curado ya no está en la galería del desarrollo.
+ *
+ * Las cuatro primeras las consume la variante A. Las nueve de abajo se
+ * añadieron el 2026-08-26 para la variante B, que se estaba publicando con UNA
+ * sola imagen: 13 de los 16 archivos de la galería pasaron revisión visual una
+ * por una. Ver `IMAGENES_CURADAS` para las DOS que quedaron fuera y por qué.
+ *
+ * Una clave nueva es aditiva: la variante A no se entera de que existen.
  */
 export interface ImagenesLanding {
   hero: ImagenLanding | null;
@@ -141,6 +148,34 @@ export interface ImagenesLanding {
   amenidades: ImagenLanding | null;
   /** Aérea real del polígono: tierra, sin urbanizar. Sostiene la sección de servicios. */
   urbanizacion: ImagenLanding | null;
+
+  // ── Añadidas para la variante B ──────────────────────────────────────────
+  //
+  // ⚠️ NO EXISTE UNA CLAVE `acceso`. La había —la caseta de vigilancia— y se
+  // retiró: al recorte que servía la página, el monumento del acceso mostraba
+  // el nombre comercial perfectamente legible. Ver `ARCHIVOS_RECHAZADOS`.
+  /** Alberca con camastros y palapa. Prueba de «Alberca Comunitaria». */
+  alberca: ImagenLanding | null;
+  /** Casa club por fuera, al atardecer. Prueba de «Salón de Eventos». */
+  casaClub: ImagenLanding | null;
+  /** Comedor de la casa club junto a la alberca. */
+  casaClubComedor: ImagenLanding | null;
+  /** Gimnasio acristalado. Prueba de «Gimnasio». */
+  gimnasio: ImagenLanding | null;
+  /** Cenital de las canchas. Prueba de «Cancha», y la única vista a escala de plano. */
+  canchasCenital: ImagenLanding | null;
+  /** Andador arbolado con las canchas al fondo. Prueba de «Jardín Comunitario». */
+  andador: ImagenLanding | null;
+  /** Cine al aire libre con mesas de picnic. Amenidad de convivencia. */
+  cine: ImagenLanding | null;
+  /**
+   * Cenital de lotes YA CONSTRUIDOS, con alberca privada en el patio.
+   *
+   * Es la imagen que más trabaja de las nueve: quien compra un terreno de
+   * 129.6 m² no sabe qué cabe ahí, y esta responde en un segundo lo que la
+   * sección del COS/CUS responde con aritmética.
+   */
+  casasCenital: ImagenLanding | null;
 }
 
 export interface AsesorLanding {
@@ -476,7 +511,53 @@ function construirPlan(
  * Por eso la página nunca itera la galería. Cada archivo que se publica se
  * revisó a ojo y se dio de alta aquí con su alt escrito a mano. Un archivo
  * nuevo en el Hub no aparece solo: hay que mirarlo y añadirlo.
+ *
+ * ═══ REVISIÓN DEL 2026-08-26: LOS 16 ARCHIVOS, UNO POR UNO ═══
+ *
+ * La galería del desarrollo tiene 16 archivos. Se descargaron los 16 y se
+ * miraron los 16. Pasaron 12. Los rechazados están en `ARCHIVOS_RECHAZADOS`,
+ * con el motivo de cada uno, y `tests/lp-terrenos-imagenes.mjs` comprueba que
+ * ninguno vuelva al HTML.
+ *
+ * El único archivo que NO es render es `1782496845888-h9idmq.webp`, la aérea
+ * real del polígono.
+ *
+ * ═══ CÓMO SE REVISA, Y NO ES COMO PARECE ═══
+ *
+ * NO basta con abrir el archivo original. El tercer rechazo apareció ya
+ * MAQUETADO, y por eso: la lámina se sirve con `object-cover` dentro de una
+ * caja de proporción fija, así que el recorte que ve el visitante NO es la
+ * imagen que tú abriste. Un rótulo que en el original queda en un borde
+ * estrecho y pasa desapercibido puede caer en el centro del recorte ancho.
+ *
+ * El procedimiento, entonces:
+ *   1. da de alta el archivo aquí;
+ *   2. sírvelo, y mira LA LÁMINA RENDERIZADA a 2× en el recorte real;
+ *   3. solo entonces decides.
  */
+
+/**
+ * Archivos de la galería que NO se publican, y por qué. Se exporta para que un
+ * test pueda exigir que no aparezcan en el HTML servido: un comentario no
+ * impide que alguien vuelva a pegar el nombre de archivo, un test rojo sí.
+ */
+export const ARCHIVOS_RECHAZADOS: { archivo: string; motivo: string }[] = [
+  {
+    archivo: '1782488141310-uns1a3.webp',
+    motivo:
+      'El monumento de acceso lleva el nombre comercial del desarrollo grabado y legible, y al lado se lee el rótulo de un local.',
+  },
+  {
+    archivo: '1782488140060-8pdp40.webp',
+    motivo:
+      'Aérea del distrito con el pilón de rótulos de la plaza comercial: logotipos de terceros que a tamaño de hero pueden volverse legibles, y sobre los que no tenemos derecho de uso.',
+  },
+  {
+    archivo: '1782488141376-dpv2ki.webp',
+    motivo:
+      'La caseta de vigilancia. Pasó la primera revisión sobre el archivo original —el rótulo quedaba en el borde derecho— y la fuga apareció YA MAQUETADA: al recorte 16/10 de la lámina, el monumento con «GRAN CORALIA RESIDENCIAL» quedaba dentro del cuadro y perfectamente legible. Es el motivo por el que la revisión se hace sobre la lámina renderizada, no sobre el archivo.',
+  },
+];
 const IMAGENES_CURADAS: Record<
   keyof ImagenesLanding,
   { archivo: string; alt: string; tipo: 'render' | 'foto'; caption: string }
@@ -507,6 +588,57 @@ const IMAGENES_CURADAS: Record<
     caption:
       'El polígono hoy: vialidades trazadas y lotes delimitados, sin urbanizar y sin construir.',
   },
+
+  // ── Añadidas el 2026-08-26 ────────────────────────────────────────────────
+  alberca: {
+    archivo: '1782488139803-hzi4tr.webp',
+    alt: 'Alberca con camastros bajo sombrillas y una palapa con asadores al fondo, con residentes dentro del agua',
+    tipo: 'render',
+    caption: 'La alberca comunitaria, como está proyectada.',
+  },
+  casaClub: {
+    archivo: '1782496944324-4375xl.webp',
+    alt: 'Exterior de la casa club al anochecer, con el comedor iluminado detrás de los ventanales y jardín tropical al frente',
+    tipo: 'render',
+    caption: 'La casa club, como está proyectada.',
+  },
+  casaClubComedor: {
+    archivo: '1782488140772-0fm035.webp',
+    alt: 'Comedor techado de la casa club junto a la alberca, con mesas largas de madera y una pared de estuco terracota',
+    tipo: 'render',
+    caption: 'El comedor de la casa club, como está proyectado.',
+  },
+  gimnasio: {
+    archivo: '1782488140307-tava97.webp',
+    alt: 'Gimnasio de una planta con muros de piedra y ventanales del piso al techo, rodeado de vegetación, con aparatos y bicicletas dentro',
+    tipo: 'render',
+    caption: 'El gimnasio, como está proyectado.',
+  },
+  canchasCenital: {
+    archivo: '1782488141122-qkzzpq.webp',
+    alt: 'Vista cenital de las canchas: dos de pádel en azul y una multiusos de basquetbol, separadas por camellones arbolados',
+    tipo: 'render',
+    caption: 'Las canchas vistas a plomo, como están proyectadas.',
+  },
+  andador: {
+    archivo: '1782488141006-rw87dy.webp',
+    alt: 'Andador peatonal de concreto bajo la sombra de árboles maduros, con las canchas y una jardinera al fondo',
+    tipo: 'render',
+    caption: 'Los andadores y el arbolado, como están proyectados.',
+  },
+  cine: {
+    archivo: '1782488140246-jquab6.webp',
+    alt: 'Cine al aire libre bajo los árboles: una pantalla grande proyectando un partido y mesas de picnic de madera con vecinos sentados',
+    tipo: 'render',
+    caption: 'El cine al aire libre, como está proyectado.',
+  },
+  casasCenital: {
+    archivo: '1782488141066-b5x2j0.webp',
+    alt: 'Vista cenital de lotes ya construidos: casas de dos niveles con alberca privada y terraza de madera en el patio trasero, entre calles arboladas',
+    tipo: 'render',
+    caption:
+      'Lotes ya construidos, en el proyecto del desarrollador. La casa no viene incluida: lo que se compra es el terreno.',
+  },
 };
 
 /**
@@ -527,12 +659,16 @@ function curarImagenes(galeria: unknown): ImagenesLanding {
     return url ? { url, alt, tipo, caption } : null;
   };
 
-  return {
-    hero: resolver('hero'),
-    domingo: resolver('domingo'),
-    amenidades: resolver('amenidades'),
-    urbanizacion: resolver('urbanizacion'),
-  };
+  // Se recorren las CLAVES DE LA LISTA BLANCA, no la galería. Sigue siendo
+  // lista blanca, y la cobertura la garantiza el TIPO: `IMAGENES_CURADAS` es un
+  // `Record<keyof ImagenesLanding, …>`, o sea que si mañana se declara una clave
+  // nueva en la interfaz sin darla de alta aquí, `tsc` no compila. Por eso el
+  // bucle puede arrancar de un objeto vacío sin dejar ningún campo sin asignar.
+  const resuelto = {} as ImagenesLanding;
+  for (const clave of Object.keys(IMAGENES_CURADAS) as (keyof ImagenesLanding)[]) {
+    resuelto[clave] = resolver(clave);
+  }
+  return resuelto;
 }
 
 /**

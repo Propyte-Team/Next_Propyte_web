@@ -65,9 +65,29 @@ type Atribucion = Partial<Record<(typeof CLAVES_URL)[number], string>>;
 /** Segmenta el A/B en GA4 sin tocar la acción de conversión de Ads. */
 const FORM_TYPE = 'lp_terrenos_pdc';
 
+/** El número que se rotula en la cartela, en orden de documento. */
+const ORDINAL: Record<'hero' | 'medio' | 'cierre', string> = {
+  hero: '01',
+  medio: '02',
+  cierre: '03',
+};
+
 export interface FormTerrenosProps {
-  /** `hero` va en el primer pliegue; `cierre` remata la página. */
-  variante: 'hero' | 'cierre';
+  /**
+   * Dónde vive esta instancia.
+   *
+   * `hero` va en el primer pliegue y `cierre` remata la página. `medio` se
+   * añadió el 2026-08-26, justo detrás del mosaico de láminas: es el punto de
+   * máxima intención de toda la página —acaban de ver el sitio— y antes había
+   * que volver a subir o seguir bajando dos secciones para encontrar un campo.
+   * El competidor de referencia repite su formulario cinco veces; tres, con la
+   * página midiendo lo que mide, es la lectura razonable de esa idea.
+   *
+   * El `bloque` viaja en el `message` del lead, así que en el CRM se ve DESDE
+   * DÓNDE convirtió cada persona. Eso es lo que va a decir si el mosaico
+   * vende o solo alarga.
+   */
+  variante: 'hero' | 'medio' | 'cierre';
   /** Plazos publicados. Vacío ⇒ no se pregunta. */
   plazos: number[];
   /** Slug del lote: el lead llega al CRM ya referenciado. */
@@ -237,16 +257,21 @@ export default function FormTerrenos({
     >
       <div className="flex items-baseline justify-between gap-4">
         <p className="lpt-rotulo text-[var(--lpt-estaca-2)]">
-          {esHero ? 'Solicitud · 01' : 'Solicitud · 02'}
+          Solicitud · {ORDINAL[variante]}
         </p>
         <p className="lpt-cota text-[0.6875rem] text-[var(--lpt-tinta-2)]">2 campos</p>
       </div>
 
+      {/* Una sola promesa en las tres instancias, a propósito: tres titulares
+          distintos se leerían como tres ofertas distintas. Lo único que cambia
+          es el cuerpo de letra, que sigue al peso del bloque donde vive. */}
       <h2
         className={`lpt-titular mt-3 text-[var(--lpt-tinta)] ${
           esHero
             ? 'text-[clamp(1.5rem,1.25rem+1.1vw,1.875rem)]'
-            : 'text-[clamp(1.75rem,1.4rem+1.6vw,2.5rem)]'
+            : variante === 'medio'
+              ? 'text-[clamp(1.625rem,1.35rem+1.3vw,2.125rem)]'
+              : 'text-[clamp(1.75rem,1.4rem+1.6vw,2.5rem)]'
         }`}
       >
         Recibe el plan de pagos completo

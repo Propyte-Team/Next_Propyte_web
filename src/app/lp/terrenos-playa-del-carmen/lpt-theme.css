@@ -148,6 +148,43 @@
   }
 }
 
+/* ── Entrada de las láminas del mosaico ─────────────────────────────────────
+   MISMA REGLA QUE EL H1, APLICADA A LAS IMÁGENES: nada que dependa de JS para
+   ser visible.
+
+   `Reveal` y `Escalonado` (framer-motion) sirven `initial={{opacity:0}}`, así
+   que el cero viaja en el HTML del servidor y lo levanta un observer en el
+   cliente. Para un párrafo es un riesgo aceptable. Para las diez láminas de la
+   sección de la privada no lo es: son lo único que la persona vino a ver, y un
+   JS que no carga las deja en blanco.
+
+   Esto lo conduce el SCROLL, no un observer: `animation-timeline: view()` ata
+   el progreso de la animación a la posición del elemento en el viewport. No
+   hay estado que se pueda atascar. Y va dentro de un `@supports`, así que en
+   el navegador que no lo soporta la lámina no arranca a cero: se ve, sin más.
+   `animation-range` la deja terminada bien antes del centro de la pantalla,
+   para que nadie tenga que esperar a que su imagen acabe de aparecer. */
+@keyframes lpt-lamina {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .lpt-lamina-entra {
+      animation: lpt-lamina 1ms linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 20%;
+    }
+  }
+}
+
 /* Marca de esquina: la escuadra naranja del vértice de un lote. Es el motivo
    que se repite en toda la página en vez de un icono redondeado por bloque. */
 .lpt-vertice {

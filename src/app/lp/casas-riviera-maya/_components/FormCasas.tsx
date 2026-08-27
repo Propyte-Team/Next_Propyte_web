@@ -1,0 +1,436 @@
+'use client';
+
+import { useEffect, useId, useRef, useState } from 'react';
+import Link from 'next/link';
+import { ArrowRight, Check, Loader2, MessageCircle } from '@/lib/icons';
+import { submitLead } from '@/lib/leads/submit-lead';
+import { trackWhatsAppClick } from '@/lib/analytics/track';
+
+// ============================================================
+// Formulario de la landing de casas. UN SOLO PASO, siempre visible.
+//
+// La lección que hereda de `LeadFormLotes` está pagada y documentada: Google
+// Ads gastó $991.40 MXN en 72 clics con CERO envíos porque el formulario vivía
+// detrás de una compuerta de calificación —`querySelectorAll('form').length`
+// devolvía 0 al cargar—. El visitante que costó $13.77 no veía un formulario,
+// veía una pregunta. Aquí el formulario está montado y con sus campos a la
+// vista desde el primer pixel, en el hero y otra vez al cierre.
+//
+// LOS DOS CANALES QUE PROMETE LA CAMPAÑA, JUNTOS Y JERARQUIZADOS. El dossier
+// (email) es el objetivo primario: deja lead atribuible aunque nadie conteste.
+// WhatsApp es la salida inmediata para quien no quiere esperar un correo, y va
+// SUBORDINADO —contorno, no relleno—. Con los dos al mismo peso visual, el
+// canal cómodo se come al canal que califica, y la campaña se queda sin correo
+// al que mandar la ficha que prometió el anuncio.
+//
+// TRES CAMPOS OBLIGATORIOS Y NI UNO MÁS. Nombre, WhatsApp y email. El email no
+// es negociable porque es donde aterriza el dossier: pedirlo es coherente con
+// lo que el botón promete. Todo lo demás —casa de interés, presupuesto— son
+// taps OPCIONALES que califican DESPUÉS del contacto, donde ya no pueden
+// costar un lead.
+//
+// Atribución: `gclid`/`wbraid`/UTMs se leen de la URL y viven en estado React
+// hasta el POST. Deliberadamente NO se usa `useUTMCapture` (persiste en
+// sessionStorage): esta landing vive fuera de `[locale]` y no monta <UTMCapture />.
+// ============================================================
+
+/**
+ * Rangos de presupuesto, derivados del inventario REAL y no de una escala
+ * genérica. El corte en 6 y en 11 millones no es redondo por capricho: parte
+ * el inventario en tres tercios comparables (cuatro casas, cuatro casas, tres
+ * villas), así que cada respuesta le dice algo distinto al asesor. Una escala
+ * de «hasta 3M / 3-5M / 5M+» dejaría diez de las once casas en el mismo cubo.
+ */
+const PRESUPUESTOS = [
+  'Hasta $6 M MXN',
+  '$6 M a $11 M MXN',
+  'Más de $11 M MXN',
+  'Todavía lo estoy definiendo',
+] as const;
+
+const CLAVES_URL = [
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_content',
+  'utm_term',
+  'gclid',
+  'wbraid',
+  'fbclid',
+  // `short_code` del QR físico (lo estampa /q/[code] del Hub). Esta LP vive
+  // fuera de [locale], así que <UTMCapture /> no se monta aquí: la lista está
+  // duplicada respecto a la de lotes a propósito y hay que tocar AMBAS.
+  'qr',
+] as const;
+
+type Atribucion = Partial<Record<(typeof CLAVES_URL)[number], string>>;
+
+export interface OpcionCasa {
+  slug: string;
+  titulo: string;
+}
+
+/** Eventos de observación, no de puja. `gtag` hace cola antes de cargar. */
+function emitirEvento(evento: string) {
+  if (typeof window === 'undefined') return;
+  const w = window as Window & { gtag?: (...args: unknown[]) => void };
+  w.gtag?.('event', evento, { form_type: 'lp_casas_riviera' });
+}
+
+const ETIQUETA = 'lpc-etiqueta block text-[var(--lpc-on-dark-3)]';
+
+function chip(activo: boolean) {
+  return `min-h-[40px] cursor-pointer border px-3 text-left text-[0.8125rem] leading-tight transition-colors duration-200 ${
+    activo
+      ? 'border-[var(--lpc-on-dark)] bg-[var(--lpc-on-dark)] text-[var(--lpc-ink)]'
+      : 'border-[var(--lpc-line-dark)] text-[var(--lpc-on-dark-2)] hover:border-[var(--lpc-on-dark-2)]'
+  }`;
+}
+
+export default function FormCasas({
+  variante,
+  casas,
+  casaSeleccionada,
+  onCasaChange,
+  telefonoWhatsApp,
+  /**
+   * ⚠️ COMPROMISO OPERATIVO, no copy. Define qué promete la marca al enviar.
+   * Cambiarlo es decisión de negocio: si el equipo comercial no puede sostener
+   * el plazo, la promesa quema el lead en vez de calentarlo.
+   */
+  tiempoRespuesta = 'el mismo día hábil',
+}: {
+  /** `hero` va en el panel del primer pliegue; `cierre` cierra el documento. */
+  variante: 'hero' | 'cierre';
+  casas: OpcionCasa[];
+  casaSeleccionada: string | null;
+  onCasaChange: (slug: string | null) => void;
+  telefonoWhatsApp: string;
+  tiempoRespuesta?: string;
+}) {
+  const [nombre, setNombre] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+  const [presupuesto, setPresupuesto] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  // Ref y NO estado: la atribución no se pinta en ningún sitio, solo se lee en
+  // el submit. En estado, el `setAtribucion` del efecto de montaje dispara un
+  // render en cascada del formulario entero para cambiar un dato invisible.
+  const atribucion = useRef<Atribucion>({});
+
+  // Honeypot. Un bot rellena todo lo que encuentra; una persona no ve esto.
+  const [website, setWebsite] = useState('');
+
+  // Se emite UNA vez por instancia, no en cada tecla.
+  const inicioEmitido = useRef(false);
+  const confirmacion = useRef<HTMLDivElement>(null);
+
+  // Dos instancias del form conviven en la página. Sin ids únicos el
+  // `htmlFor` de la segunda apunta al campo de la primera y el tap en la
+  // etiqueta mueve el foco a otro pliegue de la página.
+  const uid = useId();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const capturado: Atribucion = {};
+    for (const clave of CLAVES_URL) {
+      const valor = params.get(clave);
+      if (valor) capturado[clave] = valor;
+    }
+    atribucion.current = capturado;
+  }, []);
+
+  function marcarInicio() {
+    if (inicioEmitido.current) return;
+    inicioEmitido.current = true;
+    emitirEvento('form_start');
+  }
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    if (enviando) return;
+
+    // El honeypot NO devuelve error: el bot debe creer que funcionó. El
+    // servidor lo descarta igual; esto solo evita el viaje.
+    if (website) {
+      setEnviado(true);
+      return;
+    }
+
+    setEnviando(true);
+    setError(null);
+
+    const casa = casas.find((c) => c.slug === casaSeleccionada);
+
+    const resultado = await submitLead('lp_casas_riviera', {
+      name: nombre.trim(),
+      email: email.trim(),
+      phone: whatsapp.trim(),
+      whatsapp: whatsapp.trim(),
+      // `propertyName` es lo que el asesor ve primero en Zoho. Va el título de
+      // la casa cuando hay una elegida, y el alcance de la campaña cuando no:
+      // «(sin casa específica)» le dice al asesor que abra con el inventario
+      // completo, no que el dato se perdió.
+      propertyName: casa ? casa.titulo : 'Riviera Maya (sin casa específica)',
+      budget: presupuesto ?? undefined,
+      locale: 'es',
+      website,
+      ...atribucion.current,
+    });
+
+    setEnviando(false);
+
+    if (!resultado.ok) {
+      setError('No pudimos enviar tus datos. Escríbenos por WhatsApp y lo resolvemos ahí.');
+      emitirEvento('form_error');
+      return;
+    }
+
+    setEnviado(true);
+    emitirEvento('form_submit');
+  }
+
+  // El foco salta a la confirmación: en móvil el éxito puede quedar fuera de
+  // pantalla y el visitante cree que no pasó nada y vuelve a pulsar.
+  useEffect(() => {
+    if (enviado) confirmacion.current?.focus();
+  }, [enviado]);
+
+  const hrefWhatsApp = (() => {
+    const casa = casas.find((c) => c.slug === casaSeleccionada);
+    const texto = casa
+      ? `Hola, me interesa esta casa: ${casa.titulo}. ¿Me pasan precio y disponibilidad?`
+      : 'Hola, vi las casas de la Riviera Maya en su página. ¿Me pasan precios y disponibilidad?';
+    const params = new URLSearchParams({ text: texto });
+    return `https://wa.me/${telefonoWhatsApp}?${params.toString()}`;
+  })();
+
+  if (enviado) {
+    return (
+      <div
+        ref={confirmacion}
+        tabIndex={-1}
+        className="lpc-panel-oscuro bg-[var(--lpc-dark-2)] p-7 sm:p-9"
+        data-lpc-estado="enviado"
+      >
+        <div className="flex h-9 w-9 items-center justify-center border border-[var(--lpc-on-dark)]">
+          <Check className="h-4 w-4 text-[var(--lpc-on-dark)]" aria-hidden />
+        </div>
+        <h3 className="lpc-titulo mt-5 text-[1.5rem] text-[var(--lpc-on-dark)]">
+          Listo, {nombre.split(' ')[0] || 'gracias'}.
+        </h3>
+        <p className="mt-3 max-w-[42ch] text-sm leading-relaxed text-[var(--lpc-on-dark-2)]">
+          Te enviamos el dossier a <span className="text-[var(--lpc-on-dark)]">{email}</span> con
+          los precios, el enganche y la disponibilidad de las {casas.length} casas. Un asesor te
+          escribe por WhatsApp {tiempoRespuesta}.
+        </p>
+        <a
+          href={hrefWhatsApp}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackWhatsAppClick({ surface: `lp_casas_${variante}_post_envio` })}
+          className="mt-7 inline-flex min-h-[52px] items-center gap-2.5 border border-[var(--lpc-line-dark)] px-6 text-sm text-[var(--lpc-on-dark)] transition-colors duration-200 hover:border-[var(--lpc-on-dark)]"
+        >
+          <MessageCircle className="h-4 w-4" style={{ color: 'var(--lpc-wa)' }} aria-hidden />
+          Escribir ahora por WhatsApp
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={enviar}
+      noValidate
+      data-lpc-form={variante}
+      className="lpc-panel-oscuro bg-[var(--lpc-dark-2)] p-7 sm:p-9"
+    >
+      <p className="lpc-etiqueta text-[var(--lpc-signal-on-dark)]">
+        Dossier de inventario · {casas.length} casas
+      </p>
+      <h2 className="lpc-titulo mt-3 text-[clamp(1.5rem,1.2rem+1.1vw,2rem)] text-[var(--lpc-on-dark)]">
+        Precios, enganche y disponibilidad real
+      </h2>
+      <p className="mt-3 max-w-[44ch] text-sm leading-relaxed text-[var(--lpc-on-dark-2)]">
+        Te llega por correo la ficha completa de cada casa y un asesor te escribe por WhatsApp{' '}
+        {tiempoRespuesta}.
+      </p>
+
+      <div className="mt-8 grid gap-6">
+        <div>
+          <label htmlFor={`nombre-${uid}`} className={ETIQUETA}>
+            Nombre
+          </label>
+          <input
+            id={`nombre-${uid}`}
+            name="name"
+            type="text"
+            autoComplete="name"
+            required
+            value={nombre}
+            onFocus={marcarInicio}
+            onChange={(e) => setNombre(e.target.value)}
+            placeholder="Tu nombre"
+            className="lpc-campo mt-2 text-base"
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`whatsapp-${uid}`} className={ETIQUETA}>
+            WhatsApp
+          </label>
+          <input
+            id={`whatsapp-${uid}`}
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            required
+            value={whatsapp}
+            onFocus={marcarInicio}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            placeholder="+52 984 000 0000"
+            className="lpc-campo mt-2 text-base"
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`email-${uid}`} className={ETIQUETA}>
+            Correo — es donde llega el dossier
+          </label>
+          <input
+            id={`email-${uid}`}
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onFocus={marcarInicio}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="tu@correo.com"
+            className="lpc-campo mt-2 text-base"
+          />
+        </div>
+
+        {/* Casa de interés. Opcional y sincronizada con la cuadrícula: pulsar
+            «Me interesa» en una tarjeta la deja elegida aquí. Un <select> y no
+            once radios porque el campo NO debe crecer con el inventario. */}
+        <div>
+          <label htmlFor={`casa-${uid}`} className={ETIQUETA}>
+            Casa de interés <span className="normal-case tracking-normal">(opcional)</span>
+          </label>
+          <select
+            id={`casa-${uid}`}
+            name="propertySlug"
+            value={casaSeleccionada ?? ''}
+            onChange={(e) => onCasaChange(e.target.value || null)}
+            className="lpc-campo mt-2 cursor-pointer text-base"
+          >
+            <option value="" className="bg-[var(--lpc-dark-2)]">
+              Quiero ver todas
+            </option>
+            {casas.map((casa) => (
+              <option key={casa.slug} value={casa.slug} className="bg-[var(--lpc-dark-2)]">
+                {casa.titulo}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <fieldset>
+          <legend className={ETIQUETA}>
+            Presupuesto <span className="normal-case tracking-normal">(opcional)</span>
+          </legend>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {PRESUPUESTOS.map((rango) => (
+              <button
+                key={rango}
+                type="button"
+                aria-pressed={presupuesto === rango}
+                onClick={() => {
+                  marcarInicio();
+                  setPresupuesto(presupuesto === rango ? null : rango);
+                }}
+                className={chip(presupuesto === rango)}
+              >
+                {rango}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      {/* Honeypot. `tabIndex={-1}` y `aria-hidden` para que ni el teclado ni el
+          lector de pantalla lo encuentren; `sr-only` no sirve aquí, porque a un
+          lector de pantalla SÍ se lo leería. */}
+      <div className="absolute left-[-9999px]" aria-hidden>
+        <label htmlFor={`website-${uid}`}>No llenar</label>
+        <input
+          id={`website-${uid}`}
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+        />
+      </div>
+
+      {error && (
+        <p role="alert" className="mt-6 text-sm text-[var(--lpc-signal-on-dark)]">
+          {error}
+        </p>
+      )}
+
+      {/* CTA primario: relleno sólido invertido. En un documento monocromo la
+          inversión ES el énfasis — un botón de color aquí sería el mismo botón
+          que tiene toda la competencia. */}
+      <button
+        type="submit"
+        disabled={enviando}
+        className="mt-8 inline-flex min-h-[56px] w-full items-center justify-center gap-2.5 bg-[var(--lpc-on-dark)] px-6 text-sm font-medium uppercase tracking-[0.1em] text-[var(--lpc-ink)] transition-opacity duration-200 hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-55"
+      >
+        {enviando ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            Enviando
+          </>
+        ) : (
+          <>
+            Recibir el dossier
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </>
+        )}
+      </button>
+
+      {/* WhatsApp SUBORDINADO: mismo tap target de 52px, contorno en vez de
+          relleno. Presente porque quitarlo pierde ventas, en segundo plano
+          porque al mismo peso se come el correo al que va el dossier. */}
+      <a
+        href={hrefWhatsApp}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackWhatsAppClick({ surface: `lp_casas_${variante}` })}
+        className="mt-3 inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 border border-[var(--lpc-line-dark)] px-6 text-sm text-[var(--lpc-on-dark-2)] transition-colors duration-200 hover:border-[var(--lpc-on-dark)] hover:text-[var(--lpc-on-dark)]"
+      >
+        <MessageCircle className="h-4 w-4" style={{ color: 'var(--lpc-wa)' }} aria-hidden />
+        Prefiero preguntar por WhatsApp
+      </a>
+
+      <p className="mt-5 text-xs leading-relaxed text-[var(--lpc-on-dark-3)]">
+        Usamos tus datos solo para enviarte esta información y contactarte. Sin listas de
+        terceros.{' '}
+        <Link
+          href="/es/privacidad"
+          prefetch={false}
+          className="underline decoration-[var(--lpc-on-dark-3)] underline-offset-2 hover:text-[var(--lpc-on-dark-2)]"
+        >
+          Aviso de privacidad
+        </Link>
+        .
+      </p>
+    </form>
+  );
+}
