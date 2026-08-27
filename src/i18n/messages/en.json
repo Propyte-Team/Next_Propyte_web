@@ -1327,6 +1327,7 @@
     "heroEyebrow": "Direct contact",
     "formHeading": "Tell us how we can help",
     "formIntro": "Describe your inquiry and a specialized advisor will reach out.",
+    "formAllRequired": "All fields are required.",
     "formName": "Name",
     "formEmail": "Email",
     "formPhone": "Phone",

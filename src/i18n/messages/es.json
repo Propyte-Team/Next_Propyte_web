@@ -1327,6 +1327,7 @@
     "heroEyebrow": "Contacto directo",
     "formHeading": "Cuéntanos en qué podemos ayudarte",
     "formIntro": "Describe tu interés y un asesor especializado se pondrá en contacto.",
+    "formAllRequired": "Todos los campos son obligatorios.",
     "formName": "Nombre",
     "formEmail": "Email",
     "formSubject": "Asunto",
