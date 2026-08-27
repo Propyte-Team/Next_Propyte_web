@@ -5,7 +5,7 @@
 // hardcoded. NO leemos NEXT_PUBLIC_WHATSAPP_PHONE: esa env var quedó stale en
 // el deploy y secuestraba el número real (ver ContactPageContent/WhatsAppButton
 // histórico). Ahora todo el sitio reacciona al panel del Hub.
-//
+// 
 // Usado por:
 //   - SiteConfigContext.useSiteContact()  → componentes cliente
 //   - server components que llaman getSiteConfig() directo (detail pages, etc.)
