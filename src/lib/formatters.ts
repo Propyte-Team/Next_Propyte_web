@@ -22,8 +22,8 @@ export function formatArea(area: number): string {
   return `${area.toLocaleString('es-MX')} m²`;
 }
 
-export function formatPercentage(value: number): string {
-  return `${value.toFixed(1)}%`;
+export function formatPercentage(value: number, decimals: number = 1): string {
+  return `${value.toFixed(decimals)}%`;
 }
 
 export function formatNumber(value: number): string {

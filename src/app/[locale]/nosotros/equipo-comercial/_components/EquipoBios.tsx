@@ -18,12 +18,12 @@ function buildWhatsappLink(member: TeamMemberRow): string | null {
   return `https://wa.me/${clean}`;
 }
 
-function Avatar({ photoUrl, name }: { photoUrl: string | null; name: string }) {
+function Avatar({ photoUrl, name, role }: { photoUrl: string | null; name: string; role: string }) {
   if (photoUrl) {
     return (
       <Image
         src={photoUrl}
-        alt={name}
+        alt={`${name}, ${role}`}
         width={144}
         height={144}
         className="w-36 h-36 rounded-full object-cover object-top mx-auto mb-4 ring-4 ring-[#A2F9FF]/30 transition-transform duration-300 group-hover:scale-105"
@@ -67,10 +67,11 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
         {teamMembers.map((m) => {
           const waLink = buildWhatsappLink(m);
           const bio = pickBio(locale, m.bio_long, m.bio_long_en);
+          const role = splitBilingualRole(m.role, locale);
           const openProfile = () =>
             setSelected({
               name: m.name,
-              role: splitBilingualRole(m.role, locale),
+              role,
               city: m.city,
               photoUrl: m.photo_url,
               bio: bio ?? '',
@@ -83,11 +84,11 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
               // artículo firmado por esta persona (ver lib/blog/post-author.ts).
               // scroll-mt despeja la nav fixed al aterrizar en el fragmento.
               id={teamAnchorId(m.name)}
-              className="group bg-white p-6 rounded-xl border border-gray-100 text-center hover:shadow-lg transition-shadow scroll-mt-28"
+              className="group propyte-card-glass-light-sm propyte-card-hover-glow p-6 text-center scroll-mt-28"
             >
-              <Avatar photoUrl={m.photo_url} name={m.name} />
+              <Avatar photoUrl={m.photo_url} name={m.name} role={role} />
               <h3 className="font-bold text-[#1A2F3F] text-lg">{m.name}</h3>
-              <p className="text-sm text-gray-600 mt-1">{splitBilingualRole(m.role, locale)}</p>
+              <p className="text-sm text-gray-600 mt-1">{role}</p>
               {m.city && (
                 <p className="text-xs text-gray-600 mt-1 flex items-center justify-center gap-1">
                   <MapPin size={11} aria-hidden="true" /> {m.city}
@@ -111,7 +112,7 @@ export default function EquipoBios({ teamMembers }: { teamMembers: TeamMemberRow
                     href={waLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366]/10 text-[#075E54] text-xs font-semibold rounded-full hover:bg-[#25D366]/20 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-whatsapp/10 text-whatsapp-text text-xs font-semibold rounded-full hover:bg-whatsapp/20 transition-colors"
                   >
                     <MessageCircle size={12} aria-hidden="true" /> WhatsApp
                   </a>

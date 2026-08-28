@@ -3,7 +3,7 @@ import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda
 import { formatPriceShort } from '@/lib/formatters';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Building2, Globe, ChevronRight, MapPin, ArrowLeft, ShieldCheck } from '@/lib/icons';
+import { Building2, Globe, ChevronRight, MapPin, ShieldCheck } from '@/lib/icons';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
@@ -54,7 +54,7 @@ function DevCard({ dev, locale, t }: { dev: DeveloperDevelopment; locale: string
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-teal-a11y transition-colors">
+        <h3 className="font-bold text-navy text-base leading-snug group-hover:text-teal-a11y transition-colors">
           {dev.name}
         </h3>
         {(dev.city || dev.zone) && (
@@ -133,15 +133,6 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
       />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-10">
-
-        {/* Back link */}
-        <Link
-          href={`/${locale}/desarrolladores`}
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-teal-a11y transition-colors"
-        >
-          <ArrowLeft size={15} />
-          {locale === 'es' ? 'Todos los desarrolladores' : 'All developers'}
-        </Link>
 
         {/* Hero card */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-8">
@@ -232,6 +223,13 @@ export default async function DeveloperProfilePage({ locale, slug }: Props) {
             <p className="text-sm">
               {locale === 'es' ? 'Sin proyectos publicados aún' : 'No published projects yet'}
             </p>
+            <Link
+              href={`/${locale}/desarrollos`}
+              className="inline-flex items-center gap-1 mt-4 text-sm font-semibold text-teal-a11y hover:underline"
+            >
+              {locale === 'es' ? 'Ver otros desarrollos' : 'Browse other developments'}
+              <ChevronRight size={14} />
+            </Link>
           </div>
         )}
 

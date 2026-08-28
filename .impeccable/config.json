@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "codex-grid-background",
+        "value": ".propyte-hero-canvas::after",
+        "files": [
+          "src/styles/globals.css"
+        ],
+        "createdAt": "2026-08-27T15:43:41.640Z",
+        "reason": "Pre-existing site-wide hero-atmosphere system (not authored this session) — documented in code comments as a deliberate 'architectural/blueprint feel' layer, used across Hero.tsx, DevelopersHero, etc. Not a generated-UI artifact; a shipped design decision predating this session."
+      }
+    ]
+  }
+}

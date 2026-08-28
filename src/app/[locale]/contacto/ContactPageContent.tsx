@@ -169,7 +169,10 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
               <h2 className="text-2xl md:text-3xl font-bold text-[#1A2F3F] mb-2">
                 {t('formHeading')}
               </h2>
-              <p className="text-gray-600 mb-6">{t('formIntro')}</p>
+              <p className="text-gray-600">{t('formIntro')}</p>
+              {/* Los 4 campos visibles son obligatorios (schema Zod) pero antes
+                  solo lo comunicaba aria-required, sin marca visible. */}
+              <p className="text-xs text-gray-500 mb-6">{t('formAllRequired')}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -383,11 +386,8 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   </div>
                 </a>
 
-                <div className="relative group">
-                  <a
-                    href={mailHref}
-                    className="flex items-start gap-3 p-4 bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl transition-colors"
-                  >
+                <div className="group bg-[#F4F6F8] hover:bg-propyte-cyan-100 rounded-xl p-4 transition-colors">
+                  <a href={mailHref} className="flex items-start gap-3">
                     <div className="w-10 h-10 rounded-lg bg-propyte-cyan-100 flex items-center justify-center shrink-0 group-hover:bg-propyte-brand/25 transition-colors">
                       <Mail size={18} className="text-[#0E7490]" />
                     </div>
@@ -396,10 +396,14 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                       <p className="text-sm text-gray-600 mt-0.5 break-words">{email}</p>
                     </div>
                   </a>
-                  <CopyEmailButton
-                    email={email}
-                    className="absolute top-3 right-3 inline-flex items-center gap-1 text-xs text-gray-500 hover:text-[#1A2F3F] underline underline-offset-2 transition-colors"
-                  />
+                  {/* Ya no absolute sobre la tarjeta de mailto (riesgo de mis-tap) y con
+                      tap target real de 44px, no solo el texto pequeño. */}
+                  <div className="flex justify-end">
+                    <CopyEmailButton
+                      email={email}
+                      className="inline-flex items-center gap-1 min-h-[44px] px-1 text-xs text-gray-500 hover:text-[#1A2F3F] underline underline-offset-2 transition-colors"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-start gap-3 p-4 bg-[#F4F6F8] rounded-xl">

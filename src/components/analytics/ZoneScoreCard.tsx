@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, Minus } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
+import { formatPercentage } from '@/lib/formatters';
 
 interface ZoneScoreCardProps {
   score: ZoneScore;
@@ -24,7 +25,7 @@ function IndexBadge({ value }: { value: number }) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className={`text-3xl font-bold ${value >= 70 ? 'text-emerald-600' : value >= 50 ? 'text-amber-600' : 'text-gray-600'}`}>
+      <span className={`text-3xl font-bold ${value >= 70 ? 'text-emerald-700' : value >= 50 ? 'text-amber-700' : 'text-gray-600'}`}>
         {Math.round(value)}
       </span>
       <div className="flex flex-col">
@@ -44,7 +45,10 @@ function MetricRow({ label, value, context, trend }: {
   trend?: 'up' | 'down' | 'flat';
 }) {
   const TrendIcon = trend === 'up' ? TrendingUp : trend === 'down' ? TrendingDown : Minus;
-  const trendColor = trend === 'up' ? 'text-emerald-500' : trend === 'down' ? 'text-red-400' : 'text-gray-300';
+  // Mismo emerald-700/red-700 que usa ComparisonTable para "bueno"/"malo" — antes
+  // esta tarjeta pintaba el mismo significado en 500/400, un tono distinto al de
+  // la tabla y al de su propio IndexBadge (700) unas líneas arriba.
+  const trendColor = trend === 'up' ? 'text-emerald-700' : trend === 'down' ? 'text-red-700' : 'text-gray-300';
 
   return (
     <div className="flex items-center justify-between py-1.5">
@@ -101,7 +105,7 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         <div className="border-t border-gray-100 pt-3 space-y-0.5">
           <MetricRow
             label={t('occupancy')}
-            value={score.median_occupancy != null ? `${Math.round(score.median_occupancy)}%` : '—'}
+            value={score.median_occupancy != null ? formatPercentage(score.median_occupancy, 0) : '—'}
             trend={score.median_occupancy != null && score.median_occupancy > 58 ? 'up' : score.median_occupancy != null && score.median_occupancy < 40 ? 'down' : 'flat'}
           />
           <MetricRow

@@ -412,6 +412,8 @@
     "verified": "Verified",
     "prev": "Previous",
     "next": "Next",
+    "ratingLabel": "{rating} out of 5 stars",
+    "slideAnnouncement": "Showing testimonials {from} to {to} of {total}",
     "items": [
       {
         "name": "Carlos M.",
@@ -616,6 +618,7 @@
     "cardBathShort": "ba",
     "cardPrevImage": "Previous image",
     "cardNextImage": "Next image",
+    "cardGoToImage": "View image {n}",
     "cardSave": "Save",
     "cardBrochure": "Download brochure",
     "cardCompare": "Compare",
@@ -1324,6 +1327,7 @@
     "heroEyebrow": "Direct contact",
     "formHeading": "Tell us how we can help",
     "formIntro": "Describe your inquiry and a specialized advisor will reach out.",
+    "formAllRequired": "All fields are required.",
     "formName": "Name",
     "formEmail": "Email",
     "formPhone": "Phone",
@@ -2017,6 +2021,7 @@
     "count": "Results",
     "ofTotal": "of {total} comparables",
     "dataFreshness": "Updated",
+    "dataFreshnessTitle": "Green: updated 7 days ago or less · Yellow: 8-30 days · Red: more than 30 days",
     "today": "today",
     "methodology": "Methodology",
     "methodologyBody": "Data is collected from public real estate portals and rental platforms through automated market-data collection. Metrics (median, P25, P75, rent/m²) are computed in real time on filtered comparables. The ML model trains on this data to generate per-development estimates. Data is updated weekly."
@@ -2088,6 +2093,7 @@
     "allCitiesOption": "All Cities",
     "searchZonePlaceholder": "Search zone...",
     "provenanceLine": "Propyte's own analysis of public short-term rental platform records · Data as of {date}",
+    "zonesRankingTitle": "Zone ranking by profitability",
     "benchmarkHeading": "Reference market",
     "benchmarkNote": "Mexico City is not part of Propyte's portfolio. It is included as a comparison set: it contrasts Mexican Caribbean returns against a mature urban market.",
     "openFinancingCalculator": "Open financing calculator",
@@ -2154,7 +2160,8 @@
     "ltrStep4": "Statistical computation: median, average, percentiles by segment",
     "ltrStep5": "ML-based rent estimation for each development using comparable matching",
     "ltrStep6": "ROI, IRR, cap rate and cash flow projections computed per property",
-    "ltrFooter": "Data is refreshed daily. Financial projections are estimates and do not guarantee returns."
+    "ltrFooter": "Data is refreshed daily. Financial projections are estimates and do not guarantee returns.",
+    "fullPageCta": "See more details"
   },
   "comoComprar": {
     "heroEyebrow": "Practical guide",
