@@ -49,7 +49,10 @@ export default function MarketAttributionBadge({
         const daysAgo = Math.floor((Date.now() - new Date(dataFreshness).getTime()) / 86400000);
         const dotColor = daysAgo <= 7 ? 'bg-[#22C55E]' : daysAgo <= 30 ? 'bg-yellow-400' : 'bg-[#EF4444]';
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-600 ml-auto">
+          <span
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white border border-gray-200 rounded-full text-xs text-gray-600 ml-auto"
+            title={t('dataFreshnessTitle')}
+          >
             <Clock size={10} />
             <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
             {t('dataFreshness')}: {daysAgo <= 0 ? t('today') : `${daysAgo}d`}

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { ArrowUpDown, ArrowUp, ArrowDown } from '@/lib/icons';
-import { useCurrency } from '@/context/CurrencyContext';
+import { formatPrice, formatPercentage } from '@/lib/formatters';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
 
@@ -31,8 +31,10 @@ function competitionSortValue(listings: number): number {
 
 export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProps) {
   const t = useTranslations('comparisonTable');
-  const { formatMxn } = useCurrency();
-  const format = formatMxn;
+  // Mismo formatPrice que TradicionalTab (incluye código "MXN") — antes esta
+  // tabla usaba useCurrency().formatMxn, que omite el código de moneda, y el
+  // mismo monto se leía distinto según qué pestaña de Mercado lo mostrara.
+  const format = formatPrice;
   const [sortField, setSortField] = useState<TableSortField>('score');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
 
@@ -107,8 +109,8 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
   const SortIndicator = ({ field }: { field: TableSortField }) => {
     if (sortField !== field) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
     return sortDir === 'asc'
-      ? <ArrowUp className="w-3 h-3 text-teal-600" />
-      : <ArrowDown className="w-3 h-3 text-teal-600" />;
+      ? <ArrowUp className="w-3 h-3 text-teal-a11y" />
+      : <ArrowDown className="w-3 h-3 text-teal-a11y" />;
   };
 
   if (scores.length === 0) return null;
@@ -187,7 +189,7 @@ export function ComparisonTable({ scores, locale: _locale }: ComparisonTableProp
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
                     {score.median_occupancy != null
-                      ? `${Math.round(score.median_occupancy)}%`
+                      ? formatPercentage(score.median_occupancy, 0)
                       : '—'}
                   </td>
                   <td className="px-4 py-3 text-right font-mono">

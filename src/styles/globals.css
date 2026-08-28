@@ -23,6 +23,10 @@
   --color-error: #EF4444;
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1EBE57;
+  /* Texto/ícono sobre chip bg-whatsapp/10 — #25D366 no pasa AA como texto sobre
+     blanco. Repetido como hex suelto en 2 lugares (EquipoBios, TeamBioModal)
+     antes de tener token propio. */
+  --color-whatsapp-text: #075E54;
 
   /* Propyte Brand Identity Oficial — paleta corporativa
      Cyans claros (degradado claro) + teals oscuros (degradado oscuro).
@@ -155,6 +159,7 @@
   --color-error: #EF4444;
   --color-whatsapp: #25D366;
   --color-whatsapp-dark: #1EBE57;
+  --color-whatsapp-text: #075E54;
 
   /* Brand Identity Oficial — exposed a Tailwind como utilities
      bg-propyte-brand / text-propyte-cyan-200 / border-propyte-dark-700, etc. */

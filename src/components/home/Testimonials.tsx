@@ -62,6 +62,16 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
           </div>
         </div>
 
+        {/* Anuncia el rango visible en cada prev/next — antes el carrusel
+            cambiaba de contenido en silencio para lectores de pantalla. */}
+        <p className="sr-only" aria-live="polite">
+          {t('slideAnnouncement', {
+            from: startIndex + 1,
+            to: Math.min(startIndex + visibleCount, testimonials.length),
+            total: testimonials.length,
+          })}
+        </p>
+
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.slice(startIndex, startIndex + visibleCount).map((item, i) => (
             <div
@@ -70,9 +80,9 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
               // stack inset + drop, blur 52px. Padding 28px (vs 24px).
               className="propyte-card-glass-lg p-7 transition-transform hover:-translate-y-1"
             >
-              <div className="flex gap-0.5 mb-3">
+              <div role="img" aria-label={t('ratingLabel', { rating: item.rating })} className="flex gap-0.5 mb-3">
                 {Array.from({ length: item.rating }).map((_, j) => (
-                  <Star key={j} size={16} className="fill-propyte-brand text-propyte-brand" />
+                  <Star key={j} size={16} aria-hidden="true" className="fill-propyte-brand text-propyte-brand" />
                 ))}
               </div>
 

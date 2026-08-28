@@ -308,6 +308,10 @@ export default function MarketplaceContent({
           filters={filters}
           onFilterChange={updateFilter}
           onClear={clearFilters}
+          availableCities={availableCities}
+          availableZones={availableZones}
+          showDevTypeFilter={showDevTypeFilter}
+          priceCeiling={priceCeiling}
         />
 
         <ComparePanel properties={properties} />
@@ -353,6 +357,10 @@ export default function MarketplaceContent({
         filters={filters}
         onFilterChange={updateFilter}
         onClear={clearFilters}
+        availableCities={availableCities}
+        availableZones={availableZones}
+        showDevTypeFilter={showDevTypeFilter}
+        priceCeiling={priceCeiling}
       />
 
       <ComparePanel properties={properties} />

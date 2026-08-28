@@ -2,6 +2,7 @@
 
 import { BarChart3, TrendingUp, Home, MapPin } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
+import { formatPercentage } from '@/lib/formatters';
 
 interface VacacionalKPIsProps {
   zones: number;
@@ -16,8 +17,8 @@ export function VacacionalKPIs({ zones, avgIndex, avgOccupancy, totalListings }:
 
   const kpis = [
     { icon: MapPin, value: zones.toString(), show: zones > 0, label: t('kpiZones'), color: 'text-gray-900' },
-    { icon: BarChart3, value: `${avgIndex}/100`, show: avgIndex > 0, label: t('kpiAvgIndex'), color: 'text-teal-700' },
-    { icon: TrendingUp, value: `${avgOccupancy}%`, show: avgOccupancy > 0, label: t('kpiAvgOccupancy'), color: 'text-gray-900' },
+    { icon: BarChart3, value: `${avgIndex}/100`, show: avgIndex > 0, label: t('kpiAvgIndex'), color: 'text-teal-a11y' },
+    { icon: TrendingUp, value: formatPercentage(avgOccupancy, 0), show: avgOccupancy > 0, label: t('kpiAvgOccupancy'), color: 'text-gray-900' },
     { icon: Home, value: totalListings.toLocaleString(), show: totalListings > 0, label: t('kpiActiveProperties'), color: 'text-gray-900' },
   ].filter((kpi) => kpi.show);
 

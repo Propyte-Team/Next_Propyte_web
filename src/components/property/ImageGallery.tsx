@@ -145,7 +145,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight 
                   aria-label={isLast ? `Ver ${count - 4} fotos más` : `Ver imagen ${i + 1}`}
                   className={`relative aspect-[4/3] min-w-[88px] md:min-w-0 min-h-[66px] rounded-xl overflow-hidden border-2 transition-all ${
                     selected
-                      ? 'border-[#5CE0D2] ring-2 ring-[#5CE0D2]/30'
+                      ? 'border-teal ring-2 ring-teal/30'
                       : 'border-transparent hover:border-gray-300 opacity-80 hover:opacity-100'
                   }`}
                 >
@@ -236,7 +236,7 @@ export default function ImageGallery({ images, alt, badgeTopLeft, badgeTopRight 
                   onClick={() => setCurrent(i)}
                   aria-label={`Show image ${i + 1}`}
                   className={`relative w-16 h-12 rounded-md overflow-hidden flex-shrink-0 border-2 transition-all min-w-[44px] min-h-[44px] ${
-                    i === current ? 'border-[#5CE0D2]' : 'border-transparent opacity-55 hover:opacity-90'
+                    i === current ? 'border-teal' : 'border-transparent opacity-55 hover:opacity-90'
                   }`}
                 >
                   <Image src={img} alt="" fill sizes="64px" className="object-cover" />

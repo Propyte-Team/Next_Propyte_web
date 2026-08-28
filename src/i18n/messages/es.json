@@ -412,6 +412,8 @@
     "verified": "Verificado",
     "prev": "Anterior",
     "next": "Siguiente",
+    "ratingLabel": "{rating} de 5 estrellas",
+    "slideAnnouncement": "Mostrando testimonios {from} a {to} de {total}",
     "items": [
       {
         "name": "Carlos M.",
@@ -616,6 +618,7 @@
     "cardBathShort": "ba",
     "cardPrevImage": "Imagen anterior",
     "cardNextImage": "Imagen siguiente",
+    "cardGoToImage": "Ver imagen {n}",
     "cardSave": "Guardar",
     "cardBrochure": "Descargar brochure",
     "cardCompare": "Comparar",
@@ -1324,6 +1327,7 @@
     "heroEyebrow": "Contacto directo",
     "formHeading": "Cuéntanos en qué podemos ayudarte",
     "formIntro": "Describe tu interés y un asesor especializado se pondrá en contacto.",
+    "formAllRequired": "Todos los campos son obligatorios.",
     "formName": "Nombre",
     "formEmail": "Email",
     "formSubject": "Asunto",
@@ -2017,6 +2021,7 @@
     "count": "Resultados",
     "ofTotal": "de {total} comparables",
     "dataFreshness": "Actualización",
+    "dataFreshnessTitle": "Verde: actualizado hace 7 días o menos · Amarillo: 8-30 días · Rojo: más de 30 días",
     "today": "hoy",
     "methodology": "Metodología",
     "methodologyBody": "Los datos se recopilan de portales inmobiliarios y plataformas de renta públicas mediante recopilación automatizada de datos de mercado. Las métricas (mediana, P25, P75, renta/m²) se calculan en tiempo real sobre los comparables filtrados. El modelo ML entrena sobre estos datos para generar estimaciones por desarrollo. Los datos se actualizan semanalmente."
@@ -2088,6 +2093,7 @@
     "allCitiesOption": "Todas las Ciudades",
     "searchZonePlaceholder": "Buscar zona...",
     "provenanceLine": "Elaboración propia sobre registros públicos de plataformas de renta vacacional · Corte {date}",
+    "zonesRankingTitle": "Ranking de zonas por rentabilidad",
     "benchmarkHeading": "Mercado de referencia",
     "benchmarkNote": "Ciudad de México no forma parte de la oferta de Propyte. Se incluye como conjunto de comparación: sirve para contrastar los rendimientos del Caribe mexicano contra un mercado urbano maduro.",
     "openFinancingCalculator": "Abrir calculadora de financiamiento",
@@ -2154,7 +2160,8 @@
     "ltrStep4": "Cálculo estadístico: mediana, promedio, percentiles por segmento",
     "ltrStep5": "Estimación de renta con ML para cada desarrollo usando comparables similares",
     "ltrStep6": "ROI, TIR, cap rate y proyecciones de flujo calculadas por propiedad",
-    "ltrFooter": "Los datos se actualizan diariamente. Las proyecciones financieras son estimaciones y no garantizan rendimientos."
+    "ltrFooter": "Los datos se actualizan diariamente. Las proyecciones financieras son estimaciones y no garantizan rendimientos.",
+    "fullPageCta": "Ver más detalles"
   },
   "comoComprar": {
     "heroEyebrow": "Guía práctica",

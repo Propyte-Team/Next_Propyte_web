@@ -123,8 +123,8 @@ function PillDropdown({
         onClick={() => setOpen((v) => !v)}
         className={`h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-all whitespace-nowrap ${
           isActive
-            ? 'bg-propyte-cyan-100 border-propyte-brand text-[#0E7490]'
-            : 'bg-white border-gray-300 text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400'
+            ? 'bg-propyte-cyan-100 border-propyte-brand text-teal-a11y'
+            : 'bg-white border-gray-300 text-graphite hover:bg-gray-50 hover:border-gray-400'
         }`}
       >
         {activeLabel || label}
@@ -301,12 +301,12 @@ export default function FilterBar({
           onClick={onOpenAdvanced}
           aria-haspopup="dialog"
           aria-expanded={advancedOpen}
-          className="min-h-[44px] px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400 transition-colors flex-shrink-0 touch-manipulation"
+          className="min-h-[44px] px-4 flex items-center gap-2 rounded-full border border-gray-300 text-sm font-semibold text-graphite hover:bg-gray-50 hover:border-gray-400 transition-colors flex-shrink-0 touch-manipulation"
         >
           <SlidersHorizontal size={14} />
           {t('mobileFiltersButton')}
           {activeCount > 0 && (
-            <span className="bg-propyte-brand text-[#0F1923] text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="bg-propyte-brand text-aztec text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
               {activeCount}
             </span>
           )}
@@ -344,7 +344,7 @@ export default function FilterBar({
             <button
               onClick={() => { onFilterChange('city', ''); onFilterChange('zone', ''); }}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                !filters.city ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                !filters.city ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
               }`}
             >
               {t('filterAll')}
@@ -359,7 +359,7 @@ export default function FilterBar({
                   onFilterChange('zone', '');
                 }}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.city === city ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  filters.city === city ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {city}
@@ -379,7 +379,7 @@ export default function FilterBar({
               <button
                 onClick={() => onFilterChange('zone', '')}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  !filters.zone ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  !filters.zone ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {t('filterAll')}
@@ -389,7 +389,7 @@ export default function FilterBar({
                   key={zone}
                   onClick={() => onFilterChange('zone', filters.zone === zone ? '' : zone)}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    filters.zone === zone ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                    filters.zone === zone ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                   }`}
                 >
                   {zone}
@@ -432,7 +432,7 @@ export default function FilterBar({
                 <button
                   key={p.label}
                   onClick={() => { onFilterChange('priceMin', p.min); onFilterChange('priceMax', p.max); }}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-[#0E7490] hover:text-[#0E7490] transition-colors"
+                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-teal-a11y hover:text-teal-a11y transition-colors"
                 >
                   {p.label}
                 </button>
@@ -451,7 +451,7 @@ export default function FilterBar({
             <button
               onClick={() => onFilterChange('type', '')}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                !filters.type ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                !filters.type ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
               }`}
             >
               {t('filterAll')}
@@ -461,7 +461,7 @@ export default function FilterBar({
                 key={opt.value}
                 onClick={() => onFilterChange('type', filters.type === opt.value ? '' : opt.value)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.type === opt.value ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  filters.type === opt.value ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {opt.label}
@@ -484,7 +484,7 @@ export default function FilterBar({
                 key={n}
                 onClick={() => onFilterChange('bedroomsMin', filters.bedroomsMin === n ? 0 : n)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.bedroomsMin === n ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  filters.bedroomsMin === n ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {n === 0 ? t('filterAll') : n >= 4 ? '4+ rec' : `${n} rec`}
@@ -503,7 +503,7 @@ export default function FilterBar({
             <button
               onClick={() => onFilterChange('stage', '')}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                !filters.stage ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                !filters.stage ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
               }`}
             >
               {t('filterAll')}
@@ -513,7 +513,7 @@ export default function FilterBar({
                 key={s}
                 onClick={() => onFilterChange('stage', filters.stage === s ? '' : s)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.stage === s ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  filters.stage === s ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {safeStage(s)}
@@ -533,7 +533,7 @@ export default function FilterBar({
               <button
                 onClick={() => onFilterChange('developmentType', '')}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  !filters.developmentType ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  !filters.developmentType ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {t('filterAll')}
@@ -554,7 +554,7 @@ export default function FilterBar({
                   key={dt}
                   onClick={() => onFilterChange('developmentType', filters.developmentType === dt ? '' : dt)}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    filters.developmentType === dt ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                    filters.developmentType === dt ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                   }`}
                 >
                   {safeDevType(dt)}
@@ -576,7 +576,7 @@ export default function FilterBar({
                 key={roi}
                 onClick={() => onFilterChange('roiMin', roi)}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  filters.roiMin === roi ? 'bg-propyte-cyan-100 text-[#0E7490] font-semibold' : 'hover:bg-gray-50'
+                  filters.roiMin === roi ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
               >
                 {roi === 0 ? t('filterAll') : `${roi}%+`}
@@ -591,7 +591,7 @@ export default function FilterBar({
           aria-expanded={advancedOpen}
           aria-haspopup="dialog"
           aria-controls="advanced-filters-dialog"
-          className="h-10 px-4 flex items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-[#2C2C2C] hover:bg-gray-50 hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0"
+          className="h-10 px-4 flex items-center gap-1.5 rounded-full border border-gray-300 text-sm font-semibold text-graphite hover:bg-gray-50 hover:border-gray-400 transition-colors whitespace-nowrap flex-shrink-0"
         >
           <SlidersHorizontal size={14} />
           {t('moreFilters')}
@@ -627,7 +627,7 @@ export default function FilterBar({
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.85, y: -4 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 30, mass: 0.5 }}
-                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-propyte-cyan-100 border border-propyte-brand/40 text-xs font-semibold text-[#0E7490] hover:bg-propyte-cyan-200 hover:border-propyte-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                className="inline-flex items-center gap-1 h-7 pl-3 pr-2 rounded-full bg-propyte-cyan-100 border border-propyte-brand/40 text-xs font-semibold text-teal-a11y hover:bg-propyte-cyan-200 hover:border-propyte-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
               >
                 <span className="truncate max-w-[180px]">{chip.label}</span>
                 <X size={12} strokeWidth={2.5} aria-hidden="true" />
@@ -642,7 +642,7 @@ export default function FilterBar({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
-                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-600 hover:text-[#1A2F3F] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
+                className="inline-flex items-center h-7 px-3 rounded-full text-xs font-semibold text-gray-600 hover:text-navy hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand transition-colors"
               >
                 {t('clearAll')}
               </motion.button>

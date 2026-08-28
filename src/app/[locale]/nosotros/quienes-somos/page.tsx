@@ -333,22 +333,34 @@ export default async function QuienesSomosPage({ params }: { params: Promise<{ l
               {t('valueTitle')}
             </h2>
           </div>
-          <div
-            className="flex gap-4 snap-x snap-mandatory overflow-x-auto pb-4 -mx-4 md:-mx-6 px-4 md:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            style={{ WebkitOverflowScrolling: 'touch' }}
-          >
-            {ecosystemCards.map(({ icon: Icon, title, desc }) => (
-              <div
-                key={title}
-                className="flex-shrink-0 w-[75vw] sm:w-[45vw] lg:w-[calc(25%-0.75rem)] snap-center bg-white p-7 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-11 h-11 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-5">
-                  <Icon size={22} className="text-[#0E7490]" />
+          {/* relative + fade: la scrollbar va oculta y en mobile/tablet solo
+              se ve 1-2 de las 4 cards — sin ninguna señal de que hay más
+              contenido a la derecha. En lg caben las 4 sin overflow, así que
+              ahí el fade simplemente no tiene nada que tapar. */}
+          <div className="relative">
+            <div
+              role="region"
+              aria-label={t('ecosystemLabel')}
+              className="flex gap-4 snap-x snap-mandatory overflow-x-auto pb-4 -mx-4 md:-mx-6 px-4 md:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {ecosystemCards.map(({ icon: Icon, title, desc }) => (
+                <div
+                  key={title}
+                  className="flex-shrink-0 w-[75vw] sm:w-[45vw] lg:w-[calc(25%-0.75rem)] snap-center bg-white p-7 rounded-xl border border-gray-100 hover:shadow-lg transition-shadow"
+                >
+                  <div className="w-11 h-11 bg-propyte-cyan-100 rounded-xl flex items-center justify-center mb-5">
+                    <Icon size={22} className="text-[#0E7490]" />
+                  </div>
+                  <h3 className="text-base font-bold text-[#1A2F3F] mb-2">{title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
                 </div>
-                <h3 className="text-base font-bold text-[#1A2F3F] mb-2">{title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute top-0 right-0 bottom-4 w-12 bg-gradient-to-l from-white to-transparent lg:hidden"
+            />
           </div>
         </div>
       </section>
