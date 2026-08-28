@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import FormCasas, { type OpcionCasa } from './FormCasas';
+import type { LocaleCasas } from '../_copy';
 
 // ============================================================
 // Envoltorio de estado para el formulario del hero.
@@ -21,9 +22,11 @@ import FormCasas, { type OpcionCasa } from './FormCasas';
 export default function FormAutonomo({
   casas,
   telefonoWhatsApp,
+  locale = 'es',
 }: {
   casas: OpcionCasa[];
   telefonoWhatsApp: string;
+  locale?: LocaleCasas;
 }) {
   const [casaSeleccionada, setCasaSeleccionada] = useState<string | null>(null);
 
@@ -34,6 +37,7 @@ export default function FormAutonomo({
       casaSeleccionada={casaSeleccionada}
       onCasaChange={setCasaSeleccionada}
       telefonoWhatsApp={telefonoWhatsApp}
+      locale={locale}
     />
   );
 }

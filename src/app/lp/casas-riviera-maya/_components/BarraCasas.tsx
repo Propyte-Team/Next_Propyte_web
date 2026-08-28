@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle } from '@/lib/icons';
 import { trackWhatsAppClick } from '@/lib/analytics/track';
+import { COPY, type LocaleCasas } from '../_copy';
 
 // ============================================================
 // Barra fija de móvil. Solo móvil, y solo después del primer pliegue.
@@ -25,10 +26,13 @@ import { trackWhatsAppClick } from '@/lib/analytics/track';
 export default function BarraCasas({
   telefonoWhatsApp,
   totalCasas,
+  locale = 'es',
 }: {
   telefonoWhatsApp: string;
   totalCasas: number;
+  locale?: LocaleCasas;
 }) {
+  const copy = COPY[locale];
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function BarraCasas({
   }, []);
 
   const href = `https://wa.me/${telefonoWhatsApp}?${new URLSearchParams({
-    text: 'Hola, vi las casas de la Riviera Maya en su página. ¿Me pasan precios y disponibilidad?',
+    text: copy.whatsapp.generico,
   }).toString()}`;
 
   return (
@@ -67,7 +71,7 @@ export default function BarraCasas({
           tabIndex={visible ? undefined : -1}
           className="flex min-h-[56px] flex-1 items-center justify-center bg-[var(--lpc-on-dark)] px-4 text-center text-[0.8125rem] font-medium uppercase tracking-[0.08em] text-[var(--lpc-ink)]"
         >
-          Ver precios de las {totalCasas}
+          {copy.barra.verPrecios(totalCasas)}
         </a>
         <a
           href={href}
@@ -75,7 +79,7 @@ export default function BarraCasas({
           rel="noopener noreferrer"
           tabIndex={visible ? undefined : -1}
           onClick={() => trackWhatsAppClick({ surface: 'lp_casas_barra_movil' })}
-          aria-label="Escribir por WhatsApp"
+          aria-label={copy.whatsapp.ariaLabel}
           className="flex min-h-[56px] w-[68px] shrink-0 items-center justify-center"
         >
           <MessageCircle className="h-5 w-5" style={{ color: 'var(--lpc-wa)' }} aria-hidden />
