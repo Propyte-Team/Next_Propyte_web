@@ -51,7 +51,7 @@ export default async function ExclusivosPage({ params }: { params: Promise<{ loc
     console.error('[ExclusivosPage] Supabase fetch failed:', error);
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   const collectionSchema = {
     '@context': 'https://schema.org',

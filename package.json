@@ -18,12 +18,7 @@
     "test:e2e:report": "playwright show-report",
     "test:unit": "vitest run",
     "test:playground": "node tests/design-playground-sync.mjs",
-    "test:prerender": "node tests/prerender-seo.mjs",
-    "vercel:link": "vercel link",
-    "vercel:env:pull": "vercel env pull .env.local",
-    "vercel:dev": "vercel deploy",
-    "vercel:preview": "vercel deploy --prebuilt",
-    "vercel:prod": "vercel deploy --prod"
+    "test:prerender": "node tests/prerender-seo.mjs"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",

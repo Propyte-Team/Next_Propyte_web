@@ -56,7 +56,7 @@ export default async function TaxonomyDevelopmentsPage({
     console.error('[TaxonomyDevelopmentsPage] getDevelopments failed:', error);
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   const itemListSchema = {
     '@context': 'https://schema.org',

@@ -44,7 +44,7 @@ export default async function UnetePage({ params }: { params: Promise<{ locale: 
     getTranslations({ locale, namespace: 'a11y' }),
   ]);
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   const webPageSchema = {
     '@context': 'https://schema.org',

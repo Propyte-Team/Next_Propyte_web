@@ -2129,11 +2129,23 @@ SMTP_PASS=...
 > `main` y propyte.com solo están `npm run dev` en local y los checks de
 > `ci.yml`.
 >
-> Quedan residuos de esa etapa que NO son señal de que el staging exista:
-> los scripts `vercel:*` de `package.json`, el documento
-> `docs/VERCEL-DEPLOY.md` (marcado como obsoleto en su cabecera), la entrada
-> `https://dev.propyte.com` del allowlist de `src/app/api/leads/route.ts`, y
-> las rutas de código que distinguen staging vía `NEXT_PUBLIC_NOINDEX`
+> **Limpieza hecha el 2026-08-27.** Se eliminaron los scripts `vercel:*` de
+> `package.json` y la entrada `https://dev.propyte.com` del allowlist de
+> orígenes de `src/app/api/leads/route.ts`.
+>
+> Se corrigió además un defecto que la eliminación del staging había dejado
+> latente: **8 archivos usaban `https://dev.propyte.com` como fallback de
+> `NEXT_PUBLIC_SITE_URL`**, entre ellos el `metadataBase` de
+> `src/app/layout.tsx`, que es la base de todos los canonical y OG del sitio.
+> Con la variable ausente en el VPS, el sitio entero habría emitido canonicals
+> hacia un dominio que ya no resuelve. Ahora los 15 archivos que leen esa
+> variable caen a `https://propyte.com`.
+>
+> Lo que SÍ se conserva y no es señal de que el staging exista:
+> `docs/VERCEL-DEPLOY.md` (marcado obsoleto, registro histórico), los scripts
+> de QA de la migración en `tests/qa-phase*/` que apuntan a `dev.propyte.com`
+> (no están enganchados a ningún comando de `package.json` ni a CI), y las
+> rutas que distinguen staging vía `NEXT_PUBLIC_NOINDEX`
 > (`src/lib/seo/noindex.ts`) — estas últimas siguen siendo un mecanismo
 > válido para cualquier despliegue no productivo futuro.
 

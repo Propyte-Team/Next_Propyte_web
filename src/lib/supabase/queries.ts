@@ -2480,7 +2480,8 @@ const BLOG_SELECT = `
 // Se aplica también con `includeStaged`: estar en la papelera no es un estado de
 // publicación.
 
-// En dev.propyte.com (Vercel), poner BLOG_INCLUDE_STAGED=true para ver posts en staging.
+// BLOG_INCLUDE_STAGED=true muestra posts en staging. Sin uso hoy: el staging de
+// dev.propyte.com se eliminó el 2026-06-17 y no hay otro entorno no productivo.
 // En propyte.com (Hostinger) no definir la variable → solo muestra 'published'.
 const includeStaged = process.env.BLOG_INCLUDE_STAGED === 'true';
 

@@ -203,8 +203,8 @@ npm run build
 
 El Vercel de `dev.propyte.com` se eliminó el **2026-06-17** (fuente:
 `next.config.ts:25`, en el comentario que reactivó el optimizador de imágenes).
-Los scripts `vercel:*` de `package.json` y `docs/VERCEL-DEPLOY.md` son
-residuales de esa época.
+Los scripts `vercel:*` de `package.json` se eliminaron; `docs/VERCEL-DEPLOY.md`
+se conserva marcado como obsoleto, solo como registro histórico.
 
 Consecuencia práctica, y es la que manda al trabajar aquí: **no existe un sitio
 donde mirar un cambio antes de que lo vea el público.** Lo único que hay entre

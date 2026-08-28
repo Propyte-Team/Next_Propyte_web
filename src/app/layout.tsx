@@ -60,7 +60,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com'),
   title: {
     template: '%s | Propyte',
     default: 'Propyte — Real estate en modo inteligente',
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     alternateLocale: 'en_US',
   },
   twitter: { card: 'summary_large_image' },
-  // Bloquea indexación en staging (dev.propyte.com) o cualquier deploy donde
+  // Bloquea indexación en cualquier deploy no productivo donde
   // NEXT_PUBLIC_NOINDEX=true. En producción (propyte.com) queda undefined y
   // los crawlers usan su comportamiento default (indexable).
   ...(shouldNoIndex()

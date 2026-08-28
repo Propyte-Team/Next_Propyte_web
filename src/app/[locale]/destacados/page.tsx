@@ -85,7 +85,7 @@ export default async function DestacadosPage({ params }: { params: Promise<{ loc
   const heroSubtitle = (locale === 'en' ? heroCta?.subtitle_en : heroCta?.subtitle_es) ?? t('heroSubtitle');
   const heroAccent = heroCta?.accent_color ?? '#A2F9FF';
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   const collectionSchema = {
     '@context': 'https://schema.org',

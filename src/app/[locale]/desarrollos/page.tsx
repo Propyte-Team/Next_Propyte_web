@@ -64,7 +64,7 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
     console.error('[DesarrollosPage] getDevelopments failed:', error);
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   const itemListSchema = {
     '@context': 'https://schema.org',

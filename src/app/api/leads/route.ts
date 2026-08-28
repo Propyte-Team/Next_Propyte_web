@@ -121,7 +121,6 @@ function isAllowedOrigin(origin: string | null): boolean {
   const baseList = [
     'https://propyte.com',
     'https://www.propyte.com',
-    'https://dev.propyte.com',
   ];
   const allowed = new Set([...baseList, ...envList]);
   if (allowed.has(origin)) return true;

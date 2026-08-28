@@ -77,7 +77,7 @@ export default async function PromocionesPage({ params }: { params: Promise<{ lo
   const heroSubtitle = (locale === 'en' ? heroCta?.subtitle_en : heroCta?.subtitle_es) ?? t('heroSubtitle');
   const heroAccent = heroCta?.accent_color ?? '#A2F9FF';
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dev.propyte.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
 
   // Schema.org Offer real: cada unidad con descuento → priceSpecification con
   // precio post-descuento + validThrough cuando exista. Threshold: 2+ items.
