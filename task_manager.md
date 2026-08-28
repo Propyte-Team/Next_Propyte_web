@@ -1,57 +1,171 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
+> Última actualización: 2026-08-26 — 🔴 **PR #58 VERDE y SIN MERGEAR**: consolida 8 bumps de dependabot + los iconos de marca vendorizados (lucide v1 los eliminó) + los dos jobs de CI que faltaban (`build` y `test:unit`). El merge lo denegó el clasificador — necesita el clic de Luis. `origin/main` = `084d76f` (#56). ⚠️ El `main` LOCAL sigue en `72fc1fa` y el árbol principal tiene trabajo ajeno sin commitear.
 >
-> 🚨 **3 de los 4 ❌ que se veían en la lista de PRs eran fósiles del 16 de junio**, de cuando `main` tenía 11 errores de lint ya corregidos. El PR #7 solo tocaba `playwright.yml` y aun así «fallaba» el job de `ci.yml` — imposible. El campo que lo delata es `completedAt` de cada check, que la UI de GitHub no pone delante. Ver [[feedback_dependabot_checks_fosiles]].
+> Entrada anterior (2026-08-24) — 🚨 **la LP de lotes servía CERO formularios en producción durante 4 días; corregido y desplegado (#54).** Además entró la nueva LP corta `/lp/terrenos-playa-del-carmen` (#39, #53): ya hay dos landings listas para el A/B. `origin/main` = `8b1c8be`. ⚠️ El árbol principal sigue sucio, pero `LeadFormLotes.tsx` y `lotes-playa-del-carmen/page.tsx` **ya están versionados vía #54**: lo correcto es `git checkout --` esos dos y luego `pull`.
 >
-> 🚨 **El 403 «without workflow scope» al mergear los PRs de Actions NO era falta de permisos: era la base desfasada.** `@dependabot rebase` y entraron los cuatro. Cada merge desfasa a los siguientes, así que hay que rebasear uno por uno. Cuando `gh pr merge` (GraphQL) insiste, la API REST (`gh api -X PUT .../pulls/<n>/merge`) aceptó lo que GraphQL rechazaba. Ver [[feedback_dependabot_workflow_scope_se_cura_con_rebase]].
+> **Entrada más reciente (2026-08-24): el flake de los dos escaneos de `src` está ARREGLADO y mergeado — `origin/main` = `646cae6`.** `nap.test.ts` y `provider-names.test.ts` ya NO se descartan como falso positivo: si fallan, es real. La E/S salió del `it` (se lee el árbol una vez a nivel de módulo), así que una caché fría ya no puede tumbarlos.
 >
-> **ESLint 10 es imposible hoy y TypeScript 7 rompe el lint; TypeScript 6 compila limpio.** `eslint-plugin-react@7.37.5` (la última) solo declara peer hasta `eslint ^9.7`, y `eslint-config-next@16.3.1` (la última) depende de ella. Nada que arreglar en nuestro código. Ver [[feedback_eslint10_typescript7_bloqueados_por_next]].
+> Entrada anterior (2026-08-24): **teléfono del lead de reclutamiento arreglado y mergeado.** `origin/main` = `4615419`. ⚠️ El `main` LOCAL quedó 9 commits atrás (el árbol tiene trabajo ajeno sin commitear; un `checkout` se lo lleva).
 >
-> ✅ **`jq` SÍ existe** en este git-bash (`/c/Users/ptoral/bin/jq`, v1.8.2) — se corrigió la memoria que afirmaba lo contrario y que llevaba a evitarlo.
+> Entrada anterior (2026-08-21): precio por moneda `#36` mergeado, `main` era `72fc1fa`.
 >
-> Anterior: 2026-08-13 — **atribución de leads al QR + 🚨 fix de UTMs que destruían leads**. `main` = `9d9c772`. Trabajado en el worktree `Next_Propyte_web-qr`, en paralelo a la sesión de la LP.
+> 🔴 **Mergear DESPUÉS de `Propyte_hub#38`**, y esperar a que su build termine: los builds de Hostinger se matan entre ellos.
 >
-> 🚨 **`/api/leads` estaba perdiendo leads COMPLETOS.** Validaba los UTMs con `.regex(/^[A-Za-z0-9._~-]{0,200}$/)` dentro del `z.object`: un valor con espacio o acento no se descartaba, tumbaba el `safeParse` entero y devolvía `400` **antes de cualquier escritura**. Sin fila en Supabase, sin push a Zoho, sin nada que reintentar. Una campaña «Restaurante Corazón» borraba todos sus propios leads, y aplica igual a cualquier campaña de Ads con acentos. **El daño histórico no se puede medir**: nunca tocó la base. Fix en `src/lib/leads/utm-sanitize.ts` — sanear, nunca rechazar. Ver [[feedback_zod_regex_en_objeto_tumba_el_parse]].
+> El bug: `PriceDisplay` asumía que el monto **siempre** venía en pesos y sacaba la otra cara dividiendo por el tipo de cambio; `originalCurrency` sólo elegía cuál pintar grande. Un desarrollo cotizado en dólares daba dos cifras falsas a la vez. Y la ficha de desarrollo **ni pasaba esa prop**, así que caía al default `'MXN'` — de ahí el `$145,000 MXN` que reportó Luis.
 >
-> **Atribución QR (verificada end-to-end en prod con un lead real):** el `short_code` viaja como `?qr=` desde `/q/[code]` del Hub hasta `public.leads.qr_code` y el campo `QR_de_origen` de Zoho. Capturado en `useUTMCapture` **y** en `LeadFormLotes` — duplicados a propósito, la LP vive fuera de `[locale]`, así que **toda mejora de atribución va por duplicado**. También en `zoho-retry`, o el reintento perdía la atribución.
+> Contrato nuevo: `amount` + `currency` (la moneda DEL monto), **ambas obligatorias**. Sin default, porque el default era el bug. 17 sitios actualizados. `price.mxn` sigue llevando sólo pesos porque lo usan orden y filtros.
 >
-> **Asesor fijo del QR → `Owner` de Zoho** vía `resolveQrOwner()` (`src/lib/leads/qr-owner.ts`). Es **opt-in**: sin asesor en el QR no se toca `Owner`, porque el test demostró que **Zoho ya asigna dueño solo**. ⚠️ Usa **cliente dedicado** al schema `qr` — `.schema()` sobre el cliente compartido deja sticky `Accept-Profile` y revienta los INSERT a `public.leads` con 500.
+> 🐛 **Bug aparte, encontrado auditando los selects:** `getDeveloperDevelopments` pedía `min_price_mxn` y `price_mxn`, que **no existen** en `v_developments` (es `price_min_mxn`). PostgREST responde 42703, la función lo loguea y hace `return []`: **las páginas de desarrollador listaban cero desarrollos.** Arreglado en el mismo PR.
 >
-> **`wbraid` ya se persiste** (columna creada en `public.leads`). Antes se capturaba y llegaba a Zoho, pero se descartaba al guardar: solo se veía abriendo el lead uno por uno, inservible para importar conversiones offline en bloque.
+> 🧪 **Lección de verificación:** `curl` a una página con streaming devuelve el `loading.tsx` — 200, peso normal, sin `h1` y con las claves i18n crudas. Parece roto y no lo está. Para ver lo que ve el usuario, Playwright. Ver [[feedback_curl_devuelve_el_skeleton_no_la_pagina]].
 >
-> ⚠️ **Lección de proceso:** la primera versión de esta nota la escribí en el worktree principal, que estaba en la rama de otra sesión. `task_manager.md` es un archivo versionado, así que un cambio de rama se la llevó completa. Editarlo **solo desde un worktree cuya rama vaya a `main`, y commitearlo**.
->
-> **LP Lotes PdC — handoff de arquitectura de persuasión, 14 de 15 puntos.** Rama
-> `feat/lp-lotes-trustbar`, rebasada sobre este `main`. TrustBar, badge que ya no miente
-> («Uno disponible» → `229 disponibles según el desarrollador`), acordeón «Antes de firmar»
-> (−62.7% de scroll en la zona de riesgo), formulario de 2 pasos, `Figure` con caption
-> obligatorio, y la prosa que se leía a 34 caracteres por línea. Ver «En progreso».
->
-> Anterior: 2026-08-12. **LP Lotes PDC DESPLEGADA a producción** (`8b87115` en `origin/main`, fast-forward de 7 commits, GHA→Hostinger en ~20s): rediseño terracota, chips de plazo y comparador de los 4 lotes de PdC. Ver primera entrada de «En progreso».
->
-> ⚠️ Al medir el alcance del deploy comparé contra `main` **local** (parado en junio) y reporté 699 commits; contra `origin/main` eran **7**. Medir divergencias siempre contra el remoto tras `fetch`. Anterior: 2026-06-01 (sesión iconos infografía + rediseño tags descuento). **✅ Deployado a `dev.propyte.com` (`dpl_62pk2AkUjF3`) y aprobado visualmente por Luis.** Iconos infografía Home → `@/lib/icons`; tag galería cyan brillante #5CE0D2; tag precio → `tag_2_2` ancho; chip descuento junto al precio + nueva fila Descuento en DATOS CLAVE. Pendiente: commit del bundle (uncommitted en `feat/editorial-markdown-render`).
+> Detalle: [[project_precio_moneda_desarrollo]]
 
-Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase reads vía anon).
+## 🔴 Pendiente prioritario — mergear la PR #58 (dependencias + CI)
 
----
+**Está VERDE y `MERGEABLE/CLEAN`. El merge lo denegó el clasificador de permisos
+(mergear aquí = desplegar a producción), así que necesita el clic de Luis.**
+
+https://github.com/Propyte-Team/Next_Propyte_web/pull/58 · rama `chore/deps-batch-2026-08`
+
+- [ ] 🔴 **Mergear #58 y cerrar las 10 PRs de dependabot.**
+      ```bash
+      gh pr merge 58 --squash --delete-branch
+      for n in 42 43 44 45 46 47 48 50; do
+        gh pr close $n --comment "Superseded by #58 — bump incluido y verificado ahí."
+      done
+      gh pr close 49 --comment "Bloqueada río arriba: typescript-eslint no soporta TS 7.0."
+      gh pr close 41 --comment "Bloqueada río arriba: eslint-plugin-react dentro de eslint-config-next usa la API vieja de reglas."
+      ```
+- [ ] Retirar el worktree `_deps-review` después de mergear.
+
+**Qué trae (8 bumps en UN solo merge — Hostinger compila en el servidor y sus
+builds se matan entre ellos; 8 merges serían 8 builds simultáneos):**
+vitest 4.1.11 · @next/bundle-analyzer 16.3.2 · @hookform/resolvers 5.9.1 ·
+@supabase/ssr 0.12.4 · isomorphic-dompurify 3.22.0 (se conserva el pin exacto) ·
+marked 18.0.10 · framer-motion 13.1.1 · lucide-react 1.33.0.
+
+**🚨 Los dos huecos de CI que arregla** — `ci.yml` NO corría `next build` ni
+`test:unit`. Como Hostinger compila en el servidor, un build roto llegaba a
+producción con los checks en verde, y 356 tests en 36 archivos no se ejecutaban
+en ninguna PR. Jobs `build` y `unit-tests` añadidos.
+
+**Los iconos de marca** — lucide v1 los eliminó del paquete (Facebook,
+Instagram, Linkedin, Twitter, Youtube). Rompía el build: el Footer los usa en el
+pie de TODAS las páginas y `ShareDownloadModal` en los botones de compartir.
+Vendorizados en `src/lib/brand-icons.tsx` con los `iconNode` literales de
+lucide 0.577 y el `createLucideIcon` del propio paquete → render idéntico pixel
+a pixel.
+
+**Verificación (local, todo junto):** `tsc` 0 · eslint 0 errores · vitest 36
+archivos / 356 tests PASS · `next build` con y **sin** secretos exit 0 ·
+`next start` + curl `/es` 200 con `h1` y 2× JSON-LD · paths SVG vendorizados
+presentes en el HTML del footer · playwright `@smoke` 25 pass / 1 fail
+pre-existente.
+
+### 🚫 Bloqueadas río arriba — no son arreglables aquí
+
+- [ ] **#49** `typescript` 7.0.2 → `typescript-eslint does not support TS 7.0`.
+- [ ] **#41** `eslint` 9→10 → `eslint-plugin-react`, dentro de
+      `eslint-config-next`, usa la API vieja de reglas
+      (`contextOrFilename.getFilename is not a function`). Además metía un bloque
+      `engines` al lock que `package.json` no declara.
+
+Dependabot las reabrirá solas cuando haya versiones compatibles.
+
+### 🐛 Hallazgo aparte — un test que solo pasa en CI
+
+- [ ] **`tests/e2e/smooth-scroll.spec.ts` falla en local** (Lenis +
+      `prefers-reduced-motion`: espera `html.lenis` count 0 y encuentra alguno).
+      **Control negativo hecho: reproduce idéntico en `origin/main` limpio**, sin
+      ningún cambio de #58, y está **verde en CI Linux**. Pre-existente y
+      local-only. Sospechoso: `reuseExistingServer: !process.env.CI` en
+      `playwright.config.ts` hace que en local los tests corran contra cualquier
+      dev server que ya esté en el 3000, incluido uno de otra rama.
+
+### ⚠️ Nota de dependabot
+
+`open-pull-requests-limit: 10` estaba **en el tope**: hay más actualizaciones
+encoladas detrás. Al cerrar estas 10 van a aparecer las siguientes.
+
+## 🔴 Pendiente prioritario — el push directo a Zoho falla 56% en `/unete`
+
+Hallazgo lateral del arreglo del teléfono. **El fix de hoy salva el dato, no la demora:
+los leads de reclutamiento siguen tardando hasta 58 min en llegarle al asesor.**
+
+- [ ] 🔴 **Investigar por qué falla el push directo.** Prompt listo con hechos medidos,
+      4 hipótesis con su prueba de falsación y las trampas del entorno:
+      `C:\Users\ptoral\Desktop\prompt-investigacion-push-zoho.md`.
+      Medido: 14 de 25 leads rescatados por el cron, **exclusivo de `affiliate_request`**
+      (0/18 en los otros 7 forms), sin `zoho_sync_error` y sin patrón horario.
+      Hipótesis principal: los aspirantes reaplican → `DUPLICATE_DATA` → `createNote`,
+      dos llamadas encadenadas a Zoho en vez de una (`route.ts` ~206).
+- [ ] ⚠️ **Auditar los demás campos por-formulario en la ruta del cron.** `rebuildPayload()`
+      solo reconstruye `name/email/phone/message/property_id`. Sin verificar: `city`,
+      `experience`, `interest`, `company`, `subject`, `budget`, `projectType`, `brokerType`.
+      El teléfono fue el que se notó, no el único que se cae.
+- [ ] La solución de fondo que el propio docstring propone: columna `form_data jsonb` con
+      el body crudo, para que el reintento no adivine.
+
+## Completadas — Flake de los escaneos de `src` (2026-08-24)
+
+- [x] ✅ **Mergeado `646cae6`.** `withFileTypes` en vez de `statSync` por entrada, y el árbol
+      se lee **una sola vez** a nivel de módulo en vez de una pasada por patrón.
+      208 ms → 33 ms, pero lo que importa es que la región cronometrada quedó **libre de E/S**.
+- [x] ✅ **Control negativo**: con un archivo que mete `AirDNA`, `Calle 5 Norte 95` y `77710`,
+      los dos escaneos fallan y nombran el archivo exacto. Siguen midiendo.
+- [x] ✅ 326/326 en tres corridas, eslint y `tsc --noEmit` limpios. Sin `next build`: son
+      archivos de test, no código que se empaquete.
+- [ ] ⚠️ **Sigue abierto el otro síntoma** (el `77710` reportado como hallazgo real en
+      `e164680`) — ver la sección de SEO local / Maps.
+
+## Completadas — Teléfono del lead de reclutamiento (2026-08-24)
+
+- [x] ✅ **Fix mergeado a `main`** (`4615419`). Luis pidió «pon el teléfono obligatorio»;
+      ya lo era y sí lo llenaban — los 38 leads traían teléfono en `public.leads`. Se
+      perdía en el cron, que reconstruye el payload sin `whatsapp`, único campo que
+      `field-maps.ts` leía para `affiliate_request`. Llegaba sin `Mobile` **y** sin `Phone`.
+- [x] ✅ **12 leads rellenados en Zoho** con `trigger: []`. Verificado leyendo de vuelta:
+      cero leads `[EMPLEO]` sin `Mobile`, contrastado con la consulta espejo.
+- [x] ✅ Test de regresión que **da negativo contra el código viejo** (2 de 5 fallan ahí).
+      325/325, `tsc --noEmit` y eslint limpios sobre `origin/main`.
+- [ ] ⚠️ **El `next build` NO corrió sobre la base nueva** — el junction de `node_modules`
+      revienta Turbopack. Se cubrió con `tsc --noEmit` + el build verde previo del mismo
+      cambio. Si algo raro sale en prod, empezar por ahí.
+- [x] Decisión de Luis: **no** se cierra la validación server-side de `/api/leads`. El
+      endpoint está diseñado para nunca rechazar un lead y hoy nadie usa ese hueco.
+
+## En progreso — Precio por moneda
+
+- [x] ✅ **Mergeado** `e9172b6` (2026-08-21 17:17:42Z), 3 min antes del Hub `81ae37f`. Prod sin regresión; el deploy de la web NO se verificó de forma independiente (en un desarrollo en pesos la salida es idéntica antes y después).
+- [ ] 🟡 **Ver la ficha cuando se publique la primera fila en USD.** Hoy no hay ninguna publicada, así que ese render nunca ha corrido en producción.
+- [ ] ⚪ Las métricas de comparación (precio/m², ADR de zona) quedan como «no disponible» para un desarrollo en USD: están denominadas en pesos y no se les pasa el tipo de cambio. Decisión consciente, revisable si molesta.
 
 ## En progreso
+
+### Ocupación TTM en /mercado (sesión 2026-08-20, 3ª)
+
+- [ ] 🔴 **Aplicar la migración `20260820_zone_scores_ttm.sql`** — está escrita en `_mercado-ttm/supabase/migrations/` y **nunca aplicada**. Sin ella el pipeline real falla `PGRST204`. Es el primer paso de la secuencia.
+- [ ] 🔴 **Correr el pipeline sin `--dry-run`** para poblar las 7 columnas nuevas. Solo después desplegar la web.
+- [ ] **Commitear el arreglo del ADR de ciudad** — `city_adr_from_rows` + `tests/test_city_adr.py` están escritos y verdes (232) en `_mercado-ttm-pipeline` pero **sin commitear**.
+- [ ] **Aplicar los 9 hallazgos restantes de la revisión final** (ninguno Critical). Los dos que importan: `identical_scores` falta en el union `OmissionReason` de TS (un pool entero mostraría `—` sin explicación), y `zone_clustering.py` sigue leyendo `median_occupancy`/`median_adr` que ya nadie escribe, así que clusteriza sobre valores congelados de febrero — y su `cluster_label` **sí se publica** en el filtro de `/zonas` y el badge de la ficha. Lista completa en el ledger.
+- [ ] **Re-verificar el dry-run del ADR de ciudad** — falló con exit 255 (probable credencial; PowerShell 5.1 envuelve el stderr nativo). El cambio está probado unitariamente y toca una ruta disjunta de las cifras ya validadas, pero conviene confirmarlo.
 
 ### Dependabot / tooling (sesión 2026-08-18)
 
 Los 12 PRs de Dependabot quedaron resueltos; el único abierto es **#32**, que es de una
 persona. Lo que sigue pendiente de ese barrido:
 
-- [ ] 🚨 **Mirar el primer build de Hostinger con `sharp` 0.35.3** — es el único riesgo que la
-      verificación local NO cubre: `sharp` es binario nativo, se validó en Windows y el
-      servidor compila en Linux. Ya está en `main` (`f5d75d8`).
-- [ ] **Arreglar los comentarios de versión de los workflows, que mienten** —
-      `actions/checkout@3d3c42e5… # v5` es en realidad **v7.0.1**, y
-      `actions/setup-node@82076278… # v6` es **v7.0.0** (verificado contra los tags del repo
-      de cada action). Dependabot actualizó el SHA y no el comentario en #25 y #26; en #22 y
-      #7 sí lo hizo. Los pins son correctos, es cosmético pero engaña al que lea el archivo.
-      **Requiere scope `workflow`**: `gh auth refresh -s workflow`.
+- [x] ✅ **`sharp` 0.35.3 verificado en producción** (2026-08-18) — `/_next/image?url=…&w=32&q=75`
+      devuelve **200 con `image/avif`**, que es `sharp` transcodificando en el Linux de
+      Hostinger. Home 200 en 0.72 s, `/es/desarrollos` en 1.24 s. Era el único riesgo que la
+      verificación local (Windows) no cubría. **Cerrado.**
+- [x] ✅ **Comentarios de versión de los workflows corregidos** (2026-08-18, PR #34 → `7b4802e`)
+      — los cuatro pins declaran su versión real; cero `# v5`/`# v6` en `main`. 🔑 **Se hizo
+      SIN el scope `workflow`**: `git push` de archivos bajo `.github/workflows/` SÍ pasa con
+      este token (`gist, read:org, repo`); el scope solo limita la **API de OAuth App**. La
+      nota anterior que decía «requiere `gh auth refresh -s workflow`» era falsa. **Cerrado.**
 - [ ] **Subir TypeScript 5.9.3 → 6.0.3** — verificado: compila limpio, 0 errores, coste cero
       de código. **NO intentar la 7**: `tsc` pasa pero rompe `eslint-config-next`.
       (Se cerró el PR #16 porque estaba en conflicto y dos majors atrás, no porque fuera mala.)
@@ -455,6 +569,53 @@ Rango $1.0M–$2.1M y 130–240 m². **Etiquetado resuelto y aplicado:** ubicaci
 ---
 
 ## Pendientes
+- [ ] 🟡 **Decidir el reparto de tráfico: una semana al 100% en la variante corta, ANTES de partir 50/50** — medido por API el 2026-08-24: la campaña lleva 165 clics y $2,311 MXN en 30 días con **una** conversión, que es un clic de WhatsApp. «Lead formulario web» **nunca ha disparado**, coherente con que la landing no tenía formulario. Es decir: **no existe línea base** para un A/B. Ritmo actual ~26 clics/día; partido a la mitad son 13 por brazo, y distinguir 3% de 5% pediría ~4 meses (16 días si el efecto fuera 2%→8%). Mandar una semana el 100% a `/lp/terrenos-playa-del-carmen` prueba que un lead de formulario llega hasta Zoho desde tráfico pagado —nunca demostrado— y da la tasa con la que sí se puede dimensionar el test. Detalle en [[project_google_ads_campana_lotes_pdc_estado]].
+- [ ] ⚠️ **9 de los 11 forms del sitio siguen expuestos al bug de pre-hidratación** — solo `LeadFormLotes` y `FormTerrenos` llevan el rescate. En cualquier form controlado servido por SSR, lo que se rellene antes de que React hidrate se pierde: el campo SE VE lleno y al enviar dice que falta. Lo dispara el autocompletado del navegador. Ver [[feedback_input_controlado_pierde_lo_prehidratado]].
+- [ ] **Capturar la licencia de fraccionamiento en el Hub** — medido: **0 de 22** desarrollos la tienen. Es la prueba antifraude más fuerte que podrían llevar las dos landings, y ambas ya tienen el hueco hecho: la ficha crece sola en cuanto `licencia_numero` deje de estar vacío. Trabajo de datos, no de código.
+- [ ] **Prunear ~20 ramas remotas en GitHub ya contenidas en `main`** — la limpieza local (21→10 ramas, 8→6 worktrees) se hizo el 2026-08-21; las remotas se dejaron porque afectan a todo el equipo. Comprobar cada una con `git diff origin/main...origin/<rama> --shortstat` antes de borrar.
+- [ ] **Decidir qué pasa con `fix/mercado-ttm-ocupacion`** — 19 commits, 3.791 líneas, lista y verde, y **ya respaldada en `origin`** desde el 2026-08-21. Sigue sin mergear; el orden obligatorio es migración → pipeline → web.
+- [ ] **`Next_Propyte_web-contenido-felipe` tiene 7 archivos sin commitear** — trabajo de Felipe. Por eso no se retiró ese worktree en la limpieza. Conviene que él los commitee o los descarte.
+- [ ] 🐛 **`/desarrollos/tipo/<cualquier-basura>` devuelve 200, no 404** — con el título genérico. Soft-404 indexable en cualquier slug inventado. Preexistente, pero más relevante ahora que `villa` y `comercial` son tipos canónicos que alguien podría enlazar sin que exista la faceta.
+- [ ] 🐛 **`getSimilarUnits` (`src/lib/supabase/queries.ts:851`) nunca acierta su bucket L1** — hace `.eq('unit_type', seed.unit_type)` con un canónico en minúscula contra una columna que guarda grafías crudas (`Departamento`, `Lote`). Misma familia canónico-vs-crudo; preexistente.
+- [ ] **Abrir facetas SEO para `villa` y `comercial`** cuando haya inventario que las llene — hoy `TYPE_SLUGS` tiene 5 y abrirlas sin producto publica páginas vacías.
+
+### LP Lotes PdC — el asesor y el árbol sucio (sesión 2026-08-20, 2ª)
+
+- [ ] 🔴 **Decisión de Luis, preguntada y sin respuesta: ¿se quita al asesor también del bloque del final?** `PruebaDeQueExistimos.tsx:48-83` sigue mostrando foto de 48px, nombre y cargo, y ya trae su enlace «Ve al equipo completo». No se tocó porque ahí el argumento entero es *«una persona con nombre y cargo, no “un asesor”»*: quitarle la persona deja la tarjeta sin razón de existir. Es cambio de contenido, no de maquetado.
+- [ ] 🔴 **Decidir qué se hace con los cambios sin commitear del árbol principal** — `LeadFormLotes.tsx` (reescritura de +495/−264), `page.tsx`, `consent.ts` + `Analytics.tsx` + `CookieBanner.tsx` (parece el arreglo del banner de cookies, a medias) y `tests/lp-lotes-form.mjs` sin rastrear. Importa: **sin aceptar cookies la conversión de lead no se dispara** en Google Ads. Mientras siga sin commitear, un `git checkout` de rama se lo lleva.
+- [ ] ♻️ **Decidir el destino del rediseño de la LP (`fe189db` en `~/Projects/_lp-rediseno`)** — nunca pusheado, la rama no existe en `origin` y ya va ~30 commits por detrás de `main`. O se rebasa y se decide, o se tira. Ver [[project_lp_lotes_rediseno_estado]].
+
+
+### SEO local / Maps (sesión 2026-08-20)
+
+- [ ] 🔴 **Luis: corregir el horario en la ficha de Google Business Profile** — la oficina abre los SIETE días de 10:00 a 19:00, pero la ficha declaraba Lun–Vie 9:00–18:00. **Maps muestra lo de la ficha, no el JSON-LD**: hasta que se cambie, Propyte sale cerrado los domingos aunque el sitio ya diga lo correcto. Un minuto de trabajo y es lo más rentable pendiente.
+- [ ] 🔴 **Luis: pedir reseñas.** La ficha está verificada y hay oficina física atendida, pero con **0–5 reseñas** el ranking en Maps está bloqueado por prominencia y **ningún cambio de código lo desbloquea** — vale más que los cuatro commits de la sesión. Enlace y QR listos en `~/Projects/references/qr-resenas-google/` (SVG + PNG 1200/2400 px). Mecánica acordada: pedir en el pico emocional (firma/entrega, en persona, no por correo masivo), responder el 100%, nunca incentivar. Datos de la ficha en [[reference_propyte_ficha_google_business]].
+- [ ] **Pasar `test:prerender` a las plantillas de desarrollos y propiedades** — ofrecido y no ejecutado. Son las que llevan el `RealEstateListing` y el tráfico transaccional; si alguna cae en la trampa de `useSearchParams`, su schema tampoco está llegando a Google. Hoy el chequeo solo cubre home, contacto, faq, quienes-somos y financiamiento.
+- [ ] **Techo de proximidad de Maps, decisión de negocio** — el pin está en Playa del Carmen, así que solo se rankea cerca de ahí. La demanda medida en Google Ads está en **Cancún**, no en PdC. Cubrir Cancún exige una segunda ficha con oficina real y personal; no hay atajo y las fichas falsas se suspenden.
+- [x] ✅ **Test intermitente de `nap.test.ts` — la parte del TIMEOUT, arreglada** (2026-08-24, `646cae6`). El modo que sí se reprodujo era `Test timed out in 5000ms`: los escaneos hacían toda la E/S dentro del `it` (un `statSync` por entrada, ~695 syscalls, y nap releía los ~525 archivos **una vez por patrón** = ~2.625 lecturas). Ahora el árbol se lee una sola vez a nivel de módulo y la región cronometrada quedó libre de E/S. Umbral de ruptura: de 100 ms a 20 ms.
+- [ ] ⚠️ **Queda SIN explicar el otro síntoma del mismo test** — la ejecución de `e164680` no dio timeout: **reportó `77710` como hallazgo real** y tardó 15 s donde tarda 400 ms. Eso es una aserción que falla, no un reloj, así que el arreglo de arriba **no lo cubre**. Hipótesis viva: un archivo apareció y desapareció dentro de `src` durante el barrido (dev server escribiendo tipos, o un `checkout` de otra sesión). El fix reduce la ventana de exposición —una pasada de lectura en vez de cinco— pero no la cierra. Si vuelve a reportar un valor muerto que no está en el árbol, sospechar de eso primero.
+
+### Pixel de OpenAI Ads — instalado en prod, falta cerrarlo fuera del código (2026-08-18)
+
+- [ ] ⏳ **Confirmar que Ads Manager registra los eventos.** El panel de Conversiones marcaba **0 eventos y 0% de cobertura de identificadores**. El pixel está verificado en el sitio vivo (12/12 peticiones) y el SDK manda su ping a `bzr.openai.com/v1/sdk/events?pid=GGwkPvXutsXVZwtbnju2u4`, pero **nadie ha visto el panel llenarse**. Hasta entonces la instalación no está confirmada de punta a punta.
+- [ ] **Dar de alta `whatsapp_click` en Ads Manager** con ese nombre exacto. El sitio ya lo emite como evento a medida; sin el alta no cuenta como conversión ni optimiza. En Google Ads ya es conversión secundaria.
+- [ ] 🚫 **Completar la cuenta de OpenAI Ads: facturación y logotipo.** Sin eso los anuncios no pueden publicarse (aviso en el propio panel).
+- [ ] **Valorar la Conversions API server-side de OpenAI.** Los eventos ya viajan con `event_id`, que es la mitad del trabajo de deduplicación. El equivalente de Meta vive en `/api/track` + `src/lib/meta/capi.ts`. Subiría el match quality; hoy tampoco se manda `user.email_sha256` en el `init`.
+
+### Medición — fallo preexistente detectado, NO corregido (2026-08-18)
+
+- [ ] 🚨 **El banner de cookies solo aplica el consentimiento al GUARDAR.** `applyConsentToGtag()` y `applyConsentToMetaPixel()` se llaman únicamente desde `writeConsent()`. El visitante que aceptó en una visita anterior vuelve, no ve el banner y **nadie comunica su consentimiento a los scripts**: GA4 se queda en `denied` y Meta en `revoke` toda la sesión. Es medición perdida justo con los usuarios recurrentes. El pixel de OpenAI lo esquiva leyendo `localStorage` en su propio script de arranque; **GA4 y Meta siguen con el fallo**. Ver [[feedback_banner_cookies_no_reaplica_consentimiento]].
+
+### Higiene de la máquina (2026-08-18)
+
+- [ ] 🧟 **Matar los dos `next start` zombis de este repo**: PID 37680 en `:3000` (del 11-ago) y PID 50488 en `:3123` (del 15-ago). Comparten el directorio `.next` y **reescriben el build nuevo con el código que tienen en memoria**, así que cualquier verificación en localhost miente de forma intermitente. No se mataron por ser procesos de Luis. Ver [[feedback_next_start_zombi_pisa_el_build]].
+- [ ] **Decidir qué versión de este `task_manager.md` gana.** Al 2026-08-18 el archivo está modificado sin commitear en el worktree principal con un encabezado ANTERIOR al de `HEAD` (revierte la nota del barrido de Dependabot). Hubo tres sesiones en paralelo ese día.
+
+### LP Lotes PdC — reverificación tras el avance de `main` (2026-08-18)
+
+- [ ] 🚨 **Reverificar la LP de lotes contra el `main` actual.** El 6/6 contra producción se midió sobre `2172695`; después entraron `f5d75d8`…`21848a6`, y dos de esos commits tocan `src/components/shared/Analytics.tsx` y `src/lib/cookies/consent.ts` — que es exactamente lo que usa `ConsentBannerLp`, cuyo posicionamiento es el que arreglamos. Más el bump de `next-intl`/`framer-motion` y el `package-lock` reescrito. Comando: `PLAYWRIGHT_BASE_URL=https://propyte.com npx playwright test tests/e2e/lp-lotes-qs.spec.ts`. Si el aserto del banner falla, el culpable más probable es un cambio de altura, no de lógica.
+- [ ] **Vigilar CTR y `search_rank_lost_impression_share`, no el QS.** El Quality Score se recalcula sobre tráfico nuevo y tarda; la señal temprana es el CTR y la caída del 90% de pérdida por rango. **Y medir conversión aparte**: subir el comparador revirtió una decisión deliberada de conversión del equipo, así que puede subir el QS y bajar la conversión de quien ya venía decidido.
+- [ ] **Limpiar el worktree `~/Projects/_lp-lotes-qs`** (`git worktree remove`) y matar el dev server de `:3030` cuando ya no se necesiten.
 
 ### Workstream PropyteIcons — pendientes futuros
 
@@ -606,35 +767,38 @@ Rango $1.0M–$2.1M y 130–240 m². **Etiquetado resuelto y aplicado:** ubicaci
 
 ## Bloqueadas
 
-_Ninguna._
+- [ ] 🚫 **Aplicar la ola de arreglos con revisión independiente** — se agotó el límite de gasto mensual de la organización a mitad de la ola final, así que los 9 hallazgos quedaron sin aplicar. **Desbloquea:** subir el límite (`/usage-credits`), o aceptar aplicarlos sin revisor independiente — y esa revisión es la que encontró los 3 Critical que el plan traía.
+
+- [ ] 🚫 **Cambiar el asesor de la LP de lotes: Conrad Alvarado → Victor Sanfilippo** — es un cambio de DATO, no de código. `Propyte_unidades` id `ca6fffe4-3a0d-4ab2-82f7-5789fcb8bdc7`, columna `id_agente`: `null` → `e6345892-909c-4597-acee-d8a84c5b660a`. **Bloqueado:** el clasificador del harness deniega la escritura en el Hub vía MCP. Lo tiene que hacer Luis desde la UI. Verificar que el UPDATE escribió de verdad (ver `locked_fields`) y dar hasta 5 min de ISR. ⚠️ **Actualizado 2026-08-20: ya solo afecta a `PruebaDeQueExistimos`** — `TrustBar` dejó de mostrar asesor, así que el dato solo se ve en el bloque del final. Y si Luis decide quitar también al asesor de ahí (ver «Pendientes»), esta tarea **muere sola**: no habría dónde mostrarlo. Detalle en la memoria `reference_lotes_publicados_pdc`.
+- [ ] 🚫 **Reescribir los 5 RSA de la campaña Lotes PDC en plural** — 0 de 15 titulares contienen «terrenos»; AG-P4 y AG-P5 con eficacia POOR (12 titulares y un pin); el anuncio dice «un lote de 129.6 m²» cuando hay 670 lotes publicados en PdC. **Bloqueado por dos cosas:** la MCP `google-ads-write` apunta a un binario que no existe (memoria `feedback_google_ads_write_mcp_binario_inexistente`) y crear RSA es operación de creación, que el clasificador deniega. Rutas vivas: Google Ads Editor o Scripts (`AdsApp`).
+- [ ] 🚫 **Depurar las negativas de la campaña Lotes PDC** — ya NO es «añadir 60»: es quitar las de nombres de desarrollo, que niegan el propio mercado siendo comercializadora. **Bloqueado además por una anomalía sin resolver:** hay negativas `ENABLED` y correctas que no bloquean sus términos (memoria `feedback_negativas_campana_no_disparan`). Añadir más antes de saber por qué es trabajo sin efecto. Requiere que Luis mire el diagnóstico de conflictos en la UI.
 
 ---
 
 ## Completadas recientes
 
+- [x] 🚨 **La variante A de la LP de lotes servía CERO formularios en producción** (2026-08-24) — Se iba a arreglar un bug menor y la medición contra el sitio vivo dio `querySelectorAll("form").length === 0` **incluso tras hidratar**: la compuerta «¿Qué estás buscando?» seguía viva. Es el mismo fallo ya diagnosticado que costó **991.40 MXN en 72 clics con cero envíos**. La reescritura a un paso existía **desde el 2026-08-20 sin pushear** en el árbol de otra sesión: cuatro días de tráfico pagado contra una página sin formulario. PR #54 trae esa reescritura —aplicada con `git apply --3way` de un parche sobre `origin/main`, no copiando archivos, y revisada línea a línea: POST, honeypot y `trackGenerateLead` intactos— **más el rescate de pre-hidratación que quitar la compuerta hacía necesario**. Verificado contra producción y repetido 4 veces para descartar CDN mezclada. Ver [[feedback_verificado_en_local_no_es_desplegado]].
+
+- [x] **Nueva landing de conversión `/lp/terrenos-playa-del-carmen` EN PROD** (2026-08-24) — Variante B del A/B: **3.6 pantallas contra 12.3**, 4 secciones, formulario en el primer viewport en móvil y escritorio. Sistema visual propio bajo `.lpt-root` sin compartir un token con la A (dos variantes parecidas miden ruido); carril «hoja de topógrafo», `Archivo` con eje `wdth` + `Azeret Mono`, rechazados a propósito el turquesa de playa y el crema+serif editorial. Medición **idéntica** a la A a propósito —misma acción de conversión, mismo `source: lp_lotes_pdc`, mismo valor— para que la diferencia sea atribuible al diseño; se separan por `form_type` en GA4 y por `page`→`Nombre_anuncio` en Zoho. Verificado contra producción: POST correcto, `generate_lead`, **conversión de Ads con su `send_to` AW-** y Consent Mode en `denied`. PRs #39 y #53. Decisión de negocio de Luis: la nota «HOY NO ES ESCRITURABLE» **no se publica en la B**, y va documentada en el código para que nadie la reponga.
+
+- [x] **Bug de pre-hidratación encontrado y cerrado en las dos landings** (2026-08-24) — En un form React controlado servido por SSR, lo que se rellena antes de hidratar queda en el DOM con el estado vacío: **el campo se ve lleno y al enviar dice que falta**, sin error de consola, sin POST y sin lead. Medido en propyte.com: el form se ve a ~600 ms, React responde a ~2.2 s. El disparador habitual es el **autocompletado del navegador**. Casi se descarta como fallo del test; lo que lo confirmó fue ver que el valor **sí** sobrevivía en el DOM y aun así no salía POST. Cubierto por `tests/lp-lotes-prehidratacion.mjs` y el escenario B de `tests/lp-terrenos-conversion.mjs`, ambos validados con **control negativo** contra el build viejo. Ver [[feedback_input_controlado_pierde_lo_prehidratado]].
+
+- [x] Auditoría completa de `/es/mercado` contra la base de producción: 13 hallazgos + el P0 de la ocupación (2026-08-20)
+- [x] Arreglo TTM en las 8 superficies web, incluido el PDF que se envía a leads (2026-08-20)
+- [x] Pipeline: mediana TTM real en ocupación y tarifa, motivo de omisión persistido, `status=empty` cuando un scraper trae 0 filas (2026-08-20)
+
+- [x] **La barra de confianza de la LP de lotes dejó de nombrar a un asesor** (2026-08-20) — Luis vio la tarjeta «Quién te atiende» con la cara de Conrad Alvarado y pidió *dejar una opción de conocer al equipo completo y quitar al asesor de ahí*. En `TrustBar.tsx` la celda pasa a icono `Users` + «Conoce al equipo completo» → `/es/nosotros/equipo-comercial` (200, `target="_blank"`); con ello **desaparece la única imagen de la barra** (fuera el `import Image` y la rama `foto` del render) y la celda deja de ser condicional a que el Hub traiga asesor. El razonamiento va escrito en el comentario de cabecera del componente: quien atiende un lead depende de la asignación, así que una cara concreta promete a una persona que puede no ser la que conteste. `tsc --noEmit` + `eslint` + `npm run build` verdes; commit `4169425` (**solo ese archivo**), rebasado sobre el PR #35 que entró en medio. **Verificado 12/12 contra el HTML de producción con `Cache-Control: no-cache`**, 0 lecturas del build viejo. «Conrad Alvarado» bajó de 6 a 4 ocurrencias — que son 3 y 2 *lugares*, porque **el payload RSC duplica cada string** ([[feedback_validar_el_medidor_antes_de_confiar]]). El deploy de Hostinger tardó ~1–2 min, no los 3–6 anotados. Edición hecha con script de node con guardas de match único, no con `sed`: el archivo es CRLF ([[feedback_crlf_rompe_replace_en_silencio]]).
+
+- [x] **SEO local: NAP unificado y el sitio atado a la ficha de Maps** (2026-08-20) — Arrancó como "¿cómo mejoramos el ranking en Maps?" y el hallazgo fue que el sitio le contaba a Google una historia contradictoria: **cinco fuentes de dirección con tres calles distintas**, ninguna coincidiendo con la ficha verificada (5ta Avenida esq. Calle 40 Norte, **CP 77720**). El JSON-LD llegaba a contradecirse dentro del mismo objeto: `description` decía "5ta Avenida" y `address` decía "Calle 5 Norte 95". Fuente única nueva en `src/lib/seo/nap.ts`; `SchemaMarkup` pasa de `LocalBusiness` genérico a **`RealEstateAgent`** con `geo`, `hasMap` y `sameAs` → ficha por CID `8644542860614705024`, más `areaServed`; el embed de `/contacto` deja de ser búsqueda de texto (`?q=`) y pasa a incrustar la ficha por CID, con enlace visible; Hub `Propyte_site_config` actualizado. `nap.test.ts` escanea `.ts`, `.tsx` **y los JSON de i18n** buscando valores muertos — incluir JSON fue lo que delató las dos direcciones escondidas que mi primer escaneo de solo TypeScript dejó pasar. Commit `4dad93c`. Ver [[feedback_nap_vivia_en_cinco_lugares]], [[reference_propyte_ficha_google_business]].
+- [x] **Horario corregido: abre los siete días 10:00–19:00** (2026-08-20) — El sitio declaraba Lun–Vie 9:00–18:00 y Sáb 10:00–14:00 en cuatro capas. Luis confirmó que abre **todos los días de 10 a 19**, así que estaban mal la apertura, el cierre y el domingo salía **cerrado**. Es el error más caro de los tres: quien consulta en domingo ve "cerrado" y no viene. Corregido en `NAP_OPENING_HOURS`, en `dondeEstamos.labHours` (home) y `contact.info.hours` de ambos idiomas, y en el Hub; el test fija los 7 días. Commit `018cea1`. **Pendiente fuera del repo: la ficha de Google.**
+- [x] **`/contacto` rescatada del client-side rendering + fix del CSP** (2026-08-20) — `useSearchParams()` en `ContactPageContent` sin `<Suspense>` sacaba del prerender la **página entera**: 1539 chars de texto, `h1=0`, una sola etiqueta JSON-LD frente a las 3 de `/faq`. Diagnosticado por contraste (el hook está en `/contacto` y en ninguna de las cinco páginas sanas). El `?asunto=` se lee ahora de `window.location.search` dentro del mismo `useEffect` — solo se necesita tras hidratar, así que es equivalente y no arrastra el árbol. Envolver en `<Suspense>` habría arreglado a los hermanos pero **no** el contenido (queda el fallback, inservible para SEO). Guardia nuevo `tests/prerender-seo.mjs` + `npm run test:prerender`, sin umbrales de caracteres (`/contacto` es corta de verdad y cualquier número redondo da falsos positivos). **De paso, regresión propia:** el embed que había introducido apuntaba a `maps.google.com`, host que el CSP no lista en `frame-src`. Commit `86fb066`. ⚠️ Falso positivo que me costó tiempo: `grep RealEstateAgent` da match aunque no exista la etiqueta, porque aparece escapado en el payload RSC — hay que exigir `<script type="application/ld+json"` literal. Ver [[feedback_usesearchparams_vacia_el_html]].
+- [x] **`info@propyte.com` devuelto al aviso de cumplimiento** (2026-08-20) — Al unificar el NAP lo cambié a `contacto@` en el aviso legal; Luis confirmó que `info@` **existe** como buzón alternativo y ahí era correcto. Revertido. Lo relevante es cómo: **el guardia no se aflojó, se hizo más preciso** — prohibir el string a secas lo bloqueaba también donde sí corresponde, así que el test comprueba la **ruta exacta** (`avisoLegalPage.section7Body` en ambos idiomas, y nunca en TypeScript). Si se cuela como correo de contacto general, falla igual que antes. Commit `e164680`.
+
+- [x] **Comentarios de versión de los pins de Actions corregidos + `sharp` 0.35.3 verificado en prod** (2026-08-18) — Cierre del barrido de Dependabot. **(1)** Los workflows pinean por SHA (correcto: un tag se puede mover, un SHA no) con la versión en un comentario al lado; Dependabot actualizó el SHA en #25/#26 sin tocar el comentario, así que `ci.yml` y `playwright.yml` decían `# v5`/`# v6` cuando los SHA son **v7.0.1** y **v7.0.0** — verificado contra los tags reales de cada repo de action, no de memoria. PR #34 (4 líneas, SHA intactos), CI y Playwright verdes, squash `7b4802e`. Cero `# v5`/`# v6` en `main`. **(2)** El push de #34 hizo recompilar Hostinger y ahí se cerró el único riesgo abierto: `/_next/image?…&w=32&q=75` devuelve **200 con `image/avif`**, o sea `sharp` 0.35.3 transcodificando en Linux, no solo mi validación en Windows. 🔑 **Dos correcciones a lo que yo mismo había afirmado, ambas desmontadas probando en vez de razonando:** el 403 «without workflow scope» de los merges era **la base desfasada** (`@dependabot rebase` y entraron los cuatro), y el arreglo de los comentarios **no requería reautenticar** — `git push` de workflows sí pasa con este token; el scope solo limita la API de OAuth App. Memorias: [[feedback_dependabot_workflow_scope_se_cura_con_rebase]]. Estado final: `main`=`7b4802e`, CI+Playwright verdes, 0 alertas de Dependabot, sitio 200, único PR abierto el #32 (de una persona).
+- [x] **Pixel de OpenAI Ads instalado en propyte.com, EN PROD y verificado** (2026-08-18) — Luis pasó ID, snippet y llamada de evento desde Ads Manager (fuente de datos "Propyte.com", pixel `GGwkPvXutsXVZwtbnju2u4`). Tercer destino junto a GA4/Google Ads y Meta, disparado desde el mismo `src/lib/analytics/track.ts`. Archivos nuevos `src/lib/analytics/openai-ads.ts` y `src/components/shared/OpenAiPageView.tsx`; modificados `Analytics.tsx`, `track.ts`, `consent.ts`, `.env.example`. Eventos: `page_viewed` (carga + navegación de cliente), `contents_viewed` (fichas), **`lead_created`** (única conversión dada de alta en Ads Manager) y custom `whatsapp_click`. **Tres decisiones no obvias:** (1) el consentimiento del SDK **arranca CONCEDIDO**, así que el snippet fija `oaiq("consent", <bool>)` antes del `init` leyendo el mismo `localStorage` del banner — de paso el visitante recurrente sí queda cubierto, cosa que GA4 y Meta no hacen; (2) `page_viewed` **no se auto-dispara** ni observa el History API, de ahí el componente de navegación; (3) el ID va como **default en código**, no solo en env, porque Hostinger compila en el servidor y una `NEXT_PUBLIC_*` sin dar de alta dejaría el pixel apagado en silencio (se apaga con el literal `off`). Commit `21848a6`, merge directo a `main` autorizado por Luis; CI y Playwright verdes; **12/12 peticiones a propyte.com traen el pixel**. Los 4 eventos verificados en navegador contra el build de producción, y `lead_created` probado interceptando `/api/leads` para **no crear un lead real**. ⚠️ Lo caro no fue el código: la verificación local mentía por dos `next start` zombis que pisan `.next` y porque con `output: standalone` **`next start` no sirve el build**. Ver [[project_openai_ads_pixel_propyte]], [[reference_openai_ads_pixel_api]], [[feedback_next_start_zombi_pisa_el_build]], [[feedback_next_output_standalone_next_start_no_sirve]].
+- [x] **LP Lotes PdC — fixes de Quality Score, EN PROD y verificados contra el sitio vivo** (2026-08-18) — La campaña perdía ~90% de impresiones por RANGO con la puja topada en 14 MXN y `post_click_quality_score = BELOW_AVERAGE` en las 5 keywords. Medido: **no era velocidad** (LCP 3,088 ms, CLS 0.0000) **ni transparencia**, era **relevancia de contenido** — la página vendía UN lote y las búsquedas son en plural sobre un mercado con **670 lotes publicados** de Propyte. Cambios: `title`/H1/vocabulario en plural («terrenos» 1→20, «residencial» 0→33); `<ComparadorLotes>` subido de la pantalla 8.9 a la 2.2; línea de comercializadora; **el banner de cookies tapaba los DOS CTA del hero** en 390×844 (banner y 616–764 vs CTA y 636–692 y WhatsApp y 704–756) → `bottom-0` + copy recortado, ahora 51 px de aire; fuerza visual de los 3 CTA a 16px/600 con elevación y el paso 1 del wizard rescatado de `14px/400 blanco sobre blanco con borde al 14%`; `WhatsAppCta` propaga `gclid`/`wbraid`/`gbraid`/`fbclid` (el canal primario no llevaba NADA de atribución). Spec nuevo `tests/e2e/lp-lotes-qs.spec.ts` con 6 asertos, uno de ellos convierte en test la regla de marca de que el nombre interno del desarrollo nunca es público. Commits `83f7afd` + `dacfe82` + `2172695`, fast-forward a `main`. **6/6 verificados con `PLAYWRIGHT_BASE_URL=https://propyte.com`.** ⚠️ Dos diagnósticos del brief NO se sostuvieron: el DSA no es riesgo (acotado por criterio de página, `landing_page_view` confirma una sola URL) y el Consent Mode no toca el QS. ⚠️ **Revertí una decisión deliberada documentada en la línea ~260 de este archivo** (el comparador iba después del cierre para no desviar a quien ya venía decidido): el QS pesa más, pero hay que medir conversión, no solo QS.
 - [x] **Barrido completo de los 12 PRs de Dependabot** (2026-08-18) — Luis preguntó qué eran los 12 PRs abiertos y pidió descartar los innecesarios. Revisión de cada uno contra `origin/main` **real** (worktree aislado, no el repo principal, que tenía otra sesión dentro), no contra sus checks. **Mergeados (6):** #26 setup-node v7.0.0 · #9 @types/node 26.2.0 · #25 checkout v7.0.1 · **#33** (propio) · #22 cache v6.1.0 · #7 upload-artifact v7.0.1. **Cerrados (7)** con justificación escrita en cada uno: #30 eslint 10 (bloqueado aguas arriba por `eslint-plugin-react`, no por nuestro código) · #20/#19/#18/#17 (los cuatro `CONFLICTING` y pidiendo versiones ya obsoletas → sustituidos por #33) · #16 typescript 6 (en conflicto, dos majors atrás) · #15 bundle-analyzer (en conflicto y sin sentido suelto). **Ninguno era de seguridad**: cero alertas abiertas de Dependabot, nada urgente. Tres hallazgos no obvios, cada uno en su memoria: los ❌ fósiles de junio ([[feedback_dependabot_checks_fosiles]]), el 403 de scope que era base desfasada ([[feedback_dependabot_workflow_scope_se_cura_con_rebase]]) y el techo real del tooling ([[feedback_eslint10_typescript7_bloqueados_por_next]]). Se corrigió además la memoria que afirmaba que no hay `jq` en este git-bash — sí hay, v1.8.2.
 - [x] **PR #33 — subida de las 4 dependencias de app en un solo lockfile** (2026-08-18) — Creado para sustituir los 4 PRs de Dependabot en conflicto, con las versiones de HOY en vez de las de junio: `sharp` 0.34.5→**0.35.3**, `react-hook-form` 7.72.1→**7.85.0**, `next-intl` 4.11.2→**4.13.7**, `framer-motion` 12.38.0→**12.40.0** (nos quedamos en 12.x; la 13.1.0 es major y se evalúa aparte). Verificado en worktree limpio sobre `origin/main` antes de subir: `npx tsc --noEmit` exit 0, `npm run lint` 0 errores (21 warnings preexistentes de código de app), `npm run build` exit 0 y `sharp` procesando imágenes con libvips 8.18.3. **Verde en `CI` + `Playwright` sobre `main`.** El lockfile se reescribió limpio (−720/+254 líneas). Nota: `sharp` 0.35 eliminó `./package.json` de sus `exports`; nada en el código lo importaba. Squash `f5d75d8`, con los blobs de `package.json` y `package-lock.json` verificados idénticos al commit original antes de borrar la rama.
-- [x] **Meta Pixel instalado en propyte.com** (2026-06-01) — Código base del Píxel de Meta `808922354003079` (PageView) agregado a `src/app/layout.tsx` vía `next/script` + `<noscript>` fallback (ID público hardcodeado, no es secreto). Aplica a todas las rutas. Trabajado en **worktree aislado** sobre `main` para no tocar el WIP de `feat/editorial-markdown-render`. Commit `0c50f22` → push `main` → GitHub Actions → SCP Hostinger → PM2. **Verificado en vivo**: `window.fbq` ok, `#meta-pixel` presente, `fbevents.js` 200, request `facebook.com/tr?id=808922354003079&ev=PageView` → 200. Contexto: propyte.com sirve coming-soon (`page.tsx`→`ComingSoon.tsx`), solo PageView hasta que haya conversiones reales. Origen: revisión de píxeles/datasets del MCP de Meta (el píxel no estaba instalado en el sitio). Memory: `project_next_propyte_web_pixel_comingsoon`.
-- [x] **DiscountBadge: iconos descuento tag_3/tag_2_1 + fix bug ESM upstream dompurify** (2026-05-28) — Nuevo componente `src/components/ui/DiscountBadge.tsx` con 2 variants (`corner` para tag_3 inclinado sin número, `inline` para tag_2_1 horizontal con `−N%` cyan via span absolute encima del SVG). Icono `DiscountTagInclined` agregado a `src/lib/propyte-icons.tsx` con stroke-width strippeado (hereda 1.5 default del wrapper). tag_2_1 vive inline en DiscountBadge con viewBox crop `2 7 20 10` para forma horizontal. 6 puntos de reemplazo: `MarketplaceCard` (corner bottom-left + inline), `UnitDetailPage` (badgeTopRight + inline), `DevelopmentDetailPage` (badgeTopRight + rollup), `FloatingKeyData` (fila descuento), `UnitModelsTable` (columna + cards mobile). **Bug crítico no relacionado descubierto y fixeado**: TODAS las fichas SSR estaban en 500 latente (incluso desde 3 días atrás) por bug ESM upstream — `isomorphic-dompurify@3.12` → `jsdom@29` → `html-encoding-sniffer@6` → `require()` de `@exodus/bytes@1.x` (ESM-only). Fix: pin `isomorphic-dompurify` a `2.20.0` (usa `jsdom@26` + `html-encoding-sniffer@4` CJS-safe). API compatible, sin cambio de código. Deploy final `dpl_2swyj6274-propyte` → fichas 200 verificadas via curl. Memory: `feedback_exodus_bytes_esm_break.md`.
-- [x] **UI Fixes Bundle 2026-05-23** (2026-05-23) — Spec `specs/ui-fixes-bundle-2026-05-23.md` ejecutado 7 fixes + 1 bonus en branch `develop`, 3 deploys CLI a Vercel prod (`dev.propyte.com`), verificado por Luis. **F**: `PriceDisplay` prop `tone:'light'|'dark'` con texto referencial `text-white/75` y `(Referencial)` `text-white/55` sobre fondo `#1A2F3F` (WCAG AA). **E**: `/promociones` threshold `< 2` → `< 1` con schema gate ≥2 preservado + ICU plural en `countLabel`. **C**: `CurrencyToggle` eliminado del UI (archivo borrado), `CurrencyContext` API slim `{rate, rateUpdatedAt, formatMxn}`, refactor 5 consumers (MarketplaceCard usa `<PriceDisplay variant='dual'>` para precio de propiedad; MortgageCalculator/InvestmentComparison/ComparisonTable usan `formatMxn`). **B**: ComparePanel filas condicionales — devs 5 filas (Precio desde/hasta, Ubicación, # Amenidades, Tipo desarrollo), units 4 filas (Precio, Ubicación, # Amenidades, Tipo), mixto 5 con `—` en "Precio hasta". 7 i18n keys nuevas. **D**: WhatsApp `scrollY > 100` (antes 300) + `handleScroll()` se dispara al montar + `trackWhatsAppClick` en try/catch. **A**: `useFilters` instrumentado con debug logging gated por `localStorage.debug_filters==='1'` (zero-cost en prod). **Dropdown filtros — root cause encontrado**: el contenedor `overflow-x-auto no-scrollbar` del FilterBar forzaba `overflow-y` a clip por CSS spec, recortando el panel `absolute top-12`. Fix: `createPortal` a `document.body` con `position:fixed` computado via `getBoundingClientRect()` + `useLayoutEffect`, scroll/resize cierra dropdown, ESC también, outside-click chequea ambos refs. **Bonus CookieBanner**: `<AnimatePresence>` exterior retenía banner con opacity 0 pero pointer-events activos en esquina inferior derecha bloqueando WhatsApp + Comparar. Fix: `motion.aside` siempre montado, `pointer-events:none` vía `style` controlado por `open` (salta inmediato porque no es animable). Deploys: `dpl_ArH8yj7stB8tWVQBe5af2vJpyuD6` → `dpl_F4QWbEcww4qsxkNHZtcFw1YHiR3G` → `dpl_7Lt94nKJnryRPduxnzfMcNjZ5h9s`. Working tree uncommitted en develop.
-- [x] **Sistema de descuentos end-to-end** (2026-05-23) — Feature completa: BD migration aplicada en Supabase prod (`add_discount_fields_to_unidades` + rebuild v_units/v_developments con `discount_price_mxn`, `discount_pct` GENERATED, `discount_valid_until`, `is_discount_active`, `discounted_units_count`). Property type extendido con `PropertyDiscount` + `discountedUnitsCount`. Mappers leen discount_* con Number() defensive. Query nueva `getDiscountedUnits()`. **5 touchpoints visuales**: Home (`DiscountedUnitsSection` post-Featured), MarketplaceCard (strikethrough brand cyan `decoration-[#0E7490]` + badge `−N%` + corner badge "Con descuento" en cards de development con rollup), `/desarrollos/[slug]` (badge top-right galería "Hasta −N%" + chip al lado de "Desde" + `UnitModelsTable` con columna nueva "Desc." conditional + filas resaltadas cyan), `/propiedades/[slug]` (badge galería + precio lista tachado encima + post-descuento + chip + `FloatingKeyData` sidebar con discount row), `/promociones` (pivot de getFeaturedDevelopments a getDiscountedUnits + Schema.org Offer real). i18n keys ES+EN. Commits `e1ccb40` (feat principal), `ecafcfa` (UnitModelsTable Desc. + padding reducido para evitar scroll lateral), `169359f` (fix NUMERIC-as-string), `fe37c73` (fix badge duplicado). Deploys Vercel `dpl_6SX...`, `dpl_2Ja...`, `dpl_3mo...`, `dpl_HJA...`.
-- [x] **Bug fixes en cascada del sistema de descuentos** (2026-05-22/23): (1) CookieBanner Mac tapaba botón Comparar — fix offset `useCompare()` + modal z-60 + sticky thead Safari. (2) `estado_unidad` Hub form mandaba lowercase pero CHECK BD + Zoho usan Capitalized → fix Hub `status-canonical.ts` a Capitalized + helper `capitalizeEstatusVenta()`. (3) Mapper `typeof === 'number'` fallaba con NUMERIC-as-string → fix `Number()` defensive (descubierto al verificar con Playwright que badge aparecía pero precio post-descuento no). (4) Badge "Entrega Inmediata" duplicado en `UnitDetailPage` (span + Badge component ambos con `stageLabel`) — fix: skip Badge si type='nuevo', label vía `badge_{type}` i18n. Hub commits `b7bba6b` + `167c38c`. Next commits `169359f` + `fe37c73`.
-- [x] **Blog detail rediseño: fondo blanco + sidebar form sticky** (2026-05-22) — Detail page `/blog/[slug]` migrada de dark heredado a `bg-white text-slate-900`. Grid 2 cols en lg+ (1fr + 360px sticky `top-24`); mobile colapsa con form al final del artículo antes del share bar. 3 componentes nuevos en `src/components/blog/`: `BlogSidebarLeadForm` (source `lead_magnet` para todas las categorías excepto Asesores), `BlogSidebarBrokerForm` (source `affiliate_request` con campos name/email/whatsapp/city, igual a `/unete`), `BlogSidebarForm` wrapper que rutea por `post.category`. i18n namespace nuevo `blogSidebar` en `es/en.json`. Bug fix tangencial: fecha solo se muestra si `published_at` no es null (antes mostraba "Invalid Date" en staged posts). Commit `6dad9d4` en `develop`, deploy via `vercel --prod --yes` (deployment `dpl_9LPBg6tT1Jfbo55GRGB3yDK8hcdv`, aliased `dev.propyte.com`).
-- [x] **Ajustes estéticos cards Home + ficha precio** (2026-05-22) — Cards `FeaturedProperties` Home: título `text-sm line-clamp-1` → `text-xs leading-snug line-clamp-2 break-words` (nunca se corta, fluye a 2ª línea). Ficha desarrollo: label "Desde" pasa a block uppercase encima del precio (no rompe alineación con Share/Ficha). `PriceDisplay` dual: sufijo "(Original)" eliminado de arriba (basta "(Referencial)" abajo). Deploys `dpl_8YksvDBWaMz...` + `dpl_8FSpq2pcKuJk...`. Pendiente commit/deploy: PriceDisclaimer.tsx también limpiado para no mencionar el label "(Original)" que ya no existe.
-- [x] **Audit Playwright PDF "NOTAS ICONOS" + image proxy** (2026-05-22) — Script `tests/audit-pdf-items.mjs` corrido contra `dev.propyte.com`. 6 PASS confirmados: image proxy (440 URLs, 0 leaks Supabase), logo Propyte infografía visible, brochure icon en Ficha, cards Home título no truncado, (Original) removido en home, Desde label block. 4 items que el audit flag-eó como FAIL (burbuja search, WhatsApp color, titulares acento) confirmados como **OK por revisión manual del usuario** — el script tenía falsos positivos por selectores demasiado genéricos. Cierre del bloque PDF visual completo.
-- [x] **Listados refactor profundo + Banxico FX + filtros nuevos + UI/UX iter 4** (2026-05-20 noche-2) — /desarrollos y /propiedades: heroHidden=true (H1 sr-only), loader fullscreen lg:left-[72px], scroll defensivo, min-h grid canvas. Cards: rango precio "Desde X" + currency, chip tipo desarrollo, rango bedrooms agregado v_units, Heart+Brochure removidos, aspect 16/9 (grid) y 5/2 (compact). Split mapa 60/40 → 40/60 (mapa angosto). Hover sync card↔pin (ring cyan brand + scale). Banxico SF43718 FX rate auto (cache 12h). Filtros: Ciudad+Zona dinámicas, Recámaras 1/2/3/4+, Etapa, Tipo desarrollo. Fix bug PREVENTA en mapper unit (`status`+`is_presale` en lugar de `row.stage`). Home FeaturedProperties paridad. UI rhythm `flex flex-col gap-1.5`. Deploy final `dpl_2qmSyY1WbRSDQrZG3UB2zEGhLNrr`.
-- [x] **Migración SQL `tipo_desarrollo` unificado** (2026-05-20 noche-2, autorizado MCP) — vertical/Residencial vertical (404) → 'Residencial vertical', mixto (1) → 'Mixto', preventa misplaced (227) → NULL. Backup `Propyte_desarrollos_backup_tipo_desarrollo_20260520`. 231 rows quedaron sin clasificar (legacy scraper).
-- [x] **[SAMPLE] AZUL VIVO Residences borrado + soft-delete gate fix** (2026-05-20 noche-2) — Hard delete 6 unidades + 1 desarrollo. Bug subyacente: view `v_developments` expone soft-deleted rows; queries solo filtraban `approved_at`. Fix global: 13 queries en lib/supabase/queries.ts + 5 inline pages ahora filtran `deleted_at IS NULL`. Backups en `*_backup_sample_azulvivo_20260520`.
-- [x] **11 iconos custom nuevos + stroke 1.5 fix** (2026-05-20 noche-2) — svgs_mas.zip: bike, car, cook, ghost (refresh), headset, parking, plant, spa, sun, utensils, wifi. Registry actualizado en `lib/icons.tsx`. AmenityList: jardín ahora Plant (era TreePine), spa ahora Spa (era Flower2). **Fix crítico**: generator `build-propyte-icons.js` strippea ahora `strokeWidth="[\d.]+"` generalizado (antes solo `="1"`). Los nuevos SVGs traían `="2"` hardcoded que pisaba el default 1.5 del wrapper. Net: 72 iconos a stroke 1.5 uniforme.
-- [x] **Botón "Ver perfil" removido** (2026-05-20) — DevelopmentDetailPage line 678-685. Card Desarrolladora ya no tiene CTA al perfil. `viewProfile` i18n key sigue en uso por UnitDetailPage.
-- [x] **Iconografía Propyte v3 + lucide unificadas a strokeWidth=1.5** (2026-05-20 noche) — 61 SVGs custom Propyte v3 + generador `scripts/build-propyte-icons.js` → `src/lib/propyte-icons.tsx` auto-gen (62 componentes incl. ChevronRight flip). `src/lib/icons.tsx` (renamed de .ts) con `withDefaultStroke()` HOC envolviendo cada lucide. Codemod en 127 archivos `from 'lucide-react'` → `from '@/lib/icons'`. Librería legacy `src/components/icons/PropyteIcons.tsx` (47 iconos viewBox custom) ELIMINADA + 7 consumers migrados. Removidos 46 `strokeWidth={2}` heredados. Deploy chain final `dpl_cdmxpp9ps`.
-- [x] **"| MPgenesis" cleanup BD + view fixes** (2026-05-20 noche) — 2 migrations: `v_units.title` y `v_developments.publication_title` COALESCE invertido (campo editable Hub gana sobre JSON legacy). UPDATE masivo: 59 unidades + 37 desarrollos limpiados. Bug: Hub edits no se reflejaban porque view priorizaba JSON `ext_content_es.metaTitle` sobre `titulo_unidad`/`ext_meta_title_desarrollo`. Feedback memory: [[supabase-view-coalesce-json-priority]].
-- [x] **Rich content JSON surfaced en detail pages** (2026-05-20 noche) — Property type + mappers extendidos con `richContent?: { features, location, lifestyle, faqs }` (8 campos JSON + 2 arrays FAQ ES+EN). Nuevo `RichContentSections.tsx` renderiza Características/Ubicación/Estilo de Vida en Description tab. `UnitFAQs` ahora lee de BD con fallback hardcoded. ~440 palabras adicionales visibles por unidad. Feedback memory: [[propyte-rich-content-json-pipeline]].
-- [x] **Mocks unit-fixtures.ts eliminados** (2026-05-20) — Borrado `src/lib/mocks/unit-fixtures.ts` + carpeta. 5 consumers limpiados (UnitDetailPage data+similares fallback, buildPropertyMetadata, opengraph-image, generate-pdf, generateStaticParams). URLs sample (Akora A-301, Nativa Jungla T-12, Playacar Residencias B-205, etc.) ahora 404. Feedback: [[mock-fixtures-indexed-prod]].
-- [x] **UI detail-page mejorada (Propiedades + Desarrollos)** (2026-05-20) — FloatingKeyData + DevelopmentKeyData icons 13→18, labels text-2xs→sm, values sm→md. ContactForm sin "Tipo de inversión", Enviar+WhatsApp `grid-cols-2`. UnitDetailPage H1 smaller en flex con Share/Ficha; SpecChips bigger; Highlights+Proximity en Description. Bug badge `STAGES.X` literal arreglado (next-intl path-fallback). WhatsApp en desarrollos siempre presente (fallback global).
-- [x] **Home swap Infografía ↔ Destacados** (2026-05-20) — `src/app/[locale]/page.tsx` orden: Hero → FeaturedProperties → LeadMagnet → ProcessInfographic → DeveloperBanner → resto.
-
----
 
 ## Notas
 
