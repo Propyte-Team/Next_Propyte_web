@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Check, Loader2, MessageCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
 import { trackWhatsAppClick } from '@/lib/analytics/track';
+import { COPY, type LocaleCasas } from '../_copy';
 
 // ============================================================
 // Formulario de la landing de casas. UN SOLO PASO, siempre visible.
@@ -34,19 +35,13 @@ import { trackWhatsAppClick } from '@/lib/analytics/track';
 // sessionStorage): esta landing vive fuera de `[locale]` y no monta <UTMCapture />.
 // ============================================================
 
-/**
- * Rangos de presupuesto, derivados del inventario REAL y no de una escala
- * genérica. El corte en 6 y en 11 millones no es redondo por capricho: parte
- * el inventario en tres tercios comparables (cuatro casas, cuatro casas, tres
- * villas), así que cada respuesta le dice algo distinto al asesor. Una escala
- * de «hasta 3M / 3-5M / 5M+» dejaría diez de las once casas en el mismo cubo.
- */
-const PRESUPUESTOS = [
-  'Hasta $6 M MXN',
-  '$6 M a $11 M MXN',
-  'Más de $11 M MXN',
-  'Todavía lo estoy definiendo',
-] as const;
+// Los rangos de presupuesto viven ahora en `_copy.ts`, con el resto de las
+// cadenas. El corte en 6 y en 11 millones no es redondo por capricho: parte el
+// inventario en tres tercios comparables (cuatro casas, cuatro casas, tres
+// villas), así que cada respuesta le dice algo distinto al asesor. Una escala
+// de «hasta 3M / 3-5M / 5M+» dejaría diez de las once casas en el mismo cubo.
+// La variante en inglés los mantiene EN PESOS a propósito: convertirlos exigiría
+// un tipo de cambio inventado, que es justo lo que esta página no hace.
 
 const CLAVES_URL = [
   'utm_source',
@@ -94,11 +89,21 @@ export default function FormCasas({
   onCasaChange,
   telefonoWhatsApp,
   /**
+   * Idioma de las cadenas. Cruza la frontera servidor→cliente como CADENA y no
+   * como el objeto de copy: el diccionario interpola con funciones y una
+   * función no es serializable (ver la nota de `COPY` en `_copy.ts`). El
+   * español es el valor por defecto para que `/lp/casas-riviera-maya` se
+   * comporte igual que antes: el idioma es decisión de la RUTA.
+   */
+  locale = 'es',
+  /**
    * ⚠️ COMPROMISO OPERATIVO, no copy. Define qué promete la marca al enviar.
    * Cambiarlo es decisión de negocio: si el equipo comercial no puede sostener
-   * el plazo, la promesa quema el lead en vez de calentarlo.
+   * el plazo, la promesa quema el lead en vez de calentarlo. El valor por
+   * defecto lo declara el diccionario, porque el plazo que se puede sostener en
+   * inglés no es el mismo que en español.
    */
-  tiempoRespuesta = 'el mismo día hábil',
+  tiempoRespuesta,
 }: {
   /** `hero` va en el panel del primer pliegue; `cierre` cierra el documento. */
   variante: 'hero' | 'cierre';
@@ -106,8 +111,11 @@ export default function FormCasas({
   casaSeleccionada: string | null;
   onCasaChange: (slug: string | null) => void;
   telefonoWhatsApp: string;
+  locale?: LocaleCasas;
   tiempoRespuesta?: string;
 }) {
+  const copy = COPY[locale];
+  const plazo = tiempoRespuesta ?? copy.form.tiempoRespuesta;
   const [nombre, setNombre] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
@@ -173,9 +181,9 @@ export default function FormCasas({
       // la casa cuando hay una elegida, y el alcance de la campaña cuando no:
       // «(sin casa específica)» le dice al asesor que abra con el inventario
       // completo, no que el dato se perdió.
-      propertyName: casa ? casa.titulo : 'Riviera Maya (sin casa específica)',
+      propertyName: casa ? casa.titulo : copy.form.sinCasaEspecifica,
       budget: presupuesto ?? undefined,
-      locale: 'es',
+      locale: copy.locale,
       website,
       ...atribucion.current,
     });
@@ -183,7 +191,7 @@ export default function FormCasas({
     setEnviando(false);
 
     if (!resultado.ok) {
-      setError('No pudimos enviar tus datos. Escríbenos por WhatsApp y lo resolvemos ahí.');
+      setError(copy.form.error);
       emitirEvento('form_error');
       return;
     }
@@ -200,9 +208,7 @@ export default function FormCasas({
 
   const hrefWhatsApp = (() => {
     const casa = casas.find((c) => c.slug === casaSeleccionada);
-    const texto = casa
-      ? `Hola, me interesa esta casa: ${casa.titulo}. ¿Me pasan precio y disponibilidad?`
-      : 'Hola, vi las casas de la Riviera Maya en su página. ¿Me pasan precios y disponibilidad?';
+    const texto = casa ? copy.whatsapp.porCasa(casa.titulo) : copy.whatsapp.generico;
     const params = new URLSearchParams({ text: texto });
     return `https://wa.me/${telefonoWhatsApp}?${params.toString()}`;
   })();
@@ -219,12 +225,10 @@ export default function FormCasas({
           <Check className="h-4 w-4 text-[var(--lpc-on-dark)]" aria-hidden />
         </div>
         <h3 className="lpc-titulo mt-5 text-[1.5rem] text-[var(--lpc-on-dark)]">
-          Listo, {nombre.split(' ')[0] || 'gracias'}.
+          {copy.form.exito.titulo(nombre.split(' ')[0] || copy.form.exito.sinNombre)}
         </h3>
         <p className="mt-3 max-w-[42ch] text-sm leading-relaxed text-[var(--lpc-on-dark-2)]">
-          Te enviamos el dossier a <span className="text-[var(--lpc-on-dark)]">{email}</span> con
-          los precios, el enganche y la disponibilidad de las {casas.length} casas. Un asesor te
-          escribe por WhatsApp {tiempoRespuesta}.
+          {copy.form.exito.cuerpo(email, casas.length, plazo)}
         </p>
         <a
           href={hrefWhatsApp}
@@ -234,7 +238,7 @@ export default function FormCasas({
           className="mt-7 inline-flex min-h-[52px] items-center gap-2.5 border border-[var(--lpc-line-dark)] px-6 text-sm text-[var(--lpc-on-dark)] transition-colors duration-200 hover:border-[var(--lpc-on-dark)]"
         >
           <MessageCircle className="h-4 w-4" style={{ color: 'var(--lpc-wa)' }} aria-hidden />
-          Escribir ahora por WhatsApp
+          {copy.form.exito.cta}
         </a>
       </div>
     );
@@ -248,20 +252,19 @@ export default function FormCasas({
       className="lpc-panel-oscuro bg-[var(--lpc-dark-2)] p-7 sm:p-9"
     >
       <p className="lpc-etiqueta text-[var(--lpc-signal-on-dark)]">
-        Dossier de inventario · {casas.length} casas
+        {copy.form.etiqueta(casas.length)}
       </p>
       <h2 className="lpc-titulo mt-3 text-[clamp(1.5rem,1.2rem+1.1vw,2rem)] text-[var(--lpc-on-dark)]">
-        Precios, enganche y disponibilidad real
+        {copy.form.titulo}
       </h2>
       <p className="mt-3 max-w-[44ch] text-sm leading-relaxed text-[var(--lpc-on-dark-2)]">
-        Te llega por correo la ficha completa de cada casa y un asesor te escribe por WhatsApp{' '}
-        {tiempoRespuesta}.
+        {copy.form.cuerpo(plazo)}
       </p>
 
       <div className="mt-8 grid gap-6">
         <div>
           <label htmlFor={`nombre-${uid}`} className={ETIQUETA}>
-            Nombre
+            {copy.form.nombre}
           </label>
           <input
             id={`nombre-${uid}`}
@@ -272,14 +275,14 @@ export default function FormCasas({
             value={nombre}
             onFocus={marcarInicio}
             onChange={(e) => setNombre(e.target.value)}
-            placeholder="Tu nombre"
+            placeholder={copy.form.nombrePlaceholder}
             className="lpc-campo mt-2 text-base"
           />
         </div>
 
         <div>
           <label htmlFor={`whatsapp-${uid}`} className={ETIQUETA}>
-            WhatsApp
+            {copy.form.whatsapp}
           </label>
           <input
             id={`whatsapp-${uid}`}
@@ -291,14 +294,14 @@ export default function FormCasas({
             value={whatsapp}
             onFocus={marcarInicio}
             onChange={(e) => setWhatsapp(e.target.value)}
-            placeholder="+52 984 000 0000"
+            placeholder={copy.form.whatsappPlaceholder}
             className="lpc-campo mt-2 text-base"
           />
         </div>
 
         <div>
           <label htmlFor={`email-${uid}`} className={ETIQUETA}>
-            Correo — es donde llega el dossier
+            {copy.form.email}
           </label>
           <input
             id={`email-${uid}`}
@@ -309,7 +312,7 @@ export default function FormCasas({
             value={email}
             onFocus={marcarInicio}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="tu@correo.com"
+            placeholder={copy.form.emailPlaceholder}
             className="lpc-campo mt-2 text-base"
           />
         </div>
@@ -319,7 +322,8 @@ export default function FormCasas({
             once radios porque el campo NO debe crecer con el inventario. */}
         <div>
           <label htmlFor={`casa-${uid}`} className={ETIQUETA}>
-            Casa de interés <span className="normal-case tracking-normal">(opcional)</span>
+            {copy.form.casaLabel}{' '}
+            <span className="normal-case tracking-normal">{copy.form.opcional}</span>
           </label>
           <select
             id={`casa-${uid}`}
@@ -329,7 +333,7 @@ export default function FormCasas({
             className="lpc-campo mt-2 cursor-pointer text-base"
           >
             <option value="" className="bg-[var(--lpc-dark-2)]">
-              Quiero ver todas
+              {copy.form.verTodas}
             </option>
             {casas.map((casa) => (
               <option key={casa.slug} value={casa.slug} className="bg-[var(--lpc-dark-2)]">
@@ -341,10 +345,11 @@ export default function FormCasas({
 
         <fieldset>
           <legend className={ETIQUETA}>
-            Presupuesto <span className="normal-case tracking-normal">(opcional)</span>
+            {copy.form.presupuestoLabel}{' '}
+            <span className="normal-case tracking-normal">{copy.form.opcional}</span>
           </legend>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            {PRESUPUESTOS.map((rango) => (
+            {copy.form.presupuestos.map((rango) => (
               <button
                 key={rango}
                 type="button"
@@ -366,7 +371,7 @@ export default function FormCasas({
           lector de pantalla lo encuentren; `sr-only` no sirve aquí, porque a un
           lector de pantalla SÍ se lo leería. */}
       <div className="absolute left-[-9999px]" aria-hidden>
-        <label htmlFor={`website-${uid}`}>No llenar</label>
+        <label htmlFor={`website-${uid}`}>{copy.form.honeypot}</label>
         <input
           id={`website-${uid}`}
           name="website"
@@ -395,11 +400,11 @@ export default function FormCasas({
         {enviando ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Enviando
+            {copy.form.enviando}
           </>
         ) : (
           <>
-            Recibir el dossier
+            {copy.form.enviar}
             <ArrowRight className="h-4 w-4" aria-hidden />
           </>
         )}
@@ -416,18 +421,17 @@ export default function FormCasas({
         className="mt-3 inline-flex min-h-[52px] w-full items-center justify-center gap-2.5 border border-[var(--lpc-line-dark)] px-6 text-sm text-[var(--lpc-on-dark-2)] transition-colors duration-200 hover:border-[var(--lpc-on-dark)] hover:text-[var(--lpc-on-dark)]"
       >
         <MessageCircle className="h-4 w-4" style={{ color: 'var(--lpc-wa)' }} aria-hidden />
-        Prefiero preguntar por WhatsApp
+        {copy.form.preferirWhatsApp}
       </a>
 
       <p className="mt-5 text-xs leading-relaxed text-[var(--lpc-on-dark-3)]">
-        Usamos tus datos solo para enviarte esta información y contactarte. Sin listas de
-        terceros.{' '}
+        {copy.form.notaPrivacidad}{' '}
         <Link
-          href="/es/privacidad"
+          href={copy.legal.privacidadHref}
           prefetch={false}
           className="underline decoration-[var(--lpc-on-dark-3)] underline-offset-2 hover:text-[var(--lpc-on-dark-2)]"
         >
-          Aviso de privacidad
+          {copy.legal.avisoPrivacidad}
         </Link>
         .
       </p>

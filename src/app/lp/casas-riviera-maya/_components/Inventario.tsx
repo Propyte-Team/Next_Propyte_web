@@ -6,6 +6,7 @@ import { ArrowRight } from '@/lib/icons';
 import type { CasaLanding } from '@/lib/supabase/lp-casas';
 import { dinero, m2, mxn } from '../../_components/format';
 import FormCasas from './FormCasas';
+import { COPY, type CopyCasas, type LocaleCasas } from '../_copy';
 
 // ============================================================
 // Cuadrícula de inventario + formulario de cierre.
@@ -32,10 +33,10 @@ import FormCasas from './FormCasas';
  * silencio. Un guion se lee como «no aplica» y un vacío como error de la
  * página; esto se lee como lo que es — un dato que el asesor confirma.
  */
-function Gate() {
+function Gate({ copy }: { copy: CopyCasas }) {
   return (
     <span className="lpc-etiqueta inline-block border-b border-dotted border-[var(--lpc-ink-3)] pb-px text-[var(--lpc-ink-3)]">
-      Confirmar
+      {copy.inventario.confirmar}
     </span>
   );
 }
@@ -49,24 +50,28 @@ function Gate() {
  * medios además se lee entero de un vistazo y no depende de que el visitante
  * descifre un icono de 14 px.
  */
-function specs(casa: CasaLanding): string[] {
+function specs(casa: CasaLanding, copy: CopyCasas): string[] {
+  const s = copy.inventario.specs;
   const partes: string[] = [];
-  if (casa.recamaras) partes.push(`${casa.recamaras} rec`);
-  if (casa.banos) partes.push(`${casa.banos} baños`);
-  if (casa.m2Construidos) partes.push(`${m2(casa.m2Construidos)} const.`);
-  if (casa.m2Terreno) partes.push(`${m2(casa.m2Terreno)} terreno`);
-  if (casa.estacionamientos) partes.push(`${casa.estacionamientos} autos`);
-  if (casa.alberca) partes.push('Alberca');
+  if (casa.recamaras) partes.push(`${casa.recamaras} ${s.recamaras}`);
+  if (casa.banos) partes.push(`${casa.banos} ${s.banos}`);
+  if (casa.m2Construidos) partes.push(`${m2(casa.m2Construidos)} ${s.construidos}`);
+  if (casa.m2Terreno) partes.push(`${m2(casa.m2Terreno)} ${s.terreno}`);
+  if (casa.estacionamientos) partes.push(`${casa.estacionamientos} ${s.estacionamientos}`);
+  if (casa.alberca) partes.push(s.alberca);
   return partes;
 }
 
 export default function Inventario({
   casas,
   telefonoWhatsApp,
+  locale = 'es',
 }: {
   casas: CasaLanding[];
   telefonoWhatsApp: string;
+  locale?: LocaleCasas;
 }) {
+  const copy = COPY[locale];
   const [casaSeleccionada, setCasaSeleccionada] = useState<string | null>(null);
   const anclaForm = useRef<HTMLDivElement>(null);
 
@@ -85,21 +90,19 @@ export default function Inventario({
         <div className="mx-auto max-w-[92rem] px-5 py-16 sm:px-8 sm:py-24">
           <header className="max-w-[62ch]">
             <p className="lpc-etiqueta text-[var(--lpc-signal)]">
-              Inventario · {casas.length} casas disponibles
+              {copy.inventario.etiqueta(casas.length)}
             </p>
             <h2 className="lpc-titulo mt-4 text-[clamp(1.75rem,1.3rem+2vw,3rem)] text-[var(--lpc-ink)]">
-              Estas son las casas. No son ejemplos.
+              {copy.inventario.titulo}
             </h2>
             <p className="mt-5 text-base leading-relaxed text-[var(--lpc-ink-2)]">
-              Cada una está publicada, aprobada y con precio vigente en nuestro sistema. Si una se
-              vende, desaparece de esta página en la siguiente actualización — no la dejamos puesta
-              para que la llamada empiece con una decepción.
+              {copy.inventario.cuerpo}
             </p>
           </header>
 
           <ul className="mt-14 grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {casas.map((casa, i) => {
-              const detalle = specs(casa);
+              const detalle = specs(casa, copy);
               const elegida = casaSeleccionada === casa.slug;
 
               return (
@@ -111,7 +114,9 @@ export default function Inventario({
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">
-                      {casa.preventa ? 'Preventa' : 'Entrega inmediata'}
+                      {casa.preventa
+                        ? copy.inventario.preventa
+                        : copy.inventario.entregaInmediata}
                     </span>
                   </div>
 
@@ -119,7 +124,7 @@ export default function Inventario({
                     {casa.imagen ? (
                       <Image
                         src={casa.imagen}
-                        alt={`${casa.titulo} — ${casa.ciudad}`}
+                        alt={copy.inventario.altFicha(casa.titulo, casa.ciudad)}
                         fill
                         // Tres columnas en escritorio, dos en tableta, una en
                         // móvil. Sin esto Next sirve la imagen para el ancho
@@ -129,7 +134,9 @@ export default function Inventario({
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
-                        <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">Sin fotografía</span>
+                        <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">
+                          {copy.inventario.sinFoto}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -152,17 +159,17 @@ export default function Inventario({
                       tipográfico más alto de la tarjeta y separado por regla. */}
                   <div className="mt-5 border-t border-[var(--lpc-line)] pt-4">
                     <p className="lpc-display lpc-cifra text-[1.5rem] text-[var(--lpc-ink)]">
-                      {casa.precio ? dinero(casa.precio) : <Gate />}
+                      {casa.precio ? dinero(casa.precio) : <Gate copy={copy} />}
                     </p>
                     <p className="mt-2 text-[0.8125rem] leading-relaxed text-[var(--lpc-ink-2)]">
-                      Enganche{' '}
+                      {copy.inventario.enganche}{' '}
                       {casa.enganchePct ? (
                         <span className="lpc-cifra text-[var(--lpc-ink)]">
                           {casa.enganchePct}%
                           {casa.engancheMxn ? ` · ${mxn(casa.engancheMxn)}` : ''}
                         </span>
                       ) : (
-                        <Gate />
+                        <Gate copy={copy} />
                       )}
                     </p>
                   </div>
@@ -183,7 +190,7 @@ export default function Inventario({
                           : 'border-[var(--lpc-line-strong)] text-[var(--lpc-ink)] hover:bg-[var(--lpc-ink)] hover:text-[var(--lpc-paper)]'
                       }`}
                     >
-                      {elegida ? 'Elegida — completa tus datos' : 'Quiero esta casa'}
+                      {elegida ? copy.inventario.elegida : copy.inventario.elegir}
                       <ArrowRight className="h-4 w-4 shrink-0" aria-hidden />
                     </button>
                   </div>
@@ -203,22 +210,16 @@ export default function Inventario({
       >
         <div className="mx-auto grid max-w-[92rem] gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,26rem)] lg:gap-20">
           <div className="lpc-invertido">
-            <p className="lpc-etiqueta text-[var(--lpc-signal-on-dark)]">Último paso</p>
+            <p className="lpc-etiqueta text-[var(--lpc-signal-on-dark)]">{copy.cierre.etiqueta}</p>
             <h2 className="lpc-display mt-4 text-[clamp(2rem,1.4rem+2.6vw,3.75rem)] text-[var(--lpc-on-dark)]">
-              Te mandamos los números completos de las {casas.length}.
+              {copy.cierre.titulo(casas.length)}
             </h2>
             <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-[var(--lpc-on-dark-2)]">
-              No es un catálogo de fotos. Es el precio de cada casa, el enganche que pide cada
-              desarrollador, qué incluye la entrega y cuáles siguen disponibles hoy.
+              {copy.cierre.cuerpo}
             </p>
 
             <ul className="mt-10 max-w-[52ch] divide-y divide-[var(--lpc-line-dark)] border-y border-[var(--lpc-line-dark)]">
-              {[
-                ['Precio cerrado', 'De cada una de las casas, en su moneda de venta.'],
-                ['Enganche y esquema', 'Lo que pide cada desarrollador para apartar.'],
-                ['Qué incluye', 'Equipada, llave en mano o en obra — dicho sin adornos.'],
-                ['Disponibilidad', 'Cuáles siguen libres al día de tu solicitud.'],
-              ].map(([titulo, detalle]) => (
+              {copy.cierre.puntos.map(([titulo, detalle]) => (
                 <li key={titulo} className="grid gap-1 py-4 sm:grid-cols-[13rem_1fr] sm:gap-6">
                   <span className="lpc-etiqueta pt-1 text-[var(--lpc-on-dark)]">{titulo}</span>
                   <span className="text-sm leading-relaxed text-[var(--lpc-on-dark-2)]">
@@ -236,6 +237,7 @@ export default function Inventario({
               casaSeleccionada={casaSeleccionada}
               onCasaChange={setCasaSeleccionada}
               telefonoWhatsApp={telefonoWhatsApp}
+              locale={locale}
             />
           </div>
         </div>
