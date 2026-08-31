@@ -1735,10 +1735,15 @@ const ZONE_SCORE_NUMERIC_KEYS = [
 
 export async function getDevelopmentFinancials(client: Client, developmentId: string) {
   const { data, error } = await inv(client)
+    // maybeSingle y no single: que un desarrollo no tenga analisis financiero
+    // cargado es un estado normal, no un fallo. Con single(), PostgREST
+    // responde 406 al recibir cero filas y cada uno queda en la bitacora
+    // pareciendo un error — 73 en la ultima medicion. El retorno no cambia:
+    // aqui abajo ya se devolvia null.
     .from('development_financials')
     .select('*')
     .eq('development_id', developmentId)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return null;
   // Coerción NUMERIC-string→number: sin esto los consumidores que hacen
@@ -1763,12 +1768,15 @@ export async function getMlRentalEstimateForUnit(
   bedrooms: number,
 ) {
   const { data } = await inv(client)
+    // maybeSingle: no hay estimacion para toda combinacion de tipo y recamaras,
+    // y no haberla es normal. Con single() eran 88 rechazos 406 en la bitacora
+    // por algo que esta funcion ya trataba como «sin datos».
     .from('rental_ml_estimates')
     .select('*')
     .eq('development_id', developmentId)
     .eq('unit_type', unitType)
     .eq('bedrooms', bedrooms)
-    .single();
+    .maybeSingle();
 
   return data || null;
 }
