@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 /**
@@ -30,16 +31,30 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
-    if (!phone || !isValidPhoneNumber(phone)) {
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y el estado sigue vacío: el
+    // envío se caía sin decir una palabra —ni error, ni petición, ni lead—.
+    // Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(
+      e.currentTarget,
+      { name, email, phone, website },
+      { estadoManda: ['phone'] },
+    );
+    if (datos.name !== name) setName(datos.name);
+    if (datos.email !== email) setEmail(datos.email);
+    if (datos.phone !== phone) setPhone(datos.phone);
+
+    if (!datos.name || !datos.email) return;
+    if (!datos.phone || !isValidPhoneNumber(datos.phone)) {
       setPhoneError(tCommon('invalidPhone'));
       return;
     }
     setPhoneError(null);
     setStatus('sending');
-    const result = await submitLead('lead_magnet', { name, email, phone, website });
+    const result = await submitLead('lead_magnet', datos);
     if (result.ok) setDownloadUrl(result.downloadUrl ?? null);
     setStatus(result.ok ? 'success' : 'error');
   }

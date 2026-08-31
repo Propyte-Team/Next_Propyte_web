@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { CheckCircle, Send } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 /**
@@ -41,22 +42,37 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
   const [website, setWebsite] = useState(''); // honeypot
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !city) return;
-    if (!whatsapp || !isValidPhoneNumber(whatsapp)) {
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y el estado sigue vacío: el
+    // envío se caía sin decir una palabra —ni error, ni petición, ni lead—.
+    // Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(
+      e.currentTarget,
+      { name, email, whatsapp, city, website },
+      { estadoManda: ['whatsapp'] },
+    );
+    if (datos.name !== name) setName(datos.name);
+    if (datos.email !== email) setEmail(datos.email);
+    if (datos.whatsapp !== whatsapp) setWhatsapp(datos.whatsapp);
+    if (datos.city !== city) setCity(datos.city);
+
+    if (!datos.name || !datos.email || !datos.city) return;
+    if (!datos.whatsapp || !isValidPhoneNumber(datos.whatsapp)) {
       setPhoneError(tCommon('invalidPhone'));
       return;
     }
     setPhoneError(null);
     setStatus('sending');
     const result = await submitLead('affiliate_request', {
-      name,
-      email,
-      phone: whatsapp,
-      whatsapp,
-      city,
-      website,
+      name: datos.name,
+      email: datos.email,
+      phone: datos.whatsapp,
+      whatsapp: datos.whatsapp,
+      city: datos.city,
+      website: datos.website,
       locale,
     });
     setStatus(result.ok ? 'success' : 'error');
