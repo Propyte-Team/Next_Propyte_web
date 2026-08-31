@@ -148,12 +148,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ── Dynamic development pages ────────
+  // Antes consultaba `public.developments`, tabla que no existe (la real es
+  // `real_estate_hub.Propyte_desarrollos` / vista `v_developments`) — el fetch
+  // fallaba en silencio (catch de abajo) y NINGÚN desarrollo individual salía
+  // en el sitemap. Sin esa señal, Google no tenía forma de recrawlear y
+  // consolidar los slugs viejos tras un rename: quedaban indexados aparte del
+  // vigente aunque el 308 en middleware ya funcionara. Mismo gate canónico que
+  // el resto del sitio (ver APPROVED_STATUSES en lib/supabase/queries.ts).
   try {
     const supabase = await createServiceRoleClient() || await createServerSupabaseClient();
     const { data: developments } = await supabase
-      .from('developments')
+      .schema('real_estate_hub')
+      .from('v_developments')
       .select('slug, updated_at')
-      .eq('published', true)
+      .not('approved_at', 'is', null)
       .is('deleted_at', null)
       .order('updated_at', { ascending: false })
       .limit(5000);
@@ -166,6 +174,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             lastModified: new Date(dev.updated_at),
             changeFrequency: 'weekly',
             priority: 0.8,
+          });
+        }
+      }
+    }
+  } catch {
+    // Supabase not connected — skip dynamic entries
+  }
+
+  // ── Dynamic unit pages ────────────────────────
+  // Nunca existieron en el sitemap — no había ni siquiera un bloque roto como
+  // el de desarrollos de arriba. Mismo patrón: v_units con el gate canónico
+  // (approved_at IS NOT NULL AND deleted_at IS NULL), sección `propiedades`
+  // (ver SECCION_A_ENTIDAD en lib/redirects/match-entity-path.ts).
+  try {
+    const supabase3 = await createServiceRoleClient() || await createServerSupabaseClient();
+    const { data: units } = await supabase3
+      .schema('real_estate_hub')
+      .from('v_units')
+      .select('slug, updated_at')
+      .not('approved_at', 'is', null)
+      .is('deleted_at', null)
+      .order('updated_at', { ascending: false })
+      .limit(5000);
+
+    if (units) {
+      for (const unit of units) {
+        for (const locale of LOCALES) {
+          entries.push({
+            url: `${BASE_URL}/${locale}/propiedades/${unit.slug}`,
+            lastModified: new Date(unit.updated_at),
+            changeFrequency: 'weekly',
+            priority: 0.7,
           });
         }
       }
