@@ -16,6 +16,10 @@ import { faltanDatosDeContacto } from './field-maps';
  * `zoho_sync_error IS NOT NULL` — es decir, justo las que el endpoint marca
  * como descartadas. Sin la guardia de este lado, el cron las empujaría a Zoho
  * de todos modos unos minutos después.
+ *
+ * 31-ago-2026 — la regla SUBE de «contactable» a «los tres datos». Todos los
+ * formularios de captación piden ya nombre, correo y teléfono; el guardia deja
+ * de aceptar dos de tres. `newsletter` sigue exento (solo capta email).
  */
 describe('faltanDatosDeContacto', () => {
   it('rechaza el payload exacto del 29-ago: sin nombre, correo ni teléfono', () => {
@@ -49,19 +53,29 @@ describe('faltanDatosDeContacto', () => {
     ).toBe('sin nombre');
   });
 
-  it('acepta nombre + correo', () => {
+  it('rechaza nombre + correo sin teléfono', () => {
     expect(
       faltanDatosDeContacto('lp_casas_riviera', {
         name: 'Ana Ruiz',
         email: 'ana@example.com',
       }),
-    ).toBeNull();
+    ).toBe('sin teléfono');
   });
 
-  it('acepta nombre + teléfono, sin correo', () => {
+  it('rechaza nombre + teléfono sin correo', () => {
     expect(
       faltanDatosDeContacto('lp_casas_riviera', {
         name: 'Ana Ruiz',
+        phone: '+529841234567',
+      }),
+    ).toBe('sin email');
+  });
+
+  it('acepta los tres datos', () => {
+    expect(
+      faltanDatosDeContacto('lp_casas_riviera', {
+        name: 'Ana Ruiz',
+        email: 'ana@example.com',
         phone: '+529841234567',
       }),
     ).toBeNull();
@@ -71,12 +85,13 @@ describe('faltanDatosDeContacto', () => {
     expect(
       faltanDatosDeContacto('lp_casas_riviera', {
         name: 'Ana Ruiz',
+        email: 'ana@example.com',
         whatsapp: '+529841234567',
       }),
     ).toBeNull();
   });
 
-  it('EXIME a newsletter de tener nombre: su form solo capta email', () => {
+  it('EXIME a newsletter de nombre y teléfono: su form solo capta email', () => {
     // Si esta prueba se pone en rojo, el formulario de newsletter quedó apagado
     // por la guardia — field-maps le pone «Suscriptor» de Last_Name a propósito.
     expect(
@@ -86,5 +101,27 @@ describe('faltanDatosDeContacto', () => {
 
   it('pero a newsletter sin email tampoco lo deja pasar', () => {
     expect(faltanDatosDeContacto('newsletter', {})).toBe('sin email ni teléfono');
+  });
+
+  it('aplica la regla de los tres datos a TODOS los sources de captación', () => {
+    // Un source nuevo no debe colarse por olvido: la exención es una lista
+    // cerrada de uno, no un `default` permisivo.
+    const sinTelefono = { name: 'Ana Ruiz', email: 'ana@example.com' };
+    for (const source of [
+      'contact',
+      'property_inquiry',
+      'b2b_request',
+      'developer_request',
+      'broker_registration',
+      'provider_form',
+      'built_consultation',
+      'affiliate_request',
+      'lead_magnet',
+      'glossary_pdf',
+      'lp_lotes_pdc',
+      'lp_casas_riviera',
+    ] as const) {
+      expect(faltanDatosDeContacto(source, sinTelefono)).toBe('sin teléfono');
+    }
   });
 });

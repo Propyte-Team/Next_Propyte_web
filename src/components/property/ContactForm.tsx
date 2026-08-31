@@ -1,17 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { submitForm } from '@/lib/submitForm';
 import { AlertCircle } from '@/lib/icons';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 const schema = z.object({
   name: z.string().min(1, 'required'),
   email: z.string().email('invalidEmail'),
-  phone: z.string().optional(),
+  phone: z.string().trim().min(1, 'required').refine(isValidPhoneNumber, { message: 'invalidPhone' }),
   website: z.string().optional(), // honeypot (REQ-F-02)
 });
 
@@ -29,9 +30,8 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
   const t = useTranslations('common');
   const tContact = useTranslations('contact');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-  const [showPhone, setShowPhone] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const { register, handleSubmit, control, trigger, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
@@ -118,22 +118,33 @@ export default function ContactForm({ propertyId, propertyName, whatsappUrl, wha
         )}
       </div>
 
-      {!showPhone ? (
-        <button type="button" onClick={() => setShowPhone(true)} className="text-sm text-[#0E7490] hover:underline">
-          + {tContact('formPhone') || 'Phone'}
-        </button>
-      ) : (
-        <div>
-          <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-1">{tContact('formPhone') || 'Phone'}</label>
-          <input
-            id="contact-phone"
-            type="tel"
-            {...register('phone')}
-            toolparamdescription="Teléfono de contacto a 10 dígitos (opcional)."
-            className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-          />
-        </div>
-      )}
+      <div>
+        <label htmlFor="contact-phone" className="block text-sm font-medium text-gray-700 mb-1">{tContact('formPhone') || 'Phone'}</label>
+        <Controller
+          name="phone"
+          control={control}
+          render={({ field }) => (
+            <PhoneInputField
+              id="contact-phone"
+              name={field.name}
+              value={field.value || ''}
+              onChange={(value) => field.onChange(value || '')}
+              onBlur={() => { field.onBlur(); trigger('phone'); }}
+              invalid={!!errors.phone}
+              describedBy={errors.phone ? 'contact-phone-error' : undefined}
+              required
+              className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus-within:border-propyte-brand focus-within:outline-none aria-invalid:border-error"
+              toolParamDescription="Teléfono de contacto, con selector de lada de país."
+            />
+          )}
+        />
+        {errors.phone && (
+          <p id="contact-phone-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+            <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+            {errors.phone.message === 'invalidPhone' ? t('invalidPhone') : t('required')}
+          </p>
+        )}
+      </div>
 
       <div className={whatsappUrl ? 'grid grid-cols-2 gap-2' : ''}>
         <button

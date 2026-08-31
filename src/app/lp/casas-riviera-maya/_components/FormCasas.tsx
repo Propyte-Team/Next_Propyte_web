@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Check, Loader2, MessageCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 import { trackWhatsAppClick } from '@/lib/analytics/track';
 import { COPY, type LocaleCasas } from '../_copy';
 
@@ -117,7 +118,7 @@ export default function FormCasas({
   const copy = COPY[locale];
   const plazo = tiempoRespuesta ?? copy.form.tiempoRespuesta;
   const [nombre, setNombre] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [whatsapp, setWhatsapp] = useState<string | undefined>(undefined);
   const [email, setEmail] = useState('');
   const [presupuesto, setPresupuesto] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -180,7 +181,11 @@ export default function FormCasas({
 
     const nombreEnviado = leer('name', nombre);
     const emailEnviado = leer('email', email);
-    const whatsappEnviado = leer('phone', whatsapp);
+    // El teléfono es el ÚNICO que no lee del DOM primero: el <input> del
+    // selector de lada muestra el número formateado («+52 984 123 4567») y el
+    // estado guarda el E.164 canónico, que es lo que va a Zoho. El DOM queda
+    // de red de seguridad para el autocompletado que no dispara `change`.
+    const whatsappEnviado = (whatsapp || String(campos.get('phone') ?? '')).trim();
 
     // Se sincroniza el estado con lo que el visitante realmente ve: sin esto la
     // pantalla de éxito lo saluda con el fallback y le repite un correo vacío.
@@ -202,6 +207,12 @@ export default function FormCasas({
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEnviado)) {
       setError(copy.form.emailInvalido);
+      emitirEvento('form_invalido');
+      return;
+    }
+
+    if (!isValidPhoneNumber(whatsappEnviado)) {
+      setError(copy.form.telefonoInvalido);
       emitirEvento('form_invalido');
       return;
     }
@@ -322,17 +333,13 @@ export default function FormCasas({
           <label htmlFor={`whatsapp-${uid}`} className={ETIQUETA}>
             {copy.form.whatsapp}
           </label>
-          <input
+          <PhoneInputField
             id={`whatsapp-${uid}`}
             name="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            required
             value={whatsapp}
-            onFocus={marcarInicio}
-            onChange={(e) => setWhatsapp(e.target.value)}
+            onChange={(v) => { marcarInicio(); setWhatsapp(v); }}
             placeholder={copy.form.whatsappPlaceholder}
+            required
             className="lpc-campo mt-2 text-base"
           />
         </div>

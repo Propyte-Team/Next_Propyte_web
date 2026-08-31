@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 export interface LeadMagnetCta {
   eyebrow: string | null;
@@ -18,6 +19,8 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   const tCommon = useTranslations('common');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState<string | undefined>(undefined);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [website, setWebsite] = useState(''); // honeypot (REQ-F-02)
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -30,8 +33,15 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
+    // El teléfono no lo cubre el `required` del navegador: el valor vive en el
+    // estado del PhoneInputField, no en un <input> que el form pueda validar.
+    if (!phone || !isValidPhoneNumber(phone)) {
+      setPhoneError(tCommon('invalidPhone'));
+      return;
+    }
+    setPhoneError(null);
     setStatus('sending');
-    const result = await submitLead('lead_magnet', { name, email, website });
+    const result = await submitLead('lead_magnet', { name, email, phone, website });
     if (result.ok) {
       setDownloadUrl(result.downloadUrl ?? null);
       setStatus('success');
@@ -83,7 +93,7 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                 onSubmit={handleSubmit}
                 className="space-y-4"
                 toolname="descargar_guia_inversion"
-                tooldescription="Solicita la guía de inversión de Propyte a cambio de nombre y correo."
+                tooldescription="Solicita la guía de inversión de Propyte a cambio de nombre, correo y teléfono."
               >
                 {/* Honeypot — bots lo llenan; el endpoint los detecta (REQ-F-02).
                     Sin `name` a propósito: se captura por estado (no por name), así
@@ -123,6 +133,21 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
                     placeholder={t('emailPlaceholder')}
                     toolparamdescription="Correo electrónico del interesado."
                   />
+                </div>
+                <div>
+                  <label htmlFor="lm-phone" className="block text-xs font-medium text-white/75 mb-1">{tCommon('phone')}</label>
+                  <PhoneInputField
+                    id="lm-phone"
+                    name="phone"
+                    value={phone}
+                    onChange={(v) => { setPhone(v); if (phoneError) setPhoneError(null); }}
+                    invalid={!!phoneError}
+                    describedBy={phoneError ? 'lm-phone-error' : undefined}
+                    required
+                    className="w-full h-11 px-4 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus-within:border-propyte-brand focus-within:outline-none"
+                    toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                  />
+                  {phoneError && <p id="lm-phone-error" aria-live="polite" className="text-xs text-red-400 mt-1">{phoneError}</p>}
                 </div>
                 <button
                   type="submit"

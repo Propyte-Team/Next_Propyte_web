@@ -90,6 +90,8 @@ for (const { ruta, idioma } of LANDINGS) {
     await form.locator('input[name="name"]').fill('E2E Prueba');
     await form.locator('input[name="phone"]').fill('+52 984 000 0000');
     await form.locator('input[name="email"]').fill('e2e@example.com');
+    // El selector de lada arranca en México: es el mercado principal.
+    await expect(form.locator('select.PhoneInputCountrySelect')).toHaveValue('MX');
     await form.locator('button[type="submit"]').click();
 
     await expect(page.locator('[data-lpc-estado="enviado"]')).toBeVisible();
@@ -97,8 +99,10 @@ for (const { ruta, idioma } of LANDINGS) {
     expect(cuerpo, 'no salió ninguna petición').not.toBeNull();
     expect(cuerpo!.name).toBe('E2E Prueba');
     expect(cuerpo!.email).toBe('e2e@example.com');
-    expect(cuerpo!.phone).toBe('+52 984 000 0000');
+    // El selector normaliza a E.164 antes de mandar: lo que ve el asesor en
+    // Zoho no depende de cómo lo haya tecleado el visitante.
+    expect(cuerpo!.phone).toBe('+529840000000');
     // `whatsapp` es el que field-maps mapea a Mobile en Zoho.
-    expect(cuerpo!.whatsapp).toBe('+52 984 000 0000');
+    expect(cuerpo!.whatsapp).toBe('+529840000000');
   });
 }

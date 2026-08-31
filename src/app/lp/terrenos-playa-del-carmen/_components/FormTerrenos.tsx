@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import { trackGenerateLead } from '@/lib/analytics/track';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 // ============================================================
 // LA CONVERSIÓN. Todo lo demás en esta página existe para traer a alguien aquí.
@@ -114,14 +115,15 @@ export default function FormTerrenos({
   // por la que la persona sigue leyendo.
   const [plazo, setPlazo] = useState<number | null>(plazos.at(-1) ?? null);
   const [nombre, setNombre] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState<string | undefined>(undefined);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviado, setEnviado] = useState(false);
   const atribucion = useRef<Atribucion>({});
   const honeypot = useRef<HTMLInputElement>(null);
   const refNombre = useRef<HTMLInputElement>(null);
-  const refWhatsapp = useRef<HTMLInputElement>(null);
+  const refEmail = useRef<HTMLInputElement>(null);
 
   // Atribución leída una vez, al montar. Deliberadamente sin sessionStorage:
   // el POST sale de esta misma vista, no hay navegación que sobrevivir.
@@ -154,7 +156,7 @@ export default function FormTerrenos({
    *   vuelve a teclear en el campo.
    *
    *   El disparador más común NO es teclear rápido: es el AUTOCOMPLETADO del
-   *   navegador, que rellena los dos campos de golpe y en muchos navegadores
+   *   navegador, que rellena los campos de golpe y en muchos navegadores
    *   no dispara el `onChange` que React escucha. Es decir, le pasa
    *   justo a quien tiene sus datos guardados y venía con la menor fricción.
    *
@@ -165,9 +167,9 @@ export default function FormTerrenos({
    */
   useEffect(() => {
     const delDom = refNombre.current?.value ?? '';
-    const waDom = refWhatsapp.current?.value ?? '';
+    const emailDom = refEmail.current?.value ?? '';
     if (delDom) setNombre((actual) => (actual === delDom ? actual : delDom));
-    if (waDom) setWhatsapp((actual) => (actual === waDom ? actual : waDom));
+    if (emailDom) setEmail((actual) => (actual === emailDom ? actual : emailDom));
   }, []);
 
   async function enviar(e: React.FormEvent) {
@@ -175,15 +177,18 @@ export default function FormTerrenos({
     if (enviando) return;
     setError(null);
 
-    if (!nombre.trim() || !whatsapp.trim()) {
-      setError('Falta tu nombre o tu WhatsApp. Son los dos únicos datos que pedimos.');
+    if (!nombre.trim() || !email.trim() || !whatsapp) {
+      setError('Faltan datos: pedimos tu nombre, tu correo y tu WhatsApp.');
       return;
     }
-    // 10 dígitos es el largo de un móvil en México. Se valida contando dígitos,
-    // no con un regex de formato: quien escribe "984 123 4567" o "+52 984..."
-    // no puede perder el lead por un espacio.
-    if (whatsapp.replace(/\D/g, '').length < 10) {
-      setError('El WhatsApp necesita 10 dígitos para que podamos escribirte.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Revisa el correo: es a donde te mandamos el plan de pagos.');
+      return;
+    }
+    // La validación por país la hace el selector de lada: quien escribe desde
+    // fuera de México ya no pierde el lead por no tener 10 dígitos.
+    if (!isValidPhoneNumber(whatsapp)) {
+      setError('Revisa el WhatsApp: elige tu país y escribe el número completo.');
       return;
     }
 
@@ -197,8 +202,9 @@ export default function FormTerrenos({
           source: 'lp_lotes_pdc',
           locale: 'es',
           name: nombre.trim(),
-          phone: whatsapp.trim(),
-          whatsapp: whatsapp.trim(),
+          email: email.trim(),
+          phone: whatsapp,
+          whatsapp: whatsapp,
           propertyName: loteTitulo,
           message: [
             `Lote ref. ${loteRef}.`,
@@ -259,7 +265,7 @@ export default function FormTerrenos({
         <p className="lpt-rotulo text-[var(--lpt-estaca-2)]">
           Solicitud · {ORDINAL[variante]}
         </p>
-        <p className="lpt-cota text-[0.6875rem] text-[var(--lpt-tinta-2)]">2 campos</p>
+        <p className="lpt-cota text-[0.6875rem] text-[var(--lpt-tinta-2)]">3 campos</p>
       </div>
 
       {/* Una sola promesa en las tres instancias, a propósito: tres titulares
@@ -323,20 +329,33 @@ export default function FormTerrenos({
           />
         </div>
         <div>
-          <label htmlFor={`${uid}-wa`} className="sr-only">
-            Tu WhatsApp a 10 dígitos
+          <label htmlFor={`${uid}-email`} className="sr-only">
+            Tu correo
           </label>
           <input
+            id={`${uid}-email`}
+            ref={refEmail}
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="Tu correo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="lpt-cuerpo min-h-[52px] w-full rounded-[var(--lpt-r)] border border-[var(--lpt-caliza-2)] bg-white px-4 text-[0.9375rem] text-[var(--lpt-tinta)] transition-colors duration-200 placeholder:text-[var(--lpt-tinta-2)]/55 focus:border-[var(--lpt-tinta)]"
+          />
+        </div>
+        <div>
+          <label htmlFor={`${uid}-wa`} className="sr-only">
+            Tu WhatsApp
+          </label>
+          <PhoneInputField
             id={`${uid}-wa`}
-            ref={refWhatsapp}
             name="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="WhatsApp a 10 dígitos"
             value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            className="lpt-cota min-h-[52px] w-full rounded-[var(--lpt-r)] border border-[var(--lpt-caliza-2)] bg-white px-4 text-[0.9375rem] text-[var(--lpt-tinta)] transition-colors duration-200 placeholder:font-sans placeholder:text-[var(--lpt-tinta-2)]/55 focus:border-[var(--lpt-tinta)]"
+            onChange={setWhatsapp}
+            placeholder="Tu WhatsApp"
+            required
+            className="lpt-cota min-h-[52px] w-full rounded-[var(--lpt-r)] border border-[var(--lpt-caliza-2)] bg-white px-4 text-[0.9375rem] text-[var(--lpt-tinta)] transition-colors duration-200 focus-within:border-[var(--lpt-tinta)]"
           />
         </div>
       </div>

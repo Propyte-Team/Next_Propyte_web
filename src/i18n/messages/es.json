@@ -1389,6 +1389,8 @@
     "required": "Este campo es requerido",
     "invalidEmail": "Email inválido",
     "invalidPhone": "Teléfono inválido para el país seleccionado",
+    "phone": "Teléfono",
+    "phoneHelp": "Incluye tu lada de país",
     "close": "Cerrar",
     "back": "Volver",
     "next": "Siguiente",

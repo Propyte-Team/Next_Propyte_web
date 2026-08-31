@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { CheckCircle, Send } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 /**
  * BlogSidebarBrokerForm
@@ -26,21 +27,33 @@ const CITY_OPTIONS: Array<{ value: string; key: 'city2' | 'city3' | 'city4' | 'c
 export default function BlogSidebarBrokerForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tu = useTranslations('unete');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
+  // El artículo monta este form 2 veces (móvil + desktop): el id tiene que ser
+  // único o el <label> de una copia apunta al input de la otra.
+  const uid = useId();
+  const phoneId = `blog-broker-phone-${uid}`;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [whatsapp, setWhatsapp] = useState<string | undefined>(undefined);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [city, setCity] = useState('');
   const [website, setWebsite] = useState(''); // honeypot
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !whatsapp.trim() || !city) return;
+    if (!name.trim() || !email.trim() || !city) return;
+    if (!whatsapp || !isValidPhoneNumber(whatsapp)) {
+      setPhoneError(tCommon('invalidPhone'));
+      return;
+    }
+    setPhoneError(null);
     setStatus('sending');
     const result = await submitLead('affiliate_request', {
       name,
       email,
+      phone: whatsapp,
       whatsapp,
       city,
       website,
@@ -114,17 +127,19 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
             />
           </div>
           <div>
-            <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formWhatsappLabel')}</label>
-            <input
-              type="tel"
+            <label htmlFor={phoneId} className="block text-[11px] font-medium text-white/75 mb-1">{tu('formWhatsappLabel')}</label>
+            <PhoneInputField
+              id={phoneId}
               name="whatsapp"
               value={whatsapp}
-              onChange={(e) => setWhatsapp(e.target.value)}
+              onChange={(v) => { setWhatsapp(v); if (phoneError) setPhoneError(null); }}
+              invalid={!!phoneError}
+              describedBy={phoneError ? `${phoneId}-error` : undefined}
               required
-              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder:text-white/60 focus:border-propyte-brand focus:outline-none"
-              placeholder={tu('formWhatsappPlaceholder')}
-              {...param('Número de WhatsApp del asesor inmobiliario.')}
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus-within:border-propyte-brand focus-within:outline-none"
+              toolParamDescription={registerTool ? 'Número de WhatsApp del asesor, con selector de lada de país.' : undefined}
             />
+            {phoneError && <p id={`${phoneId}-error`} aria-live="polite" className="text-[11px] text-red-300 mt-1">{phoneError}</p>}
           </div>
           <div>
             <label className="block text-[11px] font-medium text-white/75 mb-1">{tu('formCityLabel')}</label>

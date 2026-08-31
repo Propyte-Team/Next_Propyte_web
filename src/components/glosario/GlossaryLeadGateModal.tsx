@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
@@ -10,6 +10,7 @@ import { X, Download, Loader2 } from '@/lib/icons';
 import { toast } from 'sonner';
 import { trackFileDownload } from '@/lib/analytics/track';
 import { submitLead } from '@/lib/leads/submit-lead';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 interface Props {
   open: boolean;
@@ -25,6 +26,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
   const schema = z.object({
     name: z.string().trim().min(2, tCommon('required')),
     email: z.string().trim().email(tCommon('invalidEmail')),
+    phone: z.string().trim().min(1, tCommon('required')).refine(isValidPhoneNumber, { message: tCommon('invalidPhone') }),
     consent: z.literal(true, { message: t('gateRequiredConsent') }),
     website: z.string().optional(),
   });
@@ -35,6 +37,8 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
+    trigger,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -98,6 +102,7 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
     const result = await submitLead('glossary_pdf', {
       name: data.name,
       email: data.email,
+      phone: data.phone,
       website: data.website, // honeypot — el endpoint lo evalúa
       locale,
     });
@@ -195,6 +200,36 @@ export default function GlossaryLeadGateModal({ open, onClose }: Props) {
             />
             {errors.email && (
               <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="gate-phone"
+              className="block text-sm font-semibold text-[#1A2F3F] mb-1"
+            >
+              {tCommon('phone')}
+            </label>
+            <Controller
+              name="phone"
+              control={control}
+              render={({ field }) => (
+                <PhoneInputField
+                  id="gate-phone"
+                  name={field.name}
+                  value={field.value || ''}
+                  onChange={(value) => field.onChange(value || '')}
+                  onBlur={() => { field.onBlur(); trigger('phone'); }}
+                  invalid={!!errors.phone}
+                  describedBy={errors.phone ? 'gate-phone-error' : undefined}
+                  required
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus-within:border-[#5CE0D2] focus-within:ring-2 focus-within:ring-[#5CE0D2]/30 focus-within:outline-none"
+                  toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                />
+              )}
+            />
+            {errors.phone && (
+              <p id="gate-phone-error" className="mt-1 text-xs text-red-600">{errors.phone.message}</p>
             )}
           </div>
 

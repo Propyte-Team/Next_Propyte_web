@@ -579,6 +579,18 @@ export function extractDuplicateLeadId(
  * Origen: 29-ago-2026, `lp_casas_riviera`. Un clic pagado de Google Ads en
  * inglés envió el formulario con los tres campos vacíos y aterrizó en Zoho
  * como «Anónimo», sin correo ni teléfono. El asesor no tenía a quién llamar.
+ *
+ * 31-ago-2026 — la barra sube de «contactable» (nombre + uno de los dos) a
+ * «los tres datos». Todos los formularios de captación piden ya nombre, correo
+ * y teléfono con selector de lada, así que un lead con dos de tres ya no es un
+ * lead legítimo al que le falta un campo: es una captura que se rompió.
+ *
+ * Se comprobó antes de subirla que la cola de reintento no traía backlog real
+ * (`zoho_lead_id IS NULL AND zoho_sync_error IS NOT NULL` → 5 filas `smoke`),
+ * así que endurecerla no descarta leads viejos legítimos.
+ *
+ * Sigue siendo permisiva con el FORMATO —no hay `.regex()` aquí a propósito,
+ * un patrón estricto ya tumbó leads buenos una vez— y estricta con la AUSENCIA.
  */
 export function faltanDatosDeContacto(
   source: LeadSource,
@@ -590,10 +602,14 @@ export function faltanDatosDeContacto(
 
   if (!email && !telefono) return "sin email ni teléfono";
 
-  // `newsletter` es el ÚNICO source que legítimamente no pide nombre: el form
-  // solo capta email y abajo se le pone «Suscriptor» de Last_Name a propósito.
-  // Exigirle nombre lo apagaría entero.
-  if (source !== "newsletter" && !nombre) return "sin nombre";
+  // `newsletter` es el ÚNICO source exento, y la exención es una lista cerrada
+  // de uno, no un `default` permisivo: su form solo capta email y abajo se le
+  // pone «Suscriptor» de Last_Name a propósito. Exigirle el resto lo apagaría.
+  if (source === "newsletter") return null;
+
+  if (!nombre) return "sin nombre";
+  if (!email) return "sin email";
+  if (!telefono) return "sin teléfono";
 
   return null;
 }
