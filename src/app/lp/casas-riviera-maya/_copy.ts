@@ -123,6 +123,14 @@ export interface CopyCasas {
     preferirWhatsApp: string;
     notaPrivacidad: string;
     error: string;
+    /**
+     * Campos obligatorios que faltan. El <form> ya NO lleva `noValidate`, así
+     * que el navegador avisa primero; esto es la red de abajo, para el envío
+     * que el navegador SÍ deja pasar porque el DOM está lleno y el estado
+     * React vacío (autocompletado que no dispara `change`).
+     */
+    faltanCampos: string;
+    emailInvalido: string;
     exito: {
       titulo: (nombre: string) => string;
       /** Cuando el campo de nombre vino vacío y el saludo se quedaría cojo. */
@@ -272,6 +280,8 @@ export const COPY_ES: CopyCasas = {
     notaPrivacidad:
       'Usamos tus datos solo para enviarte esta información y contactarte. Sin listas de terceros.',
     error: 'No pudimos enviar tus datos. Escríbenos por WhatsApp y lo resolvemos ahí.',
+    faltanCampos: 'Completa nombre, WhatsApp y correo para recibir el dossier.',
+    emailInvalido: 'Revisa el correo: es a donde te llega el dossier.',
     exito: {
       titulo: (nombre) => `Listo, ${nombre}.`,
       sinNombre: 'gracias',
@@ -443,6 +453,8 @@ export const COPY_EN: CopyCasas = {
     notaPrivacidad:
       'We use your details only to send you this information and to contact you. No third-party lists.',
     error: "We couldn't send your details. Message us on WhatsApp and we'll sort it out there.",
+    faltanCampos: 'Please add your name, WhatsApp and email so we can send the dossier.',
+    emailInvalido: "Check your email address — that's where the dossier lands.",
     exito: {
       titulo: (nombre) => `Done, ${nombre}.`,
       sinNombre: 'thanks',

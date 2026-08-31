@@ -156,7 +156,9 @@ export default function FormCasas({
     emitirEvento('form_start');
   }
 
-  async function enviar(e: React.FormEvent) {
+  // `<HTMLFormElement>` y no el `Element` por defecto: `new FormData(...)` no
+  // acepta un Element genérico.
+  async function enviar(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (enviando) return;
 
@@ -167,16 +169,53 @@ export default function FormCasas({
       return;
     }
 
+    // EL DOM MANDA SOBRE EL ESTADO REACT en los tres campos de texto. Un
+    // autocompletado del navegador o un gestor de contraseñas rellena el
+    // <input> sin disparar `change`: el visitante ve el campo lleno y
+    // `nombre`/`email`/`whatsapp` siguen en ''. Leer del estado manda vacío un
+    // formulario que en pantalla estaba completo.
+    const campos = new FormData(e.currentTarget);
+    const leer = (clave: string, estado: string) =>
+      (String(campos.get(clave) ?? '') || estado).trim();
+
+    const nombreEnviado = leer('name', nombre);
+    const emailEnviado = leer('email', email);
+    const whatsappEnviado = leer('phone', whatsapp);
+
+    // Se sincroniza el estado con lo que el visitante realmente ve: sin esto la
+    // pantalla de éxito lo saluda con el fallback y le repite un correo vacío.
+    if (nombreEnviado !== nombre) setNombre(nombreEnviado);
+    if (emailEnviado !== email) setEmail(emailEnviado);
+    if (whatsappEnviado !== whatsapp) setWhatsapp(whatsappEnviado);
+
+    // LA RAZÓN DE ESTE BLOQUE, con fecha. El 29-ago-2026 un clic de Google Ads
+    // en inglés (17 clics, $291.87 MXN) envió este formulario con los tres
+    // campos vacíos: el <form> llevaba `noValidate`, así que los `required` no
+    // frenaban nada, y `enviar()` no comprobaba nada. Aterrizó en Zoho como
+    // «Anónimo», sin correo ni teléfono, y al visitante se le dijo que todo
+    // había salido bien. Un lead pagado e incontactable.
+    if (!nombreEnviado || !emailEnviado || !whatsappEnviado) {
+      setError(copy.form.faltanCampos);
+      emitirEvento('form_invalido');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEnviado)) {
+      setError(copy.form.emailInvalido);
+      emitirEvento('form_invalido');
+      return;
+    }
+
     setEnviando(true);
     setError(null);
 
     const casa = casas.find((c) => c.slug === casaSeleccionada);
 
     const resultado = await submitLead('lp_casas_riviera', {
-      name: nombre.trim(),
-      email: email.trim(),
-      phone: whatsapp.trim(),
-      whatsapp: whatsapp.trim(),
+      name: nombreEnviado,
+      email: emailEnviado,
+      phone: whatsappEnviado,
+      whatsapp: whatsappEnviado,
       // `propertyName` es lo que el asesor ve primero en Zoho. Va el título de
       // la casa cuando hay una elegida, y el alcance de la campaña cuando no:
       // «(sin casa específica)» le dice al asesor que abra con el inventario
@@ -247,7 +286,6 @@ export default function FormCasas({
   return (
     <form
       onSubmit={enviar}
-      noValidate
       data-lpc-form={variante}
       className="lpc-panel-oscuro bg-[var(--lpc-dark-2)] p-7 sm:p-9"
     >
