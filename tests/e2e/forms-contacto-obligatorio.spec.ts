@@ -74,9 +74,18 @@ async function interceptarLeads(page: Page, capturado: { cuerpo: unknown }) {
 
 for (const caso of CASOS) {
   test(`@forms ${caso.nombre} — sin teléfono no sale al servidor`, async ({ page }) => {
+    // Se INTERCEPTA además de escuchar. Escuchar solo bastaría para que el
+    // test falle, pero si el guardia estuviera roto la petición saldría de
+    // verdad y crearía un lead basura en Zoho — justo cuando la suite corre
+    // contra producción, que es cuando más importa poder correrla.
     const enviados: string[] = [];
-    page.on('request', (req) => {
-      if (req.url().includes('/api/leads') && req.method() === 'POST') enviados.push(req.url());
+    await page.route('**/api/leads', async (route) => {
+      enviados.push(route.request().url());
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, id: 'e2e-simulado' }),
+      });
     });
 
     await page.goto(caso.ruta);
