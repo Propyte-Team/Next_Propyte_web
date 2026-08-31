@@ -7,6 +7,7 @@ import { getZohoClient } from '@/lib/zoho/client';
 import {
   composeDuplicateNote,
   extractDuplicateLeadId,
+  faltanDatosDeContacto,
   sourceToZohoPayload,
   truncateError,
   type FormData,
@@ -220,6 +221,30 @@ async function retryOne(
   }
 
   const { source, payload, email, formData, utms, locale } = rebuilt;
+
+  // GUARDIA DE CONTACTO — la MISMA regla que aplica /api/leads, aplicada aquí
+  // porque este camino NO pasa por aquel.
+  //
+  // Y no es defensa redundante: `claim_zoho_retry_batch` reclama toda fila con
+  // `zoho_lead_id IS NULL` y `zoho_sync_error IS NOT NULL`, así que las filas
+  // que el endpoint marca «SKIPPED: sin datos de contacto» caen en este lote a
+  // los pocos minutos. Sin esta comprobación el cron reconstruye el payload y
+  // empuja el «Anónimo» a Zoho igual, deshaciendo la guardia del endpoint.
+  const razonFaltante = faltanDatosDeContacto(source, formData);
+  if (razonFaltante) {
+    await updateLeadLocal(supabase, row.id, {
+      zoho_sync_error: truncateError(`SKIPPED: ${razonFaltante}`),
+    });
+    console.warn(
+      JSON.stringify({
+        event: 'cron.sin-datos-de-contacto',
+        lead_id: row.id,
+        source,
+        razon: razonFaltante,
+      }),
+    );
+    return 'skipped';
+  }
 
   // Rama PENDING_SYNC: search por email primero para evitar duplicar (REQ-F-10)
   const isPending = row.zoho_sync_error === 'PENDING_SYNC';

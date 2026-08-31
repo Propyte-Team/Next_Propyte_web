@@ -13,6 +13,7 @@ import { getZohoClient } from '@/lib/zoho/client';
 import {
   composeDuplicateNote,
   extractDuplicateLeadId,
+  faltanDatosDeContacto,
   sourceToZohoPayload,
   truncateError,
   type FormData,
@@ -450,6 +451,76 @@ export async function POST(request: NextRequest) {
     // es justo lo que hace falta para importar conversiones offline en bloque.
     wbraid: data.wbraid || null,
   };
+
+  // 6b. GUARDIA DE CONTACTO — un lead sin con qué contactarlo no es un lead.
+  //
+  // El 29-ago-2026 un clic de Google Ads en inglés (CPC $17.17 MXN) envió
+  // `lp_casas_riviera` con name/email/phone en cadena vacía. El esquema los
+  // acepta A PROPÓSITO —un `.regex()` estricto llegó a tumbar el safeParse
+  // entero y devolver 400, perdiendo leads buenos; ver la nota del alfabeto
+  // seguro arriba—, así que salió un 200 limpio, `parseName` puso «Anónimo» de
+  // Last_Name y el asesor recibió una ficha sin correo ni teléfono, con dos
+  // tareas de seguimiento que no puede cumplir.
+  //
+  // Ser permisivo con el FORMATO del dato es correcto. Serlo con su AUSENCIA
+  // no: no hay formato que arreglar, no hay a quién llamar.
+  //
+  // Se persiste igual (audit-first: la fila ES la evidencia de que la captura
+  // falló, y es lo único que permite medir cuántas van) pero NO se empuja a
+  // Zoho, igual que un source desconocido.
+  const nombreDado = (data.name || '').trim();
+  const emailDado = (data.email || '').trim();
+  const telefonoDado = (data.phone || '').trim() || (data.whatsapp || '').trim();
+
+  // La REGLA vive en field-maps, no aquí: el cron de reintento tiene que
+  // aplicar exactamente la misma o el hueco sigue abierto por su lado.
+  const razonFaltante = faltanDatosDeContacto(source, formData);
+
+  if (razonFaltante) {
+    const { data: fila } = await supabase
+      .from('leads')
+      .insert({
+        name: nombreDado || null,
+        email: emailDado || null,
+        phone: telefonoDado || null,
+        message: data.message || null,
+        source,
+        intake_status: 'nuevo',
+        locale,
+        utm_source: data.utm_source || null,
+        utm_medium: data.utm_medium || null,
+        utm_campaign: data.utm_campaign || null,
+        utm_content: data.utm_content || null,
+        utm_term: data.utm_term || null,
+        gclid: data.gclid || null,
+        fbclid: data.fbclid || null,
+        wbraid: data.wbraid || null,
+        qr_code: data.qr || null,
+        form_data: compactFormData(formData),
+        zoho_sync_error: 'SKIPPED: sin datos de contacto',
+      })
+      .select('id')
+      .single();
+
+    console.warn(
+      JSON.stringify({
+        event: 'leads.sin-datos-de-contacto',
+        source,
+        razon: razonFaltante,
+        id: fila?.id ?? null,
+        tiene_nombre: !!nombreDado,
+        tiene_email: !!emailDado,
+        tiene_telefono: !!telefonoDado,
+        // Si es true, esto costó dinero: sirve para cruzarlo contra Ads.
+        de_pago: !!(data.gclid || data.wbraid || data.fbclid),
+      }),
+    );
+
+    // 422 y no 200: el formulario TIENE que poder distinguir esto de un envío
+    // bueno. Con 200 el visitante ve la pantalla de éxito por un lead que nadie
+    // podrá contestar — que es exactamente lo que pasó el 29-ago.
+    return NextResponse.json({ error: 'Missing contact details' }, { status: 422 });
+  }
 
   // Resolver Proyecto_de_Interes si form 2 (lookup unit → development → zoho_id)
   // Side effect: si la unidad NO existe en v_units, NO persistimos property_id

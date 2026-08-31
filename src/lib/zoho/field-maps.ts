@@ -566,6 +566,39 @@ export function extractDuplicateLeadId(
 }
 
 /**
+ * faltanDatosDeContacto — ¿este lead se puede contactar?
+ *
+ * EL PUNTO POR DONDE PASAN LAS DOS RUTAS. A Zoho se llega por `/api/leads`
+ * (push directo) y por `/api/cron/zoho-retry` (reintento, que reconstruye el
+ * payload desde `public.leads`). Poner esta regla en una sola de las dos deja
+ * el mismo hueco abierto para la otra: el cron NO pasa por la validación del
+ * endpoint, así que una fila con `name` null viajaría igual a Zoho.
+ *
+ * Devuelve la razón —para el log— o `null` si el lead es contactable.
+ *
+ * Origen: 29-ago-2026, `lp_casas_riviera`. Un clic pagado de Google Ads en
+ * inglés envió el formulario con los tres campos vacíos y aterrizó en Zoho
+ * como «Anónimo», sin correo ni teléfono. El asesor no tenía a quién llamar.
+ */
+export function faltanDatosDeContacto(
+  source: LeadSource,
+  data: FormData,
+): string | null {
+  const nombre = (data.name ?? "").trim();
+  const email = (data.email ?? "").trim();
+  const telefono = (data.phone ?? "").trim() || (data.whatsapp ?? "").trim();
+
+  if (!email && !telefono) return "sin email ni teléfono";
+
+  // `newsletter` es el ÚNICO source que legítimamente no pide nombre: el form
+  // solo capta email y abajo se le pone «Suscriptor» de Last_Name a propósito.
+  // Exigirle nombre lo apagaría entero.
+  if (source !== "newsletter" && !nombre) return "sin nombre";
+
+  return null;
+}
+
+/**
  * sourceToZohoPayload — entrada principal.
  *
  * Genera el payload Zoho según el source del form. Para `provider_form` también
@@ -586,6 +619,18 @@ export function sourceToZohoPayload(
   // Newsletter: el form solo capta email — Last_Name siempre "Suscriptor", First_Name parsed
   const useFallbackName = source === "newsletter";
   const fallback = useFallbackName ? "Suscriptor" : "Anónimo";
+
+  // «Anónimo» ya NO debería alcanzarse: los dos llamadores filtran con
+  // faltanDatosDeContacto() antes de llegar aquí. Si suena, es que alguien
+  // agregó un TERCER llamador sin la guardia — y el síntoma sería otra ficha
+  // incontactable en el CRM, que es justo lo que costó $291.87 MXN de Ads
+  // descubrir. Se queda como último recurso porque Zoho exige Last_Name no
+  // vacío: lanzar aquí dejaría al cron reintentando el mismo lead para siempre.
+  if (!useFallbackName && !(data.name ?? "").trim()) {
+    console.warn(
+      JSON.stringify({ event: "zoho.nombre-fallback-anonimo", source }),
+    );
+  }
   const parsed = parseName(data.name, fallback);
 
   const lead: ZohoLead = {
