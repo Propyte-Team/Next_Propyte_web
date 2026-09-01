@@ -109,7 +109,7 @@ export default function FlotantesEnganche({
         <div className="flex items-center gap-3">
           {engancheTexto && (
             <p className="min-w-0 flex-1">
-              <span className="lpe-cuerpo block text-[0.6875rem] uppercase tracking-[0.1em] text-[var(--lpe-tinta-3)]">
+              <span className="lpe-cuerpo block text-[0.6875rem] uppercase tracking-[0.1em] text-[var(--lpe-tinta-3-texto)]">
                 Enganche
               </span>
               <span className="lpe-cifra block truncate text-[1.0625rem] text-[var(--lpe-tinta)]">

@@ -243,7 +243,7 @@ export default function FormEnganche({
   }
 
   const campo =
-    'lpe-cuerpo min-h-[56px] w-full rounded-[var(--lpe-r-pill)] border px-5 text-[1rem] text-[var(--lpe-tinta)] transition-colors duration-200 placeholder:text-[var(--lpe-tinta-3)]';
+    'lpe-cuerpo min-h-[56px] w-full rounded-[var(--lpe-r-pill)] border px-5 text-[1rem] text-[var(--lpe-tinta)] transition-colors duration-200 placeholder:text-[var(--lpe-tinta-3-texto)]';
 
   return (
     <form
@@ -402,7 +402,7 @@ export default function FormEnganche({
                formato antes evita el error, en vez de regañarlo después. */
             <p
               id={`${uid}-wa-ayuda`}
-              className="lpe-cuerpo mt-2 text-[0.8125rem] text-[var(--lpe-tinta-3)]"
+              className="lpe-cuerpo mt-2 text-[0.8125rem] text-[var(--lpe-tinta-3-texto)]"
             >
               10 dígitos. Es donde te llega el plan.
             </p>
@@ -432,7 +432,7 @@ export default function FormEnganche({
             className="lpe-cuerpo text-[0.875rem] font-medium text-[var(--lpe-tinta)]"
           >
             ¿A cuántos meses te lo calculamos?{' '}
-            <span className="font-normal text-[var(--lpe-tinta-3)]">
+            <span className="font-normal text-[var(--lpe-tinta-3-texto)]">
               Puedes cambiarlo después.
             </span>
           </p>
@@ -505,7 +505,7 @@ export default function FormEnganche({
 
       {/* Qué pasa DESPUÉS de pulsar, con el icono del canal: quien deja su
           WhatsApp quiere saber si le va a sonar el teléfono. */}
-      <p className="lpe-cuerpo mt-4 flex items-start gap-2.5 text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+      <p className="lpe-cuerpo mt-4 flex items-start gap-2.5 text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
         <svg
           className="mt-[2px] shrink-0 text-[var(--lpe-wa)]"
           width="15"

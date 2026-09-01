@@ -78,7 +78,7 @@ export default function FiguraRedonda({
       </div>
 
       {conPie && (
-        <figcaption className="lpe-cuerpo mt-3 max-w-[54ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+        <figcaption className="lpe-cuerpo mt-3 max-w-[54ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
           <span className="text-[var(--lpe-tinta-2)]">{PREFIJO[imagen.tipo]}</span>{' '}
           {imagen.caption}
         </figcaption>

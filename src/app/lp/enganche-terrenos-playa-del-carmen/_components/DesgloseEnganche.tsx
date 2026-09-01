@@ -168,7 +168,7 @@ export default function DesgloseEnganche({
           ))}
         </ul>
 
-        <p className="lpe-cuerpo mt-4 text-[0.8125rem] text-[var(--lpe-tinta-3)]">
+        <p className="lpe-cuerpo mt-4 text-[0.8125rem] text-[var(--lpe-tinta-3-texto)]">
           Sobre un precio de lista de {mxn(precioMxn)}.
         </p>
       </div>
@@ -195,7 +195,7 @@ export default function DesgloseEnganche({
                   {t.n} · {t.titulo}
                 </span>
                 {!t.destacado && (
-                  <span className="lpe-cifra text-[0.875rem] text-[var(--lpe-tinta-3)]">
+                  <span className="lpe-cifra text-[0.875rem] text-[var(--lpe-tinta-3-texto)]">
                     {t.pct}%
                   </span>
                 )}
