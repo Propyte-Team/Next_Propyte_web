@@ -276,6 +276,11 @@ describe('agruparPorProyecto', () => {
     expect(p.precioDesdeBase).toBe('lista');
     expect(p.precioDesdeMeses).toBeNull();
     expect(p.mensualidad).toBeNull();
+    // El mutante `contado: representativa.contado ?? {precio de lista, sin
+    // descuento}` fabrica un «de contado» inventado para los proyectos que no
+    // ofrecen ninguno. Sin este assert, ese mutante pasaba los 20 tests
+    // anteriores.
+    expect(p.contado).toBeNull();
   });
 
   it('desempate: si el precio de contado iguala al de un plazo, gana "contado"', () => {
@@ -367,11 +372,16 @@ describe('agruparPorProyecto', () => {
   });
 
   it('propaga `contado` con sus condiciones reales (90% al firmar, 10% contra entrega)', () => {
-    // Caso real: lotes-residenciales-y-comerciales-en-playa-del-carmen, el
-    // proyecto con el MAYOR descuento (-20%) y la PEOR cobertura: tiene un
-    // solo plazo, así que `motivoSinPlan` sale `null` (solo se rellena cuando
-    // `plazos` está vacío) y sin este campo la guía publicaría "desde
-    // $1,279,872 de contado" sin decir cuánto hay que poner al firmar.
+    // Fixture, NO caso real: combina a propósito el descuento de -20% de
+    // lotes-residenciales-y-comerciales-en-playa-del-carmen (que en
+    // producción es 100% al firmar, 0% contra entrega — un solo plazo, sin
+    // split) con el split 90/10 que sí es real, pero en otros dos proyectos:
+    // lotes-residenciales-en-playa-del-carmen-2 y club-residencial-con-
+    // amenidades. La forma en sí (un solo plazo, `motivoSinPlan` en `null`
+    // porque ese campo solo se rellena cuando `plazos` está vacío, y un
+    // contado 90/10) es legal y hay que fijarla: sin `contado`, la guía
+    // publicaría "desde $1,279,872 de contado" sin decir cuánto hay que poner
+    // al firmar.
     const [p] = agruparPorProyecto(
       [
         comparable({
@@ -383,6 +393,10 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.contado).not.toBeNull();
+    // El mutante `contado: {...representativa.contado, enganchePct: 100}`
+    // publicaría "100% al firmar" para los proyectos reales que SÍ son
+    // 90/10 — justo la mentira que este campo existe para impedir.
+    expect(p.contado?.enganchePct).toBe(90);
     expect(p.contado?.contraentregaPct).toBe(10);
     expect(p.contado?.precioMxn).toBe(1_279_872);
   });
