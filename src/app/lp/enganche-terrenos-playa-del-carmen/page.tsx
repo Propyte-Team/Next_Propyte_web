@@ -7,6 +7,7 @@ import FormEnganche from './_components/FormEnganche';
 import DesgloseEnganche from './_components/DesgloseEnganche';
 import FiguraRedonda from './_components/FiguraRedonda';
 import FlotantesEnganche from './_components/FlotantesEnganche';
+import EstructuraPago from './_components/EstructuraPago';
 import { ICONOS, IconoNeutro, normalizarAmenidad } from './_components/iconos';
 import { mxn, m2 } from './_components/formato';
 import './lpe-theme.css';
@@ -279,31 +280,12 @@ export default async function LandingEngancheTerrenos() {
                 ingresos.
               </p>
 
-              {plan && (
-                <dl className="mt-9 grid grid-cols-2 gap-x-8 gap-y-7 border-t border-white/15 pt-8 sm:grid-cols-3">
-                  {[
-                    { t: 'Enganche', v: mxn(plan.engancheMxn) },
-                    plan.opciones.at(-1)
-                      ? {
-                          t: `${plan.opciones.at(-1)!.pagos} mensualidades`,
-                          v: mxn(plan.opciones.at(-1)!.mensualidadMxn),
-                        }
-                      : null,
-                    { t: 'Contraentrega', v: mxn(plan.contraentregaMxn) },
-                  ]
-                    .filter((x): x is { t: string; v: string } => x !== null)
-                    .map((x) => (
-                      <div key={x.t}>
-                        <dt className="lpe-cuerpo text-[0.6875rem] uppercase tracking-[0.1em] text-white/50">
-                          {x.t}
-                        </dt>
-                        <dd className="lpe-cifra mt-1.5 text-[1.375rem] text-[var(--lpe-teal)]">
-                          {x.v}
-                        </dd>
-                      </div>
-                    ))}
-                </dl>
-              )}
+              {/* Antes aquí había una fila con las MISMAS tres cifras sueltas y
+                  debajo 519 px de vacío hasta el fondo de la tarjeta del
+                  formulario (medido en 1440 y en 1920). `EstructuraPago` dice
+                  lo mismo más la proporción y el cuándo de cada tramo, que es
+                  la pregunta que abre un enganche de siete cifras. */}
+              {plan && <EstructuraPago plan={plan} />}
             </div>
 
             <div id="solicitud" className="scroll-mt-8 lg:col-span-6">
