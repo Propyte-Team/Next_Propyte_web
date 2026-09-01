@@ -120,7 +120,12 @@ export default function FlotantesEnganche({
           <a
             href="#solicitud"
             tabIndex={visible ? undefined : -1}
-            className="lpe-cuerpo shrink-0 rounded-[var(--lpe-r-pill)] bg-[var(--lpe-teal)] px-6 py-3.5 text-[0.9375rem] font-medium text-[var(--lpe-tinta)]"
+            // Misma convención que el botón de envío del formulario:
+            // `transition-[background-color,transform]` + `active:translate-y-px`.
+            // Era el único control de la página sin transición ni estado
+            // pulsado, y es el CTA que la barra fija enseña durante todo el
+            // scroll en móvil — el más tocado de los tres.
+            className="lpe-cuerpo shrink-0 rounded-[var(--lpe-r-pill)] bg-[var(--lpe-teal)] px-6 py-3.5 text-[0.9375rem] font-medium text-[var(--lpe-tinta)] transition-[background-color,transform] duration-200 hover:bg-[var(--lpe-teal-hover)] active:translate-y-px"
           >
             Ver el plan
           </a>

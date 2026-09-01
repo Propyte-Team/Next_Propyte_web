@@ -96,7 +96,9 @@ const sans = Poppins({
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Terrenos en Playa del Carmen con $202,176 MXN de enganche | Propyte',
+  // Sin «| Propyte» al final: el layout raíz ya aplica `template: '%s | Propyte'`
+  // y el título salía duplicado en producción («... | Propyte | Propyte»).
+  title: 'Terrenos en Playa del Carmen con $202,176 MXN de enganche',
   description:
     'Lotes residenciales en privada desde 129 m². Enganche del 20%, el resto en mensualidades sin intereses y sin banco. Te mandamos el plan de pagos completo.',
   // El layout de /lp ya declara noindex; se repite aquí para que la variante no
@@ -564,13 +566,21 @@ export default async function LandingEngancheTerrenos() {
         <section className="lpe-sobre-oscuro bg-[var(--lpe-aztec)] px-5 py-20 sm:px-8 lg:py-24">
           <div className="mx-auto max-w-6xl">
             <p className="lpe-rotulo text-[var(--lpe-teal)]">08 · En números</p>
-            <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-12 lg:grid-cols-4">
+            {/* Las etiquetas van ancladas al fondo de la celda, no pegadas a
+                su cifra. Medido en producción: «$7,800 MXN» envuelve a dos
+                líneas y empujaba su etiqueta 46 px por debajo de las otras
+                tres, así que los cuatro pies quedaban a alturas distintas y la
+                fila se leía rota. Anclar abajo hace que los pies formen una
+                línea sin importar cuántas líneas ocupe el número — y aguanta
+                que mañana el dato sea más largo, que es lo que pasará: estas
+                cifras salen de la ficha del desarrollador, no de este archivo. */}
+            <dl className="mt-10 grid grid-cols-2 items-stretch gap-x-8 gap-y-12 lg:grid-cols-4">
               {cifras.map((c) => (
-                <div key={c.pie}>
-                  <dd className="lpe-cifra text-[clamp(1.875rem,1.3rem+2.4vw,3rem)] text-white">
+                <div key={c.pie} className="flex h-full flex-col">
+                  <dd className="lpe-cifra text-[clamp(1.875rem,1.3rem+2.4vw,3rem)] tabular-nums text-white">
                     {c.valor}
                   </dd>
-                  <dt className="lpe-cuerpo mt-2 text-[0.8125rem] leading-snug text-white/55">
+                  <dt className="lpe-cuerpo mt-auto pt-3 text-[0.8125rem] leading-snug text-white/55">
                     {c.pie}
                   </dt>
                 </div>
