@@ -1281,3 +1281,50 @@ usando `precioDesdeBase` y `precioDesdeMeses`:
 Y la mensualidad se publica **siempre con su plazo y su propio precio**
 (`mensualidad.precioMxn`), nunca junto al «desde» a secas: son de plazos
 distintos y sumarlos mentalmente da una cifra que no existe.
+
+---
+
+## Task 6b: `motivoSinPlan` es español hardcodeado y la guia es bilingue
+
+Detectado en la revision de la Task 6. `lp-lotes-comparador.ts` redacta cuatro
+mensajes **en español, en el codigo**, para explicar por que un lote no publica
+mensualidades: contado puro, el caso 90/10, tasa por confirmar, y condiciones
+cambiando. Nacio para una landing monolingue.
+
+La guia es ES+EN, y con una sola clave `sinPlan` generica quedan dos caminos y los
+dos son malos: renderizar `motivoSinPlan` y meter español en la pagina inglesa, o
+usar `sinPlan` y perder la distincion de cuatro casos que el spec vende como la
+mitigacion del riesgo «se lee como si el proyecto no financiara».
+
+**Solucion: el modulo expone un CODIGO junto a la prosa.** La landing sigue
+usando la prosa —no se toca su render— y la guia traduce el codigo.
+
+**Files:** `lp-lotes-comparador.ts`, `guia-terrenos.ts`, los dos JSON de i18n, y
+sus tests.
+
+1. En `LoteComparable`, campo nuevo al lado de `motivoSinPlan`:
+   ```ts
+   /**
+    * El mismo motivo que `motivoSinPlan`, como codigo traducible.
+    * La prosa se queda porque la LP monolingue la consume tal cual; la guia
+    * es bilingue y necesita la clave.
+    */
+   motivoSinPlanCodigo:
+     | 'contado' | 'contado_parcial' | 'tasa_por_confirmar'
+     | 'condiciones_cambiando' | null;
+   ```
+   Se asigna en las MISMAS cuatro ramas que ya redactan la prosa. **Cero cambios
+   en la prosa y cero en el orden de las ramas**: la LP debe seguir mostrando
+   exactamente lo mismo.
+
+2. `ProyectoGuia` lo propaga desde la unidad representativa.
+
+3. Cuatro claves nuevas en `guias.terrenosResidenciales`, ES y EN:
+   `sinPlanContado`, `sinPlanContadoParcial` (con `{enganche}` y
+   `{contraentrega}`, misma forma que `baseContadoParcial`),
+   `sinPlanTasaPorConfirmar`, `sinPlanCondicionesCambiando`.
+   La `sinPlan` generica se queda como respaldo del codigo `null`.
+
+4. Tests: que cada una de las cuatro ramas produzca su codigo, que el codigo y
+   la prosa **no se desincronicen** (si hay prosa hay codigo y viceversa), y la
+   paridad ES/EN de las claves nuevas con sus placeholders.
