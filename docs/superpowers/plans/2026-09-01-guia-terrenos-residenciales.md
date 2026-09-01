@@ -1203,3 +1203,49 @@ gh pr create --title "Guía de terrenos residenciales alimentada del inventario"
 ```
 
 **Mergear es desplegar** en este repo: compila en el servidor y tarda ~4 min desde el push. No lo mergees sin que Luis lo diga.
+
+---
+
+## Task 4b: Enmienda — el precio que encabeza la tabla
+
+Añadida el 2026-09-01 tras ejecutar `getTerrenosGuia()` contra producción. La Task 3
+puso `precioDesdeMxn = representativa.precioListaMxn`, y eso resultó ser el precio MAS
+CARO: el del plazo mas largo, sin descuento. Para el lote de Arrecifes publica
+$1,854,518 y $10,303/m2, cuando la ficha de ese mismo lote en propyte.com muestra
+$1,457,122 y la guia de Gamma dice $8,095/m2.
+
+Decision de Luis: **el «desde» y el $/m2 usan el precio mas bajo alcanzable, y la
+mensualidad se publica rotulada con su plazo y su propio precio.**
+
+**Files:**
+- Modify: `src/lib/supabase/guia-terrenos.ts`
+- Test: `src/lib/supabase/guia-terrenos.test.ts`
+
+### Lo que cambia en `ProyectoGuia`
+
+- `precioDesdeMxn` pasa a ser el minimo entre: el precio de cada plazo
+  (`plazos[].precioMxn`), el de contado (`contado.precioMxn`) y `precioListaMxn`.
+  Los tres son precios reales a los que alguien puede comprar; el mas bajo es el «desde».
+- `precioPorM2Mxn` se calcula sobre ese mismo numero, no sobre el de lista.
+- Campo nuevo `precioListaMxn: number` — se conserva para poder rotular.
+- Campo nuevo `mensualidad: { meses: number; mensualidadMxn: number; precioMxn: number } | null`
+  — el plazo MAS LARGO (la mensualidad mas baja), con **su propio precio** al lado.
+  Es la unica forma de publicarla sin mentir. `null` si no hay plazos.
+
+### Tests que hay que añadir
+
+Con el caso real de Arrecifes (`precioListaMxn` 1854518, plazo de 12 meses con
+`precioMxn` 1457121.6 y plazo de 48 con mensualidad 15454.32):
+
+- `precioDesdeMxn` es 1457121.6, **no** 1854518.
+- `precioPorM2Mxn` sobre 180 m2 da 8095, **no** 10303. Es la cifra que publica Gamma.
+- `mensualidad.meses` es 48, `mensualidad.precioMxn` es el precio de ESE plazo
+  (1854518) y **no** el `precioDesdeMxn`. Este es el test que impide la cifra falsa.
+- Un proyecto sin plazos y solo con contado toma el precio de contado como «desde».
+- Un proyecto sin plazos ni contado cae a `precioListaMxn`.
+
+### Verificacion
+
+Volver a ejecutar `getTerrenosGuia()` contra produccion y confirmar que Arrecifes
+publica ahora 1457121.6 y 8095, y que su `mensualidad` es
+`{ meses: 48, mensualidadMxn: 15454.32, precioMxn: 1854518 }`.

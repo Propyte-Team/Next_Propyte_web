@@ -52,23 +52,49 @@ descuento del plazo más corto.
 No aparecerán en la guía hasta que se publiquen en el Hub. **Es un efecto deseado de
 la decisión de alimentarla del inventario, no un defecto a compensar.**
 
-**Cobertura del dato de financiamiento.** Medida en la capa que el módulo realmente
-lee, que es `v_units` y no la tabla de desarrollos — en la vista, la unidad hereda
-`fin_esquemas_pago` y además trae sus propios `ext_*` planos:
+**Cobertura del dato de financiamiento.** Cifra final, medida **ejecutando
+`getTerrenosGuia()` contra producción**, no infiriéndola de qué columnas están pobladas:
 
-| Desarrollo | Fuente que resuelve | Mensualidad |
+| Desarrollo | Plazos que produce | Por qué |
 |---|---|---|
-| `lotes-residenciales-en-la-region-11-de-tulum` | `ext_planos` (5 unidades con meses) | sí |
-| `lotes-residenciales-en-arrecifes-playa-del-carmen` | `esquemas_jsonb` con plazo real | sí |
-| `lotes-residenciales-en-playa-del-carmen-2` | `ext_planos` | sí |
-| `terrenos-residenciales-con-amenidades-en-playa-del-carmen` | `ext_planos` | sí |
-| `lotes-residenciales-y-comerciales-en-playa-del-carmen` | prosa: «60% durante obra en 36 meses» | depende del parser |
-| `club-residencial-con-amenidades` | solo contado 90/10 | no — se muestra el motivo |
-| `amares-riviera-maya` | — | fuera: sin precio |
+| `lotes-residenciales-en-arrecifes-playa-del-carmen` | **4** | `esquemas_jsonb` con 12/24/36/48 meses |
+| `terrenos-residenciales-con-amenidades-en-playa-del-carmen` | **2** | `ext_planos`: tasa 0 + esquema en prosa parseable |
+| `lotes-residenciales-y-comerciales-en-playa-del-carmen` | **1** | prosa del desarrollo: «60% durante obra en 36 meses» |
+| `lotes-residenciales-en-la-region-11-de-tulum` | 0 | tiene los meses, pero `fin_tasa` es `null` |
+| `lotes-residenciales-en-playa-del-carmen-2` | 0 | idem |
+| `club-residencial-con-amenidades` | 0 | solo contado 90/10 — se muestra el motivo |
+| `amares-riviera-maya` | — | fuera de la puerta: sin precio |
 
-**Son 4 confirmados y 1 probable, de los 6 que pasan la puerta.** Una medición previa
-sobre `Propyte_desarrollos.esquemas_pago` daba «1 de 7» y estaba mirando la capa
-equivocada: ahí solo vive la fuente (a). La columna de mensualidad es viable.
+**Son 3 de los 6 que entran.** Las dos mediciones previas fueron ambas erróneas y por la
+misma razón: contaban columnas pobladas en vez de ejecutar el código. La primera («1 de
+7») miró `Propyte_desarrollos.esquemas_pago`, donde solo vive una de las tres fuentes. La
+segunda («4 y 1 probable») supuso que un `fin_meses_opciones` poblado bastaba para la
+fuente `ext_planos`; no basta — `plazosDesdeExtPlanos` retorna vacío en la primera línea
+si `fin_tasa` no es exactamente `0`, y además exige un texto de esquema parseable con los
+porcentajes. Tener los meses no es tener el plan.
+
+**Los tres desarrollos que faltan necesitan captura en el Hub**, no código: basta
+declarar la tasa (0 si no hay interés) y el esquema de pago.
+
+## El precio que se publica
+
+Un mismo lote tiene dos precios legítimos y hay que elegir cuál encabeza la tabla. Para
+el de Arrecifes:
+
+| | Precio | $/m² |
+|---|---|---|
+| Lista (48 meses, sin descuento) | $1,854,518 | $10,303 |
+| A 12 meses (21.4% de descuento) | $1,457,122 | $8,095 |
+
+**Decisión: el «desde» y el $/m² usan el precio más bajo alcanzable.** Es lo que ya
+muestra la ficha de ese lote en propyte.com y lo que publica la guía de Gamma; encabezar
+con el precio de lista pondría en la guía una cifra 27 % más alta que la de su propia
+ficha.
+
+**Y la mensualidad se publica rotulada con su plazo y su precio**, porque no se puede
+mezclar: a 48 meses el precio ya no es $1,457,122 sino $1,854,518. Calcular la
+mensualidad de 48 meses sobre el precio de 12 sería, en palabras del propio módulo, «la
+cifra falsa más fácil de publicar en toda la página».
 
 **Dos columnas de Gamma no tienen origen en el Hub:** hectáreas totales del proyecto
 (no existe la columna) y la mensualidad de los proyectos que se venden solo de contado
