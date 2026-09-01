@@ -1,6 +1,6 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-09-01 — **lote del tablero de mejoras: PRs #75 y #76, los dos verdes y sin mergear.** Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
+> Última actualización: 2026-09-01 (tarde) — **los 18 formularios exigen nombre + correo + teléfono con selector de lada; todo en producción y verificado.** Entrada previa: lote del tablero de mejoras, PRs #75 y #76 (ya mergeados). Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
 >
 > 🚨 **Este archivo está DIVERGIDO, no atrasado.** Medido el 2026-09-01: esta versión (la de
 > `origin/main`) pesa 74 KB y la copia del árbol principal —parada en `feat/meta-capi-rebased`,
@@ -47,7 +47,37 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-## Lote del tablero de mejoras (sesión 2026-09-01) — 2 PRs VERDES SIN MERGEAR
+## Formularios: los tres datos obligatorios (sesión 2026-09-01 tarde) — ✅ CERRADO Y VERIFICADO
+
+> ✅ `origin/main` = **`92f28e4`**, desplegado y **verificado contra producción**: 36/36 e2e de los
+> 18 formularios, 4/4 del banner en cuatro viewports, 436 unitarias, y **0 leads creados** por las
+> pruebas. Los 2 leads reales de esa hora llegaron con teléfono y sincronizaron a Zoho.
+>
+> Nombre, correo y teléfono son obligatorios en los 18 forms de captación; el teléfono se captura
+> con selector de lada de ~247 países y viaja en **E.164**. `faltanDatosDeContacto()` lo respalda en
+> el servidor. `NewsletterCTA` queda exento a propósito. Commits: `d9f97c6`, `ea9857b`, `92f28e4`.
+> Memorias: `feedback_selector_lada_react_phone_number_input`,
+> `feedback_banner_fijo_tapa_sticky_no_se_recupera`.
+
+- [ ] **`/es/built` devuelve 404 en producción** — la página ENTERA de Propyte Built, no solo su
+      formulario. Es previo a esta sesión y sin diagnosticar. El `ConsultationForm` ya tiene el
+      campo de teléfono, pero nadie puede verlo. **Prioridad: es una sección de servicio caída.**
+- [ ] **`B2BForm` es código muerto** — ningún componente lo importa (`src/components/developers/`).
+      Decidir si se borra o si debía estar montado en `/desarrolladores` y se perdió.
+- [ ] **`BlogSidebarBrokerForm` no se monta hoy** — solo aparece en posts de categoría «Para
+      Asesores» y no hay ninguno publicado. Comprobado en `que-es-un-master-broker`: sale la
+      variante de inversionista. Funcionará en cuanto se publique uno; no hay nada que arreglar.
+- [ ] **Vigilar la conversión de las dos LP de lotes** — ahora piden un campo más en tráfico
+      pagado: `/lp/lotes-playa-del-carmen` tenía el correo colapsado y opcional, y
+      `/lp/terrenos-playa-del-carmen` no tenía campo de correo (su rótulo decía «2 campos», ahora
+      3). Si cae, se revierte solo ese campo sin tocar el resto.
+- [ ] **En `/es/contacto` el banner de cookies tapa el campo *Nombre* a scroll 0** — molestia
+      recuperable bajando, aceptada a cambio de desbloquear tres formularios que quedaban sin
+      salida. Si molesta, la salida limpia es acortar el banner (mide 227 px; con ≤173 px libraría).
+- [ ] **Retirar el worktree `Next_Propyte_web-phonefield`** (rama `feat/forms-telefono-obligatorio`,
+      ya en `main`). Ojo: tiene una copia de `.env.local`.
+
+## Lote del tablero de mejoras (sesión 2026-09-01) — ✅ #75 y #76 YA MERGEADOS (junto a #74 y #77)
 
 > El tablero (`hub.propyte.com/mejoras`, tools `mejoras_*`) es la fuente de verdad de estas
 > tareas; aquí queda la bitácora para que la cosecha no vuelva a levantar lo ya hecho —
