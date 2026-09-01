@@ -1,6 +1,15 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
+> Última actualización: 2026-09-01 — **lote del tablero de mejoras: PRs #75 y #76, los dos verdes y sin mergear.** Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
+>
+> 🚨 **Este archivo está DIVERGIDO, no atrasado.** Medido el 2026-09-01: esta versión (la de
+> `origin/main`) pesa 74 KB y la copia del árbol principal —parada en `feat/meta-capi-rebased`,
+> sin commitear— pesa 45 KB y **no contiene lo de aquí**. No es que una vaya por delante: son
+> dos documentos distintos, y la corta se llevó ~29 KB. Es la tarjeta **#252** («decidir qué
+> versión gana») y sigue sin decidirse: no la resuelvo por mi cuenta. Escribir en la copia del
+> árbol principal es escribir en arena mientras esa rama no sea `main`.
+>
+> Entrada del 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
 >
 > 🚨 **3 de los 4 ❌ que se veían en la lista de PRs eran fósiles del 16 de junio**, de cuando `main` tenía 11 errores de lint ya corregidos. El PR #7 solo tocaba `playwright.yml` y aun así «fallaba» el job de `ci.yml` — imposible. El campo que lo delata es `completedAt` de cada check, que la UI de GitHub no pone delante. Ver [[feedback_dependabot_checks_fosiles]].
 >
@@ -37,6 +46,67 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+## Lote del tablero de mejoras (sesión 2026-09-01) — 2 PRs VERDES SIN MERGEAR
+
+> El tablero (`hub.propyte.com/mejoras`, tools `mejoras_*`) es la fuente de verdad de estas
+> tareas; aquí queda la bitácora para que la cosecha no vuelva a levantar lo ya hecho —
+> que es exactamente la tarjeta #641.
+
+**[PR #75](https://github.com/Propyte-Team/Next_Propyte_web/pull/75) — tarjeta #230, CI 4/4.**
+El autocompletado del navegador rellena sin disparar `change`: el campo se ve lleno, el
+estado de React sigue vacío y al enviar o sale «falta tu nombre» o —en `/built` y el lead
+magnet— no pasa nada en absoluto. Se extrajo el patrón de `FormCasas` (leer el `<form>` en
+el ENVÍO con `FormData`, no un `useEffect` de montaje) a
+`src/lib/leads/rescate-prehidratacion.ts` y se aplicó a los 7 que faltaban. 25/25 corridas
+fallaban contra propyte.com; 25/25 pasan en la rama.
+
+**[PR #76](https://github.com/Propyte-Team/Next_Propyte_web/pull/76) — tarjetas #235 y #199, CI 4/4.**
+`/es/desarrollos/tipo/<basura>` devolvía 200 con el cuerpo del 404 → `dynamicParams = false`.
+Y los tres paquetes de Next a 16.3.4.
+
+### Pendiente de Luis
+
+- [ ] **Mergear #75 y #76.** Mergear = desplegar (Hostinger compila en el servidor); la CDN
+      sirve mezclado ~5 min. Sonda del #235: `curl -s -o /dev/null -w "%{http_code}" https://propyte.com/es/desarrollos/tipo/basura-inventada-xyz` → 404.
+- [ ] **#215** — una palabra: quitar o dejar la instrumentación de depuración de
+      `useFilters`. Recomendado **dejarla**: no cuesta nada en prod y ese hook ya dio un bug.
+- [ ] **#200** — `@types/node ^26` contra Node 22 del CI. Recomendado **bajar los tipos a
+      `^22`**: tipos más nuevos que el motor dejan compilar lo que revienta en ejecución.
+- [ ] **#252** — decidir qué versión de este archivo gana (ver el aviso de la cabecera).
+
+### Abierto, con tarjeta
+
+- [ ] **#676 — el soft-404 es de CLASE.** `/desarrollos/<slug>`, `/zonas/<slug>` y
+      `/blog/<slug>` siguen en 200 con cuerpo de 404, y esas sí tienen direcciones
+      ilimitadas. No se arreglan con `dynamicParams` (su slug resuelve contra Supabase).
+      Dos hipótesis YA descartadas por medición, no repetirlas: no falta el `notFound()`
+      (se ejecuta), y **añadir `src/app/[locale]/not-found.tsx` no cambia el status** —
+      se probó y se recompiló.
+- [ ] **#226 bloqueada por #677 (hub).** Los testimonios guardan la liga a su publicación
+      original, pero el sitio no lee de Supabase: se los pide a
+      `hub.propyte.com/api/public/testimonials`, y ese endpoint no la devuelve. Primero el
+      Hub, luego la web.
+- [ ] **#645 no es «simple»** — no existe negociación de markdown en el repo. Poner
+      `Vary: Accept` sin servir markdown fragmenta la caché de la CDN sin beneficio.
+- [ ] **Los forms con react-hook-form no se midieron** (`/contacto`, `/proveedores`,
+      `/unete`, `B2BForm`, `ContactForm`, `GlossaryLeadGateModal`): son inputs no
+      controlados, otra arquitectura. No suponerlos inmunes sin medir.
+
+### Trampas de esta sesión
+
+- 🚨 **`TaskStop` no mata el `next start`**: 5 huérfanos retuvieron los binarios nativos
+      (`next-swc…node`, `libvips-42.dll`) y reventaron un `npm ci` a mitad, dejando
+      `node_modules` en 35 entradas de 639. Se leen como permisos o antivirus y no lo son.
+      Matar por PID tras parar; `powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*<worktree>*' }"` sí funciona en este equipo.
+- 🚨 **`zoho-forms.spec.ts` crea leads REALES.** No correrlo. Las suites nuevas
+      (`forms-prehidratacion`, `soft-404-taxonomia`, `lp-casas-validacion`) interceptan el
+      POST y pueden correr contra producción.
+- 🧪 Los tests nuevos miran el **estado** de la respuesta, no el texto: el cuerpo ya decía
+      «404» con el fallo vivo, así que un test sobre el markup pasaba en verde con el bug.
+
+---
+
 
 ### Dependabot / tooling (sesión 2026-08-18)
 
