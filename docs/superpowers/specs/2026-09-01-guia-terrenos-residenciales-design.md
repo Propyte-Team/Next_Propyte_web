@@ -52,13 +52,27 @@ descuento del plazo más corto.
 No aparecerán en la guía hasta que se publiquen en el Hub. **Es un efecto deseado de
 la decisión de alimentarla del inventario, no un defecto a compensar.**
 
-**Cobertura del dato de financiamiento — el hueco real:** de los 7 desarrollos, solo
-**1** tiene `esquemas_pago` con plazos (Arrecifes: 12/24/36/48 meses). Dos tienen el
-plan en prosa (`ext_esquema_pago`) y cuatro no tienen nada estructurado. Es el patrón
-documentado en `feedback_hub_financiamiento_tres_fuentes`.
+**Cobertura del dato de financiamiento.** Medida en la capa que el módulo realmente
+lee, que es `v_units` y no la tabla de desarrollos — en la vista, la unidad hereda
+`fin_esquemas_pago` y además trae sus propios `ext_*` planos:
+
+| Desarrollo | Fuente que resuelve | Mensualidad |
+|---|---|---|
+| `lotes-residenciales-en-la-region-11-de-tulum` | `ext_planos` (5 unidades con meses) | sí |
+| `lotes-residenciales-en-arrecifes-playa-del-carmen` | `esquemas_jsonb` con plazo real | sí |
+| `lotes-residenciales-en-playa-del-carmen-2` | `ext_planos` | sí |
+| `terrenos-residenciales-con-amenidades-en-playa-del-carmen` | `ext_planos` | sí |
+| `lotes-residenciales-y-comerciales-en-playa-del-carmen` | prosa: «60% durante obra en 36 meses» | depende del parser |
+| `club-residencial-con-amenidades` | solo contado 90/10 | no — se muestra el motivo |
+| `amares-riviera-maya` | — | fuera: sin precio |
+
+**Son 4 confirmados y 1 probable, de los 6 que pasan la puerta.** Una medición previa
+sobre `Propyte_desarrollos.esquemas_pago` daba «1 de 7» y estaba mirando la capa
+equivocada: ahí solo vive la fuente (a). La columna de mensualidad es viable.
 
 **Dos columnas de Gamma no tienen origen en el Hub:** hectáreas totales del proyecto
-(no existe la columna) y la mensualidad donde no hay esquema capturado.
+(no existe la columna) y la mensualidad de los proyectos que se venden solo de contado
+—para esos, `motivoSinPlan` ya redacta la explicación en lenguaje de comprador.
 
 **La puerta de calidad, medida contra el inventario de hoy: pasan 6 de 7.** El único
 que queda fuera es `amares-riviera-maya`, y por una sola razón: no tiene precio
@@ -160,15 +174,16 @@ aparezca.
   entregable. Si después se quiere, `/api/generate-pdf` ya existe.
 - **Índice `/guias`.** Hoy `/es/guias` da 404 y las otras dos guías tampoco están
   enlazadas en el footer. No se arregla aquí.
-- **Capturar en el Hub los datos que faltan** (hectáreas, esquemas de pago de los 6
-  desarrollos sin ellos). Es trabajo de datos, no de código; se reporta aparte.
+- **Capturar en el Hub los datos que faltan** (hectáreas totales, el precio de
+  `amares-riviera-maya`, el plan de pagos de `club-residencial-con-amenidades`). Es
+  trabajo de datos, no de código; se reporta aparte.
 - **Publicar los 3 desarrollos del Gamma que faltan.** Igual: trabajo de Hub.
 
 ## Riesgos
 
 | Riesgo | Mitigación |
 |---|---|
-| La columna de mensualidad sale casi vacía (6 de 7 sin dato) | La columna se renderiza solo si al menos un proyecto tiene el dato; si no, no existe. Se le reporta a Luis qué desarrollos hay que capturar en el Hub. |
+| Un proyecto sin plan de pagos se lee como «no financia» | `motivoSinPlan` ya distingue los cuatro casos (contado puro, 90/10, tasa por confirmar, condiciones cambiando) y redacta cada uno. No se deja la celda muda. |
 | Un desarrollo se despublica y la guía encoge sin avisar | La página declara cuántos proyectos compara; el test verifica que haya al menos 2 — una comparativa de uno no es comparativa. |
 | Fuga de `nombre_desarrollo` | Se usa `publication_title` vía `applyDisplayName`. Test que barre el HTML renderizado contra los nombres internos. |
 | Se publica una mensualidad falsa | El cálculo sale del módulo ya validado, que respeta el precio por plazo. Test con el caso de Arrecifes: debe dar $15,454.32. |
