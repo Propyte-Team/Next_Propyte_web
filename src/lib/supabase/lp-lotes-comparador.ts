@@ -107,6 +107,8 @@ export interface LoteComparable {
    * null cuando sí las publica. Es un gate, no un error.
    */
   motivoSinPlan: string | null;
+  /** Desarrollo de origen. La guía agrupa por él; la LP no lo usa. */
+  developmentId: string | null;
 }
 
 const MXN_ETIQUETA = new Intl.NumberFormat('es-MX', {
@@ -434,7 +436,12 @@ export function construirComparables(
     if (precioPublicado === null || !ciudad) continue;
 
     const id = f.id;
-    const devId = f.development_id;
+    // Normalizado a `string | null`: `f.development_id` puede llegar
+    // `undefined` desde el fixture/la fila, y un `undefined` desaparece al
+    // serializar (JSON.stringify lo omite) en vez de viajar como `null`. Con
+    // `developmentId` ahora expuesto en el objeto de salida —lo consume
+    // `agruparPorProyecto` en la guía— ese hueco silencioso ya no es inofensivo.
+    const devId = (f.development_id as string | null) ?? null;
     const superficieM2 = numeroONull(f.area_m2) ?? superficieBase.get(id) ?? null;
 
     const esquemas = leerEsquemasJsonb(f.fin_esquemas_pago);
@@ -517,6 +524,7 @@ export function construirComparables(
 
     lotes.push({
       id,
+      developmentId: devId,
       etiqueta: construirEtiqueta(ciudad, superficieM2, precioLista ?? precioPublicado),
       ciudad,
       superficieM2,
