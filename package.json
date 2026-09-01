@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "next dev -p 3000",
+    "prebuild": "node scripts/gen-lp-manifest.mjs",
     "build": "next build",
     "start": "next start",
     "analyze": "cross-env ANALYZE=true next build",
@@ -18,7 +19,8 @@
     "test:e2e:report": "playwright show-report",
     "test:unit": "vitest run",
     "test:playground": "node tests/design-playground-sync.mjs",
-    "test:prerender": "node tests/prerender-seo.mjs"
+    "test:prerender": "node tests/prerender-seo.mjs",
+    "test:lp-manifest": "node tests/lp-manifest.mjs"
   },
   "dependencies": {
     "@googlemaps/markerclusterer": "^2.6.2",
