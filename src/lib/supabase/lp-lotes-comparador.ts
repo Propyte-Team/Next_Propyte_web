@@ -38,6 +38,7 @@
 
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
+import { TYPE_DB_VALUES } from './taxonomy-values';
 
 /** De dónde salieron las condiciones. Cambia cómo se cuentan los pagos. */
 export type FuenteEsquema = 'ext_planos' | 'esquemas_jsonb' | 'prosa_desarrollo';
@@ -537,17 +538,26 @@ export function construirComparables(
   });
 }
 
+/** Ciudades de la LP de lotes. Es campaña de Playa del Carmen y así se queda. */
+const CIUDADES_LP = ['Playa del Carmen'];
+
 /**
- * Lotes de Playa del Carmen para el comparador.
+ * Lotes comparables para el comparador.
  *
  * La consulta es dinámica a propósito (no una lista de UUIDs): si el Hub
- * aprueba otro lote de PdC, entra solo. Tulum queda fuera por el filtro de
- * ciudad, que es exactamente la decisión de negocio — la LP es campaña de
- * Playa del Carmen.
+ * aprueba otro lote en alguna de las `ciudades` filtradas, entra solo. Por
+ * defecto son solo Playa del Carmen — la LP es campaña de Playa del Carmen y
+ * Tulum queda fuera de esa consulta por decisión de negocio. Otros consumidores
+ * (p.ej. la guía de Riviera Maya) pueden pasar más ciudades sin tocar la LP.
+ *
+ * Las grafías de tipo salen de `TYPE_DB_VALUES` (única fuente, ver
+ * `taxonomy-values.ts`), no están escritas a mano.
  *
  * OJO Camino A: no se selecciona `development_name` ni `developer_name`.
  */
-export async function getLotesComparables(): Promise<LoteComparable[]> {
+export async function getLotesComparables(
+  ciudades: string[] = CIUDADES_LP,
+): Promise<LoteComparable[]> {
   const supabase = createPublicSupabaseClient();
   if (!supabase) return [];
   const hub = supabase.schema('real_estate_hub' as 'public');
@@ -568,8 +578,8 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
         'fin_esquemas_pago',
       ].join(', '),
     )
-    .eq('city', 'Playa del Carmen')
-    .in('unit_type', ['Lote', 'Terreno'])
+    .in('city', ciudades)
+    .in('unit_type', TYPE_DB_VALUES.terreno)
     .not('approved_at', 'is', null)
     .eq('published', true)
     .is('deleted_at', null);
