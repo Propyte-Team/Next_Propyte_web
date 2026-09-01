@@ -11,6 +11,7 @@ export type LandingManifestEntry = {
 
 export const LP_MANIFEST: readonly LandingManifestEntry[] = [
   { slug: 'casas-riviera-maya', path: '/lp/casas-riviera-maya' },
+  { slug: 'enganche-terrenos-playa-del-carmen', path: '/lp/enganche-terrenos-playa-del-carmen' },
   { slug: 'homes-riviera-maya', path: '/lp/homes-riviera-maya' },
   { slug: 'lotes-playa-del-carmen', path: '/lp/lotes-playa-del-carmen' },
   { slug: 'terrenos-playa-del-carmen', path: '/lp/terrenos-playa-del-carmen' },
