@@ -99,6 +99,68 @@ const SUPERFICIE_CERO: FilaComparador = {
   ],
 };
 
+/**
+ * Sintéticos para el gate `motivoSinPlan` / `motivoSinPlanCodigo` (Task 6b).
+ *
+ * `SUPERFICIE_CERO` ya cubre la rama 1 (90/10) de forma real; las otras tres
+ * ramas no tenían fixture entre los reales disponibles, así que estas cuatro
+ * cubren las ramas 2, 3 y 4 sin tocar las de arriba.
+ */
+
+/** Rama 2: contado a secas (enganche 100%, contraentrega 0%). */
+const CONTADO_SIN_SPLIT: FilaComparador = {
+  id: 'contado-sin-split-test',
+  development_id: 'cccccccc-0000-0000-0000-000000000000',
+  city: 'Playa del Carmen',
+  area_m2: 150,
+  price_mxn: 900000,
+  unit_type: 'Lote',
+  fin_tasa: null,
+  fin_esquema: null,
+  fin_meses_opciones: null,
+  fin_esquemas_pago: [
+    { meses: 0, tasa: 0, enganche_pct: 100, descuento_pct: 10, contraentrega_pct: 0, contraentrega_via: null },
+  ],
+};
+
+/**
+ * Rama 3: hay un plazo real (JSONB, meses > 0) pero ninguna cifra de control
+ * que valide `reconstruirPrecioLista` (el desarrollo no viene en el mapa), así
+ * que la reconstrucción se declara fallida y `precioLista` sale `null`.
+ */
+const SIN_CONTROL_PRECIO: FilaComparador = {
+  id: 'sin-control-precio-test',
+  development_id: 'dddddddd-0000-0000-0000-000000000000',
+  city: 'Playa del Carmen',
+  area_m2: 200,
+  price_mxn: 800000,
+  unit_type: 'Lote',
+  fin_tasa: null,
+  fin_esquema: null,
+  fin_meses_opciones: null,
+  fin_esquemas_pago: [
+    { meses: 12, tasa: 0, enganche_pct: 20, descuento_pct: 10, contraentrega_pct: 40, contraentrega_via: 'hipotecario' },
+  ],
+};
+
+/**
+ * Rama 4 ("resto"): `ext_planos` con tasa distinta de cero (así que no hay
+ * plazos posibles por esa fuente ni por la de prosa) y sin ninguna opción de
+ * contado declarada.
+ */
+const TASA_DISTINTA_DE_CERO: FilaComparador = {
+  id: 'tasa-distinta-de-cero-test',
+  development_id: 'eeeeeeee-0000-0000-0000-000000000000',
+  city: 'Playa del Carmen',
+  area_m2: 160,
+  price_mxn: 700000,
+  unit_type: 'Lote',
+  fin_tasa: 12,
+  fin_esquema: '20% de enganche + 60% en mensualidades + 20% contraentrega',
+  fin_meses_opciones: [48],
+  fin_esquemas_pago: null,
+};
+
 describe('construirComparables', () => {
   it('calcula la mensualidad de 48 meses que publica la guía de Gamma', () => {
     const lotes = construirComparables(
@@ -202,5 +264,81 @@ describe('construirComparables', () => {
 
     const lotes = construirComparables([competidorBarato, EXT_PLANOS], new Map(), new Map());
     expect(lotes.map((l) => l.id)).toEqual([EXT_PLANOS.id, competidorBarato.id]);
+  });
+
+  describe('motivoSinPlanCodigo (Task 6b: el motivo también sale como código traducible)', () => {
+    it('rama 1 (90/10, contraentrega > 0): código "contado_parcial", con la prosa exacta de la landing', () => {
+      const [lote] = construirComparables(
+        [SUPERFICIE_CERO],
+        new Map([[SUPERFICIE_CERO.id, 500]]),
+        new Map(),
+      );
+      expect(lote.motivoSinPlanCodigo).toBe('contado_parcial');
+      // Literal, no un `toContain`: un cambio accidental de palabra en esta
+      // prosa es un cambio en la LANDING EN PRODUCCIÓN, que este módulo no
+      // debe tocar aunque se le añada el código.
+      expect(lote.motivoSinPlan).toBe(
+        'Este lote se paga 90% al firmar y 10% contra entrega. El desarrollador no ' +
+          'publica plan de mensualidades.',
+      );
+    });
+
+    it('rama 2 (contado a secas, sin split): código "contado"', () => {
+      const [lote] = construirComparables([CONTADO_SIN_SPLIT], new Map(), new Map());
+      expect(lote.motivoSinPlanCodigo).toBe('contado');
+      expect(lote.motivoSinPlan).toBe(
+        'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+      );
+    });
+
+    it('rama 3 (sin cifra de control que valide el precio de lista): código "condiciones_cambiando"', () => {
+      const [lote] = construirComparables([SIN_CONTROL_PRECIO], new Map(), new Map());
+      expect(lote.motivoSinPlanCodigo).toBe('condiciones_cambiando');
+      expect(lote.motivoSinPlan).toBe(
+        'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.',
+      );
+    });
+
+    it('rama 4 ("resto": tasa distinta de cero, sin contado): código "tasa_por_confirmar", prosa literal', () => {
+      const [lote] = construirComparables([TASA_DISTINTA_DE_CERO], new Map(), new Map());
+      expect(lote.motivoSinPlanCodigo).toBe('tasa_por_confirmar');
+      // Segunda cadena fijada palabra por palabra (junto con la de la rama 1
+      // arriba), para no depender de que un solo `toBe` baste como red.
+      expect(lote.motivoSinPlan).toBe(
+        'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+      );
+    });
+
+    it('invariante: `motivoSinPlan` y `motivoSinPlanCodigo` nunca se desincronizan, en ningún fixture', () => {
+      // El invariante que importa de verdad: si alguien añade una quinta rama
+      // al gate (o reordena las existentes) y se olvida de asignar el código,
+      // este test revienta antes que la guía bilingüe publique un motivo sin
+      // traducir. Se ejercita sobre TODOS los fixtures del archivo —los que sí
+      // publican plan y los que no— para que no baste con hacerlo bien en uno
+      // solo.
+      const todos = construirComparables(
+        [
+          ARRECIFES,
+          EXT_PLANOS,
+          PROSA_DESARROLLO,
+          SUPERFICIE_CERO,
+          CONTADO_SIN_SPLIT,
+          SIN_CONTROL_PRECIO,
+          TASA_DISTINTA_DE_CERO,
+        ],
+        new Map([[SUPERFICIE_CERO.id, 500]]),
+        new Map([['b6dd225a-2338-476d-8e6f-478e9a7cfa88', 1854518]]),
+      );
+      expect(todos.length).toBeGreaterThan(0);
+      for (const lote of todos) {
+        expect(lote.motivoSinPlan === null, `id=${lote.id}`).toBe(
+          lote.motivoSinPlanCodigo === null,
+        );
+      }
+      // Ambos lados del invariante deben estar representados, o la
+      // comprobación de arriba pasaría vacía por casualidad.
+      expect(todos.some((l) => l.motivoSinPlan === null)).toBe(true);
+      expect(todos.some((l) => l.motivoSinPlan !== null)).toBe(true);
+    });
   });
 });

@@ -6,7 +6,7 @@ function comparable(over: Partial<LoteComparable> & { id: string }): LoteCompara
   return {
     etiqueta: 'x', ciudad: 'Tulum', superficieM2: 100, precioListaMxn: 1_000_000,
     esDeEstaLanding: false, fuente: 'ext_planos', plazos: [], contado: null,
-    apartadoMxn: null, motivoSinPlan: null, developmentId: null,
+    apartadoMxn: null, motivoSinPlan: null, motivoSinPlanCodigo: null, developmentId: null,
     ...over,
   };
 }
@@ -399,5 +399,43 @@ describe('agruparPorProyecto', () => {
     expect(p.contado?.enganchePct).toBe(90);
     expect(p.contado?.contraentregaPct).toBe(10);
     expect(p.contado?.precioMxn).toBe(1_279_872);
+  });
+
+  // ============================================================
+  // Task 6b — `motivoSinPlanCodigo` viaja junto con `motivoSinPlan`: la guía
+  // bilingüe traduce el código, la LP monolingüe sigue usando la prosa.
+  // ============================================================
+
+  it('propaga `motivoSinPlanCodigo` de la unidad representativa, igual que `motivoSinPlan`', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'sin-plan-tasa', developmentId: 'tulum', precioListaMxn: 1_000_000,
+          plazos: [], contado: null,
+          motivoSinPlan:
+            'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+          motivoSinPlanCodigo: 'tasa_por_confirmar',
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.motivoSinPlanCodigo).toBe('tasa_por_confirmar');
+  });
+
+  it('`motivoSinPlanCodigo` es null cuando la unidad representativa sí publica plan', () => {
+    // Mata la mutación que deja `motivoSinPlanCodigo` pegado a un valor fijo
+    // (o al de otra unidad) en vez de copiar el de la representativa.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'con-plan', developmentId: 'tulum', precioListaMxn: 1_000_000,
+          plazos: [plazo({ meses: 12, precioMxn: 850_000 })],
+          motivoSinPlan: null,
+          motivoSinPlanCodigo: null,
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.motivoSinPlanCodigo).toBeNull();
   });
 });

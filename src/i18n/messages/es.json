@@ -3215,7 +3215,11 @@
       "sinPlan": "Pregúntanos por las condiciones de pago vigentes de este proyecto.",
       "baseContado": "de contado",
       "baseContadoParcial": "{enganche}% al firmar y {contraentrega}% contra entrega",
-      "basePlazo": "a {meses} meses"
+      "basePlazo": "a {meses} meses",
+      "sinPlanContado": "Este proyecto se vende de contado. El desarrollador no publica plan de mensualidades.",
+      "sinPlanContadoParcial": "Este proyecto se paga {enganche}% al firmar y {contraentrega}% contra entrega. El desarrollador no publica plan de mensualidades.",
+      "sinPlanTasaPorConfirmar": "Todavía no publicamos las mensualidades de este proyecto porque falta confirmar la tasa.",
+      "sinPlanCondicionesCambiando": "Las condiciones de pago de este proyecto cambiaron y las estamos confirmando antes de publicarlas."
     }
   }
 }

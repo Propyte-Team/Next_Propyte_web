@@ -3215,7 +3215,11 @@
       "sinPlan": "Ask us about this project's current payment terms.",
       "baseContado": "paid in full",
       "baseContadoParcial": "{enganche}% on signing and {contraentrega}% on delivery",
-      "basePlazo": "over {meses} months"
+      "basePlazo": "over {meses} months",
+      "sinPlanContado": "This project is sold for cash. The developer does not publish a monthly payment plan.",
+      "sinPlanContadoParcial": "This project is paid {enganche}% on signing and {contraentrega}% on delivery. The developer does not publish a monthly payment plan.",
+      "sinPlanTasaPorConfirmar": "We haven't published this project's monthly payments yet because the interest rate still needs to be confirmed.",
+      "sinPlanCondicionesCambiando": "This project's payment terms changed and we're confirming them before publishing."
     }
   }
 }

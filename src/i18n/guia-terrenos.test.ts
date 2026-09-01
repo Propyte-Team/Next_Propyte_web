@@ -110,6 +110,17 @@ describe('guias.terrenosResidenciales', () => {
     expect(String(ns.baseContado)).not.toMatch(/\{[^}]+\}/);
   });
 
+  it.each(IDIOMAS)(
+    '`sinPlanContadoParcial` trae sus dos placeholders en los dos idiomas ($locale)',
+    ({ ns }) => {
+      // Mismo riesgo que `baseContadoParcial`: un placeholder roto en un solo
+      // idioma es texto quebrado en producción que nadie ve hasta que lo ve un
+      // cliente leyendo la guía en el otro idioma.
+      expect(String(ns.sinPlanContadoParcial)).toContain('{enganche}');
+      expect(String(ns.sinPlanContadoParcial)).toContain('{contraentrega}');
+    },
+  );
+
   describe('el cierre lo firma el equipo, no un asesor', () => {
     it('el guardia muerde el cierre original de Gamma (control positivo)', () => {
       // Sin este control el guardia es teatro. Se ejercita con el cierre

@@ -107,6 +107,19 @@ export interface LoteComparable {
    * null cuando sí las publica. Es un gate, no un error.
    */
   motivoSinPlan: string | null;
+  /**
+   * El mismo motivo que `motivoSinPlan`, como código traducible.
+   *
+   * La prosa se queda porque la LP monolingüe la consume tal cual; la guía es
+   * bilingüe y necesita la clave. Van juntos a propósito: si algún día se
+   * traduce la LP, la prosa se borra y el código sobrevive.
+   */
+  motivoSinPlanCodigo:
+    | 'contado'
+    | 'contado_parcial'
+    | 'tasa_por_confirmar'
+    | 'condiciones_cambiando'
+    | null;
   /** Desarrollo de origen. La guía agrupa por él; la LP no lo usa. */
   developmentId: string | null;
 }
@@ -503,6 +516,7 @@ export function construirComparables(
 
     // El gate, en lenguaje de comprador. Nunca "faltan datos en el sistema".
     let motivoSinPlan: string | null = null;
+    let motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'] = null;
     if (plazos.length === 0) {
       if (contado && contado.contraentregaPct > 0) {
         // El caso 90/10: describir los dos pagos, porque "de contado" a secas
@@ -511,15 +525,19 @@ export function construirComparables(
           `Este lote se paga ${contado.enganchePct}% al firmar y ` +
           `${contado.contraentregaPct}% contra entrega. El desarrollador no ` +
           'publica plan de mensualidades.';
+        motivoSinPlanCodigo = 'contado_parcial';
       } else if (contado) {
         motivoSinPlan =
           'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.';
+        motivoSinPlanCodigo = 'contado';
       } else if (precioLista === null) {
         motivoSinPlan =
           'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.';
+        motivoSinPlanCodigo = 'condiciones_cambiando';
       } else {
         motivoSinPlan =
           'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.';
+        motivoSinPlanCodigo = 'tasa_por_confirmar';
       }
     }
 
@@ -536,6 +554,7 @@ export function construirComparables(
       contado,
       apartadoMxn,
       motivoSinPlan,
+      motivoSinPlanCodigo,
     });
   }
 

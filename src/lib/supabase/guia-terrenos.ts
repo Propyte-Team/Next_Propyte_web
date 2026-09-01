@@ -64,6 +64,8 @@ export interface ProyectoGuia {
   plazos: PlazoOpcion[];
   /** Redactado en lenguaje de comprador cuando no hay plan de mensualidades. */
   motivoSinPlan: string | null;
+  /** El mismo motivo que `motivoSinPlan`, como código traducible. Ver `LoteComparable`. */
+  motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'];
   /**
    * El plazo MÁS LARGO: la mensualidad más baja, con SU propio precio al lado.
    * Publicar la mensualidad sin su precio invita a sumarla al «desde», que es
@@ -187,6 +189,7 @@ export function agruparPorProyecto(
       precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
       motivoSinPlan: representativa.motivoSinPlan,
+      motivoSinPlanCodigo: representativa.motivoSinPlanCodigo,
       contado: representativa.contado,
       mensualidad:
         plazoMasLargo === null
