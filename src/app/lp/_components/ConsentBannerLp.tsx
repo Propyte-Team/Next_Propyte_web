@@ -37,7 +37,14 @@ export default function ConsentBannerLp() {
     const el = barra.current;
     if (!visible || !el) return;
     const aplicar = () => {
-      document.body.style.paddingTop = `${el.offsetHeight}px`;
+      const alto = `${el.offsetHeight}px`;
+      document.body.style.paddingTop = alto;
+      // El `padding-top` del body NO mueve lo que está posicionado contra el
+      // bloque contenedor inicial. La cabecera de `app/lp/layout.tsx` es
+      // `absolute top-0` y se quedaba DEBAJO del banner: logo blanco sobre el
+      // fondo blanco del banner, invisible en la primera carga. Se publica el
+      // alto para que ella lo siga.
+      document.documentElement.style.setProperty('--lp-consent-h', alto);
     };
     aplicar();
     const ro = new ResizeObserver(aplicar);
@@ -45,6 +52,7 @@ export default function ConsentBannerLp() {
     return () => {
       ro.disconnect();
       document.body.style.paddingTop = '';
+      document.documentElement.style.removeProperty('--lp-consent-h');
     };
   }, [visible]);
 

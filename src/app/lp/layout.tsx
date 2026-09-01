@@ -60,7 +60,14 @@ export default function LpLayout({ children }: { children: React.ReactNode }) {
           sangre, así que la cabecera flota encima en vez de cortarla con una
           banda de color: el primer pliegue se lee como una sola pieza.
           Logo no clicable: identidad sin ruta de salida (un solo objetivo). */}
-      <header className="absolute inset-x-0 top-0 z-20">
+      {/* `top` sigue al banner de consentimiento, no a cero. `ConsentBannerLp`
+          reserva su alto con `padding-top` en el body, pero esta cabecera es
+          `absolute` contra el bloque contenedor inicial: el padding del body no
+          la mueve. Sin esto quedaba DEBAJO del banner —logo blanco sobre el
+          fondo blanco del banner, 1.09:1 de contraste, invisible— en la primera
+          carga de las cinco landings. La variable la publica el banner y vale
+          0px cuando no hay banner. */}
+      <header className="absolute inset-x-0 top-[var(--lp-consent-h,0px)] z-20">
         <div className="mx-auto flex max-w-6xl items-baseline justify-between gap-4 px-5 py-5 sm:px-8">
           {/* Logo real, variante blanca: la cabecera flota sobre la foto del
               hero, oscura en su parte alta. Sin <Link>: la landing tiene un
