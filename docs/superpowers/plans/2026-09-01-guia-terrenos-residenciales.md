@@ -1249,3 +1249,35 @@ Con el caso real de Arrecifes (`precioListaMxn` 1854518, plazo de 12 meses con
 Volver a ejecutar `getTerrenosGuia()` contra produccion y confirmar que Arrecifes
 publica ahora 1457121.6 y 8095, y que su `mensualidad` es
 `{ meses: 48, mensualidadMxn: 15454.32, precioMxn: 1854518 }`.
+
+---
+
+## Nota para la Task 9 (tabla comparativa): rotular la base de cada celda
+
+Consecuencia medida de la decision de la Task 4b. El `precioDesdeMxn` y el
+`precioPorM2Mxn` de cada fila salen de bases distintas:
+
+| Proyecto | base | $/m2 |
+|---|---|---|
+| Tulum Region 11 | lista | 2,431 |
+| Terrenos c/ amenidades | plazo 48 | 7,800 |
+| Lotes resid. y comerciales | **contado** | 6,399 (sobre preventa serian 7,999) |
+| Arrecifes | **plazo 12** | 8,095 |
+| Lotes resid. PdC 2 | contado | — (sin superficie) |
+| Club residencial | contado | 8,900 |
+
+O sea: la columna que ordena la tabla compara un precio de contado contra uno a
+12 meses. Luis decidio que el «desde» sea el precio mas bajo alcanzable, asi que
+esto se queda — pero **cada celda de precio debe llevar su base rotulada**
+usando `precioDesdeBase` y `precioDesdeMeses`:
+
+- `'contado'` → «de contado». Y cuando `contado.contraentregaPct > 0`, decirlo:
+  dos de los tres proyectos de contado son en realidad **90% al firmar y 10%
+  contra entrega**. El campo `contado` viaja justo para esto, y esos dos ademas
+  traen `motivoSinPlan` con la frase ya redactada.
+- `'plazo'` → «a N meses».
+- `'lista'` → sin rotulo; es el precio unico.
+
+Y la mensualidad se publica **siempre con su plazo y su propio precio**
+(`mensualidad.precioMxn`), nunca junto al «desde» a secas: son de plazos
+distintos y sumarlos mentalmente da una cifra que no existe.
