@@ -25,6 +25,7 @@
 // `createServerSupabaseClient()` usa cookies(), lo que rompe el prerender con
 // DYNAMIC_SERVER_USAGE (el mismo fallo que ya arrastra /exclusivos).
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { esCargoComercial } from '@/lib/team/bilingual-role';
 
 /** Estados de urbanización que el registro puede declarar por servicio. */
 export type EstadoServicio = 'disponible' | 'en_proceso' | 'proyectado';
@@ -713,6 +714,13 @@ async function getAsesor(agentIdUnidad: string | null): Promise<AsesorLanding | 
     if (data) return mapearAsesor(data as Record<string, unknown>);
   }
 
+  // El cargo NO se filtra en PostgREST. `.in('role', [...])` es igualdad
+  // exacta, y el Hub guarda los cargos en bilingüe ("Gerente de Ventas |
+  // Sales Manager"), así que de los cuatro que la lista aceptaba solo empataba
+  // "Team Leader" —el único sin mitad en inglés—. El respaldo decía «cualquier
+  // comercial de la ciudad por prioridad» y de facto era «una persona concreta
+  // o nadie». Se traen los candidatos y se empata aquí, por mitad y sin
+  // acentos. La tabla de equipo tiene una decena de filas: el coste es nulo.
   const { data } = await hub
     .from('v_team_members')
     .select(seleccion)
@@ -720,12 +728,25 @@ async function getAsesor(agentIdUnidad: string | null): Promise<AsesorLanding | 
     .eq('is_vacant', false)
     .eq('city', 'Playa del Carmen')
     .not('whatsapp', 'is', null)
-    .in('role', ['Gerente de Ventas', 'Asesor de Ventas', 'Asesor', 'Team Leader'])
-    .order('sort_order', { ascending: true })
-    .limit(1)
-    .maybeSingle();
+    .order('sort_order', { ascending: true });
 
-  return data ? mapearAsesor(data as Record<string, unknown>) : null;
+  const candidato = (data ?? []).find((fila) =>
+    esCargoComercial((fila as Record<string, unknown>).role as string | null),
+  );
+
+  // Sin candidatos, el bloque «Quién te atiende» no se renderiza y la sección
+  // pierde una de sus dos celdas sin que nadie se entere. Devolver null es
+  // correcto —no se inventa una cara—, pero callarlo no.
+  if (!candidato) {
+    console.warn(
+      '[getAsesor] Ningún miembro de Playa del Carmen cumple los requisitos ' +
+        '(visible, no vacante, con whatsapp y con cargo comercial). El bloque ' +
+        '«Quién te atiende» de la landing de lotes no se va a renderizar.',
+    );
+    return null;
+  }
+
+  return mapearAsesor(candidato as Record<string, unknown>);
 }
 
 function mapearAsesor(d: Record<string, unknown>): AsesorLanding | null {
