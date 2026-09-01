@@ -61,11 +61,21 @@ ${entries}
 `;
 }
 
+/**
+ * El repo tiene `core.autocrlf=true` y no hay `.gitattributes`: en un checkout
+ * de Windows el archivo commiteado llega con CRLF, mientras que este script
+ * siempre escribe LF. Comparar en crudo haría fallar el `--check` en Windows y
+ * pasar en el CI de Linux — el peor de los dos mundos. Se compara normalizado.
+ */
+export function normalizarSaltos(texto) {
+  return texto.split('\r\n').join('\n');
+}
+
 function main() {
   const check = process.argv.includes('--check');
   const slugs = readLandingSlugs();
   const next = renderManifest(slugs);
-  const current = existsSync(OUT_FILE) ? readFileSync(OUT_FILE, 'utf8') : null;
+  const current = existsSync(OUT_FILE) ? normalizarSaltos(readFileSync(OUT_FILE, 'utf8')) : null;
 
   if (check) {
     if (current === next) {

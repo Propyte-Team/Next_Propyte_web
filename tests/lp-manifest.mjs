@@ -21,7 +21,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readLandingSlugs, renderManifest } from '../scripts/gen-lp-manifest.mjs';
+import { readLandingSlugs, renderManifest, normalizarSaltos } from '../scripts/gen-lp-manifest.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LP_DIR = join(ROOT, 'src', 'app', 'lp');
@@ -66,7 +66,9 @@ for (const slug of slugs) {
 // 1 — el archivo commiteado tiene que ser exactamente el que se genera hoy.
 check(existsSync(OUT_FILE), 'Falta src/lib/lp/manifest.generated.ts. Corre: node scripts/gen-lp-manifest.mjs');
 if (existsSync(OUT_FILE)) {
-  const actual = readFileSync(OUT_FILE, 'utf8');
+  // Normalizado: `core.autocrlf=true` deja el archivo con CRLF en un checkout
+  // de Windows y con LF en el CI de Linux. El contenido es el mismo.
+  const actual = normalizarSaltos(readFileSync(OUT_FILE, 'utf8'));
   check(
     actual === renderManifest(slugs),
     'src/lib/lp/manifest.generated.ts se quedó atrás de src/app/lp/. Corre: node scripts/gen-lp-manifest.mjs',
