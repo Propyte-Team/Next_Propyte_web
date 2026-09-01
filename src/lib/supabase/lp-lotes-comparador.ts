@@ -432,8 +432,8 @@ export function construirComparables(
     const ciudad = typeof f.city === 'string' ? f.city : null;
     if (precioPublicado === null || !ciudad) continue;
 
-    const id = f.id as string;
-    const devId = (f.development_id as string | null) ?? null;
+    const id = f.id;
+    const devId = f.development_id;
     const superficieM2 = numeroONull(f.area_m2) ?? superficieBase.get(id) ?? null;
 
     const esquemas = leerEsquemasJsonb(f.fin_esquemas_pago);
@@ -576,13 +576,13 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
 
   if (error || !data) return [];
 
-  const filas = data as unknown as Record<string, unknown>[];
+  const filas = data as unknown as FilaComparador[];
   if (filas.length === 0) return [];
 
   // `v_units.area_m2` mapea a `superficie_total_m2`, que en algún registro está
   // vacío aunque `superficie_terreno_m2` sí tenga el dato. Sin superficie no se
   // puede construir la etiqueta acordada, así que se rescata de la tabla base.
-  const ids = filas.map((f) => f.id as string);
+  const ids = filas.map((f) => f.id);
   const { data: bases } = await hub
     .from('Propyte_unidades')
     .select('id, superficie_terreno_m2')
@@ -614,5 +614,5 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
     }),
   );
 
-  return construirComparables(filas as unknown as FilaComparador[], superficieBase, precioMinDev);
+  return construirComparables(filas, superficieBase, precioMinDev);
 }
