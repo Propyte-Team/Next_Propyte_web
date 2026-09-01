@@ -117,6 +117,18 @@ describe('agruparPorProyecto', () => {
     expect(proyectos).toHaveLength(0);
   });
 
+  it('descarta el proyecto cuyo desarrollo no trae slug', () => {
+    // Con título editorial pero sin slug el enlace a la ficha sale roto.
+    // Mismo criterio que ya aplica a `tituloEditorial`: antes que publicar un
+    // enlace muerto, el proyecto no aparece.
+    const sinSlug = { ...DESARROLLOS.tulum, slug: '' };
+    const proyectos = agruparPorProyecto(
+      [comparable({ id: 'z', developmentId: 'tulum' })],
+      { tulum: sinSlug },
+    );
+    expect(proyectos).toHaveLength(0);
+  });
+
   it('ordena los proyectos por precio desde ascendente', () => {
     // El desarrollo MAS CARO se agrega primero al Map interno (aparece primero
     // en `unidades`): sin el `.sort()` final, el orden de salida seria el de
@@ -280,5 +292,98 @@ describe('agruparPorProyecto', () => {
     expect(p.precioDesdeMxn).toBe(850_000);
     expect(p.precioDesdeBase).toBe('contado');
     expect(p.precioDesdeMeses).toBeNull();
+  });
+
+  // ============================================================
+  // Ronda de revisión — 4 mutantes que sobrevivieron a la Task 4b, más el
+  // campo `contado` que faltaba en `ProyectoGuia`.
+  // ============================================================
+
+  it('Arrecifes: precioListaMxn se CONSERVA y es distinto de precioDesdeMxn (S4)', () => {
+    // El mutante `precioListaMxn: desde.precioMxn` pasaba los 8 tests de la
+    // Task 4b sin que ninguno lo notara: el único que compara ambos campos
+    // entre sí es Tulum, donde por construcción lista === desde (299,000).
+    // Aquí, con Arrecifes, los dos números tienen que venir DISTINTOS: el
+    // campo existe justo para poder rotular esa diferencia en la UI.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioListaMxn).toBe(1_854_518);
+    expect(p.precioListaMxn).not.toBe(p.precioDesdeMxn);
+  });
+
+  it('Arrecifes: un contado MAS CARO que el plazo de 12 meses NO gana el "desde" (S2)', () => {
+    // El mutante "contado gana siempre" (compara la BASE antes que el precio,
+    // así que cualquier `contado` presente se queda con el "desde" sin
+    // importar cuánto cueste) sobrevivía porque ningún fixture con `contado`
+    // tenía a la vez un plazo más barato. `leerContado` produce exactamente
+    // esta forma cuando `descuento_pct` es nulo: precio de contado == precio
+    // de lista, sin descuento — y aquí SÍ hay un plazo (12 meses) más barato.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+          contado: { descuentoPct: 0, precioMxn: 1_854_518, enganchePct: 100, contraentregaPct: 0 },
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeBase).toBe('plazo');
+    expect(p.precioDesdeMxn).toBe(1_457_121.6);
+  });
+
+  it('empate a tres bandas (lista = plazo 48 = plazo 60): gana "plazo" y el de MENOS meses (S1 y S3)', () => {
+    // Caso real: terrenos-residenciales-en-amenidades-playa-del-carmen. Sin
+    // descuento en ningún plazo, los tres candidatos (lista, plazo de 48,
+    // plazo de 60) empatan al mismo precio. Qué se publica depende ENTERAMENTE
+    // del desempate, y nada lo cubría:
+    //   S3 — "lista gana a plazo" sobrevivía: nada distinguía `base:'lista'`
+    //        de `base:'plazo'` cuando el precio es idéntico.
+    //   S1 — "entre plazos empatados gana el de MÁS meses" sobrevivía: nada
+    //        forzaba el plazo de MENOS meses cuando dos plazos empatan.
+    const plazo48 = plazo({ meses: 48, precioMxn: 1_010_880 });
+    const plazo60 = plazo({ meses: 60, precioMxn: 1_010_880, mensualidadMxn: 10_280.14 });
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'amenidades-pdc', developmentId: 'tulum', superficieM2: 129.6,
+          precioListaMxn: 1_010_880,
+          plazos: [plazo48, plazo60],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeBase).toBe('plazo'); // mata S3
+    expect(p.precioDesdeMeses).toBe(48); // mata S1
+  });
+
+  it('propaga `contado` con sus condiciones reales (90% al firmar, 10% contra entrega)', () => {
+    // Caso real: lotes-residenciales-y-comerciales-en-playa-del-carmen, el
+    // proyecto con el MAYOR descuento (-20%) y la PEOR cobertura: tiene un
+    // solo plazo, así que `motivoSinPlan` sale `null` (solo se rellena cuando
+    // `plazos` está vacío) y sin este campo la guía publicaría "desde
+    // $1,279,872 de contado" sin decir cuánto hay que poner al firmar.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'comerciales-pdc', developmentId: 'tulum', precioListaMxn: 1_599_840,
+          plazos: [plazo({ meses: 36, precioMxn: 1_599_840, mensualidadMxn: 26_664 })],
+          contado: { descuentoPct: 20, precioMxn: 1_279_872, enganchePct: 90, contraentregaPct: 10 },
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.contado).not.toBeNull();
+    expect(p.contado?.contraentregaPct).toBe(10);
+    expect(p.contado?.precioMxn).toBe(1_279_872);
   });
 });

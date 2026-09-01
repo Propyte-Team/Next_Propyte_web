@@ -13,7 +13,12 @@
 // ============================================================
 
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getLotesComparables, type LoteComparable, type PlazoOpcion } from './lp-lotes-comparador';
+import {
+  getLotesComparables,
+  type CondicionContado,
+  type LoteComparable,
+  type PlazoOpcion,
+} from './lp-lotes-comparador';
 
 /** Ciudades de la guía. Riviera Maya, no solo Playa del Carmen. */
 export const CIUDADES_GUIA = ['Playa del Carmen', 'Tulum'];
@@ -65,6 +70,15 @@ export interface ProyectoGuia {
    * de otro plazo. `null` si el proyecto no tiene plan de mensualidades.
    */
   mensualidad: { meses: number; mensualidadMxn: number; precioMxn: number } | null;
+  /**
+   * Condiciones del pago de contado, tal cual las declara el desarrollo.
+   *
+   * Va aquí porque la tabla publica precios «de contado» y sin esto no puede
+   * decir en qué consisten. El Hub etiqueta «Contado» al menos un registro que
+   * en realidad es 90% al firmar y 10% contra entrega: publicar su precio a
+   * secas se comería ese 10% diferido.
+   */
+  contado: CondicionContado | null;
 }
 
 /** Un candidato a ser el "desde" que se publica: de dónde sale y a qué precio. */
@@ -131,8 +145,9 @@ export function agruparPorProyecto(
 
   for (const [devId, lista] of porDesarrollo) {
     const dev = desarrollos[devId];
-    // Sin título editorial no hay nombre publicable. Fuera.
-    if (!dev || !dev.tituloEditorial) continue;
+    // Sin título editorial no hay nombre publicable, y sin slug el enlace a la
+    // ficha sale roto: en ambos casos, fuera.
+    if (!dev || !dev.tituloEditorial || !dev.slug) continue;
 
     // El criterio de representatividad NO cambia con esta enmienda: sigue
     // siendo la unidad más barata por precio de LISTA. Lo que cambia es qué
@@ -172,6 +187,7 @@ export function agruparPorProyecto(
       precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
       motivoSinPlan: representativa.motivoSinPlan,
+      contado: representativa.contado,
       mensualidad:
         plazoMasLargo === null
           ? null
@@ -214,6 +230,10 @@ export async function getTerrenosGuia(): Promise<ProyectoGuia[]> {
   // OJO: `name` es `nombre_desarrollo` y NO se selecciona. El título sale de
   // `publication_title`, con `meta_title` de respaldo. El dato privado no llega
   // ni a esta capa.
+  //
+  // El `error` de esta consulta se descarta a propósito (fallo cerrado): si
+  // falla, `devs` queda `null` y la guía sale vacía en vez de publicar los
+  // proyectos sin haber podido verificar sus nombres/slugs.
   const { data: devs } = await hub
     .from('v_developments')
     .select(
