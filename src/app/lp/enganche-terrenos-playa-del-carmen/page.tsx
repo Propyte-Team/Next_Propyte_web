@@ -347,7 +347,7 @@ export default async function LandingEngancheTerrenos() {
             </div>
 
             {lote.esquemaPago && (
-              <p className="lpe-cuerpo mt-10 max-w-[62ch] border-t border-[var(--lpe-linea)] pt-6 text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+              <p className="lpe-cuerpo mt-10 max-w-[62ch] border-t border-[var(--lpe-linea)] pt-6 text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
                 Esquema declarado por el desarrollador: {lote.esquemaPago}
                 {/[.!?]$/.test(lote.esquemaPago.trim()) ? '' : '.'} Los gastos de
                 escrituración y el mantenimiento se cotizan aparte, y te los
@@ -388,7 +388,7 @@ export default async function LandingEngancheTerrenos() {
                 ))}
               </ul>
 
-              <p className="lpe-cuerpo mt-8 max-w-[52ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+              <p className="lpe-cuerpo mt-8 max-w-[52ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
                 Las {amenidades.length} salen de la ficha del desarrollador, no
                 de nuestro copy. Se entregan conforme a su calendario de obra, y
                 te lo mandamos junto con el plan de pagos.
@@ -454,7 +454,7 @@ export default async function LandingEngancheTerrenos() {
               ))}
             </div>
 
-            <p className="lpe-cuerpo mt-8 max-w-[62ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+            <p className="lpe-cuerpo mt-8 max-w-[62ch] text-[0.8125rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
               Las {galeria.length} imágenes de arriba son renders del proyecto
               del desarrollador, no obra existente: hoy la privada no está
               construida. Cómo se ve el terreno HOY está en la siguiente
@@ -609,7 +609,7 @@ export default async function LandingEngancheTerrenos() {
         {/* Rótulo del inventario y de las imágenes. Va en el pie porque es
             obligación de honestidad, no argumento de venta, pero va. */}
         <div className="mx-auto mt-16 max-w-6xl">
-          <p className="lpe-cuerpo border-t border-[var(--lpe-linea)] pt-6 text-[0.75rem] leading-relaxed text-[var(--lpe-tinta-3)]">
+          <p className="lpe-cuerpo border-t border-[var(--lpe-linea)] pt-6 text-[0.75rem] leading-relaxed text-[var(--lpe-tinta-3-texto)]">
             {lote.estadoComercial ? `Estado: ${lote.estadoComercial}. ` : ''}
             {lote.lotesDisponiblesPrivada && lote.lotesTotalesPrivada
               ? `${lote.lotesDisponiblesPrivada} lotes disponibles de ${lote.lotesTotalesPrivada} declarados por el desarrollador. `
