@@ -397,83 +397,34 @@ function construirEtiqueta(
 /** UUID del lote que protagoniza la landing, para marcarlo en el comparador. */
 const ID_DESARROLLO_DE_ESTA_LANDING = '025943d7-c7f1-482c-a489-09a28bb2328a';
 
+/** Las columnas de `v_units` que consume el comparador. */
+export interface FilaComparador {
+  id: string;
+  development_id: string | null;
+  city: string | null;
+  area_m2: number | string | null;
+  price_mxn: number | string | null;
+  unit_type?: string | null;
+  fin_tasa: number | string | null;
+  fin_esquema: string | null;
+  fin_meses_opciones: unknown;
+  fin_esquemas_pago: unknown;
+}
+
 /**
- * Lotes de Playa del Carmen para el comparador.
+ * Construye los comparables a partir de filas ya consultadas.
  *
- * La consulta es dinámica a propósito (no una lista de UUIDs): si el Hub
- * aprueba otro lote de PdC, entra solo. Tulum queda fuera por el filtro de
- * ciudad, que es exactamente la decisión de negocio — la LP es campaña de
- * Playa del Carmen.
+ * Separada de la consulta para poder testearla con un fixture real, mismo
+ * patrón que `construirInventario` en `lp-casas.ts`.
  *
- * OJO Camino A: no se selecciona `development_name` ni `developer_name`.
+ * @param superficieBase  id de unidad → `superficie_terreno_m2` de la tabla base
+ * @param precioMinDev    id de desarrollo → precio mínimo EN PESOS, o null
  */
-export async function getLotesComparables(): Promise<LoteComparable[]> {
-  const supabase = createPublicSupabaseClient();
-  if (!supabase) return [];
-  const hub = supabase.schema('real_estate_hub' as 'public');
-
-  const { data, error } = await hub
-    .from('v_units')
-    .select(
-      [
-        'id',
-        'development_id',
-        'city',
-        'area_m2',
-        'price_mxn',
-        'unit_type',
-        'fin_tasa',
-        'fin_esquema',
-        'fin_meses_opciones',
-        'fin_esquemas_pago',
-      ].join(', '),
-    )
-    .eq('city', 'Playa del Carmen')
-    .in('unit_type', ['Lote', 'Terreno'])
-    .not('approved_at', 'is', null)
-    .eq('published', true)
-    .is('deleted_at', null);
-
-  if (error || !data) return [];
-
-  const filas = data as unknown as Record<string, unknown>[];
-  if (filas.length === 0) return [];
-
-  // `v_units.area_m2` mapea a `superficie_total_m2`, que en algún registro está
-  // vacío aunque `superficie_terreno_m2` sí tenga el dato. Sin superficie no se
-  // puede construir la etiqueta acordada, así que se rescata de la tabla base.
-  const ids = filas.map((f) => f.id as string);
-  const { data: bases } = await hub
-    .from('Propyte_unidades')
-    .select('id, superficie_terreno_m2')
-    .in('id', ids);
-  const superficieBase = new Map(
-    ((bases ?? []) as unknown as Record<string, unknown>[]).map((b) => [
-      b.id as string,
-      numeroONull(b.superficie_terreno_m2),
-    ]),
-  );
-
-  // Precio mínimo declarado por cada desarrollo: la cifra de control que valida
-  // la reconstrucción del precio de lista.
-  const devIds = [...new Set(filas.map((f) => f.development_id).filter(Boolean))] as string[];
-  const { data: devs } = devIds.length
-    ? await hub
-        .from('Propyte_desarrollos')
-        .select('id, ext_moneda, ext_precio_min_mxn, ext_precio_min_usd')
-        .in('id', devIds)
-    : { data: null };
-  // La cifra de control se compara contra precios de lista EN PESOS, así que sólo
-  // sirve si el desarrollo cotiza en pesos. Un desarrollo en USD daría un control
-  // de 145,000 contra lotes de millones y marcaría todo como discrepante; se deja
-  // en null (sin control) antes que validar contra una moneda distinta.
-  const precioMinDev = new Map(
-    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => {
-      const precio = precioDesarrollo(d as FilaPrecioDesarrollo);
-      return [d.id as string, precio.moneda === 'MXN' ? precio.min : null] as const;
-    }),
-  );
-
+export function construirComparables(
+  filas: FilaComparador[],
+  superficieBase: Map<string, number | null>,
+  precioMinDev: Map<string, number | null>,
+): LoteComparable[] {
   const lotes: LoteComparable[] = [];
 
   for (const f of filas) {
@@ -584,4 +535,84 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
     if (a.esDeEstaLanding !== z.esDeEstaLanding) return a.esDeEstaLanding ? -1 : 1;
     return a.precioListaMxn - z.precioListaMxn;
   });
+}
+
+/**
+ * Lotes de Playa del Carmen para el comparador.
+ *
+ * La consulta es dinámica a propósito (no una lista de UUIDs): si el Hub
+ * aprueba otro lote de PdC, entra solo. Tulum queda fuera por el filtro de
+ * ciudad, que es exactamente la decisión de negocio — la LP es campaña de
+ * Playa del Carmen.
+ *
+ * OJO Camino A: no se selecciona `development_name` ni `developer_name`.
+ */
+export async function getLotesComparables(): Promise<LoteComparable[]> {
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return [];
+  const hub = supabase.schema('real_estate_hub' as 'public');
+
+  const { data, error } = await hub
+    .from('v_units')
+    .select(
+      [
+        'id',
+        'development_id',
+        'city',
+        'area_m2',
+        'price_mxn',
+        'unit_type',
+        'fin_tasa',
+        'fin_esquema',
+        'fin_meses_opciones',
+        'fin_esquemas_pago',
+      ].join(', '),
+    )
+    .eq('city', 'Playa del Carmen')
+    .in('unit_type', ['Lote', 'Terreno'])
+    .not('approved_at', 'is', null)
+    .eq('published', true)
+    .is('deleted_at', null);
+
+  if (error || !data) return [];
+
+  const filas = data as unknown as Record<string, unknown>[];
+  if (filas.length === 0) return [];
+
+  // `v_units.area_m2` mapea a `superficie_total_m2`, que en algún registro está
+  // vacío aunque `superficie_terreno_m2` sí tenga el dato. Sin superficie no se
+  // puede construir la etiqueta acordada, así que se rescata de la tabla base.
+  const ids = filas.map((f) => f.id as string);
+  const { data: bases } = await hub
+    .from('Propyte_unidades')
+    .select('id, superficie_terreno_m2')
+    .in('id', ids);
+  const superficieBase = new Map(
+    ((bases ?? []) as unknown as Record<string, unknown>[]).map((b) => [
+      b.id as string,
+      numeroONull(b.superficie_terreno_m2),
+    ]),
+  );
+
+  // Precio mínimo declarado por cada desarrollo: la cifra de control que valida
+  // la reconstrucción del precio de lista.
+  const devIds = [...new Set(filas.map((f) => f.development_id).filter(Boolean))] as string[];
+  const { data: devs } = devIds.length
+    ? await hub
+        .from('Propyte_desarrollos')
+        .select('id, ext_moneda, ext_precio_min_mxn, ext_precio_min_usd')
+        .in('id', devIds)
+    : { data: null };
+  // La cifra de control se compara contra precios de lista EN PESOS, así que sólo
+  // sirve si el desarrollo cotiza en pesos. Un desarrollo en USD daría un control
+  // de 145,000 contra lotes de millones y marcaría todo como discrepante; se deja
+  // en null (sin control) antes que validar contra una moneda distinta.
+  const precioMinDev = new Map(
+    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => {
+      const precio = precioDesarrollo(d as FilaPrecioDesarrollo);
+      return [d.id as string, precio.moneda === 'MXN' ? precio.min : null] as const;
+    }),
+  );
+
+  return construirComparables(filas as unknown as FilaComparador[], superficieBase, precioMinDev);
 }
