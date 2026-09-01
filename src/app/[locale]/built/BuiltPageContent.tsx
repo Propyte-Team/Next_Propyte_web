@@ -9,6 +9,7 @@ import {
   Compass, Pencil, FileCheck, Wrench, KeyRound
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
+import { rescatarDelDom, sincronizar } from '@/lib/leads/rescate-prehidratacion';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import { useSiteContact } from '@/context/SiteConfigContext';
@@ -393,19 +394,27 @@ function ConsultationForm() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) return;
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y `formData` sigue vacío: el
+    // `return` de abajo se llevaba el envío sin decir una palabra —ni error,
+    // ni petición, ni lead—. Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(e.currentTarget, formData, { estadoManda: ['phone'] });
+    setFormData(sincronizar(datos));
+
+    if (!datos.name || !datos.email) return;
     // El `required` del navegador no cubre el teléfono: su valor vive en el
     // estado del PhoneInputField, no en un <input> que el form pueda validar.
-    if (!formData.phone || !isValidPhoneNumber(formData.phone)) {
+    if (!datos.phone || !isValidPhoneNumber(datos.phone)) {
       setPhoneError(tCommon('invalidPhone'));
       return;
     }
     setPhoneError(null);
     setStatus('sending');
     try {
-      const result = await submitForm(formData, 'built_consultation');
+      const result = await submitForm(datos, 'built_consultation');
       setStatus(result.success ? 'success' : 'error');
     } catch {
       setStatus('error');

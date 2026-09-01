@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 export interface LeadMagnetCta {
@@ -30,18 +31,32 @@ export default function LeadMagnet({ cta }: { cta?: LeadMagnetCta | null }) {
   const subtitleText = cta?.subtitle ?? t('description');
   const ctaLabel = cta?.buttonLabel ?? t('downloadCta');
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y el estado sigue vacío: el
+    // envío se caía sin decir una palabra —ni error, ni petición, ni lead—.
+    // Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(
+      e.currentTarget,
+      { name, email, phone, website },
+      { estadoManda: ['phone'] },
+    );
+    if (datos.name !== name) setName(datos.name);
+    if (datos.email !== email) setEmail(datos.email);
+    if (datos.phone !== phone) setPhone(datos.phone);
+
+    if (!datos.name || !datos.email) return;
     // El teléfono no lo cubre el `required` del navegador: el valor vive en el
     // estado del PhoneInputField, no en un <input> que el form pueda validar.
-    if (!phone || !isValidPhoneNumber(phone)) {
+    if (!datos.phone || !isValidPhoneNumber(datos.phone)) {
       setPhoneError(tCommon('invalidPhone'));
       return;
     }
     setPhoneError(null);
     setStatus('sending');
-    const result = await submitLead('lead_magnet', { name, email, phone, website });
+    const result = await submitLead('lead_magnet', datos);
     if (result.ok) {
       setDownloadUrl(result.downloadUrl ?? null);
       setStatus('success');
