@@ -60,6 +60,12 @@ documentado en `feedback_hub_financiamiento_tres_fuentes`.
 **Dos columnas de Gamma no tienen origen en el Hub:** hectáreas totales del proyecto
 (no existe la columna) y la mensualidad donde no hay esquema capturado.
 
+**La puerta de calidad, medida contra el inventario de hoy: pasan 6 de 7.** El único
+que queda fuera es `amares-riviera-maya`, y por una sola razón: no tiene precio
+(`price_min_mxn` nulo, moneda USD). Los otros seis tienen precio, superficie y al menos
+una de las tres fuentes de financiamiento. Si mañana se le captura el precio, entra
+solo — no hay lista que actualizar.
+
 ## Arquitectura
 
 ### Se reusa la capa de datos que ya existe
@@ -97,7 +103,7 @@ Tres cambios acotados sobre ese módulo:
 **Modificados**
 
 - `src/lib/supabase/lp-lotes-comparador.ts` — los 3 cambios de arriba.
-- `src/lib/zoho/field-maps.ts` — nuevo `LeadSource` `"guia_terrenos"` + los 5 `switch`.
+- `src/lib/zoho/field-maps.ts` — nuevo `LeadSource` `"guia_terrenos"` + los 6 `switch` sobre `source`.
 - `src/app/api/leads/route.ts` — `KNOWN_SOURCES` y `LeadSchema`.
 - `src/components/layout/Footer.tsx` — link en la columna *Recursos*.
 - `src/i18n/messages/es.json` y `en.json` — namespace `guias.terrenosResidenciales`.
