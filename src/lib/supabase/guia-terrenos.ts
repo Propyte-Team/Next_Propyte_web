@@ -102,5 +102,11 @@ export function agruparPorProyecto(
     });
   }
 
-  return proyectos.sort((a, z) => a.precioDesdeMxn - z.precioDesdeMxn);
+  // Desempate por slug: PostgREST no garantiza orden de filas sin `.order()`
+  // (y `getLotesComparables` no lo lleva), así que dos proyectos al mismo
+  // precio no pueden quedar en el orden arbitrario que da `sort` estable sobre
+  // la inserción del Map — la tabla se reordenaría sola entre revalidaciones.
+  return proyectos.sort(
+    (a, z) => a.precioDesdeMxn - z.precioDesdeMxn || a.slug.localeCompare(z.slug),
+  );
 }

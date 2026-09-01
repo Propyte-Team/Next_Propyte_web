@@ -436,12 +436,13 @@ export function construirComparables(
     if (precioPublicado === null || !ciudad) continue;
 
     const id = f.id;
-    // Normalizado a `string | null`: `f.development_id` puede llegar
-    // `undefined` desde el fixture/la fila, y un `undefined` desaparece al
-    // serializar (JSON.stringify lo omite) en vez de viajar como `null`. Con
-    // `developmentId` ahora expuesto en el objeto de salida —lo consume
-    // `agruparPorProyecto` en la guía— ese hueco silencioso ya no es inofensivo.
-    const devId = (f.development_id as string | null) ?? null;
+    // `?? null`: red de runtime por si la fila llega sin el campo (`undefined`).
+    // Un `undefined` desaparece al serializar (JSON.stringify lo omite) en vez
+    // de viajar como `null`, y con `developmentId` ahora expuesto en el objeto
+    // de salida —lo consume `agruparPorProyecto` en la guía— ese hueco
+    // silencioso ya no es inofensivo. `FilaComparador.development_id` ya está
+    // tipado `string | null`, así que no hace falta ningún cast aquí.
+    const devId = f.development_id ?? null;
     const superficieM2 = numeroONull(f.area_m2) ?? superficieBase.get(id) ?? null;
 
     const esquemas = leerEsquemasJsonb(f.fin_esquemas_pago);
