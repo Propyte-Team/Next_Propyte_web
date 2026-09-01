@@ -97,10 +97,15 @@ Tres cambios acotados sobre ese módulo:
 2. El tipo se filtra con `TYPE_DB_VALUES['terreno']` de `taxonomy-values.ts`, que
    deriva de `PRODUCT_TYPE_SPELLINGS` — única fuente de grafías. No se escriben
    `'Terreno'` / `'Lote'` a mano.
-3. Se añaden `slug` y `publication_title` del desarrollo al select. **La LP los omite a
-   propósito** (Camino A: cero nombres comerciales, sin rutas de salida). La guía sí los
-   necesita porque enlaza a ficha. El módulo expone ambas formas; la LP sigue pidiendo
-   la anónima.
+3. `LoteComparable` gana `developmentId`, para poder agrupar por proyecto. **El título
+   editorial y el slug NO se añaden a este módulo:** la LP omite los nombres a propósito
+   (Camino A, sin rutas de salida) y meterlos ahí rompería esa garantía. La guía hace su
+   propia consulta a `v_developments` para el dato editorial, y así el módulo de la LP
+   sigue sin poder nombrar nada.
+
+Con eso, la guía **reusa `getLotesComparables(CIUDADES_GUIA)` tal cual** en lugar de
+duplicar la consulta a `v_units`: el rescate de superficie y el control de precio de
+lista viven en un solo sitio.
 
 ### Archivos
 
