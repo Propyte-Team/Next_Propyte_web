@@ -41,20 +41,79 @@ export interface ProyectoGuia {
   imagenes: string[];
   totalUnidades: number | null;
   entregaTexto: string | null;
+  /**
+   * El precio MÁS BAJO alcanzable: el mínimo entre `plazos[].precioMxn`,
+   * `contado?.precioMxn` y `precioListaMxn`. NO es `precioListaMxn` — ese es
+   * el precio del plazo más largo, sin descuento, y por lo tanto el MÁS CARO.
+   */
   precioDesdeMxn: number;
+  /** Precio de lista: el más alto, sin descuento. Se conserva para poder rotular la diferencia con `precioDesdeMxn`. */
+  precioListaMxn: number;
+  /** De dónde salió `precioDesdeMxn`. La UI lo rotula; sin esto, dos precios distintos se leen como un error. */
+  precioDesdeBase: 'contado' | 'plazo' | 'lista';
+  /** Meses del plazo, cuando `precioDesdeBase` es 'plazo'. Si no, null. */
+  precioDesdeMeses: number | null;
   superficieDesdeM2: number | null;
-  /** null cuando no hay superficie utilizable. Nunca una división entre cero. */
+  /** null cuando no hay superficie utilizable. Nunca una división entre cero. Se calcula sobre `precioDesdeMxn`, no sobre `precioListaMxn`. */
   precioPorM2Mxn: number | null;
   plazos: PlazoOpcion[];
   /** Redactado en lenguaje de comprador cuando no hay plan de mensualidades. */
   motivoSinPlan: string | null;
+  /**
+   * El plazo MÁS LARGO: la mensualidad más baja, con SU propio precio al lado.
+   * Publicar la mensualidad sin su precio invita a sumarla al «desde», que es
+   * de otro plazo. `null` si el proyecto no tiene plan de mensualidades.
+   */
+  mensualidad: { meses: number; mensualidadMxn: number; precioMxn: number } | null;
+}
+
+/** Un candidato a ser el "desde" que se publica: de dónde sale y a qué precio. */
+interface CandidatoDesde {
+  base: 'contado' | 'plazo' | 'lista';
+  precioMxn: number;
+  meses: number | null;
+}
+
+/** Orden de preferencia en empate: contado > plazo > lista. Menor = gana. */
+const RANGO_BASE: Record<CandidatoDesde['base'], number> = { contado: 0, plazo: 1, lista: 2 };
+
+/**
+ * Elige el precio "desde" que se publica: el más bajo entre las tres fuentes
+ * reales a las que alguien puede comprar (contado, cada plazo, lista).
+ *
+ * Desempate cuando dos candidatos comparten el precio mínimo: gana 'contado'
+ * sobre 'plazo', y 'plazo' sobre 'lista' — el orden de `RANGO_BASE`. Si
+ * empatan dos plazos entre sí, gana el de MENOS meses.
+ */
+function elegirDesde(lote: LoteComparable): CandidatoDesde {
+  const candidatos: CandidatoDesde[] = [];
+  if (lote.contado) candidatos.push({ base: 'contado', precioMxn: lote.contado.precioMxn, meses: null });
+  for (const p of lote.plazos) candidatos.push({ base: 'plazo', precioMxn: p.precioMxn, meses: p.meses });
+  // Siempre hay al menos este candidato: nunca se devuelve un array vacío.
+  candidatos.push({ base: 'lista', precioMxn: lote.precioListaMxn, meses: null });
+
+  return candidatos.reduce((mejor, actual) => {
+    if (actual.precioMxn < mejor.precioMxn) return actual;
+    if (actual.precioMxn > mejor.precioMxn) return mejor;
+    if (RANGO_BASE[actual.base] < RANGO_BASE[mejor.base]) return actual;
+    if (RANGO_BASE[actual.base] > RANGO_BASE[mejor.base]) return mejor;
+    // Mismo precio, misma base: solo puede pasar entre dos plazos. Gana el de
+    // menos meses (comprar más barato y más rápido siempre es mejor "desde").
+    if (actual.base === 'plazo' && (actual.meses ?? Infinity) < (mejor.meses ?? Infinity)) {
+      return actual;
+    }
+    return mejor;
+  });
 }
 
 /**
  * Colapsa las unidades en un proyecto por desarrollo.
  *
- * La unidad representativa es la MÁS BARATA: la guía publica cifras "desde",
- * igual que Gamma.
+ * La unidad representativa es la MÁS BARATA por precio de lista: la guía
+ * publica cifras "desde", igual que Gamma. Pero el precio que se publica de
+ * esa unidad NO es su `precioListaMxn` (el más caro, sin descuento) sino el
+ * mínimo real alcanzable — ver `elegirDesde`. Representatividad y precio
+ * publicado son dos decisiones distintas.
  */
 export function agruparPorProyecto(
   unidades: LoteComparable[],
@@ -75,12 +134,25 @@ export function agruparPorProyecto(
     // Sin título editorial no hay nombre publicable. Fuera.
     if (!dev || !dev.tituloEditorial) continue;
 
+    // El criterio de representatividad NO cambia con esta enmienda: sigue
+    // siendo la unidad más barata por precio de LISTA. Lo que cambia es qué
+    // precio de ESA unidad se publica como "desde" (ver `elegirDesde`).
     const representativa = lista.reduce((a, z) => (z.precioListaMxn < a.precioListaMxn ? z : a));
 
     // `> 0` y no `!== null`: el inventario publica superficies en 0.00, y
     // dividir entre eso da Infinity.
     const m2 = representativa.superficieM2;
     const superficieUtil = m2 !== null && m2 > 0 ? m2 : null;
+
+    const desde = elegirDesde(representativa);
+
+    // El plazo más largo: la mensualidad más baja. Se publica con SU propio
+    // precio (`desde.precioMxn` sería el de OTRO plazo si `desde.base` es
+    // 'plazo' con menos meses, o directamente no aplica si es 'contado'/'lista').
+    const plazoMasLargo =
+      representativa.plazos.length > 0
+        ? representativa.plazos.reduce((a, z) => (z.meses > a.meses ? z : a))
+        : null;
 
     proyectos.push({
       id: devId,
@@ -92,14 +164,22 @@ export function agruparPorProyecto(
       imagenes: dev.imagenes,
       totalUnidades: dev.totalUnidades,
       entregaTexto: dev.entregaTexto,
-      precioDesdeMxn: representativa.precioListaMxn,
+      precioDesdeMxn: desde.precioMxn,
+      precioListaMxn: representativa.precioListaMxn,
+      precioDesdeBase: desde.base,
+      precioDesdeMeses: desde.base === 'plazo' ? desde.meses : null,
       superficieDesdeM2: superficieUtil,
-      precioPorM2Mxn:
-        superficieUtil === null
-          ? null
-          : Math.round(representativa.precioListaMxn / superficieUtil),
+      precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
       motivoSinPlan: representativa.motivoSinPlan,
+      mensualidad:
+        plazoMasLargo === null
+          ? null
+          : {
+              meses: plazoMasLargo.meses,
+              mensualidadMxn: plazoMasLargo.mensualidadMxn,
+              precioMxn: plazoMasLargo.precioMxn,
+            },
     });
   }
 

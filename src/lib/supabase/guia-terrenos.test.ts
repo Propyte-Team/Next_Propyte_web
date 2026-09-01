@@ -1,12 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { agruparPorProyecto, type DatosDesarrollo } from './guia-terrenos';
-import type { LoteComparable } from './lp-lotes-comparador';
+import type { LoteComparable, PlazoOpcion } from './lp-lotes-comparador';
 
 function comparable(over: Partial<LoteComparable> & { id: string }): LoteComparable {
   return {
     etiqueta: 'x', ciudad: 'Tulum', superficieM2: 100, precioListaMxn: 1_000_000,
     esDeEstaLanding: false, fuente: 'ext_planos', plazos: [], contado: null,
     apartadoMxn: null, motivoSinPlan: null, developmentId: null,
+    ...over,
+  };
+}
+
+function plazo(over: Partial<PlazoOpcion> & { meses: number; precioMxn: number }): PlazoOpcion {
+  return {
+    pagos: over.meses, descuentoPct: 0, engancheMxn: 0, mensualidadMxn: 0,
+    contraentregaMxn: 0, contraentregaVia: null,
     ...over,
   };
 }
@@ -39,13 +47,20 @@ describe('agruparPorProyecto', () => {
     expect(proyectos[0].slug).toBe('lotes-residenciales-en-la-region-11-de-tulum');
   });
 
-  it('la fila representa el lote MAS BARATO, que es el "desde" de la guia', () => {
+  it('la fila representa el lote MAS BARATO (por precio de lista), que es el "desde" de la guia', () => {
+    // Ninguno de los dos lotes declara plazos ni contado, así que el "desde"
+    // cae al último recurso: `precioListaMxn` de la unidad representativa
+    // (Task 4b: `precioDesdeMxn` ya NO es siempre `precioListaMxn` — solo lo
+    // es cuando no hay un plazo ni un contado más baratos, `base === 'lista'`).
     const unidades = [
       comparable({ id: 'caro', developmentId: 'tulum', precioListaMxn: 720_448.96, superficieM2: 276.6 }),
       comparable({ id: 'barato', developmentId: 'tulum', precioListaMxn: 299_000, superficieM2: 123 }),
     ];
     const [p] = agruparPorProyecto(unidades, DESARROLLOS);
     expect(p.precioDesdeMxn).toBe(299_000);
+    expect(p.precioListaMxn).toBe(299_000);
+    expect(p.precioDesdeBase).toBe('lista');
+    expect(p.precioDesdeMeses).toBeNull();
     expect(p.superficieDesdeM2).toBe(123);
     // 299000 / 123 = 2430.89 → redondeado a 2431. Es la columna que da sentido
     // a una tabla comparativa: no basta con que el precio y la superficie
@@ -106,6 +121,8 @@ describe('agruparPorProyecto', () => {
     // El desarrollo MAS CARO se agrega primero al Map interno (aparece primero
     // en `unidades`): sin el `.sort()` final, el orden de salida seria el de
     // insercion (caro, barato) en vez del que promete la guia (barato, caro).
+    // Sin plazos ni contado, `precioDesdeMxn` cae a `precioListaMxn` (`base ===
+    // 'lista'`), así que el orden esperado no cambia con la Task 4b.
     const unidades = [
       comparable({ id: 'caro', developmentId: 'tulum', precioListaMxn: 720_448.96 }),
       comparable({ id: 'barato', developmentId: 'pdc', precioListaMxn: 299_000 }),
@@ -128,5 +145,140 @@ describe('agruparPorProyecto', () => {
     ];
     const proyectos = agruparPorProyecto(unidades, DESARROLLOS);
     expect(proyectos.map((p) => p.id)).toEqual(['tulum', 'pdc']);
+  });
+
+  // ============================================================
+  // Task 4b — el "desde" es el precio MÁS BAJO alcanzable, no `precioListaMxn`.
+  //
+  // Caso real: el lote de Arrecifes. `precioListaMxn` es el precio del plazo
+  // de 48 meses SIN descuento (el más caro); el plazo de 12 meses trae 21.4%
+  // de descuento. La ficha del mismo lote en propyte.com publica el precio de
+  // 12 meses, no el de 48. Publicar `precioListaMxn` como "desde" habría
+  // puesto $10,303/m² en la guía cuando la ficha (y la guía comercial en la
+  // que se basa esta página) publican $8,095/m².
+  // ============================================================
+
+  const ARRECIFES_PLAZO_12 = plazo({ meses: 12, precioMxn: 1_457_121.6, descuentoPct: 21.4 });
+  const ARRECIFES_PLAZO_48 = plazo({
+    meses: 48, precioMxn: 1_854_518, mensualidadMxn: 15_454.32,
+  });
+
+  it('Arrecifes: precioDesdeMxn es el precio del plazo de 12 meses, NO precioListaMxn', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeMxn).toBe(1_457_121.6);
+    expect(p.precioDesdeMxn).not.toBe(1_854_518);
+  });
+
+  it('Arrecifes: precioPorM2Mxn es 8095 (la cifra de la guía comercial), NO 10303', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    // 1,457,121.6 / 180 = 8,095.12 → redondeado a 8,095. Control externo: es
+    // el $/m² que publica la guía comercial en la que se basa esta página.
+    // 1,854,518 / 180 = 10,302.87 → redondeado a 10,303, que es lo que se
+    // publicaba ANTES de esta enmienda y es 27% más caro que la ficha real.
+    expect(p.precioPorM2Mxn).toBe(8095);
+    expect(p.precioPorM2Mxn).not.toBe(10303);
+  });
+
+  it('Arrecifes: precioDesdeBase es "plazo" y precioDesdeMeses es 12', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeBase).toBe('plazo');
+    expect(p.precioDesdeMeses).toBe(12);
+  });
+
+  it('Arrecifes: la mensualidad es la del plazo de 48 meses, con SU PROPIO precio (no precioDesdeMxn)', () => {
+    // Este es el test que impide publicar "la cifra falsa más fácil de
+    // publicar en toda la página": calcular la mensualidad de 48 meses sobre
+    // el precio de 12. `mensualidad.precioMxn` tiene que ser el precio DE ESE
+    // PLAZO (1,854,518), no `precioDesdeMxn` (1,457,121.6, el de 12 meses).
+    // Si algún día `mensualidad.precioMxn` colapsara a `precioDesdeMxn`, la
+    // mensualidad de $15,454.32 se leería como si comprara a $1,457,121.6 —
+    // una unidad que en realidad cuesta 27% más a ese plazo.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'arrecifes', developmentId: 'tulum', superficieM2: 180,
+          precioListaMxn: 1_854_518,
+          plazos: [ARRECIFES_PLAZO_12, ARRECIFES_PLAZO_48],
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.mensualidad).not.toBeNull();
+    expect(p.mensualidad?.meses).toBe(48);
+    expect(p.mensualidad?.mensualidadMxn).toBe(15_454.32);
+    expect(p.mensualidad?.precioMxn).toBe(1_854_518);
+    expect(p.mensualidad?.precioMxn).not.toBe(p.precioDesdeMxn);
+  });
+
+  it('un proyecto sin plazos y solo con contado toma el precio de contado como "desde"', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'solo-contado', developmentId: 'tulum', precioListaMxn: 1_000_000,
+          plazos: [],
+          contado: { descuentoPct: 15, precioMxn: 850_000, enganchePct: 100, contraentregaPct: 0 },
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeMxn).toBe(850_000);
+    expect(p.precioDesdeBase).toBe('contado');
+    expect(p.precioDesdeMeses).toBeNull();
+    // Sin plazos no hay plazo más largo que rotular: no hay mensualidad que publicar.
+    expect(p.mensualidad).toBeNull();
+  });
+
+  it('un proyecto sin plazos ni contado cae a precioListaMxn', () => {
+    const [p] = agruparPorProyecto(
+      [comparable({ id: 'sin-nada', developmentId: 'tulum', precioListaMxn: 1_000_000, plazos: [], contado: null })],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeMxn).toBe(1_000_000);
+    expect(p.precioDesdeBase).toBe('lista');
+    expect(p.precioDesdeMeses).toBeNull();
+    expect(p.mensualidad).toBeNull();
+  });
+
+  it('desempate: si el precio de contado iguala al de un plazo, gana "contado"', () => {
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'empate', developmentId: 'tulum', precioListaMxn: 1_000_000,
+          plazos: [plazo({ meses: 12, precioMxn: 850_000 })],
+          contado: { descuentoPct: 15, precioMxn: 850_000, enganchePct: 100, contraentregaPct: 0 },
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.precioDesdeMxn).toBe(850_000);
+    expect(p.precioDesdeBase).toBe('contado');
+    expect(p.precioDesdeMeses).toBeNull();
   });
 });
