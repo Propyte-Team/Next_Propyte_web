@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
 import { MapPin, TrendingUp, Activity, Building2, Gauge } from '@/lib/icons';
 import type { ZoneScore } from '@/lib/supabase/queries';
+import { formatDataThroughDate } from '@/lib/rental-data/zone-metrics';
 
 interface GeoAnalysisProps {
   lat: number | null;
@@ -28,6 +29,10 @@ export default function GeoAnalysis({
   lat, lng, address, city, zone, state, zoneScore, locale,
 }: GeoAnalysisProps) {
   const t = useTranslations('geoAnalysis');
+  const dataThroughLabel = formatDataThroughDate(
+    zoneScore?.data_through,
+    locale === 'en' ? 'en' : 'es',
+  );
   const [mapError, setMapError] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const hasCoords = lat != null && lng != null;
@@ -95,9 +100,13 @@ export default function GeoAnalysis({
         <div>
           <div className="flex items-start justify-between gap-3 mb-1">
             <h3 className="text-base font-bold text-gray-900">{t('zonePerformance')}</h3>
-            {zoneScore.computed_at && (
+            {/* data_through (lo que el dato CUBRE), no computed_at (cuando corrio el
+                pipeline): computed_at rotulaba con la fecha de la corrida una serie
+                cerrada en febrero. formatDataThroughDate ancla el parseo a UTC; el
+                formateo a mano corria el mes hacia atras en huso negativo (UTC-6). */}
+            {dataThroughLabel && (
               <span className="text-2xs text-gray-600 bg-gray-50 border border-gray-100 rounded px-1.5 py-0.5 shrink-0">
-                {t('lastUpdated')} {formatZoneDate(zoneScore.computed_at, locale)}
+                {t('lastUpdated')} {dataThroughLabel}
               </span>
             )}
           </div>
@@ -161,16 +170,16 @@ export default function GeoAnalysis({
           {/* Raw metrics — datos de mercado reales de la zona (no el índice 0-100) */}
           <p className="text-2xs uppercase tracking-wider font-semibold text-gray-500 mb-2 mt-4">{t('zoneMarketDataTitle')}</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {zoneScore.median_occupancy != null && (
+            {zoneScore.occupancy_p50_ttm != null && (
               <RawMetric
                 label={t('medianOccupancy')}
-                value={`${Math.round(zoneScore.median_occupancy)}%`}
+                value={`${Math.round(zoneScore.occupancy_p50_ttm)}%`}
               />
             )}
-            {zoneScore.median_adr != null && (
+            {zoneScore.adr_p50_ttm != null && (
               <RawMetric
                 label={t('medianAdr')}
-                value={`$${Math.round(zoneScore.median_adr).toLocaleString()} MXN`}
+                value={`$${Math.round(zoneScore.adr_p50_ttm).toLocaleString()} MXN`}
               />
             )}
             {zoneScore.active_listings != null && (
@@ -213,17 +222,6 @@ function ScoreCard({ icon, label, value }: { icon: React.ReactNode; label: strin
       </div>
     </div>
   );
-}
-
-function formatZoneDate(dateStr: string, locale: string): string {
-  try {
-    return new Date(dateStr).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-MX', {
-      month: 'short',
-      year: 'numeric',
-    }).replace('.', '');
-  } catch {
-    return dateStr;
-  }
 }
 
 function RawMetric({ label, value }: { label: string; value: string }) {

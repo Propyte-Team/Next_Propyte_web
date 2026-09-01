@@ -4,6 +4,8 @@ import { getTranslations } from 'next-intl/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getZoneScores } from '@/lib/supabase/queries';
 import { getRentalAnalysis } from '@/lib/rental-data/analysis';
+import { partitionByPool } from '@/lib/rental-data/pools';
+import { oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { MercadoHero } from './components/MercadoHero';
 import { TabBar } from './components/TabBar';
@@ -69,13 +71,43 @@ export default async function MercadoPage({
   // la pagina, y con el fetch de cliente no llegaba al HTML rastreable.
   const tradicionalData = activeTab === 'tradicional' ? await getRentalAnalysis() : null;
 
-  // STR stats for hero
-  const strStats = strScores.length > 0
+  // STR stats for hero — solo cuenta el pool de ranking. CDMX es referencia,
+  // no oferta (ver src/lib/rental-data/pools.ts): 14,266 de 21,115 propiedades
+  // (67.6%) eran CDMX, un mercado que la propia página declara fuera de la
+  // oferta dos párrafos más abajo.
+  const { ranking: strRanking, benchmark: strBenchmark } = partitionByPool(strScores);
+  const strStats = strRanking.length > 0
     ? {
-        zones: strScores.length,
-        listings: strScores.reduce((s, z) => s + (z.active_listings ?? 0), 0),
-        cities: new Set(strScores.map((z) => z.city)).size,
-        updatedAt: strScores[0]?.computed_at || '',
+        zones: strRanking.length,
+        listings: strRanking.reduce((s, z) => s + (z.active_listings ?? 0), 0),
+        cities: new Set(strRanking.map((z) => z.city)).size,
+        benchmarkListings: strBenchmark.reduce((s, z) => s + (z.active_listings ?? 0), 0),
+        // data_through es lo que el dato realmente cubre; computed_at es solo
+        // cuando corrió el pipeline (Task 8 review). Y se toma la fecha MÁS
+        // ANTIGUA del ranking, no la más reciente: con el máximo, una sola zona
+        // refrescada rotulaba el hero entero y apagaba el aviso de serie rancia
+        // de las otras 25 todavía congeladas en febrero.
+        updatedAt: oldestDataThrough(strRanking),
+      }
+    : undefined;
+
+  // LTR stats for hero — antes nunca se calculaba, así que en ?tab=tradicional
+  // el hero mostraba "Actualizando datos de mercado…" sobre una tabla con
+  // 10,695 resultados ya cargados.
+  // `getRentalAnalysis` puede devolver un objeto DEGRADADO (no null) cuando la
+  // consulta trae cero comparables: con `?? 0` el hero publicaba
+  // "0 comparables · 0 desarrollos analizados" como si fueran mediciones. null
+  // = sin dato, y MercadoHero oculta la tila (mismo criterio que VacacionalKPIs).
+  const nonZero = (n: number | undefined) => (n != null && n > 0 ? n : null);
+  const ltrStats = tradicionalData
+    ? {
+        comparables: nonZero(tradicionalData.total_comparables),
+        cities: nonZero(tradicionalData.city_stats?.length),
+        developments: nonZero(tradicionalData.developments?.length),
+        // data_freshness YA es el max(scraped_at) de los comparables limpios
+        // (ver getRentalAnalysis en src/lib/rental-data/analysis.ts) — no hace
+        // falta un campo nuevo en AnalysisData.
+        updatedAt: tradicionalData.data_freshness ?? null,
       }
     : undefined;
 
@@ -106,7 +138,7 @@ export default async function MercadoPage({
         items={[{ label: tBC('market') }]}
       />
 
-      <MercadoHero activeTab={activeTab} locale={locale} strStats={strStats} />
+      <MercadoHero activeTab={activeTab} locale={locale} strStats={strStats} ltrStats={ltrStats} />
 
       {/* Cuerpo claro debajo del hero oscuro (patrón del sitio: dark hero →
           light body → dark footer). El wrapper dark de MainPadding solo debe

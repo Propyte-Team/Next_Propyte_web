@@ -5,6 +5,7 @@ import { toProxyImages, type ResourceType } from '@/lib/images/proxyUrl';
 import { analystWindowStart } from '@/lib/analyst-window';
 import { marketComboKey, isRentableType, type MarketRentTarget } from '@/lib/investment/market-rent';
 import { STAGE_DB_VALUES, TYPE_DB_VALUES } from './taxonomy-values';
+import type { OmissionReason } from '@/lib/rental-data/zone-metrics';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Client = SupabaseClient<any, any, any>;
@@ -1731,6 +1732,8 @@ const ZONE_SCORE_NUMERIC_KEYS = [
   'supply_pressure_component', 'revpar', 'price_to_rent_ratio', 'yield_spread',
   'supply_demand_ratio', 'active_listings', 'median_adr', 'median_occupancy',
   'median_rent',
+  'occupancy_p50_ttm', 'occupancy_low_season', 'occupancy_high_season',
+  'adr_p50_ttm', 'ttm_months_observed',
 ] as const;
 
 export async function getDevelopmentFinancials(client: Client, developmentId: string) {
@@ -2042,10 +2045,19 @@ export interface ZoneScore {
   yield_spread: number | null;
   supply_demand_ratio: number | null;
   active_listings: number | null;
+  /** @deprecated Último punto de la serie. Usar `adr_p50_ttm`. */
   median_adr: number | null;
+  /** @deprecated No es una mediana: es el último punto de la serie. Usar `occupancy_p50_ttm`. */
   median_occupancy: number | null;
   median_rent: number | null;
   cluster_label: string | null;
+  occupancy_p50_ttm: number | null;
+  occupancy_low_season: number | null;
+  occupancy_high_season: number | null;
+  adr_p50_ttm: number | null;
+  data_through: string | null;
+  ttm_months_observed: number | null;
+  index_omission_reason: OmissionReason;
   computed_at: string;
 }
 
@@ -2124,10 +2136,34 @@ export async function getZoneDetail(client: Client, city: string, zone: string) 
   return { score, submarkets: zoneSubmarkets };
 }
 
+/**
+ * Benchmark STR a nivel CIUDAD. Carve-out deliberado de `median_occupancy` /
+ * `median_adr`, las dos columnas que en `ZoneScore` están deprecadas.
+ *
+ * POR QUÉ NO SE MIGRA A LAS COLUMNAS TTM: estas filas las escribe un builder
+ * DISTINTO del pipeline — `build_city_benchmark_rows`, no
+ * `build_zone_score_rows` — y el `select` de abajo es angosto a propósito: NO
+ * pide `occupancy_p50_ttm` ni `adr_p50_ttm`. Cambiar los nombres aquí no
+ * "corrige" nada: devolvería `undefined` en las tres tarjetas de ciudad, que es
+ * peor que la cifra vieja. Migrar esta ruta exige tocar el pipeline primero.
+ *
+ * DEFECTO CONOCIDO, LATENTE HOY: en la ruta de ciudad la OCUPACIÓN sí es un
+ * promedio real de 12 meses (`fetch_city_level_records` lo documenta), pero la
+ * TARIFA sigue siendo un último punto: esa función toma `adr[0]` de un fetch con
+ * `limit=2`. Y `revpar` mezcla las dos, así que hereda la distorsión del ADR.
+ * Está latente porque `zone_scores` tiene CERO filas con `zone = '_ciudad'`
+ * (44 filas, ninguna) — nadie ve estas tarjetas hoy. Si esa ruta se llega a
+ * poblar, la tarifa y el RevPAR de ciudad publicarán el mismo tipo de cifra de
+ * un solo mes que originó todo este trabajo. Arreglar en el pipeline ANTES de
+ * publicar el bloque de ciudad.
+ */
 export interface CityStrBenchmark {
   city: string;
+  /** Promedio TTM real (no un último punto), a diferencia de `ZoneScore.median_occupancy`. */
   median_occupancy: number | null;
+  /** Último punto de la serie (`adr[0]`), NO una mediana. Ver el defecto conocido arriba. */
   median_adr: number | null;
+  /** Mezcla ocupación TTM con ADR de último punto: hereda la distorsión de `median_adr`. */
   revpar: number | null;
   active_listings: number | null;
   computed_at: string | null;
