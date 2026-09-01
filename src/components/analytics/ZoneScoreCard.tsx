@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import type { ZoneScore } from '@/lib/supabase/queries';
 import { getZoneInfo } from '@/lib/rental-data/zone-names';
 import { formatPercentage } from '@/lib/formatters';
+import { occupancyTrend, omissionBadge } from '@/lib/rental-data/zone-metrics';
 
 interface ZoneScoreCardProps {
   score: ZoneScore;
@@ -64,8 +65,8 @@ function MetricRow({ label, value, context, trend }: {
 
 export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
   const t = useTranslations('zoneScoreCard');
-  // La etiqueta de muestra baja se reusa de comparisonTable: mismo texto en la tabla y
-  // en la tarjeta, una sola redacción que mantener.
+  // Las etiquetas de omisión se reusan de comparisonTable: mismo texto en la tabla
+  // y en la tarjeta, una sola redacción que mantener.
   const tTable = useTranslations('comparisonTable');
 
   const adrGrowth = score.adr_growth_component;
@@ -92,12 +93,23 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         {score.score != null ? (
           <IndexBadge value={score.score} />
         ) : (
-          <span
-            className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap"
-            title={tTable('lowSampleTitle')}
-          >
-            {tTable('lowSampleBadge')}
-          </span>
+          // Antes esta tarjeta colapsaba TODA omisión a "muestra baja": Playacar
+          // (922 anuncios, sin tarifa publicada) leía "sin tarifa publicada" en
+          // la tabla de /mercado y "muestra baja" en la tarjeta de al lado, en la
+          // misma pantalla. Ahora las dos superficies resuelven la etiqueta con
+          // la misma función.
+          (() => {
+            const badge = omissionBadge(score.index_omission_reason, score.ttm_months_observed);
+            if (!badge) return null;
+            return (
+              <span
+                className="inline-block text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 whitespace-nowrap"
+                title={tTable(badge.titleKey)}
+              >
+                {tTable(badge.labelKey, badge.values)}
+              </span>
+            );
+          })()
         )}
       </div>
 
@@ -105,12 +117,12 @@ export function ZoneScoreCard({ score, compact = false }: ZoneScoreCardProps) {
         <div className="border-t border-gray-100 pt-3 space-y-0.5">
           <MetricRow
             label={t('occupancy')}
-            value={score.median_occupancy != null ? formatPercentage(score.median_occupancy, 0) : '—'}
-            trend={score.median_occupancy != null && score.median_occupancy > 58 ? 'up' : score.median_occupancy != null && score.median_occupancy < 40 ? 'down' : 'flat'}
+            value={score.occupancy_p50_ttm != null ? formatPercentage(score.occupancy_p50_ttm, 0) : '—'}
+            trend={occupancyTrend(score.occupancy_p50_ttm)}
           />
           <MetricRow
             label={t('avgRateNight')}
-            value={score.median_adr != null ? `$${Math.round(score.median_adr).toLocaleString()} MXN` : '—'}
+            value={score.adr_p50_ttm != null ? `$${Math.round(score.adr_p50_ttm).toLocaleString()} MXN` : '—'}
             trend={adrTrend}
           />
           <MetricRow
