@@ -12,7 +12,8 @@
 // el dato privado: si un desarrollo no tiene título editorial, se queda fuera.
 // ============================================================
 
-import type { LoteComparable, PlazoOpcion } from './lp-lotes-comparador';
+import { createPublicSupabaseClient } from '@/lib/supabase/public';
+import { getLotesComparables, type LoteComparable, type PlazoOpcion } from './lp-lotes-comparador';
 
 /** Ciudades de la guía. Riviera Maya, no solo Playa del Carmen. */
 export const CIUDADES_GUIA = ['Playa del Carmen', 'Tulum'];
@@ -109,4 +110,54 @@ export function agruparPorProyecto(
   return proyectos.sort(
     (a, z) => a.precioDesdeMxn - z.precioDesdeMxn || a.slug.localeCompare(z.slug),
   );
+}
+
+/**
+ * Los terrenos publicados de Riviera Maya, listos para la guía.
+ *
+ * PUERTA DE CALIDAD: entra el proyecto que tenga precio, superficie utilizable
+ * y título editorial. La medición del 2026-09-01 daba 6 de 7 — el único fuera
+ * era `amares-riviera-maya`, por no tener precio capturado. En cuanto se lo
+ * capturen entra solo: no hay lista que mantener.
+ */
+export async function getTerrenosGuia(): Promise<ProyectoGuia[]> {
+  const unidades = await getLotesComparables(CIUDADES_GUIA);
+  if (unidades.length === 0) return [];
+
+  const devIds = [...new Set(unidades.map((u) => u.developmentId).filter(Boolean))] as string[];
+  if (devIds.length === 0) return [];
+
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return [];
+  const hub = supabase.schema('real_estate_hub' as 'public');
+
+  // OJO: `name` es `nombre_desarrollo` y NO se selecciona. El título sale de
+  // `publication_title`, con `meta_title` de respaldo. El dato privado no llega
+  // ni a esta capa.
+  const { data: devs } = await hub
+    .from('v_developments')
+    .select(
+      'id, slug, publication_title, meta_title, city, zone, amenities, images, total_units, delivery_text',
+    )
+    .in('id', devIds)
+    .not('approved_at', 'is', null)
+    .is('deleted_at', null);
+
+  const desarrollos: Record<string, DatosDesarrollo> = {};
+  for (const d of (devs ?? []) as unknown as Record<string, unknown>[]) {
+    const id = d.id as string;
+    desarrollos[id] = {
+      id,
+      slug: (d.slug as string) ?? '',
+      tituloEditorial: ((d.publication_title as string) || (d.meta_title as string) || '').trim(),
+      ciudad: (d.city as string) ?? '',
+      zona: (d.zone as string) ?? null,
+      amenidades: Array.isArray(d.amenities) ? (d.amenities as string[]) : [],
+      imagenes: Array.isArray(d.images) ? (d.images as string[]) : [],
+      totalUnidades: d.total_units === null ? null : Number(d.total_units),
+      entregaTexto: (d.delivery_text as string) ?? null,
+    };
+  }
+
+  return agruparPorProyecto(unidades, desarrollos);
 }
