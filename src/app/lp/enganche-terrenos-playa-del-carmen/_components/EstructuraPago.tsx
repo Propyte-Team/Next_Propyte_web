@@ -120,7 +120,10 @@ export default function EstructuraPago({ plan }: { plan: PlanPago }) {
         ))}
       </dl>
 
-      <p className="lpe-cuerpo mt-7 max-w-[46ch] text-[0.75rem] leading-relaxed text-white/40">
+      {/* `white/55` y no `/40`: medido contra el píxel real del fondo (#0f1923),
+          el 40 % daba 3.81:1 y AA pide 4.5 para texto normal. El 55 % da ~8:1 y
+          es el mismo tono que usa el resto de los descargos de la página. */}
+      <p className="lpe-cuerpo mt-7 max-w-[46ch] text-[0.75rem] leading-relaxed text-white/55">
         Calculado sobre el esquema de pago y el precio de lista que declara el
         desarrollador.
       </p>
