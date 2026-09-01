@@ -106,7 +106,33 @@ export default function CookieBanner() {
       animate={open ? { y: 0, opacity: 1 } : { y: 24, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 28 }}
       onAnimationComplete={() => { if (!open && hasOpenedRef.current) setHidden(true); }}
-      className="fixed inset-x-3 sm:inset-x-auto sm:right-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
+      // ESQUINA IZQUIERDA en escritorio, y no es estético: la columna DERECHA
+      // es donde viven los formularios de captación (el sidebar del blog, la
+      // ficha de propiedad). Medido el 01-sep-2026 en el sidebar del blog con
+      // el banner a `sm:right-4`:
+      //
+      //   1536x864 → banner y 621+, botón «Descargar guía» y 631–675  TAPADO
+      //   1440x900 → banner y 657+, botón                    y 631–675  TAPADO
+      //   1280x720 → tapado también, y ese ya lo estaba antes
+      //
+      // `elementFromPoint` sobre el centro del botón devolvía el banner: no es
+      // solape visual, es que el clic no llegaba.
+      //
+      // LO QUE DECIDE ENTRE IZQUIERDA Y DERECHA no es cuántos elementos quedan
+      // debajo, sino si se pueden sacar de debajo. El sidebar del blog es
+      // `sticky`, así que su botón estaba tapado a CUALQUIER altura de scroll
+      // (medido a 0/800/1600/2400/3200 px). Lo que el banner cubre por la
+      // izquierda es contenido en flujo normal —el `name` de /es/contacto a
+      // scroll 0, por ejemplo— y basta con desplazarse para destaparlo.
+      // Molestia contra bloqueo: a la derecha eran TRES formularios de
+      // captación (ficha de propiedad, ficha de desarrollo y sidebar del
+      // blog); a la izquierda no queda ninguno sin salida.
+      //
+      // Es la SEGUNDA vez que pasa (la primera, los CTA del hero de la LP de
+      // lotes, commit dacfe82). El fallo es de altura acumulada y no se ve en
+      // revisión de código ni en `tsc`/lint/build: solo aparece midiendo a un
+      // viewport concreto. Lo vigila `tests/e2e/blog-sidebar-banner.spec.ts`.
+      className="fixed inset-x-3 sm:inset-x-auto sm:left-4 z-50 sm:max-w-sm sm:w-[380px] bg-white border border-gray-200 rounded-xl shadow-[0_8px_28px_rgba(15,25,35,0.16)] overflow-hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
         bottom: `calc(env(safe-area-inset-bottom, 0px) + ${bottomOffset})`,
