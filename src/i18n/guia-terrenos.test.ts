@@ -33,10 +33,23 @@ function cadenas(ns: Namespace): Array<[string, string]> {
   return salida;
 }
 
-// El cierre lo firma el equipo, no un asesor: el Gamma del que sale este copy
-// venía en primera persona del singular y con firma personal. Esto barre el
-// PATRÓN, no los literales del original —un guardia que solo conoce dos frases
-// pasa en verde con el original apenas reformulado, y eso ya se midió—.
+// OJO — lo que este guardia ES y lo que NO ES (ronda de revisión, 3ª vuelta):
+//
+// Es una ALARMA DE HUMO para regresiones evidentes, no una demostración de
+// que ninguna cadena habla en singular. Cubre: la voz del documento de origen
+// (Gamma) casi sin cambios, los pronombres/posesivos de primera persona del
+// singular en los dos idiomas, y la firma de un "asesor" genérico. NO es
+// exhaustivo — no puede serlo sin degenerar en una lista blanca de la
+// gramática española: tres rondas de esta tarjeta fueron encontrando formas
+// verbales nuevas (desinencias regulares, "me" objeto en inglés, enclíticos,
+// futuro/condicional) y siempre queda una cuarta forma sin cubrir —una firma
+// con un nombre propio inventado, una perífrasis rebuscada ("voy a estar
+// aquí para ti"), pasan sin que este guardia se entere. El copy de HOY es
+// correcto; esto detecta que alguien lo reescribió mal, no que sea imposible
+// reescribirlo mal de una forma que este guardia no conoce todavía. No sigas
+// añadiendo patrones cada vez que aparezca una evasión nueva: eso es una
+// carrera que se pierde. Si aparece una evasión real en producción, arréglala
+// en el copy primero — el guardia es la red bajo el trapecio, no el trapecio.
 const VOZ_PERSONAL: ReadonlyArray<readonly [string, RegExp]> = [
   // Inglés. `\bI\b` cubre I, I'd, I'll, I'm: el apóstrofo es frontera de palabra.
   ['en: I', /\bI\b/],
@@ -59,14 +72,57 @@ const VOZ_PERSONAL: ReadonlyArray<readonly [string, RegExp]> = [
   ['es: soy', /\bsoy\b/i],
   ['es: personalmente', /\bpersonalmente\b/i],
   ['es: me + verbo', /\bme (encantar|gustar|dar[íi]a|comprometo)/i],
-  // Desinencia de primera persona del singular en verbos comunes de venta
+  // Desinencia de primera persona del singular en verbos REGULARES de venta
   // ("acompaño", "reviso", "contesto"...). Ronda de revisión: un asesor puede
   // evadir TODOS los pronombres/posesivos de arriba y aun así hablar en
-  // singular con la conjugación del verbo.
-  [
-    'es: verbo en 1ª sing',
-    /\b(?:acompañ|conozc|llev|revis|contest|trabaj|quier|pued|est|teng|hag|voy)o\b/i,
-  ],
+  // singular con la conjugación del verbo. `est`, `voy` y `trabaj` salieron de
+  // aquí (ver la lista literal de abajo): `est`+`o` cazaba «esto» (demostrativo
+  // comunísimo, falso positivo puro), `voy`+`o` exigía la palabra inexistente
+  // «voyo» (código muerto), y `trabaj`+`o` cazaba también el sustantivo
+  // «trabajo» («nuestro trabajo es…», copy legítimo de equipo).
+  ['es: verbo regular en 1ª sing', /\b(?:acompañ|conozc|llev|revis|contest|quier|pued|teng|hag)o\b/i],
+  // Formas irregulares de primera persona, como palabras completas — no como
+  // desinencia, porque no comparten un patrón regular entre sí (y forzarlas a
+  // uno es lo que rompió `est` y `voy` arriba).
+  ['es: verbo irregular en 1ª sing', /\b(?:estoy|voy|iré|estaré|seré|puedo|quiero|tengo)\b/i],
+  // Enclíticos de imperativo con pronombre de objeto directo de 1ª persona
+  // ("escríbeme", "déjame", "cuéntame"): la forma que usa un asesor que evita
+  // toda conjugación en primera persona pero sigue dirigiéndose a sí mismo.
+  //
+  // Restringido a que la palabra lleve un acento (á/é/í/ó/ú): en español,
+  // adjuntar "-me" a un imperativo de más de una sílaba casi siempre desplaza
+  // el acento a la sílaba antepenúltima y esa sílaba esdrújula SIEMPRE lleva
+  // tilde escrita (cuéntame, escríbeme, déjame, avísame, contáctame) — así que
+  // exigir la tilde es una restricción del propio idioma, no una lista blanca.
+  // Sin ella, la primera versión de este patrón (\w{3,}me) cazaba "income" en
+  // el cierre EN real: cualquier palabra inglesa terminada en "me" (income,
+  // welcome, become...) colaba, porque el inglés no lleva estas tildes.
+  //
+  // Se usan clases Unicode (\p{L}) con la bandera 'u' en vez de \b/\w: en JS,
+  // \b y \w NO reconocen letras acentuadas como "de palabra", así que \b
+  // pegado justo después de una tilde crea una frontera FALSA en medio de una
+  // palabra (p.ej. \b\w*ría\b "encontraba" "categoría" partido en "cate" +
+  // "goría", o de hecho "crédito" cazado como "cré" — se midió con el
+  // \b original y falló contra el propio namespace real).
+  // Sin la bandera 'g': `vozPersonal` llama a `re.test(texto)`, y un regex
+  // global es CON ESTADO bajo `.test()` (avanza `lastIndex` entre llamadas) —
+  // con 'g' este mismo objeto, reusado en cada `it()` de la suite, daría
+  // resultados distintos según el orden de las llamadas. Ya se verificó sin
+  // 'g' contra llamadas repetidas.
+  ['es: enclítico -me', /(?<![\p{L}\p{N}_])[\p{L}]*[áéíóú][\p{L}]*me(?![\p{L}\p{N}_])/iu],
+  // Futuro y condicional de primera persona del singular ("acompañaré",
+  // "acompañaría"): otra forma verbal que evade los pronombres/posesivos de
+  // arriba sin recurrir a una desinencia de presente.
+  //
+  // Restringido a que la "r" del infinitivo preceda inmediatamente a la
+  // terminación: el futuro y el condicional en español SIEMPRE se forman
+  // pegando la terminación al infinitivo completo (hablar+é, comer+ía,
+  // tendr+ía), y el infinitivo siempre termina en "r" — así que esa "r" previa
+  // es un rasgo gramatical real, no un ajuste ad hoc. Sin esto, la primera
+  // versión (\w{3,}(?:é|ía)) cazaba "plusvalía" (sustantivo común y legítimo
+  // de esta misma página, sin ninguna "r" antes de "ía") como si fuera un
+  // condicional.
+  ['es: futuro/condicional 1ª sing', /(?<![\p{L}\p{N}_])[\p{L}]*r(?:é|ía)(?![\p{L}\p{N}_])/iu],
   // El sustantivo que delata al asesor hablando por sí mismo en vez de por el
   // equipo, en los dos idiomas.
   ['es/en: asesor/advisor', /\b(?:tu asesor|como asesor|your advisor|as your advisor)\b/i],

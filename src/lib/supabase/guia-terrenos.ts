@@ -62,16 +62,18 @@ export interface ProyectoGuia {
   /** null cuando no hay superficie utilizable. Nunca una división entre cero. Se calcula sobre `precioDesdeMxn`, no sobre `precioListaMxn`. */
   precioPorM2Mxn: number | null;
   plazos: PlazoOpcion[];
-  /** Redactado en lenguaje de comprador cuando no hay plan de mensualidades. */
-  motivoSinPlan: string | null;
   /**
-   * El mismo motivo que `motivoSinPlan`, como código traducible (ver
-   * `LoteComparable`). A diferencia de `motivoSinPlan` — que SIEMPRE es el de
-   * la unidad representativa — este código es `null` salvo que TODOS los
-   * lotes del desarrollo coincidan en él: es un hecho de una fila, y este
-   * campo solo lo publica cuando también es un hecho del desarrollo. Ver
-   * `agruparPorProyecto`.
+   * Redactado en lenguaje de comprador cuando no hay plan de mensualidades.
+   * Igual que `motivoSinPlanCodigo`: es `null` salvo que TODOS los lotes del
+   * desarrollo coincidan en el motivo — es un hecho de una fila (la unidad
+   * representativa), y este campo solo lo publica cuando también es un hecho
+   * del desarrollo. Los dos campos se colapsan JUNTOS (ver `agruparPorProyecto`)
+   * para que nunca quede prosa sin su código o código sin su prosa — ese
+   * desacople dejaría filtrar prosa en español, a nivel de LOTE ("este lote"),
+   * dentro de una página que ya decidió traducir por código.
    */
+  motivoSinPlan: string | null;
+  /** El mismo motivo que `motivoSinPlan`, como código traducible. Ver `LoteComparable` y la nota de arriba. */
   motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'];
   /**
    * El plazo MÁS LARGO: la mensualidad más baja, con SU propio precio al lado.
@@ -170,20 +172,22 @@ export function agruparPorProyecto(
 
     const desde = elegirDesde(representativa);
 
-    // El código del motivo solo se publica si TODOS los lotes del desarrollo
-    // coinciden en él. `representativa` es el lote más barato por precio de
-    // LISTA — una fila, no el desarrollo entero — y su código puede ser un
-    // hecho de esa fila nada más: `condiciones_cambiando` es, por
+    // El motivo (código Y prosa) solo se publica si TODOS los lotes del
+    // desarrollo coinciden en él. `representativa` es el lote más barato por
+    // precio de LISTA — una fila, no el desarrollo entero — y su motivo puede
+    // ser un hecho de esa fila nada más: `condiciones_cambiando` es, por
     // construcción, un fallo de reconstrucción de precio de ESA unidad, y
     // `contado` generaliza "el desarrollador no publica plan" desde una sola
-    // fila aunque el resto sí lo publique. Con un desacuerdo, cae a `null`
-    // (la clave genérica `sinPlan`, que nunca miente porque no afirma nada
-    // específico).
-    const motivoSinPlanCodigo = lista.every(
+    // fila aunque el resto sí lo publique. Con un desacuerdo, los DOS caen a
+    // `null` (la clave genérica `sinPlan`, que nunca miente porque no afirma
+    // nada específico) — nunca uno sin el otro: un `motivoSinPlan` que
+    // sobreviviera solo a él filtraría prosa en español, a nivel de LOTE
+    // ("este lote"), dentro de una página que traduce por código.
+    const motivoCoincide = lista.every(
       (l) => l.motivoSinPlanCodigo === representativa.motivoSinPlanCodigo,
-    )
-      ? representativa.motivoSinPlanCodigo
-      : null;
+    );
+    const motivoSinPlanCodigo = motivoCoincide ? representativa.motivoSinPlanCodigo : null;
+    const motivoSinPlan = motivoCoincide ? representativa.motivoSinPlan : null;
 
     // El plazo más largo: la mensualidad más baja. Se publica con SU propio
     // precio (`desde.precioMxn` sería el de OTRO plazo si `desde.base` es
@@ -210,7 +214,7 @@ export function agruparPorProyecto(
       superficieDesdeM2: superficieUtil,
       precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
-      motivoSinPlan: representativa.motivoSinPlan,
+      motivoSinPlan,
       motivoSinPlanCodigo,
       contado: representativa.contado,
       mensualidad:

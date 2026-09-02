@@ -410,6 +410,40 @@ function construirEtiqueta(
   return partes.join(' · ');
 }
 
+/**
+ * Prosa de `motivoSinPlan`, indexada por `motivoSinPlanCodigo`. ÚNICO lugar
+ * que redacta estos textos: el gate de `construirComparables` decide el
+ * CÓDIGO y la prosa se DERIVA de él con este Record, así que ya no hay dos
+ * sitios (código y prosa) que alguien tenga que mantener sincronizados a
+ * mano. Consecuencia gratis del tipo: un código nuevo en la unión de
+ * `motivoSinPlanCodigo` que no tenga entrada aquí no compila (`Record`
+ * exige las 4 claves), y una rama del gate no puede asignar prosa sin pasar
+ * primero por un código, porque la prosa ya no se escribe a mano en el gate.
+ *
+ * `contado` se comparte entre las 4 funciones porque el tipo de `Record`
+ * exige una firma uniforme, pero solo lo usa (y solo lo necesita)
+ * `contado_parcial`: el gate garantiza que ahí `contado` NUNCA es null antes
+ * de asignar ese código (ver la condición `contado && contado.contraentregaPct > 0`),
+ * de ahí el `!`.
+ */
+const REDACTAR_MOTIVO_SIN_PLAN: Record<
+  NonNullable<LoteComparable['motivoSinPlanCodigo']>,
+  (contado: CondicionContado | null) => string
+> = {
+  // El caso 90/10: describir los dos pagos, porque "de contado" a secas
+  // haría creer que se liquida todo al firmar.
+  contado_parcial: (contado) =>
+    `Este lote se paga ${contado!.enganchePct}% al firmar y ` +
+    `${contado!.contraentregaPct}% contra entrega. El desarrollador no ` +
+    'publica plan de mensualidades.',
+  contado: () =>
+    'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+  condiciones_cambiando: () =>
+    'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.',
+  tasa_por_confirmar: () =>
+    'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+};
+
 /** UUID del lote que protagoniza la landing, para marcarlo en el comparador. */
 const ID_DESARROLLO_DE_ESTA_LANDING = '025943d7-c7f1-482c-a489-09a28bb2328a';
 
@@ -515,31 +549,24 @@ export function construirComparables(
     }
 
     // El gate, en lenguaje de comprador. Nunca "faltan datos en el sistema".
-    let motivoSinPlan: string | null = null;
+    // Solo decide el CÓDIGO: la prosa se deriva de `REDACTAR_MOTIVO_SIN_PLAN`
+    // (ver arriba), no hay dos lugares que sincronizar a mano.
     let motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'] = null;
     if (plazos.length === 0) {
       if (contado && contado.contraentregaPct > 0) {
-        // El caso 90/10: describir los dos pagos, porque "de contado" a secas
-        // haría creer que se liquida todo al firmar.
-        motivoSinPlan =
-          `Este lote se paga ${contado.enganchePct}% al firmar y ` +
-          `${contado.contraentregaPct}% contra entrega. El desarrollador no ` +
-          'publica plan de mensualidades.';
         motivoSinPlanCodigo = 'contado_parcial';
       } else if (contado) {
-        motivoSinPlan =
-          'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.';
         motivoSinPlanCodigo = 'contado';
       } else if (precioLista === null) {
-        motivoSinPlan =
-          'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.';
         motivoSinPlanCodigo = 'condiciones_cambiando';
       } else {
-        motivoSinPlan =
-          'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.';
         motivoSinPlanCodigo = 'tasa_por_confirmar';
       }
     }
+    const motivoSinPlan =
+      motivoSinPlanCodigo === null
+        ? null
+        : REDACTAR_MOTIVO_SIN_PLAN[motivoSinPlanCodigo](contado);
 
     lotes.push({
       id,

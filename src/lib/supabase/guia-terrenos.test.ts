@@ -405,17 +405,20 @@ describe('agruparPorProyecto', () => {
   // Task 6b — `motivoSinPlanCodigo` viaja junto con `motivoSinPlan`: la guía
   // bilingüe traduce el código, la LP monolingüe sigue usando la prosa.
   //
-  // Ronda de revisión: el código NO puede ser una copia ciega de la unidad
-  // representativa (la más barata por precio de lista). Esa unidad es UNA
-  // FILA, y `condiciones_cambiando` o `contado` son hechos de esa fila, no
-  // necesariamente del desarrollo entero — un desarrollo con 5 lotes puede
-  // tener 4 con plan y 1 sin él. El código solo se publica cuando TODOS los
-  // lotes del desarrollo coinciden; si no, cae a `null` (la clave genérica
-  // `sinPlan`, que nunca miente).
+  // Ronda de revisión: ninguno de los dos puede ser una copia ciega de la
+  // unidad representativa (la más barata por precio de lista). Esa unidad es
+  // UNA FILA, y `condiciones_cambiando` o `contado` son hechos de esa fila,
+  // no necesariamente del desarrollo entero — un desarrollo con 5 lotes puede
+  // tener 4 con plan y 1 sin él. El motivo (código Y prosa, LOS DOS JUNTOS)
+  // solo se publica cuando TODOS los lotes del desarrollo coinciden; si no,
+  // los dos caen a `null` (la clave genérica `sinPlan`, que nunca miente).
+  // Los dos colapsan juntos a propósito: si solo cayera el código, `ProyectoGuia`
+  // quedaría con prosa en español sin su traducción — filtrando "este lote"
+  // dentro de una página que ya decidió traducir por código.
   // ============================================================
 
-  it('propaga `motivoSinPlanCodigo` cuando TODOS los lotes del desarrollo coinciden', () => {
-    // Dos lotes del mismo desarrollo, mismo código. El más caro va PRIMERO en
+  it('propaga motivo (código Y prosa) cuando TODOS los lotes del desarrollo coinciden', () => {
+    // Dos lotes del mismo desarrollo, mismo motivo. El más caro va PRIMERO en
     // el array: si la propagación tomara `lista[0]` en vez de la unidad
     // representativa (la más barata por precio de lista), este orden lo
     // delataría en cuanto alguno de los dos difiriera — aquí no difieren, así
@@ -440,10 +443,13 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBe('tasa_por_confirmar');
+    expect(p.motivoSinPlan).toBe(
+      'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+    );
   });
 
-  it('`motivoSinPlanCodigo` es null cuando la unidad representativa sí publica plan', () => {
-    // Mata la mutación que deja `motivoSinPlanCodigo` pegado a un valor fijo.
+  it('motivo (código Y prosa) es null cuando la unidad representativa sí publica plan', () => {
+    // Mata la mutación que deja cualquiera de los dos pegado a un valor fijo.
     const [p] = agruparPorProyecto(
       [
         comparable({
@@ -456,9 +462,10 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBeNull();
+    expect(p.motivoSinPlan).toBeNull();
   });
 
-  it('el código NO se publica cuando los lotes del desarrollo no coinciden en el motivo (mezcla)', () => {
+  it('el motivo (código Y prosa) NO se publica cuando los lotes del desarrollo no coinciden (mezcla)', () => {
     // Caso real y probable, no hipotético: `condiciones_cambiando` es un
     // fallo de reconstrucción de precio DE UNA FILA, así que es esperable que
     // el lote más barato lo tenga y otro lote del mismo desarrollo sí publique
@@ -468,15 +475,15 @@ describe('agruparPorProyecto', () => {
     // peor: generaliza a la desarrolladora completa desde una fila.
     const [p] = agruparPorProyecto(
       [
-        // Más caro y CON plan — no debe contagiar su ausencia de código al
-        // resultado, pero tampoco debe dejar pasar el código del otro lote.
+        // Más caro y CON plan — no debe contagiar su ausencia de motivo al
+        // resultado, pero tampoco debe dejar pasar el motivo del otro lote.
         comparable({
           id: 'con-plan', developmentId: 'tulum', precioListaMxn: 900_000,
           plazos: [plazo({ meses: 12, precioMxn: 800_000 })],
           motivoSinPlan: null,
           motivoSinPlanCodigo: null,
         }),
-        // El más barato (representativa): sin plan, con código.
+        // El más barato (representativa): sin plan, con motivo.
         comparable({
           id: 'barato-condiciones-cambiando', developmentId: 'tulum', precioListaMxn: 300_000,
           plazos: [], contado: null,
@@ -488,12 +495,21 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBeNull();
+    // El punto central de esta ronda de revisión: sin este assert, un
+    // refactor podría colapsar el código a `null` y dejar la PROSA de la
+    // representativa filtrándose sola — español, a nivel de lote ("este
+    // lote"), dentro de \`ProyectoGuia\`, que la guía bilingüe consumiría con
+    // un fallback tipo \`codigo ? t(codigo) : (motivoSinPlan ?? t('sinPlan'))\`.
+    expect(p.motivoSinPlan).toBeNull();
+    // El invariante explícito que exige la revisión: los dos campos son
+    // null juntos, o ninguno lo es.
+    expect(p.motivoSinPlan === null).toBe(p.motivoSinPlanCodigo === null);
   });
 
-  it('el código SÍ se publica cuando dos lotes distintos coinciden en el mismo motivo sin plan', () => {
+  it('el motivo (código Y prosa) SÍ se publica cuando dos lotes distintos coinciden en el mismo motivo sin plan', () => {
     // Control negativo del test anterior: la mezcla no es "cualquier proyecto
     // con más de un lote sin plan", es específicamente un DESACUERDO. Con dos
-    // lotes que SÍ están de acuerdo, el código se publica igual.
+    // lotes que SÍ están de acuerdo, el motivo se publica igual.
     const [p] = agruparPorProyecto(
       [
         comparable({
@@ -514,5 +530,8 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBe('contado');
+    expect(p.motivoSinPlan).toBe(
+      'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+    );
   });
 });
