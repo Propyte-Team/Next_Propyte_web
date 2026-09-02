@@ -1,6 +1,8 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-09-02 — **guía de terrenos residenciales TERMINADA en rama, sin PR y sin mergear.** 38 commits, 521 tests, `tsc`/`eslint`/build limpios, 3 e2e, revisión visual hecha. Faltan dos cosas de Luis antes de que sirva: la variable de la agenda en Hostinger (antes del build) y curar dos portadas en el Hub. Ver «En progreso → Guía de terrenos». Entrada previa: 2026-09-01 (tarde), los 18 formularios.
+> Última actualización: 2026-09-02 (tarde) — **la guía de terrenos está EN PRODUCCIÓN** (PR #85 mergeado, agenda funcionando). **PR #86 abierto** con tres arreglos vistos ya en vivo: la agenda pasa a capa con el scroll bloqueado, la CSP no permitía calendar.google.com, y las fotos iban lazy y sin proxy. Sigue pendiente curar 2 portadas en el Hub. Ver «En progreso → Guía de terrenos».
+>
+> Anterior: 2026-09-02 (mañana) — guía terminada en rama, sin PR. 38 commits, 521 tests, `tsc`/`eslint`/build limpios, 3 e2e, revisión visual hecha. Faltan dos cosas de Luis antes de que sirva: la variable de la agenda en Hostinger (antes del build) y curar dos portadas en el Hub. Ver «En progreso → Guía de terrenos». Entrada previa: 2026-09-01 (tarde), los 18 formularios.
 >
 > Anterior: 2026-09-01 (tarde) — **los 18 formularios exigen nombre + correo + teléfono con selector de lada; todo en producción y verificado.** Entrada previa: lote del tablero de mejoras, PRs #75 y #76 (ya mergeados). Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
 >
@@ -49,16 +51,25 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 
 ## En progreso
 
-## Guía de terrenos residenciales (sesión 2026-09-02) — 🟡 TERMINADA, SIN PR
+## Guía de terrenos residenciales — 🟢 EN PRODUCCIÓN · 🟡 PR #86 abierto
 
 Rama `feat/guia-terrenos-residenciales`, worktree `Next_Propyte_web-guiaterrenos`,
 rebasada sobre `origin/main` = `4ef7387`. Página `/{locale}/guias/terrenos-residenciales`
 en ES y EN, alimentada del inventario, enlazada desde *Recursos* en el footer.
 
-- [ ] **Abrir el PR** — Luis lo pidió en un solo PR con los 38 commits. Sin abrir todavía.
-- [ ] 🔴 **Poner `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL` en Hostinger ANTES del build.** Next incrusta las `NEXT_PUBLIC_*` al compilar y aquí compila el servidor: `git pull` o reiniciar PM2 no la incorporan. Va al lado de las que ya emite el sitio (`AW-18124069969`, `G-H4VD5TVEKM`). Sin ella el formulario funciona y la agenda no aparece.
+- [x] **PR #85 abierto, mergeado y desplegado** (2026-09-02)
+- [x] **`NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL` puesta en Hostinger antes del build** (2026-09-02) — verificada incrustada en el chunk de producción.
+- [ ] 🟡 **Mergear el PR #86** — tres arreglos vistos con la página ya en vivo. Ojo: mergear es desplegar (~4 min). Next incrusta las `NEXT_PUBLIC_*` al compilar y aquí compila el servidor: `git pull` o reiniciar PM2 no la incorporan. Va al lado de las que ya emite el sitio (`AW-18124069969`, `G-H4VD5TVEKM`). Sin ella el formulario funciona y la agenda no aparece.
 - [ ] 🔴 **Curar dos portadas en el Hub** (decisión de Luis): dos de las seis fotos llevan el nombre del desarrollo rotulado DENTRO de la imagen. Las segundas de cada galería están limpias y verificadas a ojo — `club-residencial-con-amenidades` → `…/44b0c506-…/1785790029985-vkwkn5.webp`; `lotes-residenciales-en-playa-del-carmen-2` → `…/09d27fcb-…/1785274768534-h4vp93.webp`.
 - [ ] **Poner también `NEXT_PUBLIC_CALENDLY_URL`** apuntando al mismo link de Google: enciende de paso el botón de agendar de `/contacto`, que **nunca se ha renderizado**. Ver [[feedback_calendly_url_nunca_estuvo_puesta]].
+
+**Lo que salió de mirar la página en producción (PR #86):**
+
+- [x] La agenda se llevaba el scroll: 250 px por gesto de rueda. Pasa a capa con el body bloqueado; medido después, 0 px. `overscroll-behavior: contain` **no** lo arregla — se probó y se midió (2026-09-02).
+- [x] La CSP nunca permitió `calendar.google.com` en `frame-src`: la agenda funcionaba porque la política va en report-only (2026-09-02).
+- [x] Las fotos: `loading="lazy"` en las visibles al abrir, y URLs crudas del storage porque la guía se saltaba `maskRows` (2026-09-02).
+- [ ] 🟡 **`NEXT_PUBLIC_CALENDLY_URL` sigue sin poner.** El botón de agendar de `/contacto` no se ha renderizado jamás. Apuntarla al mismo link de Google lo enciende en el mismo deploy.
+- [ ] Extraer una cáscara de modal común: hay **cuatro copias** de la misma lógica (`TeamBioModal`, `ShareDownloadModal`, `GlossaryLeadGateModal`, `AgendaModal`).
 
 **Captura pendiente en el Hub** (se ve en la página; es dato, no código):
 
