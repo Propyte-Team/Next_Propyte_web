@@ -9,7 +9,62 @@ import { paginaSinContenido } from './src/lib/redirects/pagina-sin-contenido';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+/** 90 días: la ventana de atribución más larga que ofrece Meta. */
+const META_COOKIE_MAX_AGE = 60 * 60 * 24 * 90;
+
+/**
+ * Persiste los identificadores de clic de Meta como cookies first-party.
+ *
+ * El problema que resuelve: `getBrowserContext()` sintetiza `fbc` a partir del
+ * `fbclid` de la URL, pero el `fbclid` sólo existe en la página de aterrizaje.
+ * En cuanto el visitante navega, Next enruta del lado del cliente y el
+ * parámetro desaparece, así que todos los eventos posteriores viajan sin `fbc`.
+ * `ViewContent` se dispara en la ficha del inmueble —que casi nunca es la
+ * página de entrada— y por eso Events Manager reclama justo ese evento.
+ *
+ * Fijarlas desde el servidor también las salva del ITP de Safari, que recorta
+ * a 7 días las cookies escritas por JavaScript de terceros.
+ */
+function persistMetaClickIds(request: NextRequest, response: NextResponse): NextResponse {
+  const fbclid = request.nextUrl.searchParams.get('fbclid');
+  const hasFbp = request.cookies.has('_fbp');
+
+  // Sin señal de Meta no se toca nada: no queremos sembrarle una cookie a cada
+  // crawler ni al tráfico orgánico, que no alimenta ninguna campaña.
+  if (!fbclid && (hasFbp || !request.cookies.has('_fbc'))) return response;
+
+  const isProd = request.nextUrl.hostname.endsWith('propyte.com');
+  const options = {
+    maxAge: META_COOKIE_MAX_AGE,
+    path: '/',
+    sameSite: 'lax' as const,
+    secure: isProd,
+    // httpOnly NO: fbevents.js tiene que leer estas cookies. Si no las ve,
+    // genera un _fbp propio distinto del que manda el CAPI y Meta cuenta dos
+    // personas donde hay una — justo lo contrario de lo que se busca.
+    httpOnly: false,
+    ...(isProd ? { domain: '.propyte.com' } : {}),
+  };
+
+  // Último clic gana: es el comportamiento del propio pixel cuando ve un
+  // fbclid nuevo, y la atribución debe seguir al anuncio más reciente.
+  if (fbclid) {
+    response.cookies.set('_fbc', `fb.1.${Date.now()}.${fbclid}`, options);
+  }
+
+  if (!hasFbp) {
+    const random = Math.floor(Math.random() * 1e10);
+    response.cookies.set('_fbp', `fb.1.${Date.now()}.${random}`, options);
+  }
+
+  return response;
+}
+
 export default async function middleware(request: NextRequest) {
+  return persistMetaClickIds(request, await handleRequest(request));
+}
+
+async function handleRequest(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   // Skip API routes, static assets, Design Playground (/admin/*),

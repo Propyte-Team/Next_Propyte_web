@@ -1,4 +1,26 @@
 import Script from 'next/script';
+import { STORAGE_KEY } from '@/lib/cookies/consent';
+
+/**
+ * Lee el consentimiento guardado DENTRO del snippet inline, antes de que
+ * gtag/fbq se inicialicen.
+ *
+ * Por qué aquí y no en un useEffect del banner: ambos scripts son
+ * `lazyOnload`, así que corren después del evento `load` — cualquier efecto
+ * de React se les adelanta, encuentra `window.fbq` indefinido y no hace nada.
+ * `applyConsentToMetaPixel()` sólo se llamaba desde `writeConsent()`, de modo
+ * que el visitante recurrente (que ya no ve el banner) dejaba GA4 en `denied`
+ * y el Pixel en `revoke` TODA la sesión, aunque hubiera aceptado. Sin
+ * consentimiento activo no se escriben `_fbp`/`_fbc`, y sin esas cookies el
+ * CAPI manda eventos sin identificadores: es la causa directa de los avisos
+ * de "calidad de coincidencias" en Events Manager.
+ *
+ * Mismo patrón que ya usa el pixel de OpenAI en este repo.
+ */
+const READ_CONSENT_JS = `
+  var __pc = null;
+  try { __pc = JSON.parse(window.localStorage.getItem('${STORAGE_KEY}') || 'null'); } catch (e) {}
+`;
 
 export default function Analytics() {
   const gaId = process.env.NEXT_PUBLIC_GA4_ID;
@@ -42,6 +64,18 @@ export default function Analytics() {
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
+              ${READ_CONSENT_JS}
+              // El 'default' de arriba deja todo en denied. Si ya hay decisión
+              // guardada hay que comunicarla ANTES del config, o el visitante
+              // recurrente navega toda la sesión como si hubiera rechazado.
+              if (__pc) {
+                gtag('consent', 'update', {
+                  analytics_storage: __pc.analytics ? 'granted' : 'denied',
+                  ad_storage: __pc.marketing ? 'granted' : 'denied',
+                  ad_user_data: __pc.marketing ? 'granted' : 'denied',
+                  ad_personalization: __pc.marketing ? 'granted' : 'denied'
+                });
+              }
               gtag('js', new Date());
               gtag('config', '${gaId}');
               ${googleAdsId ? `gtag('config', '${googleAdsId}');` : ''}
@@ -52,7 +86,8 @@ export default function Analytics() {
 
       {/* Meta Pixel — gated by ad_storage consent. fbq() queues calls before
           the script loads, so events fired during page transitions are not
-          lost. Cookie banner flips `_propyte_pixel_consent` → re-call fbq('consent','grant'). */}
+          lost. El banner llama a applyConsentToMetaPixel() al guardar; aquí se
+          restaura la decisión previa en cada carga (ver READ_CONSENT_JS). */}
       {metaPixelEnabled && (
         <>
           <Script id="meta-pixel-init" strategy="lazyOnload">
@@ -65,7 +100,11 @@ export default function Analytics() {
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('consent', 'revoke');
+              ${READ_CONSENT_JS}
+              // Arranca en el estado que el visitante YA eligió. Si nunca
+              // decidió, 'revoke' y los eventos quedan encolados hasta que el
+              // banner llame a applyConsentToMetaPixel() desde writeConsent().
+              fbq('consent', __pc && __pc.marketing ? 'grant' : 'revoke');
               fbq('init', '${metaPixelId}');
               fbq('track', 'PageView');
             `}
