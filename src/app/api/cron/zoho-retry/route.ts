@@ -18,6 +18,16 @@ import {
 import { resolveProyectoDeInteres } from '@/lib/zoho/resolve-proyecto-interes';
 import { resolveQrOwner } from '@/lib/leads/qr-owner';
 import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
+// Única fuente de la allowlist de sources reintentables — antes este archivo
+// tenía su PROPIA copia (duplicada) que se desincronizó de la de /api/leads:
+// le faltaban `lp_casas_riviera` y `guia_terrenos`, así que un lead de esos
+// sources cuyo push directo a Zoho fallara quedaba huérfano en Supabase para
+// siempre (el cron lo descartaba en cada corrida, en silencio). Importar la
+// misma constante hace que ambas listas NO puedan volver a divergir, y hereda
+// el guardia de exhaustividad (`_checkKnownSources`) que ya vive en ese
+// módulo: si `LeadSource` gana un miembro sin agregarlo ahí, `tsc` falla en
+// AMBOS endpoints, no solo en uno.
+import { KNOWN_SOURCES } from '@/app/api/leads/route';
 
 // ============================================================
 // /api/cron/zoho-retry — reintento de leads con sync fallida
@@ -26,22 +36,11 @@ import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
 //   5 * * * * curl -K /home/propyte/.zoho-retry.curlrc https://propyte.com/api/cron/zoho-retry
 // ============================================================
 
-const CRON_RATE_LIMIT = { bucket: 'cron-zoho-retry', limit: 10, windowMs: 60_000 };
+// Re-exportado solo para test (route.test.ts) — verifica que este endpoint
+// use la MISMA lista que /api/leads, no una copia que pueda volver a divergir.
+export { KNOWN_SOURCES };
 
-const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
-  'contact',
-  'property_inquiry',
-  'b2b_request',
-  'developer_request',
-  'broker_registration',
-  'provider_form',
-  'built_consultation',
-  'affiliate_request',
-  'newsletter',
-  'lead_magnet',
-  'glossary_pdf',
-  'lp_lotes_pdc',
-];
+const CRON_RATE_LIMIT = { bucket: 'cron-zoho-retry', limit: 10, windowMs: 60_000 };
 
 const ORPHAN_ID_RE = /ORPHAN: zoho_id=([A-Za-z0-9]+)/;
 

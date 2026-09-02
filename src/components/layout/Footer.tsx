@@ -154,6 +154,7 @@ export default function Footer({ siteConfig }: { siteConfig?: HubSiteConfig }) {
           <div>
             <h4 className="font-bold text-sm mb-4 uppercase tracking-wider text-white/80">{t('resources')}</h4>
             <ul className="space-y-2.5">
+              <li><Link href={`/${locale}/guias/terrenos-residenciales`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('landGuide')}</Link></li>
               <li><Link href={`/${locale}/faq`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">FAQ</Link></li>
               <li><Link href={`/${locale}/glosario`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('glossary')}</Link></li>
               <li><Link href={`/${locale}/promociones`} className="inline-flex items-center min-h-[44px] md:min-h-0 text-sm text-white/70 hover:text-white transition-colors">{t('promotions')}</Link></li>

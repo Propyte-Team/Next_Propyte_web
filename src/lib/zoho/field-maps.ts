@@ -22,7 +22,9 @@ export type LeadSource =
   /** Landing de pago de lotes, Playa del Carmen (Google Ads). */
   | "lp_lotes_pdc"
   /** Landing de pago de casas, Riviera Maya — PDC + Tulum (Google/Meta Ads). */
-  | "lp_casas_riviera";
+  | "lp_casas_riviera"
+  /** Guía comparativa de terrenos residenciales, alimentada del inventario. */
+  | "guia_terrenos";
 
 export interface FormData {
   // Identidad
@@ -296,6 +298,7 @@ function campaignSlug(source: LeadSource): string {
     case "glossary_pdf":          return "glosario/pdf-gate";
     case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
     case "lp_casas_riviera":      return "lp/casas-riviera-maya";
+    case "guia_terrenos":         return "guias/terrenos-residenciales";
   }
 }
 
@@ -348,6 +351,7 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "glossary_pdf":        return "Glosario PDF";
       case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
       case "lp_casas_riviera":    return "Landing casas Riviera Maya (Ads)";
+      case "guia_terrenos":       return "Guía de terrenos residenciales";
     }
   })();
   return `Formulario Propyte web ${langTag} - ${desc}`;

@@ -63,6 +63,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // aparezca aquí, para que añadir un pilar no deje su hub fuera del índice.
     { path: '/guias/fiscal-legal', priority: 0.8, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GUIAS_FISCAL_LEGAL },
     { path: '/guias/costa', priority: 0.8, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GUIAS_COSTA },
+    // No es un hub de pilar (no está en PILARES/pilares.ts): es una guía
+    // independiente alimentada del inventario. `weekly` y no `monthly` a
+    // propósito — los precios que muestra cambian con el inventario.
+    { path: '/guias/terrenos-residenciales', priority: 0.8, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GUIAS_TERRENOS },
     { path: '/promociones', priority: 0.75, changeFrequency: 'weekly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_PROMOCIONES },
     { path: '/faq', priority: 0.7, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_FAQ },
     { path: '/glosario', priority: 0.6, changeFrequency: 'monthly' as const, visibilityKey: VISIBILITY_KEYS.PAGE_GLOSARIO },

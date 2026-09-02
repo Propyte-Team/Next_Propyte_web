@@ -1,6 +1,8 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-09-01 (tarde) — **los 18 formularios exigen nombre + correo + teléfono con selector de lada; todo en producción y verificado.** Entrada previa: lote del tablero de mejoras, PRs #75 y #76 (ya mergeados). Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
+> Última actualización: 2026-09-02 — **guía de terrenos residenciales TERMINADA en rama, sin PR y sin mergear.** 38 commits, 521 tests, `tsc`/`eslint`/build limpios, 3 e2e, revisión visual hecha. Faltan dos cosas de Luis antes de que sirva: la variable de la agenda en Hostinger (antes del build) y curar dos portadas en el Hub. Ver «En progreso → Guía de terrenos». Entrada previa: 2026-09-01 (tarde), los 18 formularios.
+>
+> Anterior: 2026-09-01 (tarde) — **los 18 formularios exigen nombre + correo + teléfono con selector de lada; todo en producción y verificado.** Entrada previa: lote del tablero de mejoras, PRs #75 y #76 (ya mergeados). Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
 >
 > 🚨 **Este archivo está DIVERGIDO, no atrasado.** Medido el 2026-09-01: esta versión (la de
 > `origin/main`) pesa 74 KB y la copia del árbol principal —parada en `feat/meta-capi-rebased`,
@@ -46,6 +48,30 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+## Guía de terrenos residenciales (sesión 2026-09-02) — 🟡 TERMINADA, SIN PR
+
+Rama `feat/guia-terrenos-residenciales`, worktree `Next_Propyte_web-guiaterrenos`,
+rebasada sobre `origin/main` = `4ef7387`. Página `/{locale}/guias/terrenos-residenciales`
+en ES y EN, alimentada del inventario, enlazada desde *Recursos* en el footer.
+
+- [ ] **Abrir el PR** — Luis lo pidió en un solo PR con los 38 commits. Sin abrir todavía.
+- [ ] 🔴 **Poner `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL` en Hostinger ANTES del build.** Next incrusta las `NEXT_PUBLIC_*` al compilar y aquí compila el servidor: `git pull` o reiniciar PM2 no la incorporan. Va al lado de las que ya emite el sitio (`AW-18124069969`, `G-H4VD5TVEKM`). Sin ella el formulario funciona y la agenda no aparece.
+- [ ] 🔴 **Curar dos portadas en el Hub** (decisión de Luis): dos de las seis fotos llevan el nombre del desarrollo rotulado DENTRO de la imagen. Las segundas de cada galería están limpias y verificadas a ojo — `club-residencial-con-amenidades` → `…/44b0c506-…/1785790029985-vkwkn5.webp`; `lotes-residenciales-en-playa-del-carmen-2` → `…/09d27fcb-…/1785274768534-h4vp93.webp`.
+- [ ] **Poner también `NEXT_PUBLIC_CALENDLY_URL`** apuntando al mismo link de Google: enciende de paso el botón de agendar de `/contacto`, que **nunca se ha renderizado**. Ver [[feedback_calendly_url_nunca_estuvo_puesta]].
+
+**Captura pendiente en el Hub** (se ve en la página; es dato, no código):
+
+- [ ] `amares-riviera-maya` **no aparece en la guía**: sin precio capturado. Se lo ponen y entra solo.
+- [ ] **3 de 6 proyectos no publican mensualidad.** Tener `fin_meses_opciones` no basta: hace falta `fin_tasa` en `0` **y** un esquema de pago parseable. Les falta a `lotes-residenciales-en-la-region-11-de-tulum` y a `lotes-residenciales-en-playa-del-carmen-2`.
+- [ ] `delivery_text` con typo: «Primera quincena de novi**rm**bre».
+- [ ] Los 3 proyectos del Gamma que no existen publicados (`MO-SUR2027`, `AMXP-EI`, `NTSUR-30`) seguirán ausentes hasta que se den de alta.
+
+**Deuda que quedó anotada y NO se arregló:**
+
+- [ ] Cuatro sombras **latentes** en el catálogo de amenidades (`spa` caza «esparcimiento» y «Espacios verdes», `pet` caza «petanca», y `pool table` en `game_room` es código muerto). Ninguna aparece hoy en el inventario publicado. Ver [[feedback_regex_de_amenidades_alternativa_desnuda]].
+- [ ] El test de fuga de nombres **contra el inventario real está SKIPPED**: vitest no carga `.env.local` (fija `NODE_ENV=test`). Los otros dos sí corren, incluido el estructural que verifica que el `.select()` nunca pide `name`.
+- [ ] `formatPrice`/`formatArea` fijan locale `es-MX`, así que en `/en` los separadores de millar salen en formato mexicano. Es del repo entero, no de esta página.
 
 ## Formularios: los tres datos obligatorios (sesión 2026-09-01 tarde) — ✅ CERRADO Y VERIFICADO
 

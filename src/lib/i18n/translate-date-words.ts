@@ -27,12 +27,32 @@ const DATE_WORDS_EN: Record<string, string> = {
   semestre: 'half',
 };
 
+/**
+ * Frases completas que la sustitución palabra por palabra no puede resolver,
+ * porque el inglés las reordena: «Entrega y escrituración inmediata» daría
+ * «Delivery and title-transfer immediate».
+ *
+ * Se comparan contra el texto entero normalizado (sin acentos, minúsculas,
+ * sin espacios de sobra). Son las formas que el inventario publica de verdad;
+ * cualquier otra cae al reemplazo palabra por palabra de abajo.
+ */
+const DATE_PHRASES_EN: Record<string, string> = {
+  'inmediata': 'Immediate',
+  'entrega inmediata': 'Immediate delivery',
+  'entregas inmediatas': 'Immediate delivery',
+  'entrega y escrituracion inmediata': 'Immediate delivery and title transfer',
+};
+
 function stripAccents(word: string): string {
   return word.normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
 export function translateDateWords(text: string, locale: string): string {
   if (locale !== 'en' || !text) return text;
+
+  const frase = DATE_PHRASES_EN[stripAccents(text).toLowerCase().trim().replace(/\s+/g, ' ')];
+  if (frase) return frase;
+
   return text.replace(/[a-zA-ZÁÉÍÓÚÑáéíóúñ]+/g, (word) => {
     const key = stripAccents(word).toLowerCase();
     const translated = DATE_WORDS_EN[key];
