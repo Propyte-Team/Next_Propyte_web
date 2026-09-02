@@ -16,7 +16,7 @@ describe('sitemap', () => {
     const { default: sitemap } = await import('./sitemap');
     const urls = (await sitemap()).map((e) => e.url);
 
-    for (const path of ['/guias/fiscal-legal', '/guias/costa']) {
+    for (const path of ['/guias/fiscal-legal', '/guias/costa', '/guias/terrenos-residenciales']) {
       for (const locale of ['es', 'en']) {
         expect(urls.some((u) => u.endsWith(`/${locale}${path}`))).toBe(true);
       }
