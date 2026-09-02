@@ -62,7 +62,10 @@ export const AMENITIES: AmenityDef[] = [
   // Con la frontera puesta en `ac`, esta cadena ya no matchea nada: sin esta
   // entrada caeria al fallback crudo. Las 3 alternativas van juntas aunque
   // `caseta de vigilancia` hoy no puede ganar: `seguridad` la caza antes.
-  { key: 'acceso_controlado', es: 'Acceso controlado', en: 'Controlled access', icon: Shield, match: /acceso\s*controlado|controlled\s*access|caseta\s*de\s*vigilancia/i },
+  // Sin `caseta de vigilancia`: `seguridad` ya incluye /vigilancia/ y va antes,
+  // así que esa alternativa nunca podría ganar el `.find`. Es la misma trampa
+  // que `pool table` en `game_room`, que lleva ahí sin poder dispararse nunca.
+  { key: 'acceso_controlado', es: 'Acceso controlado', en: 'Controlled access', icon: Shield, match: /acceso\s*controlado|controlled\s*access/i },
 ];
 
 /**
