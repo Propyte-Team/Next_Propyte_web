@@ -78,10 +78,15 @@ const PROSA_DESARROLLO: FilaComparador = {
 };
 
 /**
- * Superficie 0.00: `numeroONull('0.00')` da 0, y el `??` de la línea del
- * fallback no cae con 0 (solo con null/undefined). El resultado de HOY es que
- * esta fila nunca rescata `superficieBase`, tenga o no dato la tabla base.
- * Documentado, no corregido — ver el reporte de esta tarea.
+ * Superficie 0.00: `numeroONull('0.00')` da 0 (no null), y `0` es un dato de
+ * `v_units.area_m2` tan sucio como ausente — nunca la superficie real de un
+ * lote residencial. Hasta el fix de esta tarea, un `??` simple no caía con 0
+ * (solo con null/undefined) y esta fila NUNCA rescataba `superficieBase`,
+ * tuviera o no dato la tabla base — bug vivo en producción: la landing de
+ * pago publicaba "Playa del Carmen · 0 m²" para esta unidad real
+ * (54329b45-c60b-48af-b479-a95015d3c33c) mientras
+ * `Propyte_unidades.superficie_terreno_m2` guardaba 201.47. El fix trata
+ * explícitamente 0 como "sin dato" antes del `??`, así que ahora SÍ rescata.
  */
 const SUPERFICIE_CERO: FilaComparador = {
   id: '54329b45-c60b-48af-b479-a95015d3c33c',
@@ -221,16 +226,20 @@ describe('construirComparables', () => {
     expect(lote.apartadoMxn).toBe(25000);
   });
 
-  it('documenta el comportamiento actual con superficie "0.00": no rescata la tabla base', () => {
+  it('rescata la superficie de la tabla base cuando la vista trae "0.00" (dato sucio, no ausente)', () => {
     const lotes = construirComparables(
       [SUPERFICIE_CERO],
       new Map([[SUPERFICIE_CERO.id, 500]]),
       new Map(),
     );
     expect(lotes).toHaveLength(1);
-    // `superficieBase` SÍ trae dato (500) pero `numeroONull('0.00')` ya
-    // devuelve 0, y 0 no es null/undefined: el `??` no cae al fallback.
-    expect(lotes[0].superficieM2).toBe(0);
+    // ANTES de este fix, `numeroONull('0.00')` devolvía 0 y el `??` del
+    // fallback no caía (0 no es null/undefined), así que esta fila NUNCA
+    // rescataba `superficieBase` aunque trajera dato — bug vivo en
+    // producción (ver comentario del fixture). El fix trata 0 como "sin
+    // dato" antes del `??`. Que nadie lo "simplifique" de vuelta a un `??`
+    // llano: eso reintroduce el bug en silencio.
+    expect(lotes[0].superficieM2).toBe(500);
   });
 
   it('rescata la superficie de la tabla base cuando la vista no trae area_m2', () => {

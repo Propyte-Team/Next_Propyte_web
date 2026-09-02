@@ -490,7 +490,20 @@ export function construirComparables(
     // silencioso ya no es inofensivo. `FilaComparador.development_id` ya está
     // tipado `string | null`, así que no hace falta ningún cast aquí.
     const devId = f.development_id ?? null;
-    const superficieM2 = numeroONull(f.area_m2) ?? superficieBase.get(id) ?? null;
+    // `??` NO cae con `0`: solo con `null`/`undefined`. `v_units.area_m2` trae
+    // '0.00' para algunas unidades (dato sucio, no "sin dato"), y `numeroONull`
+    // lo convierte al número 0 — no a null — así que un `?? superficieBase...`
+    // simple nunca rescataba desde la tabla base. Medido en producción: la
+    // unidad 54329b45-c60b-48af-b479-a95015d3c33c (lotes-residenciales-en-
+    // playa-del-carmen-2) tiene v_units.area_m2 = '0.00' mientras
+    // Propyte_unidades.superficie_terreno_m2 guarda 201.47 — la landing de pago
+    // publicaba "0 m²" para ese lote. Tratamos 0 como "sin dato" explícitamente
+    // antes del rescate.
+    const areaVista = numeroONull(f.area_m2);
+    const superficieM2 =
+      (areaVista !== null && areaVista > 0 ? areaVista : null) ??
+      superficieBase.get(id) ??
+      null;
 
     const esquemas = leerEsquemasJsonb(f.fin_esquemas_pago);
     const conPlazo = esquemas.filter((e) => e.meses > 0);
