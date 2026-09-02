@@ -57,10 +57,10 @@ export function rotuloBase(proyecto: ProyectoGuia, t: Traductor): string | null 
 /**
  * Por qué este proyecto no publica mensualidades, traducido POR CÓDIGO.
  *
- * `proyecto.motivoSinPlan` trae la misma explicación ya redactada, y no se usa
- * en ningún sitio: es prosa en español, escrita para una landing monolingüe.
- * Publicarla aquí filtraría español dentro de `/en`. El código es el que cruza
- * el idioma; la prosa se queda en la LP.
+ * `ProyectoGuia` ni siquiera CARGA la prosa española equivalente
+ * (`LoteComparable.motivoSinPlan`, que sí usa la LP monolingüe
+ * `ComparadorLotes.tsx`) — no es solo que este componente la ignore. El
+ * código es el único dato que cruza el idioma.
  */
 export function explicacionSinPlan(proyecto: ProyectoGuia, t: Traductor): string {
   const codigo = proyecto.motivoSinPlanCodigo;
@@ -98,7 +98,7 @@ const CHIPS_MAX = 8;
 
 /**
  * Las amenidades del Hub, resueltas contra la tabla canónica de `AmenityList`
- * — la MISMA tabla, importada, no una copia: son 23 regex y duplicarlas era
+ * — la MISMA tabla, importada, no una copia: duplicar sus regex era
  * garantizar que un día divergieran.
  *
  * No se usa el componente `AmenityList` entero porque está hecho para una

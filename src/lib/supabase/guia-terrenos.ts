@@ -52,7 +52,11 @@ export interface ProyectoGuia {
    * el precio del plazo más largo, sin descuento, y por lo tanto el MÁS CARO.
    */
   precioDesdeMxn: number;
-  /** Precio de lista: el más alto, sin descuento. Se conserva para poder rotular la diferencia con `precioDesdeMxn`. */
+  /**
+   * Precio de lista: el más alto, sin descuento. Se conserva disponible para
+   * poder rotular más adelante la diferencia con `precioDesdeMxn` — hoy
+   * ningún componente lo lee.
+   */
   precioListaMxn: number;
   /** De dónde salió `precioDesdeMxn`. La UI lo rotula; sin esto, dos precios distintos se leen como un error. */
   precioDesdeBase: 'contado' | 'plazo' | 'lista';
@@ -63,17 +67,22 @@ export interface ProyectoGuia {
   precioPorM2Mxn: number | null;
   plazos: PlazoOpcion[];
   /**
-   * Redactado en lenguaje de comprador cuando no hay plan de mensualidades.
-   * Igual que `motivoSinPlanCodigo`: es `null` salvo que TODOS los lotes del
-   * desarrollo coincidan en el motivo — es un hecho de una fila (la unidad
-   * representativa), y este campo solo lo publica cuando también es un hecho
-   * del desarrollo. Los dos campos se colapsan JUNTOS (ver `agruparPorProyecto`)
-   * para que nunca quede prosa sin su código o código sin su prosa — ese
-   * desacople dejaría filtrar prosa en español, a nivel de LOTE ("este lote"),
-   * dentro de una página que ya decidió traducir por código.
+   * Código traducible del motivo por el que este proyecto no publica plan de
+   * mensualidades (`contado`, `contado_parcial`, `condiciones_cambiando`,
+   * `tasa_por_confirmar`, o `null` con plan). `null` también cuando NO hay
+   * plan pero los lotes del desarrollo no coinciden en el motivo: es un hecho
+   * de una fila (la unidad representativa), y este campo solo lo publica
+   * cuando también es un hecho del desarrollo entero — ver `agruparPorProyecto`.
+   *
+   * A propósito NO existe un campo hermano con la prosa: esta página es
+   * bilingüe y traduce por código (`explicacionSinPlan` en `FichaProyecto.tsx`
+   * mapea el código a la copia i18n). `LoteComparable.motivoSinPlan` sí lleva
+   * la prosa en español — la usa la LP monolingüe (`ComparadorLotes.tsx`),
+   * que no traduce nada. Si `ProyectoGuia` alguna vez cargara esa prosa,
+   * bastaría con que un componente la renderizara sin notar el idioma para
+   * filtrar español dentro de `/en`; no cargarla la vuelve imposible en vez de
+   * solo prohibida por comentario.
    */
-  motivoSinPlan: string | null;
-  /** El mismo motivo que `motivoSinPlan`, como código traducible. Ver `LoteComparable` y la nota de arriba. */
   motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'];
   /**
    * El plazo MÁS LARGO: la mensualidad más baja, con SU propio precio al lado.
@@ -172,22 +181,19 @@ export function agruparPorProyecto(
 
     const desde = elegirDesde(representativa);
 
-    // El motivo (código Y prosa) solo se publica si TODOS los lotes del
-    // desarrollo coinciden en él. `representativa` es el lote más barato por
-    // precio de LISTA — una fila, no el desarrollo entero — y su motivo puede
-    // ser un hecho de esa fila nada más: `condiciones_cambiando` es, por
+    // El motivo (código) solo se publica si TODOS los lotes del desarrollo
+    // coinciden en él. `representativa` es el lote más barato por precio de
+    // LISTA — una fila, no el desarrollo entero — y su motivo puede ser un
+    // hecho de esa fila nada más: `condiciones_cambiando` es, por
     // construcción, un fallo de reconstrucción de precio de ESA unidad, y
     // `contado` generaliza "el desarrollador no publica plan" desde una sola
-    // fila aunque el resto sí lo publique. Con un desacuerdo, los DOS caen a
-    // `null` (la clave genérica `sinPlan`, que nunca miente porque no afirma
-    // nada específico) — nunca uno sin el otro: un `motivoSinPlan` que
-    // sobreviviera solo a él filtraría prosa en español, a nivel de LOTE
-    // ("este lote"), dentro de una página que traduce por código.
+    // fila aunque el resto sí lo publique. Con un desacuerdo cae a `null` (la
+    // clave genérica `sinPlan`, que nunca miente porque no afirma nada
+    // específico).
     const motivoCoincide = lista.every(
       (l) => l.motivoSinPlanCodigo === representativa.motivoSinPlanCodigo,
     );
     const motivoSinPlanCodigo = motivoCoincide ? representativa.motivoSinPlanCodigo : null;
-    const motivoSinPlan = motivoCoincide ? representativa.motivoSinPlan : null;
 
     // El plazo más largo: la mensualidad más baja. Se publica con SU propio
     // precio (`desde.precioMxn` sería el de OTRO plazo si `desde.base` es
@@ -214,7 +220,6 @@ export function agruparPorProyecto(
       superficieDesdeM2: superficieUtil,
       precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
-      motivoSinPlan,
       motivoSinPlanCodigo,
       contado: representativa.contado,
       mensualidad:
@@ -240,10 +245,22 @@ export function agruparPorProyecto(
 /**
  * Los terrenos publicados de Riviera Maya, listos para la guía.
  *
- * PUERTA DE CALIDAD: entra el proyecto que tenga precio, superficie utilizable
- * y título editorial. La medición del 2026-09-01 daba 6 de 7 — el único fuera
- * era `amares-riviera-maya`, por no tener precio capturado. En cuanto se lo
- * capturen entra solo: no hay lista que mantener.
+ * No hay una única puerta de calidad compuesta — son varios filtros
+ * independientes, en capas distintas:
+ *   - `construirComparables` (lp-lotes-comparador.ts) ya descarta cualquier
+ *     fila sin precio antes de que llegue aquí.
+ *   - `agruparPorProyecto` rechaza por desarrollo ausente, sin
+ *     `tituloEditorial` o sin `slug` (sin nombre publicable o sin link a la
+ *     ficha, fuera).
+ *   - La superficie NO es puerta: nunca descarta un proyecto. Cuando no es
+ *     utilizable (`null` o `<= 0`), `agruparPorProyecto` solo anula
+ *     `superficieDesdeM2` y `precioPorM2Mxn` — el proyecto se publica igual,
+ *     sin esas dos cifras.
+ *
+ * La medición del 2026-09-01 daba 6 de 7 — el único fuera era
+ * `amares-riviera-maya`, por precio nulo (el filtro de `construirComparables`,
+ * no una puerta compuesta aquí). En cuanto lo capturen entra solo: no hay
+ * lista que mantener.
  */
 export async function getTerrenosGuia(): Promise<ProyectoGuia[]> {
   const unidades = await getLotesComparables(CIUDADES_GUIA);

@@ -60,8 +60,7 @@ export const AMENITIES: AmenityDef[] = [
   { key: 'lobby', es: 'Lobby', en: 'Lobby', icon: Building, match: /lobby|recepci[oó]n/i },
   { key: 'concierge', es: 'Concierge', en: 'Concierge', icon: Users, match: /concierge|conserje/i },
   // Con la frontera puesta en `ac`, esta cadena ya no matchea nada: sin esta
-  // entrada caeria al fallback crudo. Las 3 alternativas van juntas aunque
-  // `caseta de vigilancia` hoy no puede ganar: `seguridad` la caza antes.
+  // entrada caeria al fallback crudo.
   // Sin `caseta de vigilancia`: `seguridad` ya incluye /vigilancia/ y va antes,
   // así que esa alternativa nunca podría ganar el `.find`. Es la misma trampa
   // que `pool table` en `game_room`, que lleva ahí sin poder dispararse nunca.
@@ -70,11 +69,13 @@ export const AMENITIES: AmenityDef[] = [
 
 /**
  * Renders amenities with matching canonical icons when possible.
- * - With a real list: each entry is matched against 20 canonical regexes.
- *   Unmatched strings render as generic chips (CheckCircle2 icon).
+ * - With a real list: each entry is matched against the canonical regexes in
+ *   `AMENITIES` (arriba). Unmatched strings render as generic chips
+ *   (CheckCircle2 icon).
  * - Without a list: renders nothing (returns null). NO se hace fallback a
- *   "todas las amenidades": mostrar las 20 canónicas cuando el desarrollo no
- *   tiene amenidades definidas en el Hub publicitaba amenidades inexistentes.
+ *   "todas las amenidades": mostrar el catálogo entero cuando el desarrollo
+ *   no tiene amenidades definidas en el Hub publicitaba amenidades
+ *   inexistentes.
  */
 export default async function AmenityList({ locale, amenities, title }: AmenityListProps) {
   const t = await getTranslations({ locale, namespace: 'property' });

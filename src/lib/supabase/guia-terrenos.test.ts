@@ -402,22 +402,26 @@ describe('agruparPorProyecto', () => {
   });
 
   // ============================================================
-  // Task 6b — `motivoSinPlanCodigo` viaja junto con `motivoSinPlan`: la guía
-  // bilingüe traduce el código, la LP monolingüe sigue usando la prosa.
+  // Task 6b — `motivoSinPlanCodigo` en `ProyectoGuia`.
   //
-  // Ronda de revisión: ninguno de los dos puede ser una copia ciega de la
-  // unidad representativa (la más barata por precio de lista). Esa unidad es
-  // UNA FILA, y `condiciones_cambiando` o `contado` son hechos de esa fila,
+  // `ProyectoGuia` YA NO carga la prosa española (`motivoSinPlan`) — solo el
+  // código traducible. La prosa sigue viviendo en `LoteComparable` (la usa la
+  // LP monolingüe, `ComparadorLotes.tsx`); quitarla del tipo de la guía la
+  // vuelve imposible de filtrar en `/en`, no solo prohibida por comentario.
+  // Ver el fixture `comparable()` arriba: sigue declarando `motivoSinPlan` en
+  // el `LoteComparable` de entrada porque esa forma es real (así la produce
+  // `construirComparables`), aunque `agruparPorProyecto` ya no la propague.
+  //
+  // Ronda de revisión: `motivoSinPlanCodigo` no puede ser una copia ciega de
+  // la unidad representativa (la más barata por precio de lista). Esa unidad
+  // es UNA FILA, y `condiciones_cambiando` o `contado` son hechos de esa fila,
   // no necesariamente del desarrollo entero — un desarrollo con 5 lotes puede
-  // tener 4 con plan y 1 sin él. El motivo (código Y prosa, LOS DOS JUNTOS)
-  // solo se publica cuando TODOS los lotes del desarrollo coinciden; si no,
-  // los dos caen a `null` (la clave genérica `sinPlan`, que nunca miente).
-  // Los dos colapsan juntos a propósito: si solo cayera el código, `ProyectoGuia`
-  // quedaría con prosa en español sin su traducción — filtrando "este lote"
-  // dentro de una página que ya decidió traducir por código.
+  // tener 4 con plan y 1 sin él. El código solo se publica cuando TODOS los
+  // lotes del desarrollo coinciden; si no, cae a `null` (la clave genérica
+  // `sinPlan`, que nunca miente).
   // ============================================================
 
-  it('propaga motivo (código Y prosa) cuando TODOS los lotes del desarrollo coinciden', () => {
+  it('propaga motivoSinPlanCodigo cuando TODOS los lotes del desarrollo coinciden', () => {
     // Dos lotes del mismo desarrollo, mismo motivo. El más caro va PRIMERO en
     // el array: si la propagación tomara `lista[0]` en vez de la unidad
     // representativa (la más barata por precio de lista), este orden lo
@@ -428,44 +432,35 @@ describe('agruparPorProyecto', () => {
         comparable({
           id: 'caro', developmentId: 'tulum', precioListaMxn: 900_000,
           plazos: [], contado: null,
-          motivoSinPlan:
-            'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
           motivoSinPlanCodigo: 'tasa_por_confirmar',
         }),
         comparable({
           id: 'barato', developmentId: 'tulum', precioListaMxn: 300_000,
           plazos: [], contado: null,
-          motivoSinPlan:
-            'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
           motivoSinPlanCodigo: 'tasa_por_confirmar',
         }),
       ],
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBe('tasa_por_confirmar');
-    expect(p.motivoSinPlan).toBe(
-      'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
-    );
   });
 
-  it('motivo (código Y prosa) es null cuando la unidad representativa sí publica plan', () => {
-    // Mata la mutación que deja cualquiera de los dos pegado a un valor fijo.
+  it('motivoSinPlanCodigo es null cuando la unidad representativa sí publica plan', () => {
+    // Mata la mutación que deja el campo pegado a un valor fijo.
     const [p] = agruparPorProyecto(
       [
         comparable({
           id: 'con-plan', developmentId: 'tulum', precioListaMxn: 1_000_000,
           plazos: [plazo({ meses: 12, precioMxn: 850_000 })],
-          motivoSinPlan: null,
           motivoSinPlanCodigo: null,
         }),
       ],
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBeNull();
-    expect(p.motivoSinPlan).toBeNull();
   });
 
-  it('el motivo (código Y prosa) NO se publica cuando los lotes del desarrollo no coinciden (mezcla)', () => {
+  it('motivoSinPlanCodigo NO se publica cuando los lotes del desarrollo no coinciden (mezcla)', () => {
     // Caso real y probable, no hipotético: `condiciones_cambiando` es un
     // fallo de reconstrucción de precio DE UNA FILA, así que es esperable que
     // el lote más barato lo tenga y otro lote del mismo desarrollo sí publique
@@ -480,33 +475,21 @@ describe('agruparPorProyecto', () => {
         comparable({
           id: 'con-plan', developmentId: 'tulum', precioListaMxn: 900_000,
           plazos: [plazo({ meses: 12, precioMxn: 800_000 })],
-          motivoSinPlan: null,
           motivoSinPlanCodigo: null,
         }),
         // El más barato (representativa): sin plan, con motivo.
         comparable({
           id: 'barato-condiciones-cambiando', developmentId: 'tulum', precioListaMxn: 300_000,
           plazos: [], contado: null,
-          motivoSinPlan:
-            'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.',
           motivoSinPlanCodigo: 'condiciones_cambiando',
         }),
       ],
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBeNull();
-    // El punto central de esta ronda de revisión: sin este assert, un
-    // refactor podría colapsar el código a `null` y dejar la PROSA de la
-    // representativa filtrándose sola — español, a nivel de lote ("este
-    // lote"), dentro de \`ProyectoGuia\`, que la guía bilingüe consumiría con
-    // un fallback tipo \`codigo ? t(codigo) : (motivoSinPlan ?? t('sinPlan'))\`.
-    expect(p.motivoSinPlan).toBeNull();
-    // El invariante explícito que exige la revisión: los dos campos son
-    // null juntos, o ninguno lo es.
-    expect(p.motivoSinPlan === null).toBe(p.motivoSinPlanCodigo === null);
   });
 
-  it('el motivo (código Y prosa) SÍ se publica cuando dos lotes distintos coinciden en el mismo motivo sin plan', () => {
+  it('motivoSinPlanCodigo SÍ se publica cuando dos lotes distintos coinciden en el mismo motivo sin plan', () => {
     // Control negativo del test anterior: la mezcla no es "cualquier proyecto
     // con más de un lote sin plan", es específicamente un DESACUERDO. Con dos
     // lotes que SÍ están de acuerdo, el motivo se publica igual.
@@ -515,23 +498,16 @@ describe('agruparPorProyecto', () => {
         comparable({
           id: 'contado-1', developmentId: 'tulum', precioListaMxn: 900_000,
           plazos: [], contado: { descuentoPct: 0, precioMxn: 900_000, enganchePct: 100, contraentregaPct: 0 },
-          motivoSinPlan:
-            'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
           motivoSinPlanCodigo: 'contado',
         }),
         comparable({
           id: 'contado-2', developmentId: 'tulum', precioListaMxn: 300_000,
           plazos: [], contado: { descuentoPct: 0, precioMxn: 300_000, enganchePct: 100, contraentregaPct: 0 },
-          motivoSinPlan:
-            'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
           motivoSinPlanCodigo: 'contado',
         }),
       ],
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBe('contado');
-    expect(p.motivoSinPlan).toBe(
-      'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
-    );
   });
 });

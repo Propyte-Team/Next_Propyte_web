@@ -18,7 +18,7 @@ Luis (ES/EN) apuntan al **mismo documento**, que renderiza en inglés.
 | Decisión | Elección |
 |---|---|
 | Nombre de los proyectos | **Título editorial + link a su ficha.** `publication_title` vía `applyDisplayName`, nunca `nombre_desarrollo`. No se replican los códigos de Gamma. |
-| Quién entra en la guía | **Automático, con puerta de calidad.** Todo terreno/lote publicado que tenga precio, superficie y una fuente de financiamiento. |
+| Quién entra en la guía | **Automático, con filtros — no una puerta compuesta.** Precio y desarrollo válido (título editorial + slug) descartan el proyecto; la superficie NUNCA lo hace (sin ella solo se anulan las dos cifras que dependen de m²) y el financiamiento tampoco (sin plan, `motivoSinPlan` redacta el motivo en vez de dejar la celda muda). |
 | Cierre | **Formulario primero, agenda después.** Al enviar OK, la misma tarjeta revela el calendario. El lead entra a CRM/Zoho sí o sí. |
 | Alcance de contenido | **Réplica fiel de Gamma**, con las fichas y la tabla alimentadas del inventario. |
 | Ruta e idiomas | `/{locale}/guias/terrenos-residenciales`, **ES + EN**, con hreflang. |
@@ -100,11 +100,14 @@ cifra falsa más fácil de publicar en toda la página».
 (no existe la columna) y la mensualidad de los proyectos que se venden solo de contado
 —para esos, `motivoSinPlan` ya redacta la explicación en lenguaje de comprador.
 
-**La puerta de calidad, medida contra el inventario de hoy: pasan 6 de 7.** El único
-que queda fuera es `amares-riviera-maya`, y por una sola razón: no tiene precio
-(`price_min_mxn` nulo, moneda USD). Los otros seis tienen precio, superficie y al menos
-una de las tres fuentes de financiamiento. Si mañana se le captura el precio, entra
-solo — no hay lista que actualizar.
+**Medido contra el inventario de hoy: pasan 6 de 7.** El único que queda fuera es
+`amares-riviera-maya`, y por una sola razón: no tiene precio (`price_min_mxn` nulo,
+moneda USD) — el filtro de precio de `construirComparables`, no una puerta compuesta.
+Ni la superficie ni el financiamiento sacan a nadie: un desarrollo sin superficie
+utilizable se publica igual, sin `precioPorM2Mxn`; uno sin ninguna de las tres fuentes
+de financiamiento se publica igual, con `motivoSinPlan` en vez de mensualidad. Si mañana
+se le captura el precio a `amares-riviera-maya`, entra solo — no hay lista que
+actualizar.
 
 ## Arquitectura
 
