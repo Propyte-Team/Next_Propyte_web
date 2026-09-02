@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
-import { trackGenerateLead } from '@/lib/analytics/track';
+import { trackFormStep, trackGenerateLead } from '@/lib/analytics/track';
 
 // ============================================================
 // LA CONVERSIÓN de la variante C.
@@ -83,11 +83,15 @@ const PERFIL: Record<Variante, {
   lada: boolean;
   plazo: boolean;
   diagnostico: boolean;
+  /** Parte el formulario en dos: contacto y luego diagnóstico. */
+  pasos: boolean;
 }> = {
-  hero: { correo: true, lada: true, plazo: false, diagnostico: false },
-  medio: { correo: false, lada: false, plazo: true, diagnostico: false },
-  cierre: { correo: true, lada: true, plazo: true, diagnostico: true },
+  hero: { correo: true, lada: true, plazo: false, diagnostico: false, pasos: false },
+  medio: { correo: false, lada: false, plazo: true, diagnostico: false, pasos: false },
+  cierre: { correo: true, lada: true, plazo: true, diagnostico: true, pasos: true },
 };
+
+const TOTAL_PASOS = 2;
 
 /**
  * ⚠️ PALANCA DE NEGOCIO, no de diseño.
@@ -309,6 +313,8 @@ export default function FormEnganche({
   const [whatsapp, setWhatsapp] = useState('');
   /** E.164 del selector de lada (`+529841234567`). En `hero` y `cierre`. */
   const [telefono, setTelefono] = useState<string | undefined>(undefined);
+  /** Paso visible. Siempre 1 donde `perfil.pasos` es `false`. */
+  const [paso, setPaso] = useState<1 | 2>(1);
   const [uso, setUso] = useState<string | null>(null);
   const [enganche, setEnganche] = useState<string | null>(null);
   const [zona, setZona] = useState<string | null>(null);
@@ -326,6 +332,8 @@ export default function FormEnganche({
   const cajaTelefono = useRef<HTMLDivElement>(null);
   /** Para llevar el foco a los grupos del diagnóstico, que no son `<input>`. */
   const refForm = useRef<HTMLFormElement>(null);
+  /** Encabezado del paso 2: recibe el foco al avanzar. */
+  const refPaso2 = useRef<HTMLParagraphElement>(null);
 
   function limpiar(clave: ClaveError) {
     // El error se limpia al TECLEAR o al elegir, no al reenviar: dejarlo en
@@ -407,21 +415,22 @@ export default function FormEnganche({
     atribucion.current = captura;
   }, []);
 
-  async function enviar(e: React.FormEvent) {
-    e.preventDefault();
-    if (enviando) return;
-    setError(null);
-
-    /**
-     * ⚠️ EL ERROR VA EN EL CAMPO, NO EN UN AVISO GENERAL.
-     *
-     * Antes era un solo mensaje debajo del formulario: «Falta tu nombre o tu
-     * WhatsApp». Con dos campos, un «o» obliga a la persona a mirar los dos y
-     * adivinar cuál falló, y el aviso vivía a 200 px del campo culpable. Con
-     * seis campos en el cierre eso sería inaceptable. Ahora cada campo dice lo
-     * suyo, debajo de sí mismo, y lleva `aria-invalid` + `aria-describedby`
-     * para que un lector de pantalla lo anuncie al llegar.
-     */
+  /**
+   * ⚠️ EL ERROR VA EN EL CAMPO, NO EN UN AVISO GENERAL.
+   *
+   * Antes era un solo mensaje debajo del formulario: «Falta tu nombre o tu
+   * WhatsApp». Con dos campos, un «o» obliga a la persona a mirar los dos y
+   * adivinar cuál falló, y el aviso vivía a 200 px del campo culpable. Con seis
+   * campos en el cierre eso sería inaceptable. Cada campo dice lo suyo, debajo
+   * de sí mismo, con `aria-invalid` + `aria-describedby` para que un lector de
+   * pantalla lo anuncie al llegar.
+   *
+   * Las dos mitades van separadas porque el cierre las pide en pasos distintos:
+   * «Continuar» valida solo el contacto, y el envío valida las dos. Validar
+   * todo en «Continuar» pintaría errores en preguntas que la persona todavía no
+   * ha visto.
+   */
+  function validarContacto(): Partial<Record<ClaveError, string>> {
     const nuevos: Partial<Record<ClaveError, string>> = {};
 
     if (!nombre.trim()) nuevos.nombre = 'Escribe tu nombre para que sepamos cómo llamarte.';
@@ -458,20 +467,36 @@ export default function FormEnganche({
       }
     }
 
-    if (perfil.diagnostico && DIAGNOSTICO_OBLIGATORIO) {
-      if (!uso) nuevos.uso = 'Elige para qué lo quieres.';
-      if (!enganche) nuevos.enganche = 'Elige un rango. Es aproximado, no un compromiso.';
-      if (!zona) nuevos.zona = 'Elige una zona o marca que estás abierto.';
-    }
+    return nuevos;
+  }
 
-    setErrores(nuevos);
-    if (Object.keys(nuevos).length > 0) {
-      // Llevar el foco al primer campo con problema: sin esto, en móvil el
-      // mensaje puede quedar fuera de pantalla y el botón parece no hacer nada.
-      // El orden del array ES el orden visual del formulario.
-      const primero = (['nombre', 'correo', 'telefono', 'uso', 'enganche', 'zona'] as const).find(
-        (clave) => nuevos[clave],
-      );
+  function validarDiagnostico(): Partial<Record<ClaveError, string>> {
+    if (!perfil.diagnostico || !DIAGNOSTICO_OBLIGATORIO) return {};
+    const nuevos: Partial<Record<ClaveError, string>> = {};
+    if (!uso) nuevos.uso = 'Elige para qué lo quieres.';
+    if (!enganche) nuevos.enganche = 'Elige un rango. Es aproximado, no un compromiso.';
+    if (!zona) nuevos.zona = 'Elige una zona o marca que estás abierto.';
+    return nuevos;
+  }
+
+  /** Orden del array = orden visual. Devuelve dónde poner el foco. */
+  const CLAVES_DE_CONTACTO = ['nombre', 'correo', 'telefono'] as const;
+
+  function enfocarPrimerError(nuevos: Partial<Record<ClaveError, string>>) {
+    const primero = (
+      ['nombre', 'correo', 'telefono', 'uso', 'enganche', 'zona'] as const
+    ).find((clave) => nuevos[clave]);
+    if (!primero) return;
+
+    // ⚠️ UN ERROR EN UN PASO OCULTO ES UN BOTÓN QUE NO HACE NADA.
+    // Si el fallo está en el contacto y estamos en el paso 2, hay que VOLVER
+    // antes de enfocar: el campo está en `display:none`, no se puede enfocar y
+    // el mensaje no se ve. La persona pulsaría enviar una y otra vez sin pista.
+    if (perfil.pasos && CLAVES_DE_CONTACTO.includes(primero as never)) setPaso(1);
+
+    // Un `setPaso` no ha pintado todavía cuando esto corre, así que el foco va
+    // en el siguiente frame.
+    requestAnimationFrame(() => {
       const destino =
         primero === 'nombre'
           ? refNombre.current
@@ -488,6 +513,54 @@ export default function FormEnganche({
                 ) ?? null;
       destino?.focus();
       destino?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  }
+
+  /**
+   * «Continuar» del paso 1. NO envía: el lead sale al final del paso 2.
+   *
+   * ⚠️ Es la decisión que hay que vigilar de este formulario. Quien llene su
+   * contacto y abandone aquí se pierde ENTERO y en silencio: no hay POST, no
+   * hay fila en Supabase, no hay nada que contar. Por eso se emite
+   * `form_step` — solo a GA4, nunca a Ads ni a Meta— y la fuga se mide contra
+   * el `generate_lead` del mismo `form_type`. Sin ese evento, si partir el
+   * formulario cuesta leads, no habría forma de enterarse.
+   */
+  function avanzar() {
+    const nuevos = validarContacto();
+    setErrores(nuevos);
+    if (Object.keys(nuevos).length > 0) {
+      enfocarPrimerError(nuevos);
+      return;
+    }
+    setPaso(2);
+    trackFormStep({ formType: FORM_TYPE, step: 2, totalSteps: TOTAL_PASOS, block: variante });
+    // El foco al encabezado del paso, no al primer botón: quien usa lector de
+    // pantalla necesita oír a DÓNDE llegó antes de que le lean opciones.
+    requestAnimationFrame(() => {
+      refPaso2.current?.focus();
+      refPaso2.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+
+  function retroceder() {
+    setPaso(1);
+    requestAnimationFrame(() => {
+      refNombre.current?.focus();
+      refForm.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  }
+
+  async function enviar(e: React.FormEvent) {
+    e.preventDefault();
+    if (enviando) return;
+    setError(null);
+
+    const nuevos = { ...validarContacto(), ...validarDiagnostico() };
+
+    setErrores(nuevos);
+    if (Object.keys(nuevos).length > 0) {
+      enfocarPrimerError(nuevos);
       return;
     }
 
@@ -602,6 +675,45 @@ export default function FormEnganche({
       noValidate
       className="rounded-[var(--lpe-r)] border border-[var(--lpe-linea)] bg-[var(--lpe-blanco)] p-6 shadow-[0_28px_70px_-32px_rgb(15_25_35/0.35)] sm:p-9"
     >
+      {/* ═══ EL INDICADOR DE PASO ═══
+          ⚠️ VA ANTES DE TODO Y NO ES DECORACIÓN.
+
+          Un formulario que revela un segundo paso al pulsar el botón se siente
+          como una trampa: la persona creía estar terminando. Decir «Paso 1 de
+          2» antes de que escriba nada convierte la sorpresa en un contrato, y
+          es la única defensa barata contra el abandono en el paso 2 — que aquí
+          cuesta el lead completo, porque el envío está al final.
+
+          Fuera del `<form>` partido no se pinta: en el hero y el medio no hay
+          pasos y un «1 de 1» es ruido. */}
+      {perfil.pasos && (
+        // `data-lpe-paso` no es para estilar: es el anclaje del contrato de
+        // marcado. El texto «Paso 1 de 2» sale del HTML partido en nodos con
+        // comentarios de React en medio (`Paso <!-- -->1<!-- --> de`), así que
+        // buscarlo como cadena da un rojo falso.
+        <div data-lpe-paso={paso} data-lpe-pasos={TOTAL_PASOS} className="mb-5 flex items-center gap-3">
+          <p className="lpe-rotulo text-[var(--lpe-teal-texto)]">
+            Paso {paso} de {TOTAL_PASOS}
+          </p>
+          <div aria-hidden="true" className="flex flex-1 gap-1.5">
+            {[1, 2].map((n) => (
+              <span
+                key={n}
+                className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+                  n <= paso ? 'bg-[var(--lpe-teal)]' : 'bg-[var(--lpe-linea)]'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ═══ PASO 1 · el contacto ═══
+          `hidden` y NO desmontado: lo que se escribe en el paso 1 tiene que
+          seguir ahí al volver desde el paso 2, y los campos deben estar en el
+          HTML del servidor para que el autocompletado del navegador los vea.
+          Desmontar el paso perdería las dos cosas. */}
+      <div hidden={perfil.pasos && paso !== 1}>
       {/* ═══ LA PROMESA ═══
           ⚠️ EL TITULAR DICE LO QUE RECIBES, NO LO QUE PAGAS.
 
@@ -830,19 +942,99 @@ export default function FormEnganche({
         </div>
       </div>
 
-      {/* ═══ EL DIAGNÓSTICO ═══ (solo el cierre)
-          ⚠️ NO ES UNA COMPUERTA. Son campos visibles del mismo formulario, en
-          la misma pantalla y con el mismo botón. La compuerta de la variante A
-          —dos preguntas ANTES de que existiera un `<form>`— costó $991.40 MXN
-          en 72 clics con cero envíos; eso no vuelve.
+      {/* ═══ EL PASO A PASO 2 ═══
+          ⚠️ SE DICE QUÉ VIENE, Y CUÁNTO CUESTA.
 
-          Va DESPUÉS de los datos de contacto, no antes: si alguien abandona a
-          mitad del diagnóstico, al menos el navegador ya guardó su nombre y su
-          correo para el siguiente formulario. Al revés se pierde todo. */}
+          «Continuar» a secas no dice si detrás hay tres toques o un
+          cuestionario de diez minutos, y esa incógnita es la que hace que
+          alguien cierre la pestaña con sus datos ya escritos. Decir «tres
+          toques» y qué se gana a cambio es lo que compra el segundo paso. */}
+        {perfil.pasos && (
+          <>
+            <p className="lpe-cuerpo mt-6 text-[0.875rem] leading-relaxed text-[var(--lpe-tinta-2)]">
+              Después: <strong className="font-medium">tres toques</strong> para
+              que el asesor llegue con el lote y el plan que cuadran con tu
+              caso, no con el catálogo entero.
+            </p>
+            <button
+              type="button"
+              onClick={avanzar}
+              className="group mt-4 flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[var(--lpe-r-pill)] bg-[var(--lpe-teal)] pl-7 pr-2.5 text-[1.0625rem] font-medium text-[var(--lpe-tinta)] transition-[background-color,transform] duration-200 hover:bg-[var(--lpe-teal-hover)] active:translate-y-px"
+            >
+              <span className="lpe-cuerpo font-medium">Continuar</span>
+              <span
+                aria-hidden="true"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[var(--lpe-tinta)] text-[var(--lpe-teal)] transition-transform duration-200 group-hover:translate-x-0.5"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 8h9M8.5 4l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* ═══ PASO 2 · el diagnóstico ═══ (solo el cierre)
+          ⚠️ NO ES UNA COMPUERTA. Los campos de contacto del paso 1 y este paso
+          viven en el MISMO `<form>`, presente entero en el HTML del servidor: no
+          hay nada que desbloquear para que exista un formulario. La compuerta de
+          la variante A —dos preguntas ANTES de que existiera un `<form>`— costó
+          $991.40 MXN en 72 clics con cero envíos, y `querySelectorAll('form')`
+          devolvía 0. Aquí devuelve 3.
+
+          Lo que SÍ cambia respecto a un paso único, y hay que vigilarlo: el
+          envío está al final, así que quien abandone aquí se pierde entero.
+          Decisión de Luis del 2026-09-02, tomada sabiéndolo. La fuga se mide con
+          `form_step` (ver `avanzar()`).
+
+          El diagnóstico va DESPUÉS del contacto, no antes: si alguien abandona
+          a mitad, el navegador ya guardó su nombre y su correo para el
+          siguiente formulario. Al revés se pierde todo. */}
+      <div hidden={perfil.pasos && paso !== 2}>
       {perfil.diagnostico && (
-        <div className="mt-8 space-y-7 border-t border-[var(--lpe-linea)] pt-7">
+        <div
+          className={
+            perfil.pasos ? 'space-y-7' : 'mt-8 space-y-7 border-t border-[var(--lpe-linea)] pt-7'
+          }
+        >
           <div>
-            <p className="lpe-rotulo text-[var(--lpe-teal-texto)]">
+            {/* ⚠️ ATRÁS, Y ANTES DEL ENCABEZADO.
+                Sin vuelta, corregir un correo mal escrito obliga a recargar y
+                perderlo todo. Va arriba porque es donde se busca, y `retroceder`
+                no borra nada: el paso 1 está oculto, no desmontado. */}
+            {perfil.pasos && (
+              <button
+                type="button"
+                onClick={retroceder}
+                className="lpe-cuerpo -ml-2 mb-3 inline-flex min-h-11 items-center gap-1.5 rounded-[var(--lpe-r-pill)] px-2 text-[0.875rem] text-[var(--lpe-tinta-2)] transition-colors duration-200 hover:text-[var(--lpe-tinta)]"
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M13 8H4M7.5 4l-4 4 4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Volver a mis datos
+              </button>
+            )}
+            {/* `tabIndex={-1}`: no entra en el tabulador, pero `avanzar()` le
+                pone el foco para que un lector de pantalla anuncie a dónde
+                llegó antes de empezar a leer opciones. */}
+            <p
+              ref={refPaso2}
+              tabIndex={-1}
+              className="lpe-rotulo text-[var(--lpe-teal-texto)] outline-none"
+            >
               Tres toques y llegamos con una opción
             </p>
             <p className="lpe-cuerpo mt-2 text-[0.875rem] leading-relaxed text-[var(--lpe-tinta-2)]">
@@ -946,6 +1138,7 @@ export default function FormEnganche({
           </div>
         </fieldset>
       )}
+      </div>
 
       {/* Honeypot. `aria-hidden` + tabIndex para que ningún lector lo anuncie. */}
       <input
@@ -967,10 +1160,24 @@ export default function FormEnganche({
         </p>
       )}
 
+      {/* El envío. En el formulario partido solo existe en el paso 2: dos
+          botones de envío visibles a la vez, uno de ellos inerte, es peor que
+          uno solo bien puesto.
+
+          ⚠️ EL ATRIBUTO `hidden` NO BASTA AQUÍ, Y ES UNA TRAMPA SILENCIOSA.
+          `hidden` esconde vía `display:none` de la hoja del NAVEGADOR, y
+          cualquier `display` de autor la pisa — esta clase trae `flex`. Con
+          solo el atributo, el botón de enviar seguiría visible en el paso 1,
+          se vería igual de bien en la captura y solo fallaría al pulsarlo.
+          Por eso la clase de display también cambia. El atributo se queda: es
+          lo que saca el botón del tabulador y del árbol de accesibilidad. */}
       <button
         type="submit"
         disabled={enviando}
-        className="group mt-7 flex min-h-[60px] w-full items-center justify-between gap-3 rounded-[var(--lpe-r-pill)] bg-[var(--lpe-teal)] pl-7 pr-2.5 text-[1.0625rem] font-medium text-[var(--lpe-tinta)] transition-[background-color,transform] duration-200 hover:bg-[var(--lpe-teal-hover)] active:translate-y-px disabled:opacity-60"
+        hidden={perfil.pasos && paso !== 2}
+        className={`group mt-7 ${
+          perfil.pasos && paso !== 2 ? 'hidden' : 'flex'
+        } min-h-[60px] w-full items-center justify-between gap-3 rounded-[var(--lpe-r-pill)] bg-[var(--lpe-teal)] pl-7 pr-2.5 text-[1.0625rem] font-medium text-[var(--lpe-tinta)] transition-[background-color,transform] duration-200 hover:bg-[var(--lpe-teal-hover)] active:translate-y-px disabled:opacity-60`}
       >
         <span className="lpe-cuerpo font-medium">
           {enviando ? 'Enviando…' : 'Recibe el plan de pagos'}

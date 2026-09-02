@@ -40,6 +40,15 @@ const CAMPOS = ['name="name"', 'name="phone"', 'name="email"', 'name="website"']
  */
 const GRUPOS_DIAGNOSTICO = ['uso', 'enganche', 'zona'];
 
+/**
+ * El cierre está partido en dos pasos. Estas dos cadenas defienden que siga
+ * PARTIDO Y COMPLETO en el HTML del servidor: los grupos del diagnóstico de
+ * arriba viven en el paso 2, y si un día se renderizaran condicionalmente en
+ * cliente en vez de ocultos, desaparecerían del HTML sin romper el build. El
+ * síntoma sería el de siempre: la página se ve bien y no convierte.
+ */
+const PASOS_DEL_CIERRE = ['data-lpe-paso="1"', 'data-lpe-pasos="2"', '>Continuar<'];
+
 /** Las tres instancias: hero, medio (tras la galería) y cierre. */
 const BLOQUES = [
   'data-lpe-form="hero"',
@@ -82,6 +91,11 @@ for (const bloque of BLOQUES) {
   if (!html.includes(bloque)) fallos.push(`falta el bloque ${bloque}`);
 }
 
+for (const marca of PASOS_DEL_CIERRE) {
+  if (!html.includes(marca)) {
+    fallos.push(`falta «${marca}» — el cierre dejó de estar partido en dos pasos`);
+  }
+}
 for (const grupo of GRUPOS_DIAGNOSTICO) {
   const veces = html.split(`data-lpe-grupo="${grupo}"`).length - 1;
   if (veces === 0) {

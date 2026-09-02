@@ -324,7 +324,45 @@ async function esperarHidratacion(pagina) {
   await cierre.locator('input[name="email"]').fill('lector.completo@example.com');
   await cierre.locator('input[name="phone"]').fill('+52 984 765 4321');
 
-  // Mitad 1 — contacto lleno, diagnóstico vacío: no debe salir nada.
+  // ── Paso 1 · el envío no existe todavía ──────────────────────────────────
+  // Si el botón de enviar se ve en el paso 1, el formulario partido está roto
+  // de la forma más difícil de detectar: se ve bien y solo falla al pulsarlo.
+  // Es lo que pasa si se confía en el atributo `hidden` con una clase `flex`
+  // encima — `display` de autor pisa la hoja del navegador.
+  ok(
+    !(await cierre.locator('button[type="submit"]').isVisible()),
+    'C: el botón de ENVIAR se ve en el paso 1; solo debe existir en el paso 2',
+  );
+
+  await cierre.locator('button:has-text("Continuar")').click();
+  await pagina.waitForTimeout(500);
+
+  // ── El evento que hace medible la fuga ───────────────────────────────────
+  // El envío está al final del paso 2, así que quien abandone aquí se pierde
+  // entero y sin dejar rastro: no hay POST ni fila en Supabase. `form_step` es
+  // lo único que permite contar cuántos llegaron al paso 2 y no enviaron. Si
+  // deja de emitirse, la decisión de partir el formulario se vuelve ciega.
+  const pasos = (await leerEventos(pagina)).filter(
+    (e) => e[0] === 'event' && e[1] === 'form_step',
+  );
+  ok(
+    pasos.some((e) => e[2]?.step === 2 && e[2]?.form_type === 'lp_enganche_pdc'),
+    `C: no se emitió form_step del paso 2 (${JSON.stringify(pasos.map((e) => e[2]))}) — sin él el abandono en el paso 2 es invisible`,
+  );
+
+  // ── «Volver a mis datos» no borra nada ───────────────────────────────────
+  // El paso 1 está oculto, no desmontado. Si se desmontara, corregir un correo
+  // mal escrito costaría volver a teclear los tres campos.
+  await cierre.locator('button:has-text("Volver a mis datos")').click();
+  await pagina.waitForTimeout(400);
+  ok(
+    (await cierre.locator('input[name="name"]').inputValue()) === 'Lector Completo',
+    'C: al volver al paso 1 se perdió el nombre — el paso se está desmontando',
+  );
+  await cierre.locator('button:has-text("Continuar")').click();
+  await pagina.waitForTimeout(400);
+
+  // ── Paso 2 · sin las tres respuestas no sale nada ────────────────────────
   await cierre.locator('button[type="submit"]').click();
   await pagina.waitForTimeout(900);
   ok(
@@ -332,7 +370,7 @@ async function esperarHidratacion(pagina) {
     'C: el cierre envió SIN el diagnóstico — las tres respuestas son obligatorias en este bloque',
   );
 
-  // Mitad 2 — las tres respuestas y ahora sí.
+  // Las tres respuestas y ahora sí.
   await cierre.locator('[data-lpe-grupo="uso"] button:has-text("Rentas")').click();
   await cierre.locator('[data-lpe-grupo="enganche"] button:has-text("Hasta 150 mil")').click();
   await cierre.locator('[data-lpe-grupo="zona"] button:has-text("Tulum")').click();

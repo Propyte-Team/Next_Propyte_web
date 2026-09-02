@@ -341,3 +341,37 @@ export function trackAddToWishlist(payload: {
     { name: 'AddToWishlist', params: { content_ids: [payload.itemId], content_type: payload.itemKind, value: payload.priceMxn, currency: 'MXN' } },
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// 8. form_step — micro-conversión, NO conversión
+// ─────────────────────────────────────────────────────────────────────
+/**
+ * Avance dentro de un formulario de varios pasos.
+ *
+ * ⚠️ SOLO GA4. No toca el píxel de Meta, ni la CAPI, ni la acción de conversión
+ * de Google Ads: llegar al paso 2 no es un lead, y reportarlo como tal
+ * envenenaría el CPL de las campañas y el aprendizaje de las pujas.
+ *
+ * Existe por una razón concreta. En un formulario partido, quien llena sus
+ * datos y abandona antes de enviar se pierde ENTERO y de forma invisible: no
+ * hay POST, no hay fila en Supabase, no hay nada que contar. Con este evento la
+ * fuga se puede medir —`form_step` con paso 2 contra `generate_lead` del mismo
+ * `form_type`— y la decisión de partir el formulario deja de ser una apuesta a
+ * ciegas. Sin esto, si el cambio cuesta leads, no hay forma de saberlo.
+ */
+export function trackFormStep(payload: {
+  /** Mismo valor que el `formType` de `trackGenerateLead`, para poder cruzarlos. */
+  formType: string;
+  /** Paso al que se ACABA de llegar, empezando en 1. */
+  step: number;
+  totalSteps: number;
+  /** Bloque de la página, cuando el mismo form vive en varias posiciones. */
+  block?: string;
+}) {
+  emit('form_step', {
+    form_type: payload.formType,
+    step: payload.step,
+    total_steps: payload.totalSteps,
+    block: payload.block,
+  });
+}
