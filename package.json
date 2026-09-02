@@ -26,7 +26,7 @@
     "@googlemaps/markerclusterer": "^2.6.2",
     "@hookform/resolvers": "^5.9.1",
     "@react-pdf/renderer": "^4.5.1",
-    "@supabase/ssr": "^0.12.4",
+    "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.99.1",
     "@vis.gl/react-google-maps": "^1.5.0",
     "framer-motion": "^13.1.1",
