@@ -95,15 +95,31 @@ test.describe('@guia-terrenos formulario de la guía de terrenos residenciales',
     const gracias = page.getByTestId('guia-terrenos-gracias');
     await expect(gracias).toBeVisible();
 
-    // El iframe de la agenda SOLO existe cuando `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL`
-    // está configurada (ver GuiaTerrenosForm.tsx). En este entorno de prueba
-    // no lo está, así que no se afirma su presencia — solo que, SI aparece,
-    // esté visible. El bloque de agradecimiento en sí es lo único que se
-    // exige siempre.
-    const iframe = gracias.locator('iframe');
-    const iframeCount = await iframe.count();
-    if (iframeCount > 0) {
-      await expect(iframe).toBeVisible();
+    // La agenda SOLO existe cuando `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL` está
+    // configurada (ver GuiaTerrenosForm.tsx), y en este entorno de prueba no lo
+    // está. Así que no se afirma su presencia: solo que, SI aparece, cumpla su
+    // contrato. El bloque de agradecimiento es lo único que se exige siempre.
+    //
+    // Desde el 2026-09-02 la agenda va en una CAPA con el scroll del body
+    // bloqueado, no dentro del bloque de gracias: en línea, la rueda sobre el
+    // calendario movía la página 250 px por gesto. Ver AgendaModal.tsx.
+    const capa = page.getByTestId('guia-terrenos-agenda-modal');
+    if ((await capa.count()) > 0) {
+      await expect(capa).toBeVisible();
+      await expect(capa).toHaveAttribute('aria-modal', 'true');
+      await expect(capa.locator('iframe')).toBeVisible();
+
+      // Lo que de verdad pidió Luis: la página no se mueve detrás.
+      expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+
+      // Y Escape la cierra devolviendo el scroll, o el visitante queda atrapado.
+      await page.keyboard.press('Escape');
+      await expect(capa).toHaveCount(0);
+      expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+
+      // El botón de reabrir tiene que estar: el lead ya entró y no puede
+      // volver a llenar el formulario para elegir horario.
+      await expect(gracias.locator('button')).toBeVisible();
     }
   });
 });

@@ -12,6 +12,7 @@
 // el dato privado: si un desarrollo no tiene título editorial, se queda fuera.
 // ============================================================
 
+import { toProxyImages } from '@/lib/images/proxyUrl';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import {
   getLotesComparables,
@@ -299,7 +300,11 @@ export async function getTerrenosGuia(): Promise<ProyectoGuia[]> {
       ciudad: (d.city as string) ?? '',
       zona: (d.zone as string) ?? null,
       amenidades: Array.isArray(d.amenities) ? (d.amenities as string[]) : [],
-      imagenes: Array.isArray(d.images) ? (d.images as string[]) : [],
+      // Por el proxy, como el resto del sitio. `queries.ts` lo hace con
+      // `maskRows`; esta capa consulta `v_developments` directo, así que se
+      // aplica a mano o la guía sería la única página que publica el host y el
+      // nombre de archivo del storage — que es justo lo que el proxy oculta.
+      imagenes: toProxyImages(Array.isArray(d.images) ? (d.images as string[]) : [], 'd', id),
       totalUnidades: d.total_units === null ? null : Number(d.total_units),
       entregaTexto: (d.delivery_text as string) ?? null,
     };

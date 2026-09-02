@@ -129,9 +129,21 @@ interface Props {
   proyecto: ProyectoGuia;
   locale: string;
   t: Traductor;
+  /**
+   * Posición en la rejilla. Las de la primera fila se cargan con `priority`.
+   *
+   * Sin esto las seis fotos salían `loading="lazy"`, incluidas las visibles al
+   * abrir la página: el visitante veía el hueco gris y el texto alternativo
+   * hasta que cargaban, y la portada de la guía era el LCP de una imagen
+   * diferida. Se vio en producción el 2026-09-02.
+   */
+  indice: number;
 }
 
-export default function FichaProyecto({ proyecto, locale, t }: Props) {
+/** Cuántas fichas entran en la primera fila en escritorio (`lg:grid-cols-3`). */
+const FICHAS_SOBRE_EL_PLIEGUE = 3;
+
+export default function FichaProyecto({ proyecto, locale, t, indice }: Props) {
   const foto = proyecto.imagenes[0];
   const rotulo = rotuloBase(proyecto, t);
   const mensualidad = proyecto.mensualidad;
@@ -186,6 +198,7 @@ export default function FichaProyecto({ proyecto, locale, t }: Props) {
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
+            priority={indice < FICHAS_SOBRE_EL_PLIEGUE}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

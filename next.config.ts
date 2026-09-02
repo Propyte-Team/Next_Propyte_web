@@ -127,7 +127,12 @@ const nextConfig: NextConfig = {
       "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://www.facebook.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.com.mx https://*.hotjar.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.hotjar.com wss://*.hotjar.com https://stats.g.doubleclick.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://maps.googleapis.com",
-      "frame-src 'self' https://www.google.com https://td.doubleclick.net https://bid.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://calendly.com",
+      // `calendar.google.com` es la agenda de Google Appointments que la guía de
+      // terrenos embebe al enviarse el formulario. Estaba `calendly.com` pero no
+      // esta, así que el embed solo funcionaba porque la política va en
+      // report-only: el día que se promueva a bloqueante, la agenda desaparece
+      // sin ruido. Medido el 2026-09-02 con la violación en consola.
+      "frame-src 'self' https://www.google.com https://calendar.google.com https://td.doubleclick.net https://bid.g.doubleclick.net https://www.youtube.com https://www.youtube-nocookie.com https://drive.google.com https://calendly.com",
       "media-src 'self' https://*.supabase.co https://*.youtube.com https://*.youtube-nocookie.com https://drive.google.com data: blob:",
       "worker-src 'self' blob:",
       isProd ? "frame-ancestors 'none'" : "frame-ancestors 'self'",
