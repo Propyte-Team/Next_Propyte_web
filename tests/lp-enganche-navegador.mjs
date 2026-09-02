@@ -83,7 +83,24 @@ for (const vp of [
   await pagina.waitForTimeout(2500);
 
   const d = await pagina.evaluate(() => {
-    const imgs = [...document.querySelectorAll('img')];
+    /**
+     * ⚠️ FUERA LAS BANDERAS DEL SELECTOR DE LADA.
+     *
+     * Desde el 2026-09-02 el hero y el cierre usan `PhoneInputField`, que
+     * renderiza una bandera por formulario (`img.PhoneInputCountryIconImg`).
+     * Son cromo de un control de UI, no imágenes del desarrollo: contarlas
+     * rompía el conteo exacto (14 en vez de 12) y las marcaba «sin alt» porque
+     * su alt es el nombre del país —«Mexico», 6 caracteres— y aquí el umbral de
+     * alt descriptivo son 10.
+     *
+     * Tampoco entran en `noCargadas`: la bandera se sirve desde
+     * `purecatamphetamine.github.io`, un tercero. Si ese host se cae, lo que
+     * hay que ver en rojo es una alerta de dependencia externa, no «una imagen
+     * del desarrollo no cargó» — que es lo que este test existe para vigilar.
+     */
+    const imgs = [...document.querySelectorAll('img')].filter(
+      (i) => !i.classList.contains('PhoneInputCountryIconImg'),
+    );
     const h1 = document.querySelector('h1');
     const cap = document.querySelector('.lpe-capsula');
     const hero = document.querySelector('[data-lpe-form="hero"]');

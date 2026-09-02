@@ -131,7 +131,18 @@ async function esperarHidratacion(pagina) {
   await esperarHidratacion(pagina);
 
   await hero.locator('input[name="name"]').fill('Prueba Variante C');
-  await hero.locator('input[name="phone"]').fill('9841234567');
+  await hero.locator('input[name="email"]').fill('prueba.variante.c@example.com');
+  /**
+   * ⚠️ CON LA LADA DELANTE, y no es opcional.
+   *
+   * Desde el 2026-09-02 el hero usa el selector de país, que renderiza el
+   * `<input>` ya con «+52». `fill('9841234567')` REEMPLAZA ese prefijo y deja un
+   * número sin país: la librería no lo parsea, el valor queda `undefined` y la
+   * guardia del submit bloquea el envío. El test daría rojo señalando al sitio
+   * equivocado — parecería un formulario roto cuando lo roto es la escritura.
+   * `+52 984...` es lo que consigue una persona tecleando detrás del prefijo.
+   */
+  await hero.locator('input[name="phone"]').fill('+52 984 123 4567');
   await hero.locator('button[type="submit"]').click();
   await pagina.waitForTimeout(1800);
 
@@ -143,9 +154,12 @@ async function esperarHidratacion(pagina) {
     );
     ok(cuerpo.name === 'Prueba Variante C', `A: name="${cuerpo.name}"`);
     ok(
-      (cuerpo.phone ?? '').replace(/\D/g, '') === '9841234567',
-      `A: phone="${cuerpo.phone}"`,
+      cuerpo.email === 'prueba.variante.c@example.com',
+      `A: email="${cuerpo.email}" — el hero pide correo desde el 2026-09-02`,
     );
+    // E.164, no lo tecleado: el selector de lada normaliza antes de mandar, y
+    // es ese formato el que llega a Zoho.
+    ok(cuerpo.phone === '+529841234567', `A: phone="${cuerpo.phone}", debe ser E.164`);
     ok(cuerpo.gclid === GCLID, `A: el gclid no viajó (llegó "${cuerpo.gclid}")`);
     ok(
       cuerpo.utm_source === 'google' && cuerpo.utm_medium === 'cpc',
@@ -227,8 +241,13 @@ async function esperarHidratacion(pagina) {
     const f = document.querySelector('form[data-lpe-form="hero"]');
     if (!f) return;
     const n = f.querySelector('input[name="name"]');
+    const c = f.querySelector('input[name="email"]');
     const t = f.querySelector('input[name="phone"]');
     if (n) n.value = 'Autocompletado Temprano';
+    if (c) c.value = 'autocompletado@example.com';
+    // SIN lada, que es lo que guarda el navegador para un número mexicano. El
+    // formulario tiene que normalizarlo a E.164 al hidratar; si no, el teléfono
+    // se pierde y con él el lead entero.
     if (t) t.value = '9849876543';
   });
 
@@ -249,13 +268,110 @@ async function esperarHidratacion(pagina) {
       `B: el nombre llegó como "${cuerpo.name}"`,
     );
     ok(
-      (cuerpo.phone ?? '').replace(/\D/g, '') === '9849876543',
-      `B: el teléfono llegó como "${cuerpo.phone}"`,
+      cuerpo.email === 'autocompletado@example.com',
+      `B: el correo llegó como "${cuerpo.email}"`,
+    );
+    ok(
+      cuerpo.phone === '+529849876543',
+      `B: el teléfono llegó como "${cuerpo.phone}"; se esperaba el E.164 normalizado desde los 10 dígitos del autocompletado`,
     );
   }
 
   console.log(
     `→ B autocompletado pre-hidratación: ${cuerpo ? `POST ok, name="${cuerpo.name}"` : 'PERDIDO'}`,
+  );
+  await pagina.context().close();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// ESCENARIO C · el diagnóstico del cierre llega al CRM EN CAMPOS
+//
+// El bloque de cierre pide tres respuestas más —uso, enganche disponible y
+// zona— y su única razón de existir es que el asesor abra la conversación con
+// una opción concreta. Si esas respuestas se quedan en el navegador, el
+// formulario cobra la fricción y no entrega el dato: la peor de las dos
+// opciones, y además invisible. Así que se verifica que salgan en
+// `investmentType`, `budget` y `location`, que son los campos que
+// `field-maps.ts` convierte en la Description y la City del lead de Zoho.
+//
+// Verifica también que el diagnóstico SÍ es obligatorio: con el contacto lleno
+// y las tres preguntas vacías no puede haber POST. Sin esta mitad, dejar
+// `DIAGNOSTICO_OBLIGATORIO` en `false` por descuido pasaría desapercibido y el
+// bloque se convertiría en el formulario del hero con más scroll.
+// ════════════════════════════════════════════════════════════════════════════
+{
+  const pagina = await nuevaPagina();
+
+  let cuerpo = null;
+  await pagina.route('**/api/leads', async (ruta) => {
+    cuerpo = JSON.parse(ruta.request().postData() ?? '{}');
+    await ruta.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, id: 'lead-de-prueba' }),
+    });
+  });
+  await pagina.route('**/api/track', (ruta) =>
+    ruta.fulfill({ status: 200, contentType: 'application/json', body: '{}' }),
+  );
+
+  await pagina.goto(`${BASE}${RUTA}`, { waitUntil: 'domcontentloaded' });
+  await esperarHidratacion(pagina);
+
+  const cierre = pagina.locator('form[data-lpe-form="cierre"]');
+  await cierre.scrollIntoViewIfNeeded();
+  await cierre.locator('input[name="name"]').fill('Lector Completo');
+  await cierre.locator('input[name="email"]').fill('lector.completo@example.com');
+  await cierre.locator('input[name="phone"]').fill('+52 984 765 4321');
+
+  // Mitad 1 — contacto lleno, diagnóstico vacío: no debe salir nada.
+  await cierre.locator('button[type="submit"]').click();
+  await pagina.waitForTimeout(900);
+  ok(
+    cuerpo === null,
+    'C: el cierre envió SIN el diagnóstico — las tres respuestas son obligatorias en este bloque',
+  );
+
+  // Mitad 2 — las tres respuestas y ahora sí.
+  await cierre.locator('[data-lpe-grupo="uso"] button:has-text("Rentas")').click();
+  await cierre.locator('[data-lpe-grupo="enganche"] button:has-text("Hasta 150 mil")').click();
+  await cierre.locator('[data-lpe-grupo="zona"] button:has-text("Tulum")').click();
+  await cierre.locator('button[type="submit"]').click();
+  await pagina.waitForTimeout(1800);
+
+  ok(cuerpo !== null, 'C: no salió POST con el diagnóstico completo');
+  if (cuerpo) {
+    ok(cuerpo.source === 'lp_lotes_pdc', `C: source="${cuerpo.source}"`);
+    ok(cuerpo.email === 'lector.completo@example.com', `C: email="${cuerpo.email}"`);
+    ok(cuerpo.phone === '+529847654321', `C: phone="${cuerpo.phone}", debe ser E.164`);
+    ok(
+      /^Rentas/.test(cuerpo.investmentType ?? ''),
+      `C: investmentType="${cuerpo.investmentType}" — sin él Zoho no rotula «Objetivo»`,
+    );
+    ok(
+      (cuerpo.budget ?? '').includes('MXN'),
+      `C: budget="${cuerpo.budget}" — el rango tiene que llevar la moneda; es lo que lee el asesor en la ficha`,
+    );
+    ok(
+      cuerpo.location === 'Tulum',
+      `C: location="${cuerpo.location}" — es lo que cae en City de Zoho`,
+    );
+    ok(
+      /bloque «cierre»/.test(cuerpo.message ?? ''),
+      `C: el message no identifica el bloque: "${cuerpo.message}"`,
+    );
+    ok(
+      /Diagnóstico/.test(cuerpo.message ?? ''),
+      'C: el message no repite el diagnóstico — es lo único que sobrevive si mañana cambia el mapa de campos',
+    );
+  }
+
+  console.log(
+    `→ C diagnóstico del cierre: ${
+      cuerpo
+        ? `POST ok · objetivo="${cuerpo.investmentType}" · enganche="${cuerpo.budget}" · zona="${cuerpo.location}"`
+        : 'NO SALIÓ'
+    }`,
   );
   await pagina.context().close();
 }
@@ -268,4 +384,4 @@ if (fallos.length) {
   process.exit(1);
 }
 
-console.log('\n✓ Conversión de la variante C verificada, los dos escenarios.');
+console.log('\n✓ Conversión de la variante C verificada, los tres escenarios.');

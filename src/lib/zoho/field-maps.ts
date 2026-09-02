@@ -458,7 +458,14 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       // Los dos taps de calificación de la landing. Son el dato que decide si
       // el lead vale una llamada, así que van primero en la Description.
       if (data.investmentType) parts.push(`Objetivo: ${data.investmentType}`);
-      if (data.budget) parts.push(`Presupuesto total: ${data.budget}`);
+      // ⚠️ «Enganche disponible», no «Presupuesto total». El único form que
+      // manda `budget` con este source es el diagnóstico del cierre de
+      // /lp/enganche-terrenos-playa-del-carmen, y lo que pregunta es cuánto
+      // puede poner de ENTRADA — no el precio del lote. Rotularlo «total» hacía
+      // que el asesor leyera «$150,000 MXN» y descartara un lead que sí alcanza
+      // un lote de $1M. Si algún día una variante pregunta el precio total, va
+      // en su propio campo, no reciclando este rótulo.
+      if (data.budget) parts.push(`Enganche disponible: ${data.budget}`);
       if (data.propertyName) parts.push(`Lote de interés: ${data.propertyName}`);
       break;
     case "lp_casas_riviera":

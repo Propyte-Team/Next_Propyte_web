@@ -22,8 +22,23 @@ import { readFileSync, existsSync } from 'node:fs';
 
 const RUTA = '.next/server/app/lp/enganche-terrenos-playa-del-carmen.html';
 
-/** Sin el honeypot el formulario se renderizó a medias y el anti-bot no cubre nada. */
-const CAMPOS = ['name="name"', 'name="phone"', 'name="website"'];
+/**
+ * Sin el honeypot el formulario se renderizó a medias y el anti-bot no cubre
+ * nada. `name="email"` entra el 2026-09-02: el hero y el cierre piden correo, y
+ * si el campo desaparece el lead llega sin la vía por la que se manda el PDF.
+ */
+const CAMPOS = ['name="name"', 'name="phone"', 'name="email"', 'name="website"'];
+
+/**
+ * El diagnóstico del cierre. Va aquí y no solo en el test de navegador porque
+ * su fallo más probable es silencioso: que los grupos dejen de renderizarse en
+ * el HTML del servidor y el bloque se quede en un formulario normal.
+ *
+ * ⚠️ EXACTAMENTE UNO DE CADA. Un segundo `data-lpe-grupo` significa que el
+ * diagnóstico se colgó de otro bloque — y un cuestionario en el hero es la
+ * compuerta que costó $991.40 MXN en 72 clics con cero envíos.
+ */
+const GRUPOS_DIAGNOSTICO = ['uso', 'enganche', 'zona'];
 
 /** Las tres instancias: hero, medio (tras la galería) y cierre. */
 const BLOQUES = [
@@ -65,6 +80,17 @@ for (const campo of CAMPOS) {
 }
 for (const bloque of BLOQUES) {
   if (!html.includes(bloque)) fallos.push(`falta el bloque ${bloque}`);
+}
+
+for (const grupo of GRUPOS_DIAGNOSTICO) {
+  const veces = html.split(`data-lpe-grupo="${grupo}"`).length - 1;
+  if (veces === 0) {
+    fallos.push(`falta el grupo «${grupo}» del diagnóstico del cierre`);
+  } else if (veces > 1) {
+    fallos.push(
+      `el grupo «${grupo}» aparece ${veces} veces: el diagnóstico solo va en el bloque de cierre`,
+    );
+  }
 }
 
 const posHero = html.indexOf('data-lpe-form="hero"');
