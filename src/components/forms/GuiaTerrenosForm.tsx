@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -19,6 +19,27 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 /**
+ * El snippet que Google entrega desde su propia interfaz ya trae `?gv=true`,
+ * así que quien configure la variable en el servidor lo más probable es que
+ * copie eso tal cual. Concatenar a pelo produciría `?gv=true?gv=true` — el
+ * parámetro `gv` valdría `"true?gv=true"` y Google serviría la página
+ * completa de reservas en vez del embed. Una barra final o un `#fragment`
+ * rompen igual. `URL()` además devuelve `null` ante un valor con errata: la
+ * regla de "nunca un iframe roto" vale para la variable mal puesta, no solo
+ * para la vacía.
+ */
+function urlAgenda(raw: string): string | null {
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== 'https:') return null;
+    u.searchParams.set('gv', 'true');
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Formulario de cierre de la guía de terrenos residenciales, con la agenda
  * detrás del envío.
  *
@@ -29,18 +50,30 @@ type FormData = z.infer<typeof schema>;
  * envío; no hay `reset()` al llegar a 'sent' — el formulario se sustituye
  * por el agradecimiento y el iframe, no vuelve a estar disponible.
  *
- * La URL de la agenda vive en `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL`. En
- * este repo las env solo entran por deploy (ver
- * feedback_hub_env_solo_entra_por_deploy), así que el formulario tiene que
- * funcionar igual sin ella: si viene vacía, el agradecimiento se muestra
- * solo, sin iframe. Nunca un iframe roto.
+ * La URL de la agenda vive en `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL`. Next
+ * inlinea las `NEXT_PUBLIC_*` en build, y este repo compila en el servidor al
+ * desplegar — así que la variable no existe hasta el próximo deploy y el
+ * formulario tiene que funcionar igual sin ella: si viene vacía o mal puesta
+ * (`urlAgenda` la rechaza), el agradecimiento se muestra solo, sin iframe.
+ * Nunca un iframe roto.
  */
 export default function GuiaTerrenosForm() {
   const t = useTranslations('common');
   const tg = useTranslations('guias.terrenosResidenciales');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  const agendaUrl = process.env.NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL || '';
+  const rawAgendaUrl = process.env.NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL || '';
+  const agendaUrl = rawAgendaUrl ? urlAgenda(rawAgendaUrl) : null;
+
+  // Al pasar a 'sent' el <form> se desmonta y con él el botón que tenía el
+  // foco: se cae al <body> y quien navega con teclado o lector de pantalla no
+  // recibe ningún aviso de que el envío funcionó. Mismo patrón que
+  // FormCasas.tsx. `.focus()` también hace scroll, así que cubre el caso
+  // móvil sin necesitar `scrollIntoView`.
+  const confirmacion = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status === 'sent') confirmacion.current?.focus();
+  }, [status]);
 
   const { register, handleSubmit, control, trigger, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -54,15 +87,15 @@ export default function GuiaTerrenosForm() {
 
   if (status === 'sent') {
     return (
-      <div data-testid="guia-terrenos-gracias">
+      <div ref={confirmacion} tabIndex={-1} role="status" data-testid="guia-terrenos-gracias">
         <h3 className="text-xl font-bold text-[#1A2F3F]">{tg('formGracias')}</h3>
         {agendaUrl ? (
           <>
             <p className="mt-2 text-gray-700">{tg('agendaBody')}</p>
             <iframe
               title={tg('agendaTitle')}
-              src={`${agendaUrl}?gv=true`}
-              className="mt-4 w-full h-[600px] rounded-xl border border-gray-200"
+              src={agendaUrl}
+              className="mt-4 w-full h-[520px] sm:h-[600px] rounded-xl border border-gray-200"
               loading="lazy"
             />
           </>
@@ -176,7 +209,7 @@ export default function GuiaTerrenosForm() {
         {status === 'sending' ? tg('formEnviando') : tg('formEnviar')}
       </button>
 
-      {status === 'error' && <p className="text-sm text-red-500 text-center">{tg('formError')}</p>}
+      {status === 'error' && <p role="alert" className="text-sm text-red-500 text-center">{tg('formError')}</p>}
     </form>
   );
 }
