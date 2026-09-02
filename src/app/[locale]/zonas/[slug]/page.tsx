@@ -53,6 +53,29 @@ const UNIQUE_ZONES = ZONE_CONFIGS.reduce((acc, z) => {
 // (sin cookies) — objetivo original de B2 (33e2eb6), ahora viable.
 export const revalidate = 3600;
 
+/**
+ * Soft-404: un slug inventado respondia 200 con el cuerpo del 404 (tarjeta
+ * #676). La causa no es que falte el `notFound()` de abajo — se ejecuta —, es
+ * que la respuesta va en streaming: la linea de estado sale con 200 antes de
+ * que el componente resuelva, asi que `notFound()` solo alcanza a cambiar el
+ * cuerpo. Lo documenta, medido el 29-jul, el comentario de
+ * `desarrollos/_components/DevelopmentDetailPage.tsx:101-110`.
+ *
+ * `dynamicParams = false` mueve el rechazo al ENRUTADOR, antes de que se
+ * transmita nada, y ahi el 404 si es un 404. Es el mismo arreglo que cerro la
+ * #235 en `/desarrollos/tipo/[type]`.
+ *
+ * Es aplicable aqui, y solo aqui de las tres rutas de la #676, porque la lista
+ * de zonas NO sale de la base: UNIQUE_ZONES se deriva de
+ * MARKET_SUBMARKET_TO_ZONE, que es una constante del codigo. Agregar una zona
+ * ya exigia recompilar, asi que cerrar la lista no quita nada.
+ *
+ * `/desarrollos/<slug>` y `/blog/<slug>` resuelven contra Supabase y no pueden
+ * usar esto: un contenido nuevo tiene que funcionar sin recompilar. Esas van
+ * por el middleware, que es el unico lugar donde el status se puede fijar.
+ */
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return UNIQUE_ZONES.map((z) => ({ slug: z.slug }));
 }
@@ -64,9 +87,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const zoneConfig = UNIQUE_ZONES.find((z) => z.slug === slug);
-  const zoneName = zoneConfig?.zone || slug.replace(/-/g, ' ');
-  const cityName = zoneConfig?.city || 'Cancun';
   const isEn = locale === 'en';
+
+  // Sin este guardia, un slug inventado producia metadata PLAUSIBLE: el titulo
+  // salia como «basura xyz 123, Cancun — Analisis de Mercado de Renta
+  // Vacacional» porque el nombre se rellenaba con el slug humanizado y la
+  // ciudad con 'Cancun'. Medido en produccion el 2026-09-02 (tarjeta #676).
+  // Para un buscador eso es peor que un 200 con cuerpo de 404 —el titulo es
+  // unico y creible por cada slug— y para quien lo lea es una afirmacion falsa:
+  // analisis de mercado de un lugar que no existe.
+  //
+  // Con `dynamicParams = false` esta rama ya no deberia alcanzarse, porque el
+  // enrutador rechaza antes. Se queda como red: si alguien reabre los params
+  // dinamicos, el fallo no vuelve a colarse en silencio.
+  if (!zoneConfig) {
+    return {
+      title: isEn ? 'Zone not found' : 'Zona no encontrada',
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const zoneName = zoneConfig.zone;
+  const cityName = zoneConfig.city;
 
   // El template del root layout ('%s | Propyte') ya añade el sufijo de marca.
   const title = isEn
