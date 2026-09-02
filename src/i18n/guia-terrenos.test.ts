@@ -44,6 +44,12 @@ const VOZ_PERSONAL: ReadonlyArray<readonly [string, RegExp]> = [
   ['en: mine', /\bmine\b/i],
   ['en: personally', /\bpersonally\b/i],
   ['en: myself', /\bmyself\b/i],
+  // `me`/`myself` en caso OBJETO ("write to me", "let me"): el patrón de
+  // arriba (`my`) no cubre esta forma, y es justo la que usa un asesor que
+  // evita el sujeto "I" pero sigue hablando en singular ("Write to me
+  // directly"). Ronda de revisión: se demostró que el guardia anterior no
+  // la atrapaba.
+  ['en: me/myself (objeto)', /\b(?:me|myself)\b/i],
   // Español. Pronombres y posesivos de primera persona del singular, más los
   // verbos que delatan a un asesor hablando de sí mismo.
   ['es: yo', /\byo\b/i],
@@ -53,6 +59,17 @@ const VOZ_PERSONAL: ReadonlyArray<readonly [string, RegExp]> = [
   ['es: soy', /\bsoy\b/i],
   ['es: personalmente', /\bpersonalmente\b/i],
   ['es: me + verbo', /\bme (encantar|gustar|dar[íi]a|comprometo)/i],
+  // Desinencia de primera persona del singular en verbos comunes de venta
+  // ("acompaño", "reviso", "contesto"...). Ronda de revisión: un asesor puede
+  // evadir TODOS los pronombres/posesivos de arriba y aun así hablar en
+  // singular con la conjugación del verbo.
+  [
+    'es: verbo en 1ª sing',
+    /\b(?:acompañ|conozc|llev|revis|contest|trabaj|quier|pued|est|teng|hag|voy)o\b/i,
+  ],
+  // El sustantivo que delata al asesor hablando por sí mismo en vez de por el
+  // equipo, en los dos idiomas.
+  ['es/en: asesor/advisor', /\b(?:tu asesor|como asesor|your advisor|as your advisor)\b/i],
 ];
 
 /** Devuelve las marcas de voz personal que encuentra. Vacío = voz de equipo. */
@@ -139,6 +156,25 @@ describe('guias.terrenosResidenciales', () => {
     it('el guardia no muerde un cierre en voz de equipo (control negativo)', () => {
       expect(vozPersonal('Nuestro equipo puede acompañarte a encontrar el proyecto.')).toEqual([]);
       expect(vozPersonal('Our team can help you find the project that fits you.')).toEqual([]);
+    });
+
+    it('el guardia atrapa las evasiones de la ronda de revisión (control positivo, ronda 2)', () => {
+      // Estas dos frases pasaban 19/19 con el guardia original: evaden todos
+      // los pronombres/posesivos de primera persona pero siguen hablando en
+      // singular — con desinencias verbales, con "asesor" y con el "me" en
+      // caso objeto del inglés. Fijadas literalmente para que esta verificación
+      // no dependa de que alguien las reescriba parecido.
+      expect(
+        vozPersonal(
+          'Nuestro equipo está para ayudarte. Como asesor tuyo, te acompaño en cada paso, ' +
+            'reviso contigo cada opción y contesto lo que haga falta.',
+        ),
+      ).not.toEqual([]);
+      expect(
+        vozPersonal(
+          "Our team is here for you. Write to me directly and we'll go through the shortlist together.",
+        ),
+      ).not.toEqual([]);
     });
 
     it.each(IDIOMAS)('el cierre publicado no habla en singular ($locale)', ({ ns }) => {

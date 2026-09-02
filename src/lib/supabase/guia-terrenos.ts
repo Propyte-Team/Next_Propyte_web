@@ -64,7 +64,14 @@ export interface ProyectoGuia {
   plazos: PlazoOpcion[];
   /** Redactado en lenguaje de comprador cuando no hay plan de mensualidades. */
   motivoSinPlan: string | null;
-  /** El mismo motivo que `motivoSinPlan`, como código traducible. Ver `LoteComparable`. */
+  /**
+   * El mismo motivo que `motivoSinPlan`, como código traducible (ver
+   * `LoteComparable`). A diferencia de `motivoSinPlan` — que SIEMPRE es el de
+   * la unidad representativa — este código es `null` salvo que TODOS los
+   * lotes del desarrollo coincidan en él: es un hecho de una fila, y este
+   * campo solo lo publica cuando también es un hecho del desarrollo. Ver
+   * `agruparPorProyecto`.
+   */
   motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'];
   /**
    * El plazo MÁS LARGO: la mensualidad más baja, con SU propio precio al lado.
@@ -163,6 +170,21 @@ export function agruparPorProyecto(
 
     const desde = elegirDesde(representativa);
 
+    // El código del motivo solo se publica si TODOS los lotes del desarrollo
+    // coinciden en él. `representativa` es el lote más barato por precio de
+    // LISTA — una fila, no el desarrollo entero — y su código puede ser un
+    // hecho de esa fila nada más: `condiciones_cambiando` es, por
+    // construcción, un fallo de reconstrucción de precio de ESA unidad, y
+    // `contado` generaliza "el desarrollador no publica plan" desde una sola
+    // fila aunque el resto sí lo publique. Con un desacuerdo, cae a `null`
+    // (la clave genérica `sinPlan`, que nunca miente porque no afirma nada
+    // específico).
+    const motivoSinPlanCodigo = lista.every(
+      (l) => l.motivoSinPlanCodigo === representativa.motivoSinPlanCodigo,
+    )
+      ? representativa.motivoSinPlanCodigo
+      : null;
+
     // El plazo más largo: la mensualidad más baja. Se publica con SU propio
     // precio (`desde.precioMxn` sería el de OTRO plazo si `desde.base` es
     // 'plazo' con menos meses, o directamente no aplica si es 'contado'/'lista').
@@ -189,7 +211,7 @@ export function agruparPorProyecto(
       precioPorM2Mxn: superficieUtil === null ? null : Math.round(desde.precioMxn / superficieUtil),
       plazos: representativa.plazos,
       motivoSinPlan: representativa.motivoSinPlan,
-      motivoSinPlanCodigo: representativa.motivoSinPlanCodigo,
+      motivoSinPlanCodigo,
       contado: representativa.contado,
       mensualidad:
         plazoMasLargo === null

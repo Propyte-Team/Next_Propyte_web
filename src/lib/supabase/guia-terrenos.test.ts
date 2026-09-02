@@ -404,13 +404,33 @@ describe('agruparPorProyecto', () => {
   // ============================================================
   // Task 6b — `motivoSinPlanCodigo` viaja junto con `motivoSinPlan`: la guía
   // bilingüe traduce el código, la LP monolingüe sigue usando la prosa.
+  //
+  // Ronda de revisión: el código NO puede ser una copia ciega de la unidad
+  // representativa (la más barata por precio de lista). Esa unidad es UNA
+  // FILA, y `condiciones_cambiando` o `contado` son hechos de esa fila, no
+  // necesariamente del desarrollo entero — un desarrollo con 5 lotes puede
+  // tener 4 con plan y 1 sin él. El código solo se publica cuando TODOS los
+  // lotes del desarrollo coinciden; si no, cae a `null` (la clave genérica
+  // `sinPlan`, que nunca miente).
   // ============================================================
 
-  it('propaga `motivoSinPlanCodigo` de la unidad representativa, igual que `motivoSinPlan`', () => {
+  it('propaga `motivoSinPlanCodigo` cuando TODOS los lotes del desarrollo coinciden', () => {
+    // Dos lotes del mismo desarrollo, mismo código. El más caro va PRIMERO en
+    // el array: si la propagación tomara `lista[0]` en vez de la unidad
+    // representativa (la más barata por precio de lista), este orden lo
+    // delataría en cuanto alguno de los dos difiriera — aquí no difieren, así
+    // que el resultado no debería cambiar con el orden.
     const [p] = agruparPorProyecto(
       [
         comparable({
-          id: 'sin-plan-tasa', developmentId: 'tulum', precioListaMxn: 1_000_000,
+          id: 'caro', developmentId: 'tulum', precioListaMxn: 900_000,
+          plazos: [], contado: null,
+          motivoSinPlan:
+            'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+          motivoSinPlanCodigo: 'tasa_por_confirmar',
+        }),
+        comparable({
+          id: 'barato', developmentId: 'tulum', precioListaMxn: 300_000,
           plazos: [], contado: null,
           motivoSinPlan:
             'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
@@ -423,8 +443,7 @@ describe('agruparPorProyecto', () => {
   });
 
   it('`motivoSinPlanCodigo` es null cuando la unidad representativa sí publica plan', () => {
-    // Mata la mutación que deja `motivoSinPlanCodigo` pegado a un valor fijo
-    // (o al de otra unidad) en vez de copiar el de la representativa.
+    // Mata la mutación que deja `motivoSinPlanCodigo` pegado a un valor fijo.
     const [p] = agruparPorProyecto(
       [
         comparable({
@@ -437,5 +456,63 @@ describe('agruparPorProyecto', () => {
       DESARROLLOS,
     );
     expect(p.motivoSinPlanCodigo).toBeNull();
+  });
+
+  it('el código NO se publica cuando los lotes del desarrollo no coinciden en el motivo (mezcla)', () => {
+    // Caso real y probable, no hipotético: `condiciones_cambiando` es un
+    // fallo de reconstrucción de precio DE UNA FILA, así que es esperable que
+    // el lote más barato lo tenga y otro lote del mismo desarrollo sí publique
+    // plan. Publicar "las condiciones de pago de ESTE PROYECTO cambiaron"
+    // desde un solo lote sería una afirmación falsa sobre el desarrollo
+    // entero — y "el desarrollador no publica plan" (código `contado`) sería
+    // peor: generaliza a la desarrolladora completa desde una fila.
+    const [p] = agruparPorProyecto(
+      [
+        // Más caro y CON plan — no debe contagiar su ausencia de código al
+        // resultado, pero tampoco debe dejar pasar el código del otro lote.
+        comparable({
+          id: 'con-plan', developmentId: 'tulum', precioListaMxn: 900_000,
+          plazos: [plazo({ meses: 12, precioMxn: 800_000 })],
+          motivoSinPlan: null,
+          motivoSinPlanCodigo: null,
+        }),
+        // El más barato (representativa): sin plan, con código.
+        comparable({
+          id: 'barato-condiciones-cambiando', developmentId: 'tulum', precioListaMxn: 300_000,
+          plazos: [], contado: null,
+          motivoSinPlan:
+            'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.',
+          motivoSinPlanCodigo: 'condiciones_cambiando',
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.motivoSinPlanCodigo).toBeNull();
+  });
+
+  it('el código SÍ se publica cuando dos lotes distintos coinciden en el mismo motivo sin plan', () => {
+    // Control negativo del test anterior: la mezcla no es "cualquier proyecto
+    // con más de un lote sin plan", es específicamente un DESACUERDO. Con dos
+    // lotes que SÍ están de acuerdo, el código se publica igual.
+    const [p] = agruparPorProyecto(
+      [
+        comparable({
+          id: 'contado-1', developmentId: 'tulum', precioListaMxn: 900_000,
+          plazos: [], contado: { descuentoPct: 0, precioMxn: 900_000, enganchePct: 100, contraentregaPct: 0 },
+          motivoSinPlan:
+            'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+          motivoSinPlanCodigo: 'contado',
+        }),
+        comparable({
+          id: 'contado-2', developmentId: 'tulum', precioListaMxn: 300_000,
+          plazos: [], contado: { descuentoPct: 0, precioMxn: 300_000, enganchePct: 100, contraentregaPct: 0 },
+          motivoSinPlan:
+            'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+          motivoSinPlanCodigo: 'contado',
+        }),
+      ],
+      DESARROLLOS,
+    );
+    expect(p.motivoSinPlanCodigo).toBe('contado');
   });
 });

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { construirComparables, type FilaComparador } from './lp-lotes-comparador';
 
@@ -309,13 +311,14 @@ describe('construirComparables', () => {
       );
     });
 
-    it('invariante: `motivoSinPlan` y `motivoSinPlanCodigo` nunca se desincronizan, en ningún fixture', () => {
-      // El invariante que importa de verdad: si alguien añade una quinta rama
-      // al gate (o reordena las existentes) y se olvida de asignar el código,
-      // este test revienta antes que la guía bilingüe publique un motivo sin
-      // traducir. Se ejercita sobre TODOS los fixtures del archivo —los que sí
-      // publican plan y los que no— para que no baste con hacerlo bien en uno
-      // solo.
+    it('invariante: `motivoSinPlan` y `motivoSinPlanCodigo` nunca se desincronizan, en los fixtures declarados', () => {
+      // OJO — lo que este test SÍ y NO cubre (ronda de revisión):
+      // atrapa una rama reordenada o un código que se pega a un valor fijo,
+      // en cualquiera de los fixtures de abajo. NO atrapa una rama NUEVA cuya
+      // condición ningún fixture ejercita (ninguno de estos fixtures entra
+      // por ella, así que el `for` de abajo nunca la ve). Ese caso lo cubre
+      // el test de la fuente, más abajo, que cuenta asignaciones en el propio
+      // archivo en vez de depender de qué fixtures existen hoy.
       const todos = construirComparables(
         [
           ARRECIFES,
@@ -339,6 +342,49 @@ describe('construirComparables', () => {
       // comprobación de arriba pasaría vacía por casualidad.
       expect(todos.some((l) => l.motivoSinPlan === null)).toBe(true);
       expect(todos.some((l) => l.motivoSinPlan !== null)).toBe(true);
+    });
+
+    it('invariante DE FUENTE: el gate asigna motivoSinPlanCodigo el mismo número de veces que motivoSinPlan', () => {
+      // El test anterior solo ve las ramas que ALGÚN fixture ejercita. Si
+      // alguien añade una quinta rama al gate con una condición que ningún
+      // fixture dispara (p.ej. un umbral de precio absurdo), esa rama puede
+      // redactar prosa y olvidar el código sin que ningún fixture lo note —
+      // se demostró exactamente así en la revisión de esta tarea. Este test
+      // no depende de fixtures: lee el ARCHIVO FUENTE y cuenta cuántas veces
+      // el gate asigna cada campo. Si un día no coinciden, alguien escribió
+      // una rama asimétrica, sin importar si algo la ejercita todavía.
+      const fuente = readFileSync(
+        path.join(import.meta.dirname, 'lp-lotes-comparador.ts'),
+        'utf8',
+      );
+
+      const inicio = fuente.indexOf('// El gate, en lenguaje de comprador.');
+      const fin = fuente.indexOf('lotes.push({', inicio);
+      expect(inicio, 'no se encontró el comentario que marca el inicio del gate').toBeGreaterThan(
+        -1,
+      );
+      expect(fin, 'no se encontró el `lotes.push(` que cierra el gate').toBeGreaterThan(inicio);
+      const bloqueGate = fuente.slice(inicio, fin);
+
+      // `\s*=(?!=)` exige el `=` de asignación (nunca `==`/`===`) precedido
+      // solo por espacio/salto de línea desde el nombre — así NO cuenta la
+      // declaración `let motivoSinPlan: string | null = null;` (hay un `:` y
+      // un tipo de por medio, no un espacio) ni la de
+      // `motivoSinPlanCodigo`. El `(?!Codigo)` es una segunda red para que
+      // `motivoSinPlan =` nunca cace una ocurrencia de `motivoSinPlanCodigo =`.
+      const asignacionesProsa = bloqueGate.match(/\bmotivoSinPlan(?!Codigo)\s*=(?!=)/g) ?? [];
+      const asignacionesCodigo = bloqueGate.match(/\bmotivoSinPlanCodigo\s*=(?!=)/g) ?? [];
+
+      // Si esto da 0, el marcador de arriba quedó desactualizado (alguien
+      // reescribió el comentario del gate) y el test pasaría vacío por
+      // accidente: mejor que reviente aquí y avise.
+      expect(
+        asignacionesProsa.length,
+        'no se detectó ninguna asignación de motivoSinPlan dentro del gate: revisa los marcadores de inicio/fin de este test',
+      ).toBeGreaterThan(0);
+      expect(asignacionesCodigo.length, 'motivoSinPlanCodigo no se asigna el mismo número de veces que motivoSinPlan dentro del gate').toBe(
+        asignacionesProsa.length,
+      );
     });
   });
 });
