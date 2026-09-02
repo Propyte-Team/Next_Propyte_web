@@ -37,7 +37,7 @@ export const AMENITIES: AmenityDef[] = [
   { key: 'lounge', es: 'Lounge / Coworking', en: 'Lounge / Coworking', icon: Coffee, match: /lounge|coworking|business center/i },
   { key: 'cocina_equipada', es: 'Cocina equipada', en: 'Equipped Kitchen', icon: ChefHat, match: /cocina|kitchen/i },
   { key: 'spa', es: 'Spa', en: 'Spa', icon: Spa, match: /spa|sauna|jacuzzi/i },
-  { key: 'aire_acondicionado', es: 'Aire acondicionado', en: 'Air Conditioning', icon: Wind, match: /aire|ac|a\/c|air cond|minisplit/i },
+  { key: 'aire_acondicionado', es: 'Aire acondicionado', en: 'Air Conditioning', icon: Wind, match: /aire|\bac\b|a\/c|air cond|minisplit/i },
   { key: 'terraza', es: 'Terraza / Roof garden', en: 'Terrace / Roof Garden', icon: Sun, match: /terraza|terrace|roof|azotea/i },
   { key: 'elevador', es: 'Elevador', en: 'Elevator', icon: Building, match: /elevador|elevator|ascensor/i },
   { key: 'ciclopista', es: 'Ciclopista', en: 'Bike Lane', icon: Bike, match: /ciclopista|bike|bici/i },
@@ -59,6 +59,10 @@ export const AMENITIES: AmenityDef[] = [
   { key: 'fire_pit', es: 'Fogatero', en: 'Fire pit', icon: Flame, match: /fire ?pit|fogatero|fogata/i },
   { key: 'lobby', es: 'Lobby', en: 'Lobby', icon: Building, match: /lobby|recepci[oó]n/i },
   { key: 'concierge', es: 'Concierge', en: 'Concierge', icon: Users, match: /concierge|conserje/i },
+  // Con la frontera puesta en `ac`, esta cadena ya no matchea nada: sin esta
+  // entrada caeria al fallback crudo. Las 3 alternativas van juntas aunque
+  // `caseta de vigilancia` hoy no puede ganar: `seguridad` la caza antes.
+  { key: 'acceso_controlado', es: 'Acceso controlado', en: 'Controlled access', icon: Shield, match: /acceso\s*controlado|controlled\s*access|caseta\s*de\s*vigilancia/i },
 ];
 
 /**
