@@ -21,7 +21,7 @@ interface AmenityDef {
   match: RegExp;
 }
 
-const AMENITIES: AmenityDef[] = [
+export const AMENITIES: AmenityDef[] = [
   // Alberca PRIVADA (de la unidad) — debe ir ANTES de la genérica porque el
   // match es "primer canónico que coincide" (.find en orden). Sin esto,
   // "Alberca Privada" caía en la genérica y se mostraba igual que la comunal.

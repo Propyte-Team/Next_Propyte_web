@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { AMENITIES } from '@/components/property/AmenityList';
 import { formatArea, formatPrice } from '@/lib/formatters';
-import { ArrowRight, Building2, MapPin } from '@/lib/icons';
+import { ArrowRight, Building2, CheckCircle2, MapPin } from '@/lib/icons';
+import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import type { PlazoOpcion } from '@/lib/supabase/lp-lotes-comparador';
 import type { ProyectoGuia } from '@/lib/supabase/guia-terrenos';
 import type { Traductor } from './BloquesEstaticos';
@@ -94,6 +96,35 @@ export function plazoDeLaMensualidad(proyecto: ProyectoGuia): PlazoOpcion | null
 /** Tope de chips de amenidades. El resto se resume en un «+N» sin palabras. */
 const CHIPS_MAX = 8;
 
+/**
+ * Las amenidades del Hub, resueltas contra la tabla canónica de `AmenityList`
+ * — la MISMA tabla, importada, no una copia: son 23 regex y duplicarlas era
+ * garantizar que un día divergieran.
+ *
+ * No se usa el componente `AmenityList` entero porque está hecho para una
+ * sección de página de detalle (sus dos únicos usos son eso) y no cabe en una
+ * tarjeta: emite un `<h2>` propio que no se puede suprimir —dentro de este
+ * `<article>`, cuyo título es un `<h3>`, sería un encabezado suelto por
+ * ficha— y maqueta `md:grid-cols-4` con `truncate`, que en una tarjeta de un
+ * tercio de ancho recorta cada etiqueta a unos pocos caracteres.
+ *
+ * EL FALLBACK. `AmenityList` publica la cadena CRUDA del Hub cuando no
+ * matchea ninguna regla. En español eso está bien —es el dato tal cual—, pero
+ * en `/en` es texto en español. Aquí la cruda se conserva en español y se
+ * DESCARTA en inglés: una amenidad menos en la tarjeta inglesa es más barato
+ * que una amenidad en español dentro de la página inglesa, y la ficha del
+ * desarrollo —a un clic— las publica todas.
+ */
+function amenidadesTraducidas(crudas: string[], locale: string) {
+  return crudas.flatMap((cruda) => {
+    const canonica = AMENITIES.find((c) => c.match.test(cruda));
+    if (canonica) {
+      return [{ etiqueta: locale === 'en' ? canonica.en : canonica.es, Icono: canonica.icon }];
+    }
+    return locale === 'en' ? [] : [{ etiqueta: cruda, Icono: CheckCircle2 }];
+  });
+}
+
 interface Props {
   proyecto: ProyectoGuia;
   locale: string;
@@ -106,8 +137,9 @@ export default function FichaProyecto({ proyecto, locale, t }: Props) {
   const mensualidad = proyecto.mensualidad;
   const plazo = plazoDeLaMensualidad(proyecto);
 
-  const chips = proyecto.amenidades.slice(0, CHIPS_MAX);
-  const chipsRestantes = proyecto.amenidades.length - chips.length;
+  const amenidades = amenidadesTraducidas(proyecto.amenidades, locale);
+  const chips = amenidades.slice(0, CHIPS_MAX);
+  const chipsRestantes = amenidades.length - chips.length;
 
   // La retícula de datos duros. Cada `push` es condicional: lo que no existe
   // no entra al array y por lo tanto no se dibuja.
@@ -135,7 +167,13 @@ export default function FichaProyecto({ proyecto, locale, t }: Props) {
     });
   }
   if (proyecto.entregaTexto) {
-    datos.push({ etiqueta: t('colEntrega'), valor: proyecto.entregaTexto });
+    // `delivery_text` es texto libre del Hub, en español, y no tiene columna
+    // `_en`: la traducción del vocabulario de fecha («Invierno 2027») es
+    // responsabilidad del render, igual que en la ficha de desarrollo.
+    datos.push({
+      etiqueta: t('colEntrega'),
+      valor: translateDateWords(proyecto.entregaTexto, locale),
+    });
   }
 
   return (
@@ -166,14 +204,27 @@ export default function FichaProyecto({ proyecto, locale, t }: Props) {
           <span>{proyecto.zona ? `${proyecto.zona}, ${proyecto.ciudad}` : proyecto.ciudad}</span>
         </p>
 
+        {/* `> 0` y no `!== null`: «0 lotes en el proyecto» es un hueco
+            disfrazado de dato, y la regla es que lo que no existe no se
+            dibuja. */}
+        {proyecto.totalUnidades !== null && proyecto.totalUnidades > 0 && (
+          <p className="mt-1 text-sm tabular-nums text-gray-500">
+            {t('fichaUnidades', { total: proyecto.totalUnidades })}
+          </p>
+        )}
+
         {chips.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-1.5">
-            {chips.map((amenidad) => (
+            {chips.map(({ etiqueta, Icono }, i) => (
               <li
-                key={amenidad}
-                className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-700"
+                // Índice en la clave: dos crudas distintas pueden colapsar en
+                // la misma canónica («Alberca comunitaria» y «Piscina» →
+                // «Alberca»), y la etiqueta sola daría claves repetidas.
+                key={`${etiqueta}-${i}`}
+                className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs text-gray-700"
               >
-                {amenidad}
+                <Icono size={13} className="shrink-0 text-[#0E7490]" aria-hidden="true" />
+                {etiqueta}
               </li>
             ))}
             {chipsRestantes > 0 && (

@@ -3213,6 +3213,7 @@
       "agendaBody": "Choose the day and time that work for you. We'll email you the invitation with the video call link.",
       "disclaimer": "Prices, financing terms and availability are subject to change without notice. The information shown corresponds to the most recent published update for each development.",
       "verFicha": "View the listing",
+      "fichaUnidades": "{total} lots in the project",
       "sinPlan": "Ask us about this project's current payment terms.",
       "baseContado": "paid in full",
       "baseContadoParcial": "{enganche}% on signing and {contraentrega}% on delivery",

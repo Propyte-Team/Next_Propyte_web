@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { formatArea, formatPrice } from '@/lib/formatters';
+import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import type { ProyectoGuia } from '@/lib/supabase/guia-terrenos';
 import type { Traductor } from './BloquesEstaticos';
 import { explicacionSinPlan, plazoDeLaMensualidad, rotuloBase } from './FichaProyecto';
@@ -136,7 +137,12 @@ export default function TablaComparativa({ proyectos, locale, t }: Props) {
                     : explicacionSinPlan(p, t)}
                 </td>
 
-                <td className={`${celda} text-gray-600`}>{p.entregaTexto}</td>
+                {/* `delivery_text` es texto libre en español y sin columna
+                    `_en` en el Hub: el vocabulario de fecha se traduce en el
+                    render, igual que en la ficha de desarrollo. */}
+                <td className={`${celda} text-gray-600`}>
+                  {p.entregaTexto ? translateDateWords(p.entregaTexto, locale) : null}
+                </td>
               </tr>
             );
           })}

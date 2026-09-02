@@ -3213,6 +3213,7 @@
       "agendaBody": "Selecciona el día y la hora que te acomoden. Te llega la invitación por correo con la liga de la videollamada.",
       "disclaimer": "Los precios, los esquemas de financiamiento y la disponibilidad pueden cambiar sin previo aviso. La información corresponde a la última actualización publicada de cada desarrollo.",
       "verFicha": "Ver ficha del desarrollo",
+      "fichaUnidades": "{total} lotes en el proyecto",
       "sinPlan": "Pregúntanos por las condiciones de pago vigentes de este proyecto.",
       "baseContado": "de contado",
       "baseContadoParcial": "{enganche}% al firmar y {contraentrega}% contra entrega",
