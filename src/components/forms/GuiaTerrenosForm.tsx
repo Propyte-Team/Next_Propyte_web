@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { submitLead } from '@/lib/leads/submit-lead';
 import { AlertCircle } from '@/lib/icons';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
+import AgendaModal from './AgendaModal';
 
 const schema = z.object({
   name: z.string().min(1, 'required'),
@@ -46,9 +47,15 @@ function urlAgenda(raw: string): string | null {
  * El orden importa y es decisión de negocio: primero el lead, después el
  * calendario. Un embed de Google suelto se lleva al prospecto a la agenda sin
  * dejar rastro en el CRM — ni lead, ni UTMs, ni atribución de campaña. Por
- * eso el bloque de agenda solo aparece cuando `submitLead` ya confirmó el
- * envío; no hay `reset()` al llegar a 'sent' — el formulario se sustituye
- * por el agradecimiento y el iframe, no vuelve a estar disponible.
+ * eso la agenda solo aparece cuando `submitLead` ya confirmó el envío; no hay
+ * `reset()` al llegar a 'sent' — el formulario se sustituye por el
+ * agradecimiento y no vuelve a estar disponible.
+ *
+ * La agenda va en una CAPA (`AgendaModal`), no en el flujo de la página, y con
+ * el scroll del body bloqueado: en línea, la rueda sobre el calendario movía
+ * la página 250 px por gesto y la agenda se le iba de la pantalla al visitante
+ * mientras elegía horario. El porqué está en el docblock de `AgendaModal`,
+ * incluido el CSS que se probó y NO lo arregla.
  *
  * La URL de la agenda vive en `NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL`. Next
  * inlinea las `NEXT_PUBLIC_*` en build, y este repo compila en el servidor al
@@ -61,6 +68,9 @@ export default function GuiaTerrenosForm() {
   const t = useTranslations('common');
   const tg = useTranslations('guias.terrenosResidenciales');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  // Se abre sola al enviar, para no meter un clic extra en el camino de
+  // conversión, y el botón de abajo la reabre si el visitante la cierra.
+  const [agendaAbierta, setAgendaAbierta] = useState(false);
 
   const rawAgendaUrl = process.env.NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL || '';
   const agendaUrl = rawAgendaUrl ? urlAgenda(rawAgendaUrl) : null;
@@ -72,7 +82,8 @@ export default function GuiaTerrenosForm() {
   // móvil sin necesitar `scrollIntoView`.
   const confirmacion = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (status === 'sent') confirmacion.current?.focus();
+    if (status !== 'sent') return;
+    confirmacion.current?.focus();
   }, [status]);
 
   const { register, handleSubmit, control, trigger, formState: { errors } } = useForm<FormData>({
@@ -82,25 +93,42 @@ export default function GuiaTerrenosForm() {
   async function onSubmit(data: FormData) {
     setStatus('sending');
     const result = await submitLead('guia_terrenos', data);
+    // La capa se abre AQUÍ y no en un efecto: hacerlo en el efecto de `sent`
+    // dispara un render en cascada y el linter lo marca con razón. Aquí ya
+    // sabemos que el envío salió bien. Sin URL configurada no se abre nada —
+    // el agradecimiento se queda solo, nunca una capa vacía.
+    if (result.ok && agendaUrl) setAgendaAbierta(true);
     setStatus(result.ok ? 'sent' : 'error');
   }
 
   if (status === 'sent') {
     return (
-      <div ref={confirmacion} tabIndex={-1} role="status" data-testid="guia-terrenos-gracias">
-        <h3 className="text-xl font-bold text-[#1A2F3F]">{tg('formGracias')}</h3>
-        {agendaUrl ? (
-          <>
-            <p className="mt-2 text-gray-700">{tg('agendaBody')}</p>
-            <iframe
-              title={tg('agendaTitle')}
-              src={agendaUrl}
-              className="mt-4 w-full h-[520px] sm:h-[600px] rounded-xl border border-gray-200"
-              loading="lazy"
-            />
-          </>
-        ) : null}
-      </div>
+      <>
+        <div ref={confirmacion} tabIndex={-1} role="status" data-testid="guia-terrenos-gracias">
+          <h3 className="text-xl font-bold text-[#1A2F3F]">{tg('formGracias')}</h3>
+          {agendaUrl ? (
+            <>
+              <p className="mt-2 text-gray-700">{tg('agendaBody')}</p>
+              {/* Queda visible al cerrar la capa: el lead ya entró, pero si el
+                  visitante la cierra sin elegir horario tiene que poder volver
+                  sin recargar ni volver a llenar el formulario. */}
+              <button
+                type="button"
+                onClick={() => setAgendaAbierta(true)}
+                className="mt-4 inline-flex h-12 items-center justify-center rounded-lg bg-propyte-brand px-6 font-semibold text-[#0F1923] transition-colors hover:bg-propyte-cyan-200"
+              >
+                {tg('agendaTitle')}
+              </button>
+            </>
+          ) : null}
+        </div>
+        <AgendaModal
+          open={agendaAbierta}
+          onClose={() => setAgendaAbierta(false)}
+          agendaUrl={agendaUrl}
+          titulo={tg('agendaTitle')}
+        />
+      </>
     );
   }
 
