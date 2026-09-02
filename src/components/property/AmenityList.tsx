@@ -49,6 +49,16 @@ export const AMENITIES: AmenityDef[] = [
   { key: 'pet_friendly', es: 'Pet friendly', en: 'Pet Friendly', icon: PawPrint, match: /pet|mascot/i },
   { key: 'yoga', es: 'Área de Yoga', en: 'Yoga Area', icon: Flower2, match: /yoga/i },
   { key: 'cancha', es: 'Cancha deportiva', en: 'Sports Court', icon: Activity, match: /cancha|court|tenis|tennis|padel|pádel|basquetbol|basketball|volibol|voleibol|volleyball/i },
+  // ── Añadidas para la guía de terrenos (2026-09) ──────────────────────
+  // Las cuatro salían crudas del Hub con el icono genérico: están en las
+  // amenidades publicadas de los desarrollos de terrenos y ya se publicaban
+  // sin par ES/EN en la ficha de desarrollo y en la de unidad.
+  // Van AL FINAL: el match es "el primer canónico que coincide" (.find en
+  // orden), así que aquí no pueden ensombrecer ninguna regla existente.
+  { key: 'cctv', es: 'Circuito cerrado (CCTV)', en: 'CCTV', icon: Shield, match: /cctv|circuito cerrado|videovigilancia|video vigilancia/i },
+  { key: 'fire_pit', es: 'Fogatero', en: 'Fire pit', icon: Flame, match: /fire ?pit|fogatero|fogata/i },
+  { key: 'lobby', es: 'Lobby', en: 'Lobby', icon: Building, match: /lobby|recepci[oó]n/i },
+  { key: 'concierge', es: 'Concierge', en: 'Concierge', icon: Users, match: /concierge|conserje/i },
 ];
 
 /**
