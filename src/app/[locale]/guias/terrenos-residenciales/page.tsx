@@ -139,8 +139,14 @@ export default async function GuiaTerrenosResidencialesPage({ params }: PageProp
             <p className="mt-4 max-w-3xl leading-relaxed text-gray-700">{t('proyectosIntro')}</p>
 
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {proyectos.map((proyecto) => (
-                <FichaProyecto key={proyecto.id} proyecto={proyecto} locale={locale} t={t} />
+              {proyectos.map((proyecto, indice) => (
+                <FichaProyecto
+                  key={proyecto.id}
+                  proyecto={proyecto}
+                  locale={locale}
+                  t={t}
+                  indice={indice}
+                />
               ))}
             </div>
           </div>
