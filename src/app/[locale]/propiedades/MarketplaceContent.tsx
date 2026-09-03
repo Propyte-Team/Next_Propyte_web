@@ -99,7 +99,7 @@ export default function MarketplaceContent({
   // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
   // guardamos los IDs de las unidades agrupadas y restringimos el listado.
   const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
-  const { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling } = useFilters(properties);
+  const { filters, filtered, updateFilter, updateFilters, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling } = useFilters(properties);
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
@@ -208,6 +208,7 @@ export default function MarketplaceContent({
         <FilterBar
           filters={filters}
           onFilterChange={updateFilter}
+          onFiltersChange={updateFilters}
           onOpenAdvanced={() => setShowAdvanced(true)}
           advancedOpen={showAdvanced}
           resultCount={displayed.length}
@@ -307,6 +308,7 @@ export default function MarketplaceContent({
           onClose={() => setShowAdvanced(false)}
           filters={filters}
           onFilterChange={updateFilter}
+          onFiltersChange={updateFilters}
           onClear={clearFilters}
           availableCities={availableCities}
           availableZones={availableZones}
@@ -331,6 +333,7 @@ export default function MarketplaceContent({
       <FilterBar
         filters={filters}
         onFilterChange={updateFilter}
+        onFiltersChange={updateFilters}
         onOpenAdvanced={() => setShowAdvanced(true)}
         advancedOpen={showAdvanced}
         resultCount={filtered.length}
@@ -356,6 +359,7 @@ export default function MarketplaceContent({
         onClose={() => setShowAdvanced(false)}
         filters={filters}
         onFilterChange={updateFilter}
+        onFiltersChange={updateFilters}
         onClear={clearFilters}
         availableCities={availableCities}
         availableZones={availableZones}

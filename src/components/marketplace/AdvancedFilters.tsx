@@ -15,6 +15,9 @@ interface AdvancedFiltersProps {
   onClose: () => void;
   filters: Filters;
   onFilterChange: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
+  /** Cambio de varias claves en una sola actualización (ciudad+zona, rango de
+   *  precio). Dos `onFilterChange` seguidos disparan dos navegaciones. */
+  onFiltersChange: (patch: Partial<Filters>) => void;
   onClear: () => void;
   /** Mismos props que FilterBar — en mobile este modal es la ÚNICA forma de
    *  llegar a estos filtros (la fila de pills de escritorio está oculta),
@@ -58,6 +61,7 @@ export default function AdvancedFilters({
   onClose,
   filters,
   onFilterChange,
+  onFiltersChange,
   onClear,
   availableCities,
   availableZones,
@@ -103,181 +107,200 @@ export default function AdvancedFilters({
         </div>
 
         <div className="overflow-y-auto p-6 space-y-6">
-          {/* Búsqueda — sin equivalente en mobile antes de esto (la fila de
-              pills de escritorio, incluida la caja de búsqueda, está oculta
-              por completo en pantallas <md). */}
-          <div>
-            <label htmlFor="advanced-search" className="block text-sm font-medium text-gray-700 mb-2">
-              {t('searchPlaceholder')}
-            </label>
-            <input
-              id="advanced-search"
-              type="text"
-              value={filters.search}
-              onChange={(e) => onFilterChange('search', e.target.value)}
-              placeholder={t('searchPlaceholder')}
-              className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterLocation')}</label>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => { onFilterChange('city', ''); onFilterChange('zone', ''); }}
-                className={pillClass(!filters.city)}
-              >
-                {t('filterAll')}
-              </button>
-              {cityOptions.map((city) => (
-                <button
-                  key={city}
-                  onClick={() => {
-                    onFilterChange('city', filters.city === city ? '' : city);
-                    onFilterChange('zone', '');
-                  }}
-                  className={pillClass(filters.city === city)}
-                >
-                  {city}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {filters.city && zoneOptions.length > 0 && (
+          {/* Todo lo que la fila de pills de escritorio ya ofrece vive aquí y se
+              oculta en >=md: duplicar Ubicación/Precio/Tipo/Recámaras/Etapa/ROI
+              dentro del modal solo daba dos controles para el mismo filtro. En
+              mobile esa fila está oculta y este modal es la ÚNICA vía, así que
+              ahí siguen visibles todos. Uso queda fuera del wrapper porque no
+              tiene pill propia en ningún viewport. */}
+          <div className="md:hidden space-y-6">
+            {/* Búsqueda — sin equivalente en mobile antes de esto (la fila de
+                pills de escritorio, incluida la caja de búsqueda, está oculta
+                por completo en pantallas <md). */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterZone')}</label>
+              <label htmlFor="advanced-search" className="block text-sm font-medium text-gray-700 mb-2">
+                {t('searchPlaceholder')}
+              </label>
+              <input
+                id="advanced-search"
+                type="text"
+                value={filters.search}
+                onChange={(e) => onFilterChange('search', e.target.value)}
+                placeholder={t('searchPlaceholder')}
+                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterLocation')}</label>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => onFilterChange('zone', '')} className={pillClass(!filters.zone)}>
+                <button
+                  onClick={() => onFiltersChange({ city: '', zone: '' })}
+                  className={pillClass(!filters.city)}
+                >
                   {t('filterAll')}
                 </button>
-                {zoneOptions.map((zone) => (
+                {cityOptions.map((city) => (
                   <button
-                    key={zone}
-                    onClick={() => onFilterChange('zone', filters.zone === zone ? '' : zone)}
-                    className={pillClass(filters.zone === zone)}
+                    key={city}
+                    onClick={() => onFiltersChange({ city: filters.city === city ? '' : city, zone: '' })}
+                    className={pillClass(filters.city === city)}
                   >
-                    {zone}
+                    {city}
                   </button>
                 ))}
               </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterPriceRange')}</label>
-            <div className="flex items-center gap-2 mb-2">
-              <input
-                type="number"
-                value={filters.priceMin || ''}
-                onChange={(e) => onFilterChange('priceMin', Number(e.target.value) || 0)}
-                placeholder="Min"
-                aria-label={t('filterPriceMin')}
-                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-              />
-              <span className="text-gray-600 text-sm">—</span>
-              <input
-                type="number"
-                value={filters.priceMax < priceCeiling ? filters.priceMax : ''}
-                onChange={(e) => onFilterChange('priceMax', Number(e.target.value) || priceCeiling)}
-                placeholder="Max"
-                aria-label={t('filterPriceMax')}
-                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
-              />
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {PRICE_QUICK_PICKS(priceCeiling).map((p) => (
-                <button
-                  key={p.label}
-                  onClick={() => { onFilterChange('priceMin', p.min); onFilterChange('priceMax', p.max); }}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-teal-a11y hover:text-teal-a11y transition-colors"
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
+            {filters.city && zoneOptions.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterZone')}</label>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => onFilterChange('zone', '')} className={pillClass(!filters.zone)}>
+                    {t('filterAll')}
+                  </button>
+                  {zoneOptions.map((zone) => (
+                    <button
+                      key={zone}
+                      onClick={() => onFilterChange('zone', filters.zone === zone ? '' : zone)}
+                      className={pillClass(filters.zone === zone)}
+                    >
+                      {zone}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterType')}</label>
-            <div className="flex flex-wrap gap-2">
-              <button onClick={() => onFilterChange('type', '')} className={pillClass(!filters.type)}>
-                {t('filterAll')}
-              </button>
-              {typeOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => onFilterChange('type', filters.type === opt.value ? '' : opt.value)}
-                  className={pillClass(filters.type === opt.value)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterBedrooms')}</label>
-            <div className="flex flex-wrap gap-2">
-              {[0, 1, 2, 3, 4].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => onFilterChange('bedroomsMin', filters.bedroomsMin === n ? 0 : n)}
-                  className={pillClass(filters.bedroomsMin === n)}
-                >
-                  {n === 0 ? t('filterAll') : n >= 4 ? '4+ rec' : `${n} rec`}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterStage')}</label>
-            <div className="flex flex-wrap gap-2">
-              {stages.map(stage => (
-                <button
-                  key={stage}
-                  onClick={() => onFilterChange('stage', filters.stage === stage ? '' : stage)}
-                  className={pillClass(filters.stage === stage)}
-                >
-                  {tStages(stage)}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {showDevTypeFilter && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterDevType')}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterPriceRange')}</label>
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  type="number"
+                  value={filters.priceMin || ''}
+                  onChange={(e) => onFilterChange('priceMin', Number(e.target.value) || 0)}
+                  placeholder="Min"
+                  aria-label={t('filterPriceMin')}
+                  className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
+                />
+                <span className="text-gray-600 text-sm">—</span>
+                <input
+                  type="number"
+                  value={filters.priceMax < priceCeiling ? filters.priceMax : ''}
+                  onChange={(e) => onFilterChange('priceMax', Number(e.target.value) || priceCeiling)}
+                  placeholder="Max"
+                  aria-label={t('filterPriceMax')}
+                  className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-propyte-brand focus:outline-none"
+                />
+              </div>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => onFilterChange('developmentType', '')} className={pillClass(!filters.developmentType)}>
+                {PRICE_QUICK_PICKS(priceCeiling).map((p) => {
+                  const active = filters.priceMin === p.min && filters.priceMax === p.max;
+                  return (
+                    <button
+                      key={p.label}
+                      // Toggle: sin esto el atajo no se podía deshacer más que
+                      // editando los dos inputs a mano.
+                      onClick={() => onFiltersChange(
+                        active
+                          ? { priceMin: 0, priceMax: priceCeiling }
+                          : { priceMin: p.min, priceMax: p.max },
+                      )}
+                      aria-pressed={active}
+                      className={`px-3 py-1.5 text-xs border rounded-full transition-colors ${
+                        active
+                          ? 'bg-propyte-brand text-aztec border-propyte-brand'
+                          : 'border-gray-200 hover:border-teal-a11y hover:text-teal-a11y'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterType')}</label>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => onFilterChange('type', '')} className={pillClass(!filters.type)}>
                   {t('filterAll')}
                 </button>
-                {DEV_TYPES.map((dt) => (
+                {typeOptions.map((opt) => (
                   <button
-                    key={dt}
-                    onClick={() => onFilterChange('developmentType', filters.developmentType === dt ? '' : dt)}
-                    className={pillClass(filters.developmentType === dt)}
+                    key={opt.value}
+                    onClick={() => onFilterChange('type', filters.type === opt.value ? '' : opt.value)}
+                    className={pillClass(filters.type === opt.value)}
                   >
-                    {safeDevType(dt)}
+                    {opt.label}
                   </button>
                 ))}
               </div>
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">ROI</label>
-            <div className="flex flex-wrap gap-2">
-              {ROI_OPTIONS.map((roi) => (
-                <button
-                  key={roi}
-                  onClick={() => onFilterChange('roiMin', roi)}
-                  className={pillClass(filters.roiMin === roi)}
-                >
-                  {roi === 0 ? t('filterAll') : `${roi}%+`}
-                </button>
-              ))}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterBedrooms')}</label>
+              <div className="flex flex-wrap gap-2">
+                {[0, 1, 2, 3, 4].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => onFilterChange('bedroomsMin', filters.bedroomsMin === n ? 0 : n)}
+                    className={pillClass(filters.bedroomsMin === n)}
+                  >
+                    {n === 0 ? t('filterAll') : n >= 4 ? '4+ rec' : `${n} rec`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterStage')}</label>
+              <div className="flex flex-wrap gap-2">
+                {stages.map(stage => (
+                  <button
+                    key={stage}
+                    onClick={() => onFilterChange('stage', filters.stage === stage ? '' : stage)}
+                    className={pillClass(filters.stage === stage)}
+                  >
+                    {tStages(stage)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {showDevTypeFilter && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('filterDevType')}</label>
+                <div className="flex flex-wrap gap-2">
+                  <button onClick={() => onFilterChange('developmentType', '')} className={pillClass(!filters.developmentType)}>
+                    {t('filterAll')}
+                  </button>
+                  {DEV_TYPES.map((dt) => (
+                    <button
+                      key={dt}
+                      onClick={() => onFilterChange('developmentType', filters.developmentType === dt ? '' : dt)}
+                      className={pillClass(filters.developmentType === dt)}
+                    >
+                      {safeDevType(dt)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ROI</label>
+              <div className="flex flex-wrap gap-2">
+                {ROI_OPTIONS.map((roi) => (
+                  <button
+                    key={roi}
+                    onClick={() => onFilterChange('roiMin', roi)}
+                    className={pillClass(filters.roiMin === roi)}
+                  >
+                    {roi === 0 ? t('filterAll') : `${roi}%+`}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
