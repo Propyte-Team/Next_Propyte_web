@@ -14,6 +14,10 @@ import { PRODUCT_TYPES } from '@/lib/catalog/product-types';
 interface FilterBarProps {
   filters: Filters;
   onFilterChange: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
+  /** Cambio de varias claves en una sola actualización (ciudad+zona, rango de
+   *  precio, limpiar todo). Dos `onFilterChange` seguidos disparan dos
+   *  navegaciones para un solo click. */
+  onFiltersChange: (patch: Partial<Filters>) => void;
   onOpenAdvanced: () => void;
   advancedOpen: boolean;
   resultCount: number;
@@ -154,6 +158,7 @@ function PillDropdown({
 export default function FilterBar({
   filters,
   onFilterChange,
+  onFiltersChange,
   onOpenAdvanced,
   advancedOpen,
   resultCount,
@@ -213,7 +218,7 @@ export default function FilterBar({
     activeChips.push({
       key: 'city',
       label: filters.city,
-      clear: () => { onFilterChange('city', ''); onFilterChange('zone', ''); },
+      clear: () => onFiltersChange({ city: '', zone: '' }),
     });
   }
   if (filters.zone) {
@@ -241,10 +246,7 @@ export default function FilterBar({
     activeChips.push({
       key: 'price',
       label: priceLabel,
-      clear: () => {
-        onFilterChange('priceMin', 0);
-        onFilterChange('priceMax', priceCeiling);
-      },
+      clear: () => onFiltersChange({ priceMin: 0, priceMax: priceCeiling }),
     });
   }
   if (filters.type) {
@@ -277,19 +279,19 @@ export default function FilterBar({
   }
 
   const handleClearAll = () => {
-    if (filters.search) onFilterChange('search', '');
-    if (filters.city) onFilterChange('city', '');
-    if (filters.zone) onFilterChange('zone', '');
-    if (priceActive) {
-      onFilterChange('priceMin', 0);
-      onFilterChange('priceMax', priceCeiling);
-    }
-    if (filters.type) onFilterChange('type', '');
-    if (filters.bedroomsMin > 0) onFilterChange('bedroomsMin', 0);
-    if (filters.developmentType) onFilterChange('developmentType', '');
-    if (filters.roiMin) onFilterChange('roiMin', 0);
-    if (filters.stage) onFilterChange('stage', '');
-    if (filters.usage) onFilterChange('usage', '');
+    onFiltersChange({
+      search: '',
+      city: '',
+      zone: '',
+      priceMin: 0,
+      priceMax: priceCeiling,
+      type: '',
+      bedroomsMin: 0,
+      developmentType: '',
+      roiMin: 0,
+      stage: '',
+      usage: '',
+    });
   };
 
   return (
@@ -342,7 +344,7 @@ export default function FilterBar({
         >
           <div className="space-y-1 max-h-72 overflow-y-auto">
             <button
-              onClick={() => { onFilterChange('city', ''); onFilterChange('zone', ''); }}
+              onClick={() => onFiltersChange({ city: '', zone: '' })}
               className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                 !filters.city ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
               }`}
@@ -352,12 +354,9 @@ export default function FilterBar({
             {cityOptions.map((city) => (
               <button
                 key={city}
-                onClick={() => {
-                  // Al cambiar ciudad reseteamos zona — si la zona seleccionada
-                  // no pertenece a la nueva ciudad, quedaría 0 resultados.
-                  onFilterChange('city', filters.city === city ? '' : city);
-                  onFilterChange('zone', '');
-                }}
+                // Al cambiar ciudad reseteamos zona — si la zona seleccionada
+                // no pertenece a la nueva ciudad, quedaría 0 resultados.
+                onClick={() => onFiltersChange({ city: filters.city === city ? '' : city, zone: '' })}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                   filters.city === city ? 'bg-propyte-cyan-100 text-teal-a11y font-semibold' : 'hover:bg-gray-50'
                 }`}
@@ -428,15 +427,27 @@ export default function FilterBar({
                 { label: '$3M–$5M', min: 3_000_000, max: 5_000_000 },
                 { label: '$5M–$10M', min: 5_000_000, max: 10_000_000 },
                 { label: '$10M+', min: 10_000_000, max: priceCeiling },
-              ].map(p => (
-                <button
-                  key={p.label}
-                  onClick={() => { onFilterChange('priceMin', p.min); onFilterChange('priceMax', p.max); }}
-                  className="px-3 py-1.5 text-xs border border-gray-200 rounded-full hover:border-teal-a11y hover:text-teal-a11y transition-colors"
-                >
-                  {p.label}
-                </button>
-              ))}
+              ].map(p => {
+                const active = filters.priceMin === p.min && filters.priceMax === p.max;
+                return (
+                  <button
+                    key={p.label}
+                    onClick={() => onFiltersChange(
+                      active
+                        ? { priceMin: 0, priceMax: priceCeiling }
+                        : { priceMin: p.min, priceMax: p.max },
+                    )}
+                    aria-pressed={active}
+                    className={`px-3 py-1.5 text-xs border rounded-full transition-colors ${
+                      active
+                        ? 'bg-propyte-brand text-aztec border-propyte-brand'
+                        : 'border-gray-200 hover:border-teal-a11y hover:text-teal-a11y'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </PillDropdown>

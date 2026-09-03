@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
@@ -215,15 +215,40 @@ export function useFilters(properties: Property[]) {
   // historial) para que /desarrollos?stage=preventa sea copiable/compartible
   // y sobreviva back/forward/refresh — antes solo se leía la URL al montar,
   // nunca se le escribía de vuelta.
-  const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
-    const next = { ...filters, [key]: value };
+  // El estado vive también en una ref porque varios handlers llaman al updater
+  // DOS VECES en el mismo tick (ciudad+zona, priceMin+priceMax, el «limpiar
+  // todo» del FilterBar). Leyendo `filters` del closure, la segunda llamada
+  // partía del estado viejo y su `next` descartaba el cambio de la primera:
+  // hacer click en una ciudad no hacía nada, porque el
+  // `onFilterChange('zone', '')` que la sigue reescribía estado Y URL con la
+  // ciudad anterior. Con la ref, las llamadas consecutivas se componen.
+  // Para cambios de varias claves preferir `updateFilters`: un solo set y una
+  // sola navegación, en vez de una por clave.
+  const filtersRef = useRef(filters);
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const commitFilters = useCallback((next: Filters) => {
+    filtersRef.current = next;
     setFilters(next);
     const qs = filtersToSearchParams(next, priceCeiling).toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ''}`, { scroll: false });
-  }, [filters, priceCeiling, pathname, router]);
+  }, [priceCeiling, pathname, router]);
+
+  const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
+    commitFilters({ ...filtersRef.current, [key]: value });
+  }, [commitFilters]);
+
+  /** Cambia varias claves de una sola vez (ciudad+zona, rango de precio). */
+  const updateFilters = useCallback((patch: Partial<Filters>) => {
+    commitFilters({ ...filtersRef.current, ...patch });
+  }, [commitFilters]);
 
   const clearFilters = useCallback(() => {
-    setFilters({ ...defaultFilters, priceMax: priceCeiling });
+    const cleared = { ...defaultFilters, priceMax: priceCeiling };
+    filtersRef.current = cleared;
+    setFilters(cleared);
     router.replace(pathname, { scroll: false });
   }, [priceCeiling, pathname, router]);
 
@@ -362,5 +387,5 @@ export function useFilters(properties: Property[]) {
     return result;
   }, [properties, filters, sortBy]);
 
-  return { filters, filtered, updateFilter, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling };
+  return { filters, filtered, updateFilter, updateFilters, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling };
 }
