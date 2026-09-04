@@ -9,6 +9,13 @@ interface TestimonialItem {
   city: string;
   rating: number;
   text: string;
+  /**
+   * Liga a la publicación original. OPCIONAL a propósito: los testimonios del
+   * respaldo de i18n no la tienen, y en el Hub hay contextos donde ninguna
+   * fila la trae. Sin liga, la insignia de «Verificado» se pinta como texto y
+   * no como enlace: un enlace vacío o a ninguna parte es peor que no tenerlo.
+   */
+  sourceUrl?: string | null;
 }
 
 // Si `items` se pasa como prop (desde el server fetch de Hub), úsalo.
@@ -95,10 +102,28 @@ export default function Testimonials({ items }: { items?: TestimonialItem[] }) {
                   <div className="font-bold text-white text-sm">{item.name}</div>
                   <div className="text-xs text-white/60">{item.city}</div>
                 </div>
-                <div className="flex items-center gap-1 text-2xs font-semibold text-propyte-brand">
-                  <ShieldCheck size={12} />
-                  {t('verified')}
-                </div>
+                {/* La insignia ES el enlace cuando hay publicación original.
+                    Va así y no como un enlace aparte porque son lo mismo: la
+                    insignia AFIRMA que el testimonio está verificado y la liga
+                    es la prueba que el lector puede abrir. Separarlas dejaría
+                    la afirmación por un lado y su respaldo por otro. */}
+                {item.sourceUrl ? (
+                  <a
+                    href={item.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={t('verifiedSourceLabel', { name: item.name })}
+                    className="flex items-center gap-1 rounded-sm text-2xs font-semibold text-propyte-brand underline decoration-propyte-brand/40 underline-offset-4 transition-colors hover:decoration-propyte-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-propyte-brand"
+                  >
+                    <ShieldCheck size={12} aria-hidden="true" />
+                    {t('verified')}
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-1 text-2xs font-semibold text-propyte-brand">
+                    <ShieldCheck size={12} aria-hidden="true" />
+                    {t('verified')}
+                  </div>
+                )}
               </div>
             </div>
           ))}

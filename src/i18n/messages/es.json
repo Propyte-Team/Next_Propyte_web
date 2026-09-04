@@ -410,6 +410,7 @@
     "title": "Lo que Dicen Nuestros Clientes",
     "subtitle": "Experiencias reales de inversionistas reales",
     "verified": "Verificado",
+    "verifiedSourceLabel": "Ver la publicación original de {name} en Instagram",
     "prev": "Anterior",
     "next": "Siguiente",
     "ratingLabel": "{rating} de 5 estrellas",

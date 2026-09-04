@@ -37,6 +37,21 @@ export interface HubTestimonial {
   stat2_label_en: string | null;
   stat2_value: string | null;
   sort_order: number;
+  /**
+   * Liga a la publicación original (Instagram). Es lo que vuelve verificable
+   * un testimonio: sin ella, quien lo lee solo tiene nuestra palabra.
+   *
+   * Puede venir null y hay que contar con ello: en `home` y `built` la traen
+   * todas las filas activas, pero en `recruitment` no la tiene ninguna.
+   * Cuando falta, el enlace NO se pinta — no se deja vacío ni apuntando a
+   * nada.
+   *
+   * El Hub la sirve siempre que exista, no solo cuando `verified` es true.
+   * Es una decisión tomada allá y no se reabre aquí: enseñar la publicación
+   * es la verificación que puede hacer quien lee, y `verified` es una señal
+   * editorial aparte. Ver las tarjetas #677 del hub y #226 de web.
+   */
+  source_url: string | null;
 }
 
 export interface HubFaq {
