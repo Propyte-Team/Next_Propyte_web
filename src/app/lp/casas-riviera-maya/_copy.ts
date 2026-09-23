@@ -131,6 +131,7 @@ export interface CopyCasas {
      */
     faltanCampos: string;
     emailInvalido: string;
+    telefonoInvalido: string;
     exito: {
       titulo: (nombre: string) => string;
       /** Cuando el campo de nombre vino vacío y el saludo se quedaría cojo. */
@@ -282,6 +283,7 @@ export const COPY_ES: CopyCasas = {
     error: 'No pudimos enviar tus datos. Escríbenos por WhatsApp y lo resolvemos ahí.',
     faltanCampos: 'Completa nombre, WhatsApp y correo para recibir el dossier.',
     emailInvalido: 'Revisa el correo: es a donde te llega el dossier.',
+    telefonoInvalido: 'Revisa el teléfono: elige tu país y escribe el número completo.',
     exito: {
       titulo: (nombre) => `Listo, ${nombre}.`,
       sinNombre: 'gracias',
@@ -455,6 +457,7 @@ export const COPY_EN: CopyCasas = {
     error: "We couldn't send your details. Message us on WhatsApp and we'll sort it out there.",
     faltanCampos: 'Please add your name, WhatsApp and email so we can send the dossier.',
     emailInvalido: "Check your email address — that's where the dossier lands.",
+    telefonoInvalido: 'Check your phone number — pick your country and enter the full number.',
     exito: {
       titulo: (nombre) => `Done, ${nombre}.`,
       sinNombre: 'thanks',

@@ -8,6 +8,26 @@ import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 3600;
 
+/**
+ * Cualquier slug fuera de `TYPE_SLUGS` es un 404 del enrutador, no una página.
+ *
+ * Sin esto el `notFound()` de abajo SÍ se ejecutaba —el cuerpo que salía era
+ * el del 404— pero la respuesta viajaba con **200**. Medido contra producción
+ * el 2026-08-31: `/es/desarrollos/tipo/basura-inventada-xyz` daba 200 mientras
+ * `/es/pagina-que-no-existe` daba 404 correctamente. Un soft-404 así deja que
+ * los buscadores indexen páginas basura sin límite, y cada una diluye el peso
+ * del sitio.
+ *
+ * `dynamicParams = false` mueve el rechazo al mismo sitio que ya devuelve un
+ * 404 de verdad: el enrutador, antes de que la página llegue a renderizarse.
+ * Es viable aquí y solo aquí porque la taxonomía es una lista cerrada que vive
+ * en el código (`TYPE_SLUGS`), no un catálogo que crezca desde la base: las
+ * rutas de contenido —`/desarrollos/<slug>`, `/zonas/<slug>`, `/blog/<slug>`—
+ * tienen el mismo soft-404 y NO se arreglan así, porque ahí un slug nuevo debe
+ * funcionar sin volver a compilar. Eso va en su propia tarjeta.
+ */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return TYPE_SLUGS.map((type) => ({ type }));
 }

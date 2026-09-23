@@ -18,7 +18,7 @@ const nul = (v: unknown): string | null => (v ?? null) as string | null;
 const num = (v: unknown): number | null => (v ?? null) as number | null;
 
 // ── Data cleaning constants (mirrors Python pipeline) ──
-const RENT_MIN = 2_000;
+const RENT_MIN = 5_000; // coincide con methodology.ltrStep3
 const RENT_MAX = 500_000;
 const AREA_MIN = 15;
 const AREA_MAX = 800;

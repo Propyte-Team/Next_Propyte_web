@@ -5,6 +5,7 @@
 import { Document, Page, Text, View, StyleSheet, Image, Link } from '@react-pdf/renderer';
 import type { ScoredUnit } from '@/lib/lead-magnet/score';
 import type { EditionData } from '@/lib/lead-magnet/edition-data';
+import { formatDataThroughDate, oldestDataThrough } from '@/lib/rental-data/zone-metrics';
 
 const C = {
   navy: '#1A2F3F', aztec: '#0F1923', teal: '#5CE0D2', ice: '#A2F9FF',
@@ -23,6 +24,7 @@ const LABELS = {
     occupancy: 'Ocupación', adr: 'Tarifa/noche (ADR)', revpar: 'RevPAR',
     ltrTitle: 'Renta larga — mediana mensual', sample: 'muestra',
     zonesTitle: 'Top 5 zonas por desempeño', zoneScore: 'Score',
+    zonesDataThrough: 'Ocupación y tarifa: mediana de los últimos 12 meses (TTM), corte a',
     methodTitle: 'Metodología', method:
       'Ranking por score compuesto (yield de renta 35%, ROI proyectado 30%, descuento 20%, desempeño de zona 15%) sobre el inventario público de propyte.com. Cifras en MXN. Fuente: Análisis de mercado Propyte.',
     disclaimer:
@@ -41,6 +43,7 @@ const LABELS = {
     occupancy: 'Occupancy', adr: 'Nightly rate (ADR)', revpar: 'RevPAR',
     ltrTitle: 'Long-term rent — monthly median', sample: 'sample',
     zonesTitle: 'Top 5 zones by performance', zoneScore: 'Score',
+    zonesDataThrough: 'Occupancy and rate: 12-month median (TTM), as of',
     methodTitle: 'Methodology', method:
       'Composite-score ranking (rental yield 35%, projected ROI 30%, discount 20%, zone performance 15%) over propyte.com public inventory. Figures in MXN. Source: Propyte market analysis.',
     disclaimer:
@@ -185,6 +188,15 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
 
         {data.cityBenchmarks.length > 0 && (
           <>
+            {/* CARVE-OUT de CityStrBenchmark: median_occupancy / median_adr siguen aqui a
+                proposito. Estas filas las escribe OTRO builder del pipeline
+                (build_city_benchmark_rows, no build_zone_score_rows) y el select de
+                getCityStrBenchmarks es angosto: NO pide occupancy_p50_ttm ni adr_p50_ttm,
+                asi que renombrarlas devolveria undefined. Ademas, la ocupacion de ciudad
+                SI es un promedio de 12 meses, pero el ADR es un ultimo punto (adr[0] de un
+                fetch con limit=2) y el RevPAR mezcla los dos: defecto conocido, latente
+                solo porque zone_scores no tiene ninguna fila zone='_ciudad'. Detalle en el
+                tipo CityStrBenchmark de src/lib/supabase/queries.ts. */}
             <Text style={[styles.cardTitle, { marginBottom: 6 }]}>{L.strTitle}</Text>
             <View style={styles.table}>
               <View style={styles.tHead}>
@@ -228,10 +240,27 @@ export default function LeadMagnetPDFDocument({ locale, editionLabel, generatedA
                 <View style={styles.tRow} key={`${z.city}-${z.zone}`} wrap={false}>
                   <Text style={[styles.tCell, { fontFamily: 'Helvetica-Bold', flex: 2 }]}>{z.zone} · {z.city}</Text>
                   <Text style={styles.tCell}>{L.zoneScore}: {z.score == null ? '—' : Math.round(z.score)}</Text>
-                  <Text style={styles.tCell}>{L.occupancy}: {fmtPct(z.median_occupancy, 0)}</Text>
+                  <Text style={styles.tCell}>{L.occupancy}: {fmtPct(z.occupancy_p50_ttm, 0)}</Text>
+                  {/* adr_p50_ttm ya venia seleccionado y no se renderizaba: la nota al pie
+                      prometia "Ocupacion y tarifa" sobre una tabla sin tarifa. */}
+                  <Text style={styles.tCell}>{L.adr}: {fmtMoney(z.adr_p50_ttm)}</Text>
                 </View>
               ))}
             </View>
+            {(() => {
+              // La fecha MAS ANTIGUA de las cinco, no la de la primera fila con
+              // fecha: la nota rotula una tabla completa, y solo el corte mas
+              // antiguo es cierto para todas sus filas. Con .find(), una zona
+              // recien refrescada en la posicion 1 fechaba las otras cuatro.
+              const dataThrough = oldestDataThrough(data.topZones);
+              const formatted = formatDataThroughDate(dataThrough, locale);
+              if (!formatted) return null;
+              return (
+                <Text style={styles.smallNote}>
+                  {L.zonesDataThrough} {formatted}.
+                </Text>
+              );
+            })()}
           </>
         )}
 

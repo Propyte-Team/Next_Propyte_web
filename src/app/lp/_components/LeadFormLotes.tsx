@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Check } from '@/lib/icons';
 import { trackGenerateLead } from '@/lib/analytics/track';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 // ============================================================
 // Formulario de UN paso.
@@ -124,16 +125,14 @@ export default function LeadFormLotes({
   const [objetivo, setObjetivo] = useState<string | null>(null);
   const [plazo, setPlazo] = useState<number | null>(plazosDisponibles.at(-1) ?? null);
   const [nombre, setNombre] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [whatsapp, setWhatsapp] = useState<string | undefined>(undefined);
   const [email, setEmail] = useState('');
-  const [emailVisible, setEmailVisible] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [enviado, setEnviado] = useState(false);
   const atribucion = useRef<Atribucion>({});
   const honeypot = useRef<HTMLInputElement>(null);
   const refNombre = useRef<HTMLInputElement>(null);
-  const refWhatsapp = useRef<HTMLInputElement>(null);
   const refEmail = useRef<HTMLInputElement>(null);
 
   // Atribución leída una vez, al montar. Sin storage.
@@ -179,7 +178,6 @@ export default function LeadFormLotes({
   useEffect(() => {
     const pares: Array<[string, (v: string) => void]> = [
       [refNombre.current?.value ?? '', setNombre],
-      [refWhatsapp.current?.value ?? '', setWhatsapp],
       [refEmail.current?.value ?? '', setEmail],
     ];
     for (const [valorDom, fijar] of pares) {
@@ -192,8 +190,18 @@ export default function LeadFormLotes({
     if (enviando) return;
     setError(null);
 
-    if (!nombre.trim() || !whatsapp.trim()) {
-      setError('Necesitamos tu nombre y un WhatsApp para enviarte el comparativo.');
+    if (!nombre.trim() || !email.trim() || !whatsapp) {
+      setError('Necesitamos tu nombre, tu correo y un WhatsApp para enviarte el comparativo.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Revisa el correo: es a donde te mandamos el comparativo.');
+      return;
+    }
+    // La validación por país la hace el selector de lada, no un conteo de
+    // dígitos: un comprador extranjero no puede perder el lead por la lada.
+    if (!isValidPhoneNumber(whatsapp)) {
+      setError('Revisa el WhatsApp: elige tu país y escribe el número completo.');
       return;
     }
 
@@ -206,9 +214,9 @@ export default function LeadFormLotes({
           source: 'lp_lotes_pdc',
           locale: 'es',
           name: nombre.trim(),
-          phone: whatsapp.trim(),
-          whatsapp: whatsapp.trim(),
-          email: email.trim() || undefined,
+          phone: whatsapp,
+          whatsapp: whatsapp,
+          email: email.trim(),
           investmentType: objetivo ?? undefined,
           propertyName: loteNombre,
           // Referencia y plazo en el mensaje: el asesor abre la conversación
@@ -251,7 +259,7 @@ export default function LeadFormLotes({
         </p>
         <p className="mt-3 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
           Te escribimos por WhatsApp al{' '}
-          <span className="font-mono">{whatsapp.trim()}</span> {tiempoRespuesta} con el
+          <span className="font-mono">{whatsapp}</span> {tiempoRespuesta} con el
           plano, tu tabla de amortización
           {plazo ? ` a ${plazo} meses` : ''} y el paquete documental.
         </p>
@@ -265,7 +273,7 @@ export default function LeadFormLotes({
     );
   }
 
-  // Los dos campos que de verdad convierten, idénticos en ambas variantes.
+  // Los campos que de verdad convierten, idénticos en ambas variantes.
   // Extraídos a una constante para que la copia de arriba y la de la columna no
   // puedan divergir: si un día se añade un campo requerido, entra en las dos o
   // en ninguna.
@@ -286,18 +294,29 @@ export default function LeadFormLotes({
       </label>
 
       <label className="flex flex-col gap-1.5">
-        <span className={ETIQUETA}>WhatsApp</span>
+        <span className={ETIQUETA}>Email</span>
         <input
           className={INPUT}
-          type="tel"
-          inputMode="numeric"
-          ref={refWhatsapp}
-          name="phone"
-          autoComplete="tel"
-          placeholder="+52 984 123 4567"
-          value={whatsapp}
-          onChange={(e) => setWhatsapp(e.target.value)}
+          type="email"
+          ref={refEmail}
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
+        />
+      </label>
+
+      <label className="flex flex-col gap-1.5">
+        <span className={ETIQUETA}>WhatsApp</span>
+        <PhoneInputField
+          id="lp-lotes-whatsapp"
+          name="phone"
+          value={whatsapp}
+          onChange={setWhatsapp}
+          placeholder="984 123 4567"
+          required
+          className={INPUT}
         />
       </label>
     </>
@@ -435,34 +454,6 @@ export default function LeadFormLotes({
               ))}
             </div>
           </fieldset>
-
-          {/* Email colapsado: no es necesario para responder por WhatsApp, y
-              un cuarto campo visible sube el abandono sin subir el contacto. */}
-          {emailVisible ? (
-            <label className="flex flex-col gap-1.5">
-              <span className={ETIQUETA}>
-                Email <span className="lowercase tracking-normal">(opcional)</span>
-              </span>
-              <input
-                className={INPUT}
-                type="email"
-                ref={refEmail}
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </label>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setEmailVisible(true)}
-              className="cursor-pointer self-start text-xs text-[var(--lp-muted)] underline underline-offset-4 transition-colors duration-200 hover:text-[var(--lp-ink-soft)]"
-            >
-              Prefiero que me lo manden por email
-            </button>
-          )}
 
           {trampaBots}
           {aviso}

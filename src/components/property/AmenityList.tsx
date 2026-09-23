@@ -21,7 +21,7 @@ interface AmenityDef {
   match: RegExp;
 }
 
-const AMENITIES: AmenityDef[] = [
+export const AMENITIES: AmenityDef[] = [
   // Alberca PRIVADA (de la unidad) — debe ir ANTES de la genérica porque el
   // match es "primer canónico que coincide" (.find en orden). Sin esto,
   // "Alberca Privada" caía en la genérica y se mostraba igual que la comunal.
@@ -37,7 +37,7 @@ const AMENITIES: AmenityDef[] = [
   { key: 'lounge', es: 'Lounge / Coworking', en: 'Lounge / Coworking', icon: Coffee, match: /lounge|coworking|business center/i },
   { key: 'cocina_equipada', es: 'Cocina equipada', en: 'Equipped Kitchen', icon: ChefHat, match: /cocina|kitchen/i },
   { key: 'spa', es: 'Spa', en: 'Spa', icon: Spa, match: /spa|sauna|jacuzzi/i },
-  { key: 'aire_acondicionado', es: 'Aire acondicionado', en: 'Air Conditioning', icon: Wind, match: /aire|ac|a\/c|air cond|minisplit/i },
+  { key: 'aire_acondicionado', es: 'Aire acondicionado', en: 'Air Conditioning', icon: Wind, match: /aire|\bac\b|a\/c|air cond|minisplit/i },
   { key: 'terraza', es: 'Terraza / Roof garden', en: 'Terrace / Roof Garden', icon: Sun, match: /terraza|terrace|roof|azotea/i },
   { key: 'elevador', es: 'Elevador', en: 'Elevator', icon: Building, match: /elevador|elevator|ascensor/i },
   { key: 'ciclopista', es: 'Ciclopista', en: 'Bike Lane', icon: Bike, match: /ciclopista|bike|bici/i },
@@ -49,15 +49,33 @@ const AMENITIES: AmenityDef[] = [
   { key: 'pet_friendly', es: 'Pet friendly', en: 'Pet Friendly', icon: PawPrint, match: /pet|mascot/i },
   { key: 'yoga', es: 'Área de Yoga', en: 'Yoga Area', icon: Flower2, match: /yoga/i },
   { key: 'cancha', es: 'Cancha deportiva', en: 'Sports Court', icon: Activity, match: /cancha|court|tenis|tennis|padel|pádel|basquetbol|basketball|volibol|voleibol|volleyball/i },
+  // ── Añadidas para la guía de terrenos (2026-09) ──────────────────────
+  // Las cuatro salían crudas del Hub con el icono genérico: están en las
+  // amenidades publicadas de los desarrollos de terrenos y ya se publicaban
+  // sin par ES/EN en la ficha de desarrollo y en la de unidad.
+  // Van AL FINAL: el match es "el primer canónico que coincide" (.find en
+  // orden), así que aquí no pueden ensombrecer ninguna regla existente.
+  { key: 'cctv', es: 'Circuito cerrado (CCTV)', en: 'CCTV', icon: Shield, match: /cctv|circuito cerrado|videovigilancia|video vigilancia/i },
+  { key: 'fire_pit', es: 'Fogatero', en: 'Fire pit', icon: Flame, match: /fire ?pit|fogatero|fogata/i },
+  { key: 'lobby', es: 'Lobby', en: 'Lobby', icon: Building, match: /lobby|recepci[oó]n/i },
+  { key: 'concierge', es: 'Concierge', en: 'Concierge', icon: Users, match: /concierge|conserje/i },
+  // Con la frontera puesta en `ac`, esta cadena ya no matchea nada: sin esta
+  // entrada caeria al fallback crudo.
+  // Sin `caseta de vigilancia`: `seguridad` ya incluye /vigilancia/ y va antes,
+  // así que esa alternativa nunca podría ganar el `.find`. Es la misma trampa
+  // que `pool table` en `game_room`, que lleva ahí sin poder dispararse nunca.
+  { key: 'acceso_controlado', es: 'Acceso controlado', en: 'Controlled access', icon: Shield, match: /acceso\s*controlado|controlled\s*access/i },
 ];
 
 /**
  * Renders amenities with matching canonical icons when possible.
- * - With a real list: each entry is matched against 20 canonical regexes.
- *   Unmatched strings render as generic chips (CheckCircle2 icon).
+ * - With a real list: each entry is matched against the canonical regexes in
+ *   `AMENITIES` (arriba). Unmatched strings render as generic chips
+ *   (CheckCircle2 icon).
  * - Without a list: renders nothing (returns null). NO se hace fallback a
- *   "todas las amenidades": mostrar las 20 canónicas cuando el desarrollo no
- *   tiene amenidades definidas en el Hub publicitaba amenidades inexistentes.
+ *   "todas las amenidades": mostrar el catálogo entero cuando el desarrollo
+ *   no tiene amenidades definidas en el Hub publicitaba amenidades
+ *   inexistentes.
  */
 export default async function AmenityList({ locale, amenities, title }: AmenityListProps) {
   const t = await getTranslations({ locale, namespace: 'property' });

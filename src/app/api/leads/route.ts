@@ -32,7 +32,12 @@ import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
 
 const LEAD_RATE_LIMIT = { bucket: 'leads', limit: 5, windowMs: 60_000 };
 
-const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
+// Exportado para test: es la única forma de comprobar que un source nuevo
+// quedó habilitado end-to-end. Un `LeadSource` sin entrada aquí NO produce
+// ningún error — el lead se persiste con `zoho_sync_error: 'SKIPPED: unknown
+// source'` y el endpoint responde 200, así que el fallo es silencioso y el
+// tipo (exhaustivo en field-maps.ts) no lo cubre por sí solo.
+export const KNOWN_SOURCES = [
   'contact',
   'property_inquiry',
   'b2b_request',
@@ -46,7 +51,18 @@ const KNOWN_SOURCES: ReadonlyArray<LeadSource> = [
   'glossary_pdf',
   'lp_lotes_pdc',
   'lp_casas_riviera',
-];
+  'guia_terrenos',
+] as const satisfies readonly LeadSource[];
+
+// Guardia a nivel de tipos: si `LeadSource` gana un miembro y nadie lo agrega
+// arriba, esto deja de compilar y `tsc` señala cuál falta por nombre. Mismo
+// patrón que protege los `switch` exhaustivos de field-maps.ts — sin él, un
+// source nuevo puede quedar en el tipo pero fuera del array, y el lead se
+// guarda con zoho_sync_error SKIPPED y un 200, sin ruido.
+type _FaltanEnKnownSources = Exclude<LeadSource, (typeof KNOWN_SOURCES)[number]>;
+const _checkKnownSources: _FaltanEnKnownSources extends never
+  ? true
+  : ['falta en KNOWN_SOURCES:', _FaltanEnKnownSources] = true;
 
 // Saneo defensivo de UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).
 // Vive en `@/lib/leads/utm-sanitize`: antes era un `.regex()` que ante un valor

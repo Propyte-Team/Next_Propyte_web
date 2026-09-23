@@ -22,7 +22,9 @@ export type LeadSource =
   /** Landing de pago de lotes, Playa del Carmen (Google Ads). */
   | "lp_lotes_pdc"
   /** Landing de pago de casas, Riviera Maya — PDC + Tulum (Google/Meta Ads). */
-  | "lp_casas_riviera";
+  | "lp_casas_riviera"
+  /** Guía comparativa de terrenos residenciales, alimentada del inventario. */
+  | "guia_terrenos";
 
 export interface FormData {
   // Identidad
@@ -296,6 +298,7 @@ function campaignSlug(source: LeadSource): string {
     case "glossary_pdf":          return "glosario/pdf-gate";
     case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
     case "lp_casas_riviera":      return "lp/casas-riviera-maya";
+    case "guia_terrenos":         return "guias/terrenos-residenciales";
   }
 }
 
@@ -348,6 +351,7 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "glossary_pdf":        return "Glosario PDF";
       case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
       case "lp_casas_riviera":    return "Landing casas Riviera Maya (Ads)";
+      case "guia_terrenos":       return "Guía de terrenos residenciales";
     }
   })();
   return `Formulario Propyte web ${langTag} - ${desc}`;
@@ -454,7 +458,14 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       // Los dos taps de calificación de la landing. Son el dato que decide si
       // el lead vale una llamada, así que van primero en la Description.
       if (data.investmentType) parts.push(`Objetivo: ${data.investmentType}`);
-      if (data.budget) parts.push(`Presupuesto total: ${data.budget}`);
+      // ⚠️ «Enganche disponible», no «Presupuesto total». El único form que
+      // manda `budget` con este source es el diagnóstico del cierre de
+      // /lp/enganche-terrenos-playa-del-carmen, y lo que pregunta es cuánto
+      // puede poner de ENTRADA — no el precio del lote. Rotularlo «total» hacía
+      // que el asesor leyera «$150,000 MXN» y descartara un lead que sí alcanza
+      // un lote de $1M. Si algún día una variante pregunta el precio total, va
+      // en su propio campo, no reciclando este rótulo.
+      if (data.budget) parts.push(`Enganche disponible: ${data.budget}`);
       if (data.propertyName) parts.push(`Lote de interés: ${data.propertyName}`);
       break;
     case "lp_casas_riviera":
@@ -579,6 +590,18 @@ export function extractDuplicateLeadId(
  * Origen: 29-ago-2026, `lp_casas_riviera`. Un clic pagado de Google Ads en
  * inglés envió el formulario con los tres campos vacíos y aterrizó en Zoho
  * como «Anónimo», sin correo ni teléfono. El asesor no tenía a quién llamar.
+ *
+ * 31-ago-2026 — la barra sube de «contactable» (nombre + uno de los dos) a
+ * «los tres datos». Todos los formularios de captación piden ya nombre, correo
+ * y teléfono con selector de lada, así que un lead con dos de tres ya no es un
+ * lead legítimo al que le falta un campo: es una captura que se rompió.
+ *
+ * Se comprobó antes de subirla que la cola de reintento no traía backlog real
+ * (`zoho_lead_id IS NULL AND zoho_sync_error IS NOT NULL` → 5 filas `smoke`),
+ * así que endurecerla no descarta leads viejos legítimos.
+ *
+ * Sigue siendo permisiva con el FORMATO —no hay `.regex()` aquí a propósito,
+ * un patrón estricto ya tumbó leads buenos una vez— y estricta con la AUSENCIA.
  */
 export function faltanDatosDeContacto(
   source: LeadSource,
@@ -590,10 +613,14 @@ export function faltanDatosDeContacto(
 
   if (!email && !telefono) return "sin email ni teléfono";
 
-  // `newsletter` es el ÚNICO source que legítimamente no pide nombre: el form
-  // solo capta email y abajo se le pone «Suscriptor» de Last_Name a propósito.
-  // Exigirle nombre lo apagaría entero.
-  if (source !== "newsletter" && !nombre) return "sin nombre";
+  // `newsletter` es el ÚNICO source exento, y la exención es una lista cerrada
+  // de uno, no un `default` permisivo: su form solo capta email y abajo se le
+  // pone «Suscriptor» de Last_Name a propósito. Exigirle el resto lo apagaría.
+  if (source === "newsletter") return null;
+
+  if (!nombre) return "sin nombre";
+  if (!email) return "sin email";
+  if (!telefono) return "sin teléfono";
 
   return null;
 }

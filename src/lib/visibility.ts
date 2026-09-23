@@ -57,6 +57,7 @@ export const VISIBILITY_KEYS = {
   // haberlo construido.
   PAGE_GUIAS_FISCAL_LEGAL: "page.guias-fiscal-legal",
   PAGE_GUIAS_COSTA: "page.guias-costa",
+  PAGE_GUIAS_TERRENOS: "page.guias-terrenos",
 } as const;
 
 // fail-open: key not in map → visible

@@ -1,6 +1,19 @@
 # Next_Propyte_web — Task Manager
 
-> Última actualización: 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
+> Última actualización: 2026-09-02 (tarde) — **la guía de terrenos está EN PRODUCCIÓN** (PR #85 mergeado, agenda funcionando). **PR #86 abierto** con tres arreglos vistos ya en vivo: la agenda pasa a capa con el scroll bloqueado, la CSP no permitía calendar.google.com, y las fotos iban lazy y sin proxy. Sigue pendiente curar 2 portadas en el Hub. Ver «En progreso → Guía de terrenos».
+>
+> Anterior: 2026-09-02 (mañana) — guía terminada en rama, sin PR. 38 commits, 521 tests, `tsc`/`eslint`/build limpios, 3 e2e, revisión visual hecha. Faltan dos cosas de Luis antes de que sirva: la variable de la agenda en Hostinger (antes del build) y curar dos portadas en el Hub. Ver «En progreso → Guía de terrenos». Entrada previa: 2026-09-01 (tarde), los 18 formularios.
+>
+> Anterior: 2026-09-01 (tarde) — **los 18 formularios exigen nombre + correo + teléfono con selector de lada; todo en producción y verificado.** Entrada previa: lote del tablero de mejoras, PRs #75 y #76 (ya mergeados). Entrada previa: 2026-08-18 (barrido de los 12 PRs de Dependabot).
+>
+> 🚨 **Este archivo está DIVERGIDO, no atrasado.** Medido el 2026-09-01: esta versión (la de
+> `origin/main`) pesa 74 KB y la copia del árbol principal —parada en `feat/meta-capi-rebased`,
+> sin commitear— pesa 45 KB y **no contiene lo de aquí**. No es que una vaya por delante: son
+> dos documentos distintos, y la corta se llevó ~29 KB. Es la tarjeta **#252** («decidir qué
+> versión gana») y sigue sin decidirse: no la resuelvo por mi cuenta. Escribir en la copia del
+> árbol principal es escribir en arena mientras esa rama no sea `main`.
+>
+> Entrada del 2026-08-18 — **barrido de los 12 PRs de Dependabot**. `origin/main` = `21848a6`. 6 mergeados, 7 cerrados, 1 PR propio (#33) creado y mergeado con las dependencias de app a versiones de hoy. Ver «En progreso → Dependabot / tooling».
 >
 > 🚨 **3 de los 4 ❌ que se veían en la lista de PRs eran fósiles del 16 de junio**, de cuando `main` tenía 11 errores de lint ya corregidos. El PR #7 solo tocaba `playwright.yml` y aun así «fallaba» el job de `ci.yml` — imposible. El campo que lo delata es `completedAt` de cada check, que la UI de GitHub no pone delante. Ver [[feedback_dependabot_checks_fosiles]].
 >
@@ -37,6 +50,130 @@ Plan de trabajo en el sitio público `propyte.com` (Next.js 16 + i18n + Supabase
 ---
 
 ## En progreso
+
+## Guía de terrenos residenciales — 🟢 EN PRODUCCIÓN · 🟡 PR #86 abierto
+
+Rama `feat/guia-terrenos-residenciales`, worktree `Next_Propyte_web-guiaterrenos`,
+rebasada sobre `origin/main` = `4ef7387`. Página `/{locale}/guias/terrenos-residenciales`
+en ES y EN, alimentada del inventario, enlazada desde *Recursos* en el footer.
+
+- [x] **PR #85 abierto, mergeado y desplegado** (2026-09-02)
+- [x] **`NEXT_PUBLIC_GUIA_TERRENOS_AGENDA_URL` puesta en Hostinger antes del build** (2026-09-02) — verificada incrustada en el chunk de producción.
+- [ ] 🟡 **Mergear el PR #86** — tres arreglos vistos con la página ya en vivo. Ojo: mergear es desplegar (~4 min). Next incrusta las `NEXT_PUBLIC_*` al compilar y aquí compila el servidor: `git pull` o reiniciar PM2 no la incorporan. Va al lado de las que ya emite el sitio (`AW-18124069969`, `G-H4VD5TVEKM`). Sin ella el formulario funciona y la agenda no aparece.
+- [ ] 🔴 **Curar dos portadas en el Hub** (decisión de Luis): dos de las seis fotos llevan el nombre del desarrollo rotulado DENTRO de la imagen. Las segundas de cada galería están limpias y verificadas a ojo — `club-residencial-con-amenidades` → `…/44b0c506-…/1785790029985-vkwkn5.webp`; `lotes-residenciales-en-playa-del-carmen-2` → `…/09d27fcb-…/1785274768534-h4vp93.webp`.
+- [ ] **Poner también `NEXT_PUBLIC_CALENDLY_URL`** apuntando al mismo link de Google: enciende de paso el botón de agendar de `/contacto`, que **nunca se ha renderizado**. Ver [[feedback_calendly_url_nunca_estuvo_puesta]].
+
+**Lo que salió de mirar la página en producción (PR #86):**
+
+- [x] La agenda se llevaba el scroll: 250 px por gesto de rueda. Pasa a capa con el body bloqueado; medido después, 0 px. `overscroll-behavior: contain` **no** lo arregla — se probó y se midió (2026-09-02).
+- [x] La CSP nunca permitió `calendar.google.com` en `frame-src`: la agenda funcionaba porque la política va en report-only (2026-09-02).
+- [x] Las fotos: `loading="lazy"` en las visibles al abrir, y URLs crudas del storage porque la guía se saltaba `maskRows` (2026-09-02).
+- [ ] 🟡 **`NEXT_PUBLIC_CALENDLY_URL` sigue sin poner.** El botón de agendar de `/contacto` no se ha renderizado jamás. Apuntarla al mismo link de Google lo enciende en el mismo deploy.
+- [ ] Extraer una cáscara de modal común: hay **cuatro copias** de la misma lógica (`TeamBioModal`, `ShareDownloadModal`, `GlossaryLeadGateModal`, `AgendaModal`).
+
+**Captura pendiente en el Hub** (se ve en la página; es dato, no código):
+
+- [ ] `amares-riviera-maya` **no aparece en la guía**: sin precio capturado. Se lo ponen y entra solo.
+- [ ] **3 de 6 proyectos no publican mensualidad.** Tener `fin_meses_opciones` no basta: hace falta `fin_tasa` en `0` **y** un esquema de pago parseable. Les falta a `lotes-residenciales-en-la-region-11-de-tulum` y a `lotes-residenciales-en-playa-del-carmen-2`.
+- [ ] `delivery_text` con typo: «Primera quincena de novi**rm**bre».
+- [ ] Los 3 proyectos del Gamma que no existen publicados (`MO-SUR2027`, `AMXP-EI`, `NTSUR-30`) seguirán ausentes hasta que se den de alta.
+
+**Deuda que quedó anotada y NO se arregló:**
+
+- [ ] Cuatro sombras **latentes** en el catálogo de amenidades (`spa` caza «esparcimiento» y «Espacios verdes», `pet` caza «petanca», y `pool table` en `game_room` es código muerto). Ninguna aparece hoy en el inventario publicado. Ver [[feedback_regex_de_amenidades_alternativa_desnuda]].
+- [ ] El test de fuga de nombres **contra el inventario real está SKIPPED**: vitest no carga `.env.local` (fija `NODE_ENV=test`). Los otros dos sí corren, incluido el estructural que verifica que el `.select()` nunca pide `name`.
+- [ ] `formatPrice`/`formatArea` fijan locale `es-MX`, así que en `/en` los separadores de millar salen en formato mexicano. Es del repo entero, no de esta página.
+
+## Formularios: los tres datos obligatorios (sesión 2026-09-01 tarde) — ✅ CERRADO Y VERIFICADO
+
+> ✅ `origin/main` = **`92f28e4`**, desplegado y **verificado contra producción**: 36/36 e2e de los
+> 18 formularios, 4/4 del banner en cuatro viewports, 436 unitarias, y **0 leads creados** por las
+> pruebas. Los 2 leads reales de esa hora llegaron con teléfono y sincronizaron a Zoho.
+>
+> Nombre, correo y teléfono son obligatorios en los 18 forms de captación; el teléfono se captura
+> con selector de lada de ~247 países y viaja en **E.164**. `faltanDatosDeContacto()` lo respalda en
+> el servidor. `NewsletterCTA` queda exento a propósito. Commits: `d9f97c6`, `ea9857b`, `92f28e4`.
+> Memorias: `feedback_selector_lada_react_phone_number_input`,
+> `feedback_banner_fijo_tapa_sticky_no_se_recupera`.
+
+- [ ] **`/es/built` devuelve 404 en producción** — la página ENTERA de Propyte Built, no solo su
+      formulario. Es previo a esta sesión y sin diagnosticar. El `ConsultationForm` ya tiene el
+      campo de teléfono, pero nadie puede verlo. **Prioridad: es una sección de servicio caída.**
+- [ ] **`B2BForm` es código muerto** — ningún componente lo importa (`src/components/developers/`).
+      Decidir si se borra o si debía estar montado en `/desarrolladores` y se perdió.
+- [ ] **`BlogSidebarBrokerForm` no se monta hoy** — solo aparece en posts de categoría «Para
+      Asesores» y no hay ninguno publicado. Comprobado en `que-es-un-master-broker`: sale la
+      variante de inversionista. Funcionará en cuanto se publique uno; no hay nada que arreglar.
+- [ ] **Vigilar la conversión de las dos LP de lotes** — ahora piden un campo más en tráfico
+      pagado: `/lp/lotes-playa-del-carmen` tenía el correo colapsado y opcional, y
+      `/lp/terrenos-playa-del-carmen` no tenía campo de correo (su rótulo decía «2 campos», ahora
+      3). Si cae, se revierte solo ese campo sin tocar el resto.
+- [ ] **En `/es/contacto` el banner de cookies tapa el campo *Nombre* a scroll 0** — molestia
+      recuperable bajando, aceptada a cambio de desbloquear tres formularios que quedaban sin
+      salida. Si molesta, la salida limpia es acortar el banner (mide 227 px; con ≤173 px libraría).
+- [ ] **Retirar el worktree `Next_Propyte_web-phonefield`** (rama `feat/forms-telefono-obligatorio`,
+      ya en `main`). Ojo: tiene una copia de `.env.local`.
+
+## Lote del tablero de mejoras (sesión 2026-09-01) — ✅ #75 y #76 YA MERGEADOS (junto a #74 y #77)
+
+> El tablero (`hub.propyte.com/mejoras`, tools `mejoras_*`) es la fuente de verdad de estas
+> tareas; aquí queda la bitácora para que la cosecha no vuelva a levantar lo ya hecho —
+> que es exactamente la tarjeta #641.
+
+**[PR #75](https://github.com/Propyte-Team/Next_Propyte_web/pull/75) — tarjeta #230, CI 4/4.**
+El autocompletado del navegador rellena sin disparar `change`: el campo se ve lleno, el
+estado de React sigue vacío y al enviar o sale «falta tu nombre» o —en `/built` y el lead
+magnet— no pasa nada en absoluto. Se extrajo el patrón de `FormCasas` (leer el `<form>` en
+el ENVÍO con `FormData`, no un `useEffect` de montaje) a
+`src/lib/leads/rescate-prehidratacion.ts` y se aplicó a los 7 que faltaban. 25/25 corridas
+fallaban contra propyte.com; 25/25 pasan en la rama.
+
+**[PR #76](https://github.com/Propyte-Team/Next_Propyte_web/pull/76) — tarjetas #235 y #199, CI 4/4.**
+`/es/desarrollos/tipo/<basura>` devolvía 200 con el cuerpo del 404 → `dynamicParams = false`.
+Y los tres paquetes de Next a 16.3.4.
+
+### Pendiente de Luis
+
+- [ ] **Mergear #75 y #76.** Mergear = desplegar (Hostinger compila en el servidor); la CDN
+      sirve mezclado ~5 min. Sonda del #235: `curl -s -o /dev/null -w "%{http_code}" https://propyte.com/es/desarrollos/tipo/basura-inventada-xyz` → 404.
+- [ ] **#215** — una palabra: quitar o dejar la instrumentación de depuración de
+      `useFilters`. Recomendado **dejarla**: no cuesta nada en prod y ese hook ya dio un bug.
+- [ ] **#200** — `@types/node ^26` contra Node 22 del CI. Recomendado **bajar los tipos a
+      `^22`**: tipos más nuevos que el motor dejan compilar lo que revienta en ejecución.
+- [ ] **#252** — decidir qué versión de este archivo gana (ver el aviso de la cabecera).
+
+### Abierto, con tarjeta
+
+- [ ] **#676 — el soft-404 es de CLASE.** `/desarrollos/<slug>`, `/zonas/<slug>` y
+      `/blog/<slug>` siguen en 200 con cuerpo de 404, y esas sí tienen direcciones
+      ilimitadas. No se arreglan con `dynamicParams` (su slug resuelve contra Supabase).
+      Dos hipótesis YA descartadas por medición, no repetirlas: no falta el `notFound()`
+      (se ejecuta), y **añadir `src/app/[locale]/not-found.tsx` no cambia el status** —
+      se probó y se recompiló.
+- [ ] **#226 bloqueada por #677 (hub).** Los testimonios guardan la liga a su publicación
+      original, pero el sitio no lee de Supabase: se los pide a
+      `hub.propyte.com/api/public/testimonials`, y ese endpoint no la devuelve. Primero el
+      Hub, luego la web.
+- [ ] **#645 no es «simple»** — no existe negociación de markdown en el repo. Poner
+      `Vary: Accept` sin servir markdown fragmenta la caché de la CDN sin beneficio.
+- [ ] **Los forms con react-hook-form no se midieron** (`/contacto`, `/proveedores`,
+      `/unete`, `B2BForm`, `ContactForm`, `GlossaryLeadGateModal`): son inputs no
+      controlados, otra arquitectura. No suponerlos inmunes sin medir.
+
+### Trampas de esta sesión
+
+- 🚨 **`TaskStop` no mata el `next start`**: 5 huérfanos retuvieron los binarios nativos
+      (`next-swc…node`, `libvips-42.dll`) y reventaron un `npm ci` a mitad, dejando
+      `node_modules` en 35 entradas de 639. Se leen como permisos o antivirus y no lo son.
+      Matar por PID tras parar; `powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*<worktree>*' }"` sí funciona en este equipo.
+- 🚨 **`zoho-forms.spec.ts` crea leads REALES.** No correrlo. Las suites nuevas
+      (`forms-prehidratacion`, `soft-404-taxonomia`, `lp-casas-validacion`) interceptan el
+      POST y pueden correr contra producción.
+- 🧪 Los tests nuevos miran el **estado** de la respuesta, no el texto: el cuerpo ya decía
+      «404» con el fallo vivo, así que un test sobre el markup pasaba en verde con el bug.
+
+---
+
 
 ### Dependabot / tooling (sesión 2026-08-18)
 

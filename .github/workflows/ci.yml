@@ -33,6 +33,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run test:unit
+      # El manifiesto de landings tiene que seguir a las carpetas de src/app/lp/.
+      # Si se queda atras, el Hub no se entera de una landing nueva hasta el deploy.
+      - run: npm run test:lp-manifest
 
   build:
     # CRITICO: el deploy de Hostinger compila EN EL SERVIDOR al hacer push a

@@ -118,13 +118,13 @@ export function ZoneAnalytics({
         <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
           <KPICard
             label={t('occupancy')}
-            value={score?.median_occupancy ? Math.round(score.median_occupancy) : null}
+            value={score?.occupancy_p50_ttm != null ? Math.round(score.occupancy_p50_ttm) : null}
             suffix="%"
             icon={BarChart3}
           />
           <KPICard
             label="ADR"
-            value={score?.median_adr ? `$${Math.round(score.median_adr).toLocaleString()}` : null}
+            value={score?.adr_p50_ttm != null ? `$${Math.round(score.adr_p50_ttm).toLocaleString()}` : null}
             icon={DollarSign}
           />
           <KPICard
@@ -173,7 +173,7 @@ export function ZoneAnalytics({
           <SupplyDemandIndicator
             supplyDemandRatio={score?.supply_demand_ratio ?? null}
             activeListings={score?.active_listings ?? null}
-            occupancy={score?.median_occupancy ?? null}
+            occupancy={score?.occupancy_p50_ttm ?? null}
           />
         </div>
       </div>

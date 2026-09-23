@@ -20,6 +20,7 @@ import SiteMedia from '@/components/shared/SiteMedia';
 import { zoneSlug } from '@/lib/utils';
 import { BarChart3, DollarSign, TrendingUp } from '@/lib/icons';
 import { PROPYTE_ATTRIBUTION_ES_INLINE, PROPYTE_ATTRIBUTION_EN } from '@/lib/compliance/provider-names';
+import { formatDataThroughDate, isStale } from '@/lib/rental-data/zone-metrics';
 
 // City → state, for the ones present in MARKET_SUBMARKET_TO_CITY. Used for the
 // Place JSON-LD addressRegion and the SSR summary copy — previously hardcoded
@@ -52,6 +53,29 @@ const UNIQUE_ZONES = ZONE_CONFIGS.reduce((acc, z) => {
 // (sin cookies) — objetivo original de B2 (33e2eb6), ahora viable.
 export const revalidate = 3600;
 
+/**
+ * Soft-404: un slug inventado respondia 200 con el cuerpo del 404 (tarjeta
+ * #676). La causa no es que falte el `notFound()` de abajo — se ejecuta —, es
+ * que la respuesta va en streaming: la linea de estado sale con 200 antes de
+ * que el componente resuelva, asi que `notFound()` solo alcanza a cambiar el
+ * cuerpo. Lo documenta, medido el 29-jul, el comentario de
+ * `desarrollos/_components/DevelopmentDetailPage.tsx:101-110`.
+ *
+ * `dynamicParams = false` mueve el rechazo al ENRUTADOR, antes de que se
+ * transmita nada, y ahi el 404 si es un 404. Es el mismo arreglo que cerro la
+ * #235 en `/desarrollos/tipo/[type]`.
+ *
+ * Es aplicable aqui, y solo aqui de las tres rutas de la #676, porque la lista
+ * de zonas NO sale de la base: UNIQUE_ZONES se deriva de
+ * MARKET_SUBMARKET_TO_ZONE, que es una constante del codigo. Agregar una zona
+ * ya exigia recompilar, asi que cerrar la lista no quita nada.
+ *
+ * `/desarrollos/<slug>` y `/blog/<slug>` resuelven contra Supabase y no pueden
+ * usar esto: un contenido nuevo tiene que funcionar sin recompilar. Esas van
+ * por el middleware, que es el unico lugar donde el status se puede fijar.
+ */
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return UNIQUE_ZONES.map((z) => ({ slug: z.slug }));
 }
@@ -63,9 +87,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params;
   const zoneConfig = UNIQUE_ZONES.find((z) => z.slug === slug);
-  const zoneName = zoneConfig?.zone || slug.replace(/-/g, ' ');
-  const cityName = zoneConfig?.city || 'Cancun';
   const isEn = locale === 'en';
+
+  // Sin este guardia, un slug inventado producia metadata PLAUSIBLE: el titulo
+  // salia como «basura xyz 123, Cancun — Analisis de Mercado de Renta
+  // Vacacional» porque el nombre se rellenaba con el slug humanizado y la
+  // ciudad con 'Cancun'. Medido en produccion el 2026-09-02 (tarjeta #676).
+  // Para un buscador eso es peor que un 200 con cuerpo de 404 —el titulo es
+  // unico y creible por cada slug— y para quien lo lea es una afirmacion falsa:
+  // analisis de mercado de un lugar que no existe.
+  //
+  // Con `dynamicParams = false` esta rama ya no deberia alcanzarse, porque el
+  // enrutador rechaza antes. Se queda como red: si alguien reabre los params
+  // dinamicos, el fallo no vuelve a colarse en silencio.
+  if (!zoneConfig) {
+    return {
+      title: isEn ? 'Zone not found' : 'Zona no encontrada',
+      robots: { index: false, follow: true },
+    };
+  }
+
+  const zoneName = zoneConfig.zone;
+  const cityName = zoneConfig.city;
 
   // El template del root layout ('%s | Propyte') ya añade el sufijo de marca.
   const title = isEn
@@ -154,6 +197,9 @@ export default async function ZonePage({
 
   const tProp = await getTranslations({ locale, namespace: 'property' });
   const tZonas = await getTranslations({ locale, namespace: 'zonas' });
+  // staleSeriesNotice vive en el namespace 'mercado': una sola redaccion del aviso
+  // de serie rancia para /mercado, /zonas y /zonas/[slug].
+  const tMer = await getTranslations({ locale, namespace: 'mercado' });
 
   // Schema.org JSON-LD — Place + BreadcrumbList (coincide con el breadcrumb visible).
   const isEn = locale === 'en';
@@ -191,9 +237,9 @@ export default async function ZonePage({
     ? [
         {
           label: isEn ? 'Median occupancy' : 'Ocupación media',
-          value: zs.median_occupancy != null ? `${Math.round(zs.median_occupancy)}%` : null,
+          value: zs.occupancy_p50_ttm != null ? `${Math.round(zs.occupancy_p50_ttm)}%` : null,
         },
-        { label: isEn ? 'Average daily rate (ADR)' : 'Tarifa diaria promedio (ADR)', value: fmtMoney(zs.median_adr) },
+        { label: isEn ? 'Average daily rate (ADR)' : 'Tarifa diaria promedio (ADR)', value: fmtMoney(zs.adr_p50_ttm) },
         { label: 'RevPAR', value: fmtMoney(zs.revpar) },
         {
           label: isEn ? 'Active listings' : 'Propiedades activas',
@@ -205,9 +251,14 @@ export default async function ZonePage({
         },
       ].filter((x) => x.value != null)
     : [];
-  const summaryUpdated = zs?.computed_at
-    ? new Date(zs.computed_at).toLocaleDateString(isEn ? 'en-US' : 'es-MX', { month: 'long', year: 'numeric' })
-    : null;
+  // `data_through` (lo que el dato CUBRE), no `computed_at` (cuándo corrió el
+  // pipeline): computed_at rotulaba con la fecha de la corrida una serie cerrada
+  // en febrero. formatDataThroughDate ancla el parseo a UTC — formatear a mano
+  // corre el mes hacia atrás en huso negativo (UTC-6) y publicaba enero.
+  const summaryUpdated = formatDataThroughDate(zs?.data_through, isEn ? 'en' : 'es');
+  // Aviso de serie rancia, mismo tratamiento que VacacionalTab: rotula la cifra,
+  // no la reemplaza.
+  const summaryStale = zs != null && isStale(zs.data_through, new Date());
 
   return (
     <>
@@ -253,8 +304,8 @@ export default async function ZonePage({
             </h2>
             <p className="text-gray-700 leading-relaxed">
               {isEn
-                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on ${PROPYTE_ATTRIBUTION_EN}${summaryUpdated ? ` (updated ${summaryUpdated})` : ''}:`
-                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, según el ${PROPYTE_ATTRIBUTION_ES_INLINE}${summaryUpdated ? ` (actualizado a ${summaryUpdated})` : ''}:`}
+                ? `Key short-term rental indicators for ${zone}, ${city}, ${state}, based on ${PROPYTE_ATTRIBUTION_EN}${summaryUpdated ? ` (data through ${summaryUpdated})` : ''}:`
+                : `Indicadores clave de renta vacacional en ${zone}, ${city}, ${state}, según el ${PROPYTE_ATTRIBUTION_ES_INLINE}${summaryUpdated ? ` (datos a ${summaryUpdated})` : ''}:`}
             </p>
             <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1">
               {summaryStats.map((stat) => (
@@ -264,6 +315,11 @@ export default async function ZonePage({
                 </div>
               ))}
             </dl>
+            {summaryStale && (
+              <p className="mt-3 text-xs text-amber-800">
+                {tMer('staleSeriesNotice', { date: summaryUpdated ?? '—' })}
+              </p>
+            )}
           </section>
         )}
 
@@ -329,7 +385,16 @@ export default async function ZonePage({
           </section>
         )}
 
-        {/* Renta vacacional — nivel ciudad (benchmark de compute_derived, zone='_ciudad') — fail-closed */}
+        {/* Renta vacacional — nivel ciudad (benchmark de compute_derived, zone='_ciudad') — fail-closed.
+            CARVE-OUT: `median_occupancy` / `median_adr` siguen aquí a propósito. Estas
+            filas vienen de OTRO builder del pipeline (`build_city_benchmark_rows`, no
+            `build_zone_score_rows`) y `getCityStrBenchmark` hace un select angosto que NO
+            pide `occupancy_p50_ttm` / `adr_p50_ttm`: renombrarlas devolvería `undefined`.
+            Ojo con lo que cada cifra es de verdad — la ocupación de ciudad SÍ es un
+            promedio de 12 meses, pero el ADR es un último punto (`adr[0]` de un fetch con
+            `limit=2`) y el RevPAR mezcla los dos. Latente hoy (cero filas '_ciudad' en
+            zone_scores), defecto real si esa ruta se puebla. Detalle en el tipo
+            `CityStrBenchmark` de src/lib/supabase/queries.ts. */}
         {cityStr && (
           <section aria-labelledby="city-str-heading" className="mb-8 rounded-xl border border-gray-200 bg-white p-5">
             <h2 id="city-str-heading" className="text-lg font-bold text-gray-900 mb-2">

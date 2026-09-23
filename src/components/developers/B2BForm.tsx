@@ -1,17 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslations } from 'next-intl';
 import { submitForm } from '@/lib/submitForm';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 const schema = z.object({
   name: z.string().min(1),
   company: z.string().min(1),
   email: z.string().email(),
-  phone: z.string().min(1),
+  phone: z.string().trim().min(1).refine(isValidPhoneNumber, { message: 'invalidPhone' }),
   location: z.string().min(1),
   message: z.string().optional(),
   website: z.string().optional(), // honeypot (REQ-F-02)
@@ -24,7 +25,7 @@ export default function B2BForm() {
   const tCommon = useTranslations('common');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const { register, handleSubmit, control, trigger, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
@@ -73,15 +74,38 @@ export default function B2BForm() {
               <label htmlFor={`b2b-${field.name}`} className="block text-sm font-medium text-gray-700 mb-1">
                 {field.label}
               </label>
-              <input
-                id={`b2b-${field.name}`}
-                type={field.type}
-                {...register(field.name)}
-                toolparamdescription={field.toolparamdescription}
-                className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
-              />
+              {field.name === 'phone' ? (
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field: phoneField }) => (
+                    <PhoneInputField
+                      id="b2b-phone"
+                      name={phoneField.name}
+                      value={phoneField.value || ''}
+                      onChange={(value) => phoneField.onChange(value || '')}
+                      onBlur={() => { phoneField.onBlur(); trigger('phone'); }}
+                      invalid={!!errors.phone}
+                      describedBy={errors.phone ? 'b2b-phone-error' : undefined}
+                      required
+                      className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus-within:border-[#5CE0D2] focus-within:outline-none"
+                      toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                    />
+                  )}
+                />
+              ) : (
+                <input
+                  id={`b2b-${field.name}`}
+                  type={field.type}
+                  {...register(field.name)}
+                  toolparamdescription={field.toolparamdescription}
+                  className="w-full h-11 px-3 border border-gray-200 rounded-lg text-sm focus:border-[#5CE0D2] focus:outline-none"
+                />
+              )}
               {errors[field.name] && (
-                <p className="text-xs text-red-500 mt-1">{tCommon('required')}</p>
+                <p id={field.name === 'phone' ? 'b2b-phone-error' : undefined} className="text-xs text-red-500 mt-1">
+                  {errors[field.name]?.message === 'invalidPhone' ? tCommon('invalidPhone') : tCommon('required')}
+                </p>
               )}
             </div>
           ))}

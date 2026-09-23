@@ -10,6 +10,7 @@ import {
   MessageCircle, Zap, Shield, Users, Sparkles,
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
+import { rescatarDelDom, sincronizar } from '@/lib/leads/rescate-prehidratacion';
 import { toast } from 'sonner';
 import { BorderBeam } from '@/components/magicui/border-beam';
 import ScrollReveal from '@/components/shared/ScrollReveal';
@@ -532,15 +533,15 @@ function DeveloperForm() {
     }
   };
 
-  const validate = (): Record<string, string> => {
+  const validate = (datos: typeof formData): Record<string, string> => {
     const next: Record<string, string> = {};
-    if (!formData.name.trim()) next.name = tCommon('required');
-    if (!formData.company.trim()) next.company = tCommon('required');
-    if (!formData.email.trim()) next.email = tCommon('required');
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
-    if (!formData.phone.trim()) next.phone = tCommon('required');
-    else if (!isValidPhoneNumber(formData.phone)) next.phone = tCommon('invalidPhone');
-    if (!formData.location.trim()) next.location = tCommon('required');
+    if (!datos.name.trim()) next.name = tCommon('required');
+    if (!datos.company.trim()) next.company = tCommon('required');
+    if (!datos.email.trim()) next.email = tCommon('required');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)) next.email = tCommon('invalidEmail');
+    if (!datos.phone.trim()) next.phone = tCommon('required');
+    else if (!isValidPhoneNumber(datos.phone)) next.phone = tCommon('invalidPhone');
+    if (!datos.location.trim()) next.location = tCommon('required');
     return next;
   };
 
@@ -565,21 +566,29 @@ function DeveloperForm() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y `formData` sigue vacío:
+    // validar contra el estado marcaba «falta tu nombre» sobre un nombre que
+    // estaba a la vista. Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(e.currentTarget, formData, { estadoManda: ['phone'] });
+    setFormData(sincronizar(datos));
+
     // Honeypot: silently drop bot submissions with fake-success UX.
-    if (formData.website && formData.website.length > 0) {
+    if (datos.website.length > 0) {
       setStatus('success');
       return;
     }
-    const v = validate();
+    const v = validate(datos);
     if (Object.keys(v).length > 0) {
       setErrors(v);
       return;
     }
     setStatus('sending');
     try {
-      const result = await submitForm(formData, 'developer_request');
+      const result = await submitForm(datos, 'developer_request');
       if (result.success) {
         setStatus('success');
         toast.success(t('formSuccess'));

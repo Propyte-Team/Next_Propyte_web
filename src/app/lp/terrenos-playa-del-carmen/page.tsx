@@ -113,7 +113,10 @@ const mono = Azeret_Mono({
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Terrenos en Playa del Carmen a 60 meses sin banco | Propyte',
+  // Sin «| Propyte» al final: lo añade el `template` del layout raíz. Con el
+  // sufijo aquí el título salía «... sin banco | Propyte | Propyte», y esta es
+  // la variante que hoy recibe el tráfico pagado de Google Ads.
+  title: 'Terrenos en Playa del Carmen a 60 meses sin banco',
   description:
     'Lotes residenciales en privada, desde 129 m². Enganche del 20%, mensualidades directas con el desarrollador y escrituración. Pide el plan de pagos completo.',
   // El layout de /lp ya declara noindex; se repite aquí para que la variante no

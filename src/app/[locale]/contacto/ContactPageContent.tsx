@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send, CheckCircle2, Users, Calendar, ShieldCheck, AlertCircle } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
 import { toast } from 'sonner';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 import type { HubSiteConfig } from '@/lib/hub-content';
 import SiteMediaView from '@/components/shared/SiteMediaView';
 import CopyEmailButton from '@/components/shared/CopyEmailButton';
@@ -32,6 +33,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
   const schema = z.object({
     name: z.string().min(2, tCommon('required')),
     email: z.string().email(tCommon('invalidEmail')),
+    phone: z.string().trim().min(1, tCommon('required')).refine(isValidPhoneNumber, { message: tCommon('invalidPhone') }),
     subject: z.string().min(1, tCommon('required')),
     message: z.string().min(10, tCommon('required')),
     // Honeypot — humans don't see/fill this; bots do. Allow any value to
@@ -41,7 +43,7 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
 
   type FormData = z.infer<typeof schema>;
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<FormData>({
+  const { register, handleSubmit, control, trigger, formState: { errors }, reset, setValue } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
@@ -228,7 +230,37 @@ export default function ContactPageContent({ siteConfig, siteMedia }: { siteConf
                   )}
                 </div>
 
-                <div className="md:col-span-2">
+                <div>
+                  <label htmlFor="contact-phone" className="block text-sm font-medium text-[#2C2C2C] mb-2">
+                    {t('formPhone')}
+                  </label>
+                  <Controller
+                    name="phone"
+                    control={control}
+                    render={({ field }) => (
+                      <PhoneInputField
+                        id="contact-phone"
+                        name={field.name}
+                        value={field.value || ''}
+                        onChange={(value) => field.onChange(value || '')}
+                        onBlur={() => { field.onBlur(); trigger('phone'); }}
+                        invalid={!!errors.phone}
+                        describedBy={errors.phone ? 'contact-phone-error' : undefined}
+                        required
+                        className="w-full h-11 px-3 bg-white border border-gray-200 rounded-lg text-sm focus-within:border-propyte-brand focus-within:ring-2 focus-within:ring-propyte-brand/20 focus-within:outline-none transition-colors aria-invalid:border-error"
+                        toolParamDescription="Teléfono de contacto, con selector de lada de país."
+                      />
+                    )}
+                  />
+                  {errors.phone && (
+                    <p id="contact-phone-error" role="alert" className="flex items-center gap-1 text-xs text-error mt-1">
+                      <AlertCircle size={12} aria-hidden="true" className="shrink-0" />
+                      {errors.phone.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
                   <label htmlFor="subject" className="block text-sm font-medium text-[#2C2C2C] mb-2">
                     {t('formSubject')}
                   </label>

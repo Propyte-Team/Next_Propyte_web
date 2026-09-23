@@ -3,12 +3,27 @@
 import { useTranslations } from 'next-intl';
 import { Activity } from '@/lib/icons';
 import type { TabId } from '@/lib/rental-data/types';
+import { formatDataThroughDate } from '@/lib/rental-data/zone-metrics';
 
 interface MercadoHeroProps {
   activeTab: TabId;
   locale: string;
-  strStats?: { zones: number; listings: number; cities: number; updatedAt: string };
-  ltrStats?: { comparables: number; cities: number; sources: number; updatedAt: string };
+  strStats?: {
+    zones: number;
+    listings: number;
+    cities: number;
+    /** Propiedades de CDMX excluidas del ranking — solo referencia, no oferta. */
+    benchmarkListings: number;
+    /** Corte real de la serie (`data_through` más antiguo del ranking). null = sin dato. */
+    updatedAt: string | null;
+  };
+  /** null en cualquier cifra = sin dato. Nunca 0: un 0 es una afirmación. */
+  ltrStats?: {
+    comparables: number | null;
+    cities: number | null;
+    developments: number | null;
+    updatedAt: string | null;
+  };
 }
 
 /**
@@ -23,25 +38,44 @@ interface MercadoHeroProps {
  * vs filter-empty (data sí existe pero el filtro no encontró match — eso vive en
  * VacacionalKPIs).
  */
-export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: MercadoHeroProps) {
+export function MercadoHero({ activeTab, locale, strStats, ltrStats }: MercadoHeroProps) {
   const t = useTranslations('mercadoHero');
+  const dateLocale: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
 
   const stats = activeTab === 'vacacional' ? strStats : ltrStats;
   const trustItems: { value: string; label: string }[] = [];
+  // Una cifra ausente (null) o no positiva no genera tila: publicar "0 zonas
+  // analizadas" es afirmar algo falso, no dejar un hueco.
+  const pushCount = (n: number | null, label: string) => {
+    if (n == null || n <= 0) return;
+    trustItems.push({ value: n.toLocaleString(), label });
+  };
   if (activeTab === 'vacacional' && strStats) {
-    trustItems.push(
-      { value: strStats.listings.toLocaleString(), label: t('strProperties') },
-      { value: strStats.cities.toString(), label: t('cities') },
-      { value: strStats.zones.toString(), label: t('strZones') },
-      { value: t('monthly'), label: t('update') },
-    );
+    pushCount(strStats.listings, t('strProperties'));
+    pushCount(strStats.cities, t('cities'));
+    pushCount(strStats.zones, t('strZones'));
+    // Antes esta tila mostraba el string fijo t('monthly') = "Mensual", una
+    // frecuencia nominal puesta justo encima del aviso de que la serie no se
+    // actualiza desde febrero. `strStats.updatedAt` ya venía calculado desde
+    // `data_through` en page.tsx y nadie lo leía: ahora se rinde igual que la
+    // tila de renta larga.
+    trustItems.push({
+      value: formatDataThroughDate(strStats.updatedAt, dateLocale) ?? t('noRecentData'),
+      label: t('update'),
+    });
   } else if (activeTab !== 'vacacional' && ltrStats) {
-    trustItems.push(
-      { value: ltrStats.comparables.toLocaleString(), label: t('ltrComparables') },
-      { value: ltrStats.cities.toString(), label: t('cities') },
-      { value: ltrStats.sources.toString(), label: t('ltrSources') },
-      { value: t('daily'), label: t('update') },
-    );
+    pushCount(ltrStats.comparables, t('ltrComparables'));
+    pushCount(ltrStats.cities, t('cities'));
+    pushCount(ltrStats.developments, t('ltrDevelopments'));
+    // Antes esta tila mostraba el string fijo "Diaria" — la frecuencia
+    // nominal, no un dato real. `updatedAt` es `data_freshness`
+    // (max(scraped_at) de los comparables limpios); se trunca a
+    // 'YYYY-MM-DD' y se formatea con la misma función que ya evita el
+    // salto de mes en huso negativo (formatDataThroughDate).
+    trustItems.push({
+      value: formatDataThroughDate(ltrStats.updatedAt?.slice(0, 10), dateLocale) ?? t('noRecentData'),
+      label: t('update'),
+    });
   }
 
   return (
@@ -141,6 +175,19 @@ export function MercadoHero({ activeTab, locale: _locale, strStats, ltrStats }: 
               </span>
             </div>
           )
+        )}
+
+        {/* CDMX no es oferta de Propyte: es mercado de referencia (ver
+            src/lib/rental-data/pools.ts). Los tiles de arriba solo cuentan el
+            ranking regional; esta nota declara lo excluido en vez de
+            esconderlo. */}
+        {activeTab === 'vacacional' && strStats && strStats.benchmarkListings > 0 && (
+          <p
+            className="mt-4 text-2xs text-white/40 max-w-2xl mx-auto propyte-hero-rise"
+            style={{ animationDelay: '420ms' }}
+          >
+            {t('benchmarkFootnote', { count: strStats.benchmarkListings.toLocaleString() })}
+          </p>
         )}
       </div>
     </section>

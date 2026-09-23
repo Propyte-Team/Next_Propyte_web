@@ -38,6 +38,7 @@
 
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda';
+import { TYPE_DB_VALUES } from './taxonomy-values';
 
 /** De dónde salieron las condiciones. Cambia cómo se cuentan los pagos. */
 export type FuenteEsquema = 'ext_planos' | 'esquemas_jsonb' | 'prosa_desarrollo';
@@ -106,6 +107,21 @@ export interface LoteComparable {
    * null cuando sí las publica. Es un gate, no un error.
    */
   motivoSinPlan: string | null;
+  /**
+   * El mismo motivo que `motivoSinPlan`, como código traducible.
+   *
+   * La prosa se queda porque la LP monolingüe la consume tal cual; la guía es
+   * bilingüe y necesita la clave. Van juntos a propósito: si algún día se
+   * traduce la LP, la prosa se borra y el código sobrevive.
+   */
+  motivoSinPlanCodigo:
+    | 'contado'
+    | 'contado_parcial'
+    | 'tasa_por_confirmar'
+    | 'condiciones_cambiando'
+    | null;
+  /** Desarrollo de origen. La guía agrupa por él; la LP no lo usa. */
+  developmentId: string | null;
 }
 
 const MXN_ETIQUETA = new Intl.NumberFormat('es-MX', {
@@ -394,86 +410,71 @@ function construirEtiqueta(
   return partes.join(' · ');
 }
 
+/**
+ * Prosa de `motivoSinPlan`, indexada por `motivoSinPlanCodigo`. ÚNICO lugar
+ * que redacta estos textos: el gate de `construirComparables` decide el
+ * CÓDIGO y la prosa se DERIVA de él con este Record, así que ya no hay dos
+ * sitios (código y prosa) que alguien tenga que mantener sincronizados a
+ * mano. Consecuencia gratis del tipo: un código nuevo en la unión de
+ * `motivoSinPlanCodigo` que no tenga entrada aquí no compila (`Record`
+ * exige las 4 claves), y una rama del gate no puede asignar prosa sin pasar
+ * primero por un código, porque la prosa ya no se escribe a mano en el gate.
+ *
+ * `contado` se comparte entre las 4 funciones porque el tipo de `Record`
+ * exige una firma uniforme, pero solo lo usa (y solo lo necesita)
+ * `contado_parcial`: el gate garantiza que ahí `contado` NUNCA es null antes
+ * de asignar ese código (ver la condición `contado && contado.contraentregaPct > 0`),
+ * de ahí el `!`.
+ */
+const REDACTAR_MOTIVO_SIN_PLAN: Record<
+  NonNullable<LoteComparable['motivoSinPlanCodigo']>,
+  (contado: CondicionContado | null) => string
+> = {
+  // El caso 90/10: describir los dos pagos, porque "de contado" a secas
+  // haría creer que se liquida todo al firmar.
+  contado_parcial: (contado) =>
+    `Este lote se paga ${contado!.enganchePct}% al firmar y ` +
+    `${contado!.contraentregaPct}% contra entrega. El desarrollador no ` +
+    'publica plan de mensualidades.',
+  contado: () =>
+    'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.',
+  condiciones_cambiando: () =>
+    'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.',
+  tasa_por_confirmar: () =>
+    'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.',
+};
+
 /** UUID del lote que protagoniza la landing, para marcarlo en el comparador. */
 const ID_DESARROLLO_DE_ESTA_LANDING = '025943d7-c7f1-482c-a489-09a28bb2328a';
 
+/** Las columnas de `v_units` que consume el comparador. */
+export interface FilaComparador {
+  id: string;
+  development_id: string | null;
+  city: string | null;
+  area_m2: number | string | null;
+  price_mxn: number | string | null;
+  unit_type?: string | null;
+  fin_tasa: number | string | null;
+  fin_esquema: string | null;
+  fin_meses_opciones: unknown;
+  fin_esquemas_pago: unknown;
+}
+
 /**
- * Lotes de Playa del Carmen para el comparador.
+ * Construye los comparables a partir de filas ya consultadas.
  *
- * La consulta es dinámica a propósito (no una lista de UUIDs): si el Hub
- * aprueba otro lote de PdC, entra solo. Tulum queda fuera por el filtro de
- * ciudad, que es exactamente la decisión de negocio — la LP es campaña de
- * Playa del Carmen.
+ * Separada de la consulta para poder testearla con un fixture real, mismo
+ * patrón que `construirInventario` en `lp-casas.ts`.
  *
- * OJO Camino A: no se selecciona `development_name` ni `developer_name`.
+ * @param superficieBase  id de unidad → `superficie_terreno_m2` de la tabla base
+ * @param precioMinDev    id de desarrollo → precio mínimo EN PESOS, o null
  */
-export async function getLotesComparables(): Promise<LoteComparable[]> {
-  const supabase = createPublicSupabaseClient();
-  if (!supabase) return [];
-  const hub = supabase.schema('real_estate_hub' as 'public');
-
-  const { data, error } = await hub
-    .from('v_units')
-    .select(
-      [
-        'id',
-        'development_id',
-        'city',
-        'area_m2',
-        'price_mxn',
-        'unit_type',
-        'fin_tasa',
-        'fin_esquema',
-        'fin_meses_opciones',
-        'fin_esquemas_pago',
-      ].join(', '),
-    )
-    .eq('city', 'Playa del Carmen')
-    .in('unit_type', ['Lote', 'Terreno'])
-    .not('approved_at', 'is', null)
-    .eq('published', true)
-    .is('deleted_at', null);
-
-  if (error || !data) return [];
-
-  const filas = data as unknown as Record<string, unknown>[];
-  if (filas.length === 0) return [];
-
-  // `v_units.area_m2` mapea a `superficie_total_m2`, que en algún registro está
-  // vacío aunque `superficie_terreno_m2` sí tenga el dato. Sin superficie no se
-  // puede construir la etiqueta acordada, así que se rescata de la tabla base.
-  const ids = filas.map((f) => f.id as string);
-  const { data: bases } = await hub
-    .from('Propyte_unidades')
-    .select('id, superficie_terreno_m2')
-    .in('id', ids);
-  const superficieBase = new Map(
-    ((bases ?? []) as unknown as Record<string, unknown>[]).map((b) => [
-      b.id as string,
-      numeroONull(b.superficie_terreno_m2),
-    ]),
-  );
-
-  // Precio mínimo declarado por cada desarrollo: la cifra de control que valida
-  // la reconstrucción del precio de lista.
-  const devIds = [...new Set(filas.map((f) => f.development_id).filter(Boolean))] as string[];
-  const { data: devs } = devIds.length
-    ? await hub
-        .from('Propyte_desarrollos')
-        .select('id, ext_moneda, ext_precio_min_mxn, ext_precio_min_usd')
-        .in('id', devIds)
-    : { data: null };
-  // La cifra de control se compara contra precios de lista EN PESOS, así que sólo
-  // sirve si el desarrollo cotiza en pesos. Un desarrollo en USD daría un control
-  // de 145,000 contra lotes de millones y marcaría todo como discrepante; se deja
-  // en null (sin control) antes que validar contra una moneda distinta.
-  const precioMinDev = new Map(
-    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => {
-      const precio = precioDesarrollo(d as FilaPrecioDesarrollo);
-      return [d.id as string, precio.moneda === 'MXN' ? precio.min : null] as const;
-    }),
-  );
-
+export function construirComparables(
+  filas: FilaComparador[],
+  superficieBase: Map<string, number | null>,
+  precioMinDev: Map<string, number | null>,
+): LoteComparable[] {
   const lotes: LoteComparable[] = [];
 
   for (const f of filas) {
@@ -481,9 +482,28 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
     const ciudad = typeof f.city === 'string' ? f.city : null;
     if (precioPublicado === null || !ciudad) continue;
 
-    const id = f.id as string;
-    const devId = (f.development_id as string | null) ?? null;
-    const superficieM2 = numeroONull(f.area_m2) ?? superficieBase.get(id) ?? null;
+    const id = f.id;
+    // `?? null`: red de runtime por si la fila llega sin el campo (`undefined`).
+    // Un `undefined` desaparece al serializar (JSON.stringify lo omite) en vez
+    // de viajar como `null`, y con `developmentId` ahora expuesto en el objeto
+    // de salida —lo consume `agruparPorProyecto` en la guía— ese hueco
+    // silencioso ya no es inofensivo. `FilaComparador.development_id` ya está
+    // tipado `string | null`, así que no hace falta ningún cast aquí.
+    const devId = f.development_id ?? null;
+    // `??` NO cae con `0`: solo con `null`/`undefined`. `v_units.area_m2` trae
+    // '0.00' para algunas unidades (dato sucio, no "sin dato"), y `numeroONull`
+    // lo convierte al número 0 — no a null — así que un `?? superficieBase...`
+    // simple nunca rescataba desde la tabla base. Medido en producción: la
+    // unidad 54329b45-c60b-48af-b479-a95015d3c33c (lotes-residenciales-en-
+    // playa-del-carmen-2) tiene v_units.area_m2 = '0.00' mientras
+    // Propyte_unidades.superficie_terreno_m2 guarda 201.47 — la landing de pago
+    // publicaba "0 m²" para ese lote. Tratamos 0 como "sin dato" explícitamente
+    // antes del rescate.
+    const areaVista = numeroONull(f.area_m2);
+    const superficieM2 =
+      (areaVista !== null && areaVista > 0 ? areaVista : null) ??
+      superficieBase.get(id) ??
+      null;
 
     const esquemas = leerEsquemasJsonb(f.fin_esquemas_pago);
     const conPlazo = esquemas.filter((e) => e.meses > 0);
@@ -542,29 +562,28 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
     }
 
     // El gate, en lenguaje de comprador. Nunca "faltan datos en el sistema".
-    let motivoSinPlan: string | null = null;
+    // Solo decide el CÓDIGO: la prosa se deriva de `REDACTAR_MOTIVO_SIN_PLAN`
+    // (ver arriba), no hay dos lugares que sincronizar a mano.
+    let motivoSinPlanCodigo: LoteComparable['motivoSinPlanCodigo'] = null;
     if (plazos.length === 0) {
       if (contado && contado.contraentregaPct > 0) {
-        // El caso 90/10: describir los dos pagos, porque "de contado" a secas
-        // haría creer que se liquida todo al firmar.
-        motivoSinPlan =
-          `Este lote se paga ${contado.enganchePct}% al firmar y ` +
-          `${contado.contraentregaPct}% contra entrega. El desarrollador no ` +
-          'publica plan de mensualidades.';
+        motivoSinPlanCodigo = 'contado_parcial';
       } else if (contado) {
-        motivoSinPlan =
-          'Este lote se vende de contado. El desarrollador no publica plan de mensualidades.';
+        motivoSinPlanCodigo = 'contado';
       } else if (precioLista === null) {
-        motivoSinPlan =
-          'Las condiciones de pago de este lote cambiaron y las estamos confirmando antes de publicarlas.';
+        motivoSinPlanCodigo = 'condiciones_cambiando';
       } else {
-        motivoSinPlan =
-          'Todavía no publicamos las mensualidades de este lote porque falta confirmar la tasa.';
+        motivoSinPlanCodigo = 'tasa_por_confirmar';
       }
     }
+    const motivoSinPlan =
+      motivoSinPlanCodigo === null
+        ? null
+        : REDACTAR_MOTIVO_SIN_PLAN[motivoSinPlanCodigo](contado);
 
     lotes.push({
       id,
+      developmentId: devId,
       etiqueta: construirEtiqueta(ciudad, superficieM2, precioLista ?? precioPublicado),
       ciudad,
       superficieM2,
@@ -575,6 +594,7 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
       contado,
       apartadoMxn,
       motivoSinPlan,
+      motivoSinPlanCodigo,
     });
   }
 
@@ -584,4 +604,93 @@ export async function getLotesComparables(): Promise<LoteComparable[]> {
     if (a.esDeEstaLanding !== z.esDeEstaLanding) return a.esDeEstaLanding ? -1 : 1;
     return a.precioListaMxn - z.precioListaMxn;
   });
+}
+
+/** Ciudades de la LP de lotes. Es campaña de Playa del Carmen y así se queda. */
+const CIUDADES_LP = ['Playa del Carmen'];
+
+/**
+ * Lotes comparables para el comparador.
+ *
+ * La consulta es dinámica a propósito (no una lista de UUIDs): si el Hub
+ * aprueba otro lote en alguna de las `ciudades` filtradas, entra solo. Por
+ * defecto son solo Playa del Carmen — la LP es campaña de Playa del Carmen y
+ * Tulum queda fuera de esa consulta por decisión de negocio. Otros consumidores
+ * (p.ej. la guía de Riviera Maya) pueden pasar más ciudades sin tocar la LP.
+ *
+ * Las grafías de tipo salen de `TYPE_DB_VALUES` (única fuente, ver
+ * `taxonomy-values.ts`), no están escritas a mano.
+ *
+ * OJO Camino A: no se selecciona `development_name` ni `developer_name`.
+ */
+export async function getLotesComparables(
+  ciudades: string[] = CIUDADES_LP,
+): Promise<LoteComparable[]> {
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return [];
+  const hub = supabase.schema('real_estate_hub' as 'public');
+
+  const { data, error } = await hub
+    .from('v_units')
+    .select(
+      [
+        'id',
+        'development_id',
+        'city',
+        'area_m2',
+        'price_mxn',
+        'unit_type',
+        'fin_tasa',
+        'fin_esquema',
+        'fin_meses_opciones',
+        'fin_esquemas_pago',
+      ].join(', '),
+    )
+    .in('city', ciudades)
+    .in('unit_type', TYPE_DB_VALUES.terreno)
+    .not('approved_at', 'is', null)
+    .eq('published', true)
+    .is('deleted_at', null);
+
+  if (error || !data) return [];
+
+  const filas = data as unknown as FilaComparador[];
+  if (filas.length === 0) return [];
+
+  // `v_units.area_m2` mapea a `superficie_total_m2`, que en algún registro está
+  // vacío aunque `superficie_terreno_m2` sí tenga el dato. Sin superficie no se
+  // puede construir la etiqueta acordada, así que se rescata de la tabla base.
+  const ids = filas.map((f) => f.id);
+  const { data: bases } = await hub
+    .from('Propyte_unidades')
+    .select('id, superficie_terreno_m2')
+    .in('id', ids);
+  const superficieBase = new Map(
+    ((bases ?? []) as unknown as Record<string, unknown>[]).map((b) => [
+      b.id as string,
+      numeroONull(b.superficie_terreno_m2),
+    ]),
+  );
+
+  // Precio mínimo declarado por cada desarrollo: la cifra de control que valida
+  // la reconstrucción del precio de lista.
+  const devIds = [...new Set(filas.map((f) => f.development_id).filter(Boolean))] as string[];
+  const { data: devs } = devIds.length
+    ? await hub
+        .from('Propyte_desarrollos')
+        .select('id, ext_moneda, ext_precio_min_mxn, ext_precio_min_usd')
+        .in('id', devIds)
+    : { data: null };
+  // La cifra de control se compara contra precios de lista EN PESOS, así que sólo
+  // sirve si el desarrollo cotiza en pesos. Un desarrollo en USD daría un control
+  // de 145,000 contra lotes de millones y marcaría todo como discrepante; se deja
+  // en null (sin control) antes que validar contra una moneda distinta.
+  const precioMinDev = new Map(
+    ((devs ?? []) as unknown as Record<string, unknown>[]).map((d) => {
+      const precio = precioDesarrollo(d as FilaPrecioDesarrollo);
+      return [d.id as string, precio.moneda === 'MXN' ? precio.min : null] as const;
+    }),
+  );
+
+  return construirComparables(filas, superficieBase, precioMinDev);
 }

@@ -10,6 +10,7 @@ import {
   MessageCircle, Building2, Sparkles,
 } from '@/lib/icons';
 import { submitForm } from '@/lib/submitForm';
+import { rescatarDelDom, sincronizar } from '@/lib/leads/rescate-prehidratacion';
 import { toast } from 'sonner';
 import { Particles } from '@/components/magicui/particles';
 import { BorderBeam } from '@/components/magicui/border-beam';
@@ -376,13 +377,13 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
     }
   };
 
-  const validate = (): Record<string, string> => {
+  const validate = (datos: typeof formData): Record<string, string> => {
     const next: Record<string, string> = {};
-    if (!formData.name.trim()) next.name = tCommon('required');
-    if (!formData.email.trim()) next.email = tCommon('required');
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) next.email = tCommon('invalidEmail');
-    if (!formData.phone.trim()) next.phone = tCommon('required');
-    else if (!isValidPhoneNumber(formData.phone)) next.phone = tCommon('invalidPhone');
+    if (!datos.name.trim()) next.name = tCommon('required');
+    if (!datos.email.trim()) next.email = tCommon('required');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)) next.email = tCommon('invalidEmail');
+    if (!datos.phone.trim()) next.phone = tCommon('required');
+    else if (!isValidPhoneNumber(datos.phone)) next.phone = tCommon('invalidPhone');
     return next;
   };
 
@@ -407,20 +408,28 @@ function BrokerForm({ siteMedia }: { siteMedia?: SiteMediaMap }) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (formData.website && formData.website.length > 0) {
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y `formData` sigue vacío:
+    // validar contra el estado marcaba «falta tu nombre» sobre un nombre que
+    // estaba a la vista. Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(e.currentTarget, formData, { estadoManda: ['phone'] });
+    setFormData(sincronizar(datos));
+
+    if (datos.website.length > 0) {
       setStatus('success');
       return;
     }
-    const v = validate();
+    const v = validate(datos);
     if (Object.keys(v).length > 0) {
       setErrors(v);
       return;
     }
     setStatus('sending');
     try {
-      const result = await submitForm(formData, 'broker_registration');
+      const result = await submitForm(datos, 'broker_registration');
       if (result.success) {
         setStatus('success');
         toast.success(t('formSuccess'));

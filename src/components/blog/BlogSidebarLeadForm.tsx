@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { FileDown, CheckCircle } from '@/lib/icons';
 import { submitLead } from '@/lib/leads/submit-lead';
+import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
+import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 
 /**
  * BlogSidebarLeadForm
@@ -16,17 +18,43 @@ import { submitLead } from '@/lib/leads/submit-lead';
 export default function BlogSidebarLeadForm({ registerTool = true }: { registerTool?: boolean }) {
   const t = useTranslations('blogSidebar');
   const tlm = useTranslations('leadMagnet');
+  const tCommon = useTranslations('common');
+  // El artículo monta este form 2 veces (móvil + desktop): el id del teléfono
+  // tiene que ser único o el <label> de una copia apunta al input de la otra.
+  const uid = useId();
+  const phoneId = `blog-lead-phone-${uid}`;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState<string | undefined>(undefined);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [website, setWebsite] = useState(''); // honeypot
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y el estado sigue vacío: el
+    // envío se caía sin decir una palabra —ni error, ni petición, ni lead—.
+    // Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(
+      e.currentTarget,
+      { name, email, phone, website },
+      { estadoManda: ['phone'] },
+    );
+    if (datos.name !== name) setName(datos.name);
+    if (datos.email !== email) setEmail(datos.email);
+    if (datos.phone !== phone) setPhone(datos.phone);
+
+    if (!datos.name || !datos.email) return;
+    if (!datos.phone || !isValidPhoneNumber(datos.phone)) {
+      setPhoneError(tCommon('invalidPhone'));
+      return;
+    }
+    setPhoneError(null);
     setStatus('sending');
-    const result = await submitLead('lead_magnet', { name, email, website });
+    const result = await submitLead('lead_magnet', datos);
     if (result.ok) setDownloadUrl(result.downloadUrl ?? null);
     setStatus(result.ok ? 'success' : 'error');
   }
@@ -108,6 +136,21 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
               placeholder={tlm('emailPlaceholder')}
               {...param('Correo electrónico del interesado.')}
             />
+          </div>
+          <div>
+            <label htmlFor={phoneId} className="block text-[11px] font-medium text-white/75 mb-1">{tCommon('phone')}</label>
+            <PhoneInputField
+              id={phoneId}
+              name="phone"
+              value={phone}
+              onChange={(v) => { setPhone(v); if (phoneError) setPhoneError(null); }}
+              invalid={!!phoneError}
+              describedBy={phoneError ? `${phoneId}-error` : undefined}
+              required
+              className="w-full h-11 px-3 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus-within:border-[#A2F9FF] focus-within:outline-none"
+              toolParamDescription={registerTool ? 'Teléfono de contacto, con selector de lada de país.' : undefined}
+            />
+            {phoneError && <p id={`${phoneId}-error`} aria-live="polite" className="text-[11px] text-red-300 mt-1">{phoneError}</p>}
           </div>
           <button
             type="submit"

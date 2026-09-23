@@ -171,6 +171,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     city: localizedTestimonialLocation(t.location, locale),
     rating: t.rating ?? 5,
     text: locale === 'en' ? t.quote_en : t.quote_es,
+    // Puede venir null y el componente cuenta con ello. No se filtra la fila
+    // ni se sustituye por cadena vacía: `Testimonials` distingue ausente de
+    // presente para decidir si la insignia es enlace o solo texto.
+    sourceUrl: t.source_url,
   }));
 
   const exploreOverride = hubExplore.length > 0

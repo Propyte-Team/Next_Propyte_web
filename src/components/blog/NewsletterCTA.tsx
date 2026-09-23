@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
+import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
 import { useTranslations } from 'next-intl';
 import { Mail } from '@/lib/icons';
 import { toast } from 'sonner';
@@ -17,19 +18,27 @@ export default function NewsletterCTA() {
   const [website, setWebsite] = useState(''); // honeypot
   const [status, setStatus] = useState<'idle' | 'sending' | 'success'>('idle');
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // EL DOM MANDA SOBRE EL ESTADO DE REACT. Si el navegador autocompletó
+    // antes de hidratar, los campos se ven llenos y el estado sigue vacío: el
+    // envío se caía sin decir una palabra —ni error, ni petición, ni lead—.
+    // Ver `rescatarDelDom`.
+    const datos = rescatarDelDom(e.currentTarget, { email, website });
+    if (datos.email !== email) setEmail(datos.email);
+
     // Honeypot — silently drop bots, fake-success UX.
-    if (website) {
+    if (datos.website) {
       setStatus('success');
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(datos.email)) {
       toast.error(t('newsletterInvalidEmail'));
       return;
     }
     setStatus('sending');
-    const res = await submitForm({ email, source: 'blog-newsletter' }, 'newsletter');
+    const res = await submitForm({ email: datos.email, source: 'blog-newsletter' }, 'newsletter');
     if (res.success) {
       setStatus('success');
       toast.success(t('newsletterSuccess'));
