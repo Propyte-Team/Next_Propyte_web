@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { KNOWN_SOURCES } from '@/lib/lead-sources';
 import { randomInt, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { createServiceRoleClient } from '@/lib/supabase/server';
@@ -37,32 +38,7 @@ const LEAD_RATE_LIMIT = { bucket: 'leads', limit: 5, windowMs: 60_000 };
 // ningún error — el lead se persiste con `zoho_sync_error: 'SKIPPED: unknown
 // source'` y el endpoint responde 200, así que el fallo es silencioso y el
 // tipo (exhaustivo en field-maps.ts) no lo cubre por sí solo.
-export const KNOWN_SOURCES = [
-  'contact',
-  'property_inquiry',
-  'b2b_request',
-  'developer_request',
-  'broker_registration',
-  'provider_form',
-  'built_consultation',
-  'affiliate_request',
-  'newsletter',
-  'lead_magnet',
-  'glossary_pdf',
-  'lp_lotes_pdc',
-  'lp_casas_riviera',
-  'guia_terrenos',
-] as const satisfies readonly LeadSource[];
 
-// Guardia a nivel de tipos: si `LeadSource` gana un miembro y nadie lo agrega
-// arriba, esto deja de compilar y `tsc` señala cuál falta por nombre. Mismo
-// patrón que protege los `switch` exhaustivos de field-maps.ts — sin él, un
-// source nuevo puede quedar en el tipo pero fuera del array, y el lead se
-// guarda con zoho_sync_error SKIPPED y un 200, sin ruido.
-type _FaltanEnKnownSources = Exclude<LeadSource, (typeof KNOWN_SOURCES)[number]>;
-const _checkKnownSources: _FaltanEnKnownSources extends never
-  ? true
-  : ['falta en KNOWN_SOURCES:', _FaltanEnKnownSources] = true;
 
 // Saneo defensivo de UTMs/gclid — bloquea injection y limita tamaño (REQ-S-08).
 // Vive en `@/lib/leads/utm-sanitize`: antes era un `.regex()` que ante un valor

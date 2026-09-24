@@ -87,7 +87,7 @@ describe('guia_terrenos', () => {
  */
 describe('guia_terrenos está en la allowlist del endpoint', () => {
   it('aparece en KNOWN_SOURCES (src/app/api/leads/route.ts)', async () => {
-    const { KNOWN_SOURCES } = await import('@/app/api/leads/route');
+    const { KNOWN_SOURCES } = await import('@/lib/lead-sources');
     expect(KNOWN_SOURCES).toContain('guia_terrenos');
   });
 });
