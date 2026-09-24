@@ -27,7 +27,7 @@ import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
 // el guardia de exhaustividad (`_checkKnownSources`) que ya vive en ese
 // módulo: si `LeadSource` gana un miembro sin agregarlo ahí, `tsc` falla en
 // AMBOS endpoints, no solo en uno.
-import { KNOWN_SOURCES } from '@/app/api/leads/route';
+import { KNOWN_SOURCES } from '@/lib/lead-sources';
 
 // ============================================================
 // /api/cron/zoho-retry — reintento de leads con sync fallida
@@ -38,7 +38,7 @@ import { KNOWN_SOURCES } from '@/app/api/leads/route';
 
 // Re-exportado solo para test (route.test.ts) — verifica que este endpoint
 // use la MISMA lista que /api/leads, no una copia que pueda volver a divergir.
-export { KNOWN_SOURCES };
+
 
 const CRON_RATE_LIMIT = { bucket: 'cron-zoho-retry', limit: 10, windowMs: 60_000 };
 
