@@ -33,6 +33,10 @@ updates:
       - dependency-name: "next"
       - dependency-name: "react"
       - dependency-name: "react-dom"
+      # eslint 10 no lo soporta eslint-plugin-react (bloqueado 4 veces: #93, #103, #112, #123).
+      # Quitar esta línea cuando jsx-eslint/eslint-plugin-react#4027 se resuelva.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
