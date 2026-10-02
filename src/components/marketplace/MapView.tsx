@@ -1,7 +1,9 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
-import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
+import { useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useTranslations } from 'next-intl';
 import { MapPin } from '@/lib/icons';
 import { formatPriceShort } from '@/lib/formatters';
@@ -25,7 +27,7 @@ interface MapViewProps {
   onHover?: (id: string | null) => void;
 }
 
-const RIVIERA_MAYA_CENTER = { lat: 20.42, lng: -87.25 };
+const RIVIERA_MAYA_CENTER: [number, number] = [20.42, -87.25];
 const DEFAULT_ZOOM = 9;
 
 // Precisión 4 decimales ≈ 11m. Suficiente para considerar "mismo punto" 2+
@@ -43,11 +45,53 @@ type Group = {
 };
 
 // ─────────────────────────────────────────────────────
-// Inner map content — agrupación manual.
-// Reemplaza @googlemaps/markerclusterer porque su integración con
-// @vis.gl/react-google-maps AdvancedMarker tiene un timing bug (los markers
-// se crean async tras carga del SDK, el effect del clusterer no los ve).
-// Agrupar manualmente por coord rounded da control 100%.
+// Solución temporal 2026-10: Google Maps devuelve
+// `BillingNotEnabledMapError` (falta vincular tarjeta/cuenta de facturación
+// en Google Cloud — ver claude/mapa-google-maps-billing-2026-10-02.md en el
+// proyecto "Sistemas"). Mientras se resuelve, el mapa corre sobre Leaflet +
+// tiles de OpenStreetMap: sin API key, sin facturación, cero fricción.
+// Revertir a @vis.gl/react-google-maps (sigue en package.json) una vez
+// habilitada la facturación, si se prefiere el estilo de Google.
+// ─────────────────────────────────────────────────────
+
+// Pines con `L.divIcon` en vez de `L.Icon.Default`: evita el bug clásico de
+// bundlers con las imágenes default de Leaflet (marker-icon.png 404) y
+// replica el estilo de chip de precio que ya existía con AdvancedMarker.
+function priceIcon(label: string, isHovered: boolean): L.DivIcon {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      background:#1A2F3F;color:#fff;padding:4px 8px;border-radius:6px;
+      font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;
+      box-shadow:${isHovered ? '0 4px 12px rgba(162,249,255,0.5)' : '0 2px 6px rgba(0,0,0,0.2)'};
+      transform:${isHovered ? 'scale(1.2)' : 'scale(1)'};
+      ${isHovered ? 'outline:2px solid #A2F9FF;outline-offset:1px;' : ''}
+      transition: box-shadow 150ms, transform 150ms;
+    ">${label}</div>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 20],
+  });
+}
+
+function clusterIcon(count: number): L.DivIcon {
+  const size = count > 20 ? 52 : count > 10 ? 44 : 36;
+  const fontSize = count > 20 ? 14 : count > 10 ? 13 : 12;
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:${size}px;height:${size}px;border-radius:50%;background:#A2F9FF;
+      color:#0F1923;font-weight:800;font-size:${fontSize}px;display:flex;
+      align-items:center;justify-content:center;border:2px solid white;
+      cursor:pointer;font-variant-numeric:tabular-nums;
+      box-shadow:0 -1px 1px 0 rgba(255,255,255,0.55) inset, 0 1px 1px 0 rgba(255,255,255,0.85) inset, 0 4px 12px rgba(162,249,255,0.45), 0 2px 6px rgba(11,28,30,0.2);
+    ">+${count}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+}
+
+// ─────────────────────────────────────────────────────
+// Inner map content — agrupación manual (idéntica a la versión Google Maps).
 // ─────────────────────────────────────────────────────
 function MapContent({
   properties,
@@ -62,10 +106,7 @@ function MapContent({
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
 }) {
-  const [selected, setSelected] = useState<PropertyWithCoords | null>(null);
-
   // Agrupar properties por coord rounded. Stable via useMemo.
-  // (Usamos `Record` para evitar shadowing del componente `Map` de vis.gl.)
   const groups = useMemo<Group[]>(() => {
     const byKey: Record<string, Group> = {};
     for (const p of properties) {
@@ -85,14 +126,6 @@ function MapContent({
     return Object.values(byKey);
   }, [properties]);
 
-  const handleMarkerClick = useCallback(
-    (property: PropertyWithCoords) => {
-      setSelected(property);
-      if (onPropertyClick) onPropertyClick(property);
-    },
-    [onPropertyClick],
-  );
-
   return (
     <>
       {groups.map((group) => {
@@ -101,83 +134,46 @@ function MapContent({
           const property = group.properties[0];
           const isHovered = hoveredId === property.id;
           return (
-            <AdvancedMarker
+            <Marker
               key={property.id}
-              position={{ lat: group.lat, lng: group.lng }}
-              onClick={() => handleMarkerClick(property)}
+              position={[group.lat, group.lng]}
+              icon={priceIcon(formatPriceShort(property.price.mxn), isHovered)}
+              eventHandlers={{
+                click: () => onPropertyClick?.(property),
+                mouseover: () => onHover?.(property.id),
+                mouseout: () => onHover?.(null),
+              }}
             >
-              <div
-                className={`bg-[#1A2F3F] text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap cursor-pointer hover:bg-[#0F1923] transition-all duration-150 ${
-                  isHovered ? 'scale-[1.2] ring-2 ring-propyte-brand ring-offset-1 z-10 relative' : ''
-                }`}
-                style={{ boxShadow: isHovered ? '0 4px 12px rgba(162, 249, 255, 0.5)' : '0 2px 6px rgba(0,0,0,0.2)' }}
-                onMouseEnter={onHover ? () => onHover(property.id) : undefined}
-                onMouseLeave={onHover ? () => onHover(null) : undefined}
-              >
-                {formatPriceShort(property.price.mxn)}
-              </div>
-            </AdvancedMarker>
+              <Popup offset={[0, -16]}>
+                <div className="p-1 min-w-[180px]">
+                  <div className="text-sm font-bold text-[#1A2F3F] mb-1 line-clamp-1">
+                    {property.name}
+                  </div>
+                  <div className="text-xs text-gray-600 mb-2">
+                    {property.location.zone}, {property.location.city}
+                  </div>
+                  <div className="text-sm font-bold text-[#0E7490]">
+                    {formatPriceShort(property.price.mxn)}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
           );
         }
 
         // Cluster pin "+N" — onClick filtra el listado a estos IDs
         const count = group.properties.length;
-        const size = count > 20 ? 52 : count > 10 ? 44 : 36;
-        const fontSize = count > 20 ? 14 : count > 10 ? 13 : 12;
         return (
-          <AdvancedMarker
+          <Marker
             key={group.key}
-            position={{ lat: group.lat, lng: group.lng }}
-            onClick={() => {
-              if (onClusterClick) {
-                onClusterClick(group.properties.map((p) => p.id));
-              }
+            position={[group.lat, group.lng]}
+            icon={clusterIcon(count)}
+            eventHandlers={{
+              click: () => onClusterClick?.(group.properties.map((p) => p.id)),
             }}
-          >
-            <div
-              style={{
-                width: size,
-                height: size,
-                borderRadius: '50%',
-                background: '#A2F9FF',
-                color: '#0F1923',
-                fontWeight: 800,
-                fontSize,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow:
-                  '0 -1px 1px 0 rgba(255, 255, 255, 0.55) inset, 0 1px 1px 0 rgba(255, 255, 255, 0.85) inset, 0 4px 12px rgba(162, 249, 255, 0.45), 0 2px 6px rgba(11, 28, 30, 0.2)',
-                border: '2px solid white',
-                cursor: 'pointer',
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              +{count}
-            </div>
-          </AdvancedMarker>
+          />
         );
       })}
-
-      {selected && (
-        <InfoWindow
-          position={{ lat: selected.location.lat, lng: selected.location.lng }}
-          onCloseClick={() => setSelected(null)}
-          pixelOffset={[0, -8]}
-        >
-          <div className="p-1 min-w-[180px]">
-            <div className="text-sm font-bold text-[#1A2F3F] mb-1 line-clamp-1">
-              {selected.name}
-            </div>
-            <div className="text-xs text-gray-600 mb-2">
-              {selected.location.zone}, {selected.location.city}
-            </div>
-            <div className="text-sm font-bold text-[#0E7490]">
-              {formatPriceShort(selected.price.mxn)}
-            </div>
-          </div>
-        </InfoWindow>
-      )}
     </>
   );
 }
@@ -187,33 +183,6 @@ function MapContent({
 // ─────────────────────────────────────────────────────
 export default function MapView({ properties, onPropertyClick, onClusterClick, hoveredId, onHover }: MapViewProps) {
   const t = useTranslations('marketplace');
-  const [error, setError] = useState(false);
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-  if (!apiKey || apiKey === 'your_google_maps_api_key_here') {
-    return (
-      <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
-        <div className="text-center p-8">
-          <div className="w-16 h-16 mx-auto mb-4 bg-[#1A2F3F]/10 rounded-full flex items-center justify-center">
-            <MapPin size={24} className="text-[#1A2F3F]" />
-          </div>
-          <p className="text-gray-600 font-medium">{t('mapApiKeyMissing')}</p>
-          <p className="text-sm text-gray-600 mt-1">{t('mapApiKeyHint')}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full h-full bg-[#F4F6F8] flex items-center justify-center">
-        <div className="text-center p-8">
-          <p className="text-gray-600 font-medium">{t('mapError')}</p>
-          <p className="text-sm text-gray-600 mt-1">{t('mapErrorHint')}</p>
-        </div>
-      </div>
-    );
-  }
 
   const validProperties = properties.filter(
     (p): p is PropertyWithCoords => p.location.lat != null && p.location.lng != null,
@@ -236,27 +205,27 @@ export default function MapView({ properties, onPropertyClick, onClusterClick, h
   return (
     // data-lenis-prevent: el smooth-scroll global (Lenis) intercepta el wheel en
     // toda la página y le ganaba al mapa. Con este atributo Lenis ignora el wheel
-    // aquí dentro → Google Maps (gestureHandling="greedy") hace zoom y NO se
-    // scrollea la página mientras el mouse está sobre el mapa.
+    // aquí dentro → Leaflet hace zoom con scroll y NO se scrollea la página
+    // mientras el mouse está sobre el mapa.
     <div data-lenis-prevent className="w-full h-full">
-      <APIProvider apiKey={apiKey} onError={() => setError(true)}>
-        <Map
-          defaultCenter={RIVIERA_MAYA_CENTER}
-          defaultZoom={DEFAULT_ZOOM}
-          mapId="propyte-map"
-          gestureHandling="greedy"
-          disableDefaultUI={false}
-          className="w-full h-full"
-        >
-          <MapContent
-            properties={validProperties}
-            onPropertyClick={onPropertyClick}
-            onClusterClick={onClusterClick}
-            hoveredId={hoveredId}
-            onHover={onHover}
-          />
-        </Map>
-      </APIProvider>
+      <MapContainer
+        center={RIVIERA_MAYA_CENTER}
+        zoom={DEFAULT_ZOOM}
+        scrollWheelZoom
+        className="w-full h-full"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapContent
+          properties={validProperties}
+          onPropertyClick={onPropertyClick}
+          onClusterClick={onClusterClick}
+          hoveredId={hoveredId}
+          onHover={onHover}
+        />
+      </MapContainer>
     </div>
   );
 }

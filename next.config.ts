@@ -124,7 +124,11 @@ const nextConfig: NextConfig = {
       // googleadservices/doubleclick: pings de conversión de Google Ads (tag AW).
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://static.hotjar.com https://*.hotjar.com https://connect.facebook.net https://maps.googleapis.com https://maps.gstatic.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://www.facebook.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.com.mx https://*.hotjar.com",
+      // tile.openstreetmap.org: tiles del mapa de /propiedades mientras Google Maps
+      // está bloqueado por BillingNotEnabledMapError (solución temporal 2026-10,
+      // ver claude/mapa-google-maps-billing-2026-10-02.md). Revertir junto con
+      // MapView.tsx si se vuelve a Google Maps.
+      "img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://lh3.googleusercontent.com https://drive.google.com https://img.youtube.com https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https://*.tile.openstreetmap.org https://www.facebook.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://www.google.com.mx https://*.hotjar.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://*.analytics.google.com https://*.hotjar.com wss://*.hotjar.com https://stats.g.doubleclick.net https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.google.com https://maps.googleapis.com",
       // `calendar.google.com` es la agenda de Google Appointments que la guía de

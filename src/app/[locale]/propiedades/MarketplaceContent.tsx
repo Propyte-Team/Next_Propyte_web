@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { Map, List, X, Sparkles } from '@/lib/icons';
 import { useFilters } from '@/hooks/useFilters';
@@ -9,10 +10,15 @@ import { useIsMobile } from '@/hooks/useMediaQuery';
 import FilterBar from '@/components/marketplace/FilterBar';
 import AdvancedFilters from '@/components/marketplace/AdvancedFilters';
 import PropertyList from '@/components/marketplace/PropertyList';
-import MapView from '@/components/marketplace/MapView';
 import MobileBottomSheet from '@/components/marketplace/MobileBottomSheet';
 import ComparePanel from '@/components/marketplace/ComparePanel';
 import { trackSearch } from '@/lib/analytics/track';
+
+// Leaflet toca `window` al importarse (solución temporal mientras se resuelve
+// la facturación de Google Maps, ver claude/mapa-google-maps-billing-2026-10-02.md
+// en el proyecto "Sistemas"): sin ssr:false, el SSR de Next revienta. dynamic()
+// lo manda solo al bundle cliente.
+const MapView = dynamic(() => import('@/components/marketplace/MapView'), { ssr: false });
 
 /**
  * Heading band con identidad Propyte: eyebrow pill brand + H1 con accent
