@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import { useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTranslations } from 'next-intl';
@@ -30,13 +30,6 @@ interface MapViewProps {
 const RIVIERA_MAYA_CENTER: [number, number] = [20.42, -87.25];
 const DEFAULT_ZOOM = 9;
 
-// Precisión 4 decimales ≈ 11m. Suficiente para considerar "mismo punto" 2+
-// unidades del mismo desarrollo (que heredan lat/lng del padre) sin agrupar
-// edificios distintos a 100m de distancia.
-function coordKey(lat: number, lng: number): string {
-  return `${lat.toFixed(4)},${lng.toFixed(4)}`;
-}
-
 type Group = {
   key: string;
   lat: number;
@@ -44,74 +37,32 @@ type Group = {
   properties: PropertyWithCoords[];
 };
 
-// Radio en PÍXELES (no en metros ni en grados) dentro del cual dos puntos se
-// funden en un mismo cluster "+N". Al ser en píxeles, el agrupado depende del
-// zoom: con el mapa alejado, desarrollos distintos que caen a pocos píxeles
-// uno de otro se ven como un solo "+N"; al acercar el zoom esa misma distancia
-// real ocupa muchos más píxeles en pantalla, así que deja de superar el radio
-// y los pines se separan solos en sus ubicaciones reales (reporte 2026-10-05:
-// "al hacer zoom deberían separarse en los precios y lugares reales"). Antes
-// el agrupado era por coordenada redondeada, fijo sin importar el zoom.
-const CLUSTER_PIXEL_RADIUS = 60;
-
-// Zoom a partir del cual se desactiva el agrupado por proximidad por completo
-// y cada desarrollo se muestra siempre en su pin individual, sin importar qué
-// tan cerca esté de otro en pantalla. Sin este tope, dos desarrollos a pocos
-// metros reales uno de otro (mismo predio/manzana) podían seguir cayendo
-// dentro de CLUSTER_PIXEL_RADIUS incluso al zoom máximo del mapa (18, default
-// de Leaflet, nunca lo sobreescribimos) y la bolita "+N" nunca se abría —
-// reporte 2026-10-05: "al hacer el máximo zoom... ya deberían verse las
-// etiquetas de cada desarrollo por separado". El clusterer de Google Maps que
-// reemplazamos sí tenía este tope (maxZoom); el agrupado por píxeles por sí
-// solo no lo garantiza porque es continuo, no un escalón duro.
-const DISABLE_CLUSTERING_AT_ZOOM = 17;
-
-// Agrupa "puntos" (ya deduplicados por coordenada exacta) por cercanía en
-// píxeles a un zoom dado. Greedy O(n²): de sobra para los cientos de
-// desarrollos que tiene el catálogo, y evita sumar una librería de
-// clustering — mismo criterio de "control 100%" que ya se documentó arriba
-// para los pines (agrupación manual en vez de un paquete de terceros).
-function clusterByPixelProximity(points: Group[], map: L.Map, zoom: number): Group[] {
-  const projected = points.map((pt) => ({ pt, px: map.project([pt.lat, pt.lng], zoom) }));
-  const used = new Array(projected.length).fill(false);
-  const result: Group[] = [];
-
-  for (let i = 0; i < projected.length; i++) {
-    if (used[i]) continue;
-    used[i] = true;
-    const members = [projected[i]];
-    for (let j = i + 1; j < projected.length; j++) {
-      if (used[j]) continue;
-      if (projected[i].px.distanceTo(projected[j].px) <= CLUSTER_PIXEL_RADIUS) {
-        used[j] = true;
-        members.push(projected[j]);
-      }
-    }
-    const properties = members.flatMap((m) => m.pt.properties);
-    result.push({
-      // Ids ordenados en vez del índice de iteración: la key tiene que ser
-      // estable entre renders (mismo set de propiedades agrupadas = misma
-      // key) para que React no desmonte/remonte el marker sin necesidad.
-      key: properties.map((p) => p.id).sort().join('+'),
-      lat: members.reduce((sum, m) => sum + m.pt.lat, 0) / members.length,
-      lng: members.reduce((sum, m) => sum + m.pt.lng, 0) / members.length,
-      properties,
-    });
-  }
-  return result;
-}
-
-// Zoom actual del mapa como estado de React. `useMap` no re-renderiza al
-// cambiar el zoom por sí solo — hace falta escuchar `zoomend` a mano.
-function useCurrentZoom(): number {
-  const map = useMap();
-  const [zoom, setZoom] = useState(() => map.getZoom());
-  useMapEvents({
-    zoomend() {
-      setZoom(map.getZoom());
-    },
-  });
-  return zoom;
+// ─────────────────────────────────────────────────────
+// Agrupado: por DESARROLLO, nunca por cercanía en pantalla.
+//
+// Historia: la v1 agrupaba por coordenada redondeada (fijo); la v2 añadió un
+// segundo paso que fundía en una sola bolita "+N" desarrollos DISTINTOS que
+// caían cerca en pantalla, recalculado por zoom. Eso traía un problema de
+// fondo: el radio en píxeles no sabe de identidad — un cluster podía mezclar
+// unidades de desarrollos completamente ajenos (ej. "Av. Libramiento" y
+// "Calle Ceiba 2") solo porque caían a <60px en ese zoom. El panel "Mostrando
+// N unidades en este punto" terminaba mintiendo: esas unidades NO estaban en
+// el mismo punto (reporte 2026-10-06).
+//
+// `developmentKey` agrupa por identidad real del desarrollo en vez de por
+// geometría: dos unidades del MISMO desarrollo siempre se funden en un "+N"
+// (es correcto, son el mismo desarrollo aunque el mapa esté muy alejado), y
+// dos desarrollos DISTINTOS nunca se funden entre sí, sin importar qué tan
+// cerca estén en pantalla ni en qué zoom. Zoom-independiente a propósito: ya
+// no hace falta rastrear el zoom del mapa para esto (se quitaron useMap /
+// useMapEvents, que solo existían para el agrupado por píxeles).
+function developmentKey(p: PropertyWithCoords): string {
+  // Unit con desarrollo padre conocido → la key es la del padre, compartida
+  // por todas sus unidades hermanas. Development, o unit huérfana sin
+  // development_slug (standalone, sin padre), usa su propio slug/id —
+  // único por definición, así que nunca se mezcla con otro desarrollo.
+  if (p.kind === 'unit' && p.parentDevelopmentSlug) return p.parentDevelopmentSlug;
+  return p.slug || p.id;
 }
 
 // ─────────────────────────────────────────────────────
@@ -168,9 +119,7 @@ function clusterIcon(count: number): L.DivIcon {
 }
 
 // ─────────────────────────────────────────────────────
-// Inner map content — agrupación manual en dos niveles (ver
-// `clusterByPixelProximity` arriba): coordenada exacta, zoom-independiente,
-// y luego proximidad en píxeles, zoom-dependiente.
+// Inner map content — agrupación por desarrollo (ver developmentKey arriba).
 // ─────────────────────────────────────────────────────
 function MapContent({
   properties,
@@ -185,44 +134,24 @@ function MapContent({
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
 }) {
-  const map = useMap();
-  const zoom = useCurrentZoom();
-
-  // Nivel 1 — fijo, no depende del zoom: funde unidades que comparten
-  // literalmente la misma coordenada (varias unidades del mismo desarrollo,
-  // que heredan el lat/lng del padre). Esas SÍ son el mismo punto en el mapa
-  // sea cual sea el zoom, así que nunca deberían "separarse".
-  const locationPoints = useMemo<Group[]>(() => {
-    const byKey: Record<string, Group> = {};
+  const groups = useMemo<Group[]>(() => {
+    const byKey: Record<string, PropertyWithCoords[]> = {};
     for (const p of properties) {
-      const key = coordKey(p.location.lat, p.location.lng);
-      const existing = byKey[key];
-      if (existing) {
-        existing.properties.push(p);
-      } else {
-        byKey[key] = {
-          key,
-          lat: p.location.lat,
-          lng: p.location.lng,
-          properties: [p],
-        };
-      }
+      const key = developmentKey(p);
+      (byKey[key] ??= []).push(p);
     }
-    return Object.values(byKey);
+    // Centroide del desarrollo: promedio de lat/lng de sus unidades. En la
+    // práctica casi siempre son el mismo punto exacto (las unidades heredan
+    // lat/lng del padre), pero promediar es inofensivo si alguna unidad trae
+    // una coordenada propia ligeramente distinta y evita que el pin salte a
+    // la posición de "la última unidad procesada".
+    return Object.entries(byKey).map(([key, members]) => ({
+      key,
+      lat: members.reduce((sum, p) => sum + p.location.lat, 0) / members.length,
+      lng: members.reduce((sum, p) => sum + p.location.lng, 0) / members.length,
+      properties: members,
+    }));
   }, [properties]);
-
-  // Nivel 2 — sí depende del zoom: funde puntos de desarrollos DISTINTOS que
-  // caen cerca en pantalla. Se recalcula cuando cambia el zoom, así que al
-  // acercar el mapa los clusters se abren solos en las ubicaciones reales.
-  // A partir de DISABLE_CLUSTERING_AT_ZOOM se desactiva del todo: cada
-  // desarrollo siempre en su propio pin, sin importar la distancia en pantalla.
-  const groups = useMemo<Group[]>(
-    () =>
-      zoom >= DISABLE_CLUSTERING_AT_ZOOM
-        ? locationPoints
-        : clusterByPixelProximity(locationPoints, map, zoom),
-    [locationPoints, map, zoom],
-  );
 
   return (
     <>
@@ -259,10 +188,12 @@ function MapContent({
           );
         }
 
-        // Cluster pin "+N" — onClick filtra el listado a estos IDs.
+        // Cluster pin "+N" — todas las unidades agrupadas son del MISMO
+        // desarrollo (ver developmentKey), así que "N unidades en este punto"
+        // siempre es verdad. onClick filtra el listado a estos IDs.
         // zIndexOffset alto: cuando un cluster cae cerca de un chip de precio
-        // individual (zoom alejado, varios desarrollos próximos), el círculo
-        // "+N" gana y no queda tapado a medias por el chip (reporte 2026-10-05).
+        // individual (otro desarrollo próximo), el círculo "+N" gana y no
+        // queda tapado a medias por el chip (reporte 2026-10-05).
         const count = group.properties.length;
         return (
           <Marker
