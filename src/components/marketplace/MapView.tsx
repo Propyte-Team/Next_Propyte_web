@@ -57,19 +57,26 @@ type Group = {
 // Pines con `L.divIcon` en vez de `L.Icon.Default`: evita el bug clásico de
 // bundlers con las imágenes default de Leaflet (marker-icon.png 404) y
 // replica el estilo de chip de precio que ya existía con AdvancedMarker.
+//
+// `transform:translate(-50%,-100%)` dentro del propio HTML (no `iconAnchor`)
+// porque el ancho del chip varía con el precio ("$1.2M MXN" vs "$950K MXN");
+// un `iconAnchor` fijo descentraba el chip y lo hacía chocar con el cluster
+// "+N" más cercano cuando había varias unidades próximas (reporte 2026-10-05).
+// Con translate queda siempre centrado y apuntando hacia abajo al punto,
+// sea cual sea el largo del texto.
 function priceIcon(label: string, isHovered: boolean): L.DivIcon {
   return L.divIcon({
     className: '',
     html: `<div style="
+      position:absolute;left:0;top:0;transform:translate(-50%,-100%)${isHovered ? ' scale(1.2)' : ''};
       background:#1A2F3F;color:#fff;padding:4px 8px;border-radius:6px;
       font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;
       box-shadow:${isHovered ? '0 4px 12px rgba(162,249,255,0.5)' : '0 2px 6px rgba(0,0,0,0.2)'};
-      transform:${isHovered ? 'scale(1.2)' : 'scale(1)'};
       ${isHovered ? 'outline:2px solid #A2F9FF;outline-offset:1px;' : ''}
       transition: box-shadow 150ms, transform 150ms;
     ">${label}</div>`,
     iconSize: [0, 0],
-    iconAnchor: [0, 20],
+    iconAnchor: [0, 0],
   });
 }
 
@@ -161,13 +168,17 @@ function MapContent({
           );
         }
 
-        // Cluster pin "+N" — onClick filtra el listado a estos IDs
+        // Cluster pin "+N" — onClick filtra el listado a estos IDs.
+        // zIndexOffset alto: cuando un cluster cae cerca de un chip de precio
+        // individual (zoom alejado, varios desarrollos próximos), el círculo
+        // "+N" gana y no queda tapado a medias por el chip (reporte 2026-10-05).
         const count = group.properties.length;
         return (
           <Marker
             key={group.key}
             position={[group.lat, group.lng]}
             icon={clusterIcon(count)}
+            zIndexOffset={1000}
             eventHandlers={{
               click: () => onClusterClick?.(group.properties.map((p) => p.id)),
             }}
@@ -207,7 +218,15 @@ export default function MapView({ properties, onPropertyClick, onClusterClick, h
     // toda la página y le ganaba al mapa. Con este atributo Lenis ignora el wheel
     // aquí dentro → Leaflet hace zoom con scroll y NO se scrollea la página
     // mientras el mouse está sobre el mapa.
-    <div data-lenis-prevent className="w-full h-full">
+    //
+    // isolate: el CSS de Leaflet pone z-index hasta 1000 en sus controles
+    // (zoom, atribución) y 600-700 en sus panes de marcadores/popups. Sin un
+    // contenedor con su propio stacking context, esos z-index "se escapan"
+    // y comparan contra el resto de la página — tapaban el panel "Más" del
+    // menú lateral (z-50), que abre justo donde empieza el mapa (reporte
+    // 2026-10-05). `isolate` encierra todo el z-index de Leaflet dentro de
+    // este div; nunca vuelve a competir con nada de fuera.
+    <div data-lenis-prevent className="w-full h-full isolate">
       <MapContainer
         center={RIVIERA_MAYA_CENTER}
         zoom={DEFAULT_ZOOM}
