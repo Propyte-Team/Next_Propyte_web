@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useMemo, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useTranslations } from 'next-intl';
@@ -43,6 +43,64 @@ type Group = {
   lng: number;
   properties: PropertyWithCoords[];
 };
+
+// Radio en PÍXELES (no en metros ni en grados) dentro del cual dos puntos se
+// funden en un mismo cluster "+N". Al ser en píxeles, el agrupado depende del
+// zoom: con el mapa alejado, desarrollos distintos que caen a pocos píxeles
+// uno de otro se ven como un solo "+N"; al acercar el zoom esa misma distancia
+// real ocupa muchos más píxeles en pantalla, así que deja de superar el radio
+// y los pines se separan solos en sus ubicaciones reales (reporte 2026-10-05:
+// "al hacer zoom deberían separarse en los precios y lugares reales"). Antes
+// el agrupado era por coordenada redondeada, fijo sin importar el zoom.
+const CLUSTER_PIXEL_RADIUS = 60;
+
+// Agrupa "puntos" (ya deduplicados por coordenada exacta) por cercanía en
+// píxeles a un zoom dado. Greedy O(n²): de sobra para los cientos de
+// desarrollos que tiene el catálogo, y evita sumar una librería de
+// clustering — mismo criterio de "control 100%" que ya se documentó arriba
+// para los pines (agrupación manual en vez de un paquete de terceros).
+function clusterByPixelProximity(points: Group[], map: L.Map, zoom: number): Group[] {
+  const projected = points.map((pt) => ({ pt, px: map.project([pt.lat, pt.lng], zoom) }));
+  const used = new Array(projected.length).fill(false);
+  const result: Group[] = [];
+
+  for (let i = 0; i < projected.length; i++) {
+    if (used[i]) continue;
+    used[i] = true;
+    const members = [projected[i]];
+    for (let j = i + 1; j < projected.length; j++) {
+      if (used[j]) continue;
+      if (projected[i].px.distanceTo(projected[j].px) <= CLUSTER_PIXEL_RADIUS) {
+        used[j] = true;
+        members.push(projected[j]);
+      }
+    }
+    const properties = members.flatMap((m) => m.pt.properties);
+    result.push({
+      // Ids ordenados en vez del índice de iteración: la key tiene que ser
+      // estable entre renders (mismo set de propiedades agrupadas = misma
+      // key) para que React no desmonte/remonte el marker sin necesidad.
+      key: properties.map((p) => p.id).sort().join('+'),
+      lat: members.reduce((sum, m) => sum + m.pt.lat, 0) / members.length,
+      lng: members.reduce((sum, m) => sum + m.pt.lng, 0) / members.length,
+      properties,
+    });
+  }
+  return result;
+}
+
+// Zoom actual del mapa como estado de React. `useMap` no re-renderiza al
+// cambiar el zoom por sí solo — hace falta escuchar `zoomend` a mano.
+function useCurrentZoom(): number {
+  const map = useMap();
+  const [zoom, setZoom] = useState(() => map.getZoom());
+  useMapEvents({
+    zoomend() {
+      setZoom(map.getZoom());
+    },
+  });
+  return zoom;
+}
 
 // ─────────────────────────────────────────────────────
 // Solución temporal 2026-10: Google Maps devuelve
@@ -98,7 +156,9 @@ function clusterIcon(count: number): L.DivIcon {
 }
 
 // ─────────────────────────────────────────────────────
-// Inner map content — agrupación manual (idéntica a la versión Google Maps).
+// Inner map content — agrupación manual en dos niveles (ver
+// `clusterByPixelProximity` arriba): coordenada exacta, zoom-independiente,
+// y luego proximidad en píxeles, zoom-dependiente.
 // ─────────────────────────────────────────────────────
 function MapContent({
   properties,
@@ -113,8 +173,14 @@ function MapContent({
   hoveredId?: string | null;
   onHover?: (id: string | null) => void;
 }) {
-  // Agrupar properties por coord rounded. Stable via useMemo.
-  const groups = useMemo<Group[]>(() => {
+  const map = useMap();
+  const zoom = useCurrentZoom();
+
+  // Nivel 1 — fijo, no depende del zoom: funde unidades que comparten
+  // literalmente la misma coordenada (varias unidades del mismo desarrollo,
+  // que heredan el lat/lng del padre). Esas SÍ son el mismo punto en el mapa
+  // sea cual sea el zoom, así que nunca deberían "separarse".
+  const locationPoints = useMemo<Group[]>(() => {
     const byKey: Record<string, Group> = {};
     for (const p of properties) {
       const key = coordKey(p.location.lat, p.location.lng);
@@ -132,6 +198,14 @@ function MapContent({
     }
     return Object.values(byKey);
   }, [properties]);
+
+  // Nivel 2 — sí depende del zoom: funde puntos de desarrollos DISTINTOS que
+  // caen cerca en pantalla. Se recalcula cuando cambia el zoom, así que al
+  // acercar el mapa los clusters se abren solos en las ubicaciones reales.
+  const groups = useMemo<Group[]>(
+    () => clusterByPixelProximity(locationPoints, map, zoom),
+    [locationPoints, map, zoom],
+  );
 
   return (
     <>
@@ -221,8 +295,8 @@ export default function MapView({ properties, onPropertyClick, onClusterClick, h
     //
     // isolate: el CSS de Leaflet pone z-index hasta 1000 en sus controles
     // (zoom, atribución) y 600-700 en sus panes de marcadores/popups. Sin un
-    // contenedor con su propio stacking context, esos z-index "se escapaban"
-    // y comparaban contra el resto de la página — tapaban el panel "Más" del
+    // contenedor con su propio stacking context, esos z-index "se escapan"
+    // y comparan contra el resto de la página — tapaban el panel "Más" del
     // menú lateral (z-50), que abre justo donde empieza el mapa (reporte
     // 2026-10-05). `isolate` encierra todo el z-index de Leaflet dentro de
     // este div; nunca vuelve a competir con nada de fuera.
