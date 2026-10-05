@@ -54,6 +54,18 @@ type Group = {
 // el agrupado era por coordenada redondeada, fijo sin importar el zoom.
 const CLUSTER_PIXEL_RADIUS = 60;
 
+// Zoom a partir del cual se desactiva el agrupado por proximidad por completo
+// y cada desarrollo se muestra siempre en su pin individual, sin importar qué
+// tan cerca esté de otro en pantalla. Sin este tope, dos desarrollos a pocos
+// metros reales uno de otro (mismo predio/manzana) podían seguir cayendo
+// dentro de CLUSTER_PIXEL_RADIUS incluso al zoom máximo del mapa (18, default
+// de Leaflet, nunca lo sobreescribimos) y la bolita "+N" nunca se abría —
+// reporte 2026-10-05: "al hacer el máximo zoom... ya deberían verse las
+// etiquetas de cada desarrollo por separado". El clusterer de Google Maps que
+// reemplazamos sí tenía este tope (maxZoom); el agrupado por píxeles por sí
+// solo no lo garantiza porque es continuo, no un escalón duro.
+const DISABLE_CLUSTERING_AT_ZOOM = 17;
+
 // Agrupa "puntos" (ya deduplicados por coordenada exacta) por cercanía en
 // píxeles a un zoom dado. Greedy O(n²): de sobra para los cientos de
 // desarrollos que tiene el catálogo, y evita sumar una librería de
@@ -202,8 +214,13 @@ function MapContent({
   // Nivel 2 — sí depende del zoom: funde puntos de desarrollos DISTINTOS que
   // caen cerca en pantalla. Se recalcula cuando cambia el zoom, así que al
   // acercar el mapa los clusters se abren solos en las ubicaciones reales.
+  // A partir de DISABLE_CLUSTERING_AT_ZOOM se desactiva del todo: cada
+  // desarrollo siempre en su propio pin, sin importar la distancia en pantalla.
   const groups = useMemo<Group[]>(
-    () => clusterByPixelProximity(locationPoints, map, zoom),
+    () =>
+      zoom >= DISABLE_CLUSTERING_AT_ZOOM
+        ? locationPoints
+        : clusterByPixelProximity(locationPoints, map, zoom),
     [locationPoints, map, zoom],
   );
 
