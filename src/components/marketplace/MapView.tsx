@@ -221,8 +221,8 @@ export default function MapView({ properties, onPropertyClick, onClusterClick, h
     //
     // isolate: el CSS de Leaflet pone z-index hasta 1000 en sus controles
     // (zoom, atribución) y 600-700 en sus panes de marcadores/popups. Sin un
-    // contenedor con su propio stacking context, esos z-index "se escapan"
-    // y comparan contra el resto de la página — tapaban el panel "Más" del
+    // contenedor con su propio stacking context, esos z-index "se escapaban"
+    // y comparaban contra el resto de la página — tapaban el panel "Más" del
     // menú lateral (z-50), que abre justo donde empieza el mapa (reporte
     // 2026-10-05). `isolate` encierra todo el z-index de Leaflet dentro de
     // este div; nunca vuelve a competir con nada de fuera.
