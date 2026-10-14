@@ -7,8 +7,8 @@ import {
   hubIdAvica,
 } from './etiquetas';
 
-const YAXNAH = '76dfb7d5-78a7-47cd-b316-faadd97f4c9e';
-const NATIVA = '5c171eb4-ef42-444c-9a81-6d61a5b20813';
+const YAXNAH = '76dfb7d5-4755-4938-8bf2-07aed5d2df15';
+const NATIVA = '5c171eb4-f5f7-4ade-a8b1-0ef2a4926168';
 
 describe('etiquetaAvica', () => {
   it('traduce las claves de los selects de Webflow a lo que vio el visitante', () => {

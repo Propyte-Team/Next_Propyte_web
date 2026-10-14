@@ -46,8 +46,8 @@ zod 4, Vitest (entorno `node`, `src/**/*.test.ts`), Supabase JS, Zoho CRM v2.
 - **Etiquetas legibles:** las de `yaxnah-registro-brokers/src/lib/sitio/mapeo.ts`,
   copiadas en la Tarea 1.
 - **Desarrollos** (`Propyte_desarrollos.id`):
-  - Yaxnáh Caucel `76dfb7d5-78a7-47cd-b316-faadd97f4c9e`
-  - Nativa Tulum `5c171eb4-ef42-444c-9a81-6d61a5b20813`
+  - Yaxnáh Caucel `76dfb7d5-4755-4938-8bf2-07aed5d2df15`
+  - Nativa Tulum `5c171eb4-f5f7-4ade-a8b1-0ef2a4926168`
   - Real Caucel no existe en el Hub.
 - **Nada del código de Avica importa `@/lib/meta/capi`.**
 - **Logs sin datos personales:** ni nombre, ni teléfono, ni correo.
@@ -106,8 +106,8 @@ import {
   hubIdAvica,
 } from './etiquetas';
 
-const YAXNAH = '76dfb7d5-78a7-47cd-b316-faadd97f4c9e';
-const NATIVA = '5c171eb4-ef42-444c-9a81-6d61a5b20813';
+const YAXNAH = '76dfb7d5-4755-4938-8bf2-07aed5d2df15';
+const NATIVA = '5c171eb4-f5f7-4ade-a8b1-0ef2a4926168';
 
 describe('etiquetaAvica', () => {
   it('traduce las claves de los selects de Webflow a lo que vio el visitante', () => {
@@ -226,8 +226,8 @@ interface DesarrolloAvica {
   hubId: string | null;
 }
 
-const YAXNAH_CAUCEL = '76dfb7d5-78a7-47cd-b316-faadd97f4c9e';
-const NATIVA_TULUM = '5c171eb4-ef42-444c-9a81-6d61a5b20813';
+const YAXNAH_CAUCEL = '76dfb7d5-4755-4938-8bf2-07aed5d2df15';
+const NATIVA_TULUM = '5c171eb4-f5f7-4ade-a8b1-0ef2a4926168';
 
 /** Fichas `/desarrollos/<slug>` del CMS de Webflow (medido el 2026-10-14). */
 const DESARROLLOS_AVICA: Record<string, DesarrolloAvica> = {
@@ -1277,7 +1277,7 @@ git commit -m "refactor(leads): extraer pushToZoho y compactFormData de /api/lea
 import { describe, expect, it } from 'vitest';
 import { resolverProyectoZoho } from './resolve-proyecto-interes';
 
-const YAXNAH_HUB = '76dfb7d5-78a7-47cd-b316-faadd97f4c9e';
+const YAXNAH_HUB = '76dfb7d5-4755-4938-8bf2-07aed5d2df15';
 const ZOHO_YAXNAH = '6040986000097746005';
 
 /** Mapa falso Hub → Zoho: registra a quién le preguntaron. */

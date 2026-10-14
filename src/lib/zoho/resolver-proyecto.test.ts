@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolverProyectoZoho } from './resolve-proyecto-interes';
 
-const YAXNAH_HUB = '76dfb7d5-78a7-47cd-b316-faadd97f4c9e';
+const YAXNAH_HUB = '76dfb7d5-4755-4938-8bf2-07aed5d2df15';
 const ZOHO_YAXNAH = '6040986000097746005';
 
 /** Mapa falso Hub → Zoho: registra a quién le preguntaron. */
