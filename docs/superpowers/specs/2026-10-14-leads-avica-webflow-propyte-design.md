@@ -148,8 +148,8 @@ que `resolveProyectoDeInteres`.
 
 | Página / interés | Desarrollo del Hub | Zoho (medido 2026-10-14) |
 |---|---|---|
-| `/desarrollos/yaxnah` | `76dfb7d5-78a7-47cd-b316-faadd97f4c9e` (Yaxnáh Caucel) | `6040986000097746005` |
-| `/desarrollos/nativa-tulum` | `5c171eb4-ef42-444c-9a81-6d61a5b20813` (Nativa Tulum) | `6040986000000864137` |
+| `/desarrollos/yaxnah` | `76dfb7d5-4755-4938-8bf2-07aed5d2df15` (Yaxnáh Caucel) | `6040986000097746005` |
+| `/desarrollos/nativa-tulum` | `5c171eb4-f5f7-4ade-a8b1-0ef2a4926168` (Nativa Tulum) | `6040986000000864137` |
 | `/desarrollos/real-caucel` | No existe en el Hub | Sin proyecto |
 | Otra página + `casa` | Yaxnáh Caucel | — |
 | Otra página + `departamento` | Nativa Tulum | — |
