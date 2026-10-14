@@ -36,7 +36,7 @@ describe('un lead de Avica rescatado por el cron llega igual que por el push dir
       'avica_contacto', reconstruido, 'es', {},
       await resolverProyectoZoho(null, 'avica_contacto', reconstruido, buscar),
     );
-    expect(contacto.lead.Proyecto_de_Interes).toEqual([{ id: '6040986000097746005' }]);
+    expect(contacto.lead.Proyecto_de_Interes).toEqual([{ Proyecto_de_Interes: { id: '6040986000097746005' } }]);
     expect(contacto.lead.City).toBe('Mérida');
     expect(contacto.lead.Description).toContain('Marcó «¿Eres broker inmobiliario?»');
   });

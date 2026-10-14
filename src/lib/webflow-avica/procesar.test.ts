@@ -74,7 +74,7 @@ describe('procesar (sitio de Avica → public.leads → Zoho)', () => {
       nombre_campana: 'Sitio Avica - contacto - [LEADS]',
       nombre_formulario: 'Formulario sitio Avica ES - Contacto',
     });
-    expect(pushes).toEqual([{ leadId: 'lead-1', filasAlEmpujar: 1, proyecto: [{ id: '6040986000097746005' }] }]);
+    expect(pushes).toEqual([{ leadId: 'lead-1', filasAlEmpujar: 1, proyecto: [{ Proyecto_de_Interes: { id: '6040986000097746005' } }] }]);
   });
 
   it('sin datos de contacto: fila SKIPPED, sin Zoho, y el motivo queda registrado sin datos personales', async () => {

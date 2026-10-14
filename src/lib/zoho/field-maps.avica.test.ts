@@ -73,8 +73,20 @@ describe('fuentes del sitio de Avica', () => {
   it('Proyecto_de_Interes solo cuando se resolvió un id', () => {
     expect(
       sourceToZohoPayload('avica_contacto', CONTACTO, 'es', {}, '6040986000097746005').lead.Proyecto_de_Interes,
-    ).toEqual([{ id: '6040986000097746005' }]);
+    ).toEqual([{ Proyecto_de_Interes: { id: '6040986000097746005' } }]);
     expect(sourceToZohoPayload('avica_contacto', CONTACTO, 'es', {}).lead).not.toHaveProperty('Proyecto_de_Interes');
+  });
+
+  it('Proyecto_de_Interes va con el formato de lookup múltiple de Zoho, también en property_inquiry', () => {
+    // Medido en el Zoho de Propyte (2026-10-14). Con el campo en el layout,
+    // `[{ id }]` da INVALID_DATA («the id given seems to be invalid»): ese `id`
+    // sería el del registro de Leads_X_Proyectos. El desarrollo va bajo el
+    // lookup conectado. Fuera del layout, Zoho tiraba el campo sin avisar.
+    const id = '6040986000000864137';
+    const consulta: FormData = { name: 'Ana Ruiz', email: 'ana@example.com', phone: '9991234567', propertyId: 'p-1' };
+    expect(sourceToZohoPayload('property_inquiry', consulta, 'es', {}, id).lead.Proyecto_de_Interes).toEqual([
+      { Proyecto_de_Interes: { id } },
+    ]);
   });
 
   it('avica_broker es un broker de Propyte: etiqueta [BROKERS], tipo Broker, marca Broker y sin proyecto', () => {

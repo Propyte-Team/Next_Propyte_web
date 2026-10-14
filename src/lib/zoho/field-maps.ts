@@ -785,7 +785,7 @@ export function sourceToZohoPayload(
   // para la ruta y el cron). Si no hay mapping, composeDescription ya nombra
   // la propiedad o el desarrollo.
   if (zohoDevelopmentId && (source === "property_inquiry" || source === "avica_contacto")) {
-    lead.Proyecto_de_Interes = [{ id: zohoDevelopmentId }];
+    lead.Proyecto_de_Interes = [{ Proyecto_de_Interes: { id: zohoDevelopmentId } }];
   }
 
   // Description (contexto estructurado) — sin texto libre

@@ -107,7 +107,8 @@ export interface ZohoLead extends ZohoRecord {
   Nombre_anuncio?: string;
   Plataforma_de_llegada?: string;
   Nombre_del_formulario?: string;
-  Proyecto_de_Interes?: Array<{ id: string }>;
+  /** Lookup múltiple: cada elemento es un registro de Leads_X_Proyectos. */
+  Proyecto_de_Interes?: Array<{ Proyecto_de_Interes: { id: string } }>;
   Inter_s?: string;
   Mensaje?: string;
   Idioma?: string;
