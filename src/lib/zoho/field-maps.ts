@@ -4,6 +4,7 @@
 // ============================================================
 
 import type { ZohoAccount, ZohoLead } from "./types";
+import { DOMINIO_AVICA, FUENTE_AVICA, INTERES_AVICA, etiquetaAvica } from "@/lib/webflow-avica/etiquetas";
 
 // --- Tipos ---
 
@@ -24,7 +25,13 @@ export type LeadSource =
   /** Landing de pago de casas, Riviera Maya — PDC + Tulum (Google/Meta Ads). */
   | "lp_casas_riviera"
   /** Guía comparativa de terrenos residenciales, alimentada del inventario. */
-  | "guia_terrenos";
+  | "guia_terrenos"
+  /** Sitio de Avica (Webflow): formulario de contacto «Email Footer». Va al Zoho de Propyte. */
+  | "avica_contacto"
+  /** Sitio de Avica: marcó «¿Eres broker inmobiliario?» o eligió «Soy Broker». */
+  | "avica_broker"
+  /** Sitio de Avica: newsletter «Email Form» (solo correo). */
+  | "avica_newsletter";
 
 export interface FormData {
   // Identidad
@@ -53,6 +60,12 @@ export interface FormData {
   interest?: string | null;
   /** URL exacta de la página donde se envió el form — mapeada a Nombre_anuncio. */
   page?: string | null;
+  /** Sitio de Avica: clave cruda del select «interes_en» (asesor | casa | departamento | broker). */
+  interestOption?: string | null;
+  /** Sitio de Avica: clave cruda de «nos_encontro_en». */
+  heardFrom?: string | null;
+  /** Sitio de Avica: casilla «¿Eres broker inmobiliario?». */
+  isBroker?: boolean | null;
 }
 
 export interface UtmData {
@@ -283,6 +296,20 @@ export function truncateError(
 // --- Mappers por form ---
 
 /** Slug de ruta usado en Nombre_de_Campa_a — "Propyte web - <slug>". */
+function esAvica(source: LeadSource): boolean {
+  return source === "avica_contacto" || source === "avica_broker" || source === "avica_newsletter";
+}
+
+/**
+ * «Sitio Avica» y no «Propyte web»: la regla «Enviar Lead a Meta CAPI» del
+ * Zoho de Propyte excluye las campañas que contienen «Sitio Avica» (cambio
+ * del 2026-10-14). Las reglas de asignación miran la etiqueta [LEADS] o
+ * [BROKERS], no este prefijo.
+ */
+function campaignPrefix(source: LeadSource): string {
+  return esAvica(source) ? "Sitio Avica" : "Propyte web";
+}
+
 function campaignSlug(source: LeadSource): string {
   switch (source) {
     case "contact":               return "contacto";
@@ -299,6 +326,9 @@ function campaignSlug(source: LeadSource): string {
     case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
     case "lp_casas_riviera":      return "lp/casas-riviera-maya";
     case "guia_terrenos":         return "guias/terrenos-residenciales";
+    case "avica_contacto":        return "contacto";
+    case "avica_broker":          return "broker";
+    case "avica_newsletter":      return "newsletter";
   }
 }
 
@@ -309,7 +339,8 @@ function campaignSlug(source: LeadSource): string {
  */
 function campaignTag(source: LeadSource): string {
   switch (source) {
-    case "broker_registration": return "[BROKERS]";
+    case "broker_registration":
+    case "avica_broker":        return "[BROKERS]";
     case "provider_form":       return "[PROVEEDORES]";
     case "b2b_request":
     case "developer_request":
@@ -352,9 +383,12 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
       case "lp_casas_riviera":    return "Landing casas Riviera Maya (Ads)";
       case "guia_terrenos":       return "Guía de terrenos residenciales";
+      case "avica_contacto":      return "Contacto";
+      case "avica_broker":        return "Broker";
+      case "avica_newsletter":    return "Newsletter";
     }
   })();
-  return `Formulario Propyte web ${langTag} - ${desc}`;
+  return `Formulario ${esAvica(source) ? "sitio Avica" : "Propyte web"} ${langTag} - ${desc}`;
 }
 
 /** Base aplicada a TODOS los leads desde web (§6.3 reglas globales). */
@@ -377,7 +411,7 @@ function baseLeadFields(
     Plataforma_de_llegada: "Sitio web",
     Nombre_de_Campa_a: (() => {
       const subtag = campaignSubtag(source);
-      const base = `Propyte web - ${campaignSlug(source)} - ${campaignTag(source)}`;
+      const base = `${campaignPrefix(source)} - ${campaignSlug(source)} - ${campaignTag(source)}`;
       return subtag ? `${base} ${subtag}` : base;
     })(),
     Nombre_del_formulario: fitZoho("Nombre_del_formulario", formDescription(source, locale)),
@@ -394,7 +428,8 @@ function baseLeadFields(
 /** Tipo_de_Contacto por source. */
 function tipoDeContacto(source: LeadSource): string {
   switch (source) {
-    case "broker_registration": return "Broker";
+    case "broker_registration":
+    case "avica_broker":        return "Broker";
     case "provider_form":       return "Proveedor";
     case "b2b_request":
     case "developer_request":
@@ -409,6 +444,17 @@ function tipoDeContacto(source: LeadSource): string {
  *   — info estructurada del prospecto que NO es texto libre.
  * NO incluye `data.message` ni `data.interest` libres — esos van a `Mensaje` (composeMensaje).
  */
+/** Ruta de la página sin dominio ni query, para leerla en Zoho; '' en la portada. */
+function rutaDePagina(page: string | null | undefined): string {
+  if (!page) return "";
+  try {
+    const { pathname } = new URL(page);
+    return pathname === "/" ? "" : pathname;
+  } catch {
+    return "";
+  }
+}
+
 function composeDescription(source: LeadSource, data: FormData): string | undefined {
   const parts: string[] = [];
 
@@ -476,6 +522,19 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       if (data.propertyName) parts.push(`Casa de interés: ${data.propertyName}`);
       if (data.budget) parts.push(`Presupuesto: ${data.budget}`);
       break;
+    case "avica_contacto":
+    case "avica_broker":
+    case "avica_newsletter": {
+      parts.push(`Sitio: ${DOMINIO_AVICA}${rutaDePagina(data.page)}`);
+      if (data.propertyName) parts.push(`Desarrollo: ${data.propertyName}`);
+      const interes = etiquetaAvica(INTERES_AVICA, data.interestOption);
+      if (interes) parts.push(`Interés: ${interes}`);
+      const fuente = etiquetaAvica(FUENTE_AVICA, data.heardFrom);
+      if (fuente) parts.push(`Cómo nos conoció: ${fuente}`);
+      if (data.city) parts.push(`Ciudad: ${data.city}`);
+      if (data.isBroker) parts.push("Marcó «¿Eres broker inmobiliario?»");
+      break;
+    }
   }
 
   return parts.length > 0 ? truncateDescription(parts.join("\n")) : undefined;
@@ -490,7 +549,12 @@ function composeMensaje(source: LeadSource, data: FormData): string | undefined 
   if (source === "affiliate_request") {
     return data.interest ? truncateDescription(data.interest) : undefined;
   }
-  if (source === "newsletter" || source === "lead_magnet" || source === "glossary_pdf") {
+  if (
+    source === "newsletter" ||
+    source === "avica_newsletter" ||
+    source === "lead_magnet" ||
+    source === "glossary_pdf"
+  ) {
     return undefined;
   }
   return data.message ? truncateDescription(data.message) : undefined;
@@ -508,9 +572,9 @@ export function composeDuplicateNote(
 ): { title: string; content: string } {
   const langTag = locale === "en" ? "EN" : "ES";
   const formName = formDescription(source, locale);
-  const campaign = `Propyte web - ${campaignSlug(source)}`;
+  const campaign = `${campaignPrefix(source)} - ${campaignSlug(source)}`;
 
-  const title = `Nuevo contacto web — ${formName.replace(/^Formulario Propyte web (ES|EN) - /, "")}`;
+  const title = `Nuevo contacto web — ${formName.replace(/^Formulario (Propyte web|sitio Avica) (ES|EN) - /, "")}`;
 
   const lines: string[] = [
     `📩 Nuevo touchpoint desde ${langTag === "ES" ? "el sitio web" : "the website"}.`,
@@ -613,10 +677,11 @@ export function faltanDatosDeContacto(
 
   if (!email && !telefono) return "sin email ni teléfono";
 
-  // `newsletter` es el ÚNICO source exento, y la exención es una lista cerrada
-  // de uno, no un `default` permisivo: su form solo capta email y abajo se le
-  // pone «Suscriptor» de Last_Name a propósito. Exigirle el resto lo apagaría.
-  if (source === "newsletter") return null;
+  // Los dos newsletters son los ÚNICOS sources exentos, y la exención es una
+  // lista cerrada, no un `default` permisivo: sus forms solo captan email y
+  // abajo se les pone «Suscriptor» de Last_Name a propósito. Exigirles el
+  // resto los apagaría.
+  if (source === "newsletter" || source === "avica_newsletter") return null;
 
   if (!nombre) return "sin nombre";
   if (!email) return "sin email";
@@ -644,7 +709,7 @@ export function sourceToZohoPayload(
   const base = baseLeadFields(source, locale, utms);
 
   // Newsletter: el form solo capta email — Last_Name siempre "Suscriptor", First_Name parsed
-  const useFallbackName = source === "newsletter";
+  const useFallbackName = source === "newsletter" || source === "avica_newsletter";
   const fallback = useFallbackName ? "Suscriptor" : "Anónimo";
 
   // «Anónimo» ya NO debería alcanzarse: los dos llamadores filtran con
@@ -698,9 +763,13 @@ export function sourceToZohoPayload(
   // Country default Mexico para web (todos nuestros forms son MX-centric)
   lead.Country = "Mexico";
 
-  // Broker registration: marker boolean + Inmobiliaria
-  if (source === "broker_registration") {
+  // Brokers: marker boolean (lo leen las reglas de Zoho) + Inmobiliaria solo
+  // donde el form la pregunta. El broker de Avica marcó una casilla; no hay
+  // inmobiliaria que copiar.
+  if (source === "broker_registration" || source === "avica_broker") {
     lead.Broker = true;
+  }
+  if (source === "broker_registration") {
     const inmobiliaria = fitZoho("Inmobiliaria", data.company);
     if (inmobiliaria) lead.Inmobiliaria = inmobiliaria;
   }
@@ -710,12 +779,11 @@ export function sourceToZohoPayload(
     lead.Presupuesto = fitZoho("Presupuesto", data.budget);
   }
 
-  // Property inquiry: lookup zoho_developmentId
-  if (source === "property_inquiry") {
-    if (zohoDevelopmentId) {
-      lead.Proyecto_de_Interes = [{ id: zohoDevelopmentId }];
-    }
-    // Si no hay mapping, composeDescription ya incluyó "Propiedad: <name>"
+  // Proyecto de interés: lo resuelve resolverProyectoZoho (una sola función
+  // para la ruta y el cron). Si no hay mapping, composeDescription ya nombra
+  // la propiedad o el desarrollo.
+  if (zohoDevelopmentId && (source === "property_inquiry" || source === "avica_contacto")) {
+    lead.Proyecto_de_Interes = [{ id: zohoDevelopmentId }];
   }
 
   // Description (contexto estructurado) — sin texto libre

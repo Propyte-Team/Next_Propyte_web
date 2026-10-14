@@ -15,6 +15,9 @@ export const KNOWN_SOURCES = [
   'lp_lotes_pdc',
   'lp_casas_riviera',
   'guia_terrenos',
+  'avica_contacto',
+  'avica_broker',
+  'avica_newsletter',
 ] as const satisfies readonly LeadSource[];
 
 // Guardia de tipos: si se agrega un LeadSource y no se registra aquí,
