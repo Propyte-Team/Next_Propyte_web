@@ -34,6 +34,21 @@ const eslintConfig = defineConfig([
       // bloquear CI) en vez de error. Revisar caso por caso si crece la lista.
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/static-components": "warn",
+      // Fuentes: siempre next/font/local con los .woff2 de src/fonts/.
+      // next/font/google las descarga de Google en CADA build del VPS y una
+      // respuesta rara tumba el deploy (2026-10-14, URL de fuente sin extensión).
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "next/font/google",
+              message:
+                "Usa next/font/local con un .woff2 de src/fonts/. Para añadir una familia o un peso: scripts/descargar-fuentes.mjs.",
+            },
+          ],
+        },
+      ],
     },
   },
   {

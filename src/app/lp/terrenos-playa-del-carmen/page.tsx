@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { Archivo, Azeret_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { getLotePlayaDelCarmen } from '@/lib/supabase/lp-lotes';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import MotionProvider from './_components/MotionProvider';
@@ -90,10 +90,21 @@ import './lpt-theme.css';
  * dibujada para leerse de lejos— y a ancho normal hace texto corrido sin
  * cambiar de voz. Una sola familia, con contraste real de peso y ancho, aguanta
  * toda la página sin el par display+cuerpo que lleva cualquier landing.
+ *
+ * Autoalojadas (esta y la mono), no next/font/google: el porqué está en
+ * src/app/layout.tsx.
  */
-const sans = Archivo({
-  subsets: ['latin'],
-  axes: ['wdth'],
+const sans = localFont({
+  src: '../../../fonts/archivo-latin.woff2',
+  weight: '100 900',
+  style: 'normal',
+  // Rango del eje wdth tal como lo declaraba Google. Sin este descriptor el
+  // navegador trata la cara como de ancho normal y recorta el
+  // `font-stretch: 112%` de los titulares (lpt-theme.css) a 100%.
+  declarations: [
+    { prop: 'font-family', value: 'Archivo' },
+    { prop: 'font-stretch', value: '62% 125%' },
+  ],
   variable: '--font-lpt-sans',
   display: 'swap',
 });
@@ -103,9 +114,12 @@ const sans = Archivo({
  * superficies, plazos y dinero en columnas que tienen que cuadrar
  * verticalmente, y eso pide cifras tabulares. Se usa SOLO en cifras y rótulos.
  */
-const mono = Azeret_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const mono = localFont({
+  src: [
+    { path: '../../../fonts/azeret-mono-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../../../fonts/azeret-mono-latin.woff2', weight: '500', style: 'normal' },
+  ],
+  declarations: [{ prop: 'font-family', value: 'Azeret Mono' }],
   variable: '--font-lpt-mono',
   display: 'swap',
 });

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { Poppins } from 'next/font/google';
+import localFont from 'next/font/local';
 import { getLotePlayaDelCarmen } from '@/lib/supabase/lp-lotes';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import FormEnganche from './_components/FormEnganche';
@@ -86,10 +86,17 @@ import './lpe-theme.css';
  * La serif en itálica de los acentos NO se declara aquí: es `--font-lp-display`
  * (Newsreader), que el layout compartido de `/lp` ya carga con su itálica. El
  * acento cuesta cero bytes de red en una página que se paga por clic.
+ *
+ * Autoalojada, no next/font/google: el porqué está en src/app/layout.tsx.
  */
-const sans = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+const sans = localFont({
+  src: [
+    { path: '../../../fonts/poppins-latin-300.woff2', weight: '300', style: 'normal' },
+    { path: '../../../fonts/poppins-latin-400.woff2', weight: '400', style: 'normal' },
+    { path: '../../../fonts/poppins-latin-500.woff2', weight: '500', style: 'normal' },
+    { path: '../../../fonts/poppins-latin-600.woff2', weight: '600', style: 'normal' },
+  ],
+  declarations: [{ prop: 'font-family', value: 'Poppins' }],
   variable: '--font-lpe-sans',
   display: 'swap',
 });

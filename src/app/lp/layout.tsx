@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { Newsreader } from 'next/font/google';
+import localFont from 'next/font/local';
 import Analytics from '@/components/shared/Analytics';
 import ConsentBannerLp from './_components/ConsentBannerLp';
 import './lp-theme.css';
@@ -13,10 +13,17 @@ import './lp-theme.css';
 // producto. Una serif de texto le da autoridad de publicación a los titulares,
 // que es exactamente el registro que la página necesita. Newsreader, no las
 // dos serifs que todo generador escoge por defecto.
-const displaySerif = Newsreader({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  style: ['normal', 'italic'],
+//
+// Autoalojada, no next/font/google: el porqué está en src/app/layout.tsx.
+const displaySerif = localFont({
+  src: [
+    { path: '../../fonts/newsreader-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../../fonts/newsreader-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../../fonts/newsreader-latin-italic.woff2', weight: '400', style: 'italic' },
+    { path: '../../fonts/newsreader-latin-italic.woff2', weight: '500', style: 'italic' },
+  ],
+  adjustFontFallback: 'Times New Roman',
+  declarations: [{ prop: 'font-family', value: 'Newsreader' }],
   variable: '--font-lp-display',
   display: 'swap',
 });

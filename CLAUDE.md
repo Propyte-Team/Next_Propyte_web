@@ -49,7 +49,7 @@ Antes de ejecutar cualquier tarea, evaluar si la instruccion es lo suficientemen
 | Runtime | Node.js 22 LTS |
 | Lenguaje | TypeScript 5.8+ (strict) |
 | CSS | Tailwind CSS 4.2 |
-| Fuente | Space Grotesk (next/font/google) |
+| Fuentes | Inter, DM Sans, Space Grotesk… autoalojadas con `next/font/local` (`src/fonts/`). `next/font/google` prohibido por ESLint: tumbaba builds del VPS |
 | Animaciones | Framer Motion 12.x |
 | Mapas | @vis.gl/react-google-maps |
 | Charts | Recharts 3.x |
