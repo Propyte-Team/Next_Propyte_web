@@ -15,7 +15,7 @@ import {
   type Locale,
   type UtmData,
 } from '@/lib/zoho/field-maps';
-import { resolveProyectoDeInteres } from '@/lib/zoho/resolve-proyecto-interes';
+import { resolverProyectoZoho } from '@/lib/zoho/resolve-proyecto-interes';
 import { resolveQrOwner } from '@/lib/leads/qr-owner';
 import type { ZohoLead, ZohoAccount } from '@/lib/zoho/types';
 // Única fuente de la allowlist de sources reintentables — antes este archivo
@@ -166,11 +166,10 @@ async function rebuildPayload(
     qr: row.qr_code,
   };
 
-  let zohoDevelopmentId: string | undefined;
-  if (source === 'property_inquiry' && row.property_id) {
-    const resolved = await resolveProyectoDeInteres(supabase, row.property_id);
-    if (resolved) zohoDevelopmentId = resolved;
-  }
+  // La misma decisión que el push directo: si viviera solo en la ruta, el lead
+  // rescatado aquí llegaría sin proyecto. `formData.propertyId` ya cae a
+  // `row.property_id` en filas viejas sin form_data.
+  const zohoDevelopmentId = await resolverProyectoZoho(supabase, source as LeadSource, formData);
 
   const payload = sourceToZohoPayload(
     source as LeadSource,
