@@ -23,6 +23,8 @@
 //     Accept-Profile).
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { hubIdAvica } from "@/lib/webflow-avica/etiquetas";
+import type { FormData, LeadSource } from "@/lib/zoho/field-maps";
 
 // Cliente untyped (no generamos types del schema real_estate_hub) — tipamos
 // los rows esperados en cada maybeSingle<T>() en vez de castear a `any`.
@@ -78,18 +80,52 @@ export async function resolveProyectoDeInteres(
   }
 
   // Paso 2: development_id (uuid) → zoho_record_id (text) vía id_map
-  const developmentIdAsText = String(unit.development_id);
+  return zohoIdDeDesarrollo(String(unit.development_id));
+}
 
+/**
+ * `Propyte_desarrollos.id` → id del registro en Zoho, vía Propyte_zoho_id_map.
+ * null si no hay cliente, no hay mapeo o la consulta falla: nunca tumba un lead.
+ */
+export async function zohoIdDeDesarrollo(hubId: string): Promise<string | null> {
+  if (!hubId) return null;
+  const hub = getRealEstateHubClient();
+  if (!hub) return null;
+
+  // supabase_id en id_map es TEXT, no UUID (ver notas arriba).
   const { data: mapping, error: mapErr } = await hub
     .from("Propyte_zoho_id_map")
     .select("zoho_record_id")
-    .eq("supabase_id", developmentIdAsText)
+    .eq("supabase_id", hubId)
     .eq("entity_type", "development")
     .maybeSingle<{ zoho_record_id: string | null }>();
 
-  if (mapErr || !mapping?.zoho_record_id) {
-    return null;
-  }
+  if (mapErr || !mapping?.zoho_record_id) return null;
+  return mapping.zoho_record_id;
+}
 
-  return mapping.zoho_record_id as string;
+/**
+ * Proyecto_de_Interes de un lead, decidido en UN solo lugar para /api/leads,
+ * el webhook del sitio de Avica y el cron de reintento. Si la decisión
+ * viviera solo en una ruta, el lead rescatado por el cron llegaría sin
+ * proyecto: el mismo hueco que mordió en /unete con el teléfono.
+ *
+ * @param buscar Inyectable para pruebas; en producción, zohoIdDeDesarrollo.
+ */
+export async function resolverProyectoZoho(
+  supabase: unknown,
+  source: LeadSource,
+  data: FormData,
+  buscar: (hubId: string) => Promise<string | null> = zohoIdDeDesarrollo,
+): Promise<string | undefined> {
+  if (source === "property_inquiry") {
+    if (!data.propertyId) return undefined;
+    return (await resolveProyectoDeInteres(supabase, data.propertyId)) ?? undefined;
+  }
+  if (source === "avica_contacto") {
+    const hubId = hubIdAvica(data.page, data.interestOption);
+    if (!hubId) return undefined;
+    return (await buscar(hubId)) ?? undefined;
+  }
+  return undefined;
 }
