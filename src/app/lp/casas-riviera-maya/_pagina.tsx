@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Archivo } from 'next/font/google';
+import localFont from 'next/font/local';
 import { getCasasRivieraMaya, resumenInventario } from '@/lib/supabase/lp-casas';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import { dinero, dineroCompacto } from '../_components/format';
@@ -84,10 +84,20 @@ import './lpc-theme.css';
  *
  * Se comparte el nombre de variable con el tema (`--font-lpc-display`), que la
  * consume en `.lpc-display` y `.lpc-titulo`.
+ *
+ * Autoalojada, no next/font/google: el porqué está en src/app/layout.tsx.
  */
-const display = Archivo({
-  subsets: ['latin'],
-  axes: ['wdth'],
+const display = localFont({
+  src: '../../../fonts/archivo-latin.woff2',
+  weight: '100 900',
+  style: 'normal',
+  // Rango del eje wdth tal como lo declaraba Google. Sin este descriptor el
+  // navegador trata la cara como de ancho normal y recorta cualquier
+  // `font-stretch` a 100%.
+  declarations: [
+    { prop: 'font-family', value: 'Archivo' },
+    { prop: 'font-stretch', value: '62% 125%' },
+  ],
   variable: '--font-lpc-display',
   display: 'swap',
 });

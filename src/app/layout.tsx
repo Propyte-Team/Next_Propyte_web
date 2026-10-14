@@ -1,8 +1,19 @@
 import type { Metadata } from 'next';
-import { Space_Grotesk, Fraunces, JetBrains_Mono, Inter, DM_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import '@/styles/globals.css';
 import { shouldNoIndex } from '@/lib/seo/noindex';
 
+// Fuentes AUTOALOJADAS (src/fonts/), no next/font/google: este pedía las
+// fuentes a Google en cada build del VPS y el 2026-10-14 dos deploys murieron
+// porque Google devolvió una URL sin extensión. Son los mismos .woff2 (subset
+// latin) que servía next/font/google — ver scripts/descargar-fuentes.mjs.
+// Un archivo variable declarado peso a peso replica las caras discretas del
+// CSS de Google: un peso intermedio (450) cae al mismo sitio que antes.
+// El `font-family` explícito es el nombre que daba Google. Next 16 no hashea
+// los nombres: sin él la familia se llamaría como la variable JS (`inter`,
+// `sans`…), dos landings con `const sans` chocarían, y el canvas de
+// ShareDownloadModal, que pide "Space Grotesk" por nombre, no la encontraría.
+//
 // Brand identity oficial (manual de marca PDF) replica la jerarquía de las
 // publicaciones de redes sociales:
 //   - Títulos display → Neue Haas Grotesk Display Pro (Adobe paid).
@@ -12,18 +23,28 @@ import { shouldNoIndex } from '@/lib/seo/noindex';
 //   - Cuerpo → Normalidad VF (Adobe paid).
 //     Substituto free más cercano: DM Sans (humanist, mismas proporciones).
 //   - Eyebrows / subtítulos → Space Grotesk Bold (ya incluida).
-const inter = Inter({
-  subsets: ['latin'],
+const inter = localFont({
+  src: [
+    { path: '../fonts/inter-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/inter-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/inter-latin.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/inter-latin.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
+  declarations: [{ prop: 'font-family', value: 'Inter' }],
   variable: '--font-display',
-  weight: ['400', '500', '600', '700'],
 });
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
+const dmSans = localFont({
+  src: [
+    { path: '../fonts/dm-sans-latin.woff2', weight: '300', style: 'normal' },
+    { path: '../fonts/dm-sans-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/dm-sans-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/dm-sans-latin.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
+  declarations: [{ prop: 'font-family', value: 'DM Sans' }],
   variable: '--font-text',
-  weight: ['300', '400', '500', '700'],
 });
 
 // preload:false — fuentes de acento (eyebrows, italic editorial, mono de stats).
@@ -31,32 +52,46 @@ const dmSans = DM_Sans({
 // la ruta crítica en 4G: dejan de competir con Inter+DM Sans en el arranque y
 // se cargan al usarse. El diseño no cambia; el swap es gradual y adjustFontFallback
 // (default en next/font) evita CLS. PSI móvil 2026-06-26: bajar render-blocking del LCP.
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
+const spaceGrotesk = localFont({
+  src: [
+    { path: '../fonts/space-grotesk-latin.woff2', weight: '300', style: 'normal' },
+    { path: '../fonts/space-grotesk-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/space-grotesk-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/space-grotesk-latin.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/space-grotesk-latin.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
   preload: false,
+  declarations: [{ prop: 'font-family', value: 'Space Grotesk' }],
   variable: '--font-space-grotesk',
-  weight: ['300', '400', '500', '600', '700'],
 });
 
 // Display serif italic — accent voz "humana / editorial" en heros y headlines.
 // Solo italic 400/500 — usado para 1-2 palabras acentuadas, no body.
-const fraunces = Fraunces({
-  subsets: ['latin'],
+// Serif: su fallback métrico es Times New Roman, como lo elegía next/font/google.
+const fraunces = localFont({
+  src: [
+    { path: '../fonts/fraunces-latin-italic.woff2', weight: '400', style: 'italic' },
+    { path: '../fonts/fraunces-latin-italic.woff2', weight: '500', style: 'italic' },
+  ],
   display: 'swap',
   preload: false,
+  adjustFontFallback: 'Times New Roman',
+  declarations: [{ prop: 'font-family', value: 'Fraunces' }],
   variable: '--font-fraunces',
-  style: ['italic'],
-  weight: ['400', '500'],
 });
 
 // Mono — data forward. Stats, números, indicadores, code-like markers.
-const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
+const jetBrainsMono = localFont({
+  src: [
+    { path: '../fonts/jetbrains-mono-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/jetbrains-mono-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/jetbrains-mono-latin.woff2', weight: '700', style: 'normal' },
+  ],
   display: 'swap',
   preload: false,
+  declarations: [{ prop: 'font-family', value: 'JetBrains Mono' }],
   variable: '--font-mono',
-  weight: ['400', '500', '700'],
 });
 
 export const metadata: Metadata = {
