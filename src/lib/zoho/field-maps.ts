@@ -66,6 +66,8 @@ export interface FormData {
   heardFrom?: string | null;
   /** Sitio de Avica: casilla «¿Eres broker inmobiliario?». */
   isBroker?: boolean | null;
+  /** Sitio de Avica: lo que tecleó en «correo» cuando no es un correo válido. Solo evidencia en form_data. */
+  invalidEmail?: string | null;
 }
 
 export interface UtmData {

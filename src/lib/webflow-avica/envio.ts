@@ -34,6 +34,11 @@ export interface EnvioAvica {
   /** Casilla «¿Eres broker inmobiliario?». */
   esBroker: boolean;
   trampa: string | null;
+  /**
+   * Lo que tecleó en «correo» cuando no es un correo válido (`ana@gmail`, que
+   * el navegador sí acepta). No ocupa `correo`: Zoho rechazaría el registro.
+   */
+  correoInvalido: string | null;
 }
 
 export type MotivoDescarte = 'trampa' | 'enlaces';
@@ -56,14 +61,20 @@ const textoDe = (valor: unknown): string | null => {
   return limpio === '' ? null : limpio;
 };
 
+/**
+ * La URL real del visitante manda. En una ficha del CMS, `publishedPath` es la
+ * ruta de la PLANTILLA: los 4 envíos reales hechos desde una ficha traían
+ * «/desarrollos», nunca «/desarrollos/yaxnah» (medido el 2026-10-14).
+ */
 function rutaDe(publishedPath: string | undefined, pageUrl: string | undefined): string | null {
-  if (publishedPath) return publishedPath;
-  if (!pageUrl) return null;
-  try {
-    return new URL(pageUrl).pathname;
-  } catch {
-    return null;
+  if (pageUrl) {
+    try {
+      return new URL(pageUrl).pathname;
+    } catch {
+      // URL rota: se cae a publishedPath.
+    }
   }
+  return publishedPath || null;
 }
 
 /** null si el cuerpo no es un form_submission de Webflow con datos. */
@@ -72,6 +83,7 @@ export function leerEnvio(cuerpo: unknown): EnvioAvica | null {
   if (!analisis.success) return null;
   const { name, data, publishedPath, pageUrl } = analisis.data.payload;
   const correo = textoDe(data.correo ?? data.correo_newsletter)?.toLowerCase() ?? null;
+  const correoEsValido = correo !== null && correoValido.safeParse(correo).success;
   // Sin publicar, la casilla no tiene nombre y Webflow la manda como «Field 8».
   // Se acepta booleano por si Webflow cambia el formato del payload.
   const casilla = data.es_broker ?? data['Field 8'];
@@ -80,13 +92,14 @@ export function leerEnvio(cuerpo: unknown): EnvioAvica | null {
     pagina: rutaDe(publishedPath, pageUrl),
     nombre: textoDe(data.nombre),
     telefono: textoDe(data.tel),
-    correo: correo && correoValido.safeParse(correo).success ? correo : null,
+    correo: correoEsValido ? correo : null,
     ciudad: textoDe(data.ciudad),
     interes: textoDe(data.interes_en),
     fuente: textoDe(data.nos_encontro_en),
     mensaje: textoDe(data.mensaje),
     esBroker: casilla === true || textoDe(casilla) === 'true',
     trampa: textoDe(data[CAMPO_TRAMPA]),
+    correoInvalido: correo !== null && !correoEsValido ? correo : null,
   };
 }
 
@@ -128,5 +141,8 @@ export function aFormData(envio: EnvioAvica): FormData {
     isBroker: envio.esBroker ? true : null,
     propertyName: desarrolloDePagina(page)?.nombre ?? null,
     page,
+    // Sin esto, un lead con nombre y teléfono pero el correo mal escrito
+    // quedaba SKIPPED y el correo tecleado no se guardaba en ningún lado.
+    invalidEmail: envio.correoInvalido,
   };
 }

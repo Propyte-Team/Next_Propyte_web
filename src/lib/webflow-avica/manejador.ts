@@ -77,7 +77,9 @@ export async function manejarWebhookAvica(req: Request, deps: DepsWebhookAvica):
 
   try {
     const resultado = await deps.procesar(fuente, aFormData(envio));
-    log(`${resultado} fuente=${fuente}`);
+    // La ruta no es dato personal y es la única forma de comprobar en
+    // producción qué página reporta Webflow para las fichas del CMS.
+    log(`${resultado} fuente=${fuente} pagina=${(envio.pagina ?? '/').slice(0, 120)}`);
     return responder({ resultado });
   } catch {
     // El detalle (sin datos personales) lo registra procesar.

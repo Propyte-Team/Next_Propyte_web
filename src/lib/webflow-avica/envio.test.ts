@@ -49,6 +49,7 @@ describe('leerEnvio', () => {
       mensaje: '¿Tienen casas de 3 recámaras?',
       esBroker: false,
       trampa: null,
+      correoInvalido: null,
     });
   });
 
@@ -61,6 +62,20 @@ describe('leerEnvio', () => {
   it('sin publishedPath usa la ruta de pageUrl', () => {
     expect(leido(LEGITIMO, { pageUrl: 'https://www.avicainmobiliaria.com.mx/contacto?utm_source=x' }).pagina)
       .toBe('/contacto');
+  });
+
+  it('en una ficha del CMS gana la URL real: publishedPath trae la ruta de la plantilla (medido en 4 envíos reales)', () => {
+    expect(
+      leido(LEGITIMO, {
+        publishedPath: '/desarrollos',
+        pageUrl: 'https://www.avicainmobiliaria.com.mx/desarrollos/yaxnah',
+      }).pagina,
+    ).toBe('/desarrollos/yaxnah');
+  });
+
+  it('un correo con formato inválido no se pierde: queda aparte para la evidencia', () => {
+    expect(leido({ ...LEGITIMO, correo: ' ana@gmail ' })).toMatchObject({ correo: null, correoInvalido: 'ana@gmail' });
+    expect(leido(LEGITIMO).correoInvalido).toBeNull();
   });
 
   it('el newsletter manda su correo en «correo_newsletter»', () => {
@@ -155,7 +170,14 @@ describe('aFormData', () => {
       isBroker: null,
       propertyName: 'Yaxnáh',
       page: 'https://www.avicainmobiliaria.com.mx/desarrollos/yaxnah',
+      invalidEmail: null,
     });
+  });
+
+  it('el correo con formato inválido viaja aparte, sin ocupar email', () => {
+    const datos = aFormData(leido({ ...LEGITIMO, correo: 'ana@gmail' }));
+    expect(datos.email).toBeNull();
+    expect(datos.invalidEmail).toBe('ana@gmail');
   });
 
   it('sin página usa la portada; la casilla marcada viaja como true', () => {

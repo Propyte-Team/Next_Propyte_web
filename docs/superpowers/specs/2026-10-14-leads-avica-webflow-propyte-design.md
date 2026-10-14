@@ -117,12 +117,13 @@ ya mordió en `/unete` con el teléfono.
 | `nombre` | `name` | |
 | `tel` | `phone` | Va a `Phone`, como el resto de fuentes que no son `/unete` |
 | `correo` (contacto) / `correo_newsletter` (newsletter) | `email` | En minúsculas; inválido → null |
+| `correo` con formato inválido (`ana@gmail`) | `invalidEmail` *(campo nuevo)* | Solo evidencia en `form_data`: el lead queda SKIPPED por la regla de los tres datos y se registra el motivo |
 | `ciudad` | `city` | `City` en Zoho y en la descripción (ver §9, riesgo 1) |
 | `mensaje` | `message` | Va a `Mensaje` |
 | `interes_en` | `interestOption` *(campo nuevo)* | Clave cruda: `asesor` / `casa` / `departamento` / `broker` |
 | `nos_encontro_en` | `heardFrom` *(campo nuevo)* | Clave cruda: `busqueda_google`, `publicidad_meta`, `referencias`, `medio_impreso` |
 | `es_broker` o, sin publicar, `Field 8` | `isBroker` *(campo nuevo, boolean)* | `"true"` → true |
-| `publishedPath` (o la ruta de `pageUrl`) | `page` | URL absoluta `https://www.avicainmobiliaria.com.mx<ruta>` → `Nombre_anuncio` |
+| La ruta de `pageUrl` (o `publishedPath` si no viene) | `page` | URL absoluta `https://www.avicainmobiliaria.com.mx<ruta>` → `Nombre_anuncio`. `pageUrl` manda: en una ficha del CMS, `publishedPath` trae la ruta de la plantilla (`/desarrollos`, medido en 4 envíos reales) |
 | `campo_extra_hp` | — | Solo para detectar spam; nunca se guarda |
 
 Los tres campos nuevos son opcionales en `FormData`. `compactFormData` los
@@ -206,7 +207,7 @@ error cuando un reintento puede servir.
 | Campo trampa lleno, o enlace/HTML en nombre, ciudad o mensaje | 200 `descartado` + motivo | **No** | — |
 | Sin datos de contacto (`faltanDatosDeContacto`) | 200 `omitido` | Sí, `SKIPPED: sin datos de contacto` | — |
 | INSERT falla | **500** | — | — |
-| Zoho falla o tarda | 200 `guardado` | Sí, con el error; el cron lo reintenta | Pendiente |
+| Zoho falla o tarda más de 10 s | 200 `guardado` | Sí, con el error o en `PENDING_SYNC`; lo cierra el push en vuelo o el cron | Pendiente |
 | Éxito / duplicado | 200 `guardado` (el resultado de Zoho queda en `zoho_lead_id` / `zoho_sync_error`) | Sí | Lead / nota |
 
 - **Spam:** regla medida el 2026-10-14. «Trae enlace o HTML» atrapó 35/35

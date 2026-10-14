@@ -123,4 +123,9 @@ describe('manejarWebhookAvica', () => {
     expect(bitacora[0]).toMatch(/^\[webflow-avica\] guardado fuente=avica_contacto/);
     expect(bitacora.join('\n')).not.toMatch(/ana|ruiz|9991234567|example\.com/i);
   });
+
+  it('la bitácora trae la ruta de la página: así se verifica en producción qué ficha llegó', async () => {
+    await manejarWebhookAvica(peticion(CONTACTO), deps());
+    expect(bitacora[0]).toBe('[webflow-avica] guardado fuente=avica_contacto pagina=/contacto');
+  });
 });
