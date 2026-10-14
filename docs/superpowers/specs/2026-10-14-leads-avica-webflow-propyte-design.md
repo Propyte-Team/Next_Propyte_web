@@ -90,9 +90,11 @@ POST /api/webhooks/webflow-avica                  (Next_Propyte_web)
 | Archivo | Qué hace | Cambio |
 |---|---|---|
 | `src/lib/webflow-avica/envio.ts` | Lee el payload de Webflow; detecta spam; arma `{ source, formData }`. Porta la lógica probada de `yaxnah-registro-brokers/src/lib/sitio/envio.ts` | Nuevo |
-| `src/lib/leads/registrar-lead.ts` | `compactFormData`, `updateLeadLocal`, `pushToZoho` y el INSERT con `PENDING_SYNC`, **movidos** de `src/app/api/leads/route.ts` sin cambiar su comportamiento | Extraído |
+| `src/lib/leads/registrar-lead.ts` + `src/lib/leads/compact-form-data.ts` | `updateLeadLocal` y `pushToZoho` (y `compactFormData`, puro), **movidos** de `src/app/api/leads/route.ts` sin cambiar su conducta. Cada llamador hace su propio INSERT: las columnas difieren (UTM, QR, `property_id`) | Extraído |
 | `src/app/api/leads/route.ts` | Importa lo extraído. Mismo contrato, mismos códigos | Refactor sin cambio de conducta |
-| `src/app/api/webhooks/webflow-avica/route.ts` | El receptor. `dynamic = 'force-dynamic'` (lee el token en tiempo de ejecución) | Nuevo |
+| `src/lib/webflow-avica/manejador.ts` | Decide la respuesta a Webflow (token, ignorado, descartado, 500). Recibe `procesar` inyectado: se prueba sin Supabase ni Zoho | Nuevo |
+| `src/lib/webflow-avica/procesar.ts` | INSERT + `resolverProyectoZoho` + `pushToZoho`. No importa nada de Meta | Nuevo |
+| `src/app/api/webhooks/webflow-avica/route.ts` | Conecta cuota global, token del entorno y `procesar` | Nuevo |
 | `src/lib/zoho/resolve-proyecto-interes.ts` | Nueva `resolverProyectoZoho(supabase, source, formData)`. Para `property_inquiry` delega en la función actual; para las fuentes de Avica aplica la §5.3 | Ampliado |
 | `src/app/api/cron/zoho-retry/route.ts` | Usa `resolverProyectoZoho` en lugar del `if (source === 'property_inquiry')` | Una línea de decisión menos |
 | `src/lib/zoho/field-maps.ts` | 3 fuentes nuevas en `LeadSource`, campaña, formulario, tipo, descripción, mensaje; exención de newsletter extendida | Ampliado |
@@ -205,7 +207,7 @@ error cuando un reintento puede servir.
 | Sin datos de contacto (`faltanDatosDeContacto`) | 200 `omitido` | Sí, `SKIPPED: sin datos de contacto` | — |
 | INSERT falla | **500** | — | — |
 | Zoho falla o tarda | 200 `guardado` | Sí, con el error; el cron lo reintenta | Pendiente |
-| Éxito / duplicado | 200 `creado` / `nota` | Sí | Lead / nota |
+| Éxito / duplicado | 200 `guardado` (el resultado de Zoho queda en `zoho_lead_id` / `zoho_sync_error`) | Sí | Lead / nota |
 
 - **Spam:** regla medida el 2026-10-14. «Trae enlace o HTML» atrapó 35/35
   envíos spam y 0/10 legítimos; sin filtro por idioma. Se registra una línea
