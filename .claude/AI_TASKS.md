@@ -14,8 +14,12 @@ en el tablero, y era el que no podía leer el protocolo.
 - **Puerta del tablero:** las tools `mejoras_*`. Si no las tienes, el tablero no se toca a
   mano por SQL.
 - **Rama:** `mejora/<id>-<slug>`, desde `origin/main` y no desde el `main` local.
-- **En un `git worktree` propio.** El árbol principal lo comparten varias sesiones y su rama
-  cambia sin avisar.
+- **En un `git worktree` propio, dentro del repo:**
+  `git worktree add .claude/worktrees/<id>-<slug> -b mejora/<id>-<slug> origin/main`.
+  El árbol principal lo comparten varias sesiones y su rama cambia sin avisar. **Nunca** como
+  carpeta hermana (`../<repo>-<tema>`): esas no se limpian solas y se acumulan.
+- Al pasar a `en_revision`, si el worktree quedó limpio y pusheado: `git worktree remove`.
+  La rama vive en GitHub; si el PR pide cambios, se vuelve a crear.
 - **`gh` no está en el PATH:** `"/c/Program Files/GitHub CLI/gh.exe"`.
 - Panel del tablero: https://hub.propyte.com/mejoras
 - Lo demás de este repo está en `CLAUDE.md`, que manda sobre este archivo si se contradicen.
