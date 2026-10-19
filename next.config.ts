@@ -10,6 +10,13 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // hPanel compila EN EL SERVIDOR. Next arranca (núcleos - 1) workers para
+  // "Collecting page data" y "Generating static pages"; en el host de Hostinger
+  // eso son ~63 workers y el build muere con "OS can't spawn worker thread:
+  // Resource temporarily unavailable (os error 11)" (2026-10-19). Tope fijo.
+  experimental: {
+    cpus: 4,
+  },
   reactStrictMode: true,
   poweredByHeader: false,
   // Fuerza inclusión de los helpers SWC en el output standalone. Sin esto, el
