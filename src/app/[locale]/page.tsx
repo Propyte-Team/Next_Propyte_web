@@ -14,7 +14,6 @@ import ProcessInfographic from '@/components/home/ProcessInfographic';
 import HowItWorks from '@/components/home/HowItWorks';
 import Testimonials from '@/components/home/Testimonials';
 import WhyPropyte from '@/components/home/WhyPropyte';
-import TrendingMarket from '@/components/home/TrendingMarket';
 import DondeEstamos from '@/components/home/DondeEstamos';
 import DeveloperLogos from '@/components/home/DeveloperLogos';
 import HomeFAQ from '@/components/home/HomeFAQ';
@@ -215,8 +214,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // Orden Home — se conserva el de develop (decisión Luis 2026-05-20):
   // Hero → Featured → DiscountedUnits → LeadMagnet(Hub) → ProcessInfographic →
   // DeveloperBanner → Nosotros → ExploreCategories(Hub) → WhyPropyte →
-  // Metodología → HowItWorks → Testimonials(Hub) → TrendingMarket →
+  // Metodología → HowItWorks → Testimonials(Hub) →
   // DondeEstamos → DeveloperLogos → RecentBlog → HomeFAQ → JoinTeamBanner.
+  // TrendingMarket retirado 2026-10-27 (auditoría UX, Fase 0): mostraba cifras
+  // con unidades erróneas ("51/100 ROI anual") y zonas fuera de Riviera Maya.
+  // Vuelve como tabla con fuente en la Fase 2.
   // Los banners consumen CTAs del Hub con fallback a i18n (merge
   // feat/dynamic-content-a1-pulido 2026-06-02).
   return (
@@ -279,10 +281,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <Testimonials items={homeTestimonials} />
         </ScrollReveal>
       )}
-
-      <ScrollReveal>
-        <TrendingMarket />
-      </ScrollReveal>
 
       <ScrollReveal delay={0.05}>
         <DondeEstamos />

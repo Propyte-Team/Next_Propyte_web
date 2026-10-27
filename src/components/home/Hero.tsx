@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
 import { Search, MapPin, Building2, Home, WavesHorizontal, Tag } from '@/lib/icons';
-import StatCounter from '@/components/shared/StatCounter';
 import HeroAtmosphere from './HeroAtmosphere';
 
 type IntentTab = 'desarrollos' | 'propiedades';
@@ -30,14 +29,19 @@ export default function Hero({ stats }: HeroProps) {
   const videoUrl = process.env.NEXT_PUBLIC_HERO_VIDEO_URL;
   const imageUrl = process.env.NEXT_PUBLIC_HERO_IMAGE_URL;
 
-  // Stats reales sin pisos inventados. Cada pill se omite si la cifra es 0,
-  // y el suffix "+" se aplica solo cuando el valor sugiere conteo agregado (>=10).
+  // Stats reales sin pisos inventados. Cada pill se omite si la cifra es 0.
+  // Cifra final estática, sin "+" ni conteo animado (auditoría UX 2026-10-27:
+  // el conteo desde 0 se capturaba a medias, p. ej. "1 Ciudades"); la etiqueta
+  // concuerda en número vía plural ICU.
+  const intlLocale = locale === 'en' ? 'en-US' : 'es-MX';
   const heroStats = [
-    { value: stats?.developments ?? 0, label: t('statsDevelopments') },
-    { value: stats?.units ?? 0, label: t('statsUnits') },
-    { value: stats?.cities ?? 0, label: t('statsCities') },
-    { value: stats?.zones ?? 0, label: t('statsZones') },
-  ].filter((s) => s.value > 0);
+    { key: 'statsDevelopments' as const, value: stats?.developments ?? 0 },
+    { key: 'statsUnits' as const, value: stats?.units ?? 0 },
+    { key: 'statsCities' as const, value: stats?.cities ?? 0 },
+    { key: 'statsZones' as const, value: stats?.zones ?? 0 },
+  ]
+    .filter((s) => s.value > 0)
+    .map((s) => ({ value: s.value.toLocaleString(intlLocale), label: t(s.key, { count: s.value }) }));
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -196,11 +200,9 @@ export default function Hero({ stats }: HeroProps) {
                 key={stat.label}
                 className="hero-stat propyte-glass-pill flex items-center gap-2 rounded-full px-5 py-2.5"
               >
-                <StatCounter
-                  to={stat.value}
-                  suffix={stat.value >= 10 ? '+' : ''}
-                  className="text-propyte-brand text-xl md:text-2xl font-bold"
-                />
+                <span className="text-propyte-brand text-xl md:text-2xl font-bold tabular-nums">
+                  {stat.value}
+                </span>
                 <span className="text-white/80 text-sm font-medium">{stat.label}</span>
               </div>
             ))}

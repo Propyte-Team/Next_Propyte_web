@@ -121,7 +121,7 @@ export default function UnitModelsTable({ units, mlEstimates, locale }: UnitMode
       <h2 className="text-xl font-bold text-gray-900 mb-4">
         {t('title')}
         <span className="ml-2 text-sm font-normal text-gray-600">
-          ({units.length} {t('unitsSuffix')})
+          ({units.length} {t('unitsSuffix', { count: units.length })})
         </span>
       </h2>
 

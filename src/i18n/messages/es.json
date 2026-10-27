@@ -38,10 +38,10 @@
     "searchButton": "Buscar",
     "tabDesarrollos": "Desarrollos",
     "tabPropiedades": "Propiedades",
-    "statsDevelopments": "Desarrollos",
-    "statsUnits": "Unidades",
-    "statsCities": "Ciudades",
-    "statsZones": "Zonas",
+    "statsDevelopments": "{count, plural, one {Desarrollo} other {Desarrollos}}",
+    "statsUnits": "{count, plural, one {Unidad} other {Unidades}}",
+    "statsCities": "{count, plural, one {Ciudad} other {Ciudades}}",
+    "statsZones": "{count, plural, one {Zona} other {Zonas}}",
     "quickPDC": "Playa del Carmen",
     "quickTulum": "Tulum",
     "quickBeachfront": "Frente al mar",
@@ -407,7 +407,7 @@
     "footnote": "Las proyecciones son estimaciones basadas en datos históricos y supuestos del usuario. No constituyen garantía de rendimiento. Consulta a un asesor Propyte para un análisis personalizado."
   },
   "testimonials": {
-    "title": "Lo que Dicen Nuestros Clientes",
+    "title": "Lo que dicen nuestros clientes",
     "subtitle": "Experiencias reales de inversionistas reales",
     "verified": "Verificado",
     "verifiedSourceLabel": "Ver la publicación original de {name} en Instagram",
@@ -860,8 +860,8 @@
     "entrega_inmediata": "Entrega inmediata"
   },
   "unitModels": {
-    "title": "Modelos de Unidades",
-    "unitsSuffix": "unidades",
+    "title": "Modelos de unidades",
+    "unitsSuffix": "{count, plural, one {unidad} other {unidades}}",
     "model": "Modelo",
     "type": "Tipo",
     "beds": "Rec",

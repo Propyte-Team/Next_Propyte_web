@@ -54,3 +54,17 @@ export const STAGE_URL_SLUGS: Record<string, string> = {
 };
 
 export const STAGE_SLUGS_URL = Object.keys(STAGE_URL_SLUGS);
+
+/**
+ * Etapa canónica de un desarrollo a partir de su columna `stage`.
+ * Única fuente de verdad para el badge de la ficha y el <title> de metadata
+ * (antes divergían: el title decía "En Construccion" para cualquier etapa que
+ * no fuera preventa, mientras el badge mostraba "Entrega Inmediata").
+ * Cualquier valor que no sea preventa/construccion cae en entrega_inmediata,
+ * igual que el badge histórico de la ficha.
+ */
+export function resolveStage(stage: string | null | undefined): StageInfo {
+  if (stage === 'preventa') return STAGE_MAP.preventa;
+  if (stage === 'construccion') return STAGE_MAP.construccion;
+  return STAGE_MAP.entrega_inmediata;
+}
