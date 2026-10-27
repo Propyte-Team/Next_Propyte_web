@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import type { Property, PropertyStage, PropertyUsage } from '@/types/property';
 import { MAX_PRICE } from '@/shared/constants/marketplace';
 import { PRODUCT_TYPES, type ProductType } from '@/lib/catalog/product-types';
@@ -114,8 +114,9 @@ export function projectForProductType(property: Property, filterType: string): P
   };
 }
 
-function parseFiltersFromParams(params: URLSearchParams): Partial<Filters> {
+function parseFiltersFromParams(params: URLSearchParams | null): Partial<Filters> {
   const parsed: Partial<Filters> = {};
+  if (!params) return parsed;
 
   const search = params.get('search');
   if (search) parsed.search = search;
@@ -181,8 +182,14 @@ function filtersToSearchParams(filters: Filters, priceCeiling: number): URLSearc
   return params;
 }
 
-export function useFilters(properties: Property[]) {
-  const searchParams = useSearchParams();
+/**
+ * `searchParams` llega por argumento en vez de leerse aquí con
+ * `useSearchParams()`: en páginas prerenderizadas ese hook, fuera de un
+ * <Suspense>, saca del SSR todo el árbol hasta el `loading.tsx` y Google veía
+ * solo «Cargando…» en /propiedades y /desarrollos/{ciudad} (2026-10-27).
+ * `null` = render de servidor sin querystring (catálogo completo, sin filtros).
+ */
+export function useFilters(properties: Property[], searchParams: URLSearchParams | null) {
   const pathname = usePathname();
   const router = useRouter();
 
