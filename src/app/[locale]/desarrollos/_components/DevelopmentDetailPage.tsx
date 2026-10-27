@@ -64,6 +64,7 @@ import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndica
 import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
+import { resolveStage } from './stageConfig';
 
 interface DevelopmentDetailPageProps {
   locale: string;
@@ -436,10 +437,8 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     });
   }
 
-  const stageLabel =
-    property.stage === 'preventa' ? tProp('stagePresale')
-      : property.stage === 'construccion' ? tProp('stageConstruction')
-        : tProp('stageReady');
+  const stage = resolveStage(property.stage);
+  const stageLabel = locale === 'en' ? stage.nameEn : stage.nameEs;
 
   // mainType hoisted arriba (justo tras buildRichContent) para que
   // getRentalEstimate reciba el canónico en vez de la grafía cruda.
