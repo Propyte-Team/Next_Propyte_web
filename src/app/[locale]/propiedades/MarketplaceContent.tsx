@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Map, List, X, Sparkles } from '@/lib/icons';
 import { useFilters } from '@/hooks/useFilters';
@@ -85,7 +86,27 @@ interface MarketplaceContentProps {
   heroHidden?: boolean;
 }
 
-export default function MarketplaceContent({
+/**
+ * El catálogo se prerenderiza (ISR). Leer la querystring con `useSearchParams()`
+ * sin <Suspense> sacaba todo el árbol del SSR: el HTML llevaba solo el
+ * «Cargando…» del `loading.tsx`, sin H1 ni tarjetas (auditoría 2026-10-27).
+ * El fallback renderiza el mismo listado sin filtros, así que el HTML servido
+ * ya trae H1 + tarjetas; en el cliente lo reemplaza la versión con la URL.
+ */
+export default function MarketplaceContent(props: MarketplaceContentProps) {
+  return (
+    <Suspense fallback={<MarketplaceBody {...props} searchParams={null} />}>
+      <MarketplaceWithSearchParams {...props} />
+    </Suspense>
+  );
+}
+
+function MarketplaceWithSearchParams(props: MarketplaceContentProps) {
+  const searchParams = useSearchParams();
+  return <MarketplaceBody {...props} searchParams={searchParams} />;
+}
+
+function MarketplaceBody({
   properties,
   titleKey = 'h1Propiedades',
   subtitleKey = 'subtitlePropiedades',
@@ -94,7 +115,8 @@ export default function MarketplaceContent({
   customEyebrow,
   showMap = false,
   heroHidden = false,
-}: MarketplaceContentProps) {
+  searchParams,
+}: MarketplaceContentProps & { searchParams: URLSearchParams | null }) {
   const t = useTranslations('marketplace');
   const isMobile = useIsMobile();
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -105,7 +127,7 @@ export default function MarketplaceContent({
   // Filtro on-cluster-click: cuando el usuario clickea un pin "+N" en el mapa,
   // guardamos los IDs de las unidades agrupadas y restringimos el listado.
   const [clusterFilter, setClusterFilter] = useState<string[] | null>(null);
-  const { filters, filtered, updateFilter, updateFilters, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling } = useFilters(properties);
+  const { filters, filtered, updateFilter, updateFilters, clearFilters, activeFilterCount, sortBy, setSortBy, priceCeiling } = useFilters(properties, searchParams);
 
   const heading = customTitle ?? t(titleKey);
   const subheading = customSubtitle ?? t(subtitleKey);
