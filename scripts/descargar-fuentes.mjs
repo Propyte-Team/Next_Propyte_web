@@ -39,6 +39,8 @@ const FUENTES = [
   // src/app/layout.tsx
   { slug: 'inter', query: 'Inter:wght@400;500;600;700' },
   { slug: 'dm-sans', query: 'DM+Sans:wght@300;400;500;700' },
+  // Home v3 (rediseño 2026-10): texto. Los titulares usan 'archivo', ya listado abajo.
+  { slug: 'hanken-grotesk', query: 'Hanken+Grotesk:wght@400;500;600;700' },
   { slug: 'space-grotesk', query: 'Space+Grotesk:wght@300;400;500;600;700' },
   { slug: 'fraunces', query: 'Fraunces:ital,wght@1,400;1,500' },
   { slug: 'jetbrains-mono', query: 'JetBrains+Mono:wght@400;500;700' },

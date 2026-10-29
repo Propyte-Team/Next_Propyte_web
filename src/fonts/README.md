@@ -18,13 +18,14 @@ correspondiente.
 
 | Archivo | Familia | Se usa en |
 |---|---|---|
-| `inter-latin.woff2` | Inter (variable) | `src/app/layout.tsx` → `--font-display` |
-| `dm-sans-latin.woff2` | DM Sans (variable) | `src/app/layout.tsx` → `--font-text` |
+| `inter-latin.woff2` | Inter (variable) | Sin uso desde el rediseño v3 (antes `--font-display`); se conserva para comparar |
+| `dm-sans-latin.woff2` | DM Sans (variable) | Sin uso desde el rediseño v3 (antes `--font-text`); se conserva para comparar |
+| `hanken-grotesk-latin.woff2` | Hanken Grotesk (variable) | `src/app/layout.tsx` → `--font-text` (texto del sitio) |
 | `space-grotesk-latin.woff2` | Space Grotesk (variable) | `src/app/layout.tsx` → `--font-space-grotesk` |
 | `fraunces-latin-italic.woff2` | Fraunces itálica (variable) | `src/app/layout.tsx` → `--font-fraunces` |
 | `jetbrains-mono-latin.woff2` | JetBrains Mono (variable) | `src/app/layout.tsx` → `--font-mono` |
 | `newsreader-latin*.woff2` | Newsreader normal e itálica (variable) | `src/app/lp/layout.tsx` → `--font-lp-display` |
-| `archivo-latin.woff2` | Archivo (variable, ejes `wght` y `wdth`) | `/lp/casas-riviera-maya`, `/lp/terrenos-playa-del-carmen` |
+| `archivo-latin.woff2` | Archivo (variable, ejes `wght` y `wdth`) | `src/app/layout.tsx` → `--font-display` (titulares del sitio), `/lp/casas-riviera-maya`, `/lp/terrenos-playa-del-carmen` |
 | `azeret-mono-latin.woff2` | Azeret Mono (variable) | `/lp/terrenos-playa-del-carmen` → `--font-lpt-mono` |
 | `poppins-latin-{300,400,500,600}.woff2` | Poppins (estática, un archivo por peso) | `/lp/enganche-terrenos-playa-del-carmen` |
 

@@ -14,36 +14,33 @@ import { shouldNoIndex } from '@/lib/seo/noindex';
 // `sans`…), dos landings con `const sans` chocarían, y el canvas de
 // ShareDownloadModal, que pide "Space Grotesk" por nombre, no la encontraría.
 //
-// Brand identity oficial (manual de marca PDF) replica la jerarquía de las
-// publicaciones de redes sociales:
-//   - Títulos display → Neue Haas Grotesk Display Pro (Adobe paid).
-//     Substituto free más cercano: Inter (mismo carácter geométrico-grotesk,
-//     misma altura-x, terminales rectas). Si se obtiene kit Adobe se swap en
-//     una sola variable CSS (--font-heading).
-//   - Cuerpo → Normalidad VF (Adobe paid).
-//     Substituto free más cercano: DM Sans (humanist, mismas proporciones).
+// Brand identity oficial (manual de marca PDF): titulares en Neue Haas Grotesk
+// Display Pro y texto en Normalidad VF (ambas Adobe, de pago). Rediseño v3
+// (2026-10, propuesta aprobada en Figma "Propuesta v3"): sustitutos libres
+// Archivo (titulares) y Hanken Grotesk (texto). Con kit de Adobe el cambio vuelve
+// a ser de una sola variable (--font-display / --font-text).
 //   - Eyebrows / subtítulos → Space Grotesk Bold (ya incluida).
-const inter = localFont({
+const archivo = localFont({
   src: [
-    { path: '../fonts/inter-latin.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/inter-latin.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/inter-latin.woff2', weight: '600', style: 'normal' },
-    { path: '../fonts/inter-latin.woff2', weight: '700', style: 'normal' },
+    { path: '../fonts/archivo-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/archivo-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/archivo-latin.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/archivo-latin.woff2', weight: '700', style: 'normal' },
   ],
   display: 'swap',
-  declarations: [{ prop: 'font-family', value: 'Inter' }],
+  declarations: [{ prop: 'font-family', value: 'Archivo' }],
   variable: '--font-display',
 });
 
-const dmSans = localFont({
+const hanken = localFont({
   src: [
-    { path: '../fonts/dm-sans-latin.woff2', weight: '300', style: 'normal' },
-    { path: '../fonts/dm-sans-latin.woff2', weight: '400', style: 'normal' },
-    { path: '../fonts/dm-sans-latin.woff2', weight: '500', style: 'normal' },
-    { path: '../fonts/dm-sans-latin.woff2', weight: '700', style: 'normal' },
+    { path: '../fonts/hanken-grotesk-latin.woff2', weight: '400', style: 'normal' },
+    { path: '../fonts/hanken-grotesk-latin.woff2', weight: '500', style: 'normal' },
+    { path: '../fonts/hanken-grotesk-latin.woff2', weight: '600', style: 'normal' },
+    { path: '../fonts/hanken-grotesk-latin.woff2', weight: '700', style: 'normal' },
   ],
   display: 'swap',
-  declarations: [{ prop: 'font-family', value: 'DM Sans' }],
+  declarations: [{ prop: 'font-family', value: 'Hanken Grotesk' }],
   variable: '--font-text',
 });
 
@@ -147,7 +144,7 @@ export default async function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={`${inter.variable} ${dmSans.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${dmSans.className}`}
+      className={`${archivo.variable} ${hanken.variable} ${spaceGrotesk.variable} ${fraunces.variable} ${jetBrainsMono.variable} ${hanken.className}`}
     >
       <head>
         {/* WebMCP origin trial (propyte.com + subdominios). Habilita

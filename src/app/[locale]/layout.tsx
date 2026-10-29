@@ -79,7 +79,8 @@ export default async function LocaleLayout({
           {tA11y('skipToContent')}
         </a>
         <Header siteConfig={siteConfig} />
-        <div className="lg:ml-[72px]">
+        {/* Sin desplazamiento lateral: la barra de 72px se retiró en el rediseño v3. */}
+        <div>
           <main
             id="main-content"
             className="flex-1"
