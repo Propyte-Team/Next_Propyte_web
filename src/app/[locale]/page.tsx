@@ -1,36 +1,32 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
-import { getGlobalStats, getDevelopers, getFeaturedDevelopments, getDiscountedUnits } from '@/lib/supabase/queries';
+import {
+  getGlobalStats,
+  getFeaturedDevelopments,
+  getDevelopments,
+  getDiscountedUnits,
+  getBlogPosts,
+  type BlogPost,
+} from '@/lib/supabase/queries';
 import { mapUnitToProperty, type UnitRow } from '@/lib/mappers/unit-to-property';
 import { resolveInvestmentForRows } from '@/lib/investment/resolve-rows';
 import type { Property } from '@/types/property';
-import Hero from '@/components/home/Hero';
-import NosotrosTeaser from '@/components/home/NosotrosTeaser';
-import FeaturedProperties, { type FeaturedDevelopment } from '@/components/home/FeaturedProperties';
-import DiscountedUnitsSection from '@/components/home/DiscountedUnitsSection';
-import ExploreCategories from '@/components/home/ExploreCategories';
-import MetodologiaTeaser from '@/components/home/MetodologiaTeaser';
-import ProcessInfographic from '@/components/home/ProcessInfographic';
-import HowItWorks from '@/components/home/HowItWorks';
-import Testimonials from '@/components/home/Testimonials';
-import WhyPropyte from '@/components/home/WhyPropyte';
-import DondeEstamos from '@/components/home/DondeEstamos';
-import DeveloperLogos from '@/components/home/DeveloperLogos';
-import HomeFAQ from '@/components/home/HomeFAQ';
-import DeveloperBanner from '@/components/home/DeveloperBanner';
-import JoinTeamBanner from '@/components/home/JoinTeamBanner';
-import LeadMagnet from '@/components/home/LeadMagnet';
-import RecentBlog from '@/components/home/RecentBlog';
+import { CITY_MAP } from '@/lib/cities';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import ScrollReveal from '@/components/shared/ScrollReveal';
+import DiscountedUnitsSection from '@/components/home/DiscountedUnitsSection';
+import Testimonials from '@/components/home/Testimonials';
+import GsapLenisSync from '@/components/home/v3/GsapLenisSync';
+import HeroV3 from '@/components/home/v3/HeroV3';
+import FiguresV3 from '@/components/home/v3/FiguresV3';
+import CityCarouselV3 from '@/components/home/v3/CityCarouselV3';
+import CityPanelsV3 from '@/components/home/v3/CityPanelsV3';
+import BenefitsV3 from '@/components/home/v3/BenefitsV3';
+import PartnersV3, { type PartnerBand } from '@/components/home/v3/PartnersV3';
+import BlogFaqV3, { type BlogItem } from '@/components/home/v3/BlogFaqV3';
+import type { HeroSlide, HomeCard, HomeCity, HomeStats, StageKey } from '@/components/home/v3/types';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
-import {
-  getTestimonials,
-  getCta,
-  getExploreCategories,
-  localizedExploreLabel,
-  localizedTestimonialLocation,
-} from '@/lib/hub-content';
+import { getCta, getBlogFeatured, getTestimonials, localizedTestimonialLocation } from '@/lib/hub-content';
 import { ogLocaleImages } from '@/lib/og/images';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -57,254 +53,226 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   };
 }
 
+// Filas de v_developments que usa la home v3 (la vista trae más columnas).
+interface DevRow {
+  id: string;
+  slug: string;
+  name: string;
+  city: string | null;
+  zone: string | null;
+  stage: string | null;
+  price_min_mxn: number | null;
+  images: string[] | null;
+  property_types: string[] | null;
+  available_units: number | null;
+  featured: boolean | null;
+}
+
+// Precios por debajo de esto son errores de captura conocidos (p. ej. un lote a
+// $35,000); no se usan para el "desde" de una ciudad.
+const MIN_REAL_PRICE = 100_000;
+
+const TYPE_LABELS: Record<'es' | 'en', Record<string, string>> = {
+  es: { Departamento: 'Departamentos', Casa: 'Casas', Villa: 'Villas', Terreno: 'Lotes', Lote: 'Lotes', Penthouse: 'Penthouses', Local: 'Locales' },
+  en: { Departamento: 'Apartments', Casa: 'Houses', Villa: 'Villas', Terreno: 'Lots', Lote: 'Lots', Penthouse: 'Penthouses', Local: 'Retail' },
+};
+
+const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+
+function stageKey(stage: string | null): StageKey {
+  const s = norm(stage ?? '');
+  if (s.includes('preventa') || s.includes('presale')) return 'presale';
+  if (s.includes('constru')) return 'construction';
+  return 'ready';
+}
+
+function compactPrice(n: number | null, locale: string): string | null {
+  if (!n || n < MIN_REAL_PRICE) return null;
+  if (n >= 1_000_000) {
+    const v = (Math.round((n / 1_000_000) * 100) / 100).toString();
+    return `$${v} M`;
+  }
+  return locale === 'en' ? `$${Math.round(n / 1000)}K` : `$${Math.round(n / 1000)} mil`;
+}
+
+function place(zone: string | null, city: string): string {
+  if (!zone) return city;
+  return norm(zone).includes(norm(city)) ? zone : `${zone}, ${city}`;
+}
+
+function citySlug(city: string): string | null {
+  const n = norm(city);
+  const hit = Object.entries(CITY_MAP).find(([, info]) => norm(info.name) === n);
+  return hit ? hit[0] : null;
+}
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   // Sin esto next-intl resuelve el locale vía cookies()/headers() y la home
   // vuelve a caer a render dinámico. Mismo patrón que desarrolladores/page.tsx.
   setRequestLocale(locale);
+  const lang: 'es' | 'en' = locale === 'en' ? 'en' : 'es';
+  const t = await getTranslations({ locale, namespace: 'homeV3' });
 
-  // Stats reales sin pisos inventados (Bloque A — FLOORS eliminado 2026-05-11).
-  // Si Supabase devuelve 0 en alguna métrica, Hero omite esa pill condicionalmente.
-  // Defaults fail-open. El IIFE de Supabase RETORNA estos valores en vez de
-  // reasignar variables externas (regla del React Compiler: no reasignar
-  // variables capturadas dentro de una función async).
-  const HOME_DATA_DEFAULT = {
-    stats: { developments: 0, units: 0, cities: 0, zones: 0, typeCounts: {} as Record<string, number> },
-    developers: [] as Array<{ name: string; logo_url: string | null; slug: string; city: string | null; state: string | null }>,
-    featured: [] as FeaturedDevelopment[],
+  const EMPTY = {
+    stats: { developments: 0, units: 0, cities: 0, zones: 0 } as HomeStats,
+    featured: [] as DevRow[],
+    rows: [] as DevRow[],
+    posts: [] as BlogPost[],
     discountedUnits: [] as Property[],
   };
 
-  // Perf: los 3 bloques (visibility Hub, Supabase, contenido editorial Hub)
-  // son independientes entre sí — ninguno depende del resultado de otro —
-  // así que se lanzan en paralelo en vez de esperarse secuencialmente. Cada
-  // bloque conserva su propio manejo de errores (fail-open) para que el
-  // rechazo de uno no tumbe a los demás.
-  const visibilityPromise = getVisibility();
-
-  const supabasePromise = (async (): Promise<typeof HOME_DATA_DEFAULT> => {
+  // Visibilidad del Hub, catálogo de Supabase y contenido editorial del Hub son
+  // independientes: van en paralelo, cada uno fail-open.
+  const supabasePromise = (async (): Promise<typeof EMPTY> => {
     try {
-      // Cliente sin cookies: createServerSupabaseClient() usa cookies() y eso
-      // demovía la home a dinámica (Cache-Control: no-store medido en prod el
-      // 5-ago). Todos los queries de aquí son catálogo público.
+      // Cliente sin cookies: la home se mantiene estática (ver comentario histórico).
       const supabase = createPublicSupabaseClient();
-      const [statsData, devsRes, featuredRes, discountedRes] = await Promise.all([
+      if (!supabase) return EMPTY;
+      const [stats, featuredRes, devsRes, blogRes, discountedRes] = await Promise.all([
         getGlobalStats(supabase),
-        getDevelopers(supabase),
         getFeaturedDevelopments(supabase, 6),
+        getDevelopments(supabase, { limit: 120, orderBy: 'newest' }),
+        getBlogPosts(supabase, { locale, limit: 7, page: 1 }),
         getDiscountedUnits(supabase, 6),
       ]);
-      const stats = statsData;
       const discountedRows = (discountedRes.data || []) as unknown as UnitRow[];
       const discountedResolved = await resolveInvestmentForRows(supabase, discountedRows);
-      const discountedUnits = discountedRows.map((row) => mapUnitToProperty(
-        row, locale, discountedResolved.get(row.id),
-      ));
-      type DeveloperRow = { name: string; logo_url: string | null; verified: boolean | null; slug: string; city: string | null; state: string | null };
-      const developers = ((devsRes.data || []) as DeveloperRow[])
-        .filter((d) => Boolean(d.logo_url) && Boolean(d.verified))
-        .map((d) => ({ name: d.name, logo_url: d.logo_url, slug: d.slug, city: d.city, state: d.state }));
-      const featured = (featuredRes.data || []) as FeaturedDevelopment[];
-
-      // Inyectar bedrooms_min/max agregado desde v_units por development_id —
-      // misma lógica que /desarrollos/page.tsx. Una query bulk para los 6
-      // featured. Sin esto el chip de rango bedrooms en FeaturedProperties
-      // queda vacío (v_developments no expone bedroom aggregates).
-      const featuredIds = featured.map((d) => d.id).filter(Boolean);
-      if (featuredIds.length > 0) {
-        try {
-          const { data: unitsData } = await supabase
-            .schema('real_estate_hub' as 'public')
-            .from('v_units')
-            .select('development_id, bedrooms')
-            .in('development_id', featuredIds)
-            .not('approved_at', 'is', null)
-            .is('deleted_at', null);
-          const bedroomsByDev = new Map<string, { min: number; max: number }>();
-          (unitsData as Array<{ development_id: string; bedrooms: number | null }> | null)?.forEach((u) => {
-            if (!u.development_id || u.bedrooms == null || u.bedrooms <= 0) return;
-            const existing = bedroomsByDev.get(u.development_id);
-            if (!existing) {
-              bedroomsByDev.set(u.development_id, { min: u.bedrooms, max: u.bedrooms });
-            } else {
-              existing.min = Math.min(existing.min, u.bedrooms);
-              existing.max = Math.max(existing.max, u.bedrooms);
-            }
-          });
-          featured.forEach((d) => {
-            const br = bedroomsByDev.get(d.id);
-            if (br) {
-              d.bedrooms_min = br.min;
-              d.bedrooms_max = br.max;
-            }
-          });
-        } catch (err) {
-          console.error('[HomePage] bedrooms aggregate failed:', err);
-        }
-      }
-      return { stats, developers, featured, discountedUnits };
+      return {
+        stats: { developments: stats.developments, units: stats.units, cities: stats.cities, zones: stats.zones },
+        featured: (featuredRes.data || []) as unknown as DevRow[],
+        rows: (devsRes.data || []) as unknown as DevRow[],
+        posts: blogRes.posts,
+        discountedUnits: discountedRows.map((row) => mapUnitToProperty(row, locale, discountedResolved.get(row.id))),
+      };
     } catch (error) {
-      console.error('[HomePage] Supabase fetch failed:', error);
-      return HOME_DATA_DEFAULT;
+      console.error('[HomePage v3] Supabase fetch failed:', error);
+      return EMPTY;
     }
   })();
 
-  // Contenido editorial dinámico desde Hub. Auto-hide si Hub no devuelve data:
-  // si Luis quiere ocultar la sección, basta con borrar/desactivar los datos en hub.propyte.com.
-  // getTestimonials/getCta/getExploreCategories ya son fail-open (fetchJson
-  // interno con try/catch → null/[] en vez de throw), así que no necesitan
-  // un try/catch adicional aquí.
-  const hubContentPromise = Promise.all([
-    getTestimonials('home'),
-    getCta('home_lead_magnet'),
+  const [visibility, data, developerCta, blogFeatured, hubTestimonials] = await Promise.all([
+    getVisibility(),
+    supabasePromise,
     getCta('home_developer_banner'),
-    getCta('home_join_team'),
-    getExploreCategories(),
+    getBlogFeatured('inversionistas'),
+    getTestimonials('home'),
   ]);
+  const { stats, featured, rows, posts, discountedUnits } = data;
 
-  const [visibility, { stats, developers, featured, discountedUnits }, [hubTestimonials, leadMagnetCta, developerBannerCta, joinTeamCta, hubExplore]] =
-    await Promise.all([visibilityPromise, supabasePromise, hubContentPromise]);
-
+  // Testimonios reales del Hub (se conservan de la home anterior: son la prueba
+  // social con liga a la publicación original).
   const homeTestimonials = hubTestimonials.map((t) => ({
     name: t.name,
     city: localizedTestimonialLocation(t.location, locale),
     rating: t.rating ?? 5,
     text: locale === 'en' ? t.quote_en : t.quote_es,
-    // Puede venir null y el componente cuenta con ello. No se filtra la fila
-    // ni se sustituye por cadena vacía: `Testimonials` distingue ausente de
-    // presente para decidir si la insignia es enlace o solo texto.
+    // Puede venir null: `Testimonials` decide con eso si la insignia es enlace.
     sourceUrl: t.source_url,
   }));
 
-  const exploreOverride = hubExplore.length > 0
-    ? hubExplore.map((c) => ({
-        key: c.slug,
-        typeKey: c.type_key ?? c.slug,
-        label: localizedExploreLabel(c, locale),
-        image: c.image_url,
-        href: c.href,
-      }))
-    : null;
+  // Tarjetas por ciudad: destacados primero y solo con foto.
+  const toCard = (r: DevRow): HomeCard => ({
+    id: r.id,
+    slug: r.slug,
+    name: r.name,
+    zone: r.zone,
+    city: r.city ?? '',
+    place: place(r.zone, r.city ?? ''),
+    priceLabel: compactPrice(r.price_min_mxn, locale),
+    stage: stageKey(r.stage),
+    types: Array.from(new Set((r.property_types ?? []).map((tp) => TYPE_LABELS[lang][tp] ?? tp))),
+    available: r.available_units,
+    image: r.images?.[0] ?? null,
+  });
+  const byCity = new Map<string, DevRow[]>();
+  for (const r of rows) {
+    if (!r.city) continue;
+    byCity.set(r.city, [...(byCity.get(r.city) ?? []), r]);
+  }
+  const cities: HomeCity[] = [...byCity.entries()]
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 5)
+    .map(([city, list]) => {
+      const withPhoto = list.filter((r) => r.images?.length);
+      const ordered = [...withPhoto.filter((r) => r.featured), ...withPhoto.filter((r) => !r.featured)];
+      const prices = list.map((r) => r.price_min_mxn ?? 0).filter((p) => p >= MIN_REAL_PRICE);
+      const zoneCount = new Map<string, number>();
+      list.forEach((r) => { if (r.zone && norm(r.zone) !== norm(city)) zoneCount.set(r.zone, (zoneCount.get(r.zone) ?? 0) + 1); });
+      const slug = citySlug(city);
+      return {
+        key: slug ?? norm(city).replace(/\s+/g, '-'),
+        name: city,
+        href: slug ? `/${locale}/desarrollos/${slug}` : `/${locale}/desarrollos?search=${encodeURIComponent(city)}`,
+        count: list.length,
+        fromLabel: prices.length ? compactPrice(Math.min(...prices), locale) : null,
+        zones: [...zoneCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([z]) => z),
+        image: ordered[0]?.images?.[0] ?? null,
+        items: ordered.slice(0, 6).map(toCard),
+      };
+    })
+    .filter((c) => c.items.length > 0);
 
-  const leadMagnetProps = leadMagnetCta
-    ? {
-        eyebrow: locale === 'en' ? leadMagnetCta.eyebrow_en : leadMagnetCta.eyebrow_es,
-        title: locale === 'en' ? leadMagnetCta.title_en : leadMagnetCta.title_es,
-        subtitle: locale === 'en' ? leadMagnetCta.subtitle_en : leadMagnetCta.subtitle_es,
-        buttonLabel: locale === 'en' ? leadMagnetCta.button_label_en : leadMagnetCta.button_label_es,
-      }
-    : null;
+  const pool = [...featured, ...rows.filter((r) => !featured.some((f) => f.id === r.id))].filter((r) => r.images?.length);
+  const heroSlides: HeroSlide[] = pool.slice(0, 4).map((r) => ({ src: r.images![0], name: r.name }));
+  const benefitImages = pool.slice(0, 5).map((r) => r.images![1] ?? r.images![0]);
+  const partnerImages = pool.slice(5, 7).map((r) => r.images![1] ?? r.images![0]);
+  // Las portadas del blog son ilustraciones generadas: en la nota destacada se
+  // usa una foto real de desarrollo (decisión del prototipo v3, auditoría "se ve IA").
+  const blogLeadPhoto = pool[7] ? (pool[7].images![1] ?? pool[7].images![0]) : null;
 
-  const developerBannerProps = developerBannerCta
-    ? {
-        title: (locale === 'en' ? developerBannerCta.title_en : developerBannerCta.title_es) || '',
-        buttonLabel: locale === 'en' ? developerBannerCta.button_label_en : developerBannerCta.button_label_es,
-        buttonHref: developerBannerCta.button_href,
-      }
-    : null;
+  const bands: PartnerBand[] = [
+    {
+      key: 'developers',
+      who: t('partners.developersWho'),
+      title: (lang === 'en' ? developerCta?.title_en : developerCta?.title_es) || t('partners.developersTitle'),
+      body: t('partners.developersBody'),
+      cta: (lang === 'en' ? developerCta?.button_label_en : developerCta?.button_label_es) || t('partners.developersCta'),
+      href: developerCta?.button_href || `/${locale}/desarrolladores`,
+      image: partnerImages[0] ?? null,
+    },
+    isVisible(visibility, VISIBILITY_KEYS.NAV_BROKERS)
+      ? { key: 'brokers', who: t('partners.brokersWho'), title: t('partners.brokersTitle'), body: t('partners.brokersBody'), cta: t('partners.brokersCta'), href: `/${locale}/brokers`, image: partnerImages[1] ?? null }
+      : { key: 'team', who: t('partners.teamWho'), title: t('partners.teamTitle'), body: t('partners.teamBody'), cta: t('partners.teamCta'), href: `/${locale}/unete`, image: partnerImages[1] ?? null },
+  ];
 
-  const joinTeamBannerProps = joinTeamCta
-    ? {
-        title: (locale === 'en' ? joinTeamCta.title_en : joinTeamCta.title_es) || '',
-        buttonLabel: locale === 'en' ? joinTeamCta.button_label_en : joinTeamCta.button_label_es,
-        buttonHref: joinTeamCta.button_href,
-      }
-    : null;
+  const toBlog = (p: BlogPost): BlogItem => ({
+    slug: p.slug, title: p.title, excerpt: p.excerpt, category: p.category,
+    image: p.featured_image, publishedAt: p.published_at, minutes: p.read_time_min,
+  });
+  // La nota destacada la curan en el Hub (blog-featured); si no hay, la más reciente.
+  const curatedSlug = blogFeatured[0]?.post_slug;
+  const leadPost = posts.find((p) => p.slug === curatedSlug) ?? posts[0] ?? null;
+  const latestPosts = posts.filter((p) => p !== leadPost).slice(0, 5);
 
-  // Orden Home — se conserva el de develop (decisión Luis 2026-05-20):
-  // Hero → Featured → DiscountedUnits → LeadMagnet(Hub) → ProcessInfographic →
-  // DeveloperBanner → Nosotros → ExploreCategories(Hub) → WhyPropyte →
-  // Metodología → HowItWorks → Testimonials(Hub) →
-  // DondeEstamos → DeveloperLogos → RecentBlog → HomeFAQ → JoinTeamBanner.
-  // TrendingMarket retirado 2026-10-27 (auditoría UX, Fase 0): mostraba cifras
-  // con unidades erróneas ("51/100 ROI anual") y zonas fuera de Riviera Maya.
-  // Vuelve como tabla con fuente en la Fase 2.
-  // Los banners consumen CTAs del Hub con fallback a i18n (merge
-  // feat/dynamic-content-a1-pulido 2026-06-02).
+  const asOf = new Intl.DateTimeFormat(lang === 'en' ? 'en-US' : 'es-MX', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+
+  // Home v3 (rediseño 2026-10, Figma "Propuesta v3" + comentarios de Lara):
+  // Hero → Cifras → Lo más buscado por ciudad → Unidades con descuento →
+  // Ciudades → Por qué Propyte → Desarrolladores/Brokers → Blog + FAQ.
+  // Contacto vive en el footer global. Las secciones de la home anterior que no
+  // están aquí (LeadMagnet, ProcessInfographic, NosotrosTeaser, ExploreCategories,
+  // MetodologiaTeaser, HowItWorks, Testimonials, DondeEstamos, DeveloperLogos,
+  // JoinTeamBanner) siguen en el repo para comparar en develop.
   return (
     <>
       <SchemaMarkup type="organization" />
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <Hero stats={stats} />}
-
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && (
-        <ScrollReveal delay={0.05}>
-          <FeaturedProperties developments={featured} />
-        </ScrollReveal>
-      )}
-
-      {/* Sección Unidades con descuento — solo render si ≥3 unidades activas.
-          Source: v_units.is_discount_active filtrado server-side. */}
+      <GsapLenisSync />
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && heroSlides.length > 0 && <HeroV3 slides={heroSlides} />}
+      <FiguresV3 stats={stats} asOf={asOf} />
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && <CityCarouselV3 cities={cities} />}
       <ScrollReveal delay={0.05}>
         <DiscountedUnitsSection units={discountedUnits} />
       </ScrollReveal>
-
-      {leadMagnetProps && (
-        <ScrollReveal>
-          <LeadMagnet cta={leadMagnetProps} />
-        </ScrollReveal>
-      )}
-
-      <ScrollReveal delay={0.05}>
-        <ProcessInfographic />
-      </ScrollReveal>
-
-      <ScrollReveal>
-        <DeveloperBanner cta={developerBannerProps} />
-      </ScrollReveal>
-
-      <ScrollReveal>
-        <NosotrosTeaser />
-      </ScrollReveal>
-
-      {exploreOverride && (
-        <ScrollReveal>
-          <ExploreCategories typeCounts={stats.typeCounts} override={exploreOverride} />
-        </ScrollReveal>
-      )}
-
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && (
-        <ScrollReveal delay={0.05}>
-          <WhyPropyte />
-        </ScrollReveal>
-      )}
-
-      <ScrollReveal>
-        <MetodologiaTeaser />
-      </ScrollReveal>
-
-      <ScrollReveal>
-        <HowItWorks />
-      </ScrollReveal>
-
+      <CityPanelsV3 cities={cities} />
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_WHY_PROPYTE) && benefitImages.length > 0 && <BenefitsV3 images={benefitImages} />}
       {isVisible(visibility, VISIBILITY_KEYS.HOME_TESTIMONIALS) && homeTestimonials.length > 0 && (
         <ScrollReveal delay={0.05}>
           <Testimonials items={homeTestimonials} />
         </ScrollReveal>
       )}
-
-      <ScrollReveal delay={0.05}>
-        <DondeEstamos />
-      </ScrollReveal>
-
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_PARTNERS) && developers.length > 0 && (
-        <ScrollReveal>
-          <DeveloperLogos developers={developers} />
-        </ScrollReveal>
-      )}
-
-      <ScrollReveal>
-        <RecentBlog locale={locale} />
-      </ScrollReveal>
-
-      <ScrollReveal delay={0.05}>
-        <HomeFAQ />
-      </ScrollReveal>
-
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_CTA_JOIN) && (
-        <ScrollReveal delay={0.05}>
-          <JoinTeamBanner cta={joinTeamBannerProps} />
-        </ScrollReveal>
-      )}
+      <PartnersV3 bands={bands} />
+      <BlogFaqV3 lead={leadPost ? { ...toBlog(leadPost), image: blogLeadPhoto ?? leadPost.featured_image } : null} latest={latestPosts.map(toBlog)} />
     </>
   );
 }

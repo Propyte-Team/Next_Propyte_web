@@ -1401,6 +1401,10 @@
     "copyFailed": "No se pudo copiar"
   },
   "footer": {
+    "whatsappCta": "Escribir por WhatsApp",
+    "office": "Oficina",
+    "whatsappPhone": "WhatsApp y teléfono",
+    "emailLabel": "Correo",
     "description": "Comercializadora inmobiliaria con datos, tecnología y transparencia. Riviera Maya y Yucatán.",
     "properties": "Propiedades",
     "allProperties": "Todas las propiedades",
@@ -3223,6 +3227,158 @@
       "sinPlanContadoParcial": "Este proyecto se paga {enganche}% al firmar y {contraentrega}% contra entrega. El desarrollador no publica plan de mensualidades.",
       "sinPlanTasaPorConfirmar": "Todavía no publicamos las mensualidades de este proyecto porque falta confirmar la tasa.",
       "sinPlanCondicionesCambiando": "Las condiciones de pago de este proyecto cambiaron y las estamos confirmando antes de publicarlas."
+    }
+  },
+  "siteNav": {
+    "ariaMain": "Principal",
+    "home": "Propyte, inicio",
+    "menu": "Menú",
+    "search": "Buscar",
+    "switchLanguage": "Cambiar idioma",
+    "cta": "Hablar con un asesor",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "units": "Unidades de superficie",
+    "advertise": "Anuncia tu desarrollo",
+    "groupBuy": "Comprar",
+    "groupLearn": "Aprender",
+    "groupPropyte": "Propyte",
+    "developments": "Desarrollos",
+    "developmentsDesc": "Preventas y entregas inmediatas",
+    "exclusivos": "Exclusivos",
+    "exclusivosDesc": "Inventario que solo vende Propyte",
+    "properties": "Propiedades",
+    "propertiesDesc": "Unidades individuales en venta",
+    "zones": "Zonas",
+    "zonesDesc": "Ciudades y zonas que cubrimos",
+    "blog": "Blog",
+    "blogDesc": "Artículos para decidir antes de firmar",
+    "landGuide": "Guía de terrenos",
+    "landGuideDesc": "Qué revisar antes de comprar un lote",
+    "faq": "Preguntas frecuentes",
+    "faqDesc": "Fideicomiso, cierre y preventa",
+    "market": "Mercado",
+    "marketDesc": "Datos del mercado inmobiliario",
+    "methodology": "Metodología",
+    "methodologyDesc": "Cómo revisamos cada desarrollo",
+    "about": "Nosotros",
+    "aboutDesc": "Quiénes somos y nuestro equipo",
+    "developers": "Desarrolladores",
+    "developersDesc": "Vende tu proyecto con Propyte",
+    "brokers": "Brokers",
+    "brokersDesc": "Vende inventario ya revisado",
+    "providers": "Proveedores",
+    "providersDesc": "Red de aliados para tu propiedad",
+    "recruitment": "Trabaja con nosotros",
+    "recruitmentDesc": "Vacantes y plan de carrera",
+    "contact": "Contacto",
+    "contactDesc": "Escríbenos o agenda una llamada"
+  },
+  "homeV3": {
+    "hero": {
+      "aria": "Desarrollos destacados",
+      "title": "Real estate en modo inteligente.",
+      "subtitle": "Desarrollos revisados uno por uno en Playa del Carmen, Tulum, Cancún y Yucatán.",
+      "tabDevelopments": "Desarrollos",
+      "tabProperties": "Propiedades",
+      "searchLabel": "Buscar",
+      "placeholder": "Ciudad, zona o nombre del desarrollo",
+      "photosLabel": "Fotos de desarrollos",
+      "photoN": "Foto {n} de {total}: {name}",
+      "play": "Reanudar fotos",
+      "pause": "Pausar fotos"
+    },
+    "figures": {
+      "aria": "Inventario en cifras",
+      "developments": "desarrollos publicados, revisados antes de entrar al portafolio",
+      "units": "unidades publicadas",
+      "cities": "ciudades entre Quintana Roo y Yucatán",
+      "zones": "zonas con inventario",
+      "source": "Inventario publicado al {date}."
+    },
+    "carousel": {
+      "title": "Lo más buscado, ciudad por ciudad",
+      "citiesAria": "Ciudades",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "from": "Desde",
+      "available": "{count, plural, one {# disponible} other {# disponibles}}",
+      "seeAll": "Ver los {count} en {city}"
+    },
+    "stage": {
+      "presale": "Preventa",
+      "construction": "En obra",
+      "ready": "Entrega inmediata"
+    },
+    "cities": {
+      "title": "Elige dónde vivir o invertir",
+      "lead": "Cada ciudad tiene su propio mercado. Mira cuántos desarrollos hay y desde cuánto, antes de hablar con nadie.",
+      "count": "{count, plural, one {# desarrollo} other {# desarrollos}}",
+      "from": "desde {price}",
+      "cta": "Ver desarrollos en {city}"
+    },
+    "benefits": {
+      "title": "Por qué comprar con Propyte",
+      "lead": "Ordenado de lo que más pesa en tu decisión a lo que menos.",
+      "methodology": "Ver nuestra metodología",
+      "rank": {
+        "review": "Lo primero",
+        "compare": "Después",
+        "keys": "También",
+        "abroad": "También",
+        "oneAdvisor": "Y sin presión"
+      },
+      "review": {
+        "title": "Revisamos el desarrollo antes de mostrártelo",
+        "body": "Escrituras, permisos, historial del desarrollador y precio contra la zona. Si algo no cuadra, no se publica."
+      },
+      "compare": {
+        "title": "Comparas con números reales",
+        "body": "Precio por m², avance de obra y fecha de entrega de cada opción, lado a lado."
+      },
+      "keys": {
+        "title": "Te acompañamos hasta las llaves",
+        "body": "Firma, escrituración y entrega supervisada con checklist."
+      },
+      "abroad": {
+        "title": "Compras desde fuera de México",
+        "body": "Equipo bilingüe y fideicomiso explicado paso a paso."
+      },
+      "oneAdvisor": {
+        "title": "Un solo asesor",
+        "body": "Nadie más te llama ni te persigue con otro inventario."
+      },
+      "criteria": {
+        "legal": "Claridad legal",
+        "deadlines": "Plazos de entrega",
+        "price": "Precio comparable",
+        "build": "Calidad constructiva",
+        "resale": "Facilidad de reventa"
+      }
+    },
+    "partners": {
+      "aria": "Desarrolladores y brokers",
+      "developersWho": "Para desarrolladores",
+      "developersTitle": "Vendemos tu proyecto con datos",
+      "developersBody": "Estudio de absorción, precio por etapa y una red de asesores que ya conoce la zona.",
+      "developersCta": "Solicitar propuesta comercial",
+      "brokersWho": "Para brokers y asesores inmobiliarios",
+      "brokersTitle": "Vende inventario ya revisado",
+      "brokersBody": "Material de venta listo y comisiones claras desde el primer día.",
+      "brokersCta": "Conocer el programa",
+      "teamWho": "Para asesores inmobiliarios",
+      "teamTitle": "Trabaja con inventario ya revisado",
+      "teamBody": "Únete al equipo comercial de Propyte en la Riviera Maya.",
+      "teamCta": "Ver vacantes"
+    },
+    "blog": {
+      "title": "Antes de comprar, lee esto",
+      "all": "Ver todo el blog",
+      "featured": "Destacado",
+      "latest": "Lo más reciente",
+      "minutes": "{count} min de lectura",
+      "faqLead": "Lo que más nos preguntan antes de comprar en la Riviera Maya y Yucatán.",
+      "faqAll": "Ver todas las preguntas"
     }
   }
 }

@@ -1401,6 +1401,10 @@
     "copyFailed": "Could not copy"
   },
   "footer": {
+    "whatsappCta": "Message us on WhatsApp",
+    "office": "Office",
+    "whatsappPhone": "WhatsApp and phone",
+    "emailLabel": "Email",
     "description": "Real estate brokerage with data, technology and transparency. Riviera Maya and Yucatán.",
     "properties": "Properties",
     "allProperties": "All properties",
@@ -3223,6 +3227,158 @@
       "sinPlanContadoParcial": "This project is paid {enganche}% on signing and {contraentrega}% on delivery. The developer does not publish a monthly payment plan.",
       "sinPlanTasaPorConfirmar": "We haven't published this project's monthly payments yet because the interest rate still needs to be confirmed.",
       "sinPlanCondicionesCambiando": "This project's payment terms changed and we're confirming them before publishing."
+    }
+  },
+  "siteNav": {
+    "ariaMain": "Main",
+    "home": "Propyte, home",
+    "menu": "Menu",
+    "search": "Search",
+    "switchLanguage": "Change language",
+    "cta": "Talk to an advisor",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "units": "Area units",
+    "advertise": "List your development",
+    "groupBuy": "Buy",
+    "groupLearn": "Learn",
+    "groupPropyte": "Propyte",
+    "developments": "Developments",
+    "developmentsDesc": "Pre-sales and move-in ready",
+    "exclusivos": "Exclusives",
+    "exclusivosDesc": "Inventory sold only by Propyte",
+    "properties": "Properties",
+    "propertiesDesc": "Individual units for sale",
+    "zones": "Areas",
+    "zonesDesc": "Cities and areas we cover",
+    "blog": "Blog",
+    "blogDesc": "Articles to decide before you sign",
+    "landGuide": "Land guide",
+    "landGuideDesc": "What to check before buying a lot",
+    "faq": "FAQ",
+    "faqDesc": "Trusts, closing and pre-sales",
+    "market": "Market",
+    "marketDesc": "Real estate market data",
+    "methodology": "Methodology",
+    "methodologyDesc": "How we review each development",
+    "about": "About us",
+    "aboutDesc": "Who we are and our team",
+    "developers": "Developers",
+    "developersDesc": "Sell your project with Propyte",
+    "brokers": "Brokers",
+    "brokersDesc": "Sell inventory we already reviewed",
+    "providers": "Providers",
+    "providersDesc": "Partner network for your property",
+    "recruitment": "Work with us",
+    "recruitmentDesc": "Openings and career plan",
+    "contact": "Contact",
+    "contactDesc": "Write to us or book a call"
+  },
+  "homeV3": {
+    "hero": {
+      "aria": "Featured developments",
+      "title": "Real estate, the smart way.",
+      "subtitle": "Developments reviewed one by one in Playa del Carmen, Tulum, Cancún and Yucatán.",
+      "tabDevelopments": "Developments",
+      "tabProperties": "Properties",
+      "searchLabel": "Search",
+      "placeholder": "City, area or development name",
+      "photosLabel": "Development photos",
+      "photoN": "Photo {n} of {total}: {name}",
+      "play": "Resume photos",
+      "pause": "Pause photos"
+    },
+    "figures": {
+      "aria": "Inventory in numbers",
+      "developments": "published developments, reviewed before joining the portfolio",
+      "units": "published units",
+      "cities": "cities across Quintana Roo and Yucatán",
+      "zones": "areas with inventory",
+      "source": "Published inventory as of {date}."
+    },
+    "carousel": {
+      "title": "Most searched, city by city",
+      "citiesAria": "Cities",
+      "prev": "Previous",
+      "next": "Next",
+      "from": "From",
+      "available": "{count, plural, one {# available} other {# available}}",
+      "seeAll": "See all {count} in {city}"
+    },
+    "stage": {
+      "presale": "Pre-sale",
+      "construction": "Under construction",
+      "ready": "Move-in ready"
+    },
+    "cities": {
+      "title": "Choose where to live or invest",
+      "lead": "Each city has its own market. See how many developments there are and the starting price before talking to anyone.",
+      "count": "{count, plural, one {# development} other {# developments}}",
+      "from": "from {price}",
+      "cta": "See developments in {city}"
+    },
+    "benefits": {
+      "title": "Why buy with Propyte",
+      "lead": "Ordered from what matters most in your decision to what matters least.",
+      "methodology": "See our methodology",
+      "rank": {
+        "review": "First",
+        "compare": "Then",
+        "keys": "Also",
+        "abroad": "Also",
+        "oneAdvisor": "And no pressure"
+      },
+      "review": {
+        "title": "We review the development before showing it to you",
+        "body": "Deeds, permits, developer track record and price against the area. If something doesn't add up, it isn't listed."
+      },
+      "compare": {
+        "title": "You compare with real numbers",
+        "body": "Price per m², construction progress and delivery date for each option, side by side."
+      },
+      "keys": {
+        "title": "We stay with you until you get the keys",
+        "body": "Signing, deed and supervised handover with a checklist."
+      },
+      "abroad": {
+        "title": "You buy from outside Mexico",
+        "body": "Bilingual team and the bank trust explained step by step."
+      },
+      "oneAdvisor": {
+        "title": "One advisor",
+        "body": "No one else calls you or chases you with other inventory."
+      },
+      "criteria": {
+        "legal": "Legal clarity",
+        "deadlines": "Delivery deadlines",
+        "price": "Comparable price",
+        "build": "Build quality",
+        "resale": "Resale ease"
+      }
+    },
+    "partners": {
+      "aria": "Developers and brokers",
+      "developersWho": "For developers",
+      "developersTitle": "We sell your project with data",
+      "developersBody": "Absorption study, pricing by phase and a network of advisors who already know the area.",
+      "developersCta": "Request a sales proposal",
+      "brokersWho": "For brokers and real estate advisors",
+      "brokersTitle": "Sell inventory we already reviewed",
+      "brokersBody": "Sales material ready and clear commissions from day one.",
+      "brokersCta": "See the program",
+      "teamWho": "For real estate advisors",
+      "teamTitle": "Work with reviewed inventory",
+      "teamBody": "Join Propyte's sales team in the Riviera Maya.",
+      "teamCta": "See openings"
+    },
+    "blog": {
+      "title": "Before you buy, read this",
+      "all": "See the whole blog",
+      "featured": "Featured",
+      "latest": "Latest",
+      "minutes": "{count} min read",
+      "faqLead": "What people ask us most before buying in the Riviera Maya and Yucatán.",
+      "faqAll": "See all questions"
     }
   }
 }
