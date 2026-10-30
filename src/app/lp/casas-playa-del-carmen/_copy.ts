@@ -5,8 +5,8 @@ import type { CopyForm } from '../_components/v2/FormInventario';
 
 export const FORM: CopyForm = {
   etiqueta: 'Las {total} casas, con sus números',
-  titulo: 'Te mandamos precio, enganche y disponibilidad de cada una',
-  cuerpo: 'Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
+  titulo: 'Dinos qué buscas y te mandamos solo las que encajan',
+  cuerpo: 'Zona, presupuesto y recámaras acotan la lista. Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
   nombre: 'Nombre',
   whatsapp: 'WhatsApp',
   email: 'Correo',
@@ -22,6 +22,7 @@ export const FORM: CopyForm = {
   sinEspecifica: 'Playa del Carmen (sin casa específica)',
   whatsappGenerico: 'Hola, vi las casas en venta en Playa del Carmen en su página. ¿Me pasan precios y disponibilidad?',
   whatsappPorPropiedad: 'Hola, me interesa esta casa: {titulo}. ¿Me pasan precio y disponibilidad?',
+  coinciden: '{n} {n|casa coincide|casas coinciden} con lo que elegiste.',
 };
 
 export const PIE_AVISO =

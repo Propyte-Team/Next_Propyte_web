@@ -34,7 +34,9 @@ export default function IndiceCiudades({ ciudades }: { ciudades: Ubicacion[] }) 
     );
     pantallas.forEach((p) => observer.observe(p));
     return () => observer.disconnect();
-  }, []);
+    // Las pantallas cambian con los filtros: se vuelve a observar cuando
+    // cambia la lista de ciudades visibles.
+  }, [ciudades]);
 
   function ir(clave: string) {
     const destino = document.querySelector<HTMLElement>(`[data-ciudad="${clave}"]`);

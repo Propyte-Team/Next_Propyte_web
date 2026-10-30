@@ -72,25 +72,11 @@
   background: linear-gradient(to top, rgb(10 10 10 / 0.72) 0%, rgb(10 10 10 / 0.3) 38%, rgb(10 10 10 / 0) 70%);
 }
 
-/* La ficha es la foto. Al pasar el cursor sube el velo y aparecen las
-   características; en táctil van siempre visibles. */
-.lpx-root .lpx-ficha .lpx-specs {
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 260ms cubic-bezier(0.2, 0, 0, 1), transform 260ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-.lpx-root .lpx-ficha:hover .lpx-specs,
-.lpx-root .lpx-ficha:focus-within .lpx-specs {
-  opacity: 1;
-  transform: none;
-}
-
-@media (hover: none) {
-  .lpx-root .lpx-ficha .lpx-specs {
-    opacity: 1;
-    transform: none;
-  }
+/* La ficha es la foto. Las características van siempre visibles (30-oct-2026:
+   antes aparecían al pasar el cursor y en móvil nadie las veía). El velo sube
+   un poco más para que la fila de datos lea bien sobre cualquier foto. */
+.lpx-root .lpx-ficha .lpx-velo {
+  background: linear-gradient(to top, rgb(10 10 10 / 0.78) 0%, rgb(10 10 10 / 0.42) 42%, rgb(10 10 10 / 0) 72%);
 }
 
 .lpx-root .lpx-ficha .lpx-foto {
@@ -104,7 +90,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lpx-root .lpx-ficha .lpx-specs,
   .lpx-root .lpx-ficha .lpx-foto {
     transition: none;
   }

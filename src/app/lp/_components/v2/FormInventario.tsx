@@ -7,6 +7,9 @@ import { submitLead } from '@/lib/leads/submit-lead';
 import PhoneInputField, { isValidPhoneNumber } from '@/components/ui/PhoneInput';
 import { trackWhatsAppClick } from '@/lib/analytics/track';
 import type { LeadSource } from '@/lib/zoho/field-maps';
+import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
+import { filtrar, textoLead, type FiltroDef } from './filtros';
+import { useSeleccionFiltros } from './useFiltros';
 
 // ============================================================
 // Formulario compartido de las landings de inventario (familia v2).
@@ -75,6 +78,8 @@ export interface CopyForm {
   whatsappGenerico: string;
   /** Admite `{titulo}`. */
   whatsappPorPropiedad: string;
+  /** Con filtros: admite `{n}` y `{n|singular|plural}`. Tiene valor fijo. */
+  coinciden?: string;
 }
 
 const TEXTOS_FIJOS = {
@@ -92,6 +97,8 @@ const TEXTOS_FIJOS = {
   nombrePlaceholder: 'Tu nombre',
   whatsappPlaceholder: '+52 984 000 0000',
   emailPlaceholder: 'tu@correo.com',
+  coinciden: '{n} {n|propiedad coincide|propiedades coinciden} con lo que elegiste.',
+  sinCoincidencias: 'Ninguna coincide con todo lo que elegiste. Quita un filtro, o mándanos el formulario y te decimos qué hay cerca.',
 } as const;
 
 /**
@@ -130,6 +137,8 @@ export default function FormInventario({
   seleccion,
   onSeleccion,
   telefonoWhatsApp,
+  filtros = [],
+  propiedades,
   className = '',
 }: {
   source: LeadSource;
@@ -141,11 +150,22 @@ export default function FormInventario({
   seleccion?: string | null;
   onSeleccion?: (slug: string | null) => void;
   telefonoWhatsApp: string;
+  /**
+   * Filtros del inventario (30-oct-2026). Los chips viven aquí, mueven la
+   * cuadrícula por evento y viajan en el lead. Si trae uno de `presupuesto`,
+   * sustituye a `copy.presupuestos`.
+   */
+  filtros?: FiltroDef[];
+  /** Con `filtros`: para decir cuántas coinciden con lo elegido. */
+  propiedades?: PropiedadLanding[];
   className?: string;
 }) {
   const [seleccionInterna, setSeleccionInterna] = useState<string | null>(null);
   const elegida = seleccion !== undefined ? seleccion : seleccionInterna;
   const elegir = onSeleccion ?? setSeleccionInterna;
+  const { seleccion: filtroSel, alternar } = useSeleccionFiltros();
+  const coinciden = propiedades && filtros.length > 0 ? filtrar(propiedades, filtroSel, filtros).length : null;
+  const hayFiltroPresupuesto = filtros.some((f) => f.id === 'presupuesto');
 
   const [nombre, setNombre] = useState('');
   const [whatsapp, setWhatsapp] = useState<string | undefined>(undefined);
@@ -220,13 +240,16 @@ export default function FormInventario({
     setError(null);
 
     const propiedad = opciones.find((o) => o.slug === elegida);
+    const deFiltros = textoLead(filtros, filtroSel);
     const resultado = await submitLead(source, {
       name: nombreEnviado,
       email: emailEnviado,
       phone: whatsappEnviado,
       whatsapp: whatsappEnviado,
       propertyName: propiedad ? propiedad.titulo : copy.sinEspecifica,
-      budget: presupuesto ?? undefined,
+      budget: deFiltros.budget ?? presupuesto ?? undefined,
+      location: deFiltros.location,
+      interestOption: deFiltros.interestOption,
       locale: 'es',
       website,
       ...atribucion.current,
@@ -372,7 +395,44 @@ export default function FormInventario({
           </div>
         )}
 
-        {copy.presupuestos.length > 0 && (
+        {filtros.map((f) => (
+          <fieldset key={f.id} data-lpv-filtro={f.id}>
+            <legend className={ETIQUETA}>
+              {f.etiqueta}{' '}
+              <span className="normal-case tracking-normal">{TEXTOS_FIJOS.opcional}</span>
+            </legend>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {f.opciones.map((o) => {
+                const activo = filtroSel[f.id] === o.valor;
+                return (
+                  <button
+                    key={o.valor}
+                    type="button"
+                    aria-pressed={activo}
+                    onClick={() => {
+                      marcarInicio();
+                      alternar(f.id, o.valor);
+                    }}
+                    className={`${chip(activo)} inline-flex items-center gap-1.5`}
+                  >
+                    {o.etiqueta}
+                    <span className="lpv-cifra opacity-60">{o.total}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+        ))}
+
+        {coinciden !== null && (
+          <p aria-live="polite" className="-mt-2 text-xs text-[var(--lpv-panel-fg-3)]">
+            {coinciden === 0
+              ? TEXTOS_FIJOS.sinCoincidencias
+              : rellenar(copy.coinciden ?? TEXTOS_FIJOS.coinciden, { n: coinciden })}
+          </p>
+        )}
+
+        {!hayFiltroPresupuesto && copy.presupuestos.length > 0 && (
           <fieldset>
             <legend className={ETIQUETA}>
               {copy.presupuestoLabel}{' '}

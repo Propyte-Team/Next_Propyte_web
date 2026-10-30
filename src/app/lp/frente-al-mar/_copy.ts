@@ -5,8 +5,8 @@ import type { CopyForm } from '../_components/v2/FormInventario';
 
 export const FORM: CopyForm = {
   etiqueta: 'Las {total} {total|propiedad|propiedades}, con sus números',
-  titulo: 'Precio, enganche y disponibilidad de cada una',
-  cuerpo: 'Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
+  titulo: 'Precio, enganche y disponibilidad de las que encajan contigo',
+  cuerpo: 'Elige ciudad, presupuesto y recámaras si quieres acotar. Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
   nombre: 'Nombre',
   whatsapp: 'WhatsApp',
   email: 'Correo',
@@ -23,6 +23,7 @@ export const FORM: CopyForm = {
   whatsappGenerico:
     'Hola, vi las propiedades frente al mar en su página. ¿Me pasan precios y disponibilidad?',
   whatsappPorPropiedad: 'Hola, me interesa esta propiedad: {titulo}. ¿Me pasan precio y disponibilidad?',
+  coinciden: '{n} {n|propiedad coincide|propiedades coinciden} con lo que elegiste. Las ves arriba, una por pantalla.',
 };
 
 /** Texto de la vista tal como la declara el Hub. */

@@ -5,8 +5,9 @@ import type { CopyForm } from '../_components/v2/FormInventario';
 
 export const FORM: CopyForm = {
   etiqueta: 'Los {total} departamentos, con sus números',
-  titulo: 'Precio, enganche y disponibilidad de cada uno, por correo',
-  cuerpo: 'Llega el mismo día hábil y un asesor te escribe por WhatsApp.',
+  titulo: 'Dinos qué buscas y te mandamos solo lo que encaja',
+  cuerpo: 'Precio, enganche y disponibilidad por correo el mismo día hábil. Un asesor te escribe por WhatsApp.',
+  coinciden: '{n} {n|departamento coincide|departamentos coinciden} con lo que elegiste.',
   nombre: 'Nombre',
   whatsapp: 'WhatsApp',
   email: 'Correo',

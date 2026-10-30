@@ -23,6 +23,7 @@ export const FORM: CopyForm = {
   whatsappGenerico:
     'Hola, vi los terrenos residenciales de la Riviera Maya en su página. ¿Me pasan precios, planos y plan de pagos?',
   whatsappPorPropiedad: 'Hola, me interesa este terreno: {titulo}. ¿Me pasan precio, plano y plan de pagos?',
+  coinciden: '{n} {n|terreno coincide|terrenos coinciden} con lo que elegiste.',
 };
 
 export const COMERCIALIZADORA =

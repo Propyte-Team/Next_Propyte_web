@@ -55,6 +55,7 @@ function comoPropiedad(l: LoteComparable): PropiedadLanding {
     frenteAlMar: false,
     imagen: l.imagenes[0] ?? null,
     imagenes: l.imagenes,
+    creditos: { infonavit: false, fovissste: false, hipotecario: false, directo: false },
   };
 }
 

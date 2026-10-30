@@ -137,6 +137,12 @@ html:has(.lpo-root) {
   }
 }
 
+/* Características en grande sobre la foto: el icono lleva el acento, la cifra
+   el peso. En 375px van a dos columnas; en escritorio, en fila. */
+.lpo-root .lpo-cifras svg {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5));
+}
+
 /* La etiqueta del formulario no es un eyebrow. */
 .lpo-root [data-lpv-form] > p:first-child {
   text-transform: none;

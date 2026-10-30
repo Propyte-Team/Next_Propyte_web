@@ -31,7 +31,17 @@ function sinPortadasRepetidas(casas: CasaLanding[]): Map<string, string[]> {
 
 /** El filtro de ubicación de la familia v2 trabaja sobre `PropiedadLanding`. */
 function comoPropiedad(c: CasaLanding): PropiedadLanding {
-  return { ...c, tipo: 'Casa', estado: '', precioM2Mxn: null, mesesOpciones: [], estadoComercial: c.preventa ? 'preventa' : 'disponible', vista: null, frenteAlMar: false };
+  return {
+    ...c,
+    tipo: 'Casa',
+    estado: '',
+    precioM2Mxn: null,
+    mesesOpciones: [],
+    estadoComercial: c.preventa ? 'preventa' : 'disponible',
+    vista: null,
+    frenteAlMar: false,
+    creditos: { infonavit: false, fovissste: false, hipotecario: false, directo: false },
+  };
 }
 
 // ============================================================
