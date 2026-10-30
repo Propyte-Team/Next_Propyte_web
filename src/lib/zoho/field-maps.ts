@@ -544,6 +544,10 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       // perdió por el camino.
       if (data.propertyName) parts.push(`Propiedad de interés: ${data.propertyName}`);
       if (data.budget) parts.push(`Presupuesto: ${data.budget}`);
+      // Filtros del formulario (30-oct-2026): lo que el visitante eligió para
+      // acotar el inventario viaja tal cual, para que el asesor abra con eso.
+      if (data.location) parts.push(`Ubicación: ${data.location}`);
+      if (data.interestOption) parts.push(`Busca: ${data.interestOption}`);
       break;
     case "avica_contacto":
     case "avica_broker":

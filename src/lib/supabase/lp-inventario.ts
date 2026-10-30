@@ -66,6 +66,19 @@ export interface PropiedadLanding {
   frenteAlMar: boolean;
   imagen: string | null;
   imagenes: string[];
+  /**
+   * Créditos que el desarrollador declara aceptar. `true` solo si el Hub lo
+   * afirma; `null` y `false` se tratan igual: no se publica. Es el dato que
+   * sostiene el gancho «con tu crédito Infonavit» de Mérida.
+   */
+  creditos: Creditos;
+}
+
+export interface Creditos {
+  infonavit: boolean;
+  fovissste: boolean;
+  hipotecario: boolean;
+  directo: boolean;
 }
 
 export interface FilaInventario {
@@ -97,6 +110,11 @@ export interface FilaInventario {
   view_type: string | null;
   cover_image: string | null;
   images: string[] | null;
+  /** Opcionales: las pruebas y los adaptadores viejos no los traen. */
+  fin_infonavit?: boolean | null;
+  fin_fovissste?: boolean | null;
+  fin_hipotecario?: boolean | null;
+  fin_directo?: boolean | null;
 }
 
 export interface FiltroInventario {
@@ -127,6 +145,7 @@ const COLUMNAS = [
   'down_payment_pct', 'down_payment_mxn', 'fin_enganche_pct', 'fin_meses_opciones',
   'parking_spots', 'has_pool', 'tipo_entrega', 'is_presale', 'status', 'view_type',
   'cover_image', 'images',
+  'fin_infonavit', 'fin_fovissste', 'fin_hipotecario', 'fin_directo',
 ].join(',');
 
 function num(valor: string | number | null | undefined): number | null {
@@ -224,6 +243,12 @@ function mapear(fila: FilaInventario): PropiedadLanding | null {
     frenteAlMar: vista !== null && (VISTAS_MAR as readonly string[]).includes(vista),
     imagen,
     imagenes,
+    creditos: {
+      infonavit: fila.fin_infonavit === true,
+      fovissste: fila.fin_fovissste === true,
+      hipotecario: fila.fin_hipotecario === true,
+      directo: fila.fin_directo === true,
+    },
   };
 }
 
