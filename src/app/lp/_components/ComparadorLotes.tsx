@@ -56,6 +56,11 @@ function comoPropiedad(l: LoteComparable): PropiedadLanding {
     imagen: l.imagenes[0] ?? null,
     imagenes: l.imagenes,
     creditos: { infonavit: false, fovissste: false, hipotecario: false, directo: false },
+    mensualidadMxn: null,
+    amueblado: false,
+    equipado: false,
+    descuentoPct: null,
+    desarrolloId: null,
   };
 }
 

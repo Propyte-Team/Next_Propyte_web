@@ -8,7 +8,18 @@ import FormAutonomo from './_components/FormAutonomo';
 import Inventario from './_components/Inventario';
 import BarraCasas from './_components/BarraCasas';
 import { ChipsHero } from '../_components/v2/ChipsUbicacion';
-import { BadgeCheck, Calculator, ClipboardCheck } from '@/lib/icons';
+import {
+  BadgeCheck,
+  Building2,
+  Calculator,
+  ClipboardCheck,
+  CreditCard,
+  FileText,
+  Home,
+  KeySquare,
+  Shield,
+  Tag,
+} from '@/lib/icons';
 import { ubicaciones } from '@/lib/supabase/lp-inventario';
 import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
 import type { CopyCasas } from './_copy';
@@ -178,11 +189,37 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
 
   const rango = {
     desde: resumen.desde,
-    hasta: casas[casas.length - 1]?.precio ?? null,
+    hasta: resumen.hasta,
   };
 
-  const todasInmediatas = casas.every((c) => !c.preventa);
-  const [tituloL1, tituloL2] = copy.hero.titulo(casas.length, todasInmediatas);
+  // Brief del 30-oct-2026: el titular lleva el «desde» del inventario y el
+  // subtítulo dice qué entrega hay, dónde, y qué financiamiento declaran.
+  // Todo derivado; si una cifra no existe, su frase no se imprime.
+  const [tituloL1, tituloL2] = copy.hero.titulo(rango.desde ? dineroCompacto(rango.desde) : null);
+  const hayPreventa = resumen.preventa > 0;
+  const hayInmediata = resumen.entregaInmediata > 0;
+  const subtitulo = copy.hero.cuerpo({
+    ciudades: resumen.ciudades,
+    preventa: hayPreventa,
+    inmediata: hayInmediata,
+    engancheMin: resumen.engancheMinimoPct,
+    directo: resumen.financiamientoDirecto,
+  });
+
+  const badges: { icono: typeof Home; etiqueta: string; valor: string }[] = [
+    { icono: Home, etiqueta: copy.hero.badges.disponibles[0], valor: copy.hero.badges.disponibles[1](casas.length) },
+    ...(rango.desde
+      ? [{
+          icono: Tag,
+          etiqueta: copy.hero.badges.rango[0],
+          valor: copy.hero.badges.rango[1](dineroCompacto(rango.desde), rango.hasta ? dineroCompacto(rango.hasta) : null),
+        }]
+      : []),
+    ...(resumen.engancheMinimoPct
+      ? [{ icono: CreditCard, etiqueta: copy.hero.badges.enganche[0], valor: copy.hero.badges.enganche[1](resumen.engancheMinimoPct) }]
+      : []),
+    { icono: KeySquare, etiqueta: copy.hero.badges.entrega[0], valor: copy.hero.badges.entrega[1](hayPreventa, hayInmediata) },
+  ];
 
   // Zonas con inventario para los chips del hero (brief de octubre-2026:
   // «botones de cada lugar más visibles desde la primera parte»). El filtro
@@ -215,11 +252,9 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
                 {tituloL2}
               </h1>
 
-              {copy.hero.cuerpo && (
-                <p className="mt-8 max-w-[54ch] text-[1.0625rem] leading-relaxed text-[var(--lpc-ink-2)]">
-                  {copy.hero.cuerpo}
-                </p>
-              )}
+              <p className="mt-7 max-w-[58ch] text-[1.0625rem] leading-relaxed text-[var(--lpc-ink-2)]">
+                {subtitulo}
+              </p>
 
               {zonas.length > 1 && (
                 <div className="mt-8">
@@ -227,40 +262,22 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
                 </div>
               )}
 
-              {/* Cifras del encabezado, TODAS derivadas del inventario. */}
-              <dl className="mt-12 grid grid-cols-2 border-t border-[var(--lpc-line-strong)] sm:grid-cols-4">
-                {[
-                  {
-                    t: copy.hero.cifras.disponibles[0],
-                    v: String(casas.length),
-                    s: copy.hero.cifras.disponibles[1],
-                  },
-                  {
-                    t: copy.hero.cifras.desde[0],
-                    v: rango.desde ? dineroCompacto(rango.desde) : '—',
-                    s: copy.hero.cifras.desde[1],
-                  },
-                  {
-                    t: copy.hero.cifras.hasta[0],
-                    v: rango.hasta ? dineroCompacto(rango.hasta) : '—',
-                    s: copy.hero.cifras.hasta[1],
-                  },
-                  {
-                    t: copy.hero.cifras.enganche[0],
-                    v: resumen.engancheMinimoPct ? `${resumen.engancheMinimoPct}%` : '—',
-                    s: copy.hero.cifras.enganche[1],
-                  },
-                ].map((cifra) => (
+              {/* Badges del brief del 30-oct-2026 (disponibles, rango,
+                  enganche, entrega) como banda de cifras con filetes e icono,
+                  no como cuatro tarjetas. TODOS derivados del inventario; el
+                  que no tiene dato no se pinta. */}
+              <dl className={`mt-10 grid grid-cols-2 border-t border-[var(--lpc-line-strong)] ${badges.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-4'}`}>
+                {badges.map(({ icono: Icono, etiqueta, valor }) => (
                   <div
-                    key={cifra.t}
+                    key={etiqueta}
                     className="border-b border-[var(--lpc-line)] py-5 pr-4 sm:border-b-0"
                   >
-                    <dt className="lpc-etiqueta text-[var(--lpc-ink-3)]">{cifra.t}</dt>
-                    <dd className="lpc-display lpc-cifra mt-2 text-[1.375rem] leading-none text-[var(--lpc-ink)]">
-                      {cifra.v}
-                    </dd>
-                    <dd className="mt-1.5 text-xs leading-snug text-[var(--lpc-ink-3)]">
-                      {cifra.s}
+                    <dt className="flex items-center gap-2">
+                      <Icono className="h-4 w-4 text-[var(--lpc-signal)]" strokeWidth={1.75} aria-hidden />
+                      <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">{etiqueta}</span>
+                    </dt>
+                    <dd className="lpc-titulo lpc-cifra mt-2.5 text-[1.0625rem] leading-snug text-[var(--lpc-ink)]">
+                      {valor}
                     </dd>
                   </div>
                 ))}
@@ -309,6 +326,33 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
 
       {/* ══════════ INVENTARIO + FORMULARIO DE CIERRE ══════════ */}
       <Inventario casas={casas} telefonoWhatsApp={FALLBACK_WHATSAPP} locale={copy.locale} />
+
+      {/* ══════════ LO QUE REVISAMOS ANTES DE PUBLICAR ══════════
+          Brief del 30-oct-2026, en su versión moderada: se cuenta el proceso,
+          no se garantiza nada «100%». En claro y en dos columnas (título a la
+          izquierda, filas con filete a la derecha) para no repetir la banda
+          oscura de tres tarjetas que viene justo después. */}
+      <section className="lpc-regla bg-[var(--lpc-paper-2)]">
+        <div className="mx-auto grid max-w-[92rem] gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-12">
+          <h2 className="lpc-display text-[clamp(1.75rem,1.2rem+2vw,2.75rem)] text-[var(--lpc-ink)] lg:col-span-5">
+            {copy.revision.titulo}
+          </h2>
+          <ul className="divide-y divide-[var(--lpc-line)] border-y border-[var(--lpc-line-strong)] lg:col-span-7">
+            {copy.revision.puntos.map(([titulo, cuerpo], i) => {
+              const Icono = [Shield, Building2, FileText][i] ?? Shield;
+              return (
+                <li key={titulo} className="grid grid-cols-[2rem_1fr] gap-x-4 py-6 sm:grid-cols-[2.5rem_14rem_1fr] sm:gap-x-6">
+                  <Icono className="mt-0.5 h-6 w-6 text-[var(--lpc-signal)]" strokeWidth={1.5} aria-hidden />
+                  <h3 className="lpc-titulo text-[1.0625rem] leading-snug text-[var(--lpc-ink)]">{titulo}</h3>
+                  <p className="col-start-2 mt-2 text-[0.9375rem] leading-relaxed text-[var(--lpc-ink-2)] sm:col-start-3 sm:mt-0">
+                    {cuerpo}
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
 
       {/* ══════════ CÓMO PUBLICAMOS ══════════
           Tres afirmaciones verificables. Vivían entre el hero y el inventario;

@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import localFont from 'next/font/local';
-import { TIPOS_DEPTO, getInventario, resumenInventario } from '@/lib/supabase/lp-inventario';
+import { TIPOS_DEPTO, getInventario, resumenInventario, totalDesarrollos } from '@/lib/supabase/lp-inventario';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
+import { Calendar, CheckCircle, KeySquare, Tag } from '@/lib/icons';
 import { dinero, dineroCompacto } from '../_components/format';
 import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
-import { filtroPresupuesto, filtroRecamaras, filtroUbicacion, filtros } from '../_components/v2/filtros';
-import { ubicacionCorta } from '../_components/v2/util';
+import { filtroEntrega, filtroPresupuesto, filtroRecamaras, filtroUbicacion, filtros } from '../_components/v2/filtros';
+import { plural, ubicacionCorta } from '../_components/v2/util';
 import Catalogo from './_components/Catalogo';
 import FiltrosPortada from './_components/FiltrosPortada';
 import { FORM, PIE_AVISO } from './_copy';
@@ -27,23 +28,36 @@ import './lpd-theme.css';
 // de casas (foto a sangre con el precio encima): cada landing tiene su
 // propia logica.
 //
-// GANCHO (30-oct-2026): la portada pregunta «¿buscas departamento?» y pide
-// presupuesto y ciudad. El indice de ciudades es el filtro; los chips de
-// presupuesto tambien. Lo elegido mueve los capitulos, el formulario y el
+// GANCHO (30-oct-2026): la portada promete «esquemas de pago a tu medida» y
+// pide presupuesto y ciudad. El indice de ciudades es el filtro; los chips
+// de presupuesto tambien. Lo elegido mueve los capitulos, el formulario y el
 // lead (ver `_components/v2/filtros.ts`).
 //
+// BRIEF DE COPY (30-oct-2026, tarde): titulo, subtitulo y badges vienen del
+// brief, pero CADA CIFRA se sustituyo por la del Hub: el brief decia «20% de
+// enganche» y el inventario declara desde 10%; decia «preventa con -8%» y el
+// unico descuento vigente es otro; «lock-off» no existe en `v_units`. Lo
+// que no se puede derivar del inventario no se imprime. Y el CTA no promete
+// una descarga: el formulario no entrega un PDF, lo manda un asesor.
+//
 // Reglas heredadas: toda cifra sale del inventario; ningun nombre de
-// desarrollo llega al DOM; cero urgencia inventada.
+// desarrollo llega al DOM (el id solo se cuenta); cero urgencia inventada.
 // ============================================================
 
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Departamentos en venta en la Riviera Maya | Precios y enganche publicados',
+  title: 'Departamentos en la Riviera Maya con esquemas de pago a tu medida | Precios y enganche publicados',
   description:
-    'Departamentos publicados hoy en Playa del Carmen, Tulum y Puerto Morelos con precio cerrado, enganche y disponibilidad. Dinos presupuesto y ciudad y recibe solo los que encajan.',
+    'Unidades seleccionadas en Tulum, Playa del Carmen y Puerto Morelos con precio cerrado, enganche declarado y disponibilidad. Dinos presupuesto y ciudad y recibe la lista de precios.',
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
+
+/** «Tulum, Playa del Carmen y Puerto Morelos»: lista en español. */
+function listaY(partes: string[]): string {
+  if (partes.length <= 1) return partes[0] ?? '';
+  return `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}`;
+}
 
 const display = localFont({
   src: [
@@ -87,7 +101,22 @@ export default async function LandingDepartamentosRivieraMaya() {
     filtroUbicacion(departamentos, 'ciudad', 'Ciudad'),
     filtroPresupuesto(departamentos, [3_000_000, 4_500_000, 6_000_000]),
     filtroRecamaras(departamentos),
+    filtroEntrega(departamentos),
   );
+
+  // Badges de la portada: solo los que tienen propiedades detras, con su
+  // conteo. Son informativos; filtrar es cosa del indice y del formulario.
+  const nInmediata = departamentos.filter((p) => p.estadoComercial === 'entrega_inmediata').length;
+  const nPreventa = departamentos.filter((p) => p.estadoComercial === 'preventa').length;
+  const nAmueblados = departamentos.filter((p) => p.amueblado || p.equipado).length;
+  const nDescuento = departamentos.filter((p) => p.descuentoPct !== null).length;
+  const badges = [
+    { n: nInmediata, texto: 'Entrega inmediata', Icono: KeySquare },
+    { n: nPreventa, texto: 'Preventa', Icono: Calendar },
+    { n: nAmueblados, texto: 'Amueblado o equipado', Icono: CheckCircle },
+    { n: nDescuento, texto: 'Con descuento vigente', Icono: Tag },
+  ].filter((b) => b.n > 0);
+  const desarrollos = totalDesarrollos(departamentos);
 
   // Lamina de portada: la unidad con mas fotos propias. La panoramica del
   // cierre es otra, de otra ciudad si la hay.
@@ -99,24 +128,42 @@ export default async function LandingDepartamentosRivieraMaya() {
     <div className={`lpv lpd-root ${display.variable}`}>
       {/* ══ PORTADA ══ */}
       <section id="hero" className="bg-[var(--lpv-bg)]">
-        <div className="mx-auto grid min-h-[100svh] max-w-[96rem] content-center gap-10 px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-16">
+        <div className="mx-auto grid min-h-[100svh] max-w-[96rem] content-center gap-10 px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-14">
           <div className="lg:col-span-7">
             <h1 className="text-[var(--lpv-fg)]">
-              <span className="lpd-serif block text-[clamp(2.75rem,1.4rem+6vw,6.5rem)]">¿Buscas departamento</span>
-              <span className="lpd-serif-italic block pb-1 text-[clamp(2rem,1.2rem+4vw,4.75rem)] text-[var(--lpv-accent)]">
-                en la Riviera Maya?
+              <span className="lpd-serif block text-[clamp(2.5rem,1.3rem+5vw,5.5rem)]">Departamentos en la Riviera Maya</span>
+              <span className="lpd-serif-italic block pb-1 text-[clamp(1.75rem,1.1rem+3.2vw,4rem)] text-[var(--lpv-accent)]">
+                con esquemas de pago a tu medida
               </span>
             </h1>
-            <p className="mt-6 max-w-[42ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
-              Dinos presupuesto y ciudad y te mandamos solo los que encajan. {resumen.total} publicados hoy
-              {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}, con precio cerrado, enganche y fotos.
+            <p className="mt-4 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
+              Unidades seleccionadas en {listaY(resumen.ciudades)}
+              {resumen.desde ? ` desde ${dineroCompacto(resumen.desde)}` : ''}.
+              {resumen.engancheMinimoPct !== null ? ` Enganches desde el ${resumen.engancheMinimoPct}%.` : ''}
+            </p>
+
+            {badges.length > 0 && (
+              <ul className="lpd-badges mt-5 flex flex-wrap gap-2" aria-label="Lo que hay en el inventario">
+                {badges.map(({ n, texto, Icono }) => (
+                  <li key={texto} className="lpd-badge">
+                    <Icono className="h-3.5 w-3.5 text-[var(--lpv-accent)]" aria-hidden />
+                    {texto}
+                    <span className="lpv-cifra opacity-60">{n}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <p className="mt-4 text-[0.9375rem] text-[var(--lpv-fg-3)]">
+              {plural(resumen.total, 'unidad disponible', 'unidades disponibles')}
+              {desarrollos > 1 ? ` de ${plural(desarrollos, 'desarrollo', 'desarrollos')}` : ''}, revisadas antes de publicar.
             </p>
 
             {/* Presupuesto + indice de ciudades como filtro. */}
             <FiltrosPortada defs={defs} todos={departamentos} />
 
-            <a href="#solicitar" className="lpd-boton mt-8">
-              Recibir precios
+            <a href="#solicitar" className="lpd-boton mt-6">
+              Recibir la lista de precios
             </a>
           </div>
 
@@ -176,7 +223,7 @@ export default async function LandingDepartamentosRivieraMaya() {
       />
 
       <BarraMovil
-        etiqueta="Recibir precios"
+        etiqueta="Recibir la lista de precios"
         telefonoWhatsApp={FALLBACK_WHATSAPP}
         mensajeWhatsApp={mensajeWa}
         surface="lp_deptos_rm_barra_movil"

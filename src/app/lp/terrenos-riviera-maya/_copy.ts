@@ -14,7 +14,10 @@ export const FORM: CopyForm = {
   verTodas: 'Quiero ver todos',
   presupuestoLabel: 'Presupuesto',
   presupuestos: ['Hasta $1 M MXN', '$1 M a $2 M MXN', 'Más de $2 M MXN', 'Todavía lo estoy definiendo'],
-  enviar: 'Recibir precios y planos',
+  // El brief pedía «Descargar Master Plan y Lista de Precios 2026»; el
+  // formulario no entrega un archivo (el lead llega a Zoho y el asesor manda
+  // lo que exista), así que promete lo que de verdad pasa.
+  enviar: 'Recibir lista de precios y planos',
   preferirWhatsApp: 'Prefiero preguntar por WhatsApp',
   exitoCuerpo:
     'Te enviamos a {email} el precio, el plano y el plan de pagos de {total|el terreno|los {total} terrenos}. Un asesor te escribe por WhatsApp el mismo día hábil.',

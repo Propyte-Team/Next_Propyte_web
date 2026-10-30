@@ -41,6 +41,11 @@ function comoPropiedad(c: CasaLanding): PropiedadLanding {
     vista: null,
     frenteAlMar: false,
     creditos: { infonavit: false, fovissste: false, hipotecario: false, directo: false },
+    mensualidadMxn: null,
+    amueblado: false,
+    equipado: false,
+    descuentoPct: null,
+    desarrolloId: null,
   };
 }
 
@@ -122,6 +127,10 @@ export default function Inventario({
     // `scrollIntoView` y no `location.hash`: el hash deja la URL sucia y, si el
     // visitante recarga, aterriza en el formulario sin haber visto el hero.
     anclaForm.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // «Solicitar ficha técnica» (brief 30-oct-2026) lleva también el FOCO al
+    // formulario, como en lotes: el lector de pantalla y el teclado aterrizan
+    // donde la casa ya quedó elegida. `preventScroll` deja el scroll suave.
+    anclaForm.current?.focus({ preventScroll: true });
   }, []);
 
   return (
@@ -170,9 +179,11 @@ export default function Inventario({
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">
-                      {casa.preventa
-                        ? copy.inventario.preventa
-                        : copy.inventario.entregaInmediata}
+                      {casa.entregaInmediata
+                        ? copy.inventario.entregaInmediata
+                        : casa.preventa
+                          ? copy.inventario.preventa
+                          : copy.inventario.disponible}
                     </span>
                   </div>
 
@@ -249,7 +260,8 @@ export default function Inventario({
       <section
         id="solicitar"
         ref={anclaForm}
-        className="scroll-mt-4 bg-[var(--lpc-dark)] pb-28 pt-16 sm:pb-24 sm:pt-24"
+        tabIndex={-1}
+        className="scroll-mt-4 bg-[var(--lpc-dark)] pb-28 pt-16 outline-none sm:pb-24 sm:pt-24"
       >
         <div className="mx-auto grid max-w-[92rem] gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_minmax(0,26rem)] lg:gap-20">
           <div className="lpc-invertido">

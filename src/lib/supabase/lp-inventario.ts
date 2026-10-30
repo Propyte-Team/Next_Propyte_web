@@ -72,6 +72,14 @@ export interface PropiedadLanding {
    * sostiene el gancho «con tu crédito Infonavit» de Mérida.
    */
   creditos: Creditos;
+  /** Mensualidad declarada por el desarrollador, si la declara. Nunca se calcula aquí. */
+  mensualidadMxn: number | null;
+  amueblado: boolean;
+  equipado: boolean;
+  /** Descuento vigente declarado (porcentaje), o null. */
+  descuentoPct: number | null;
+  /** UUID del desarrollo: solo para contar desarrollos, nunca se imprime ni se resuelve a nombre. */
+  desarrolloId: string | null;
 }
 
 export interface Creditos {
@@ -115,6 +123,12 @@ export interface FilaInventario {
   fin_fovissste?: boolean | null;
   fin_hipotecario?: boolean | null;
   fin_directo?: boolean | null;
+  monthly_payment_mxn?: string | number | null;
+  furnished?: boolean | null;
+  equipped?: boolean | null;
+  discount_pct?: string | number | null;
+  is_discount_active?: boolean | null;
+  development_id?: string | null;
 }
 
 export interface FiltroInventario {
@@ -146,6 +160,7 @@ const COLUMNAS = [
   'parking_spots', 'has_pool', 'tipo_entrega', 'is_presale', 'status', 'view_type',
   'cover_image', 'images',
   'fin_infonavit', 'fin_fovissste', 'fin_hipotecario', 'fin_directo',
+  'monthly_payment_mxn', 'furnished', 'equipped', 'discount_pct', 'is_discount_active', 'development_id',
 ].join(',');
 
 function num(valor: string | number | null | undefined): number | null {
@@ -249,7 +264,20 @@ function mapear(fila: FilaInventario): PropiedadLanding | null {
       hipotecario: fila.fin_hipotecario === true,
       directo: fila.fin_directo === true,
     },
+    mensualidadMxn: (() => {
+      const m = num(fila.monthly_payment_mxn);
+      return m !== null && m > 0 ? m : null;
+    })(),
+    amueblado: fila.furnished === true,
+    equipado: fila.equipped === true,
+    descuentoPct: fila.is_discount_active === true ? num(fila.discount_pct) : null,
+    desarrolloId: fila.development_id ?? null,
   };
+}
+
+/** Desarrollos distintos detrás del inventario. Un conteo, nunca un nombre. */
+export function totalDesarrollos(propiedades: PropiedadLanding[]): number {
+  return new Set(propiedades.map((p) => p.desarrolloId).filter((id): id is string => !!id)).size;
 }
 
 function valorOrden(p: PropiedadLanding): number {
