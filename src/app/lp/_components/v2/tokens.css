@@ -1,0 +1,172 @@
+/* ============================================================
+   Contrato de tokens de la familia v2 de landings de inventario.
+
+   Los componentes compartidos de `_components/v2/` (formulario, chips de
+   ubicación, galería de ficha, FAQ, barra móvil) pintan EXCLUSIVAMENTE con
+   estas variables. Cada landing las define bajo su clase raíz (`.lpx-root`,
+   `.lpd-root`, …) con su propia paleta, tipografía y radio, y así el mismo
+   formulario se ve negro sobre bermellón en una y hueso sobre azul en otra sin
+   tocar una línea del componente.
+
+   Este archivo NO define valores: documenta el contrato y da un respaldo
+   neutro para que un componente montado fuera de una landing no salga
+   invisible. Todo cuelga de `.lpv`, que cada landing pone en su raíz junto a
+   su clase propia.
+
+   Tokens:
+     --lpv-bg / --lpv-bg-2      superficie de página y banda secundaria
+     --lpv-fg / -2 / -3         tinta en tres pesos
+     --lpv-line / --lpv-line-2  regla fina y regla fuerte
+     --lpv-accent               ÚNICO acento de la página
+     --lpv-on-accent            texto sobre el acento
+     --lpv-panel-*              el formulario (fondo, tinta, regla, campo)
+     --lpv-r                    radio de bloques
+     --lpv-r-control            radio de controles
+     --lpv-font-display         familia de titulares
+     --lpv-font-ui              familia de interfaz y cifras
+     --lpv-wa                   verde de WhatsApp (marca de un tercero)
+   ============================================================ */
+
+.lpv {
+  --lpv-bg: #fafaf8;
+  --lpv-bg-2: #f0f0ec;
+  --lpv-fg: #121417;
+  --lpv-fg-2: #474c53;
+  --lpv-fg-3: #7a8089;
+  --lpv-line: rgb(18 20 23 / 0.12);
+  --lpv-line-2: rgb(18 20 23 / 0.4);
+  --lpv-accent: #121417;
+  --lpv-on-accent: #fafaf8;
+  --lpv-panel-bg: #121417;
+  --lpv-panel-bg-2: #1c1f24;
+  --lpv-panel-fg: #f6f6f3;
+  --lpv-panel-fg-2: rgb(246 246 243 / 0.66);
+  --lpv-panel-fg-3: rgb(246 246 243 / 0.42);
+  --lpv-panel-line: rgb(246 246 243 / 0.18);
+  --lpv-panel-accent: #f6f6f3;
+  --lpv-panel-on-accent: #121417;
+  --lpv-r: 0px;
+  --lpv-r-control: 0px;
+  --lpv-font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --lpv-wa: #25d366;
+
+  font-family: var(--lpv-font-ui);
+  color: var(--lpv-fg);
+  background: var(--lpv-bg);
+}
+
+.lpv .lpv-display {
+  font-family: var(--lpv-font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.lpv-cifra {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.lpv :focus-visible {
+  outline: 2px solid var(--lpv-accent);
+  outline-offset: 2px;
+}
+
+.lpv .lpv-panel :focus-visible {
+  outline-color: var(--lpv-panel-accent);
+}
+
+/* Campo del formulario: fondo transparente, regla inferior. */
+.lpv .lpv-campo {
+  width: 100%;
+  min-height: 52px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--lpv-panel-line);
+  border-radius: 0;
+  color: var(--lpv-panel-fg);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 200ms ease;
+}
+
+.lpv .lpv-campo::placeholder {
+  color: var(--lpv-panel-fg-3);
+}
+
+.lpv .lpv-campo:hover {
+  border-bottom-color: var(--lpv-panel-fg-2);
+}
+
+.lpv .lpv-campo:focus {
+  border-bottom-color: var(--lpv-panel-fg);
+  outline: 0;
+}
+
+.lpv .lpv-campo:-webkit-autofill,
+.lpv .lpv-campo:-webkit-autofill:hover,
+.lpv .lpv-campo:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--lpv-panel-fg);
+  -webkit-box-shadow: 0 0 0 1000px var(--lpv-panel-bg-2) inset;
+  caret-color: var(--lpv-panel-fg);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.lpv .lpv-campo[aria-invalid='true'] {
+  border-bottom-color: #ff6a4d;
+}
+
+/* El selector de lada del sitio pinta su propio fondo blanco; dentro del
+   panel se vuelve transparente y hereda la tinta del campo. */
+.lpv .lpv-campo .PhoneInputInput {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  min-height: 50px;
+}
+
+.lpv .lpv-campo .PhoneInputInput:focus {
+  outline: 0;
+}
+
+.lpv .lpv-campo .PhoneInputCountrySelect {
+  color: var(--lpv-panel-bg);
+}
+
+/* Galería de ficha: scroll-snap horizontal sin barra visible. */
+.lpv-galeria {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lpv-galeria::-webkit-scrollbar {
+  display: none;
+}
+
+.lpv-galeria > * {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* FAQ nativa: el marcador del navegador se quita y lo pone el chevron. */
+.lpv details > summary, .lp-root details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.lpv details > summary, .lp-root details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] .lpv-chevron {
+  transform: rotate(180deg);
+}
+
+.lpv-chevron {
+  transition: transform 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpv-chevron {
+    transition: none;
+  }
+}

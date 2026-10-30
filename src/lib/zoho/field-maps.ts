@@ -26,6 +26,12 @@ export type LeadSource =
   | "lp_casas_riviera"
   /** Guía comparativa de terrenos residenciales, alimentada del inventario. */
   | "guia_terrenos"
+  /** Landings de inventario v2 (Ads). Una fuente por landing para atribuir. */
+  | "lp_casas_pdc"
+  | "lp_terrenos_rm"
+  | "lp_deptos_rm"
+  | "lp_casas_merida"
+  | "lp_frente_mar"
   /** Sitio de Avica (Webflow): formulario de contacto «Email Footer». Va al Zoho de Propyte. */
   | "avica_contacto"
   /** Sitio de Avica: marcó «¿Eres broker inmobiliario?» o eligió «Soy Broker». */
@@ -328,6 +334,11 @@ function campaignSlug(source: LeadSource): string {
     case "lp_lotes_pdc":          return "lp/lotes-playa-del-carmen";
     case "lp_casas_riviera":      return "lp/casas-riviera-maya";
     case "guia_terrenos":         return "guias/terrenos-residenciales";
+    case "lp_casas_pdc":          return "lp/casas-playa-del-carmen";
+    case "lp_terrenos_rm":        return "lp/terrenos-riviera-maya";
+    case "lp_deptos_rm":          return "lp/departamentos-riviera-maya";
+    case "lp_casas_merida":       return "lp/casas-merida";
+    case "lp_frente_mar":         return "lp/frente-al-mar";
     case "avica_contacto":        return "contacto";
     case "avica_broker":          return "broker";
     case "avica_newsletter":      return "newsletter";
@@ -385,6 +396,11 @@ function formDescription(source: LeadSource, locale: Locale): string {
       case "lp_lotes_pdc":        return "Landing lotes Playa del Carmen (Ads)";
       case "lp_casas_riviera":    return "Landing casas Riviera Maya (Ads)";
       case "guia_terrenos":       return "Guía de terrenos residenciales";
+      case "lp_casas_pdc":        return "Landing casas Playa del Carmen (Ads)";
+      case "lp_terrenos_rm":      return "Landing terrenos Riviera Maya (Ads)";
+      case "lp_deptos_rm":        return "Landing departamentos Riviera Maya (Ads)";
+      case "lp_casas_merida":     return "Landing casas Mérida (Ads)";
+      case "lp_frente_mar":       return "Landing frente al mar (Ads)";
       case "avica_contacto":      return "Contacto";
       case "avica_broker":        return "Broker";
       case "avica_newsletter":    return "Newsletter";
@@ -517,11 +533,16 @@ function composeDescription(source: LeadSource, data: FormData): string | undefi
       if (data.propertyName) parts.push(`Lote de interés: ${data.propertyName}`);
       break;
     case "lp_casas_riviera":
+    case "lp_casas_pdc":
+    case "lp_terrenos_rm":
+    case "lp_deptos_rm":
+    case "lp_casas_merida":
+    case "lp_frente_mar":
       // `propertyName` va SIEMPRE: el form manda «Riviera Maya (sin casa
       // específica)» cuando el visitante no eligió una, para que el asesor
       // sepa que debe abrir con el inventario completo y no que el dato se
       // perdió por el camino.
-      if (data.propertyName) parts.push(`Casa de interés: ${data.propertyName}`);
+      if (data.propertyName) parts.push(`Propiedad de interés: ${data.propertyName}`);
       if (data.budget) parts.push(`Presupuesto: ${data.budget}`);
       break;
     case "avica_contacto":

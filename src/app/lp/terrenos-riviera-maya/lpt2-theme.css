@@ -1,0 +1,95 @@
+/* ============================================================
+   Tema: terrenos residenciales en la Riviera Maya (`.lpt2-root`).
+
+   REFERENCIA: landing de suelo guiada por el número (mensualidad y precio por
+   m² por delante), un solo objetivo, formulario a la vista. Página CLARA.
+
+   PALETA «cobalto + hueso frío», sin beige: off-white, tinta casi negra y un
+   solo acento cobalto para la acción. El panel del formulario es azul marino
+   profundo con acento celeste, que como botón relleno con tinta marina pasa
+   AA holgado.
+
+   RADIOS: todo a 0px. Es una hoja técnica, no una app.
+   ============================================================ */
+
+.lpt2-root {
+  --lpv-bg: #f7f8fa;
+  --lpv-bg-2: #eceff4;
+  --lpv-fg: #111827;
+  --lpv-fg-2: #3f4756;
+  --lpv-fg-3: #6b7280;
+  --lpv-line: rgb(17 24 39 / 0.12);
+  --lpv-line-2: rgb(17 24 39 / 0.4);
+  --lpv-accent: #1d4ed8;
+  --lpv-on-accent: #ffffff;
+
+  --lpv-panel-bg: #0f172a;
+  --lpv-panel-bg-2: #172036;
+  --lpv-panel-fg: #f1f4f9;
+  --lpv-panel-fg-2: rgb(241 244 249 / 0.68);
+  --lpv-panel-fg-3: rgb(241 244 249 / 0.44);
+  --lpv-panel-line: rgb(241 244 249 / 0.2);
+  --lpv-panel-accent: #60a5fa;
+  --lpv-panel-on-accent: #0f172a;
+
+  --lpv-r: 0px;
+  --lpv-r-control: 0px;
+  --lpv-font-display: var(--font-lpt2-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Cifras técnicas: superficie, precio por m², mensualidad. */
+.lpt2-root .lpt2-mono {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Estado de disponibilidad: cobalto rebajado, sin relleno saturado. */
+.lpt2-root .lpt2-estado {
+  color: #1e3a8a;
+  background: rgb(29 78 216 / 0.1);
+}
+
+/* Barra de filtros pegajosa. */
+.lpt2-root .lpt2-filtros {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--lpv-bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lpt2-root .lpt2-filtros {
+    background: var(--lpv-bg);
+    backdrop-filter: none;
+  }
+}
+
+/* Fila de ficha técnica: la regla superior separa, nada de cajas. */
+.lpt2-root .lpt2-fila {
+  border-top: 1px solid var(--lpv-line);
+}
+
+.lpt2-root .lpt2-fila[data-elegida='true'] {
+  border-top-color: var(--lpv-accent);
+}
+
+/* Cabecera compartida: logo blanco pensado para heros oscuros. Aquí el hero
+   es claro, así que el logo pasa a tinta y el rótulo pierde la sombra. */
+.lp-root:has(.lpt2-root) {
+  background: var(--lpv-bg, #f7f8fa);
+  --lp-accent: #1d4ed8;
+  --lp-accent-strong: #1e40af;
+}
+
+.lp-root:has(.lpt2-root) header img {
+  filter: invert(1);
+}
+
+.lp-root:has(.lpt2-root) header span {
+  color: #6b7280;
+  filter: none;
+  text-shadow: none;
+}

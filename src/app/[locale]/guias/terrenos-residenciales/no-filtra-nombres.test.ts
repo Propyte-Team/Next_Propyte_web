@@ -57,6 +57,7 @@ function comparable(over: Partial<LoteComparable> & { id: string }): LoteCompara
     plazos: [],
     contado: null,
     apartadoMxn: null,
+    imagenes: [],
     motivoSinPlan: null,
     motivoSinPlanCodigo: null,
     developmentId: null,

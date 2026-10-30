@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { ExternalLink } from '@/lib/icons';
-import { EnlaceGate, TituloSeccion, RULE_LIGHT } from './ui';
+import { EnlaceGate, RULE_LIGHT } from './ui';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
@@ -11,9 +11,11 @@ import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 // testimonio: es verificabilidad. Una dirección a la que puedes ir, una persona
 // con nombre y cara, y un contrato que puede revisar tu abogado.
 //
-// Dirección, horario y asesor vienen del Hub, no de un documento. La dirección
-// canónica de `Propyte_site_config` es la 5ta Avenida; cualquier otra que
-// circule en briefs externos no está respaldada por la fuente de verdad.
+// Brief de octubre-2026: sin título de sección (la oficina y el asesor hablan
+// solos) y los tres bloques de abajo como PASOS numerados con línea de
+// recorrido, no como filas de un listado.
+//
+// Dirección, horario y asesor vienen del Hub, no de un documento.
 // ============================================================
 
 /** Destino de la barra de credibilidad del inicio, que resume este bloque. */
@@ -25,11 +27,58 @@ export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
     c.concepto.toLowerCase().includes('apartado'),
   );
 
-  return (
-    <section id={ANCLA_PRUEBA} aria-labelledby="prueba-titulo" className="scroll-mt-6">
-      <TituloSeccion id="prueba-titulo">Cómo compruebas que existimos</TituloSeccion>
+  const pasos = [
+    {
+      titulo: 'Antes de que firmes nada',
+      cuerpo: (
+        <>
+          Te mandamos el contrato para que lo revise tu abogado, y el paquete documental
+          completo: licencia del desarrollo, autorización de venta municipal y régimen de
+          propiedad.
+        </>
+      ),
+    },
+    {
+      titulo: 'Apartado',
+      cuerpo: (
+        <>
+          {apartado ? (
+            <>
+              {apartado.monto}, {apartado.momento}.{' '}
+            </>
+          ) : (
+            <>El monto del apartado lo confirmamos por escrito. </>
+          )}
+          Las condiciones de devolución todavía no están publicadas por el desarrollador,
+          y es la pregunta que más conviene resolver antes de entregar dinero.{' '}
+          <EnlaceGate que="condiciones de devolución del apartado" />
+        </>
+      ),
+    },
+    {
+      titulo: 'Cómo validamos lo que listamos',
+      cuerpo: (
+        <>
+          Cinco criterios documentados antes de publicar cualquier propiedad, y la
+          información de urbanización la verificamos en campo en lugar de copiarla del
+          brochure.{' '}
+          <a
+            href="/es/metodologia"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-baseline gap-1 text-[var(--lp-accent)] underline decoration-[var(--lp-accent)]/40 underline-offset-4 transition-colors duration-200 hover:decoration-[var(--lp-accent)]"
+          >
+            Lee la metodología
+            <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
+          </a>
+        </>
+      ),
+    },
+  ];
 
-      <div className="mt-6 grid gap-px border-t-2 border-[var(--lp-accent)] bg-[var(--lp-line)] sm:grid-cols-2">
+  return (
+    <section id={ANCLA_PRUEBA} aria-label="Cómo comprobar quiénes somos" className="scroll-mt-6">
+      <div className="grid gap-px border-t-2 border-[var(--lp-accent)] bg-[var(--lp-line)] sm:grid-cols-2">
         {oficina && (
           <div className="bg-white p-5">
             <h3 className="text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-muted)]">
@@ -38,9 +87,7 @@ export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
             <p className="mt-2.5 text-sm leading-relaxed text-[var(--lp-ink-soft)]">
               {oficina.direccion}
             </p>
-            <p className="mt-1 lp-num text-xs text-[var(--lp-muted)]">
-              {oficina.horario}
-            </p>
+            <p className="mt-1 lp-num text-xs text-[var(--lp-muted)]">{oficina.horario}</p>
             <p className="mt-3 text-sm leading-relaxed text-[var(--lp-ink)]">
               Puedes venir a revisar los documentos en papel antes de apartar.
             </p>
@@ -84,53 +131,22 @@ export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
         )}
       </div>
 
-      <div className={`mt-6 border-x border-b border-t-2 border-t-[var(--lp-accent)] ${RULE_LIGHT}`}>
-        <div className={`border-t ${RULE_LIGHT} px-4 py-4`}>
-          <h3 className="text-sm font-medium text-[var(--lp-ink)]">Antes de que firmes nada</h3>
-          <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
-            Te mandamos el contrato para que lo revise tu abogado, y el paquete
-            documental completo: licencia del desarrollo, autorización de venta
-            municipal y régimen de propiedad.
-          </p>
-        </div>
-
-        <div className={`border-t ${RULE_LIGHT} px-4 py-4`}>
-          <h3 className="text-sm font-medium text-[var(--lp-ink)]">Apartado</h3>
-          <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
-            {apartado ? (
-              <>
-                {apartado.monto}, {apartado.momento}.{' '}
-              </>
-            ) : (
-              <>El monto del apartado lo confirmamos por escrito. </>
-            )}
-            Las condiciones de devolución todavía no están publicadas por el
-            desarrollador, y es la pregunta que más conviene resolver antes de
-            entregar dinero:
-          </p>
-          <p className="mt-2.5">
-            <EnlaceGate que="condiciones de devolución del apartado" />
-          </p>
-        </div>
-
-        <div className={`border-t ${RULE_LIGHT} px-4 py-4`}>
-          <h3 className="text-sm font-medium text-[var(--lp-ink)]">Cómo validamos lo que listamos</h3>
-          <p className="mt-1.5 max-w-[62ch] text-sm leading-relaxed text-[var(--lp-ink-soft)]">
-            Cinco criterios documentados antes de publicar cualquier propiedad, y la
-            información de urbanización la verificamos en campo en lugar de copiarla
-            del brochure.{' '}
-            <a
-              href="/es/metodologia"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-baseline gap-1 text-[var(--lp-accent)] underline decoration-[var(--lp-accent)]/40 underline-offset-4 transition-colors duration-200 hover:decoration-[var(--lp-accent)]"
-            >
-              Lee la metodología
-              <ExternalLink className="size-3 shrink-0" aria-hidden="true" />
-            </a>
-          </p>
-        </div>
-      </div>
+      {/* Pasos: número grande, línea de recorrido a la izquierda en móvil y
+          arriba en escritorio. El recorrido se dibuja con bordes, sin SVG. */}
+      <ol className={`mt-8 grid gap-8 border-t ${RULE_LIGHT} pt-8 md:grid-cols-3 md:gap-6`}>
+        {pasos.map((paso, i) => (
+          <li
+            key={paso.titulo}
+            className="lp-reveal relative border-l-2 border-[var(--lp-accent)] pl-5 md:border-l-0 md:border-t-2 md:pl-0 md:pt-5"
+          >
+            <span className="lp-display lp-num text-[2.25rem] leading-none text-[var(--lp-accent)]">
+              {i + 1}
+            </span>
+            <h3 className="mt-3 text-base font-medium text-[var(--lp-ink)]">{paso.titulo}</h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{paso.cuerpo}</p>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

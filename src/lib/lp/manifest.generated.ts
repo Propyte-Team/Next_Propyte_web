@@ -10,9 +10,14 @@ export type LandingManifestEntry = {
 };
 
 export const LP_MANIFEST: readonly LandingManifestEntry[] = [
+  { slug: 'casas-merida', path: '/lp/casas-merida' },
+  { slug: 'casas-playa-del-carmen', path: '/lp/casas-playa-del-carmen' },
   { slug: 'casas-riviera-maya', path: '/lp/casas-riviera-maya' },
+  { slug: 'departamentos-riviera-maya', path: '/lp/departamentos-riviera-maya' },
   { slug: 'enganche-terrenos-playa-del-carmen', path: '/lp/enganche-terrenos-playa-del-carmen' },
+  { slug: 'frente-al-mar', path: '/lp/frente-al-mar' },
   { slug: 'homes-riviera-maya', path: '/lp/homes-riviera-maya' },
   { slug: 'lotes-playa-del-carmen', path: '/lp/lotes-playa-del-carmen' },
   { slug: 'terrenos-playa-del-carmen', path: '/lp/terrenos-playa-del-carmen' },
+  { slug: 'terrenos-riviera-maya', path: '/lp/terrenos-riviera-maya' },
 ];

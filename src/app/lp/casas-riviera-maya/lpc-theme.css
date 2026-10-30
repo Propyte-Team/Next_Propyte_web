@@ -281,3 +281,33 @@
   --lp-accent: #0b0b0c;
   --lp-accent-strong: #2c2e31;
 }
+
+/* ------------------------------------------------------------
+   Tokens de la familia v2 (chips de ubicación, galería de ficha), mapeados a
+   la paleta monocroma de esta landing. `.lpc-root.lpv` gana a `.lpv` por
+   especificidad; sin esto el chip activo saldría con el papel neutro del kit.
+   ------------------------------------------------------------ */
+.lpc-root.lpv {
+  --lpv-bg: var(--lpc-paper);
+  --lpv-bg-2: var(--lpc-paper-2);
+  --lpv-fg: var(--lpc-ink);
+  --lpv-fg-2: var(--lpc-ink-2);
+  --lpv-fg-3: var(--lpc-ink-3);
+  --lpv-line: var(--lpc-line);
+  --lpv-line-2: var(--lpc-line-strong);
+  --lpv-accent: var(--lpc-ink);
+  --lpv-on-accent: var(--lpc-paper);
+  --lpv-panel-bg: var(--lpc-dark);
+  --lpv-panel-bg-2: var(--lpc-dark-2);
+  --lpv-panel-fg: var(--lpc-on-dark);
+  --lpv-panel-fg-2: var(--lpc-on-dark-2);
+  --lpv-panel-fg-3: var(--lpc-on-dark-3);
+  --lpv-panel-line: var(--lpc-line-dark);
+  --lpv-panel-accent: var(--lpc-on-dark);
+  --lpv-panel-on-accent: var(--lpc-ink);
+  --lpv-r: 0px;
+  --lpv-r-control: 0px;
+  --lpv-font-display: var(--font-lpc-display), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--lpv-font-ui);
+}
