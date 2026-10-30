@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { ExternalLink } from '@/lib/icons';
 import { EnlaceGate, RULE_LIGHT } from './ui';
+import PasosDinamicos from './PasosDinamicos';
 import type { LoteLanding } from '@/lib/supabase/lp-lotes';
 
 // ============================================================
@@ -131,22 +132,11 @@ export default function PruebaDeQueExistimos({ lote }: { lote: LoteLanding }) {
         )}
       </div>
 
-      {/* Pasos: número grande, línea de recorrido a la izquierda en móvil y
-          arriba en escritorio. El recorrido se dibuja con bordes, sin SVG. */}
-      <ol className={`mt-8 grid gap-8 border-t ${RULE_LIGHT} pt-8 md:grid-cols-3 md:gap-6`}>
-        {pasos.map((paso, i) => (
-          <li
-            key={paso.titulo}
-            className="lp-reveal relative border-l-2 border-[var(--lp-accent)] pl-5 md:border-l-0 md:border-t-2 md:pl-0 md:pt-5"
-          >
-            <span className="lp-display lp-num text-[2.25rem] leading-none text-[var(--lp-accent)]">
-              {i + 1}
-            </span>
-            <h3 className="mt-3 text-base font-medium text-[var(--lp-ink)]">{paso.titulo}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{paso.cuerpo}</p>
-          </li>
-        ))}
-      </ol>
+      {/* Pasos como lista numerada dinámica (ejemplo del brief del
+          30-oct-2026): el activo se abre, los demás se quedan en una línea. */}
+      <div className={`mt-8 border-t ${RULE_LIGHT} pt-8`}>
+        <PasosDinamicos pasos={pasos} />
+      </div>
     </section>
   );
 }

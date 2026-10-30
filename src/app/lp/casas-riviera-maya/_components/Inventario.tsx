@@ -173,14 +173,12 @@ export default function Inventario({
                     alt={copy.inventario.altFicha(casa.titulo, casa.ciudad)}
                     sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
                     sinFoto={copy.inventario.sinFoto}
-                    className="mt-4 !rounded-none"
+                    controles="abajo"
+                    pie={casa.zona ? `${casa.zona} · ${casa.ciudad}` : casa.ciudad}
+                    className="mt-4 [&>div:first-child]:!rounded-none"
                   />
 
-                  <p className="lpc-etiqueta mt-4 text-[var(--lpc-ink-3)]">
-                    {casa.zona ? `${casa.zona} · ${casa.ciudad}` : casa.ciudad}
-                  </p>
-
-                  <h3 className="lpc-titulo mt-2 text-[1.0625rem] text-[var(--lpc-ink)]">
+                  <h3 className="lpc-titulo mt-3 text-[1.0625rem] text-[var(--lpc-ink)]">
                     {casa.titulo}
                   </h3>
 

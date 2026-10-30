@@ -1,102 +1,226 @@
 /* ============================================================
-   Tema: casas en Playa del Carmen (`.lpx-root`).
+   Tema: casas en Playa del Carmen (`.lpx-root`), segunda versión.
 
-   REFERENCIA: listado de portal que convierte (Redfin / Zillow): filtros
-   arriba, foto y precio primero, formulario a un clic. Página CLARA.
+   REFERENCIAS (30-oct-2026, elegidas por Luis): Alexander Millett
+   (Barbados: la foto ES la ficha, nombre y precio encima, sin tarjetas),
+   Gerax (foto a sangre, un titular, un botón) y los pines de Pinterest de
+   "real estate landing pages" (hero oscuro de foto, tipografía grande,
+   precio flotando sobre la imagen).
 
-   PALETA «bosque»: verde profundo + hueso frío + ámbar como único acento de
-   acción. El verde sale del material: todas las casas publicadas en Playa
-   están rodeadas de selva, y un contenedor verde oscuro hace que las fotos se
-   lean en su sitio. El ámbar va SOLO en el botón primario del panel y en el
-   estado de disponibilidad.
-
-   RADIOS: bloques 12px, controles 8px, en toda la página.
+   La regla de esta versión: NADA de cajas. No hay tarjetas con borde, no
+   hay panel oscuro de formulario, no hay etiquetas en mayúsculas sobre los
+   títulos. El color lo ponen las fotos; la interfaz es blanco, tinta y una
+   regla fina. Tipografía: Archivo (la de la v3 del home) con el eje de ancho
+   cerrado para los titulares; DM Sans para el resto.
    ============================================================ */
 
 .lpx-root {
-  --lpv-bg: #f8f8f4;
-  --lpv-bg-2: #eceee6;
-  --lpv-fg: #121a15;
-  --lpv-fg-2: #3f4a43;
-  --lpv-fg-3: #6f7a73;
-  --lpv-line: rgb(18 26 21 / 0.12);
-  --lpv-line-2: rgb(18 26 21 / 0.38);
-  --lpv-accent: #1f5c3a;
-  --lpv-on-accent: #f8f8f4;
+  --lpv-bg: #ffffff;
+  --lpv-bg-2: #f4f4f1;
+  --lpv-fg: #111111;
+  --lpv-fg-2: #4d4d4a;
+  --lpv-fg-3: #8a8a85;
+  --lpv-line: rgb(17 17 17 / 0.12);
+  --lpv-line-2: rgb(17 17 17 / 0.5);
+  --lpv-accent: #111111;
+  --lpv-on-accent: #ffffff;
 
-  --lpv-panel-bg: #12201a;
-  --lpv-panel-bg-2: #1a2b23;
-  --lpv-panel-fg: #f3f4ee;
-  --lpv-panel-fg-2: rgb(243 244 238 / 0.68);
-  --lpv-panel-fg-3: rgb(243 244 238 / 0.44);
-  --lpv-panel-line: rgb(243 244 238 / 0.2);
-  --lpv-panel-accent: #f2b544;
-  --lpv-panel-on-accent: #12201a;
+  /* El formulario va en CLARO: campos con regla inferior sobre blanco. */
+  --lpv-panel-bg: #ffffff;
+  --lpv-panel-bg-2: #ffffff;
+  --lpv-panel-fg: #111111;
+  --lpv-panel-fg-2: #4d4d4a;
+  --lpv-panel-fg-3: #8a8a85;
+  --lpv-panel-line: rgb(17 17 17 / 0.22);
+  --lpv-panel-accent: #111111;
+  --lpv-panel-on-accent: #ffffff;
 
-  --lpv-r: 12px;
-  --lpv-r-control: 8px;
+  --lpv-r: 0px;
+  --lpv-r-control: 999px;
   --lpv-font-display: var(--font-lpx-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
   --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Estado de disponibilidad: el ámbar fuera del panel, y nada más. */
-.lpx-root .lpx-estado {
-  color: #8a5a00;
-  background: rgb(242 181 68 / 0.18);
+/* Titular: Archivo semicondensada. El ancho cerrado es lo que hace que un
+   titular de cinco palabras se lea como rótulo y no como párrafo. */
+.lpx-root .lpx-display {
+  font-family: var(--lpv-font-display);
+  font-weight: 500;
+  font-stretch: 88%;
+  letter-spacing: -0.02em;
+  line-height: 0.96;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Barra de filtros pegajosa bajo el borde superior, con fondo del papel para
-   que las fichas pasen por debajo sin mezclarse. */
+.lpx-root .lpx-display-ligero {
+  font-family: var(--lpv-font-display);
+  font-weight: 300;
+  font-stretch: 92%;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Texto sobre foto: sombra suave que no se nota como sombra. */
+.lpx-root .lpx-sobre-foto {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 32px rgb(0 0 0 / 0.35);
+}
+
+/* Degradado de legibilidad del hero y de cada ficha. Dos paradas: la foto
+   conserva su luz arriba y cede en el tercio inferior. */
+.lpx-root .lpx-velo {
+  background: linear-gradient(to top, rgb(10 10 10 / 0.72) 0%, rgb(10 10 10 / 0.3) 38%, rgb(10 10 10 / 0) 70%);
+}
+
+/* La ficha es la foto. Al pasar el cursor sube el velo y aparecen las
+   características; en táctil van siempre visibles. */
+.lpx-root .lpx-ficha .lpx-specs {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 260ms cubic-bezier(0.2, 0, 0, 1), transform 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.lpx-root .lpx-ficha:hover .lpx-specs,
+.lpx-root .lpx-ficha:focus-within .lpx-specs {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none) {
+  .lpx-root .lpx-ficha .lpx-specs {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lpx-root .lpx-ficha .lpx-foto {
+  transition: transform 900ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lpx-root .lpx-ficha:hover .lpx-foto {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpx-root .lpx-ficha .lpx-specs,
+  .lpx-root .lpx-ficha .lpx-foto {
+    transition: none;
+  }
+  .lpx-root .lpx-ficha:hover .lpx-foto {
+    transform: none;
+  }
+}
+
+/* Chips sobre la foto del hero: texto blanco con regla, sin relleno. */
+.lpx-root .lpx-chip-foto {
+  color: #ffffff;
+  border: 1px solid rgb(255 255 255 / 0.45);
+  background: rgb(10 10 10 / 0.25);
+  backdrop-filter: blur(6px);
+  transition: background 200ms ease, border-color 200ms ease;
+}
+
+.lpx-root .lpx-chip-foto:hover {
+  background: rgb(255 255 255 / 0.16);
+  border-color: #ffffff;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lpx-root .lpx-chip-foto {
+    backdrop-filter: none;
+    background: rgb(10 10 10 / 0.55);
+  }
+}
+
+/* Chips de la barra de filtros (fondo claro): la activa se invierte. */
+.lpx-root .lpx-chip {
+  border: 1px solid var(--lpv-line-2);
+  color: var(--lpv-fg);
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.lpx-root .lpx-chip[aria-pressed='true'] {
+  background: var(--lpv-fg);
+  color: #ffffff;
+  border-color: var(--lpv-fg);
+}
+
 .lpx-root .lpx-filtros {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--lpv-bg) 92%, transparent);
+  background: color-mix(in srgb, #ffffff 92%, transparent);
   backdrop-filter: blur(8px);
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .lpx-root .lpx-filtros {
-    background: var(--lpv-bg);
+    background: #ffffff;
     backdrop-filter: none;
   }
 }
 
-/* Ficha: elevación mínima, tintada al fondo, solo al pasar el cursor. */
-.lpx-root .lpx-ficha {
-  transition: transform 260ms cubic-bezier(0.2, 0, 0, 1), box-shadow 260ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .lpx-root .lpx-ficha:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 40px -24px rgb(18 26 21 / 0.35);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lpx-root .lpx-ficha {
-    transition: none;
-  }
-  .lpx-root .lpx-ficha:hover {
-    transform: none;
-  }
-}
-
-/* Cabecera compartida de `app/lp/layout.tsx`: pinta logo blanco para heros
-   oscuros. Esta página abre en claro, así que el logo se vuelve tinta. */
+/* Cabecera compartida: abre sobre foto oscura, el logo blanco va bien. Solo
+   se fija el acento del banner de consentimiento. */
 .lp-root:has(.lpx-root) {
-  background: var(--lpv-bg, #f8f8f4);
-  --lp-accent: #1f5c3a;
-  --lp-accent-strong: #174a2e;
+  background: #ffffff;
+  --lp-accent: #111111;
+  --lp-accent-strong: #333333;
 }
 
-.lp-root:has(.lpx-root) header img {
-  filter: invert(1);
+/* Chips de zona del hero: van sobre la foto, en blanco. Sobrescriben los
+   tokens del kit, que aqui son claros porque el formulario es claro. */
+.lpx-root .lpx-hero-chips button {
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 0.45);
+  background: rgb(10 10 10 / 0.25);
+  backdrop-filter: blur(6px);
+  border-radius: 999px;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
 }
 
-.lp-root:has(.lpx-root) header span {
-  color: #6f7a73;
-  filter: none;
-  text-shadow: none;
+.lpx-root .lpx-hero-chips button:hover {
+  background: rgb(255 255 255 / 0.16);
+  border-color: #ffffff;
+}
+
+/* La etiqueta del formulario deja de ser un eyebrow en mayusculas. */
+.lpx-root [data-lpv-form] > p:first-child {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9375rem;
+  color: var(--lpv-fg-3);
+}
+
+/* El contador de fotos sube a la esquina superior: abajo choca con el precio. */
+.lpx-root .lpx-ficha .lpv-galeria-contador {
+  top: 0.75rem;
+  bottom: auto;
+}
+
+/* Fila de filtros deslizable en movil, sin barra visible. */
+.lpx-root .lpx-filtros-fila {
+  scrollbar-width: none;
+}
+.lpx-root .lpx-filtros-fila::-webkit-scrollbar {
+  display: none;
+}
+
+/* Chips del hero en movil: una fila deslizable. */
+@media (max-width: 639px) {
+  .lpx-root .lpx-hero-chips > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+  }
+  .lpx-root .lpx-hero-chips > div::-webkit-scrollbar {
+    display: none;
+  }
+  .lpx-root .lpx-hero-chips button {
+    flex-shrink: 0;
+  }
 }

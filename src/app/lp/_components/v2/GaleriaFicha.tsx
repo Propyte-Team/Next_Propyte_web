@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight } from '@/lib/icons';
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from '@/lib/icons';
 
 // ============================================================
 // Galería de una ficha: carrusel de fotos con scroll-snap nativo.
@@ -12,9 +12,15 @@ import { ChevronLeft, ChevronRight } from '@/lib/icons';
 // navegador hace el gesto táctil, el teclado y el snap; aquí solo se añaden
 // las flechas para el ratón y el contador.
 //
+// DOS DISPOSICIONES DE CONTROLES:
+//   · `encima`  (por defecto): flechas redondas sobre la foto y contador en
+//     la esquina. Para fichas donde la foto es toda la tarjeta.
+//   · `abajo`: una fila bajo la foto con el pie opcional a la izquierda y
+//     flechas + contador «01 / 06» a la derecha, como el ejemplo del brief
+//     del 30-oct-2026. Para fichas con texto debajo de la imagen.
+//
 // SOLO LA PRIMERA FOTO SE CARGA CON PRIORIDAD NORMAL. Las demás llevan
-// `loading="lazy"` y entran cuando el visitante desliza; una cuadrícula de
-// diez fichas con 40 fotos cada una no puede pedir 400 imágenes al cargar.
+// `loading="lazy"` y entran cuando el visitante desliza.
 //
 // `tope` recorta la galería: el Hub tiene unidades con 366 fotos y nadie va a
 // deslizar 366 veces en una tarjeta.
@@ -29,6 +35,8 @@ export default function GaleriaFicha({
   tope = 12,
   className = '',
   sinFoto = 'Sin fotografía',
+  controles = 'encima',
+  pie,
 }: {
   imagenes: string[];
   alt: string;
@@ -38,6 +46,9 @@ export default function GaleriaFicha({
   tope?: number;
   className?: string;
   sinFoto?: string;
+  controles?: 'encima' | 'abajo';
+  /** Texto a la izquierda de la fila de controles (solo `abajo`). */
+  pie?: string;
 }) {
   const fotos = imagenes.slice(0, tope);
   const pista = useRef<HTMLDivElement>(null);
@@ -72,6 +83,8 @@ export default function GaleriaFicha({
     [fotos.length, indice],
   );
 
+  const dosDigitos = (n: number) => String(n).padStart(2, '0');
+
   if (fotos.length === 0) {
     return (
       <div className={`relative ${aspecto} w-full overflow-hidden rounded-[var(--lpv-r)] bg-[var(--lpv-bg-2)] ${className}`}>
@@ -82,8 +95,8 @@ export default function GaleriaFicha({
     );
   }
 
-  return (
-    <div className={`group/galeria relative ${aspecto} w-full overflow-hidden rounded-[var(--lpv-r)] bg-[var(--lpv-bg-2)] ${className}`}>
+  const caja = (
+    <div className={`group/galeria relative ${aspecto} w-full overflow-hidden rounded-[var(--lpv-r)] bg-[var(--lpv-bg-2)] ${controles === 'abajo' ? '' : className}`}>
       <div
         ref={pista}
         className="lpv-galeria flex h-full w-full overflow-x-auto"
@@ -105,7 +118,7 @@ export default function GaleriaFicha({
         ))}
       </div>
 
-      {fotos.length > 1 && (
+      {controles === 'encima' && fotos.length > 1 && (
         <>
           <button
             type="button"
@@ -127,12 +140,51 @@ export default function GaleriaFicha({
           </button>
           <span
             aria-live="polite"
-            className="lpv-cifra absolute bottom-2 right-2 rounded-full bg-[rgb(10_10_12/0.6)] px-2 py-1 text-[0.6875rem] text-white"
+            className="lpv-cifra lpv-galeria-contador absolute bottom-2 right-2 rounded-full bg-[rgb(10_10_12/0.6)] px-2 py-1 text-[0.6875rem] text-white"
           >
             {indice + 1} / {fotos.length}
           </span>
         </>
       )}
+    </div>
+  );
+
+  if (controles !== 'abajo') return caja;
+
+  return (
+    <div className={className}>
+      {caja}
+      <div className="lpv-galeria-pie mt-3 flex items-center justify-between gap-4">
+        <span className="min-w-0 truncate text-[0.6875rem] uppercase tracking-[0.14em] text-[var(--lpv-fg-3)]">
+          {pie ?? ''}
+        </span>
+        {fotos.length > 1 && (
+          <span className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => ir(-1)}
+              disabled={indice === 0}
+              aria-label="Foto anterior"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--lpv-line-2)] text-[var(--lpv-fg)] transition-colors hover:bg-[var(--lpv-fg)] hover:text-[var(--lpv-bg)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--lpv-fg)]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+            </button>
+            <span aria-live="polite" className="lpv-cifra text-[0.75rem] tracking-[0.08em] text-[var(--lpv-fg)]">
+              {dosDigitos(indice + 1)}
+              <span className="text-[var(--lpv-fg-3)]"> / {dosDigitos(fotos.length)}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => ir(1)}
+              disabled={indice >= fotos.length - 1}
+              aria-label="Foto siguiente"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--lpv-line-2)] text-[var(--lpv-fg)] transition-colors hover:bg-[var(--lpv-fg)] hover:text-[var(--lpv-bg)] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[var(--lpv-fg)]"
+            >
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          </span>
+        )}
+      </div>
     </div>
   );
 }
