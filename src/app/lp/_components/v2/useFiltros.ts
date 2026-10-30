@@ -37,7 +37,9 @@ export function useSeleccionFiltros() {
   // Copia síncrona para decidir el «alternar» sin efectos dentro del updater
   // (que en desarrollo corre dos veces).
   const ultima = useRef<Seleccion>({});
-  ultima.current = seleccion;
+  useEffect(() => {
+    ultima.current = seleccion;
+  }, [seleccion]);
 
   useEffect(() => {
     function onFiltro(e: Event) {

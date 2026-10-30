@@ -5,17 +5,18 @@ import {
   TIPOS_TERRENO,
   getInventario,
   resumenInventario,
-  ubicaciones,
+  type PropiedadLanding,
 } from '@/lib/supabase/lp-inventario';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import { dinero, dineroCompacto } from '../_components/format';
-import { ChipsHero } from '../_components/v2/ChipsUbicacion';
+import { filtroPlazo, filtroPresupuesto, filtroUbicacion, filtros } from '../_components/v2/filtros';
 import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
 import { ubicacionCorta } from '../_components/v2/util';
 import Catalogo from './_components/Catalogo';
+import ChipsHero from './_components/ChipsHero';
 import { FORM, PIE_AVISO } from './_copy';
 import '../_components/v2/tokens.css';
 import './lpt2-theme.css';
@@ -27,9 +28,10 @@ import './lpt2-theme.css';
 // precio por metro y plazo, así que la página es una tabla grande que se
 // abre fila por fila, no una galería. Cuatro movimientos:
 //
-//   1. Hero tipográfico sobre blanco: «Terrenos» a tamaño de rótulo, las
-//      ciudades como filtro y un botón. Debajo, una banda de foto aérea sin
-//      texto encima.
+//   1. Hero tipográfico sobre blanco: «Terrenos» a tamaño de rótulo, el
+//      gancho con cifras reales («desde $X con enganche del Y% y hasta Z
+//      meses»), ciudad y plazo como filtro y un botón. Debajo, una banda de
+//      foto aérea sin texto encima.
 //   2. El catálogo: filas de ancho completo con la superficie como cifra
 //      principal; cada una se abre con fotos y plan por plazo.
 //   3. La línea de comercializadora, sola y grande.
@@ -62,11 +64,44 @@ const display = localFont({
   display: 'swap',
 });
 
+/**
+ * Cortes de presupuesto que caen DENTRO del rango real de precios: así cada
+ * rango tiene lotes y ninguno se publica vacío (`filtroPresupuesto` descarta
+ * los que queden sin propiedades de todos modos).
+ */
+function cortesPresupuesto(lotes: PropiedadLanding[]): number[] {
+  const montos = lotes.filter((l) => l.precio?.moneda === 'MXN').map((l) => l.precio!.monto);
+  if (montos.length < 2) return [];
+  const min = Math.min(...montos);
+  const max = Math.max(...montos);
+  const escalera = [500_000, 1_000_000, 1_500_000, 2_000_000, 3_000_000, 5_000_000];
+  return escalera.filter((c) => c > min && c <= max).slice(0, 3);
+}
+
+/** Frase gancho del hero: solo las partes cuyo dato existe en el inventario. */
+function gancho(resumen: ReturnType<typeof resumenInventario>, mesesMax: number): string | null {
+  if (!resumen.desde) return null;
+  const partes = [`Terrenos desde ${dineroCompacto(resumen.desde)}`];
+  if (resumen.engancheMinimoPct) partes.push(`con enganche del ${resumen.engancheMinimoPct}%`);
+  if (mesesMax > 0) partes.push(`${resumen.engancheMinimoPct ? 'y ' : 'con '}hasta ${mesesMax} meses para pagar`);
+  return `${partes.join(' ')}.`;
+}
+
 export default async function LandingTerrenosRivieraMaya() {
   const lotes = await getInventario({ tipos: TIPOS_TERRENO });
   const resumen = resumenInventario(lotes);
-  const ciudades = ubicaciones(lotes, 'ciudad');
+  const mesesMax = Math.max(0, ...lotes.flatMap((l) => l.mesesOpciones));
+  const frase = gancho(resumen, mesesMax);
   const mensajeWa = FORM.whatsappGenerico;
+
+  // Filtros con conteo real. Ciudad y plazo van también en el hero; los tres
+  // viven en la barra pegajosa del catálogo y en el formulario.
+  const defs = filtros(
+    filtroUbicacion(lotes, 'ciudad', 'Ciudad'),
+    filtroPlazo(lotes),
+    filtroPresupuesto(lotes, cortesPresupuesto(lotes)),
+  );
+  const defsHero = defs.filter((d) => d.id === 'ubicacion' || d.id === 'plazo');
 
   if (lotes.length === 0) {
     return (
@@ -107,19 +142,25 @@ export default async function LandingTerrenosRivieraMaya() {
             </span>
           </h1>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-12 lg:items-end">
-            <p className="text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)] lg:col-span-5">
-              {resumen.total} {resumen.total === 1 ? 'lote publicado' : 'lotes publicados'} hoy
-              {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}. Superficie, precio por metro
-              y plazos tal como los declara cada desarrollador.
-            </p>
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between lg:col-span-7">
-              <div className="lpt2-chips-hero lpt2-fila-chips -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0 [&>div]:flex-nowrap [&>div]:gap-6 sm:[&>div]:flex-wrap">
-                <ChipsHero ubicaciones={ciudades} tono="claro" />
-              </div>
+          {/* `minmax(0,1fr)` + `min-w-0`: la fila de chips desplazable no puede
+              ensanchar la columna en móvil (desbordaba 230 px a 375). */}
+          <div className="mt-8 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="min-w-0 lg:col-span-5">
+              {frase && (
+                <p className="lpt2-display-ligero text-[clamp(1.375rem,1rem+1.4vw,2rem)] text-[var(--lpv-fg)]">
+                  {frase}
+                </p>
+              )}
+              <p className="mt-4 text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
+                {resumen.total} {resumen.total === 1 ? 'lote publicado' : 'lotes publicados'} hoy. Superficie, precio
+                por metro y plazos tal como los declara cada desarrollador.
+              </p>
+            </div>
+            <div className="flex min-w-0 flex-col gap-6 lg:col-span-7 lg:flex-row lg:items-end lg:justify-between">
+              <ChipsHero defs={defsHero} />
               <a
                 href="#solicitar"
-                className="inline-flex min-h-[52px] shrink-0 items-center justify-center rounded-full bg-[var(--lpv-fg)] px-7 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90 active:translate-y-px"
+                className="inline-flex min-h-[52px] shrink-0 items-center justify-center self-start rounded-full bg-[var(--lpv-fg)] px-7 text-[0.9375rem] font-medium text-white transition-opacity hover:opacity-90 active:translate-y-px lg:self-auto"
               >
                 Recibir precios y planos
               </a>
@@ -143,7 +184,7 @@ export default async function LandingTerrenosRivieraMaya() {
       </section>
 
       {/* ══ 2 · CATÁLOGO + 3 · COMERCIALIZADORA + 4 · FORMULARIO ══ */}
-      <Catalogo lotes={lotes} telefonoWhatsApp={FALLBACK_WHATSAPP} />
+      <Catalogo lotes={lotes} defs={defs} telefonoWhatsApp={FALLBACK_WHATSAPP} />
 
       {/* ══ 5 · PREGUNTAS ══ */}
       <div className="mx-auto max-w-[96rem] px-5 py-16 sm:px-8 sm:py-24">

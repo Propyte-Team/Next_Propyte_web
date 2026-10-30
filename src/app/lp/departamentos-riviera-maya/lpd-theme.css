@@ -58,26 +58,73 @@
   line-height: 1.1;
 }
 
-/* Indice de capitulos: enlaces de texto grandes separados por filetes. */
-.lpd-root .lpd-indice a {
+/* Indice de capitulos: filas de texto grandes separadas por filetes. Desde
+   el 30-oct-2026 son botones (filtran por ciudad), no anclas. */
+.lpd-root .lpd-indice > button {
   display: flex;
+  width: 100%;
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
   padding: 0.85rem 0;
   border-top: 1px solid var(--lpv-line);
   color: var(--lpv-fg);
+  text-align: left;
   text-decoration: none;
+  cursor: pointer;
   transition: color 200ms ease, padding-left 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-.lpd-root .lpd-indice a:last-child {
+.lpd-root .lpd-indice > button:last-child {
   border-bottom: 1px solid var(--lpv-line);
 }
 
-.lpd-root .lpd-indice a:hover {
+.lpd-root .lpd-indice > button:hover,
+.lpd-root .lpd-indice > button[aria-pressed='true'] {
   color: var(--lpv-accent);
   padding-left: 0.5rem;
+}
+
+.lpd-root .lpd-indice > button:disabled {
+  color: var(--lpv-fg-3);
+  cursor: default;
+  padding-left: 0;
+}
+
+/* Chips de presupuesto en la portada: mismo cuadrado que los del formulario
+   (radio 0), relleno tan al activarse. */
+.lpd-root .lpd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0 0.875rem;
+  border: 1px solid var(--lpv-line-2);
+  color: var(--lpv-fg);
+  font-size: 0.8125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+
+.lpd-root .lpd-chip:hover {
+  border-color: var(--lpv-fg);
+}
+
+.lpd-root .lpd-chip:active {
+  transform: translateY(1px);
+}
+
+.lpd-root .lpd-chip-activo,
+.lpd-root .lpd-chip-activo:hover {
+  background: var(--lpv-accent);
+  border-color: var(--lpv-accent);
+  color: var(--lpv-on-accent);
+}
+
+/* Caracteristicas con icono bajo cada lamina. */
+.lpd-root .lpd-specs {
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 /* Boton de contorno tan. */
@@ -184,7 +231,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lpd-root .lpd-indice a,
+  .lpd-root .lpd-indice > button,
+  .lpd-root .lpd-chip,
   .lpd-root .lpd-boton,
   .lpd-root .lpd-lamina .lpv-galeria img,
   .lpd-root .lpd-enlace {

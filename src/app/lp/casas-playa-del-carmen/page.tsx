@@ -5,17 +5,24 @@ import {
   TIPOS_CASA,
   getInventario,
   resumenInventario,
-  ubicaciones,
+  type PropiedadLanding,
 } from '@/lib/supabase/lp-inventario';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import { dinero, dineroCompacto } from '../_components/format';
-import { ChipsHero } from '../_components/v2/ChipsUbicacion';
+import {
+  filtroEntrega,
+  filtroPresupuesto,
+  filtroRecamaras,
+  filtroUbicacion,
+  filtros,
+} from '../_components/v2/filtros';
 import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
 import { ubicacionCorta } from '../_components/v2/util';
 import Catalogo from './_components/Catalogo';
+import ChipsHeroFiltro from './_components/ChipsHeroFiltro';
 import { FORM, PIE_AVISO } from './_copy';
 import '../_components/v2/tokens.css';
 import './lpx-theme.css';
@@ -59,11 +66,46 @@ const display = localFont({
   display: 'swap',
 });
 
+/**
+ * Cortes de presupuesto en MXN sacados del inventario: los terciles del
+ * precio, redondeados al medio millón. Con pocos precios distintos salen
+ * repetidos y el filtro se queda sin opciones; `filtroPresupuesto` lo omite.
+ */
+function cortesPresupuesto(casas: PropiedadLanding[]): number[] {
+  const montos = casas
+    .map((c) => (c.precio?.moneda === 'MXN' ? c.precio.monto : null))
+    .filter((m): m is number => m !== null)
+    .sort((a, b) => a - b);
+  if (montos.length < 3) return [];
+  const redondear = (n: number) => Math.round(n / 500_000) * 500_000;
+  const t1 = redondear(montos[Math.floor(montos.length / 3)]);
+  const t2 = redondear(montos[Math.floor((montos.length * 2) / 3)]);
+  return [...new Set([t1, t2])].filter((n) => n > 0);
+}
+
 export default async function LandingCasasPlayaDelCarmen() {
   const casas = await getInventario({ tipos: TIPOS_CASA, ciudades: ['Playa del Carmen'] });
   const resumen = resumenInventario(casas);
-  const zonas = ubicaciones(casas, 'zona');
   const mensajeWa = FORM.whatsappGenerico;
+
+  // Filtros del formulario y del catálogo, construidos desde el inventario.
+  // Cada uno sale solo si tiene al menos dos opciones con casas.
+  const defsFiltros = filtros(
+    filtroUbicacion(casas, 'zona', 'Zona'),
+    filtroPresupuesto(casas, cortesPresupuesto(casas)),
+    filtroRecamaras(casas),
+    filtroEntrega(casas),
+  );
+  const zonas = defsFiltros.find((f) => f.id === 'ubicacion')?.opciones ?? [];
+
+  // EL GANCHO: lo que el inventario permite afirmar hoy, nada más.
+  const inmediatas = casas.filter((c) => c.estadoComercial === 'entrega_inmediata').length;
+  const gancho = inmediatas > 0 ? 'Listas para entregar.' : 'Con precio y enganche publicados.';
+  const datosGancho = [
+    inmediatas > 0 ? `${inmediatas} con entrega inmediata` : `${resumen.total} publicadas hoy`,
+    resumen.engancheMinimoPct ? `enganche desde ${resumen.engancheMinimoPct}%` : null,
+    resumen.desde ? `desde ${dineroCompacto(resumen.desde)}` : null,
+  ].filter((t): t is string => t !== null);
 
   if (casas.length === 0) {
     return (
@@ -121,18 +163,22 @@ export default async function LandingCasasPlayaDelCarmen() {
         <div className="lpx-velo absolute inset-0" aria-hidden="true" />
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-[96rem] flex-col justify-end px-5 pb-10 pt-28 text-white sm:px-8 sm:pb-14">
-          <h1 className="lpx-display lpx-sobre-foto max-w-[14ch] text-[clamp(3rem,1.6rem+7vw,8rem)]">
+          <h1 className="lpx-display lpx-sobre-foto max-w-[14ch] text-[clamp(2.75rem,1.4rem+6.2vw,7rem)]">
             Casas en Playa del Carmen
           </h1>
-          <p className="lpx-display-ligero lpx-sobre-foto mt-4 max-w-[44ch] text-[clamp(1.25rem,1rem+1.6vw,2.25rem)] text-white/90">
-            {resumen.total} publicadas hoy
-            {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}.
+          <p className="lpx-display-ligero lpx-sobre-foto mt-3 max-w-[24ch] text-[clamp(1.5rem,1.1rem+2.4vw,3rem)] text-white">
+            {gancho}
+          </p>
+          <p className="lpx-sobre-foto mt-4 max-w-[52ch] text-[clamp(1rem,0.9rem+0.6vw,1.25rem)] text-white/85">
+            {datosGancho.join(', ')}.
           </p>
 
           <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="lpx-hero-chips">
-              <ChipsHero ubicaciones={zonas} tono="oscuro" />
-            </div>
+            {zonas.length > 0 && (
+              <div className="lpx-hero-chips">
+                <ChipsHeroFiltro opciones={zonas} />
+              </div>
+            )}
             <a
               href="#solicitar"
               className="inline-flex min-h-[52px] shrink-0 items-center justify-center rounded-full bg-white px-7 text-[0.9375rem] font-medium text-[#111] transition-opacity hover:opacity-90 active:translate-y-px"
@@ -146,6 +192,7 @@ export default async function LandingCasasPlayaDelCarmen() {
       {/* ══ 2 · LAS CASAS ══ */}
       <Catalogo
         casas={casas}
+        filtros={defsFiltros}
         telefonoWhatsApp={FALLBACK_WHATSAPP}
         fotoFormulario={
           fotoFormulario?.imagen

@@ -1,21 +1,17 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import localFont from 'next/font/local';
-import {
-  TIPOS_DEPTO,
-  claveUbicacion,
-  getInventario,
-  resumenInventario,
-  ubicaciones,
-} from '@/lib/supabase/lp-inventario';
+import { TIPOS_DEPTO, getInventario, resumenInventario } from '@/lib/supabase/lp-inventario';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
 import { dinero, dineroCompacto } from '../_components/format';
 import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
+import { filtroPresupuesto, filtroRecamaras, filtroUbicacion, filtros } from '../_components/v2/filtros';
 import { ubicacionCorta } from '../_components/v2/util';
-import Catalogo, { type Capitulo } from './_components/Catalogo';
+import Catalogo from './_components/Catalogo';
+import FiltrosPortada from './_components/FiltrosPortada';
 import { FORM, PIE_AVISO } from './_copy';
 import '../_components/v2/tokens.css';
 import './lpd-theme.css';
@@ -31,6 +27,11 @@ import './lpd-theme.css';
 // de casas (foto a sangre con el precio encima): cada landing tiene su
 // propia logica.
 //
+// GANCHO (30-oct-2026): la portada pregunta «¿buscas departamento?» y pide
+// presupuesto y ciudad. El indice de ciudades es el filtro; los chips de
+// presupuesto tambien. Lo elegido mueve los capitulos, el formulario y el
+// lead (ver `_components/v2/filtros.ts`).
+//
 // Reglas heredadas: toda cifra sale del inventario; ningun nombre de
 // desarrollo llega al DOM; cero urgencia inventada.
 // ============================================================
@@ -40,7 +41,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: 'Departamentos en venta en la Riviera Maya | Precios y enganche publicados',
   description:
-    'Departamentos publicados hoy en Playa del Carmen, Tulum y Puerto Morelos con precio cerrado, enganche y disponibilidad. Elige la ciudad y recibe la ficha completa por correo.',
+    'Departamentos publicados hoy en Playa del Carmen, Tulum y Puerto Morelos con precio cerrado, enganche y disponibilidad. Dinos presupuesto y ciudad y recibe solo los que encajan.',
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
 
@@ -79,12 +80,14 @@ export default async function LandingDepartamentosRivieraMaya() {
     );
   }
 
-  // Capitulos: una ciudad por capitulo, de mas a menos inventario. Dentro de
-  // cada uno el orden es el del inventario (precio ascendente).
-  const capitulos: Capitulo[] = ubicaciones(departamentos, 'ciudad').map((u) => ({
-    ubicacion: u,
-    propiedades: departamentos.filter((p) => claveUbicacion(p.ciudad) === u.clave),
-  }));
+  // Filtros con conteo real. Los cortes de presupuesto parten el inventario
+  // de hoy (2.2 a 9.1 M MXN) en cuatro tramos con departamentos en todos;
+  // una opcion vacia no se publica, un filtro con una sola opcion tampoco.
+  const defs = filtros(
+    filtroUbicacion(departamentos, 'ciudad', 'Ciudad'),
+    filtroPresupuesto(departamentos, [3_000_000, 4_500_000, 6_000_000]),
+    filtroRecamaras(departamentos),
+  );
 
   // Lamina de portada: la unidad con mas fotos propias. La panoramica del
   // cierre es otra, de otra ciudad si la hay.
@@ -99,28 +102,18 @@ export default async function LandingDepartamentosRivieraMaya() {
         <div className="mx-auto grid min-h-[100svh] max-w-[96rem] content-center gap-10 px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-16">
           <div className="lg:col-span-7">
             <h1 className="text-[var(--lpv-fg)]">
-              <span className="lpd-serif block text-[clamp(3.25rem,1.8rem+7vw,8rem)]">Departamentos</span>
+              <span className="lpd-serif block text-[clamp(2.75rem,1.4rem+6vw,6.5rem)]">¿Buscas departamento</span>
               <span className="lpd-serif-italic block pb-1 text-[clamp(2rem,1.2rem+4vw,4.75rem)] text-[var(--lpv-accent)]">
-                en la Riviera Maya
+                en la Riviera Maya?
               </span>
             </h1>
-            <p className="mt-6 max-w-[40ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
-              {resumen.total} publicados hoy en {resumen.ciudades.length === 1 ? 'una ciudad' : `${resumen.ciudades.length} ciudades`}
-              {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}. Cada uno con su precio cerrado, su enganche y
-              sus fotos.
+            <p className="mt-6 max-w-[42ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
+              Dinos presupuesto y ciudad y te mandamos solo los que encajan. {resumen.total} publicados hoy
+              {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}, con precio cerrado, enganche y fotos.
             </p>
 
-            {/* Indice de capitulos. */}
-            <nav aria-label="Capítulos por ciudad" className="lpd-indice mt-10 max-w-[34rem]">
-              {capitulos.map((c) => (
-                <a key={c.ubicacion.clave} href={`#${c.ubicacion.clave}`}>
-                  <span className="lpd-serif text-[clamp(1.75rem,1.2rem+2vw,2.75rem)]">{c.ubicacion.nombre}</span>
-                  <span className="text-[0.9375rem] text-[var(--lpv-fg-2)]">
-                    {c.propiedades.length} {c.propiedades.length === 1 ? 'departamento' : 'departamentos'}
-                  </span>
-                </a>
-              ))}
-            </nav>
+            {/* Presupuesto + indice de ciudades como filtro. */}
+            <FiltrosPortada defs={defs} todos={departamentos} />
 
             <a href="#solicitar" className="lpd-boton mt-8">
               Recibir precios
@@ -149,7 +142,7 @@ export default async function LandingDepartamentosRivieraMaya() {
       </section>
 
       {/* ══ CAPITULOS + FORMULARIO ══ */}
-      <Catalogo capitulos={capitulos} todos={departamentos} telefonoWhatsApp={FALLBACK_WHATSAPP} />
+      <Catalogo todos={departamentos} defs={defs} telefonoWhatsApp={FALLBACK_WHATSAPP} />
 
       {/* ══ PANORAMICA MUDA ══
           Una foto sin texto entre el formulario y las preguntas: respiro

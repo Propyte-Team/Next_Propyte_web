@@ -13,9 +13,15 @@ import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
+import {
+  filtroPresupuesto,
+  filtroRecamaras,
+  filtroUbicacion,
+  filtros,
+} from '../_components/v2/filtros';
 import { ubicacionCorta } from '../_components/v2/util';
 import Catalogo from './_components/Catalogo';
-import IndiceCiudades from './_components/IndiceCiudades';
+import ChipsPortada from './_components/ChipsPortada';
 import { FORM, PIE_AVISO } from './_copy';
 import '../_components/v2/tokens.css';
 import './lpo-theme.css';
@@ -29,10 +35,18 @@ import './lpo-theme.css';
 // El scroll salta de una a otra (snap por proximidad). En escritorio un
 // índice fijo con las ciudades permite saltar; en móvil se desliza.
 //
+// EL GANCHO (30-oct-2026): la portada ya no es un rótulo, es una promesa con
+// salida inmediata: «Tu propiedad frente al mar», la cifra real del
+// inventario y las ciudades como chips que filtran y bajan. El mismo filtro
+// vive en el formulario final (ciudad, presupuesto, recámaras) y viaja al lead.
+//
 // Reglas heredadas: toda cifra sale del inventario; ningún nombre de
 // desarrollo llega al DOM; cero urgencia inventada. La vista al mar es la que
 // declara el desarrollador en el Hub (`view_type`).
 // ============================================================
+
+/** Cortes de presupuesto en MXN. Se ajustan al rango real (hoy $4 M a $30 M). */
+const CORTES_PRESUPUESTO = [5_000_000, 10_000_000, 15_000_000];
 
 export const revalidate = 300;
 
@@ -68,6 +82,12 @@ export default async function LandingFrenteAlMar() {
   const resumen = resumenInventario(propiedades);
   const ciudades = ubicaciones(propiedades, 'ciudad');
   const mensajeWa = FORM.whatsappGenerico;
+  const ubicacion = filtroUbicacion(propiedades, 'ciudad', 'Ciudad');
+  const defs = filtros(
+    ubicacion,
+    filtroPresupuesto(propiedades, CORTES_PRESUPUESTO),
+    filtroRecamaras(propiedades),
+  );
 
   if (propiedades.length === 0) {
     return (
@@ -116,21 +136,27 @@ export default async function LandingFrenteAlMar() {
         <div className="lpo-velo absolute inset-0" aria-hidden="true" />
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-[96rem] flex-col justify-end px-5 pb-12 pt-28 text-white sm:px-8 sm:pb-16 lg:pr-48">
-          <h1 className="lpo-display lpo-sobre-foto text-[clamp(4rem,1.5rem+11vw,11rem)]">
-            Frente al mar
+          <h1 className="lpo-display lpo-sobre-foto max-w-[9ch] text-[clamp(3rem,1.2rem+8vw,8.5rem)]">
+            Tu propiedad frente al mar
           </h1>
           <p className="lpo-display-ligero lpo-sobre-foto mt-5 max-w-[36ch] text-[clamp(1.25rem,1rem+1.5vw,2.25rem)] text-white/90">
-            {resumen.total} {resumen.total === 1 ? 'propiedad' : 'propiedades'} en {estados}
-            {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}.
+            {resumen.total} {resumen.total === 1 ? 'propiedad con vista al mar' : 'propiedades con vista al mar'}{' '}
+            en {ciudades.length === 1 ? ciudades[0].nombre : `${ciudades.length} ciudades de ${estados}`}
+            {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}. Elige dónde y la ves en una
+            pantalla.
           </p>
+          <div className="mt-8">
+            <ChipsPortada
+              ubicacion={ubicacion}
+              total={resumen.total}
+              etiquetaTodas={resumen.total === 1 ? 'Verla' : `Ver las ${resumen.total}`}
+            />
+          </div>
         </div>
       </section>
 
-      {/* ══ PANTALLAS 1..n y el formulario ══ */}
-      <Catalogo propiedades={propiedades} telefonoWhatsApp={FALLBACK_WHATSAPP} />
-
-      {/* Índice fijo de ciudades, solo escritorio. */}
-      <IndiceCiudades ciudades={ciudades} />
+      {/* ══ PANTALLAS 1..n, el índice de ciudades y el formulario ══ */}
+      <Catalogo propiedades={propiedades} filtros={defs} telefonoWhatsApp={FALLBACK_WHATSAPP} />
 
       {/* ══ PREGUNTAS, fuera del snap ══ */}
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-24">
