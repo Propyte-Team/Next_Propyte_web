@@ -11,6 +11,7 @@ import FormInventario from '../../_components/v2/FormInventario';
 import GaleriaFicha from '../../_components/v2/GaleriaFicha';
 import { ESTADO_TEXTO, plural, ubicacionCorta } from '../../_components/v2/util';
 import { COMERCIALIZADORA, FORM, NOTA_MENSUALIDAD, SIN_PLAN } from '../_copy';
+import MapaLotes from './MapaLotes';
 
 // ============================================================
 // El catálogo: filas de ancho completo, una por lote.
@@ -30,6 +31,12 @@ import { COMERCIALIZADORA, FORM, NOTA_MENSUALIDAD, SIN_PLAN } from '../_copy';
 // hero y el formulario por `useFiltros`. El plazo elegido arriba manda sobre
 // el selector de la fila: si alguien pidió «24 meses», la cuota que ve es la
 // de 24 meses, no la del plazo más largo.
+//
+// MAPA (30-oct-2026): `MapaLotes` vive aquí, entre la barra de filtros y las
+// filas, porque comparte las tres cosas que ya tiene el catálogo: la lista
+// filtrada, la fila abierta y el lote elegido para el formulario. Pulsar un
+// marcador abre su fila; abrir una fila resalta su marcador. Si no hay clave
+// de Google Maps, el componente no pinta nada y el catálogo sigue igual.
 // ============================================================
 
 const ICONO = 'h-3.5 w-3.5 shrink-0 text-[var(--lpv-fg-3)]';
@@ -76,7 +83,7 @@ function Fila({
   const idDetalle = `detalle-${lote.id}`;
 
   return (
-    <li className="lpt2-fila" data-abierta={abierta}>
+    <li id={`lote-${lote.id}`} className="lpt2-fila scroll-mt-16" data-abierta={abierta}>
       <button
         type="button"
         onClick={onToggle}
@@ -269,6 +276,16 @@ export default function Catalogo({
             </p>
           </div>
         </div>
+
+        <MapaLotes
+          lotes={lotes}
+          visibles={visibles}
+          abierta={abiertaEfectiva}
+          onAbrir={setAbierta}
+          onElegir={elegir}
+          elegido={elegido}
+          plazoFiltro={plazoFiltro}
+        />
 
         {visibles.length === 0 ? (
           <p className="mx-auto max-w-[96rem] px-5 py-24 text-[var(--lpv-fg-2)] sm:px-8">

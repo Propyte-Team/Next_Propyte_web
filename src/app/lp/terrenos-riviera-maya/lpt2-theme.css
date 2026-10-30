@@ -180,6 +180,87 @@
   }
 }
 
+/* Marcador del mapa: chip cobalto con los números en mono y una punta que
+   señala el punto. El del punto cuya fila está abierta va en tinta. Google
+   posiciona el elemento con su esquina inferior central sobre la coordenada,
+   así que la punta cuelga del chip sin desplazamientos a mano. */
+.lpt2-root .lpt2-marcador {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lpt2-root .lpt2-marcador-chip {
+  display: inline-block;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: var(--lpv-accent);
+  color: var(--lpv-on-accent);
+  font-size: 0.75rem;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 0.18);
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.lpt2-root .lpt2-marcador-pie {
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--lpv-accent);
+  transition: border-color 180ms ease;
+}
+
+.lpt2-root .lpt2-marcador:hover .lpt2-marcador-chip {
+  transform: translateY(-1px);
+}
+
+.lpt2-root .lpt2-marcador[data-activo='true'] .lpt2-marcador-chip {
+  background: var(--lpv-fg);
+}
+
+.lpt2-root .lpt2-marcador[data-activo='true'] .lpt2-marcador-pie {
+  border-top-color: var(--lpv-fg);
+}
+
+/* Teselas de OpenStreetMap: desaturadas para que el único color del mapa sea
+   el cobalto de los marcadores, y la familia de interfaz en los controles. */
+.lpt2-root .leaflet-tile-pane {
+  filter: saturate(0.35);
+}
+
+.lpt2-root .leaflet-container {
+  font-family: var(--lpv-font-ui);
+  background: var(--lpv-bg-2);
+}
+
+.lpt2-root .leaflet-bar a {
+  border-radius: 0;
+  color: var(--lpv-fg);
+}
+
+/* Lote del panel del mapa: el abierto en el catálogo comparte el fondo de la fila abierta. */
+.lpt2-root .lpt2-mapa-lote {
+  transition: background-color 180ms ease;
+}
+
+.lpt2-root .lpt2-mapa-lote[data-abierto='true'] {
+  background: var(--lpv-bg-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpt2-root .lpt2-marcador-chip,
+  .lpt2-root .lpt2-marcador-pie,
+  .lpt2-root .lpt2-mapa-lote {
+    transition: none;
+  }
+  .lpt2-root .lpt2-marcador:hover .lpt2-marcador-chip {
+    transform: none;
+  }
+}
+
 /* Chips de plazo dentro de la fila abierta: píldora, la activa en tinta. */
 .lpt2-root .lpt2-plazo {
   border: 1px solid var(--lpv-line-2);

@@ -26,6 +26,14 @@
 //    código.
 //  · SUPERFICIE ABSURDA. Un lote declara 1 m². La fila se publica, la cifra no:
 //    viaja como `null` y la ficha dice «superficie por confirmar».
+//
+// COORDENADAS (30-oct-2026, mapa de la landing de terrenos). `v_units` expone
+// `lat`/`lng`, pero son las del DESARROLLO (`Propyte_desarrollos.latitud`),
+// no las del lote: los cinco lotes de un mismo desarrollo caen en el mismo
+// punto, y hoy cuatro lotes de Playa del Carmen de desarrollos distintos
+// comparten una coordenada idéntica (parece un centro de ciudad capturado a
+// mano). El mapa agrupa por punto exacto y nunca separa lo que el Hub junta;
+// afinar la coordenada de cada lote es trabajo del Hub, no de este código.
 // ============================================================
 
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -80,6 +88,12 @@ export interface PropiedadLanding {
   descuentoPct: number | null;
   /** UUID del desarrollo: solo para contar desarrollos, nunca se imprime ni se resuelve a nombre. */
   desarrolloId: string | null;
+  /**
+   * Punto del mapa. `null` si falta una de las dos o no es un número finito
+   * dentro del rango de un mapa. Ver la nota de COORDENADAS arriba: es el
+   * punto del desarrollo, así que varios lotes comparten el mismo.
+   */
+  coordenadas: { lat: number; lng: number } | null;
 }
 
 export interface Creditos {
@@ -129,6 +143,8 @@ export interface FilaInventario {
   discount_pct?: string | number | null;
   is_discount_active?: boolean | null;
   development_id?: string | null;
+  lat?: string | number | null;
+  lng?: string | number | null;
 }
 
 export interface FiltroInventario {
@@ -161,6 +177,7 @@ const COLUMNAS = [
   'cover_image', 'images',
   'fin_infonavit', 'fin_fovissste', 'fin_hipotecario', 'fin_directo',
   'monthly_payment_mxn', 'furnished', 'equipped', 'discount_pct', 'is_discount_active', 'development_id',
+  'lat', 'lng',
 ].join(',');
 
 function num(valor: string | number | null | undefined): number | null {
@@ -172,6 +189,15 @@ function num(valor: string | number | null | undefined): number | null {
 function superficie(valor: string | number | null | undefined): number | null {
   const n = num(valor);
   return n !== null && n >= SUPERFICIE_MIN_M2 ? n : null;
+}
+
+/** Par lat/lng válido para un mapa, o `null`. Nunca se inventa un punto. */
+function coordenadas(fila: FilaInventario): { lat: number; lng: number } | null {
+  const lat = num(fila.lat);
+  const lng = num(fila.lng);
+  if (lat === null || lng === null) return null;
+  if (Math.abs(lat) > 90 || Math.abs(lng) > 180 || (lat === 0 && lng === 0)) return null;
+  return { lat, lng };
 }
 
 function resolverPrecio(fila: FilaInventario): Precio | null {
@@ -272,6 +298,7 @@ function mapear(fila: FilaInventario): PropiedadLanding | null {
     equipado: fila.equipped === true,
     descuentoPct: fila.is_discount_active === true ? num(fila.discount_pct) : null,
     desarrolloId: fila.development_id ?? null,
+    coordenadas: coordenadas(fila),
   };
 }
 

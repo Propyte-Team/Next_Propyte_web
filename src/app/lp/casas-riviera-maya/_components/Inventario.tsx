@@ -46,6 +46,7 @@ function comoPropiedad(c: CasaLanding): PropiedadLanding {
     equipado: false,
     descuentoPct: null,
     desarrolloId: null,
+    coordenadas: null,
   };
 }
 
