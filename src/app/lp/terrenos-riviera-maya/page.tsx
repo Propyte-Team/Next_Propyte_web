@@ -36,7 +36,8 @@ import './lpt2-theme.css';
 //      documentación, financiamiento), ciudad y plazo como filtro, y el
 //      FORMULARIO FIJO a la derecha del titular. La foto aérea va bajo el
 //      texto, en la columna izquierda, sin nada encima.
-//   2. El catálogo: filas de ancho completo con la superficie como cifra
+//   2. El catálogo: un mapa con los puntos del inventario (el que pidió el
+//      brief) y filas de ancho completo con la superficie como cifra
 //      principal; cada una se abre con fotos y plan por plazo.
 //   3. La línea de comercializadora, sola y grande.
 //   4. El formulario sobre un bloque cobalto, y las preguntas.

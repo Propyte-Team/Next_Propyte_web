@@ -61,6 +61,7 @@ function comoPropiedad(l: LoteComparable): PropiedadLanding {
     equipado: false,
     descuentoPct: null,
     desarrolloId: null,
+    coordenadas: null,
   };
 }
 

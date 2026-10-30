@@ -43,6 +43,7 @@ function prop(sobre: Partial<PropiedadLanding> & { id: string }): PropiedadLandi
     equipado: false,
     descuentoPct: null,
     desarrolloId: null,
+    coordenadas: null,
     ...sobre,
   };
 }
