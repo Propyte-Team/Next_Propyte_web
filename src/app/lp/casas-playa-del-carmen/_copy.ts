@@ -4,9 +4,9 @@ import type { CopyForm } from '../_components/v2/FormInventario';
 // interpola usa marcadores `{total}` que resuelve el componente.
 
 export const FORM: CopyForm = {
-  etiqueta: 'Información de {total} casas',
-  titulo: 'Recibe precios, enganche y disponibilidad',
-  cuerpo: 'Te llega por correo la ficha de cada casa y un asesor te escribe por WhatsApp el mismo día hábil.',
+  etiqueta: 'Las {total} casas, con sus números',
+  titulo: 'Te mandamos precio, enganche y disponibilidad de cada una',
+  cuerpo: 'Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
   nombre: 'Nombre',
   whatsapp: 'WhatsApp',
   email: 'Correo',
@@ -24,27 +24,5 @@ export const FORM: CopyForm = {
   whatsappPorPropiedad: 'Hola, me interesa esta casa: {titulo}. ¿Me pasan precio y disponibilidad?',
 };
 
-export const PASOS: { titulo: string; cuerpo: string }[] = [
-  {
-    titulo: 'Recibes la información completa',
-    cuerpo: 'Precio cerrado, enganche, esquema de pago y qué incluye la entrega de cada casa, por correo.',
-  },
-  {
-    titulo: 'Visitas o la ves por videollamada',
-    cuerpo: 'Un asesor con nombre y cargo te acompaña a la casa, o te la muestra en vivo si no estás en Playa.',
-  },
-  {
-    titulo: 'Apartas con los documentos a la vista',
-    cuerpo: 'Antes de entregar dinero te mandamos el contrato y el paquete documental para que lo revise tu abogado.',
-  },
-];
-
-export const CIERRE_PUNTOS: [string, string][] = [
-  ['Precio cerrado', 'De cada una de las casas, en su moneda de venta.'],
-  ['Enganche y esquema', 'Lo que pide cada desarrollador para apartar.'],
-  ['Qué incluye', 'Equipada, llave en mano o en obra.'],
-  ['Disponibilidad', 'Cuáles siguen libres al día de tu solicitud.'],
-];
-
 export const PIE_AVISO =
-  'Precios y disponibilidad vigentes al momento de la consulta y sujetos a confirmación con el desarrollador. Propyte no es la desarrolladora de estos inmuebles.';
+  'Precios y disponibilidad vigentes al momento de la consulta y sujetos a confirmación con el desarrollador. Propyte no es la desarrolladora de estos inmuebles. Las imágenes las proporciona cada desarrollador y pueden incluir renders.';

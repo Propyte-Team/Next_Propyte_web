@@ -127,7 +127,7 @@ export default function GaleriaFicha({
           </button>
           <span
             aria-live="polite"
-            className="lpv-cifra absolute bottom-2 right-2 rounded-full bg-[rgb(10_10_12/0.6)] px-2 py-1 text-[0.6875rem] text-white"
+            className="lpv-cifra lpv-galeria-contador absolute bottom-2 right-2 rounded-full bg-[rgb(10_10_12/0.6)] px-2 py-1 text-[0.6875rem] text-white"
           >
             {indice + 1} / {fotos.length}
           </span>
