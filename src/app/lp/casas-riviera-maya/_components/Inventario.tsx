@@ -41,6 +41,11 @@ function comoPropiedad(c: CasaLanding): PropiedadLanding {
     vista: null,
     frenteAlMar: false,
     creditos: { infonavit: false, fovissste: false, hipotecario: false, directo: false },
+    mensualidadMxn: null,
+    amueblado: false,
+    equipado: false,
+    descuentoPct: null,
+    desarrolloId: null,
   };
 }
 
