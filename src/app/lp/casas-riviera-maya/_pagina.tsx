@@ -7,7 +7,11 @@ import { dinero, dineroCompacto } from '../_components/format';
 import FormAutonomo from './_components/FormAutonomo';
 import Inventario from './_components/Inventario';
 import BarraCasas from './_components/BarraCasas';
+import { ChipsHero } from '../_components/v2/ChipsUbicacion';
+import { ubicaciones } from '@/lib/supabase/lp-inventario';
+import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
 import type { CopyCasas } from './_copy';
+import '../_components/v2/tokens.css';
 import './lpc-theme.css';
 
 // ============================================================
@@ -176,10 +180,20 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
     hasta: casas[casas.length - 1]?.precio ?? null,
   };
 
-  const [tituloL1, tituloL2] = copy.hero.titulo(casas.length);
+  const todasInmediatas = casas.every((c) => !c.preventa);
+  const [tituloL1, tituloL2] = copy.hero.titulo(casas.length, todasInmediatas);
+
+  // Zonas con inventario para los chips del hero (brief de octubre-2026:
+  // «botones de cada lugar más visibles desde la primera parte»). El filtro
+  // de ubicación de la familia v2 trabaja sobre `PropiedadLanding`; aquí solo
+  // hacen falta ciudad y zona.
+  const zonas = ubicaciones(
+    casas.map((c) => ({ ciudad: c.ciudad, zona: c.zona }) as PropiedadLanding),
+    'zona',
+  );
 
   return (
-    <div className={`lpc-root ${display.variable} bg-[var(--lpc-paper)] text-[var(--lpc-ink)]`}>
+    <div className={`lpc-root lpv ${display.variable} bg-[var(--lpc-paper)] text-[var(--lpc-ink)]`}>
       <CorrigeLang copy={copy} />
 
       {/* ══════════ HERO ══════════
@@ -200,9 +214,17 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
                 {tituloL2}
               </h1>
 
-              <p className="mt-8 max-w-[54ch] text-[1.0625rem] leading-relaxed text-[var(--lpc-ink-2)]">
-                {copy.hero.cuerpo}
-              </p>
+              {copy.hero.cuerpo && (
+                <p className="mt-8 max-w-[54ch] text-[1.0625rem] leading-relaxed text-[var(--lpc-ink-2)]">
+                  {copy.hero.cuerpo}
+                </p>
+              )}
+
+              {zonas.length > 1 && (
+                <div className="mt-8">
+                  <ChipsHero ubicaciones={zonas} tono="claro" etiquetaTodas={copy.inventario.todas} />
+                </div>
+              )}
 
               {/* Cifras del encabezado, TODAS derivadas del inventario. */}
               <dl className="mt-12 grid grid-cols-2 border-t border-[var(--lpc-line-strong)] sm:grid-cols-4">
@@ -284,12 +306,15 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
         </div>
       </section>
 
-      {/* ══════════ QUÉ ES ESTA PÁGINA ══════════
-          Tres afirmaciones verificables, en lugar de la banda de «beneficios»
-          que llevaría cualquier landing. Cada una es comprobable contra el
-          propio documento, que es lo que la hace útil en tráfico frío. */}
+      {/* ══════════ INVENTARIO + FORMULARIO DE CIERRE ══════════ */}
+      <Inventario casas={casas} telefonoWhatsApp={FALLBACK_WHATSAPP} locale={copy.locale} />
+
+      {/* ══════════ CÓMO PUBLICAMOS ══════════
+          Tres afirmaciones verificables. Vivían entre el hero y el inventario;
+          el brief de octubre-2026 las manda al final (o fuera): aquí quedan,
+          reescritas y compactas, después de la conversión y antes del pie. */}
       <section className="lpc-regla bg-[var(--lpc-paper-2)]">
-        <div className="mx-auto max-w-[92rem] px-5 py-14 sm:px-8 sm:py-16">
+        <div className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 sm:py-14">
           <ul className="grid gap-x-12 gap-y-8 sm:grid-cols-3">
             {copy.afirmaciones.map(([titulo, cuerpo]) => (
               <li key={titulo} className="border-t border-[var(--lpc-line-strong)] pt-4">
@@ -300,9 +325,6 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
           </ul>
         </div>
       </section>
-
-      {/* ══════════ INVENTARIO + FORMULARIO DE CIERRE ══════════ */}
-      <Inventario casas={casas} telefonoWhatsApp={FALLBACK_WHATSAPP} locale={copy.locale} />
 
       {/* ══════════ PIE MÍNIMO ══════════
           Los ÚNICOS enlaces de salida de la página, y son obligatorios por ley.

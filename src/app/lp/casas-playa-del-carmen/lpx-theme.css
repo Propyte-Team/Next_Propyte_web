@@ -1,0 +1,102 @@
+/* ============================================================
+   Tema: casas en Playa del Carmen (`.lpx-root`).
+
+   REFERENCIA: listado de portal que convierte (Redfin / Zillow): filtros
+   arriba, foto y precio primero, formulario a un clic. Página CLARA.
+
+   PALETA «bosque»: verde profundo + hueso frío + ámbar como único acento de
+   acción. El verde sale del material: todas las casas publicadas en Playa
+   están rodeadas de selva, y un contenedor verde oscuro hace que las fotos se
+   lean en su sitio. El ámbar va SOLO en el botón primario del panel y en el
+   estado de disponibilidad.
+
+   RADIOS: bloques 12px, controles 8px, en toda la página.
+   ============================================================ */
+
+.lpx-root {
+  --lpv-bg: #f8f8f4;
+  --lpv-bg-2: #eceee6;
+  --lpv-fg: #121a15;
+  --lpv-fg-2: #3f4a43;
+  --lpv-fg-3: #6f7a73;
+  --lpv-line: rgb(18 26 21 / 0.12);
+  --lpv-line-2: rgb(18 26 21 / 0.38);
+  --lpv-accent: #1f5c3a;
+  --lpv-on-accent: #f8f8f4;
+
+  --lpv-panel-bg: #12201a;
+  --lpv-panel-bg-2: #1a2b23;
+  --lpv-panel-fg: #f3f4ee;
+  --lpv-panel-fg-2: rgb(243 244 238 / 0.68);
+  --lpv-panel-fg-3: rgb(243 244 238 / 0.44);
+  --lpv-panel-line: rgb(243 244 238 / 0.2);
+  --lpv-panel-accent: #f2b544;
+  --lpv-panel-on-accent: #12201a;
+
+  --lpv-r: 12px;
+  --lpv-r-control: 8px;
+  --lpv-font-display: var(--font-lpx-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Estado de disponibilidad: el ámbar fuera del panel, y nada más. */
+.lpx-root .lpx-estado {
+  color: #8a5a00;
+  background: rgb(242 181 68 / 0.18);
+}
+
+/* Barra de filtros pegajosa bajo el borde superior, con fondo del papel para
+   que las fichas pasen por debajo sin mezclarse. */
+.lpx-root .lpx-filtros {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--lpv-bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lpx-root .lpx-filtros {
+    background: var(--lpv-bg);
+    backdrop-filter: none;
+  }
+}
+
+/* Ficha: elevación mínima, tintada al fondo, solo al pasar el cursor. */
+.lpx-root .lpx-ficha {
+  transition: transform 260ms cubic-bezier(0.2, 0, 0, 1), box-shadow 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lpx-root .lpx-ficha:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -24px rgb(18 26 21 / 0.35);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpx-root .lpx-ficha {
+    transition: none;
+  }
+  .lpx-root .lpx-ficha:hover {
+    transform: none;
+  }
+}
+
+/* Cabecera compartida de `app/lp/layout.tsx`: pinta logo blanco para heros
+   oscuros. Esta página abre en claro, así que el logo se vuelve tinta. */
+.lp-root:has(.lpx-root) {
+  background: var(--lpv-bg, #f8f8f4);
+  --lp-accent: #1f5c3a;
+  --lp-accent-strong: #174a2e;
+}
+
+.lp-root:has(.lpx-root) header img {
+  filter: invert(1);
+}
+
+.lp-root:has(.lpx-root) header span {
+  color: #6f7a73;
+  filter: none;
+  text-shadow: none;
+}

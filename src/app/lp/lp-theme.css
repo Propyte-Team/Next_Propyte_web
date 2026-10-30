@@ -115,3 +115,31 @@
     transform: none;
   }
 }
+
+/* ------------------------------------------------------------
+   Tokens de la familia v2 que reutiliza la landing de lotes (chips de
+   ubicación en el hero y en el comparador, galería de ficha). Van en
+   `.lp-root` porque esa landing no tiene raíz propia; las landings v2 los
+   redefinen en su raíz y ganan por cercanía en la herencia.
+   ------------------------------------------------------------ */
+.lp-root {
+  --lpv-bg: var(--lp-paper);
+  --lpv-bg-2: var(--lp-paper-2);
+  --lpv-fg: var(--lp-ink);
+  --lpv-fg-2: var(--lp-ink-soft);
+  --lpv-fg-3: var(--lp-muted);
+  --lpv-line: var(--lp-line);
+  --lpv-line-2: rgb(22 25 28 / 0.4);
+  --lpv-accent: var(--lp-accent);
+  --lpv-on-accent: #ffffff;
+  --lpv-panel-bg: var(--lp-dark);
+  --lpv-panel-bg-2: var(--lp-dark-2);
+  --lpv-panel-fg: var(--lp-on-dark);
+  --lpv-panel-fg-2: var(--lp-on-dark-soft);
+  --lpv-panel-fg-3: rgb(242 241 239 / 0.42);
+  --lpv-panel-line: var(--lp-line-dark);
+  --lpv-panel-accent: var(--lp-accent-on-dark);
+  --lpv-panel-on-accent: var(--lp-dark);
+  --lpv-r: var(--lp-r-media);
+  --lpv-r-control: var(--lp-r-control);
+}

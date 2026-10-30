@@ -1,0 +1,111 @@
+/* ============================================================
+   Tema: propiedades frente al mar en el sur de México (`.lpo-root`).
+
+   REFERENCIA: listado cinematográfico de lujo (Sotheby's International
+   Realty, JamesEdition): foto a sangre en el hero, rail horizontal de
+   propiedades, interfaz oscura y calmada, un solo acento. Página OSCURA
+   bloqueada: ninguna sección invierte a claro.
+
+   PALETA «océano profundo»: azul noche + hueso frío + turquesa de marca como
+   único acento. El turquesa va en chips activos, CTA del panel y nada más.
+
+   RADIOS, regla documentada: los bloques (fotos, paneles) van a 4px; los
+   controles (chips, botones) son píldoras. Sin mezclas fuera de esto.
+   ============================================================ */
+
+.lpo-root {
+  --lpv-bg: #0b1620;
+  --lpv-bg-2: #122230;
+  --lpv-fg: #eef3f6;
+  --lpv-fg-2: rgb(238 243 246 / 0.7);
+  --lpv-fg-3: rgb(238 243 246 / 0.46);
+  --lpv-line: rgb(238 243 246 / 0.14);
+  --lpv-line-2: rgb(238 243 246 / 0.4);
+  --lpv-accent: #5ce0d2;
+  --lpv-on-accent: #0b1620;
+
+  --lpv-panel-bg: #122230;
+  --lpv-panel-bg-2: #172a3a;
+  --lpv-panel-fg: #eef3f6;
+  --lpv-panel-fg-2: rgb(238 243 246 / 0.7);
+  --lpv-panel-fg-3: rgb(238 243 246 / 0.46);
+  --lpv-panel-line: rgb(238 243 246 / 0.18);
+  --lpv-panel-accent: #5ce0d2;
+  --lpv-panel-on-accent: #0b1620;
+
+  --lpv-r: 4px;
+  --lpv-r-control: 999px;
+  --lpv-font-display: var(--font-lpo-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Titulares: Bricolage a peso 700, ligeramente condensada. */
+.lpo-root .lpo-titular {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-stretch: 92%;
+}
+
+/* Barra de filtros pegajosa sobre fondo oscuro. */
+.lpo-root .lpo-filtros {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--lpv-bg) 90%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lpo-root .lpo-filtros {
+    background: var(--lpv-bg);
+    backdrop-filter: none;
+  }
+}
+
+/* Rail horizontal: snap nativo, sin barra visible. */
+.lpo-root .lpo-rail {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lpo-root .lpo-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ficha: el borde se enciende al pasar el cursor. Sin elevación: sobre fondo
+   oscuro una sombra no se ve y un borde sí. */
+.lpo-root .lpo-ficha {
+  transition: border-color 240ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lpo-root .lpo-ficha:hover {
+    border-color: var(--lpv-line-2);
+  }
+}
+
+/* Columnas de la costa: el nombre de la ciudad se enciende al pasar. */
+.lpo-root .lpo-costa {
+  transition: color 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpo-root .lpo-ficha,
+  .lpo-root .lpo-costa {
+    transition: none;
+  }
+}
+
+/* Cabecera compartida de `app/lp/layout.tsx`: el logo blanco funciona sobre
+   el hero oscuro, no se invierte. El rótulo «Riviera Maya» se oculta porque
+   esta página también cubre la costa de Yucatán. */
+.lp-root:has(.lpo-root) {
+  background: #0b1620;
+  --lp-accent: #5ce0d2;
+  --lp-accent-strong: #3fc9bb;
+}
+
+.lp-root:has(.lpo-root) header span {
+  display: none;
+}

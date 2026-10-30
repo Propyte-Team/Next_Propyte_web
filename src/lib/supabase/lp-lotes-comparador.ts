@@ -122,6 +122,12 @@ export interface LoteComparable {
     | null;
   /** Desarrollo de origen. La guía agrupa por él; la LP no lo usa. */
   developmentId: string | null;
+  /**
+   * Galería de la unidad (fotos propias primero, portada del desarrollo de
+   * respaldo), deduplicada. Vacía si el Hub no tiene imagen. Pueden ser
+   * renders: la UI lo rotula, el data layer no puede saberlo.
+   */
+  imagenes: string[];
 }
 
 const MXN_ETIQUETA = new Intl.NumberFormat('es-MX', {
@@ -459,6 +465,20 @@ export interface FilaComparador {
   fin_esquema: string | null;
   fin_meses_opciones: unknown;
   fin_esquemas_pago: unknown;
+  images?: string[] | null;
+  cover_image?: string | null;
+}
+
+/** Fotos de la unidad primero, portada del desarrollo de respaldo. */
+function imagenesDe(fila: FilaComparador): string[] {
+  const galeria = (fila.images ?? []).filter(
+    (u): u is string => typeof u === 'string' && u.startsWith('http'),
+  );
+  const unicas = [...new Set(galeria)];
+  if (unicas.length > 0) return unicas;
+  return typeof fila.cover_image === 'string' && fila.cover_image.startsWith('http')
+    ? [fila.cover_image]
+    : [];
 }
 
 /**
@@ -595,6 +615,7 @@ export function construirComparables(
       apartadoMxn,
       motivoSinPlan,
       motivoSinPlanCodigo,
+      imagenes: imagenesDe(f),
     });
   }
 
@@ -644,12 +665,17 @@ export async function getLotesComparables(
         'fin_esquema',
         'fin_meses_opciones',
         'fin_esquemas_pago',
+        'images',
+        'cover_image',
       ].join(', '),
     )
     .in('city', ciudades)
     .in('unit_type', TYPE_DB_VALUES.terreno)
     .not('approved_at', 'is', null)
     .eq('published', true)
+    // Un lote vendido sigue publicado en el Hub con su precio; en un
+    // comparador se leeria como disponible.
+    .neq('status', 'Vendida')
     .is('deleted_at', null);
 
   if (error || !data) return [];

@@ -1,47 +1,76 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { mxn } from './format';
 import { DisclaimerCifras } from './ui';
+import GaleriaFicha from './v2/GaleriaFicha';
+import { ANCLA_INVENTARIO, ChipsUbicacion, TODAS, useFiltroUbicacion } from './v2/ChipsUbicacion';
 import type { LoteComparable } from '@/lib/supabase/lp-lotes-comparador';
+import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
 
 // ============================================================
-// Comparador de lotes de Playa del Carmen.
+// Terrenos de la Riviera Maya: fichas con galería + plan por plazo.
 //
-// UBICACIÓN: después del CTA de cierre, nunca antes. La landing se construyó
-// sin rutas de salida a propósito — el logo ni siquiera es clicable. Este
-// bloque captura a quien ya decidió que este lote no era el suyo; ponerlo
-// arriba desviaría a quien iba a convertir.
+// Cambios del brief de octubre-2026 sobre la versión anterior (chips de texto
+// y un solo bloque de cifras):
+//   · Cada lote es una FICHA con sus fotos en carrusel, no un chip. Las
+//     imágenes vienen del Hub y pueden ser renders: se rotula debajo.
+//   · Botones de UBICACIÓN como filtro, también disparables desde el hero
+//     (`ChipsHero` en la página emite el evento que `useFiltroUbicacion`
+//     escucha). Solo aparecen si hay más de una ciudad.
+//   · El texto queda en una sola línea de comercializadora. La regla de la
+//     mensualidad baja al pie de la sección, pequeña.
 //
-// CAMINO A: cada opción se identifica por ubicación + superficie + precio
-// desde. Cero nombres comerciales, y compara mejor que un nombre. La capa de
-// datos ni siquiera selecciona `development_name`, así que no hay nada que
-// filtrar aquí: el nombre no existe en este árbol.
+// CAMINO A intacto: la etiqueta es ubicación + superficie + precio. El data
+// layer no selecciona nombres de desarrollo.
 //
-// DOS NIVELES DE SELECCIÓN: lote y, dentro del lote, plazo. El segundo solo
-// aparece donde hay plan de mensualidades — un lote que se vende de contado no
-// tiene plazos que ofrecer y decirlo es más útil que esconderlo.
-//
-// EL PRECIO PUEDE CAMBIAR CON EL PLAZO. Un desarrollo aplica descuento por
-// pronto pago escalonado, así que a menor plazo el precio baja. Cuando pasa, se
-// publica el precio de ESE plazo junto al de lista. Calcular la mensualidad de
-// 48 meses sobre el precio de 12 sería la cifra falsa más fácil de publicar en
-// toda la página.
+// EL PRECIO PUEDE CAMBIAR CON EL PLAZO. Se publica el precio de ESE plazo.
 // ============================================================
+
+/** Adaptador mínimo para reutilizar el filtro de ubicación de la familia v2. */
+function comoPropiedad(l: LoteComparable): PropiedadLanding {
+  return {
+    id: l.id,
+    slug: l.id,
+    titulo: l.etiqueta,
+    tipo: 'Lote',
+    ciudad: l.ciudad,
+    estado: '',
+    zona: null,
+    recamaras: null,
+    banos: null,
+    m2Construidos: null,
+    m2Terreno: l.superficieM2,
+    precio: { monto: l.precioListaMxn, moneda: 'MXN' },
+    precioM2Mxn: null,
+    enganchePct: null,
+    engancheMxn: null,
+    mesesOpciones: l.plazos.map((p) => p.meses),
+    estacionamientos: null,
+    alberca: false,
+    entrega: null,
+    estadoComercial: 'disponible',
+    vista: null,
+    frenteAlMar: false,
+    imagen: l.imagenes[0] ?? null,
+    imagenes: l.imagenes,
+  };
+}
 
 export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) {
-  const grupoLote = useId();
   const grupoPlazo = useId();
+  const propiedades = useMemo(() => lotes.map(comoPropiedad), [lotes]);
+  const { activa, setActiva, visibles, ubicaciones } = useFiltroUbicacion(propiedades, 'ciudad');
   const [loteId, setLoteId] = useState(() => lotes[0]?.id ?? null);
-  // Índice del plazo, no meses: los plazos disponibles cambian con el lote y un
-  // valor en meses del lote anterior no siempre existe en el nuevo.
-  //
-  // `null` significa "el plazo más largo", que es la mensualidad más baja y la
-  // misma convención que usa el bloque de pagos de arriba. Arrancar en el
-  // índice 0 hacía que el lote de esta landing mostrara $12,905 aquí y $10,280
-  // cuatro secciones más arriba: dos cifras distintas para el mismo lote se
-  // leen como un error de la página, no como dos opciones.
   const [plazoIdx, setPlazoIdx] = useState<number | null>(null);
+
+  // Si el filtro deja fuera al lote elegido, se elige el primero visible.
+  useEffect(() => {
+    if (visibles.length > 0 && !visibles.some((v) => v.id === loteId)) {
+      setLoteId(visibles[0].id);
+      setPlazoIdx(null);
+    }
+  }, [visibles, loteId]);
 
   if (lotes.length < 2) return null;
 
@@ -51,11 +80,8 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
   const idxActivo = plazoIdx ?? lote.plazos.length - 1;
   const plazo = lote.plazos[Math.min(idxActivo, lote.plazos.length - 1)] ?? null;
   const hayDescuento = plazo !== null && plazo.descuentoPct > 0;
+  const lotesVisibles = visibles.map((v) => lotes.find((l) => l.id === v.id)!).filter(Boolean);
 
-  // `lp-num`: las etiquetas son casi todas cifras («130 m² · desde $1,010,880»)
-  // y se apilan verticalmente para compararse. Sin dígitos tabulares los
-  // precios no cuadran entre opciones, que es justo lo único que hace un
-  // comparador.
   const CHIP =
     'lp-num block cursor-pointer select-none rounded-[var(--lp-r-control)] border px-4 py-2.5 text-sm ' +
     'transition-colors duration-150 border-[var(--lp-line-dark)] text-[var(--lp-on-dark-soft)] ' +
@@ -66,76 +92,91 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
     'peer-focus-visible:outline-[var(--lp-accent-on-dark)]';
 
   return (
-    <section aria-labelledby="comparador-titulo" className="bg-[var(--lp-dark-2)]">
+    <section
+      id={ANCLA_INVENTARIO}
+      aria-labelledby="comparador-titulo"
+      className="scroll-mt-2 bg-[var(--lp-dark-2)]"
+    >
       <div className="mx-auto max-w-6xl px-5 py-16">
-        {/* El título estaba en clave de descarte —«Si este lote no es el
-            tuyo»— porque el bloque vivía al final, después del cierre. Al
-            subirlo a la primera mitad de la página ese encuadre deja de servir:
-            quien acaba de llegar buscando «terrenos residenciales en playa del
-            carmen» no ha descartado nada todavía. Ahora nombra la categoría en
-            plural, que es además el término exacto que compra la campaña. */}
         <h2
           id="comparador-titulo"
           className="max-w-[24ch] lp-display text-[clamp(1.5rem,1.2rem+1.1vw,2.125rem)] leading-tight tracking-[-0.02em] text-balance text-[var(--lp-on-dark)]"
         >
-          Terrenos residenciales en Playa del Carmen
+          Terrenos residenciales en la Riviera Maya
         </h2>
-        {/* La línea de comercializadora. Propyte no es la desarrolladora de
-            estos lotes: los comercializa, y puede conseguir cualquier otro de
-            la zona. Decirlo cambia la pregunta del visitante de «¿me sirve
-            ESTE?» a «¿me consiguen el que me sirve?», que es la que de verdad
-            queremos contestar. No promete inventario concreto: promete
-            búsqueda, que es lo que sí se puede sostener. */}
         <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-on-dark-soft)]">
-          Estos son los terrenos que tenemos publicados hoy en Playa del Carmen.
-          Somos comercializadora, no desarrolladora: si ninguno encaja con tu
-          presupuesto o tu superficie, dínoslo y te buscamos otro en la zona.
-        </p>
-        <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-[var(--lp-on-dark-soft)]">
-          Mismas reglas que en el resto de la página: solo publicamos la
-          mensualidad donde el desarrollador tiene el esquema declarado. Donde no
-          la ves, es porque no la hay, no porque no quepa.
+          Somos comercializadora, no desarrolladora: si ninguno encaja con tu presupuesto
+          o tu superficie, dínoslo y te buscamos otro en la zona.
         </p>
 
-        {/* Nivel 1: el lote. */}
-        <fieldset className="mt-8">
-          <legend className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-on-dark-soft)]">
-            Elige el lote
-          </legend>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {lotes.map((l) => {
-              const id = `${grupoLote}-${l.id}`;
-              return (
-                <div key={l.id}>
-                  <input
-                    type="radio"
-                    id={id}
-                    name={grupoLote}
-                    className="peer sr-only"
-                    checked={l.id === lote.id}
-                    onChange={() => {
-                      setLoteId(l.id);
-                      // Vuelve a "el más largo" del lote nuevo, no al índice
-                      // del anterior: los plazos no coinciden entre lotes.
-                      setPlazoIdx(null);
-                    }}
-                  />
-                  <label htmlFor={id} className={CHIP}>
-                    {l.etiqueta}
-                    {l.esDeEstaLanding && (
-                      <span className="ml-2 opacity-70">· el de este anuncio</span>
-                    )}
-                  </label>
-                </div>
-              );
-            })}
+        {ubicaciones.length > 1 && (
+          <div className="mt-7">
+            <ChipsUbicacion
+              ubicaciones={ubicaciones}
+              activa={activa}
+              onChange={(clave) => {
+                setActiva(clave);
+                setPlazoIdx(null);
+              }}
+              etiquetaTodas="Todas"
+              tono="oscuro"
+            />
           </div>
-        </fieldset>
+        )}
+
+        {/* Fichas con galería. La ficha entera es el control de selección. */}
+        <ul className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          {lotesVisibles.map((l) => {
+            const elegido = l.id === lote.id;
+            return (
+              <li key={l.id}>
+                <button
+                  type="button"
+                  aria-pressed={elegido}
+                  onClick={() => {
+                    setLoteId(l.id);
+                    setPlazoIdx(null);
+                  }}
+                  className={`block w-full overflow-hidden rounded-[var(--lp-r-media)] border text-left transition-colors duration-150 ${
+                    elegido
+                      ? 'border-[var(--lp-accent-on-dark)] bg-[var(--lp-dark)]'
+                      : 'border-[var(--lp-line-dark)] hover:border-[var(--lp-on-dark-soft)]'
+                  }`}
+                >
+                  <GaleriaFicha
+                    imagenes={l.imagenes}
+                    alt={l.etiqueta}
+                    aspecto="aspect-[4/3]"
+                    sizes="(min-width: 1024px) 30vw, 46vw"
+                    tope={8}
+                    className="!rounded-none"
+                  />
+                  <div className="p-3 sm:p-4">
+                    <p className="text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-on-dark-soft)]">
+                      {l.ciudad}
+                      {l.esDeEstaLanding ? ' · el de este anuncio' : ''}
+                    </p>
+                    <p className="lp-num mt-1 text-sm text-[var(--lp-on-dark)]">
+                      {l.superficieM2 ? `${l.superficieM2} m²` : 'Superficie por confirmar'}
+                    </p>
+                    <p className="lp-num mt-1 text-base font-medium text-[var(--lp-on-dark)]">
+                      {mxn(l.precioListaMxn)}
+                    </p>
+                  </div>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <p className="mt-3 text-xs text-[var(--lp-on-dark-soft)]">
+          Imágenes proporcionadas por cada desarrollador; pueden incluir renders del proyecto.
+        </p>
 
         <div className="mt-8 rounded-[var(--lp-r-media)] border border-[var(--lp-line-dark)] p-6">
-          {/* Nivel 2: el plazo, solo donde hay plan. */}
+          <p className="lp-num text-sm text-[var(--lp-on-dark)]">{lote.etiqueta}</p>
+
           {lote.plazos.length > 1 && (
-            <fieldset>
+            <fieldset className="mt-5">
               <legend className="font-mono text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-on-dark-soft)]">
                 Plazo
               </legend>
@@ -162,7 +203,7 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
             </fieldset>
           )}
 
-          <div className={lote.plazos.length > 1 ? 'mt-6' : ''} aria-live="polite">
+          <div className="mt-6" aria-live="polite">
             {plazo ? (
               <>
                 <p className="lp-num text-4xl leading-none text-[var(--lp-on-dark)]">
@@ -172,23 +213,17 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                   al mes · {plazo.pagos} pagos sin intereses
                 </p>
 
-                {/* El precio de ESTE plazo. Solo se explicita cuando cambia con
-                    el plazo: en los demás lotes sería ruido. */}
                 {hayDescuento ? (
                   <p className="mt-4 text-sm text-[var(--lp-on-dark-soft)]">
                     Precio a {plazo.meses} meses{' '}
-                    <span className="lp-num text-[var(--lp-on-dark)]">
-                      {mxn(plazo.precioMxn)}
-                    </span>{' '}
-                    — el desarrollador descuenta {plazo.descuentoPct.toFixed(1)}% sobre
-                    los {mxn(lote.precioListaMxn)} de lista por pagar en menos tiempo.
+                    <span className="lp-num text-[var(--lp-on-dark)]">{mxn(plazo.precioMxn)}</span>: el
+                    desarrollador descuenta {plazo.descuentoPct.toFixed(1)}% sobre los{' '}
+                    {mxn(lote.precioListaMxn)} de lista por pagar en menos tiempo.
                   </p>
                 ) : (
                   <p className="mt-4 text-sm text-[var(--lp-on-dark-soft)]">
                     Precio{' '}
-                    <span className="lp-num text-[var(--lp-on-dark)]">
-                      {mxn(plazo.precioMxn)}
-                    </span>
+                    <span className="lp-num text-[var(--lp-on-dark)]">{mxn(plazo.precioMxn)}</span>
                   </p>
                 )}
 
@@ -203,9 +238,6 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                     {
                       k: 'Contra entrega',
                       v: plazo.contraentregaMxn,
-                      // Dato material, no letra chica: si el pago final se cubre
-                      // con hipotecario, el comprador tiene que calificar para un
-                      // crédito. Omitirlo compararía peras con manzanas.
                       nota:
                         plazo.contraentregaVia === 'hipotecario'
                           ? 'Al entregar. El desarrollador lo plantea con crédito hipotecario.'
@@ -222,15 +254,12 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                           {f.k}
                           <span className="lp-num block text-xs opacity-70">{f.nota}</span>
                         </dt>
-                        <dd className="lp-num text-right text-sm text-[var(--lp-on-dark)]">
-                          {mxn(f.v)}
-                        </dd>
+                        <dd className="lp-num text-right text-sm text-[var(--lp-on-dark)]">{mxn(f.v)}</dd>
                       </div>
                     ))}
                 </dl>
               </>
             ) : (
-              // Gate. Se publica el porqué, no un vacío ni un guion.
               <>
                 <p className="lp-num text-3xl leading-none text-[var(--lp-on-dark)]">
                   {mxn(lote.precioListaMxn)}
@@ -242,10 +271,7 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                   <p className="mt-3 max-w-[54ch] text-sm leading-relaxed text-[var(--lp-on-dark-soft)]">
                     Pagándolo de contado, el desarrollador descuenta{' '}
                     {lote.contado.descuentoPct.toFixed(0)}%:{' '}
-                    <span className="lp-num text-[var(--lp-on-dark)]">
-                      {mxn(lote.contado.precioMxn)}
-                    </span>
-                    .
+                    <span className="lp-num text-[var(--lp-on-dark)]">{mxn(lote.contado.precioMxn)}</span>.
                   </p>
                 )}
               </>
@@ -254,27 +280,20 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
             {lote.apartadoMxn !== null && (
               <p className="mt-4 text-sm text-[var(--lp-on-dark-soft)]">
                 El apartado para reservarlo es de{' '}
-                <span className="lp-num text-[var(--lp-on-dark)]">
-                  {mxn(lote.apartadoMxn)}
-                </span>
-                .
+                <span className="lp-num text-[var(--lp-on-dark)]">{mxn(lote.apartadoMxn)}</span>.
               </p>
             )}
           </div>
         </div>
 
         <div className="mt-6">
-          <DisclaimerCifras
-            tono="oscuro"
-            alcance="el esquema que declara cada desarrollador"
-          />
+          <DisclaimerCifras tono="oscuro" alcance="el esquema que declara cada desarrollador" />
+          <p className="mt-2 max-w-[62ch] text-xs leading-relaxed text-[var(--lp-on-dark-soft)]">
+            Solo publicamos la mensualidad donde el desarrollador tiene el esquema declarado.
+          </p>
         </div>
 
         <div className="mt-7">
-          {/* Contorno, no sólido. Este bloque va DESPUÉS del cierre y su lote no
-              es el protagonista de la página: un botón sólido aquí compite con
-              el CTA del cierre por la misma acción y a dos pantallas de
-              distancia. Mismo destino y mismo tap target, menos peso. */}
           <a
             href="#solicitar"
             className="inline-flex min-h-[52px] cursor-pointer items-center justify-center rounded-[var(--lp-r-control)] border border-[var(--lp-accent-on-dark)]/45 px-7 text-sm font-medium text-[var(--lp-accent-on-dark)] transition-colors duration-200 hover:border-[var(--lp-accent-on-dark)] hover:bg-[var(--lp-accent-on-dark)]/10"

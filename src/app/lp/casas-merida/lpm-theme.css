@@ -1,0 +1,89 @@
+/* ============================================================
+   Tema: casas en Mérida (`.lpm-root`).
+
+   REFERENCIA: ficha de un solo inmueble con formulario al lado (Compass /
+   Redfin listing detail) cuando hay una casa; listado cuando hay varias.
+   Página CLARA.
+
+   PALETA: monocromo puro + un solo color saturado. Mérida es una ciudad de
+   piedra blanca y luz dura: el papel es casi blanco, la tinta casi negra, y
+   el esmeralda es el único color de acción. En el panel oscuro el esmeralda
+   sube de luminancia para conservar contraste.
+
+   RADIOS: bloques 16px, controles 10px, en toda la página. Sin píldoras.
+   ============================================================ */
+
+.lpm-root {
+  --lpv-bg: #fbfbfa;
+  --lpv-bg-2: #f0f1ef;
+  --lpv-fg: #141414;
+  --lpv-fg-2: #474747;
+  --lpv-fg-3: #767676;
+  --lpv-line: rgb(20 20 20 / 0.12);
+  --lpv-line-2: rgb(20 20 20 / 0.38);
+  --lpv-accent: #047857;
+  --lpv-on-accent: #ffffff;
+
+  --lpv-panel-bg: #141414;
+  --lpv-panel-bg-2: #1e1e1e;
+  --lpv-panel-fg: #f5f5f4;
+  --lpv-panel-fg-2: rgb(245 245 244 / 0.68);
+  --lpv-panel-fg-3: rgb(245 245 244 / 0.44);
+  --lpv-panel-line: rgb(245 245 244 / 0.2);
+  --lpv-panel-accent: #34d399;
+  --lpv-panel-on-accent: #141414;
+
+  --lpv-r: 16px;
+  --lpv-r-control: 10px;
+  --lpv-font-display: var(--font-lpm-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Estado de disponibilidad: esmeralda tenue, el único color fuera del CTA. */
+.lpm-root .lpm-estado {
+  color: #065f46;
+  background: rgb(4 120 87 / 0.12);
+}
+
+/* Celda de la ficha: superficie secundaria, sin sombra. */
+.lpm-root .lpm-celda {
+  background: var(--lpv-bg-2);
+  border-radius: var(--lpv-r);
+}
+
+/* Ficha de catálogo: elevación mínima solo con cursor. */
+.lpm-root .lpm-ficha {
+  transition: transform 260ms cubic-bezier(0.2, 0, 0, 1), box-shadow 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lpm-root .lpm-ficha:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px -24px rgb(20 20 20 / 0.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpm-root .lpm-ficha {
+    transition: none;
+  }
+  .lpm-root .lpm-ficha:hover {
+    transform: none;
+  }
+}
+
+/* Cabecera compartida de `app/lp/layout.tsx`: logo blanco pensado para heros
+   oscuros, y un rótulo fijo «Riviera Maya» que aquí sería falso. */
+.lp-root:has(.lpm-root) {
+  background: var(--lpv-bg, #fbfbfa);
+  --lp-accent: #047857;
+  --lp-accent-strong: #065f46;
+}
+
+.lp-root:has(.lpm-root) header img {
+  filter: invert(1);
+}
+
+.lp-root:has(.lpm-root) header span {
+  display: none;
+}

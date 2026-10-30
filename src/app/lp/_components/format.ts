@@ -118,5 +118,7 @@ export function dineroCompacto(precio: { monto: number; moneda: 'MXN' | 'USD' })
       ? `$${(monto / 1_000_000).toFixed(1).replace(/\.0$/, '')} M USD`
       : `$${Math.round(monto / 1000)} K USD`;
   }
+  // Por debajo del millon, «$0.3 M» se lee raro: va en miles.
+  if (monto < 1_000_000) return `$${Math.round(monto / 1000)} K MXN`;
   return `$${(monto / 1_000_000).toFixed(2).replace(/\.?0+$/, '')} M MXN`;
 }

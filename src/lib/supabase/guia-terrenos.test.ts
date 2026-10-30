@@ -6,7 +6,7 @@ function comparable(over: Partial<LoteComparable> & { id: string }): LoteCompara
   return {
     etiqueta: 'x', ciudad: 'Tulum', superficieM2: 100, precioListaMxn: 1_000_000,
     esDeEstaLanding: false, fuente: 'ext_planos', plazos: [], contado: null,
-    apartadoMxn: null, motivoSinPlan: null, motivoSinPlanCodigo: null, developmentId: null,
+    apartadoMxn: null, motivoSinPlan: null, motivoSinPlanCodigo: null, developmentId: null, imagenes: [],
     ...over,
   };
 }

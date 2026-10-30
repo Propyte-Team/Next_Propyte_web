@@ -1,0 +1,120 @@
+/* ============================================================
+   Tema: departamentos en la Riviera Maya (`.lpd-root`).
+
+   REFERENCIA: páginas editoriales de inmobiliaria de lujo (Luxury Presence,
+   fichas de Sotheby's): fotografía grande, serif de display, mucho aire y un
+   solo acento silencioso. Página OSCURA de principio a fin: ninguna sección
+   se invierte a claro.
+
+   PALETA «negro y tan»: casi-negro cálido + hueso + tan como único acento.
+   El tan va en el botón primario del panel, en el CTA de ficha y en el
+   filtro activo. Nada más lo lleva.
+
+   RADIOS: 2px en toda la página, casi vivos. El registro es el de la lámina
+   impresa, no el del software.
+
+   TIPOGRAFÍA: Cormorant Garamond para titulares. Se justifica aquí y no en
+   el resto de la familia porque la convención del inmobiliario de lujo es la
+   serif de display; corre pequeña, así que los tamaños van altos. El cuerpo
+   y las cifras siguen con el grotesk del sitio.
+   ============================================================ */
+
+.lpd-root {
+  --lpv-bg: #111110;
+  --lpv-bg-2: #1a1917;
+  --lpv-fg: #f2efe9;
+  --lpv-fg-2: rgb(242 239 233 / 0.68);
+  --lpv-fg-3: rgb(242 239 233 / 0.44);
+  --lpv-line: rgb(242 239 233 / 0.14);
+  --lpv-line-2: rgb(242 239 233 / 0.4);
+  --lpv-accent: #c8a97e;
+  --lpv-on-accent: #111110;
+
+  --lpv-panel-bg: #1a1917;
+  --lpv-panel-bg-2: #232220;
+  --lpv-panel-fg: #f2efe9;
+  --lpv-panel-fg-2: rgb(242 239 233 / 0.68);
+  --lpv-panel-fg-3: rgb(242 239 233 / 0.44);
+  --lpv-panel-line: rgb(242 239 233 / 0.18);
+  --lpv-panel-accent: #c8a97e;
+  --lpv-panel-on-accent: #111110;
+
+  --lpv-r: 2px;
+  --lpv-r-control: 2px;
+  --lpv-font-display: var(--font-lpd-display), Georgia, 'Times New Roman', serif;
+  --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Serif de display: peso 500, interlineado cerrado. Las cifras en serif van
+   tabulares para que diez precios cuadren en columna. */
+.lpd-root .lpd-serif {
+  font-family: var(--lpv-font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.lpd-root .lpd-serif-italic {
+  font-family: var(--lpv-font-display);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: -0.005em;
+  /* Las itálicas con descendentes (p, g) se recortan con leading 1. */
+  line-height: 1.1;
+}
+
+/* Barra de filtros pegajosa, con el fondo de la página para que las fichas
+   pasen por debajo sin mezclarse. */
+.lpd-root .lpd-filtros {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--lpv-bg) 90%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .lpd-root .lpd-filtros {
+    background: var(--lpv-bg);
+    backdrop-filter: none;
+  }
+}
+
+/* Escala de grises leve en reposo, color al pasar el cursor: en la retícula
+   el ojo compara volumen y luz; el color entra en la ficha que se mira.
+   Solo con puntero fino; en táctil van a color desde el inicio. */
+@media (hover: hover) and (pointer: fine) {
+  .lpd-root .lpd-ficha img {
+    filter: saturate(0.55);
+    transition: filter 480ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .lpd-root .lpd-ficha:hover img,
+  .lpd-root .lpd-ficha:focus-within img {
+    filter: saturate(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpd-root .lpd-ficha img {
+    transition: none;
+  }
+}
+
+/* Estado de disponibilidad: tan apagado, sin relleno. */
+.lpd-root .lpd-estado {
+  color: var(--lpv-accent);
+  border: 1px solid rgb(200 169 126 / 0.4);
+}
+
+/* Cabecera compartida de `app/lp/layout.tsx`: el logo blanco ya está bien
+   sobre esta página oscura. Solo se recolorea el banner de consentimiento. */
+.lp-root:has(.lpd-root) {
+  background: #111110;
+  --lp-accent: #c8a97e;
+  --lp-accent-strong: #b8955f;
+}
+
+.lp-root:has(.lpd-root) header span {
+  color: rgb(242 239 233 / 0.6);
+}

@@ -15,8 +15,12 @@ import WhatsAppCta from '../_components/WhatsAppCta';
 import UnDomingoAqui from '../_components/UnDomingoAqui';
 import ComparadorLotes from '../_components/ComparadorLotes';
 import AvailabilityBadge from '../_components/AvailabilityBadge';
-import TrustBar from '../_components/TrustBar';
-import { EnlaceGate, TituloSeccion, BotonPrimario, RULE_DARK } from '../_components/ui';
+import { ChipsHero } from '../_components/v2/ChipsUbicacion';
+import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
+import { ChevronDown } from '@/lib/icons';
+import { claveUbicacion } from '@/lib/supabase/lp-inventario';
+import '../_components/v2/tokens.css';
+import { TituloSeccion, BotonPrimario } from '../_components/ui';
 import { mxn, mxnExacto, m2 } from '../_components/format';
 
 // ISR: el inventario cambia sin deploy. 5 min es suficientemente fresco para que
@@ -33,9 +37,9 @@ export const revalidate = 300;
 // consulta de exploración. El inventario real que se puede ofrecer aquí son
 // varios lotes publicados en Playa del Carmen, y el texto ahora lo dice.
 export const metadata: Metadata = {
-  title: 'Terrenos residenciales en Playa del Carmen · Lotes en privada',
+  title: 'Terrenos residenciales en la Riviera Maya · Lotes en privada',
   description:
-    'Terrenos y lotes residenciales en venta en Playa del Carmen, con enganche, mensualidades y el estatus real de urbanización servicio por servicio. Comparamos los que tenemos publicados y conseguimos cualquier otro de la zona.',
+    'Terrenos y lotes residenciales en venta en Playa del Carmen y Tulum, con enganche, mensualidades y el estatus real de urbanización servicio por servicio. Comparamos los que tenemos publicados y conseguimos cualquier otro de la zona.',
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
 };
 
@@ -56,9 +60,11 @@ const BLUR_HERO =
 export default async function LandingLotesPlayaDelCarmen() {
   // En paralelo: el comparador es contenido secundario y no debe sumar su
   // latencia a la del lote protagonista.
+  // Brief de octubre-2026: la landing habla de la Riviera Maya, así que el
+  // comparador trae también Tulum y la cabecera ofrece las ciudades como filtro.
   const [lote, lotesComparables] = await Promise.all([
     getLotePlayaDelCarmen(),
-    getLotesComparables(),
+    getLotesComparables(['Playa del Carmen', 'Tulum']),
   ]);
 
   // Inventario de una unidad: que se venda o se aparte es un escenario probable,
@@ -108,6 +114,16 @@ export default async function LandingLotesPlayaDelCarmen() {
           caption: 'La privada terminada, según el proyecto del desarrollador.',
         } satisfies ImagenLanding)
       : null);
+
+  // Ciudades con lotes publicados, para los chips del hero. Se derivan del
+  // comparador, que es lo que esos chips filtran.
+  const conteoCiudades = new Map<string, number>();
+  for (const l of lotesComparables) {
+    conteoCiudades.set(l.ciudad, (conteoCiudades.get(l.ciudad) ?? 0) + 1);
+  }
+  const ciudades = [...conteoCiudades.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([nombre, total]) => ({ clave: claveUbicacion(nombre), nombre, total }));
 
   const mensajeWa = [
     `Hola, me interesa el lote residencial en privada de Playa del Carmen (ref. ${lote.slug}).`,
@@ -160,7 +176,8 @@ export default async function LandingLotesPlayaDelCarmen() {
           className="absolute inset-0 bg-gradient-to-t from-[var(--lp-dark)] via-[var(--lp-dark)]/72 to-[var(--lp-dark)]/15"
         />
 
-        <div className="relative mx-auto flex min-h-[92svh] max-w-6xl flex-col justify-end px-5 pb-14 pt-28 sm:px-8 lg:min-h-[100svh] lg:pb-20">
+        <div className="relative mx-auto grid min-h-[92svh] max-w-6xl content-end gap-10 px-5 pb-14 pt-28 sm:px-8 lg:min-h-[100svh] lg:grid-cols-[1.1fr_minmax(0,26rem)] lg:items-end lg:gap-16 lg:pb-20">
+          <div>
           {/* Estado real, no escasez. Decía «Uno disponible» leyendo el número
               de REGISTROS de `v_units`, y el desarrollador declara 229 lotes
               disponibles de 310: ver `AvailabilityBadge`. */}
@@ -182,15 +199,10 @@ export default async function LandingLotesPlayaDelCarmen() {
               —que sigue siendo aritmética verificable de COS y CUS, no una
               promesa— queda inmediatamente después, en la misma frase. Se gana
               relevancia sin perder el gancho. */}
-          <h1 className="lp-display mt-5 max-w-[22ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
-            {apr ? (
-              <>
-                Terrenos residenciales en Playa del Carmen donde puedes construir
-                una casa de {apr.niveles === 2 ? 'dos' : apr.niveles} niveles
-              </>
-            ) : (
-              <>Terrenos residenciales en privada en Playa del Carmen</>
-            )}
+          {/* Brief de octubre-2026: solo la categoría y la región. La
+              aritmética de niveles construibles sigue en la ficha. */}
+          <h1 className="lp-display mt-5 max-w-[18ch] text-[clamp(2.25rem,1.5rem+3.6vw,4.25rem)] leading-[1.06] text-balance text-[var(--lp-on-dark)]">
+            Terrenos residenciales en la Riviera Maya
           </h1>
 
           {/* Recortado de cinco líneas a dos. Cada línea de aquí empuja los CTA
@@ -198,11 +210,13 @@ export default async function LandingLotesPlayaDelCarmen() {
               alcance visual. El dato de la privada de 310 lotes y el aviso de
               que abajo hay más terrenos no se pierden: viven en la banda de
               cifras y en el comparador, que ahora está a dos pantallas. */}
-          <p className="mt-6 max-w-[46ch] text-[1.0625rem] leading-relaxed text-[var(--lp-on-dark)]/75">
-            Lotes en privada a 4.2 km de la playa. Este mide{' '}
-            {lote.superficieM2 ? m2(lote.superficieM2) : 'superficie por confirmar'}
-            {apr && <>, con hasta {m2(apr.construibleM2)} construibles</>}.
-          </p>
+          {/* Ubicaciones como filtro desde el primer pliegue: bajan al
+              comparador con la ciudad ya elegida. */}
+          {ciudades.length > 1 && (
+            <div className="mt-7">
+              <ChipsHero ubicaciones={ciudades} tono="oscuro" />
+            </div>
+          )}
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <BotonPrimario href="#solicitar">
@@ -216,21 +230,6 @@ export default async function LandingLotesPlayaDelCarmen() {
             />
           </div>
 
-          {/* Captura arriba del documento. Los dos CTA de encima son ancla y
-              enlace: sirven a quien los pulsa, pero el formulario real vivía a
-              y ≈ 3,374 px — tres pantallas y media de scroll— y la campaña de
-              Ads gastó $991 MXN en 72 clics sin un solo envío. Esto no
-              sustituye al de la columna: lo adelanta para quien ya se convenció
-              con el titular y el precio. */}
-          <div className="mt-8 max-w-[26rem]">
-            <LeadFormLotes
-              variante="hero"
-              loteNombre={lote.titulo}
-              loteRef={lote.slug}
-              plazosDisponibles={lote.mesesOpciones}
-            />
-          </div>
-
           {/* El render más grande de la página era el único sin rotular. No
               puede ir en un `<figure>` —es el fondo, con el texto encima— así
               que el rótulo va aquí, discreto y al pie, como en una publicación:
@@ -241,6 +240,20 @@ export default async function LandingLotesPlayaDelCarmen() {
               Render del desarrollador. {heroImg.caption}
             </p>
           )}
+          </div>
+
+          {/* Captura arriba del documento, AL LADO del titular (brief de
+              octubre-2026). Los dos CTA de arriba son ancla y enlace; el
+              formulario real vivía a tres pantallas y media y la campaña gastó
+              $991 MXN en 72 clics sin un envío. */}
+          <div className="max-w-[26rem] lg:max-w-none">
+            <LeadFormLotes
+              variante="hero"
+              loteNombre={lote.titulo}
+              loteRef={lote.slug}
+              plazosDisponibles={lote.mesesOpciones}
+            />
+          </div>
         </div>
       </section>
 
@@ -339,7 +352,8 @@ export default async function LandingLotesPlayaDelCarmen() {
           Resume el bloque «Cómo compruebas que existimos», que vive al 90% del
           scroll y que nadie que dude de nosotros alcanza a leer. Ese bloque no
           se toca: aquí solo se declara que hay algo verificable, con enlace. */}
-      <TrustBar lote={lote} />
+      {/* La barra de credibilidad de cuatro celdas se quitó (brief de
+          octubre-2026): hablaba de un lote en específico y la página ya no. */}
 
       {/* ═══════════ 2.6 · Los demás terrenos de Playa del Carmen ═══════════
           SUBIDO desde el final de la página (iba tras el cierre, a ~2,900
@@ -465,73 +479,25 @@ export default async function LandingLotesPlayaDelCarmen() {
         <div className="flex flex-col gap-16">
           <PruebaDeQueExistimos lote={lote} />
 
-          {/* ───── 11 · FAQ ───── */}
+          {/* ───── 11 · FAQ ─────
+              Acordeón nativo con chevron (brief de octubre-2026) y las
+              preguntas de «compra» y «financiamiento» del sitio, no unas
+              escritas para la landing. */}
           <section aria-labelledby="faq-titulo">
-            <TituloSeccion id="faq-titulo">Preguntas que sí importan</TituloSeccion>
-            <dl className="mt-6 border-t border-[var(--lp-line)]">
-              {[
-                {
-                  q: '¿Es terreno ejidal o propiedad privada, y cómo lo compruebo?',
-                  a: (
-                    <>
-                      Es propiedad privada bajo{' '}
-                      {lote.regimenPropiedad?.toLowerCase() ?? 'régimen por confirmar'}, no
-                      terreno ejidal. Se comprueba con el antecedente de propiedad y el
-                      certificado de libertad de gravamen, más la licencia del desarrollo
-                      y la autorización de venta municipal. Pídenos los cuatro: si alguno
-                      no existe todavía, te lo decimos en lugar de darte largas.
-                    </>
-                  ),
-                },
-                {
-                  q: '¿Qué significa que la escrituración esté proyectada?',
-                  a: (
-                    <>
-                      Que hoy no puedes escriturar. El título está en fideicomiso y el
-                      desarrollador declara finales de 2026 como fecha objetivo. Mientras
-                      tanto lo que firmas es un contrato de compraventa con calendario de
-                      pagos. Es una fecha declarada, no una garantía contractual, y
-                      conviene que quede por escrito en tu contrato.
-                    </>
-                  ),
-                },
-                {
-                  q: '¿Puedo comprar siendo extranjero?',
-                  a: (
-                    <>
-                      Sí. Playa del Carmen está en zona restringida constitucional, así que
-                      la compra se hace mediante fideicomiso bancario, presentando tu
-                      identificación fiscal del país donde tributas. El costo del
-                      fideicomiso es anual y se suma a los gastos de cierre.
-                    </>
-                  ),
-                },
-                {
-                  q: '¿Qué servicios tiene el lote hoy y qué falta?',
-                  a: lote.ningunServicioHoy ? (
-                    <>
-                      Hoy no hay ningún servicio conectado. Agua potable, drenaje,
-                      electricidad y alumbrado están proyectados, y la vialidad después de
-                      ellos. Arriba está el detalle con las fechas que declara el
-                      desarrollador y la advertencia de que falta confirmar la etapa exacta
-                      de este lote.
-                    </>
-                  ) : (
-                    <>
-                      El detalle servicio por servicio, con su estado y fecha estimada,
-                      está en la sección de urbanización.
-                    </>
-                  ),
-                },
-              ].map((item) => (
-                <div key={item.q} className="border-b border-[var(--lp-line)] py-5">
-                  <dt className="lp-display text-base font-semibold leading-snug tracking-tight text-[var(--lp-ink)]">
-                    {item.q}
-                  </dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{item.a}</dd>
-                </div>
+            <TituloSeccion id="faq-titulo">Preguntas frecuentes</TituloSeccion>
+            <div className="mt-6 divide-y divide-[var(--lp-line)] border-y border-[var(--lp-line)]">
+              {FAQ_COMPRA_Y_FINANCIAMIENTO.map((item) => (
+                <details key={item.q} className="group">
+                  <summary className="flex min-h-[56px] items-center justify-between gap-6 py-4 text-left">
+                    <span className="lp-display text-base font-semibold leading-snug tracking-tight text-[var(--lp-ink)]">
+                      {item.q}
+                    </span>
+                    <ChevronDown className="lpv-chevron size-5 shrink-0 text-[var(--lp-muted)]" aria-hidden="true" />
+                  </summary>
+                  <p className="max-w-[64ch] pb-5 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{item.a}</p>
+                </details>
               ))}
-            </dl>
+            </div>
           </section>
         </div>
       </div>

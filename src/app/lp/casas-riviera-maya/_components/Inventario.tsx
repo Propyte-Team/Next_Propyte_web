@@ -1,12 +1,38 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from '@/lib/icons';
 import type { CasaLanding } from '@/lib/supabase/lp-casas';
+import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
 import { dinero, m2, mxn } from '../../_components/format';
+import { ANCLA_INVENTARIO, ChipsUbicacion, useFiltroUbicacion } from '../../_components/v2/ChipsUbicacion';
+import GaleriaFicha from '../../_components/v2/GaleriaFicha';
 import FormCasas from './FormCasas';
 import { COPY, type CopyCasas, type LocaleCasas } from '../_copy';
+
+/**
+ * Dos casas del mismo desarrollo pueden traer la MISMA galería (la portada
+ * heredada). En la cuadrícula se leen como la misma casa dos veces. No se
+ * inventa nada: cuando la primera foto ya se usó, la galería de la siguiente
+ * arranca en otra foto del mismo juego (el carrusel sigue teniendo todas).
+ */
+function sinPortadasRepetidas(casas: CasaLanding[]): Map<string, string[]> {
+  const usadas = new Set<string>();
+  const resultado = new Map<string, string[]>();
+  for (const casa of casas) {
+    let fotos = casa.imagenes;
+    const libre = fotos.findIndex((f) => !usadas.has(f));
+    if (libre > 0) fotos = [...fotos.slice(libre), ...fotos.slice(0, libre)];
+    if (fotos[0]) usadas.add(fotos[0]);
+    resultado.set(casa.id, fotos);
+  }
+  return resultado;
+}
+
+/** El filtro de ubicación de la familia v2 trabaja sobre `PropiedadLanding`. */
+function comoPropiedad(c: CasaLanding): PropiedadLanding {
+  return { ...c, tipo: 'Casa', estado: '', precioM2Mxn: null, mesesOpciones: [], estadoComercial: c.preventa ? 'preventa' : 'disponible', vista: null, frenteAlMar: false };
+}
 
 // ============================================================
 // Cuadrícula de inventario + formulario de cierre.
@@ -76,6 +102,10 @@ export default function Inventario({
   const anclaForm = useRef<HTMLDivElement>(null);
 
   const opciones = casas.map((c) => ({ slug: c.slug, titulo: c.titulo }));
+  const propiedades = useMemo(() => casas.map(comoPropiedad), [casas]);
+  const { activa, setActiva, visibles, ubicaciones } = useFiltroUbicacion(propiedades, 'zona');
+  const galerias = useMemo(() => sinPortadasRepetidas(casas), [casas]);
+  const casasVisibles = casas.filter((c) => visibles.some((v) => v.id === c.id));
 
   const elegir = useCallback((slug: string) => {
     setCasaSeleccionada(slug);
@@ -86,7 +116,7 @@ export default function Inventario({
 
   return (
     <>
-      <section id="inventario" className="lpc-regla bg-[var(--lpc-paper)]">
+      <section id={ANCLA_INVENTARIO} className="lpc-regla scroll-mt-2 bg-[var(--lpc-paper)]">
         <div className="mx-auto max-w-[92rem] px-5 py-16 sm:px-8 sm:py-24">
           <header className="max-w-[62ch]">
             <p className="lpc-etiqueta text-[var(--lpc-signal)]">
@@ -95,13 +125,29 @@ export default function Inventario({
             <h2 className="lpc-titulo mt-4 text-[clamp(1.75rem,1.3rem+2vw,3rem)] text-[var(--lpc-ink)]">
               {copy.inventario.titulo}
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-[var(--lpc-ink-2)]">
-              {copy.inventario.cuerpo}
-            </p>
+            {copy.inventario.cuerpo && (
+              <p className="mt-5 text-base leading-relaxed text-[var(--lpc-ink-2)]">
+                {copy.inventario.cuerpo}
+              </p>
+            )}
           </header>
 
-          <ul className="mt-14 grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-            {casas.map((casa, i) => {
+          {/* Filtro por zona (brief de octubre-2026). Los mismos chips del
+              hero, aquí como control real de la cuadrícula. */}
+          {ubicaciones.length > 1 && (
+            <div className="mt-8">
+              <ChipsUbicacion
+                ubicaciones={ubicaciones}
+                activa={activa}
+                onChange={setActiva}
+                etiquetaTodas={copy.inventario.todas}
+                tono="claro"
+              />
+            </div>
+          )}
+
+          <ul className="mt-12 grid grid-cols-1 gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+            {casasVisibles.map((casa, i) => {
               const detalle = specs(casa, copy);
               const elegida = casaSeleccionada === casa.slug;
 
@@ -120,26 +166,15 @@ export default function Inventario({
                     </span>
                   </div>
 
-                  <div className="relative mt-4 aspect-[4/3] w-full overflow-hidden bg-[var(--lpc-paper-2)]">
-                    {casa.imagen ? (
-                      <Image
-                        src={casa.imagen}
-                        alt={copy.inventario.altFicha(casa.titulo, casa.ciudad)}
-                        fill
-                        // Tres columnas en escritorio, dos en tableta, una en
-                        // móvil. Sin esto Next sirve la imagen para el ancho
-                        // completo del viewport en las tres.
-                        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
-                        className="lpc-foto object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <span className="lpc-etiqueta text-[var(--lpc-ink-3)]">
-                          {copy.inventario.sinFoto}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                  {/* Ficha de fotos (brief de octubre-2026): carrusel con
+                      todas las fotos de la casa, no una sola imagen. */}
+                  <GaleriaFicha
+                    imagenes={galerias.get(casa.id) ?? casa.imagenes}
+                    alt={copy.inventario.altFicha(casa.titulo, casa.ciudad)}
+                    sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                    sinFoto={copy.inventario.sinFoto}
+                    className="mt-4 !rounded-none"
+                  />
 
                   <p className="lpc-etiqueta mt-4 text-[var(--lpc-ink-3)]">
                     {casa.zona ? `${casa.zona} · ${casa.ciudad}` : casa.ciudad}
@@ -214,9 +249,11 @@ export default function Inventario({
             <h2 className="lpc-display mt-4 text-[clamp(2rem,1.4rem+2.6vw,3.75rem)] text-[var(--lpc-on-dark)]">
               {copy.cierre.titulo(casas.length)}
             </h2>
-            <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-[var(--lpc-on-dark-2)]">
-              {copy.cierre.cuerpo}
-            </p>
+            {copy.cierre.cuerpo && (
+              <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-[var(--lpc-on-dark-2)]">
+                {copy.cierre.cuerpo}
+              </p>
+            )}
 
             <ul className="mt-10 max-w-[52ch] divide-y divide-[var(--lpc-line-dark)] border-y border-[var(--lpc-line-dark)]">
               {copy.cierre.puntos.map(([titulo, detalle]) => (

@@ -50,6 +50,12 @@ const FUENTES = [
   { slug: 'azeret-mono', query: 'Azeret+Mono:wght@400;500' },
   // src/app/lp/enganche-terrenos-playa-del-carmen
   { slug: 'poppins', query: 'Poppins:wght@300;400;500;600' },
+  // Landings de inventario v2 (src/app/lp/{casas-playa-del-carmen,…})
+  { slug: 'outfit', query: 'Outfit:wght@300..700' },
+  { slug: 'manrope', query: 'Manrope:wght@400..800' },
+  { slug: 'cormorant-garamond', query: 'Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500' },
+  { slug: 'sora', query: 'Sora:wght@300..700' },
+  { slug: 'bricolage-grotesque', query: 'Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800' },
 ];
 
 async function pedir(url) {
@@ -77,7 +83,13 @@ function bloquesLatin(css) {
 
 mkdirSync(DESTINO, { recursive: true });
 
+// `SOLO=outfit,sora node scripts/descargar-fuentes.mjs` baja solo esas
+// familias: Google devuelve a veces una URL sin extensión en una familia que
+// ya está en el repo, y tumba la corrida entera por nada.
+const SOLO = process.env.SOLO ? new Set(process.env.SOLO.split(',')) : null;
+
 for (const { slug, query } of FUENTES) {
+  if (SOLO && !SOLO.has(slug)) continue;
   const css = (await pedir(`${CSS2}${query}&display=swap`)).toString('utf8');
   const bloques = bloquesLatin(css);
   if (bloques.length === 0) throw new Error(`${slug}: Google no devolvió subset latin`);

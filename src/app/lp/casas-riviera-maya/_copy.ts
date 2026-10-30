@@ -54,9 +54,13 @@ export interface CopyCasas {
 
   hero: {
     etiqueta: string;
-    /** Dos líneas: el <br /> lo pone la página. */
-    titulo: (total: number) => [string, string];
-    cuerpo: string;
+    /**
+     * Dos líneas: el <br /> lo pone la página. `todasInmediatas` permite decir
+     * «con entrega inmediata» solo cuando es verdad para TODO el inventario.
+     */
+    titulo: (total: number, todasInmediatas: boolean) => [string, string];
+    /** Sin cuerpo desde el brief de octubre-2026: el titular basta. */
+    cuerpo?: string;
     cifras: {
       disponibles: [string, string];
       desde: [string, string];
@@ -73,7 +77,9 @@ export interface CopyCasas {
   inventario: {
     etiqueta: (total: number) => string;
     titulo: string;
-    cuerpo: string;
+    cuerpo?: string;
+    /** Chip «todas» del filtro de ubicación. */
+    todas: string;
     preventa: string;
     entregaInmediata: string;
     sinFoto: string;
@@ -97,7 +103,7 @@ export interface CopyCasas {
   cierre: {
     etiqueta: string;
     titulo: (total: number) => string;
-    cuerpo: string;
+    cuerpo?: string;
     puntos: [string, string][];
   };
 
@@ -189,9 +195,13 @@ export const COPY_ES: CopyCasas = {
 
   hero: {
     etiqueta: 'Inventario verificado · Playa del Carmen y Tulum',
-    titulo: (total) => [`${total} casas reales,`, 'con su precio real.'],
-    cuerpo:
-      'No es un catálogo de renders ni una lista de «desde». Son las casas que tenemos publicadas hoy en la Riviera Maya, cada una con su precio cerrado, su enganche y su disponibilidad. Déjanos tus datos y te mandamos los números de todas.',
+    // Brief de octubre-2026: «15 casas con entrega inmediata en la Riviera
+    // Maya». Se dice «con entrega inmediata» SOLO si ninguna está en preventa;
+    // si alguna lo está, la frase honesta es «en venta».
+    titulo: (total, todasInmediatas) => [
+      `${total} casas ${todasInmediatas ? 'con entrega inmediata' : 'en venta'}`,
+      'en la Riviera Maya.',
+    ],
     cifras: {
       disponibles: ['Disponibles', 'casas publicadas'],
       desde: ['Desde', 'precio de entrada'],
@@ -203,24 +213,23 @@ export const COPY_ES: CopyCasas = {
 
   afirmaciones: [
     [
-      'Precio publicado, no «desde»',
-      'Cada casa de abajo lleva su precio cerrado en la moneda en que se vende. Dos se venden en dólares y se publican en dólares — sin tipo de cambio inventado.',
+      'Precio confirmado',
+      'Cada casa tiene su precio en la moneda en que se vende (dos se venden en dólares).',
     ],
     [
-      'Si no lo sabemos, lo decimos',
-      'Donde el desarrollador no declaró una cifra verás «Confirmar», no un estimado. Preferimos un hueco honesto a un número que el asesor tenga que desmentir.',
+      'Información real',
+      'Donde el desarrollador no declaró una cifra verás «Confirmar»: preferimos un espacio honesto a un número que el asesor tenga que desmentir.',
     ],
     [
-      'Sin mensualidades de adorno',
+      'Cálculos en conjunto',
       'Publicamos el enganche porque cuadra contra el precio. La mensualidad la calculamos contigo según el esquema real de cada desarrollador.',
     ],
   ],
 
   inventario: {
     etiqueta: (total) => `Inventario · ${total} casas disponibles`,
-    titulo: 'Estas son las casas. No son ejemplos.',
-    cuerpo:
-      'Cada una está publicada, aprobada y con precio vigente en nuestro sistema. Si una se vende, desaparece de esta página en la siguiente actualización — no la dejamos puesta para que la llamada empiece con una decepción.',
+    titulo: 'Casas disponibles',
+    todas: 'Todas',
     preventa: 'Preventa',
     entregaInmediata: 'Entrega inmediata',
     sinFoto: 'Sin fotografía',
@@ -241,20 +250,18 @@ export const COPY_ES: CopyCasas = {
 
   cierre: {
     etiqueta: 'Último paso',
-    titulo: (total) => `Te mandamos los números completos de las ${total}.`,
-    cuerpo:
-      'No es un catálogo de fotos. Es el precio de cada casa, el enganche que pide cada desarrollador, qué incluye la entrega y cuáles siguen disponibles hoy.',
+    titulo: (total) => `Te mandamos la información completa de las ${total}.`,
     puntos: [
       ['Precio cerrado', 'De cada una de las casas, en su moneda de venta.'],
       ['Enganche y esquema', 'Lo que pide cada desarrollador para apartar.'],
-      ['Qué incluye', 'Equipada, llave en mano o en obra — dicho sin adornos.'],
+      ['Qué incluye', 'Equipada, llave en mano o en obra.'],
       ['Disponibilidad', 'Cuáles siguen libres al día de tu solicitud.'],
     ],
   },
 
   form: {
     etiqueta: (total) => `Dossier de inventario · ${total} casas`,
-    titulo: 'Precios, enganche y disponibilidad real',
+    titulo: 'Recibe precios, enganche y disponibilidad',
     cuerpo: (t) =>
       `Te llega por correo la ficha completa de cada casa y un asesor te escribe por WhatsApp ${t}.`,
     tiempoRespuesta: 'el mismo día hábil',
@@ -358,9 +365,10 @@ export const COPY_EN: CopyCasas = {
 
   hero: {
     etiqueta: 'Verified inventory · Playa del Carmen and Tulum',
-    titulo: (total) => [`${total} real homes,`, 'with their real price.'],
-    cuerpo:
-      'Not a gallery of renders, and not a list of "starting at". These are the homes we have published in the Riviera Maya today, each with its full price, its down payment and its availability. Leave us your details and we send you the numbers on all of them.',
+    titulo: (total, todasInmediatas) => [
+      `${total} ${todasInmediatas ? 'move-in ready homes' : 'homes for sale'}`,
+      'in the Riviera Maya.',
+    ],
     cifras: {
       disponibles: ['Available', 'homes published'],
       desde: ['From', 'entry price'],
@@ -372,24 +380,23 @@ export const COPY_EN: CopyCasas = {
 
   afirmaciones: [
     [
-      'Published price, not "from"',
-      'Every home below carries its full price in the currency it sells in. Two sell in dollars and are published in dollars — no invented exchange rate.',
+      'Confirmed price',
+      'Every home carries its price in the currency it sells in (two sell in dollars).',
     ],
     [
-      "If we don't know it, we say so",
-      'Where the developer never declared a figure you will see "To confirm", not an estimate. We would rather leave an honest gap than print a number an advisor has to walk back.',
+      'Real information',
+      'Where the developer never declared a figure you will see "To confirm": we would rather leave an honest gap than print a number an advisor has to walk back.',
     ],
     [
-      'No decorative monthly payments',
+      'Worked out together',
       "We publish the down payment because it reconciles against the price. The monthly payment we work out with you, against each developer's actual terms.",
     ],
   ],
 
   inventario: {
     etiqueta: (total) => `Inventory · ${total} homes available`,
-    titulo: 'These are the homes. They are not examples.',
-    cuerpo:
-      'Each one is published, approved and carries a current price in our system. When one sells, it disappears from this page at the next refresh — we do not leave it up so that the call can open with a disappointment.',
+    titulo: 'Available homes',
+    todas: 'All',
     preventa: 'Pre-construction',
     entregaInmediata: 'Move-in ready',
     sinFoto: 'No photograph',
@@ -410,20 +417,18 @@ export const COPY_EN: CopyCasas = {
 
   cierre: {
     etiqueta: 'Last step',
-    titulo: (total) => `We send you the complete numbers on all ${total}.`,
-    cuerpo:
-      'It is not a photo catalogue. It is the price of each home, the down payment each developer asks for, what the handover includes and which ones are still available today.',
+    titulo: (total) => `We send you the complete information on all ${total}.`,
     puntos: [
       ['Full price', 'For every home, in the currency it sells in.'],
       ['Down payment and terms', 'What each developer asks for to reserve.'],
-      ['What it includes', 'Furnished, turnkey or under construction — said plainly.'],
+      ['What it includes', 'Furnished, turnkey or under construction.'],
       ['Availability', 'Which ones are still free the day you ask.'],
     ],
   },
 
   form: {
     etiqueta: (total) => `Inventory dossier · ${total} homes`,
-    titulo: 'Prices, down payment and real availability',
+    titulo: 'Get prices, down payment and availability',
     cuerpo: (t) =>
       `You get the full sheet on every home by email, and an advisor writes to you on WhatsApp ${t}.`,
     // El plazo en inglés se dice en el mismo día hábil, pero la zona horaria del
