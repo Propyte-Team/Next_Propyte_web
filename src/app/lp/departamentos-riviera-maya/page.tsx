@@ -3,36 +3,36 @@ import Image from 'next/image';
 import localFont from 'next/font/local';
 import {
   TIPOS_DEPTO,
+  claveUbicacion,
   getInventario,
   resumenInventario,
   ubicaciones,
 } from '@/lib/supabase/lp-inventario';
 import { FALLBACK_WHATSAPP } from '@/lib/site-contact';
-import { dinero } from '../_components/format';
-import { ChipsHero } from '../_components/v2/ChipsUbicacion';
-import FormInventario from '../_components/v2/FormInventario';
+import { dinero, dineroCompacto } from '../_components/format';
 import FaqAcordeon from '../_components/v2/FaqAcordeon';
 import BarraMovil from '../_components/v2/BarraMovil';
 import PieLegal from '../_components/v2/PieLegal';
 import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
 import { ubicacionCorta } from '../_components/v2/util';
-import Catalogo from './_components/Catalogo';
-import { FORM, PIE_AVISO, QUE_RECIBES } from './_copy';
+import Catalogo, { type Capitulo } from './_components/Catalogo';
+import { FORM, PIE_AVISO } from './_copy';
 import '../_components/v2/tokens.css';
 import './lpd-theme.css';
 
 // ============================================================
-// Landing de pago: DEPARTAMENTOS EN LA RIVIERA MAYA.
+// Landing de pago: DEPARTAMENTOS EN LA RIVIERA MAYA (segunda version).
 //
-// Lectura del brief: comprador premium o inversionista que teclea
-// «departamentos en venta en Tulum / Playa del Carmen». Referencia de
-// conversión: la ficha editorial de inmobiliaria de lujo (Luxury Presence,
-// Sotheby's): foto a sangre, serif grande, aire, un acento. Página oscura
-// completa; retícula de revista con una lámina de apertura y el resto en
-// columna; carrusel por ficha.
+// Logica: REVISTA POR CAPITULOS. La portada no pone texto sobre foto: a la
+// izquierda el titular en serif y un indice de ciudades como tabla de
+// contenido; a la derecha una lamina vertical con su pie debajo. Despues, un
+// capitulo por ciudad (nombre enorme, riel de laminas), una foto panoramica
+// muda y el formulario en linea. Es deliberadamente distinta de la landing
+// de casas (foto a sangre con el precio encima): cada landing tiene su
+// propia logica.
 //
-// Reglas heredadas de la familia: toda cifra sale del inventario; ningún
-// nombre de desarrollo llega al DOM; cero urgencia inventada.
+// Reglas heredadas: toda cifra sale del inventario; ningun nombre de
+// desarrollo llega al DOM; cero urgencia inventada.
 // ============================================================
 
 export const revalidate = 300;
@@ -59,31 +59,19 @@ const CIUDADES = ['Playa del Carmen', 'Tulum', 'Puerto Morelos'] as const;
 export default async function LandingDepartamentosRivieraMaya() {
   const departamentos = await getInventario({ tipos: TIPOS_DEPTO, ciudades: CIUDADES });
   const resumen = resumenInventario(departamentos);
-  const ciudades = ubicaciones(departamentos, 'ciudad');
-  const opciones = departamentos.map((d) => ({ slug: d.slug, titulo: d.titulo }));
-  const conFoto = departamentos.filter((d) => d.imagen);
-  const portada = conFoto[0] ?? null;
-  // Segunda foto para la sección «qué recibes»: distinta de la portada, y de
-  // otra ciudad si la hay, para que la página enseñe amplitud de inventario.
-  const lamina = conFoto.find((d) => d.ciudad !== portada?.ciudad) ?? conFoto[1] ?? null;
   const mensajeWa = FORM.whatsappGenerico;
 
   if (departamentos.length === 0) {
     return (
       <div className={`lpv lpd-root ${display.variable} min-h-[70vh]`}>
         <div className="mx-auto max-w-2xl px-5 py-32 sm:px-8">
-          <h1 className="lpd-serif text-[clamp(2rem,1.5rem+2.4vw,3.25rem)] text-[var(--lpv-fg)]">
+          <h1 className="lpd-serif text-[clamp(2.25rem,1.5rem+3vw,4rem)] text-[var(--lpv-fg)]">
             Ahora mismo no tenemos departamentos publicados en la Riviera Maya.
           </h1>
           <p className="mt-6 max-w-[54ch] text-base leading-relaxed text-[var(--lpv-fg-2)]">
             Escríbenos y te avisamos en cuanto entre inventario, con los números completos.
           </p>
-          <a
-            href={`https://wa.me/${FALLBACK_WHATSAPP}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-9 inline-flex min-h-[52px] items-center rounded-[var(--lpv-r-control)] bg-[var(--lpv-accent)] px-7 text-sm font-semibold text-[var(--lpv-on-accent)]"
-          >
+          <a href={`https://wa.me/${FALLBACK_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="lpd-boton mt-9">
             Avísenme por WhatsApp
           </a>
         </div>
@@ -91,128 +79,111 @@ export default async function LandingDepartamentosRivieraMaya() {
     );
   }
 
+  // Capitulos: una ciudad por capitulo, de mas a menos inventario. Dentro de
+  // cada uno el orden es el del inventario (precio ascendente).
+  const capitulos: Capitulo[] = ubicaciones(departamentos, 'ciudad').map((u) => ({
+    ubicacion: u,
+    propiedades: departamentos.filter((p) => claveUbicacion(p.ciudad) === u.clave),
+  }));
+
+  // Lamina de portada: la unidad con mas fotos propias. La panoramica del
+  // cierre es otra, de otra ciudad si la hay.
+  const conFoto = [...departamentos].filter((p) => p.imagen).sort((a, b) => b.imagenes.length - a.imagenes.length);
+  const portada = conFoto[0] ?? null;
+  const panoramica = conFoto.find((p) => p.ciudad !== portada?.ciudad) ?? conFoto[1] ?? null;
+
   return (
     <div className={`lpv lpd-root ${display.variable}`}>
-      {/* ══ HERO: foto a sangre, titular abajo a la izquierda, formulario a la derecha en escritorio ══ */}
-      <section id="hero" className="relative isolate overflow-hidden bg-[var(--lpv-bg)]">
-        {portada && (
-          <Image
-            src={portada.imagen as string}
-            alt={`${portada.titulo}, ${ubicacionCorta(portada)}`}
-            fill
-            priority
-            sizes="(min-width: 2048px) 2048px, 100vw"
-            className="object-cover"
-          />
-        )}
-        {/* Degradado de abajo hacia arriba: la foto conserva su luz arriba y
-            cede legibilidad abajo, donde vive el texto. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-[var(--lpv-bg)] via-[rgb(17_17_16/0.72)] to-[rgb(17_17_16/0.18)]"
-        />
+      {/* ══ PORTADA ══ */}
+      <section id="hero" className="bg-[var(--lpv-bg)]">
+        <div className="mx-auto grid min-h-[100svh] max-w-[96rem] content-center gap-10 px-5 pb-12 pt-24 sm:px-8 lg:grid-cols-12 lg:gap-14 lg:pb-16">
+          <div className="lg:col-span-7">
+            <h1 className="text-[var(--lpv-fg)]">
+              <span className="lpd-serif block text-[clamp(3.25rem,1.8rem+7vw,8rem)]">Departamentos</span>
+              <span className="lpd-serif-italic block pb-1 text-[clamp(2rem,1.2rem+4vw,4.75rem)] text-[var(--lpv-accent)]">
+                en la Riviera Maya
+              </span>
+            </h1>
+            <p className="mt-6 max-w-[40ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
+              {resumen.total} publicados hoy en {resumen.ciudades.length === 1 ? 'una ciudad' : `${resumen.ciudades.length} ciudades`}
+              {resumen.desde ? `, desde ${dineroCompacto(resumen.desde)}` : ''}. Cada uno con su precio cerrado, su enganche y
+              sus fotos.
+            </p>
 
-        <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-end px-5 pb-12 pt-28 sm:px-8 lg:pb-16 lg:pr-[30rem]">
-          <p className="text-[0.6875rem] uppercase tracking-[0.14em] text-[var(--lpv-accent)]">
-            Inventario publicado hoy
-          </p>
-          {/* El tamano va en el h1, no solo en los spans: `max-w-[16ch]` se
-              mide con la fuente del propio h1, y con la base de 16px el
-              titular salia a una palabra por linea. */}
-          <h1 className="lpd-serif mt-5 max-w-[16ch] text-[clamp(3rem,2rem+5vw,6rem)] text-[var(--lpv-fg)]">
-            <span className="block">
-              {resumen.total} departamentos en la Riviera Maya
-            </span>
-            <span className="lpd-serif-italic block pb-1 text-[clamp(2rem,1.4rem+3vw,3.75rem)] text-[var(--lpv-accent)]">
-              con precio publicado
-            </span>
-          </h1>
-          <p className="mt-6 max-w-[44ch] text-[1.0625rem] leading-relaxed text-[var(--lpv-fg-2)]">
-            Playa del Carmen, Tulum y Puerto Morelos. Elige la ciudad y te mandamos la ficha completa de cada uno.
-          </p>
-          <div className="mt-8">
-            <ChipsHero ubicaciones={ciudades} tono="oscuro" />
+            {/* Indice de capitulos. */}
+            <nav aria-label="Capítulos por ciudad" className="lpd-indice mt-10 max-w-[34rem]">
+              {capitulos.map((c) => (
+                <a key={c.ubicacion.clave} href={`#${c.ubicacion.clave}`}>
+                  <span className="lpd-serif text-[clamp(1.75rem,1.2rem+2vw,2.75rem)]">{c.ubicacion.nombre}</span>
+                  <span className="text-[0.9375rem] text-[var(--lpv-fg-2)]">
+                    {c.propiedades.length} {c.propiedades.length === 1 ? 'departamento' : 'departamentos'}
+                  </span>
+                </a>
+              ))}
+            </nav>
+
+            <a href="#solicitar" className="lpd-boton mt-8">
+              Recibir precios
+            </a>
           </div>
-        </div>
 
-        {/* Formulario del primer pliegue: flotando a la derecha en escritorio. */}
-        <div className="relative hidden lg:absolute lg:bottom-16 lg:right-8 lg:block lg:w-[26rem]">
-          <FormInventario
-            source="lp_deptos_rm"
-            variante="hero"
-            copy={FORM}
-            opciones={opciones}
-            telefonoWhatsApp={FALLBACK_WHATSAPP}
-            className="border border-[var(--lpv-panel-line)] shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)]"
-          />
-        </div>
-      </section>
-
-      {/* En móvil y tableta el formulario va justo debajo del hero. En
-          escritorio ya está dentro, así que aquí no se repite. */}
-      <div className="bg-[var(--lpv-bg)] lg:hidden">
-        <div className="mx-auto max-w-7xl px-5 pb-12 sm:px-8">
-          <FormInventario
-            source="lp_deptos_rm"
-            variante="hero"
-            copy={FORM}
-            opciones={opciones}
-            telefonoWhatsApp={FALLBACK_WHATSAPP}
-            className="border border-[var(--lpv-panel-line)]"
-          />
-        </div>
-      </div>
-
-      {/* ══ INVENTARIO EDITORIAL + CIERRE ══ */}
-      <Catalogo departamentos={departamentos} telefonoWhatsApp={FALLBACK_WHATSAPP} />
-
-      {/* ══ QUÉ RECIBES: lámina a la izquierda, titular y cuatro líneas a la derecha ══ */}
-      <section className="border-t border-[var(--lpv-line)] bg-[var(--lpv-bg-2)]">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-12 lg:gap-16">
-          {lamina && (
-            <figure className="relative aspect-[3/4] overflow-hidden rounded-[var(--lpv-r)] bg-[var(--lpv-bg)] lg:col-span-5">
-              <Image
-                src={lamina.imagen as string}
-                alt={`${lamina.titulo}, ${ubicacionCorta(lamina)}`}
-                fill
-                sizes="(min-width: 1024px) 40vw, 92vw"
-                className="object-cover"
-              />
+          {portada?.imagen && (
+            <figure className="lg:col-span-5 lg:self-center">
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-[var(--lpv-bg-2)]">
+                <Image
+                  src={portada.imagen}
+                  alt={`${portada.titulo}, ${ubicacionCorta(portada)}`}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 38vw, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="mt-3 flex items-baseline justify-between gap-4 text-[0.875rem] text-[var(--lpv-fg-2)]">
+                <span>{ubicacionCorta(portada)}</span>
+                <span className="text-[var(--lpv-fg)]">{portada.precio ? dinero(portada.precio) : ''}</span>
+              </figcaption>
             </figure>
           )}
-          <div className={lamina ? 'lg:col-span-7 lg:self-center' : 'lg:col-span-12'}>
-            <h2 className="lpd-serif max-w-[16ch] text-[clamp(2.25rem,1.6rem+3vw,4rem)] text-[var(--lpv-fg)]">
-              Lo que te llega por correo
-            </h2>
-            <ul className="mt-10 max-w-[56ch] divide-y divide-[var(--lpv-line)] border-y border-[var(--lpv-line)]">
-              {QUE_RECIBES.map(([titulo, detalle]) => (
-                <li key={titulo} className="grid gap-1 py-5 sm:grid-cols-[12rem_1fr] sm:gap-6">
-                  <span className="lpd-serif text-[1.375rem] text-[var(--lpv-fg)]">{titulo}</span>
-                  <span className="text-sm leading-relaxed text-[var(--lpv-fg-2)]">{detalle}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </section>
 
-      {/* ══ FAQ ══ */}
-      <div className="mx-auto max-w-3xl px-5 py-16 sm:px-8 sm:py-24">
-        <FaqAcordeon faqs={FAQ_COMPRA_Y_FINANCIAMIENTO} />
+      {/* ══ CAPITULOS + FORMULARIO ══ */}
+      <Catalogo capitulos={capitulos} todos={departamentos} telefonoWhatsApp={FALLBACK_WHATSAPP} />
+
+      {/* ══ PANORAMICA MUDA ══
+          Una foto sin texto entre el formulario y las preguntas: respiro
+          entre la conversion y la lectura. */}
+      {panoramica?.imagen && (
+        <figure className="relative aspect-[21/9] w-full overflow-hidden bg-[var(--lpv-bg-2)]">
+          <Image
+            src={panoramica.imagen}
+            alt={`${panoramica.titulo}, ${ubicacionCorta(panoramica)}`}
+            fill
+            loading="lazy"
+            sizes="100vw"
+            className="object-cover"
+          />
+        </figure>
+      )}
+
+      {/* ══ PREGUNTAS ══ */}
+      <div className="mx-auto max-w-[44rem] px-5 py-16 sm:px-8 sm:py-24">
+        <FaqAcordeon faqs={FAQ_COMPRA_Y_FINANCIAMIENTO} titulo="Lo que preguntan antes de comprar" />
       </div>
 
       <PieLegal
+        tono="oscuro"
         aviso={PIE_AVISO}
         inventario={
           resumen.desde && resumen.hasta
             ? `Inventario publicado: ${resumen.total} departamentos de ${dinero(resumen.desde)} a ${dinero(resumen.hasta)}.`
             : null
         }
-        tono="oscuro"
       />
 
       <BarraMovil
-        etiqueta={`Ver precios de los ${resumen.total}`}
+        etiqueta="Recibir precios"
         telefonoWhatsApp={FALLBACK_WHATSAPP}
         mensajeWhatsApp={mensajeWa}
         surface="lp_deptos_rm_barra_movil"

@@ -306,8 +306,28 @@
   --lpv-panel-accent: var(--lpc-on-dark);
   --lpv-panel-on-accent: var(--lpc-ink);
   --lpv-r: 0px;
-  --lpv-r-control: 0px;
+  /* Chips de ubicación como píldora (ejemplo del brief del 30-oct-2026):
+     negra la activa, contorno las demás. Es la única curva de la página. */
+  --lpv-r-control: 999px;
   --lpv-font-display: var(--font-lpc-display), var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
   font-family: var(--lpv-font-ui);
+}
+
+/* Afirmaciones al pie: la primera resaltada con el bermellón de estado, y
+   cualquiera al pasar el cursor. Texto en tinta sobre el bermellón. */
+.lpc-root .lpc-afirmacion:first-child,
+.lpc-root .lpc-afirmacion:hover {
+  background: var(--lpc-signal-on-dark);
+  border-color: var(--lpc-signal-on-dark);
+}
+.lpc-root .lpc-afirmacion:first-child > *,
+.lpc-root .lpc-afirmacion:hover > * {
+  color: var(--lpc-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lpc-root .lpc-afirmacion,
+  .lpc-root .lpc-afirmacion > * {
+    transition: none;
+  }
 }

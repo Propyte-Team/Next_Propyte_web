@@ -8,6 +8,7 @@ import FormAutonomo from './_components/FormAutonomo';
 import Inventario from './_components/Inventario';
 import BarraCasas from './_components/BarraCasas';
 import { ChipsHero } from '../_components/v2/ChipsUbicacion';
+import { BadgeCheck, Calculator, ClipboardCheck } from '@/lib/icons';
 import { ubicaciones } from '@/lib/supabase/lp-inventario';
 import type { PropiedadLanding } from '@/lib/supabase/lp-inventario';
 import type { CopyCasas } from './_copy';
@@ -313,15 +314,25 @@ export default async function PaginaCasas({ copy }: { copy: CopyCasas }) {
           Tres afirmaciones verificables. Vivían entre el hero y el inventario;
           el brief de octubre-2026 las manda al final (o fuera): aquí quedan,
           reescritas y compactas, después de la conversión y antes del pie. */}
-      <section className="lpc-regla bg-[var(--lpc-paper-2)]">
+      {/* Banda oscura con icono por afirmación, como el ejemplo del brief
+          del 30-oct-2026. La primera va resaltada con el bermellón de
+          estado; las otras dos se resaltan al pasar el cursor. */}
+      <section className="bg-[var(--lpc-dark)]">
         <div className="mx-auto max-w-[92rem] px-5 py-12 sm:px-8 sm:py-14">
-          <ul className="grid gap-x-12 gap-y-8 sm:grid-cols-3">
-            {copy.afirmaciones.map(([titulo, cuerpo]) => (
-              <li key={titulo} className="border-t border-[var(--lpc-line-strong)] pt-4">
-                <h3 className="lpc-titulo text-[1.0625rem] text-[var(--lpc-ink)]">{titulo}</h3>
-                <p className="mt-2.5 text-sm leading-relaxed text-[var(--lpc-ink-2)]">{cuerpo}</p>
-              </li>
-            ))}
+          <ul className="grid gap-3 sm:grid-cols-3">
+            {copy.afirmaciones.map(([titulo, cuerpo], i) => {
+              const Icono = [BadgeCheck, ClipboardCheck, Calculator][i] ?? BadgeCheck;
+              return (
+                <li
+                  key={titulo}
+                  className="lpc-afirmacion group border border-[var(--lpc-line-dark)] p-6 transition-colors duration-300 sm:p-7"
+                >
+                  <Icono className="h-7 w-7 text-[var(--lpc-signal-on-dark)] transition-colors duration-300 group-hover:text-[var(--lpc-ink)]" strokeWidth={1.5} aria-hidden />
+                  <h3 className="lpc-titulo mt-5 text-[1.125rem] text-[var(--lpc-on-dark)] transition-colors duration-300 group-hover:text-[var(--lpc-ink)]">{titulo}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-[var(--lpc-on-dark-2)] transition-colors duration-300 group-hover:text-[var(--lpc-ink)]">{cuerpo}</p>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>

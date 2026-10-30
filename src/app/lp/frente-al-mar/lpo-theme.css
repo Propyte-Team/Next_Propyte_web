@@ -1,16 +1,15 @@
 /* ============================================================
-   Tema: propiedades frente al mar en el sur de México (`.lpo-root`).
+   Tema: frente al mar (`.lpo-root`), segunda versión.
 
-   REFERENCIA: listado cinematográfico de lujo (Sotheby's International
-   Realty, JamesEdition): foto a sangre en el hero, rail horizontal de
-   propiedades, interfaz oscura y calmada, un solo acento. Página OSCURA
-   bloqueada: ninguna sección invierte a claro.
+   LÓGICA: una historia a pantalla completa. Cada propiedad ocupa una pantalla
+   entera con su foto; el scroll salta de una a otra (snap por proximidad, no
+   obligatorio, para que el formulario y las preguntas sigan siendo
+   desplazables). No hay cuadrícula, no hay riel, no hay tarjetas: la foto es
+   la pantalla y el dato va encima.
 
-   PALETA «océano profundo»: azul noche + hueso frío + turquesa de marca como
-   único acento. El turquesa va en chips activos, CTA del panel y nada más.
-
-   RADIOS, regla documentada: los bloques (fotos, paneles) van a 4px; los
-   controles (chips, botones) son píldoras. Sin mezclas fuera de esto.
+   Paleta océano profundo: azul casi negro, hueso frío, un solo acento
+   turquesa (el de la marca). Radios: bloques 4px, controles en píldora.
+   Tipografía: Bricolage Grotesque para titulares, DM Sans para el resto.
    ============================================================ */
 
 .lpo-root {
@@ -24,12 +23,13 @@
   --lpv-accent: #5ce0d2;
   --lpv-on-accent: #0b1620;
 
-  --lpv-panel-bg: #122230;
-  --lpv-panel-bg-2: #172a3a;
+  /* El formulario va directo sobre el fondo de la página, sin panel. */
+  --lpv-panel-bg: #0b1620;
+  --lpv-panel-bg-2: #122230;
   --lpv-panel-fg: #eef3f6;
   --lpv-panel-fg-2: rgb(238 243 246 / 0.7);
   --lpv-panel-fg-3: rgb(238 243 246 / 0.46);
-  --lpv-panel-line: rgb(238 243 246 / 0.18);
+  --lpv-panel-line: rgb(238 243 246 / 0.22);
   --lpv-panel-accent: #5ce0d2;
   --lpv-panel-on-accent: #0b1620;
 
@@ -39,71 +39,118 @@
   --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Titulares: Bricolage a peso 700, ligeramente condensada. */
-.lpo-root .lpo-titular {
+.lpo-root .lpo-display {
+  font-family: var(--lpv-font-display);
   font-weight: 700;
-  letter-spacing: -0.03em;
   font-stretch: 92%;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Barra de filtros pegajosa sobre fondo oscuro. */
-.lpo-root .lpo-filtros {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--lpv-bg) 90%, transparent);
-  backdrop-filter: blur(10px);
+.lpo-root .lpo-display-ligero {
+  font-family: var(--lpv-font-display);
+  font-weight: 400;
+  font-stretch: 96%;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  .lpo-root .lpo-filtros {
-    background: var(--lpv-bg);
-    backdrop-filter: none;
+/* Texto sobre foto. */
+.lpo-root .lpo-sobre-foto {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 36px rgb(0 0 0 / 0.4);
+}
+
+/* Velo de legibilidad: la foto conserva su cielo y cede abajo, donde vive el
+   dato. */
+.lpo-root .lpo-velo {
+  background: linear-gradient(
+    to top,
+    rgb(11 22 32 / 0.82) 0%,
+    rgb(11 22 32 / 0.42) 36%,
+    rgb(11 22 32 / 0.06) 68%,
+    rgb(11 22 32 / 0) 100%
+  );
+}
+
+/* Cada pantalla es un punto de snap. `proximity` en vez de `mandatory`: el
+   formulario es más alto que una pantalla y las preguntas no deben pelear
+   con el scroll. */
+html:has(.lpo-root) {
+  scroll-snap-type: y proximity;
+}
+
+.lpo-root .lpo-pantalla {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+/* La galería llena la pantalla: sin radio, sin fondo que asome. */
+.lpo-root .lpo-pantalla .lpv-galeria-contador {
+  top: 1rem;
+  right: auto;
+  left: 1.25rem;
+  bottom: auto;
+}
+
+@media (min-width: 640px) {
+  .lpo-root .lpo-pantalla .lpv-galeria-contador {
+    left: 2rem;
   }
 }
 
-/* Rail horizontal: snap nativo, sin barra visible. */
-.lpo-root .lpo-rail {
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.lpo-root .lpo-rail::-webkit-scrollbar {
-  display: none;
-}
-
-/* Ficha: el borde se enciende al pasar el cursor. Sin elevación: sobre fondo
-   oscuro una sombra no se ve y un borde sí. */
-.lpo-root .lpo-ficha {
-  transition: border-color 240ms cubic-bezier(0.2, 0, 0, 1);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .lpo-root .lpo-ficha:hover {
-    border-color: var(--lpv-line-2);
-  }
-}
-
-/* Columnas de la costa: el nombre de la ciudad se enciende al pasar. */
-.lpo-root .lpo-costa {
+/* Índice fijo de ciudades (escritorio). La activa se llena con el acento. */
+.lpo-root .lpo-indice button {
+  color: rgb(238 243 246 / 0.55);
   transition: color 200ms ease;
 }
 
+.lpo-root .lpo-indice button:hover {
+  color: #eef3f6;
+}
+
+.lpo-root .lpo-indice button[aria-current='true'] {
+  color: #5ce0d2;
+}
+
+.lpo-root .lpo-indice button[aria-current='true'] .lpo-indice-marca {
+  background: #5ce0d2;
+  width: 2.25rem;
+}
+
+.lpo-root .lpo-indice-marca {
+  display: inline-block;
+  height: 1px;
+  width: 1rem;
+  background: rgb(238 243 246 / 0.35);
+  transition: width 260ms cubic-bezier(0.2, 0, 0, 1), background 200ms ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .lpo-root .lpo-ficha,
-  .lpo-root .lpo-costa {
+  html:has(.lpo-root) {
+    scroll-behavior: auto;
+  }
+  .lpo-root .lpo-indice-marca,
+  .lpo-root .lpo-indice button {
     transition: none;
   }
 }
 
-/* Cabecera compartida de `app/lp/layout.tsx`: el logo blanco funciona sobre
-   el hero oscuro, no se invierte. El rótulo «Riviera Maya» se oculta porque
-   esta página también cubre la costa de Yucatán. */
+/* La etiqueta del formulario no es un eyebrow. */
+.lpo-root [data-lpv-form] > p:first-child {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9375rem;
+  color: var(--lpv-fg-3);
+}
+
+/* Cabecera compartida: el logo blanco va bien sobre la foto. El rótulo
+   «Riviera Maya» se oculta porque esta página cubre también Yucatán. */
 .lp-root:has(.lpo-root) {
   background: #0b1620;
   --lp-accent: #5ce0d2;
-  --lp-accent-strong: #3fc9bb;
+  --lp-accent-strong: #3fcabd;
 }
 
 .lp-root:has(.lpo-root) header span {

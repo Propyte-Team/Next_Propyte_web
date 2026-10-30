@@ -16,8 +16,8 @@ import UnDomingoAqui from '../_components/UnDomingoAqui';
 import ComparadorLotes from '../_components/ComparadorLotes';
 import AvailabilityBadge from '../_components/AvailabilityBadge';
 import { ChipsHero } from '../_components/v2/ChipsUbicacion';
-import { FAQ_COMPRA_Y_FINANCIAMIENTO } from '../_components/v2/faqs';
-import { ChevronDown } from '@/lib/icons';
+import { FAQ_COMPRA, FAQ_FINANCIAMIENTO } from '../_components/v2/faqs';
+import FaqCategorias from '../_components/v2/FaqCategorias';
 import { claveUbicacion } from '@/lib/supabase/lp-inventario';
 import '../_components/v2/tokens.css';
 import { TituloSeccion, BotonPrimario } from '../_components/ui';
@@ -483,22 +483,14 @@ export default async function LandingLotesPlayaDelCarmen() {
               Acordeón nativo con chevron (brief de octubre-2026) y las
               preguntas de «compra» y «financiamiento» del sitio, no unas
               escritas para la landing. */}
-          <section aria-labelledby="faq-titulo">
-            <TituloSeccion id="faq-titulo">Preguntas frecuentes</TituloSeccion>
-            <div className="mt-6 divide-y divide-[var(--lp-line)] border-y border-[var(--lp-line)]">
-              {FAQ_COMPRA_Y_FINANCIAMIENTO.map((item) => (
-                <details key={item.q} className="group">
-                  <summary className="flex min-h-[56px] items-center justify-between gap-6 py-4 text-left">
-                    <span className="lp-display text-base font-semibold leading-snug tracking-tight text-[var(--lp-ink)]">
-                      {item.q}
-                    </span>
-                    <ChevronDown className="lpv-chevron size-5 shrink-0 text-[var(--lp-muted)]" aria-hidden="true" />
-                  </summary>
-                  <p className="max-w-[64ch] pb-5 text-sm leading-relaxed text-[var(--lp-ink-soft)]">{item.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
+          <FaqCategorias
+            titulo="Preguntas frecuentes"
+            categorias={[
+              { nombre: 'Compra', faqs: FAQ_COMPRA },
+              { nombre: 'Financiamiento', faqs: FAQ_FINANCIAMIENTO },
+            ]}
+            className="lp-faq"
+          />
         </div>
       </div>
 

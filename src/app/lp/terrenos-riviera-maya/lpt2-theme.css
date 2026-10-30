@@ -1,54 +1,122 @@
 /* ============================================================
-   Tema: terrenos residenciales en la Riviera Maya (`.lpt2-root`).
+   Tema: terrenos en la Riviera Maya (`.lpt2-root`), segunda versión.
 
-   REFERENCIA: landing de suelo guiada por el número (mensualidad y precio por
-   m² por delante), un solo objetivo, formulario a la vista. Página CLARA.
+   LÓGICA DE ESTA LANDING: catálogo técnico. Quien compra suelo compara
+   números (superficie, precio, precio por metro, plazo), así que la página
+   es una TABLA grande y legible, no una galería. Hero tipográfico sobre
+   blanco, una banda de foto aérea sin texto, filas de ancho completo que se
+   abren, y el formulario sobre un bloque cobalto.
 
-   PALETA «cobalto + hueso frío», sin beige: off-white, tinta casi negra y un
-   solo acento cobalto para la acción. El panel del formulario es azul marino
-   profundo con acento celeste, que como botón relleno con tinta marina pasa
-   AA holgado.
+   Deliberadamente distinta de la landing de casas (foto a sangre con el
+   titular encima, fotos con precio superpuesto): aquí la foto es secundaria
+   y el dato manda.
 
-   RADIOS: todo a 0px. Es una hoja técnica, no una app.
+   RADIOS, regla documentada: bloques y filas a 0; botones y chips de plazo
+   a 999px (píldora). Nada más lleva radio.
+
+   TIPOGRAFÍA: Archivo semicondensada (la de la v3 del home) para titular,
+   superficie y precios; DM Sans para el resto; JetBrains Mono del sitio para
+   el precio por metro, que es la cifra que se compara entre filas.
    ============================================================ */
 
 .lpt2-root {
-  --lpv-bg: #f7f8fa;
-  --lpv-bg-2: #eceff4;
-  --lpv-fg: #111827;
-  --lpv-fg-2: #3f4756;
-  --lpv-fg-3: #6b7280;
-  --lpv-line: rgb(17 24 39 / 0.12);
-  --lpv-line-2: rgb(17 24 39 / 0.4);
+  --lpv-bg: #ffffff;
+  --lpv-bg-2: #f3f4f6;
+  --lpv-fg: #0f172a;
+  --lpv-fg-2: #475569;
+  --lpv-fg-3: #94a3b8;
+  --lpv-line: rgb(15 23 42 / 0.12);
+  --lpv-line-2: rgb(15 23 42 / 0.5);
   --lpv-accent: #1d4ed8;
   --lpv-on-accent: #ffffff;
 
-  --lpv-panel-bg: #0f172a;
-  --lpv-panel-bg-2: #172036;
-  --lpv-panel-fg: #f1f4f9;
-  --lpv-panel-fg-2: rgb(241 244 249 / 0.68);
-  --lpv-panel-fg-3: rgb(241 244 249 / 0.44);
-  --lpv-panel-line: rgb(241 244 249 / 0.2);
-  --lpv-panel-accent: #60a5fa;
-  --lpv-panel-on-accent: #0f172a;
+  /* El formulario vive sobre cobalto: campos blancos con regla inferior. */
+  --lpv-panel-bg: #1d4ed8;
+  --lpv-panel-bg-2: #1d4ed8;
+  --lpv-panel-fg: #ffffff;
+  --lpv-panel-fg-2: rgb(255 255 255 / 0.78);
+  --lpv-panel-fg-3: rgb(255 255 255 / 0.6);
+  --lpv-panel-line: rgb(255 255 255 / 0.35);
+  --lpv-panel-accent: #ffffff;
+  --lpv-panel-on-accent: #1d4ed8;
 
   --lpv-r: 0px;
-  --lpv-r-control: 0px;
+  --lpv-r-control: 999px;
   --lpv-font-display: var(--font-lpt2-display), var(--font-text), ui-sans-serif, system-ui, sans-serif;
   --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Cifras técnicas: superficie, precio por m², mensualidad. */
+.lpt2-root .lpt2-display {
+  font-family: var(--lpv-font-display);
+  font-stretch: 85%;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.lpt2-root .lpt2-display-ligero {
+  font-family: var(--lpv-font-display);
+  font-stretch: 90%;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 .lpt2-root .lpt2-mono {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
-/* Estado de disponibilidad: cobalto rebajado, sin relleno saturado. */
-.lpt2-root .lpt2-estado {
-  color: #1e3a8a;
-  background: rgb(29 78 216 / 0.1);
+/* Chips de ciudad: texto con regla inferior, sin píldora. La activa lleva
+   la regla en tinta a 2px; las demás, fina. Mismo dibujo en el hero y en la
+   barra de filtros. */
+.lpt2-root .lpt2-chip {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--lpv-line);
+  border-radius: 0;
+  padding: 0.5rem 0 0.4rem;
+  color: var(--lpv-fg-2);
+  font-size: 0.9375rem;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.lpt2-root .lpt2-chip:hover {
+  color: var(--lpv-fg);
+  border-bottom-color: var(--lpv-line-2);
+}
+
+.lpt2-root .lpt2-chip[aria-pressed='true'] {
+  color: var(--lpv-fg);
+  border-bottom: 2px solid var(--lpv-fg);
+  padding-bottom: calc(0.4rem - 1px);
+}
+
+/* `ChipsHero` del kit viene en píldora con tokens del panel; aquí se vuelve
+   texto con regla, como los de la barra de filtros. */
+.lpt2-root .lpt2-chips-hero button {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--lpv-line);
+  border-radius: 0;
+  padding: 0.5rem 0 0.4rem;
+  min-height: 0;
+  color: var(--lpv-fg-2);
+  font-size: 0.9375rem;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.lpt2-root .lpt2-chips-hero button:hover {
+  color: var(--lpv-fg);
+  border-bottom-color: var(--lpv-line-2);
+  background: transparent;
 }
 
 /* Barra de filtros pegajosa. */
@@ -56,30 +124,98 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--lpv-bg) 92%, transparent);
+  background: color-mix(in srgb, #ffffff 94%, transparent);
   backdrop-filter: blur(8px);
 }
 
 @media (prefers-reduced-transparency: reduce) {
   .lpt2-root .lpt2-filtros {
-    background: var(--lpv-bg);
+    background: #ffffff;
     backdrop-filter: none;
   }
 }
 
-/* Fila de ficha técnica: la regla superior separa, nada de cajas. */
+/* Filas deslizables sin barra visible (chips en móvil). */
+.lpt2-root .lpt2-fila-chips {
+  scrollbar-width: none;
+}
+.lpt2-root .lpt2-fila-chips::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fila del catálogo: el fondo cambia al pasar el cursor y cuando está abierta. */
 .lpt2-root .lpt2-fila {
-  border-top: 1px solid var(--lpv-line);
+  transition: background-color 180ms ease;
 }
 
-.lpt2-root .lpt2-fila[data-elegida='true'] {
-  border-top-color: var(--lpv-accent);
+.lpt2-root .lpt2-fila:hover,
+.lpt2-root .lpt2-fila[data-abierta='true'] {
+  background: var(--lpv-bg-2);
 }
 
-/* Cabecera compartida: logo blanco pensado para heros oscuros. Aquí el hero
-   es claro, así que el logo pasa a tinta y el rótulo pierde la sombra. */
+/* El área expandida entra con un deslizamiento corto. */
+.lpt2-root .lpt2-detalle {
+  animation: lpt2-abrir 260ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes lpt2-abrir {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lpt2-root .lpt2-detalle {
+    animation: none;
+  }
+  .lpt2-root .lpt2-fila,
+  .lpt2-root .lpt2-chip,
+  .lpt2-root .lpt2-chips-hero button {
+    transition: none;
+  }
+}
+
+/* Chips de plazo dentro de la fila abierta: píldora, la activa en tinta. */
+.lpt2-root .lpt2-plazo {
+  border: 1px solid var(--lpv-line-2);
+  border-radius: 999px;
+  color: var(--lpv-fg);
+  background: transparent;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.lpt2-root .lpt2-plazo[aria-pressed='true'] {
+  background: var(--lpv-fg);
+  border-color: var(--lpv-fg);
+  color: #ffffff;
+}
+
+/* La etiqueta del formulario deja de ser un eyebrow en mayúsculas. */
+.lpt2-root [data-lpv-form] > p:first-child {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9375rem;
+  color: var(--lpv-panel-fg-2);
+}
+
+/* Las etiquetas de campo del kit vienen en mayúsculas con tracking; aquí van
+   en caja normal. */
+.lpt2-root [data-lpv-form] label,
+.lpt2-root [data-lpv-form] legend {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.8125rem;
+}
+
+/* Cabecera compartida de `app/lp/layout.tsx`: abre en blanco, el logo
+   blanco se vuelve tinta y el rótulo lateral se apaga. */
 .lp-root:has(.lpt2-root) {
-  background: var(--lpv-bg, #f7f8fa);
+  background: #ffffff;
   --lp-accent: #1d4ed8;
   --lp-accent-strong: #1e40af;
 }
@@ -89,7 +225,7 @@
 }
 
 .lp-root:has(.lpt2-root) header span {
-  color: #6b7280;
+  color: #94a3b8;
   filter: none;
   text-shadow: none;
 }

@@ -1,120 +1,212 @@
 /* ============================================================
-   Tema: departamentos en la Riviera Maya (`.lpd-root`).
+   Tema: departamentos en la Riviera Maya (`.lpd-root`), segunda version.
 
-   REFERENCIA: páginas editoriales de inmobiliaria de lujo (Luxury Presence,
-   fichas de Sotheby's): fotografía grande, serif de display, mucho aire y un
-   solo acento silencioso. Página OSCURA de principio a fin: ninguna sección
-   se invierte a claro.
+   LOGICA: REVISTA POR CAPITULOS. Portada oscura sin foto detras del texto
+   (titular serif + lamina vertical + indice de ciudades), un capitulo por
+   ciudad con el nombre enorme y un riel horizontal de laminas verticales con
+   el pie DEBAJO de la foto, y un cierre con una foto panoramica muda y el
+   formulario en linea, sin caja.
 
-   PALETA «negro y tan»: casi-negro cálido + hueso + tan como único acento.
-   El tan va en el botón primario del panel, en el CTA de ficha y en el
-   filtro activo. Nada más lo lleva.
-
-   RADIOS: 2px en toda la página, casi vivos. El registro es el de la lámina
-   impresa, no el del software.
-
-   TIPOGRAFÍA: Cormorant Garamond para titulares. Se justifica aquí y no en
-   el resto de la familia porque la convención del inmobiliario de lujo es la
-   serif de display; corre pequeña, así que los tamaños van altos. El cuerpo
-   y las cifras siguen con el grotesk del sitio.
+   Pagina oscura de principio a fin. Un solo acento, tan. Radio 0 en todo.
+   Serif Cormorant Garamond para todo lo que es titulo; corre pequena, asi
+   que los tamanos van altos. El cuerpo con el grotesk del sitio.
    ============================================================ */
 
 .lpd-root {
-  --lpv-bg: #111110;
+  --lpv-bg: #121110;
   --lpv-bg-2: #1a1917;
   --lpv-fg: #f2efe9;
   --lpv-fg-2: rgb(242 239 233 / 0.68);
-  --lpv-fg-3: rgb(242 239 233 / 0.44);
+  --lpv-fg-3: rgb(242 239 233 / 0.45);
   --lpv-line: rgb(242 239 233 / 0.14);
   --lpv-line-2: rgb(242 239 233 / 0.4);
   --lpv-accent: #c8a97e;
-  --lpv-on-accent: #111110;
+  --lpv-on-accent: #121110;
 
-  --lpv-panel-bg: #1a1917;
-  --lpv-panel-bg-2: #232220;
+  /* El formulario va EN LINEA sobre el fondo de la pagina: mismos tokens. */
+  --lpv-panel-bg: #121110;
+  --lpv-panel-bg-2: #121110;
   --lpv-panel-fg: #f2efe9;
   --lpv-panel-fg-2: rgb(242 239 233 / 0.68);
-  --lpv-panel-fg-3: rgb(242 239 233 / 0.44);
-  --lpv-panel-line: rgb(242 239 233 / 0.18);
+  --lpv-panel-fg-3: rgb(242 239 233 / 0.45);
+  --lpv-panel-line: rgb(242 239 233 / 0.35);
   --lpv-panel-accent: #c8a97e;
-  --lpv-panel-on-accent: #111110;
+  --lpv-panel-on-accent: #121110;
 
-  --lpv-r: 2px;
-  --lpv-r-control: 2px;
+  --lpv-r: 0px;
+  --lpv-r-control: 0px;
   --lpv-font-display: var(--font-lpd-display), Georgia, 'Times New Roman', serif;
   --lpv-font-ui: var(--font-text), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Serif de display: peso 500, interlineado cerrado. Las cifras en serif van
-   tabulares para que diez precios cuadren en columna. */
+/* Serif de titulo. Interlineado cerrado, cifras alineadas. */
 .lpd-root .lpd-serif {
   font-family: var(--lpv-font-display);
   font-weight: 500;
   letter-spacing: -0.01em;
-  line-height: 1;
+  line-height: 0.98;
   font-variant-numeric: tabular-nums lining-nums;
 }
 
+/* Italica: con descendentes (y, g, j) el interlineado 1 corta; va 1.1 y un
+   pequeno reserva abajo lo pone el marcado (`pb-1`). */
 .lpd-root .lpd-serif-italic {
   font-family: var(--lpv-font-display);
   font-weight: 500;
   font-style: italic;
   letter-spacing: -0.005em;
-  /* Las itálicas con descendentes (p, g) se recortan con leading 1. */
   line-height: 1.1;
 }
 
-/* Barra de filtros pegajosa, con el fondo de la página para que las fichas
-   pasen por debajo sin mezclarse. */
-.lpd-root .lpd-filtros {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--lpv-bg) 90%, transparent);
-  backdrop-filter: blur(10px);
+/* Indice de capitulos: enlaces de texto grandes separados por filetes. */
+.lpd-root .lpd-indice a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid var(--lpv-line);
+  color: var(--lpv-fg);
+  text-decoration: none;
+  transition: color 200ms ease, padding-left 300ms cubic-bezier(0.2, 0, 0, 1);
 }
 
-@media (prefers-reduced-transparency: reduce) {
-  .lpd-root .lpd-filtros {
-    background: var(--lpv-bg);
-    backdrop-filter: none;
-  }
+.lpd-root .lpd-indice a:last-child {
+  border-bottom: 1px solid var(--lpv-line);
 }
 
-/* Escala de grises leve en reposo, color al pasar el cursor: en la retícula
-   el ojo compara volumen y luz; el color entra en la ficha que se mira.
-   Solo con puntero fino; en táctil van a color desde el inicio. */
+.lpd-root .lpd-indice a:hover {
+  color: var(--lpv-accent);
+  padding-left: 0.5rem;
+}
+
+/* Boton de contorno tan. */
+.lpd-root .lpd-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 1.75rem;
+  border: 1px solid var(--lpv-accent);
+  border-radius: 999px;
+  color: var(--lpv-accent);
+  font-size: 0.9375rem;
+  transition: background 200ms ease, color 200ms ease;
+}
+
+.lpd-root .lpd-boton:hover {
+  background: var(--lpv-accent);
+  color: var(--lpv-on-accent);
+}
+
+.lpd-root .lpd-boton:active {
+  transform: translateY(1px);
+}
+
+/* Riel de laminas: deslizable, sin barra. */
+.lpd-root .lpd-riel {
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lpd-root .lpd-riel::-webkit-scrollbar {
+  display: none;
+}
+
+.lpd-root .lpd-riel > * {
+  scroll-snap-align: start;
+}
+
+/* Lamina: la foto sube apenas al pasar el cursor; en tactil nada. */
+.lpd-root .lpd-lamina .lpv-galeria img {
+  transition: transform 900ms cubic-bezier(0.2, 0, 0, 1);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .lpd-root .lpd-ficha img {
-    filter: saturate(0.55);
-    transition: filter 480ms cubic-bezier(0.2, 0, 0, 1);
+  .lpd-root .lpd-lamina:hover .lpv-galeria img {
+    transform: scale(1.03);
   }
-  .lpd-root .lpd-ficha:hover img,
-  .lpd-root .lpd-ficha:focus-within img {
-    filter: saturate(1);
+}
+
+/* El contador de fotos de la galeria queda arriba, para no pisar la foto. */
+.lpd-root .lpd-lamina .lpv-galeria-contador {
+  top: 0.75rem;
+  bottom: auto;
+}
+
+/* Enlace de texto «Me interesa». */
+.lpd-root .lpd-enlace {
+  color: var(--lpv-fg);
+  text-decoration: underline;
+  text-decoration-color: var(--lpv-accent);
+  text-underline-offset: 5px;
+  transition: color 200ms ease;
+}
+
+.lpd-root .lpd-enlace:hover,
+.lpd-root .lpd-enlace[aria-pressed='true'] {
+  color: var(--lpv-accent);
+}
+
+/* Flechas del riel: solo con raton. */
+.lpd-root .lpd-flecha {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lpd-root .lpd-flecha {
+    display: inline-flex;
   }
+}
+
+/* Formulario en linea: la etiqueta deja de ser un eyebrow en mayusculas. */
+.lpd-root [data-lpv-form] > p:first-child {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9375rem;
+  color: var(--lpv-fg-3);
+}
+
+.lpd-root [data-lpv-form] h2 {
+  font-family: var(--lpv-font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+}
+
+/* FAQ: preguntas en serif, respuestas en cuerpo. */
+.lpd-root details summary {
+  font-family: var(--lpv-font-display);
+  font-weight: 500;
+  font-size: 1.375rem;
+  letter-spacing: -0.005em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lpd-root .lpd-ficha img {
+  .lpd-root .lpd-indice a,
+  .lpd-root .lpd-boton,
+  .lpd-root .lpd-lamina .lpv-galeria img,
+  .lpd-root .lpd-enlace {
     transition: none;
+  }
+  .lpd-root .lpd-lamina:hover .lpv-galeria img {
+    transform: none;
+  }
+  .lpd-root .lpd-riel {
+    scroll-behavior: auto;
   }
 }
 
-/* Estado de disponibilidad: tan apagado, sin relleno. */
-.lpd-root .lpd-estado {
-  color: var(--lpv-accent);
-  border: 1px solid rgb(200 169 126 / 0.4);
-}
-
-/* Cabecera compartida de `app/lp/layout.tsx`: el logo blanco ya está bien
-   sobre esta página oscura. Solo se recolorea el banner de consentimiento. */
+/* Cabecera compartida: abre en oscuro, el logo blanco va bien. */
 .lp-root:has(.lpd-root) {
-  background: #111110;
+  background: #121110;
   --lp-accent: #c8a97e;
   --lp-accent-strong: #b8955f;
 }
 
 .lp-root:has(.lpd-root) header span {
-  color: rgb(242 239 233 / 0.6);
+  color: rgb(242 239 233 / 0.55);
+  filter: none;
+  text-shadow: none;
 }

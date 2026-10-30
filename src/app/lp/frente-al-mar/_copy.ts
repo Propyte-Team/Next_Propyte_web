@@ -1,13 +1,12 @@
 import type { CopyForm } from '../_components/v2/FormInventario';
 
-// Copy de la landing de propiedades frente al mar. Cadenas planas: lo que
-// interpola usa marcadores `{total}` que resuelve el componente.
+// Copy de la landing «frente al mar». Cadenas planas; `{total}` y `{email}`
+// los resuelve el formulario.
 
 export const FORM: CopyForm = {
-  etiqueta: 'Información de {total} propiedades',
-  titulo: 'Recibe precios, enganche y disponibilidad',
-  cuerpo:
-    'Te llega por correo la ficha de cada propiedad y un asesor te escribe por WhatsApp el mismo día hábil.',
+  etiqueta: 'Las {total} {total|propiedad|propiedades}, con sus números',
+  titulo: 'Precio, enganche y disponibilidad de cada una',
+  cuerpo: 'Llega por correo el mismo día y un asesor te escribe por WhatsApp.',
   nombre: 'Nombre',
   whatsapp: 'WhatsApp',
   email: 'Correo',
@@ -18,7 +17,7 @@ export const FORM: CopyForm = {
   enviar: 'Recibir la información',
   preferirWhatsApp: 'Prefiero preguntar por WhatsApp',
   exitoCuerpo:
-    'Te enviamos a {email} los precios, el enganche y la disponibilidad de las {total} propiedades. Un asesor te escribe por WhatsApp el mismo día hábil.',
+    'Te enviamos a {email} los precios, el enganche y la disponibilidad de {total|la propiedad|las {total} propiedades}. Un asesor te escribe por WhatsApp el mismo día hábil.',
   exitoCta: 'Escribir ahora por WhatsApp',
   sinEspecifica: 'Frente al mar (sin propiedad específica)',
   whatsappGenerico:
@@ -26,17 +25,11 @@ export const FORM: CopyForm = {
   whatsappPorPropiedad: 'Hola, me interesa esta propiedad: {titulo}. ¿Me pasan precio y disponibilidad?',
 };
 
+/** Texto de la vista tal como la declara el Hub. */
 export const VISTA_TEXTO: Record<string, string> = {
   Mar: 'Frente al mar',
   'Mar lateral': 'Vista lateral al mar',
 };
 
-export const CIERRE_PUNTOS: [string, string][] = [
-  ['Precio cerrado', 'De cada propiedad, en su moneda de venta.'],
-  ['Enganche y esquema', 'Lo que pide cada desarrollador para apartar.'],
-  ['Qué incluye', 'Equipada, llave en mano o en obra.'],
-  ['Disponibilidad', 'Cuáles siguen libres al día de tu solicitud.'],
-];
-
 export const PIE_AVISO =
-  'Precios y disponibilidad vigentes al momento de la consulta y sujetos a confirmación con el desarrollador. La vista al mar es la declarada por el desarrollador para cada unidad. Propyte no es la desarrolladora de estos inmuebles.';
+  'Precios y disponibilidad vigentes al momento de la consulta y sujetos a confirmación con el desarrollador. Propyte no es la desarrolladora de estos inmuebles. Las imágenes las proporciona cada desarrollador y pueden incluir renders. La vista al mar es la declarada por el desarrollador para cada unidad.';

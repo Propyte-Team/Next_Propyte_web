@@ -143,3 +143,16 @@
   --lpv-r: var(--lp-r-media);
   --lpv-r-control: var(--lp-r-control);
 }
+
+/* FAQ con categorías (kit v2) dentro de la landing de lotes: título y
+   preguntas en la serif de la página, no en el grotesk del kit. */
+.lp-root .lp-faq h2 {
+  font-family: var(--font-lp-display), Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.lp-root .lp-faq summary {
+  font-family: var(--font-lp-display), Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

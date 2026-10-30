@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight } from '@/lib/icons';
 import { mxn } from './format';
 import { DisclaimerCifras } from './ui';
 import GaleriaFicha from './v2/GaleriaFicha';
@@ -63,6 +64,34 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
   const { activa, setActiva, visibles, ubicaciones } = useFiltroUbicacion(propiedades, 'ciudad');
   const [loteId, setLoteId] = useState(() => lotes[0]?.id ?? null);
   const [plazoIdx, setPlazoIdx] = useState<number | null>(null);
+  // Carrusel de fichas (ejemplo del brief del 30-oct-2026): riel con
+  // scroll-snap, flechas y contador «01 / 06». El índice sigue al scroll.
+  const riel = useRef<HTMLUListElement>(null);
+  const [tarjeta, setTarjeta] = useState(0);
+  useEffect(() => {
+    const el = riel.current;
+    if (!el) return;
+    let marco = 0;
+    function onScroll() {
+      cancelAnimationFrame(marco);
+      marco = requestAnimationFrame(() => {
+        if (!el) return;
+        const ancho = (el.firstElementChild as HTMLElement | null)?.offsetWidth ?? 1;
+        setTarjeta(Math.round(el.scrollLeft / (ancho + 16)));
+      });
+    }
+    el.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(marco);
+    };
+  }, []);
+  const desplazar = (delta: number) => {
+    const el = riel.current;
+    if (!el) return;
+    const ancho = (el.firstElementChild as HTMLElement | null)?.offsetWidth ?? 320;
+    el.scrollBy({ left: delta * (ancho + 16), behavior: 'smooth' });
+  };
 
   // Si el filtro deja fuera al lote elegido, se elige el primero visible.
   useEffect(() => {
@@ -124,26 +153,37 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
           </div>
         )}
 
-        {/* Fichas con galería. La ficha entera es el control de selección. */}
-        <ul className="mt-7 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+        {/* Fichas con galería en carrusel. La ficha entera es el control de
+            selección; las flechas y el contador van arriba a la derecha. */}
+        <div className="mt-7 flex items-center justify-between gap-4">
+          <p className="lp-num text-xs text-[var(--lp-on-dark-soft)]">
+            {String(Math.min(tarjeta, Math.max(lotesVisibles.length - 1, 0)) + 1).padStart(2, '0')} / {String(lotesVisibles.length).padStart(2, '0')}
+          </p>
+          <div className="flex gap-2">
+            <button type="button" onClick={() => desplazar(-1)} aria-label="Lote anterior" className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--lp-line-dark)] text-[var(--lp-on-dark)] transition-colors hover:border-[var(--lp-on-dark)]">
+              <ArrowLeft className="size-4" aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => desplazar(1)} aria-label="Lote siguiente" className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--lp-line-dark)] text-[var(--lp-on-dark)] transition-colors hover:border-[var(--lp-on-dark)]">
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+        <ul ref={riel} className="lpv-galeria mt-4 flex gap-4 overflow-x-auto pb-1">
           {lotesVisibles.map((l) => {
             const elegido = l.id === lote.id;
             return (
-              <li key={l.id}>
-                <button
-                  type="button"
-                  aria-pressed={elegido}
-                  onClick={() => {
-                    setLoteId(l.id);
-                    setPlazoIdx(null);
-                  }}
-                  className={`block w-full overflow-hidden rounded-[var(--lp-r-media)] border text-left transition-colors duration-150 ${
-                    elegido
-                      ? 'border-[var(--lp-accent-on-dark)] bg-[var(--lp-dark)]'
-                      : 'border-[var(--lp-line-dark)] hover:border-[var(--lp-on-dark-soft)]'
-                  }`}
-                >
-                  <GaleriaFicha
+              <li
+                key={l.id}
+                className={`w-[min(78vw,22rem)] shrink-0 snap-start overflow-hidden rounded-[var(--lp-r-media)] border transition-colors duration-150 ${
+                  elegido
+                    ? 'border-[var(--lp-accent-on-dark)] bg-[var(--lp-dark)]'
+                    : 'border-[var(--lp-line-dark)] hover:border-[var(--lp-on-dark-soft)]'
+                }`}
+              >
+                {/* La galeria va FUERA del boton: un <button> no puede
+                    contener los botones de las flechas (HTML invalido y
+                    error de hidratacion). El pie es el control de seleccion. */}
+                <GaleriaFicha
                     imagenes={l.imagenes}
                     alt={l.etiqueta}
                     aspecto="aspect-[4/3]"
@@ -151,6 +191,15 @@ export default function ComparadorLotes({ lotes }: { lotes: LoteComparable[] }) 
                     tope={8}
                     className="!rounded-none"
                   />
+                <button
+                  type="button"
+                  aria-pressed={elegido}
+                  onClick={() => {
+                    setLoteId(l.id);
+                    setPlazoIdx(null);
+                  }}
+                  className="block w-full text-left"
+                >
                   <div className="p-3 sm:p-4">
                     <p className="text-[0.6875rem] uppercase tracking-[0.08em] text-[var(--lp-on-dark-soft)]">
                       {l.ciudad}
