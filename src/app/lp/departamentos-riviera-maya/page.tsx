@@ -116,8 +116,11 @@ export default async function LandingDepartamentosRivieraMaya() {
           <p className="text-[0.6875rem] uppercase tracking-[0.14em] text-[var(--lpv-accent)]">
             Inventario publicado hoy
           </p>
-          <h1 className="mt-5 max-w-[16ch] text-[var(--lpv-fg)]">
-            <span className="lpd-serif block text-[clamp(3rem,2rem+5vw,6rem)]">
+          {/* El tamano va en el h1, no solo en los spans: `max-w-[16ch]` se
+              mide con la fuente del propio h1, y con la base de 16px el
+              titular salia a una palabra por linea. */}
+          <h1 className="lpd-serif mt-5 max-w-[16ch] text-[clamp(3rem,2rem+5vw,6rem)] text-[var(--lpv-fg)]">
+            <span className="block">
               {resumen.total} departamentos en la Riviera Maya
             </span>
             <span className="lpd-serif-italic block pb-1 text-[clamp(2rem,1.4rem+3vw,3.75rem)] text-[var(--lpv-accent)]">

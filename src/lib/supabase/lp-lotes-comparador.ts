@@ -673,6 +673,9 @@ export async function getLotesComparables(
     .in('unit_type', TYPE_DB_VALUES.terreno)
     .not('approved_at', 'is', null)
     .eq('published', true)
+    // Un lote vendido sigue publicado en el Hub con su precio; en un
+    // comparador se leeria como disponible.
+    .neq('status', 'Vendida')
     .is('deleted_at', null);
 
   if (error || !data) return [];
