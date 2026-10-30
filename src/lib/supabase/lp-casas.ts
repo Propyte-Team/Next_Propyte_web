@@ -84,6 +84,10 @@ export interface CasaLanding {
   /** 'Equipada', 'Turnkey (llave en mano)', etc. null ⇒ gate. */
   entrega: string | null;
   preventa: boolean;
+  /** `status` o `tipo_entrega` declaran «inmediata». Brief del 30-oct-2026. */
+  entregaInmediata: boolean;
+  /** El desarrollador declara financiamiento directo (`fin_directo`). */
+  financiamientoDirecto: boolean;
   /** Foto principal. Prioriza foto de la UNIDAD sobre portada del desarrollo. */
   imagen: string | null;
   /** Galería completa, ya deduplicada. */
@@ -113,6 +117,9 @@ export interface FilaUnidad {
   is_presale: boolean | null;
   cover_image: string | null;
   images: string[] | null;
+  /** Opcionales: las pruebas antiguas no los traen. */
+  status?: string | null;
+  fin_directo?: boolean | null;
 }
 
 /** `numeric` de Postgres llega como string por el SDK. Null-safe. */
@@ -190,6 +197,8 @@ function mapear(fila: FilaUnidad): CasaLanding | null {
     alberca: fila.has_pool === true,
     entrega: fila.tipo_entrega?.trim() || null,
     preventa: fila.is_presale === true,
+    entregaInmediata: /inmediata/i.test(`${fila.status ?? ''} ${fila.tipo_entrega ?? ''}`),
+    financiamientoDirecto: fila.fin_directo === true,
     imagen,
     imagenes,
   };
@@ -241,7 +250,7 @@ export async function getCasasRivieraMaya(): Promise<CasaLanding[]> {
         'price_mxn', 'price_usd', 'currency',
         'down_payment_pct', 'down_payment_mxn', 'fin_enganche_pct',
         'parking_spots', 'has_pool', 'tipo_entrega', 'is_presale',
-        'cover_image', 'images',
+        'cover_image', 'images', 'status', 'fin_directo',
       ].join(','),
     )
     .in('unit_type', TIPOS as unknown as string[])
@@ -263,6 +272,12 @@ export interface ResumenInventario {
   ciudades: string[];
   /** Enganche mínimo declarado, en %. null si ninguna casa lo declara. */
   engancheMinimoPct: number | null;
+  /** Precio más alto, en su moneda. */
+  hasta: Precio | null;
+  /** Conteos para el subtítulo y los badges del brief del 30-oct-2026. */
+  preventa: number;
+  entregaInmediata: number;
+  financiamientoDirecto: number;
 }
 
 /**
@@ -286,7 +301,11 @@ export function resumenInventario(casas: CasaLanding[]): ResumenInventario {
     total: casas.length,
     // La lista ya viene ordenada ascendente por valor comparable.
     desde: casas[0]?.precio ?? null,
+    hasta: casas[casas.length - 1]?.precio ?? null,
     ciudades: [...conteo.entries()].sort((a, b) => b[1] - a[1]).map(([c]) => c),
     engancheMinimoPct: enganches.length > 0 ? Math.min(...enganches) : null,
+    preventa: casas.filter((c) => c.preventa).length,
+    entregaInmediata: casas.filter((c) => c.entregaInmediata).length,
+    financiamientoDirecto: casas.filter((c) => c.financiamientoDirecto).length,
   };
 }

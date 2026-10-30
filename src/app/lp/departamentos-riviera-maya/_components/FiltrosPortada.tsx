@@ -40,7 +40,7 @@ export default function FiltrosPortada({
   const ciudadActiva = seleccion.ubicacion ?? TODAS;
 
   return (
-    <div className="mt-9 max-w-[34rem]">
+    <div className="mt-6 max-w-[34rem]">
       {presupuesto && (
         <div role="group" aria-label={presupuesto.etiqueta}>
           <p className="text-[0.9375rem] text-[var(--lpv-fg-2)]">{presupuesto.etiqueta}</p>
@@ -66,7 +66,7 @@ export default function FiltrosPortada({
       )}
 
       {ubicacion && (
-        <nav aria-label="Capítulos por ciudad" className="lpd-indice mt-8">
+        <nav aria-label="Capítulos por ciudad" className="lpd-indice mt-6">
           <button
             type="button"
             aria-pressed={ciudadActiva === TODAS}

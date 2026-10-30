@@ -15,7 +15,7 @@ export const FORM: CopyForm = {
   verTodas: 'Quiero ver todos',
   presupuestoLabel: 'Presupuesto',
   presupuestos: ['Hasta $3.5 M MXN', '$3.5 M a $6 M MXN', 'Más de $6 M MXN', 'Todavía lo estoy definiendo'],
-  enviar: 'Recibir la información',
+  enviar: 'Recibir la lista de precios',
   preferirWhatsApp: 'Prefiero preguntar por WhatsApp',
   exitoCuerpo:
     'Te enviamos a {email} los precios, el enganche y la disponibilidad de los {total} departamentos. Un asesor te escribe por WhatsApp el mismo día hábil.',

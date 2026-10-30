@@ -23,6 +23,17 @@
 
 import type { Precio } from '@/lib/supabase/lp-casas';
 
+/** «Playa del Carmen y Tulum», «Tulum, Playa del Carmen y Cancún». */
+function unirEs(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+}
+
+function unirEn(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? '';
+  return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+}
+
 /**
  * `tiempoRespuesta` es COMPROMISO OPERATIVO, no copy: define qué promete la
  * marca al enviar. Si el equipo comercial no puede sostener el plazo en inglés
@@ -55,20 +66,41 @@ export interface CopyCasas {
   hero: {
     etiqueta: string;
     /**
-     * Dos líneas: el <br /> lo pone la página. `todasInmediatas` permite decir
-     * «con entrega inmediata» solo cuando es verdad para TODO el inventario.
+     * Dos líneas: el <br /> lo pone la página. `desde` llega ya formateado
+     * (compacto) o null si ninguna casa declara precio. Brief del 30-oct-2026:
+     * «Casas exclusivas en la Riviera Maya desde $4.4M MXN».
      */
-    titulo: (total: number, todasInmediatas: boolean) => [string, string];
-    /** Sin cuerpo desde el brief de octubre-2026: el titular basta. */
-    cuerpo?: string;
-    cifras: {
-      disponibles: [string, string];
-      desde: [string, string];
-      hasta: [string, string];
-      enganche: [string, string];
+    titulo: (desde: string | null) => [string, string];
+    /**
+     * Subtítulo derivado del inventario: qué entrega hay, en qué ciudades, el
+     * enganche más bajo y cuántas declaran financiamiento directo. Cada parte
+     * sale solo si el dato existe.
+     */
+    cuerpo: (datos: {
+      ciudades: string[];
+      preventa: boolean;
+      inmediata: boolean;
+      engancheMin: number | null;
+      directo: number;
+    }) => string;
+    /** Banda de cuatro cifras: [etiqueta, valor]. */
+    badges: {
+      disponibles: [string, (total: number) => string];
+      rango: [string, (desde: string, hasta: string | null) => string];
+      enganche: [string, (min: number) => string];
+      entrega: [string, (preventa: boolean, inmediata: boolean) => string];
     };
     /** `alt` del tríptico. */
     altFoto: (zona: string, ciudad: string) => string;
+  };
+
+  /**
+   * Qué revisa Propyte antes de publicar. Versión moderada del «Filtro Legal
+   * Propyte» del brief: se dice lo que se hace, no se garantiza «100%».
+   */
+  revision: {
+    titulo: string;
+    puntos: [string, string][];
   };
 
   /** Las tres afirmaciones verificables, en vez de una banda de «beneficios». */
@@ -82,6 +114,8 @@ export interface CopyCasas {
     todas: string;
     preventa: string;
     entregaInmediata: string;
+    /** Ni preventa ni entrega inmediata declarada: no se asume nada. */
+    disponible: string;
     sinFoto: string;
     /** Chip de dato ausente. Regla 3 del data layer. */
     confirmar: string;
@@ -194,21 +228,47 @@ export const COPY_ES: CopyCasas = {
   },
 
   hero: {
-    etiqueta: 'Inventario verificado · Playa del Carmen y Tulum',
-    // Brief de octubre-2026: «15 casas con entrega inmediata en la Riviera
-    // Maya». Se dice «con entrega inmediata» SOLO si ninguna está en preventa;
-    // si alguna lo está, la frase honesta es «en venta».
-    titulo: (total, todasInmediatas) => [
-      `${total} casas ${todasInmediatas ? 'con entrega inmediata' : 'en venta'}`,
-      'en la Riviera Maya.',
+    etiqueta: 'Inventario publicado · Playa del Carmen y Tulum',
+    titulo: (desde) => [
+      'Casas exclusivas en la Riviera Maya',
+      desde ? `desde ${desde}.` : 'con precio publicado.',
     ],
-    cifras: {
-      disponibles: ['Disponibles', 'casas publicadas'],
-      desde: ['Desde', 'precio de entrada'],
-      hasta: ['Hasta', 'tope del inventario'],
-      enganche: ['Enganche', 'el más bajo publicado'],
+    cuerpo: ({ ciudades, preventa, inmediata, engancheMin, directo }) => {
+      const entrega =
+        preventa && inmediata ? 'Preventa y entrega inmediata' : inmediata ? 'Entrega inmediata' : preventa ? 'Preventa' : 'Casas';
+      const partes = [`${entrega} en ${unirEs(ciudades)}.`];
+      const fin: string[] = [];
+      if (engancheMin) fin.push(`enganches desde el ${engancheMin}%`);
+      if (directo > 0) fin.push(`financiamiento directo del desarrollador en ${directo} ${directo === 1 ? 'casa' : 'casas'}`);
+      if (fin.length > 0) {
+        const frase = fin.join(' y ');
+        partes.push(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}.`);
+      }
+      return partes.join(' ');
+    },
+    badges: {
+      disponibles: ['Disponibles', (total) => `${total} ${total === 1 ? 'propiedad publicada' : 'propiedades publicadas'}`],
+      rango: ['Rango', (desde, hasta) => (hasta ? `Desde ${desde} hasta ${hasta}` : desde)],
+      enganche: ['Enganche', (min) => `Desde ${min}%`],
+      entrega: [
+        'Entrega',
+        (preventa, inmediata) =>
+          preventa && inmediata ? 'Preventa y entrega inmediata' : inmediata ? 'Entrega inmediata' : preventa ? 'Preventa' : 'Según cada desarrollo',
+      ],
     },
     altFoto: (zona, ciudad) => `Casa en ${zona}, ${ciudad}`,
+  },
+
+  revision: {
+    titulo: 'Lo que revisamos antes de publicar',
+    puntos: [
+      [
+        'Régimen de propiedad y licencias',
+        'Revisamos que cada casa esté titulada o en régimen condominal y que el desarrollo declare su licencia de construcción antes de publicarla.',
+      ],
+      ['Desarrolladores con trayectoria', 'Revisamos el historial de entregas de cada constructora.'],
+      ['Acompañamiento notarial', 'Asesoría jurídica desde la carta de oferta hasta la firma de escrituras.'],
+    ],
   },
 
   afirmaciones: [
@@ -232,12 +292,13 @@ export const COPY_ES: CopyCasas = {
     todas: 'Todas',
     preventa: 'Preventa',
     entregaInmediata: 'Entrega inmediata',
+    disponible: 'Disponible',
     sinFoto: 'Sin fotografía',
     confirmar: 'Confirmar',
     enganche: 'Enganche',
-    altFicha: (titulo, ciudad) => `${titulo} — ${ciudad}`,
-    elegir: 'Quiero esta casa',
-    elegida: 'Elegida — completa tus datos',
+    altFicha: (titulo, ciudad) => `${titulo}, ${ciudad}`,
+    elegir: 'Solicitar ficha técnica',
+    elegida: 'Elegida: completa tus datos',
     specs: {
       recamaras: 'rec',
       banos: 'baños',
@@ -261,7 +322,7 @@ export const COPY_ES: CopyCasas = {
 
   form: {
     etiqueta: (total) => `Dossier de inventario · ${total} casas`,
-    titulo: 'Recibe precios, enganche y disponibilidad',
+    titulo: 'Recibe el dossier completo con precios y ubicaciones',
     cuerpo: (t) =>
       `Te llega por correo la ficha completa de cada casa y un asesor te escribe por WhatsApp ${t}.`,
     tiempoRespuesta: 'el mismo día hábil',
@@ -269,7 +330,7 @@ export const COPY_ES: CopyCasas = {
     nombrePlaceholder: 'Tu nombre',
     whatsapp: 'WhatsApp',
     whatsappPlaceholder: '+52 984 000 0000',
-    email: 'Correo — es donde llega el dossier',
+    email: 'Correo, a donde llega el dossier',
     emailPlaceholder: 'tu@correo.com',
     casaLabel: 'Casa de interés',
     opcional: '(opcional)',
@@ -282,7 +343,9 @@ export const COPY_ES: CopyCasas = {
       'Todavía lo estoy definiendo',
     ],
     honeypot: 'No llenar',
-    enviar: 'Recibir el dossier',
+    // «Recibir», no «Descargar»: el formulario no entrega un PDF; el dossier
+    // lo manda un asesor por correo.
+    enviar: 'Recibir catálogo y disponibilidad',
     enviando: 'Enviando',
     preferirWhatsApp: 'Prefiero preguntar por WhatsApp',
     notaPrivacidad:
@@ -364,18 +427,47 @@ export const COPY_EN: CopyCasas = {
   },
 
   hero: {
-    etiqueta: 'Verified inventory · Playa del Carmen and Tulum',
-    titulo: (total, todasInmediatas) => [
-      `${total} ${todasInmediatas ? 'move-in ready homes' : 'homes for sale'}`,
-      'in the Riviera Maya.',
+    etiqueta: 'Published inventory · Playa del Carmen and Tulum',
+    titulo: (desde) => [
+      'Exclusive homes in the Riviera Maya',
+      desde ? `from ${desde}.` : 'with published prices.',
     ],
-    cifras: {
-      disponibles: ['Available', 'homes published'],
-      desde: ['From', 'entry price'],
-      hasta: ['Up to', 'top of the inventory'],
-      enganche: ['Down payment', 'lowest published'],
+    cuerpo: ({ ciudades, preventa, inmediata, engancheMin, directo }) => {
+      const entrega =
+        preventa && inmediata ? 'Pre-construction and move-in ready homes' : inmediata ? 'Move-in ready homes' : preventa ? 'Pre-construction homes' : 'Homes';
+      const partes = [`${entrega} in ${unirEn(ciudades)}.`];
+      const fin: string[] = [];
+      if (engancheMin) fin.push(`down payments from ${engancheMin}%`);
+      if (directo > 0) fin.push(`developer financing on ${directo} ${directo === 1 ? 'home' : 'homes'}`);
+      if (fin.length > 0) {
+        const frase = fin.join(' and ');
+        partes.push(`${frase.charAt(0).toUpperCase()}${frase.slice(1)}.`);
+      }
+      return partes.join(' ');
+    },
+    badges: {
+      disponibles: ['Available', (total) => `${total} ${total === 1 ? 'property published' : 'properties published'}`],
+      rango: ['Range', (desde, hasta) => (hasta ? `From ${desde} to ${hasta}` : desde)],
+      enganche: ['Down payment', (min) => `From ${min}%`],
+      entrega: [
+        'Delivery',
+        (preventa, inmediata) =>
+          preventa && inmediata ? 'Pre-construction and move-in ready' : inmediata ? 'Move-in ready' : preventa ? 'Pre-construction' : 'Varies by development',
+      ],
     },
     altFoto: (zona, ciudad) => `Home in ${zona}, ${ciudad}`,
+  },
+
+  revision: {
+    titulo: 'What we check before publishing',
+    puntos: [
+      [
+        'Title and permits',
+        'We check that each home is titled or under a legal condominium regime, and that the development declares its construction licence, before we publish it.',
+      ],
+      ['Developers with a track record', "We review each builder's delivery history."],
+      ['Notary support', 'Legal guidance from the offer letter to the signing of the deed.'],
+    ],
   },
 
   afirmaciones: [
@@ -399,12 +491,13 @@ export const COPY_EN: CopyCasas = {
     todas: 'All',
     preventa: 'Pre-construction',
     entregaInmediata: 'Move-in ready',
+    disponible: 'Available',
     sinFoto: 'No photograph',
     confirmar: 'To confirm',
     enganche: 'Down payment',
-    altFicha: (titulo, ciudad) => `${titulo} — ${ciudad}`,
-    elegir: 'I want this home',
-    elegida: 'Selected — fill in your details',
+    altFicha: (titulo, ciudad) => `${titulo}, ${ciudad}`,
+    elegir: 'Request spec sheet',
+    elegida: 'Selected: fill in your details',
     specs: {
       recamaras: 'bd',
       banos: 'ba',
@@ -428,7 +521,7 @@ export const COPY_EN: CopyCasas = {
 
   form: {
     etiqueta: (total) => `Inventory dossier · ${total} homes`,
-    titulo: 'Get prices, down payment and availability',
+    titulo: 'Get the full dossier with prices and locations',
     cuerpo: (t) =>
       `You get the full sheet on every home by email, and an advisor writes to you on WhatsApp ${t}.`,
     // El plazo en inglés se dice en el mismo día hábil, pero la zona horaria del
@@ -439,7 +532,7 @@ export const COPY_EN: CopyCasas = {
     nombrePlaceholder: 'Your name',
     whatsapp: 'WhatsApp',
     whatsappPlaceholder: '+1 555 000 0000',
-    email: 'Email — this is where the dossier lands',
+    email: 'Email, where the dossier lands',
     emailPlaceholder: 'you@email.com',
     casaLabel: 'Home you are interested in',
     opcional: '(optional)',
@@ -454,15 +547,15 @@ export const COPY_EN: CopyCasas = {
       'Still working it out',
     ],
     honeypot: 'Do not fill',
-    enviar: 'Send me the dossier',
+    enviar: 'Get catalogue and availability',
     enviando: 'Sending',
     preferirWhatsApp: "I'd rather ask on WhatsApp",
     notaPrivacidad:
       'We use your details only to send you this information and to contact you. No third-party lists.',
     error: "We couldn't send your details. Message us on WhatsApp and we'll sort it out there.",
     faltanCampos: 'Please add your name, WhatsApp and email so we can send the dossier.',
-    emailInvalido: "Check your email address — that's where the dossier lands.",
-    telefonoInvalido: 'Check your phone number — pick your country and enter the full number.',
+    emailInvalido: "Check your email address: that's where the dossier lands.",
+    telefonoInvalido: 'Check your phone number: pick your country and enter the full number.',
     exito: {
       titulo: (nombre) => `Done, ${nombre}.`,
       sinNombre: 'thanks',
