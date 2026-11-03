@@ -51,7 +51,7 @@ export default function HeroV3({ slides }: { slides: HeroSlide[] }) {
     const fills = gsap.utils.toArray<HTMLElement>('[data-fill]', el);
     const reduce = prefersReducedMotion();
     const s = state.current;
-    gsap.set(imgs, { autoAlpha: (i: number) => (i === 0 ? 1 : 0) });
+    if (imgs.length) gsap.set(imgs, { autoAlpha: (i: number) => (i === 0 ? 1 : 0) });
 
     const syncPause = () => {
       const p = s.userPaused || s.offscreen || document.hidden;
@@ -67,7 +67,7 @@ export default function HeroV3({ slides }: { slides: HeroSlide[] }) {
         gsap.to(imgs[prev], { autoAlpha: 0, duration: d, ease: 'power2.inOut' });
         gsap.fromTo(imgs[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: d, ease: 'power2.inOut' });
       }
-      if (!reduce) {
+      if (!reduce && imgs[i]) {
         gsap.fromTo(imgs[i].querySelector('img'), { scale: 1.12, xPercent: i % 2 ? 1.5 : -1.5 }, { scale: 1, xPercent: 0, duration: SLIDE_SECS + 1.5, ease: 'none', overwrite: true });
       }
       fills.forEach((f, j) => gsap.set(f, { scaleX: j < i ? 1 : 0 }));
@@ -87,8 +87,9 @@ export default function HeroV3({ slides }: { slides: HeroSlide[] }) {
     io.observe(el);
 
     const mm = gsap.matchMedia();
-    // El titular arranca oculto (clase `invisible`) para que la entrada por palabras
-    // no parpadee; con movimiento reducido se muestra tal cual.
+    // El titular arranca transparente (clase `opacity-0`) para que la entrada por palabras
+    // no parpadee; con movimiento reducido se muestra tal cual. No usar `invisible`:
+    // visibility:hidden vacía innerText y saca el <h1> del árbol de accesibilidad hasta que corre JS.
     mm.add('(prefers-reduced-motion: reduce)', () => { gsap.set(el.querySelector('h1'), { autoAlpha: 1 }); });
     mm.add(MOTION_OK, () => {
       gsap.from('[data-slides]', { scale: 1.15, duration: 2.4, ease: 'expo.out' });
@@ -161,7 +162,7 @@ export default function HeroV3({ slides }: { slides: HeroSlide[] }) {
       />
       <div data-hero-in className="relative px-4 lg:px-10 pt-28 lg:pt-36 pb-6 lg:pb-10 flex flex-col gap-7 lg:gap-10">
         <div className="max-w-[900px]">
-          <h1 className="invisible font-display text-[52px] sm:text-[clamp(52px,8vw,116px)] leading-[0.9] font-bold tracking-[-0.045em] text-balance">
+          <h1 className="opacity-0 font-display text-[52px] sm:text-[clamp(52px,8vw,116px)] leading-[0.9] font-bold tracking-[-0.045em] text-balance">
             {t('title')}
           </h1>
           <p data-hero-sub className="mt-4 lg:mt-7 text-[17px] lg:text-[clamp(17px,1.5vw,21px)] leading-[1.45] text-white/85 max-w-[560px]">

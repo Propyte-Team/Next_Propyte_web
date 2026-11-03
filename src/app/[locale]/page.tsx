@@ -258,7 +258,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <>
       <SchemaMarkup type="organization" />
       <GsapLenisSync />
-      {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && heroSlides.length > 0 && <HeroV3 slides={heroSlides} />}
+      {/* Sin fotos (Supabase caído o CI sin secretos) el hero sigue con titular y buscador sobre el fondo aztec: es el único <h1> de la home. */}
+      {isVisible(visibility, VISIBILITY_KEYS.HOME_HERO) && <HeroV3 slides={heroSlides} />}
       <FiguresV3 stats={stats} asOf={asOf} />
       {isVisible(visibility, VISIBILITY_KEYS.HOME_FEATURED) && <CityCarouselV3 cities={cities} />}
       <ScrollReveal delay={0.05}>

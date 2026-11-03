@@ -65,7 +65,7 @@ export default function BlogFaqV3({ lead, latest }: { lead: BlogItem | null; lat
       gsap.to(`[data-ico="${openQ}"]`, { rotate: 0, duration: d, ease: 'power3.inOut' });
     }
     if (next !== null) {
-      gsap.to(`[data-ans="${next}"]`, { height: 'auto', duration: d, ease: 'power3.inOut', onComplete: () => ScrollTrigger.refresh() });
+      gsap.to(`[data-ans="${next}"]`, { height: 'auto', duration: d, ease: 'power3.inOut', onComplete: () => ScrollTrigger.refresh(true) });
       gsap.to(`[data-ico="${next}"]`, { rotate: 45, duration: d, ease: 'power3.inOut' });
     }
     setOpenQ(next);
