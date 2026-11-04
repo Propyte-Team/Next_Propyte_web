@@ -65,12 +65,12 @@
      cambio es global: cualquier `text-3xl` se vuelve fluido sin tocar JSX. */
   /* Brand identity oficial — jerarquía replica las publicaciones de RRSS:
        --font-display → Neue Haas Grotesk Display Pro (Adobe). Substituto
-                        free: Inter (var inyectada por next/font en layout.tsx).
-       --font-text    → Normalidad VF (Adobe). Substituto free: DM Sans.
+                        free: Archivo (var inyectada por next/font en layout.tsx).
+       --font-text    → Normalidad VF (Adobe). Substituto free: Hanken Grotesk.
        --font-eyebrow → Space Grotesk Bold (subtítulos, eyebrows, kickers).
      Cuando se obtenga kit Adobe, basta swap del Google Font en layout.tsx. */
-  --font-heading: var(--font-display), 'Inter', system-ui, -apple-system, sans-serif;
-  --font-body:    var(--font-text), 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-display), 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-body:    var(--font-text), 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
   --font-eyebrow-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
 
   --fs-2xs:  clamp(0.625rem,  0.607rem + 0.089vw,  0.6875rem); /* 10  → 11 */
