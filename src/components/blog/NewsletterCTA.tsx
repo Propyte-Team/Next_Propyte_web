@@ -3,7 +3,6 @@
 import { useState, type FormEvent } from 'react';
 import { rescatarDelDom } from '@/lib/leads/rescate-prehidratacion';
 import { useTranslations } from 'next-intl';
-import { Mail } from '@/lib/icons';
 import { toast } from 'sonner';
 import { submitForm } from '@/lib/submitForm';
 
@@ -50,15 +49,16 @@ export default function NewsletterCTA() {
   }
 
   return (
-    <section className="py-14 bg-[#F4F6F8]">
-      <div className="max-w-xl mx-auto px-4 md:px-6 text-center">
-        <Mail size={32} className="mx-auto text-[#0E7490] mb-4" aria-hidden="true" />
-        <h2 className="text-2xl font-bold text-[#1A2F3F] mb-2">{t('newsletterTitle')}</h2>
-        <p className="text-gray-600 text-sm mb-6">{t('newsletterDesc')}</p>
+    <section className="px-4 lg:px-10 py-[72px] lg:py-28 bg-[#0F1923] text-white">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] gap-8 lg:gap-16 items-end">
+        <div>
+          <h2 className="font-display text-[32px] lg:text-[clamp(34px,4vw,56px)] leading-[1.02] font-semibold tracking-[-0.035em] max-w-[16ch]">{t('newsletterTitle')}</h2>
+          <p className="mt-4 text-[16px] lg:text-[17px] text-white/70 max-w-[46ch]">{t('newsletterDesc')}</p>
+        </div>
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
+          className="flex flex-col sm:flex-row gap-3 w-full"
           toolname="suscribir_newsletter"
           tooldescription="Suscribe un correo al newsletter de Propyte."
         >
@@ -73,7 +73,7 @@ export default function NewsletterCTA() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t('newsletterPlaceholder')}
-            className="w-full sm:flex-1 min-h-[44px] px-4 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#5CE0D2] focus:ring-2 focus:ring-[#5CE0D2]/20 bg-white"
+            className="w-full sm:flex-1 h-12 px-0 bg-transparent border-0 border-b border-white/30 rounded-none text-[16px] text-white placeholder:text-white/45 focus:outline-none focus:border-white"
             aria-label={t('newsletterPlaceholder')}
             toolparamdescription="Correo electrónico a suscribir."
           />
@@ -92,7 +92,7 @@ export default function NewsletterCTA() {
           <button
             type="submit"
             disabled={status !== 'idle'}
-            className="h-11 px-6 bg-[#5CE0D2] hover:bg-[#4BCEC0] text-[#0F1923] font-bold rounded-xl text-sm transition-colors shrink-0 disabled:opacity-60"
+            className="h-12 px-7 bg-propyte-brand hover:bg-white text-[#0F1923] font-semibold rounded-md text-[15px] transition-colors shrink-0 disabled:opacity-60"
           >
             {status === 'sending' ? '…' : t('newsletterCta')}
           </button>

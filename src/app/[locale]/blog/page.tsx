@@ -7,8 +7,8 @@ import EmptyState from '@/components/ui/EmptyState';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { getBlogPosts, getBlogPilarCounts, getTeamMembers } from '@/lib/supabase/queries';
 import { resolvePostAuthor } from '@/lib/blog/post-author';
-import BlogCard from '@/components/blog/BlogCard';
-import BlogHero from '@/components/blog/BlogHero';
+import { BlogLeadV3, BlogRowV3, type BlogRowAuthor } from '@/components/blog/v3/BlogIndexV3';
+import { pickEditorialPhoto } from '@/lib/blog/editorial-photo';
 import BlogPagination from '@/components/blog/BlogPagination';
 import BlogFilterBar from '@/components/blog/BlogFilterBar';
 import MapaDePilares from '@/components/blog/MapaDePilares';
@@ -179,11 +179,12 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   setRequestLocale(locale);
   await assertPageVisible(VISIBILITY_KEYS.PAGE_BLOG);
 
-  const [t, tb, tp, ta] = await Promise.all([
+  const [t, tb, tp, ta, tv] = await Promise.all([
     getTranslations({ locale, namespace: 'blog' }),
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'pilares' }),
     getTranslations({ locale, namespace: 'audiencias' }),
+    getTranslations({ locale, namespace: 'homeV3.blog' }),
   ]);
 
   const { category, pilar, audiencia, page: currentPage, urlState } = resolveBlogState(sp);
@@ -207,7 +208,6 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   );
 
   const totalPages = Math.max(1, Math.ceil(total / POSTS_PER_PAGE));
-  const cardT = { minRead: t('minRead') };
 
   // Labels resueltos en el servidor: los componentes de filtro son neutros y no
   // llaman a getTranslations por su cuenta.
@@ -220,10 +220,23 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     PILARES.map((p) => [p.code, t('articleCount', { count: pilarCounts[p.code] ?? 0 })]),
   );
 
-  const heroT = {
-    heroHeadLine1: t('heroHeadLine1'),
-    heroHeadLine2: t('heroHeadLine2'),
-    heroDescription: t('heroDescription'),
+  // Portada del índice (página 1 sin filtros): nota destacada con foto real de
+  // desarrollo + "Lo más reciente". El resto de vistas son solo filas.
+  const isFront = currentPage === 1 && !category && !pilar && !audiencia && posts.length > 0;
+  const lead = isFront ? posts[0] : null;
+  const latest = isFront ? posts.slice(1, 5) : [];
+  const rest = isFront ? posts.slice(5) : posts;
+  const leadPhoto = lead ? await pickEditorialPhoto(createPublicSupabaseClient(), lead.related_city) : null;
+  const authors: Record<string, BlogRowAuthor> = Object.fromEntries(
+    posts.map((post) => {
+      const a = resolvePostAuthor(post, teamMembers, locale);
+      return [post.id, { name: a.name, role: a.role }];
+    }),
+  );
+  const rowLabels = {
+    minutes: (n: number) => tv('minutes', { count: n }),
+    featured: tv('featured'),
+    latest: tv('latest'),
   };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://propyte.com';
@@ -235,7 +248,19 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
   return (
     <>
-      <BlogHero t={heroT} />
+      <header className="px-4 lg:px-10 pt-8 lg:pt-14 pb-8 lg:pb-12 text-[#13222C]">
+        <Breadcrumbs
+          items={breadcrumbItems}
+          locale={locale}
+          homeLabel={tb('home')}
+          ariaLabel={tb('ariaLabel')}
+          baseUrl={siteUrl}
+        />
+        <h1 className="mt-6 lg:mt-10 font-display text-[44px] sm:text-[56px] lg:text-[clamp(60px,7vw,112px)] leading-[0.96] font-semibold tracking-[-0.045em] max-w-[13ch] text-balance">
+          {activeLabel ?? `${t('heroHeadLine1')} ${t('heroHeadLine2')}`}
+        </h1>
+        <p className="mt-5 lg:mt-7 text-[16px] lg:text-[19px] leading-[1.5] text-[#5B6B74] max-w-[560px]">{t('heroDescription')}</p>
+      </header>
 
       <BlogFilterBar
         locale={locale}
@@ -260,66 +285,49 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
         }}
       />
 
-      <section className="bg-white py-10 md:py-14">
-        <div className="max-w-[1280px] mx-auto px-4 md:px-6">
-          <Breadcrumbs
-            items={breadcrumbItems}
-            locale={locale}
-            homeLabel={tb('home')}
-            ariaLabel={tb('ariaLabel')}
-            baseUrl={siteUrl}
-          />
-
-          <div className="mt-6" />
-
-          {posts.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {posts.map((post, i) => {
-                  const a = resolvePostAuthor(post, teamMembers, locale);
-                  return (
-                    <BlogCard
-                      key={post.id}
-                      post={post}
-                      locale={locale}
-                      t={cardT}
-                      priority={i < 1}
-                      author={{ name: a.name, role: a.role, photo: a.photo }}
-                    />
-                  );
-                })}
+      <section className="bg-white px-4 lg:px-10 pt-10 lg:pt-14 pb-[72px] lg:pb-28">
+        {posts.length > 0 ? (
+          <>
+            {lead && (
+              <BlogLeadV3 lead={lead} photo={leadPhoto} latest={latest} locale={locale} labels={rowLabels} authors={authors} />
+            )}
+            {rest.length > 0 && (
+              <div className={`${lead ? 'mt-16 lg:mt-24' : ''} border-t border-black/10`}>
+                {rest.map((post) => (
+                  <BlogRowV3 key={post.id} post={post} locale={locale} labels={rowLabels} author={authors[post.id]} />
+                ))}
               </div>
+            )}
 
-              {/* El conteo vive en la barra de filtros, a la derecha, como en
-                  /desarrollos. Repetirlo aquí era decir lo mismo dos veces. */}
+            {/* El conteo vive en la barra de filtros, a la derecha, como en
+                /desarrollos. Repetirlo aquí era decir lo mismo dos veces. */}
 
-              <BlogPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                locale={locale}
-                keep={urlState}
-                prevLabel={t('paginationPrev')}
-                nextLabel={t('paginationNext')}
-                ariaLabel={t('paginationAriaLabel')}
-              />
-            </>
-          ) : (
-            <EmptyState
-              icon={BookOpen}
-              title={t('emptyState')}
-              description={t('emptyStateBody')}
-              actions={[
-                { label: t('emptyStateCtaContact'), href: `/${locale}/contacto?asunto=blog` },
-                // "Volver al blog" solo tiene sentido con algún filtro activo (lo
-                // limpia). Sin filtro, el grid ya está vacío sitewide y el CTA
-                // sería un loop al mismo estado vacío.
-                ...(hayFiltro
-                  ? [{ label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' as const }]
-                  : []),
-              ]}
+            <BlogPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              locale={locale}
+              keep={urlState}
+              prevLabel={t('paginationPrev')}
+              nextLabel={t('paginationNext')}
+              ariaLabel={t('paginationAriaLabel')}
             />
-          )}
-        </div>
+          </>
+        ) : (
+          <EmptyState
+            icon={BookOpen}
+            title={t('emptyState')}
+            description={t('emptyStateBody')}
+            actions={[
+              { label: t('emptyStateCtaContact'), href: `/${locale}/contacto?asunto=blog` },
+              // "Volver al blog" solo tiene sentido con algún filtro activo (lo
+              // limpia). Sin filtro, el grid ya está vacío sitewide y el CTA
+              // sería un loop al mismo estado vacío.
+              ...(hayFiltro
+                ? [{ label: t('emptyStateCtaBack'), href: `/${locale}/blog`, variant: 'secondary' as const }]
+                : []),
+            ]}
+          />
+        )}
       </section>
 
       <MapaDePilares

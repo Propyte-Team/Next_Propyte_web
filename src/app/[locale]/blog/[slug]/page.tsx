@@ -19,7 +19,7 @@ import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { formatDate } from '@/lib/helpers/format-date';
 import { resolvePostDates } from '@/lib/blog/post-dates';
 import { sanitizeRichHtml } from '@/lib/security/sanitizeHtml';
-import { Calendar, Clock, Tag, ChevronLeft, RefreshCw } from '@/lib/icons';
+import { categoryLabel } from '@/lib/blog/category-labels';
 import { ogLocaleImages } from '@/lib/og/images';
 
 export const revalidate = 3600;
@@ -172,13 +172,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   ];
 
   return (
-    <div className="bg-white text-slate-900 min-h-screen">
+    <div className="bg-white text-[#13222C] min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-8">
+      <div className="px-4 lg:px-10 pt-8 lg:pt-12">
         <Breadcrumbs
           items={breadcrumbs}
           locale={locale}
@@ -186,141 +186,101 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           ariaLabel={tb('ariaLabel')}
           baseUrl={siteUrl}
         />
+      </div>
 
-        <Link
-          href={`/${locale}/blog`}
-          className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-[#0E7490] mb-6 transition-colors"
-        >
-          <ChevronLeft size={16} /> {t('backToListing')}
-        </Link>
+      {/* Encabezado a todo lo ancho: categoría y fecha en una línea, titular
+          grande en Archivo, entradilla y autor. Sin pastillas ni iconos. */}
+      <header className="px-4 lg:px-10 pt-8 lg:pt-14 pb-10 lg:pb-14">
+        <p className="text-[14px] text-[#5B6B74]">
+          <Link
+            href={`/${locale}/blog?categoria=${encodeURIComponent(post.category)}`}
+            className="font-semibold text-[#0E7490] hover:underline"
+          >
+            {categoryLabel(post.category, locale)}
+          </Link>
+          {' · '}
+          <time dateTime={postDates.published}>
+            <span className="sr-only">{t('publishedOn')} </span>
+            {formatDate(postDates.published, locale)}
+          </time>
+          {' · '}
+          {post.read_time_min} {t('minRead')}
+        </p>
+        <h1 className="mt-4 lg:mt-6 font-display text-[36px] sm:text-[46px] lg:text-[clamp(50px,5.4vw,84px)] leading-[1.0] font-semibold tracking-[-0.04em] max-w-[20ch] text-balance">
+          {post.title}
+        </h1>
+        {post.excerpt && (
+          <p className="mt-5 lg:mt-7 text-[18px] lg:text-[22px] leading-[1.45] text-[#5B6B74] max-w-[46ch]">{post.excerpt}</p>
+        )}
 
-        {/* Two-column layout: article + sticky sidebar form */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 lg:gap-12">
-          {/* MAIN COLUMN — article content */}
-          <article className="min-w-0">
-            <header className="mb-8">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="px-3 py-1 text-xs font-semibold bg-[#0E7490] text-white rounded-full">
-                  {post.category}
-                </span>
-                {post.tags.slice(0, 3).map((tag) => (
-                  <span key={tag} className="flex items-center gap-1 px-2 py-1 text-xs bg-slate-100 text-slate-600 rounded-full">
-                    <Tag size={10} /> {tag}
-                  </span>
-                ))}
-              </div>
-
-              <h1 className="text-2xl md:text-4xl font-bold text-[#0F1923] leading-tight mb-4">
-                {post.title}
-              </h1>
-
-              {post.excerpt && (
-                <p className="text-lg text-slate-600 leading-relaxed mb-6">{post.excerpt}</p>
+        {/* Byline: cuando el autor es una persona del equipo se muestra su
+            cargo y el nombre enlaza a su perfil. */}
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 border-t border-black/10 text-[14px] text-[#5B6B74]">
+          <div className="flex items-center gap-3">
+            {author.photo ? (
+              <Image src={author.photo} alt={author.name} width={40} height={40} className="rounded-full object-cover" />
+            ) : (
+              <span aria-hidden="true" className="w-10 h-10 rounded-full bg-[#0F1923] flex items-center justify-center text-white text-sm font-semibold">
+                {author.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+            <span className="flex flex-col leading-tight">
+              {author.profileUrl ? (
+                <Link href={author.profileUrl} className="font-semibold text-[#13222C] hover:text-[#0E7490] hover:underline">{author.name}</Link>
+              ) : (
+                <span className="font-semibold text-[#13222C]">{author.name}</span>
               )}
+              {author.role && <span className="text-[13px]">{author.role}</span>}
+            </span>
+          </div>
+          {/* Fecha de actualización solo cuando hubo un cambio en un día
+              posterior. Sale de `updated_at` de la fila, no de la hora del render. */}
+          {postDates.showModified && (
+            <time dateTime={postDates.modified}>
+              {t('updatedOn')} {formatDate(postDates.modified, locale)}
+            </time>
+          )}
+        </div>
+      </header>
 
-              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 pb-6 border-b border-slate-200">
-                {/* Byline: cuando el autor es una persona del equipo se muestra su
-                    cargo y el nombre enlaza a su perfil. Con el autor genérico
-                    ("Propyte", los 18 artículos de hoy) queda idéntico a antes. */}
-                <div className="flex items-center gap-2">
-                  {author.photo ? (
-                    <Image
-                      src={author.photo}
-                      alt={author.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#0F1923] flex items-center justify-center text-white text-xs font-bold">
-                      {author.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <span className="flex flex-col leading-tight">
-                    {author.profileUrl ? (
-                      <Link
-                        href={author.profileUrl}
-                        className="font-medium text-[#0F1923] hover:text-[#0E7490] hover:underline transition-colors"
-                      >
-                        {author.name}
-                      </Link>
-                    ) : (
-                      <span className="font-medium text-[#0F1923]">{author.name}</span>
-                    )}
-                    {author.role && (
-                      <span className="text-xs text-slate-500">{author.role}</span>
-                    )}
-                  </span>
-                </div>
+      {/* Sin portada en el cuerpo: las de este blog son ilustraciones generadas
+          (auditoría "se ve IA", 2026-10-27). `featured_image` sigue alimentando
+          el JSON-LD y la imagen para compartir. */}
 
-                <time dateTime={postDates.published} className="flex items-center gap-1">
-                  <Calendar size={14} />
-                  <span className="sr-only">{t('publishedOn')} </span>
-                  {formatDate(postDates.published, locale)}
-                </time>
+      {/* Artículo + formulario lateral fijo */}
+      <div className="px-4 lg:px-10 pt-2 pb-[72px] lg:pb-28 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-10 lg:gap-20">
+        <article className="min-w-0">
+          {post.content && (
+            <div
+              className="prose prose-lg max-w-[68ch]
+                prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-[-0.025em] prose-headings:text-[#13222C]
+                prose-h2:text-[30px] prose-h2:leading-[1.12] prose-h2:mt-14
+                prose-h3:text-[22px]
+                prose-p:text-[#2C3A42] prose-p:leading-[1.7] prose-li:text-[#2C3A42]
+                prose-a:text-[#0E7490] prose-a:font-medium prose-a:underline-offset-2
+                prose-strong:text-[#13222C]
+                prose-img:rounded-md
+                prose-blockquote:border-l-2 prose-blockquote:border-[#0F1923] prose-blockquote:font-display prose-blockquote:not-italic prose-blockquote:text-[#13222C]
+                prose-table:text-[15px] prose-th:text-[#13222C]
+                prose-code:bg-[#F4F6F8] prose-code:text-[#13222C] prose-code:px-1 prose-code:rounded"
+              dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(post.content) }}
+            />
+          )}
 
-                {/* Fecha de actualización solo cuando hubo un cambio en un día
-                    posterior. No se mueve por builds ni por cambios de estilo:
-                    sale de `updated_at` de la fila, no de la hora del render. */}
-                {postDates.showModified && (
-                  <time dateTime={postDates.modified} className="flex items-center gap-1">
-                    <RefreshCw size={14} />
-                    {t('updatedOn')} {formatDate(postDates.modified, locale)}
-                  </time>
-                )}
+          {/* Enlace al pilar padre. Anchor descriptivo (el título del pilar), no
+              "clic aquí": es el lado artículo→hub del enlace bidireccional. */}
+          {hub && (
+            <p className="mt-12 max-w-[68ch] py-5 border-y border-black/10 text-[15px] text-[#5B6B74]">
+              {t('pilarLinkIntro')}{' '}
+              <Link href={hubHref(locale, hub)} className="font-semibold text-[#0E7490] hover:underline">
+                {tHub(HUB_LABEL_KEY[hub] as 'comoInvertir')}
+              </Link>
+              .
+            </p>
+          )}
 
-                <span className="flex items-center gap-1">
-                  <Clock size={14} />
-                  {post.read_time_min} {t('minRead')}
-                </span>
-              </div>
-            </header>
-
-            {post.featured_image && (
-              <div className="relative aspect-[16/9] rounded-xl overflow-hidden mb-8">
-                <Image
-                  src={post.featured_image}
-                  alt={post.title}
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 800px"
-                  className="object-cover"
-                />
-              </div>
-            )}
-
-            {post.content && (
-              <div
-                className="prose prose-lg prose-slate max-w-none
-                  prose-headings:text-[#0F1923] prose-headings:font-bold
-                  prose-a:text-[#0E7490] prose-a:no-underline hover:prose-a:underline
-                  prose-strong:text-[#0F1923]
-                  prose-img:rounded-xl prose-img:shadow-card
-                  prose-blockquote:border-propyte-brand prose-blockquote:text-slate-600
-                  prose-code:bg-slate-100 prose-code:text-[#0F1923] prose-code:px-1 prose-code:rounded"
-                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(post.content) }}
-              />
-            )}
-
-            {/* Enlace al pilar padre. Anchor descriptivo (el título del pilar), no
-                "clic aquí": es el lado artículo→hub del enlace bidireccional, y
-                sin él el artículo compite con su propio pilar por la misma
-                intención en vez de reforzarlo. */}
-            {hub && (
-              <p className="mt-10 rounded-xl bg-[#F4F6F8] px-5 py-4 text-sm text-slate-600">
-                {t('pilarLinkIntro')}{' '}
-                <Link
-                  href={hubHref(locale, hub)}
-                  className="font-semibold text-[#0E7490] hover:underline"
-                >
-                  {tHub(HUB_LABEL_KEY[hub] as 'comoInvertir')}
-                </Link>
-                .
-              </p>
-            )}
-
-            {/* Enlace a /metodologia y al aviso legal, según lo que el artículo
-                publique. Antes ambos activos solo se alcanzaban desde el pie. */}
+          {/* Enlace a /metodologia y al aviso legal, según lo que el artículo publique. */}
+          <div className="max-w-[68ch]">
             <ArticleDataNotice
               locale={locale}
               showMethodology={showMethodology}
@@ -332,54 +292,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 disclaimerCta: t('legalNoticeCta'),
               }}
             />
+          </div>
 
-            {/* Mobile: sidebar form appears here (between content and footer).
-                registerTool={false} → no emite toolname WebMCP: la copia
-                desktop de abajo es la única que registra la tool (dos formularios
-                con el mismo toolname tumban el renderer de Chrome). */}
-            <div className="mt-10 lg:hidden">
-              <BlogSidebarForm category={post.category} registerTool={false} />
-            </div>
+          {/* Móvil: el formulario va aquí. registerTool={false} → no emite
+              toolname WebMCP: la copia de escritorio es la única que la registra
+              (dos formularios con el mismo toolname tumban el renderer de Chrome). */}
+          <div className="mt-12 lg:hidden pt-10 border-t border-black/10">
+            <BlogSidebarForm category={post.category} registerTool={false} />
+          </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-200">
-              {post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1.5 text-sm bg-slate-100 text-slate-600 rounded-full"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <BlogShareBar
-                title={post.title}
-                url={`${siteUrl}/${locale}/blog/${post.slug}`}
-                shareLabel={t('share')}
-                copyLabel={t('copyLink')}
-                copiedLabel={t('copied')}
-                whatsappLabel={t('shareWhatsapp')}
-              />
-            </div>
-
-            <RelatedPosts
-              posts={related}
-              locale={locale}
-              title={t('relatedTitle')}
-              minRead={t('minRead')}
+          <div className="mt-12 pt-6 border-t border-black/10 max-w-[68ch]">
+            {post.tags.length > 0 && (
+              <p className="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[14px] text-[#5B6B74]">
+                {post.tags.map((tag) => <span key={tag}>#{tag}</span>)}
+              </p>
+            )}
+            <BlogShareBar
+              title={post.title}
+              url={`${siteUrl}/${locale}/blog/${post.slug}`}
+              shareLabel={t('share')}
+              copyLabel={t('copyLink')}
+              copiedLabel={t('copied')}
+              whatsappLabel={t('shareWhatsapp')}
             />
-          </article>
+          </div>
+        </article>
 
-          {/* SIDEBAR — sticky form on desktop, hidden on mobile (rendered inline above) */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-24">
-              <BlogSidebarForm category={post.category} />
-            </div>
-          </aside>
-        </div>
+        <aside className="hidden lg:block">
+          <div className="sticky top-28">
+            <BlogSidebarForm category={post.category} />
+          </div>
+        </aside>
       </div>
+
+      <RelatedPosts
+        posts={related}
+        locale={locale}
+        title={t('relatedTitle')}
+        minRead={t('minRead')}
+      />
     </div>
   );
 }

@@ -44,7 +44,7 @@ export default function BlogPagination({
     'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 transition-colors';
 
   return (
-    <nav className="flex items-center justify-center gap-2 mt-10" aria-label={ariaLabel}>
+    <nav className="flex items-center justify-center gap-2 mt-14 lg:mt-20" aria-label={ariaLabel}>
       {currentPage > 1 ? (
         <Link href={hrefFor(currentPage - 1)} rel="prev" className={`${edgeClass} hover:bg-gray-100`}>
           <ChevronLeft size={16} /> {prevLabel}
@@ -61,7 +61,7 @@ export default function BlogPagination({
             <span
               key={page}
               aria-current="page"
-              className="flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] rounded-lg text-sm font-medium bg-[#1A2F3F] text-white"
+              className="flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] rounded text-[15px] font-semibold bg-[#0F1923] text-white"
             >
               {page}
             </span>
@@ -69,7 +69,7 @@ export default function BlogPagination({
             <Link
               key={page}
               href={hrefFor(page)}
-              className="flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] rounded text-[15px] font-medium text-[#5B6B74] hover:bg-[#F4F6F8] transition-colors"
             >
               {page}
             </Link>

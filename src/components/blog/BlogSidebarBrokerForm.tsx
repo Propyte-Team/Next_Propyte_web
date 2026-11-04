@@ -91,7 +91,7 @@ export default function BlogSidebarBrokerForm({ registerTool = true }: { registe
   const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
 
   return (
-    <aside className="bg-gradient-to-br from-[#0F1923] via-[#1A2F3F] to-[#0F1923] rounded-2xl p-6 border border-slate-200 shadow-sm">
+    <aside className="bg-[#0F1923] rounded-md p-6 lg:p-7">
       <div className="inline-flex items-center gap-2 px-3 py-1 bg-propyte-brand/15 text-propyte-brand border border-propyte-brand/30 rounded-full text-[11px] font-bold mb-3">
         {t('brokerEyebrow')}
       </div>

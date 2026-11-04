@@ -5,7 +5,7 @@ import { getDevelopments } from '@/lib/supabase/queries';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
+import DevelopmentsListV3 from '@/components/developments/v3/DevelopmentsListV3';
 import type { Property } from '@/types/property';
 
 interface TaxonomyDevelopmentsPageProps {
@@ -109,11 +109,7 @@ export default async function TaxonomyDevelopmentsPage({
           { label: termLabel },
         ]}
       />
-      <MarketplaceContent
-        properties={properties}
-        customTitle={title}
-        customSubtitle={subtitle}
-      />
+      <DevelopmentsListV3 properties={properties} title={title} lead={subtitle} />
     </>
   );
 }

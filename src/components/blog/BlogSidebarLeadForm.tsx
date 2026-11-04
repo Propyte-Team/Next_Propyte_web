@@ -74,7 +74,7 @@ export default function BlogSidebarLeadForm({ registerTool = true }: { registerT
   const param = (desc: string) => (registerTool ? { toolparamdescription: desc } : {});
 
   return (
-    <aside className="bg-[#0B1C1E] rounded-2xl p-6 border border-slate-200 shadow-sm">
+    <aside className="bg-[#0F1923] rounded-md p-6 lg:p-7">
       <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#A2F9FF]/15 text-[#A2F9FF] border border-[#A2F9FF]/30 rounded-full text-[11px] font-bold mb-3">
         <FileDown size={12} />
         {t('investorEyebrow')}

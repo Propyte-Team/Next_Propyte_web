@@ -19,7 +19,8 @@ export const DARK_HERO_ROUTES = [
   '/reclutamiento',
   '/built',
   '/nosotros',
-  '/blog',
+  // '/blog' salió en el rediseño v3 (fase 2): índice y artículo ya no abren
+  // con banda oscura.
   '/desarrolladores',
   '/proveedores',
   '/como-comprar',

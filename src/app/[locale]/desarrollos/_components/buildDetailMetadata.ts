@@ -18,7 +18,9 @@ export async function buildDetailMetadata(slug: string, locale: string): Promise
     if (!property) return {};
 
     const stage = resolveStage(property.stage);
-    const title = `${property.name} — ${property.city} | ${isEn ? stage.nameEn : stage.nameEs}`;
+    const title = stage
+      ? `${property.name} — ${property.city} | ${isEn ? stage.nameEn : stage.nameEs}`
+      : `${property.name} — ${property.city}`;
 
     const priceMin = property.price_min_mxn || property.price_mxn || 0;
     const description = isEn
