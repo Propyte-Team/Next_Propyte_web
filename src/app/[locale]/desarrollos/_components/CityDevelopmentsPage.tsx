@@ -5,7 +5,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public';
 import { pickLang } from '@/lib/i18n/pickLang';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import SiteMedia from '@/components/shared/SiteMedia';
-import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
+import DevelopmentsListV3 from '@/components/developments/v3/DevelopmentsListV3';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
 import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
 import type { Property } from '@/types/property';
@@ -80,32 +80,33 @@ export default async function CityDevelopmentsPage({ locale, citySlug }: CityDev
         ]}
       />
 
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pt-4">
-        {/* Foto de la ciudad — gestionada en Hub › Materiales (slot city.<slug>); fallback a placeholder */}
-        <SiteMedia
-          mediaKey={`city.${citySlug}`}
-          locale={locale}
-          icon={MapPin}
-          label={`Foto de ${cityInfo.name}`}
-          className="h-40 md:h-56"
-          sizes="(max-width: 768px) 100vw, 1232px"
-          priority
-        />
-      </div>
-
-      {/* Mismas cards + filtro que /desarrollos, pre-filtrado a la ciudad */}
-      <MarketplaceContent
+      {/* Mismas tarjetas y filtros que /desarrollos, ya filtrado a la ciudad.
+          La foto de la ciudad (Hub › Materiales, slot city.<slug>) va a sangre
+          entre el encabezado y los filtros. */}
+      <DevelopmentsListV3
         properties={properties}
-        customTitle={t('h1', { city: cityInfo.name })}
-        customSubtitle={pickLang(locale, cityInfo.descEn, cityInfo.descEs)}
-        customEyebrow={t('eyebrow', { region: cityInfo.region })}
-      />
+        title={t('h1', { city: cityInfo.name })}
+        lead={pickLang(locale, cityInfo.descEn, cityInfo.descEs)}
+        lockedCity
+      >
+        <div className="px-4 lg:px-10 pb-8 lg:pb-12">
+          <SiteMedia
+            mediaKey={`city.${citySlug}`}
+            locale={locale}
+            icon={MapPin}
+            label={`Foto de ${cityInfo.name}`}
+            className="h-48 md:h-[420px] rounded-md"
+            sizes="100vw"
+            priority
+          />
+        </div>
+      </DevelopmentsListV3>
 
       {/* SEO prose */}
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 pb-16">
-        <div className="prose prose-gray max-w-none">
-          <h2>{t('investingIn', { city: cityInfo.name })}</h2>
-          <p>
+      <div className="px-4 lg:px-10 pb-20 lg:pb-28 border-t border-black/10 pt-12 lg:pt-16">
+        <div className="max-w-[720px] text-[#13222C]">
+          <h2 className="font-display text-[28px] lg:text-[40px] leading-[1.05] font-semibold tracking-[-0.03em]">{t('investingIn', { city: cityInfo.name })}</h2>
+          <p className="mt-4 text-[16px] lg:text-[17px] leading-[1.6] text-[#5B6B74]">
             {count > 0
               ? t('investingDescription', {
                   city: cityInfo.name,

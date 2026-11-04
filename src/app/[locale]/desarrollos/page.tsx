@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getDevelopments } from '@/lib/supabase/queries';
 import { attachDevelopmentUnitAggregates } from '@/lib/supabase/development-aggregates';
 import { mapDevelopmentToProperty, type DevelopmentRow } from '@/lib/mappers/development-to-property';
-import MarketplaceContent from '@/app/[locale]/propiedades/MarketplaceContent';
+import DevelopmentsListV3 from '@/components/developments/v3/DevelopmentsListV3';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import type { Property } from '@/types/property';
 import { ogLocaleImages } from '@/lib/og/images';
@@ -39,9 +39,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function DesarrollosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const [tBC, tA11y] = await Promise.all([
+  const [tBC, tA11y, tV3] = await Promise.all([
     getTranslations({ locale, namespace: 'breadcrumbs' }),
     getTranslations({ locale, namespace: 'a11y' }),
+    getTranslations({ locale, namespace: 'developmentsV3' }),
   ]);
 
   let properties: Property[] = [];
@@ -108,12 +109,7 @@ export default async function DesarrollosPage({ params }: { params: Promise<{ lo
         ariaLabel={tA11y('breadcrumbLabel')}
         items={[{ label: tBC('developments') }]}
       />
-      <MarketplaceContent
-        properties={properties}
-        titleKey="h1Desarrollos"
-        subtitleKey="subtitleDesarrollos"
-        heroHidden
-      />
+      <DevelopmentsListV3 properties={properties} title={tV3('title')} />
     </>
   );
 }

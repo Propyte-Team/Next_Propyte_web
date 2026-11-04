@@ -51,6 +51,13 @@ function parseTarget(url: string): { slug: string; kind: 'development' | 'unit' 
 }
 
 async function captureTemplate(el: HTMLElement): Promise<Blob> {
+  // Las plantillas se montan al abrir el panel: espera a que sus imágenes
+  // terminen de cargar (o fallen) para no capturar la foto en blanco.
+  await Promise.all(
+    Array.from(el.querySelectorAll('img')).map((img) =>
+      img.complete ? Promise.resolve() : new Promise<void>((r) => { img.onload = () => r(); img.onerror = () => r(); }),
+    ),
+  );
   const html2canvas = (await import('html2canvas')).default;
   const canvas = await html2canvas(el, {
     useCORS: true,
@@ -456,15 +463,21 @@ export default function ShareDownloadModal({ data, locale = 'es', compact }: Pro
 
   return (
     <>
-      {/* Off-screen templates (for html2canvas capture) */}
-      <div aria-hidden="true" style={{ position: 'fixed', top: -9999, left: -9999, pointerEvents: 'none' }}>
-        <div ref={storiesRef}>
-          <TemplateStories data={data} />
+      {/* Plantillas fuera de pantalla para html2canvas. Solo existen mientras el
+          panel de descargas está abierto: antes vivían siempre en el DOM a
+          -9,999 px, bajaban la foto principal otra vez al cargar la ficha y
+          herramientas como html.to.design las importaban como una tarjeta
+          suelta que agrandaba la página. */}
+      {fichaOpen && (
+        <div aria-hidden="true" style={{ position: 'fixed', top: -9999, left: -9999, pointerEvents: 'none' }}>
+          <div ref={storiesRef}>
+            <TemplateStories data={data} />
+          </div>
+          <div ref={squareRef}>
+            <TemplateSquare data={data} />
+          </div>
         </div>
-        <div ref={squareRef}>
-          <TemplateSquare data={data} />
-        </div>
-      </div>
+      )}
 
       {/* Trigger row */}
       <div className="flex items-center gap-2">

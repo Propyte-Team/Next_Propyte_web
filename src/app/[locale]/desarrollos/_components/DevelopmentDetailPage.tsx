@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getVisibility, isVisible, VISIBILITY_KEYS } from '@/lib/visibility';
-import {
-  MapPin, Building2, BarChart3, Globe, FileText, TrendingUp,
-  Users, Zap, Download,
-} from '@/lib/icons';
+import Link from 'next/link';
+import { FileText, Download } from '@/lib/icons';
 import ExpandableText from '@/components/ui/ExpandableText';
 import { getTranslations } from 'next-intl/server';
 import { createPublicSupabaseClient } from '@/lib/supabase/public';
@@ -19,7 +17,7 @@ import {
   getSimilarDevelopments,
   getZoneDetail,
 } from '@/lib/supabase/queries';
-import { buildRichContent, resolveSpecType } from '@/lib/mappers/development-to-property';
+import { buildRichContent, normalizeStage, resolveSpecType } from '@/lib/mappers/development-to-property';
 import { getSiteConfig } from '@/lib/hub-content';
 import { resolveSiteContact } from '@/lib/site-contact';
 import { formatPrice } from '@/lib/formatters';
@@ -37,9 +35,10 @@ import { pickLang } from '@/lib/i18n/pickLang';
 import { translateDateWords } from '@/lib/i18n/translate-date-words';
 import SchemaMarkup from '@/components/shared/SchemaMarkup';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
-import SimilarListings, { type SimilarListingItem } from '@/components/shared/SimilarListings';
+import DevCardV3, { type DevCardV3Data } from '@/components/v3/DevCardV3';
+import GalleryV3 from '@/components/developments/v3/GalleryV3';
+import { compactMoney, placeLabel } from '@/components/v3/format';
 import ContactForm from '@/components/property/ContactForm';
-import ImageGallery from '@/components/property/ImageGallery';
 import MobileContactBar from '@/components/property/MobileContactBar';
 import ShareDownloadModal, { type ShareDownloadData } from '@/components/property/ShareDownloadModal';
 import PriceDisplay from '@/components/ui/PriceDisplay';
@@ -47,7 +46,6 @@ import { precioDesarrollo, type FilaPrecioDesarrollo } from '@/lib/precio-moneda
 import { fetchUsdMxnRate } from '@/lib/banxico/fetchUsdMxnRate';
 import PriceDisclaimer from '@/components/ui/PriceDisclaimer';
 import DiscountBadge from '@/components/ui/DiscountBadge';
-import DevelopmentKeyData from '@/components/property/DevelopmentKeyData';
 import RentalEstimate from '@/components/property/RentalEstimate';
 import InvestmentSummary from '@/components/property/InvestmentSummary';
 import UnitModelsTable from '@/components/property/UnitModelsTable';
@@ -61,7 +59,6 @@ import DataInsights from '@/components/property/DataInsights';
 import MarketSentiment, { type SentimentIndicator } from '@/components/property/MarketSentiment';
 import CetesComparison from '@/components/property/CetesComparison';
 import MarketIndicator from '@/app/[locale]/propiedades/_components/MarketIndicator';
-import Tabs, { type TabItem } from '@/components/ui/Tabs';
 import ViewItemTracker from '@/components/shared/ViewItemTracker';
 import { slugify, deriveFilenameFromUrl } from '@/lib/utils';
 import { resolveStage } from './stageConfig';
@@ -144,7 +141,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     : property.richContent?.editorial?.es);
 
   // ── Similar developments (4-level fallback) ──
-  let similar: SimilarListingItem[] = [];
+  let similar: DevCardV3Data[] = [];
   try {
     if (supabase) {
       const data = await getSimilarDevelopments(
@@ -158,16 +155,22 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         4,
       );
        
-      similar = (data as any[]).map((d) => ({
-        id: d.id,
-        slug: d.slug,
-        name: d.name,
-        city: d.city,
-        zone: d.zone,
-        images: d.images,
-        price: precioDesarrollo(d as FilaPrecioDesarrollo).min,
-        currency: precioDesarrollo(d as FilaPrecioDesarrollo).moneda,
-      }));
+      const tStagesV3 = await getTranslations({ locale, namespace: 'developmentsV3.stages' });
+      similar = (data as any[]).map((d) => {
+        const p = precioDesarrollo(d as FilaPrecioDesarrollo);
+        const st = normalizeStage(d.stage);
+        return {
+          id: d.id,
+          href: `/${locale}/desarrollos/${d.slug}`,
+          name: d.name,
+          place: placeLabel(d.zone, d.city),
+          image: d.images?.[0] ?? null,
+          stageLabel: st ? tStagesV3(st) : null,
+          presale: st === 'preventa',
+          priceLabel: compactMoney(p.min, p.moneda, locale),
+          meta: [],
+        };
+      });
     }
   } catch (err) {
     console.error('Similar query failed:', err);
@@ -438,7 +441,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
   }
 
   const stage = resolveStage(property.stage);
-  const stageLabel = locale === 'en' ? stage.nameEn : stage.nameEs;
+  const stageLabel = stage ? (locale === 'en' ? stage.nameEn : stage.nameEs) : null;
 
   // mainType hoisted arriba (justo tras buildRichContent) para que
   // getRentalEstimate reciba el canónico en vez de la grafía cruda.
@@ -459,7 +462,7 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     img: property.images?.[0] || '',
     url: `https://propyte.com/${locale}/desarrollos/${slug}`,
     wa: waNumber,
-    etapa: stageLabel,
+    etapa: stageLabel ?? undefined,
     specs: shareSpecs,
     desc: description || undefined,
     amenidades: property.amenities || undefined,
@@ -468,6 +471,41 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
     roi: roiDisplay ? `${roiDisplay}% anual` : undefined,
     prop_type: typeLabel,
   };
+
+  const tV3 = await getTranslations({ locale, namespace: 'developmentDetailV3' });
+  const galleryImages = (property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0);
+  const placeLine = [placeLabel(property.zone, property.city), propertyState].filter(Boolean).join(', ');
+  const showGeo = isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_GEO);
+  const showReturns = isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_RENTABILIDAD);
+  const progress = typeof property.construction_progress === 'number' && property.construction_progress > 0 && property.construction_progress < 100
+    ? property.construction_progress
+    : null;
+  const deliveryText = stage?.slug !== 'entrega_inmediata' && rawDeliveryText ? translateDateWords(rawDeliveryText, locale) : null;
+
+  // Franja de datos (banda oscura). Solo datos capturados: sin dato, no hay celda.
+  // La etapa sale de la misma resolución que el badge de la foto y el <title>,
+  // así ya no conviven "Entrega inmediata" y "En construcción" en la misma ficha.
+  const facts: Array<{ label: string; value: string }> = [];
+  const priceShort = compactMoney(precio.min, precio.moneda, locale);
+  if (priceShort) facts.push({ label: tV3('facts.from'), value: priceShort });
+  if (stageLabel) facts.push({ label: tV3('facts.stage'), value: stageLabel });
+  if (deliveryText) facts.push({ label: tV3('facts.delivery'), value: deliveryText });
+  if (progress != null) facts.push({ label: tV3('facts.progress'), value: `${progress}%` });
+  if (totalUnits) facts.push({ label: tV3('facts.units'), value: String(totalUnits) });
+  if (typeLabel) facts.push({ label: tV3('facts.type'), value: typeLabel });
+  if (areaRange) facts.push({ label: tV3('facts.area'), value: `${areaRange.min.toLocaleString(locale === 'en' ? 'en-US' : 'es-MX')} m²` });
+
+  const safeBrochureUrl = isExclusive ? safeExternalUrl(property.brochure_url) : null;
+  const navItems = [
+    { id: 'descripcion', label: tV3('nav.description') },
+    ...(units.length > 0 ? [{ id: 'modelos', label: tV3('nav.models') }] : []),
+    ...(property.amenities?.length ? [{ id: 'amenidades', label: tV3('nav.amenities') }] : []),
+    ...(showGeo ? [{ id: 'ubicacion', label: tV3('nav.location') }] : []),
+    ...(showReturns ? [{ id: 'rentabilidad', label: tV3('nav.returns') }] : []),
+  ];
+  // Encabezados de los bloques compartidos (modelos, amenidades) al estilo v3
+  // sin tocar esos componentes, que también usa la ficha de unidad.
+  const sectionCls = 'pt-10 lg:pt-14 mt-10 lg:mt-14 border-t border-black/10 first:mt-0 first:pt-0 first:border-t-0 empty:hidden scroll-mt-28 [&_h2]:font-display [&_h2]:font-semibold [&_h2]:tracking-[-0.03em] [&_h2]:text-[28px] lg:[&_h2]:text-[36px] [&_h2]:leading-[1.08] [&_h2]:text-[#13222C] [&_h2]:mb-6';
 
   return (
     <>
@@ -530,406 +568,246 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         ]}
       />
 
-      <div className="max-w-[1280px] mx-auto px-4 md:px-6 py-4 pb-24 md:pb-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Hero gallery */}
-            <ImageGallery
-              images={(property.images || []).filter((x: unknown): x is string => typeof x === 'string' && x.length > 0)}
-              alt={property.name}
-              badgeTopLeft={
-                <span className="px-3 py-1.5 bg-propyte-brand text-aztec text-sm font-bold rounded-full">{stageLabel}</span>
-              }
-              badgeTopRight={hasUnitsWithDiscount ? (
-                <DiscountBadge variant="corner" size={56} ariaLabel={tProp('discountUpTo', { pct: maxDiscountPct })} />
-              ) : null}
-            />
-
-            {/* Title & Location */}
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{h1Title}</h1>
-              {publicationSubtitle && (
-                <p className="mt-1.5 text-lg md:text-xl font-medium leading-snug text-gray-600">
-                  {publicationSubtitle}
-                </p>
-              )}
-              <div className="flex items-center gap-2 mt-2 text-gray-600">
-                <MapPin size={18} />
-                <span className="text-lg">
-                  {property.zone !== property.city ? `${property.zone}, ` : ''}
-                  {property.city}, {property.state}
-                </span>
-              </div>
-              <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
-                {precio.min != null ? (
-                  <div>
-                    {/* "Desde" como label arriba del precio para no desalinear
-                        los componentes adyacentes (feedback Luis 2026-05-22). */}
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-1">{tProp('startingFrom')}</span>
-                    {/* Precio dual MXN/USD con TC ref Banxico debajo + chip de
-                        descuento al lado del precio (no del label "desde"). */}
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <PriceDisplay
-                        amount={precio.min}
-                        currency={precio.moneda}
-                        variant="dual"
-                        size="xl"
-                        showRateNote
-                      />
-                      {hasUnitsWithDiscount && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <DiscountBadge variant="inline" pct={maxDiscountPct} />
-                          <span className="text-2xs font-semibold uppercase tracking-wider text-teal-a11y">{tProp('discountInUnits')}</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ) : <div />}
-                <ShareDownloadModal data={shareData} locale={locale} />
-              </div>
-            </div>
-
-            {/* 3-tab layout */}
-            <Tabs
-              tablistLabel={tProp('specs')}
-              items={[
-                {
-                  id: 'descripcion',
-                  label: tProp('tabDescripcion'),
-                  panel: (
-                    <div className="space-y-8">
-                      {/* ── Descripción (expandable, max 120px) ──
-                          Editorial-first: si hay editorial en el idioma de la
-                          página, se muestra SOLO ese (RichContentSections) y se
-                          oculta el bloque "Acerca de" (description SEO). El SEO
-                          queda como fallback cuando aún no hay editorial.
-                          Decisión 2026-06-02. */}
-                      {!hasEditorial && description && (
-                        <div>
-                          <h2 className="text-xl font-bold text-gray-900 mb-3">
-                            {tProp('aboutTitle')}
-                          </h2>
-                          <ExpandableText
-                            maxHeight={120}
-                            moreLabel={tProp('readMore')}
-                            lessLabel={tProp('readLess')}
-                          >
-                            <MarkdownContent markdown={description} />
-                          </ExpandableText>
-                        </div>
-                      )}
-
-                      {property.richContent && (
-                        <RichContentSections
-                          richContent={property.richContent}
-                          locale={locale}
-                          moreLabel={tProp('readMore')}
-                          lessLabel={tProp('readLess')}
-                        />
-                      )}
-
-                      {/* ── Unit type chips (individual units) ── */}
-                      <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
-
-                      {/* ── 4 metric cards: tipo / etapa / zona / estado ── */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <MetricCard
-                          icon={<Building2 size={22} />}
-                          label={tProp('type')}
-                          value={typeLabel || '—'}
-                        />
-                        <MetricCard
-                          icon={<BarChart3 size={22} />}
-                          label={tProp('stage')}
-                          value={stageLabel}
-                        />
-                        <MetricCard
-                          icon={<MapPin size={22} />}
-                          label={tProp('zone')}
-                          value={property.zone || property.city || '—'}
-                        />
-                        <MetricCard
-                          icon={<Globe size={22} />}
-                          label={tProp('stateLabel')}
-                          value={property.state || 'Quintana Roo'}
-                        />
-                      </div>
-
-                      {/* ── Metrics row: total / delivery / progress ──
-                          Frontend-only: ocultamos el badge "X disponibles"
-                          (derivedAvailable) y el de Comisión. Sólo total/delivery/progress. */}
-                      {(totalUnits || deliveryDisplay || (property.construction_progress != null && property.construction_progress > 0)) && (
-                        <div className="flex flex-wrap gap-3">
-                          {totalUnits && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <Users size={16} className="text-gray-600" />
-                              <span className="text-gray-600">{totalUnits} {tProp('totalProperties')}</span>
-                            </div>
-                          )}
-                          {deliveryDisplay && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <TrendingUp size={16} className="text-gray-600" />
-                              <span className="text-gray-600">{tProp('delivery')} {deliveryDisplay}</span>
-                            </div>
-                          )}
-                          {property.construction_progress != null && property.construction_progress > 0 && (
-                            <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-xl text-sm">
-                              <Zap size={16} className="text-gray-600" />
-                              <span className="text-gray-600">{tProp('progress')} {property.construction_progress}%</span>
-                            </div>
-                          )}
-                          {/* Badge de Comisión eliminada del sitio (2026-06-02): el % de
-                              comisión NO debe verse públicamente. El dato sigue en BD
-                              (commission_rate); solo se quita del render. */}
-                        </div>
-                      )}
-
-                      {/* Virtual Tour + Video */}
-                      {(property.virtual_tour_url || property.video_url) && (
-                        <div>
-                          <h2 className="text-xl font-bold text-gray-900 mb-4">
-                            {tProp('exploreTitle')}
-                          </h2>
-                          <div className={`grid gap-4 ${property.virtual_tour_url && property.video_url ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-                            {property.virtual_tour_url && (
-                              <VirtualTour url={property.virtual_tour_url} propertyName={property.name} />
-                            )}
-                            {property.video_url && (
-                              <VideoPlayer
-                                url={property.video_url}
-                                propertyName={property.name}
-                                thumbnail={property.images?.[0]}
-                              />
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      <AmenityList locale={locale} amenities={property.amenities || undefined} />
-
-                      {(() => {
-                        const safeBrochureUrl = safeExternalUrl(property.brochure_url);
-                        // Regla 3: Documentos solo en exclusivos.
-                        if (!isExclusive || !safeBrochureUrl) return null;
-                        return (
-                        <div>
-                          <h2 className="text-xl font-bold text-gray-900 mb-3">
-                            {tProp('documentsTitle')}
-                          </h2>
-                          <a
-                            href={safeBrochureUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="group flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors"
-                          >
-                            <div className="w-12 h-12 rounded-lg bg-navy flex items-center justify-center shrink-0">
-                              <FileText size={22} className="text-teal-a11y" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="font-bold text-gray-900 truncate">
-                                {tProp('brochure')}
-                              </div>
-                              <div className="text-xs text-gray-600 truncate">
-                                {deriveFilenameFromUrl(safeBrochureUrl, 'brochure.pdf')}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-sm font-semibold text-teal-a11y group-hover:text-teal-a11y shrink-0">
-                              <Download size={16} />
-                              {tProp('download')}
-                            </div>
-                          </a>
-                        </div>
-                        );
-                      })()}
-
-                      {/* Regla 4: Desarrollador solo en exclusivos. */}
-                      {isExclusive && developerDisplay.name && (
-                        <div className="propyte-card-glass-light p-6">
-                          <h2 className="text-lg font-bold text-gray-900 mb-4">
-                            {tProp('developerTitle')}
-                          </h2>
-                          <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                              {developerDisplay.logoUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                  src={developerDisplay.logoUrl}
-                                  alt={developerDisplay.name}
-                                  className="w-full h-full object-contain"
-                                />
-                              ) : developerInitials ? (
-                                <span className="text-xl font-extrabold text-teal-a11y tracking-tight">
-                                  {developerInitials}
-                                </span>
-                              ) : (
-                                <Building2 size={28} className="text-gray-300" />
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <div className="font-bold text-gray-900 text-lg truncate">{developerDisplay.name}</div>
-                              </div>
-                              <div className="text-xs text-gray-600 mt-0.5 flex items-center gap-2 flex-wrap">
-                                {developerProjects > 0 && (
-                                  <span>{tProp('projectsCount', { count: developerProjects })}</span>
-                                )}
-                                {developerDisplay.yearsExperience != null && developerDisplay.yearsExperience > 0 && (
-                                  <span>
-                                    · {developerDisplay.yearsExperience} {tProp('yearsExperience')}
-                                  </span>
-                                )}
-                                {developerDisplay.unitsDelivered != null && developerDisplay.unitsDelivered > 0 && (
-                                  <span>
-                                    · {developerDisplay.unitsDelivered.toLocaleString()} {tProp('unitsDelivered')}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {developerDisplay.description && (
-                            <p className="text-sm text-gray-600 leading-relaxed mt-4 pt-4 border-t border-gray-200">
-                              {developerDisplay.description}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ),
-                },
-                ...(isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_GEO) ? [{
-                  id: 'geo',
-                  label: tProp('tabGeo'),
-                  panel: (
-                    <div className="space-y-8">
-                      <GeoAnalysis
-                        lat={property.lat ?? null}
-                        lng={property.lng ?? null}
-                        address={property.address || null}
-                        city={property.city}
-                        zone={property.zone || null}
-                        state={property.state || null}
-                        zoneScore={zoneScore}
-                        locale={locale}
-                      />
-                      {airdnaSummary && marketCode && (
-                        <DataInsights
-                          data={airdnaSummary}
-                          locale={locale}
-                          market={marketCode}
-                        />
-                      )}
-                    </div>
-                  ),
-                }] as TabItem[] : []),
-                ...(isVisible(visibility, VISIBILITY_KEYS.DESARROLLOS_DETAIL_RENTABILIDAD) ? [{
-                  id: 'rentabilidad',
-                  label: tProp('tabRentabilidad'),
-                  panel: (
-                    <div className="space-y-8">
-                      <MarketIndicator
-                        city={property.city}
-                        price={propertyPrice > 0 ? propertyPrice : 0}
-                        monthlyRent={rentalMedian ?? null}
-                        capRate={devFinancials?.cap_rate ?? null}
-                        airdnaOccupancy={airdnaOccupancy ?? null}
-                        locale={locale}
-                      />
-                      <RentalEstimate
-                        city={property.city}
-                        zone={property.zone}
-                        propertyType={mainType}
-                        bedrooms={null}
-                        locale={locale}
-                        areaM2={representativeArea}
-                        priceMin={propertyPrice > 0 ? propertyPrice : null}
-                        state={propertyState}
-                      />
-                      {devFinancials && (
-                        <InvestmentSummary
-                          financials={devFinancials}
-                          locale={locale}
-                          price={propertyPrice > 0 ? propertyPrice : null}
-                          state={propertyState}
-                          estimatedRent={
-                            rentalPerM2 && representativeArea
-                              ? Math.round(rentalPerM2 * representativeArea)
-                              : rentalMedian
-                          }
-                          estimatedRentVac={rentalMedianVac}
-                          airdnaOccupancy={airdnaOccupancy}
-                        />
-                      )}
-                      {sentimentIndicators.length > 0 && (
-                        <MarketSentiment indicators={sentimentIndicators} locale={locale} />
-                      )}
-                      {propertyPrice > 0 && (irr5y != null || irr10y != null) && (
-                        <CetesComparison
-                          initialInvestment={propertyPrice}
-                          irr5y={irr5y}
-                          irr10y={irr10y}
-                          locale={locale}
-                        />
-                      )}
-                    </div>
-                  ),
-                }] as TabItem[] : []),
-              ] satisfies TabItem[]}
-            />
+      <div className="bg-white text-[#13222C] pb-24 md:pb-0">
+        {/* ── Encabezado ── */}
+        <header className="px-4 lg:px-10 pt-6 lg:pt-10 pb-6 lg:pb-10 lg:flex lg:items-end lg:justify-between lg:gap-12">
+          <div className="min-w-0">
+            <p className="text-[14px] lg:text-[15px] text-[#5B6B74]">{placeLine}</p>
+            <h1 className="mt-3 font-display text-[38px] sm:text-[48px] lg:text-[clamp(52px,5.6vw,92px)] leading-[0.98] font-semibold tracking-[-0.04em] max-w-[18ch] text-balance">
+              {h1Title}
+            </h1>
+            {publicationSubtitle && (
+              <p className="mt-3 text-[18px] lg:text-[22px] leading-snug text-[#5B6B74] max-w-[40ch]">{publicationSubtitle}</p>
+            )}
           </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="sticky top-24 space-y-6">
-            {/* Datos clave (cuadro azul) — variante específica para desarrollos:
-                muestra unidades / tipo / ubicación (zona+estado) en lugar de
-                bedrooms/bathrooms del cuadrito de unidades. Client component
-                completo (los iconos LucideIcon no cruzan server→client). */}
-            <DevelopmentKeyData
-              price={precio.min}
-              currency={precio.moneda}
-              areaM2={areaRange ? areaRange.min : representativeArea ?? null}
-              totalUnits={totalUnits ?? null}
-              mainType={typeLabel}
-              zone={property.zone}
-              state={property.state}
-              discountPct={hasUnitsWithDiscount ? maxDiscountPct : null}
-              labels={{
-                title: tProp('keyDataTitle'),
-                price: tProp('keyDataPrice'),
-                area: tProp('keyDataArea'),
-                units: tProp('units'),
-                type: tProp('type'),
-                location: tProp('location'),
-                discount: tProp('discount'),
-                disclaimer: tProp('priceDisclaimer'),
-              }}
-            />
-
-            <div id="contact-form" className="propyte-card-glass-light p-6 scroll-mt-24">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                {tProp('interestedDevQuestion')}
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                {tProp('getPricingDescription')}
-              </p>
-              <ContactForm
-                propertyId={property.id}
-                propertyName={property.name}
-                whatsappUrl={`https://wa.me/${waNumber}?text=${encodeURIComponent(
-                  tProp('whatsappInterestText', { name: property.name })
-                )}`}
-                whatsappLabel="WhatsApp"
-              />
-            </div>
-            </div>
+          <div className="mt-6 lg:mt-0 flex flex-col items-start sm:flex-row sm:items-end sm:justify-between lg:justify-end gap-5 sm:gap-6 shrink-0">
+            {precio.min != null && (
+              <div>
+                <span className="block text-[13px] text-[#5B6B74] mb-1">{tProp('startingFrom')}</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <PriceDisplay amount={precio.min} currency={precio.moneda} variant="dual" size="xl" showRateNote />
+                  {hasUnitsWithDiscount && <DiscountBadge variant="inline" pct={maxDiscountPct} />}
+                </div>
+              </div>
+            )}
+            <ShareDownloadModal data={shareData} locale={locale} />
           </div>
+        </header>
+
+        {/* ── Fotos ── */}
+        <div className="px-4 lg:px-10">
+          <GalleryV3
+            images={galleryImages}
+            alt={property.name}
+            badge={stageLabel ? (
+              <span className={`text-xs lg:text-[13px] font-semibold px-2.5 py-1.5 lg:px-3 lg:py-[7px] rounded ${stage?.slug === 'preventa' ? 'bg-propyte-brand text-[#0F1923]' : 'bg-[#0F1923] text-white'}`}>{stageLabel}</span>
+            ) : null}
+          />
         </div>
 
-        <SimilarListings items={similar} kind="development" locale={locale} />
+        {/* ── Franja de datos: filetes de 1 px con el truco de gap sobre fondo claro ── */}
+        {facts.length > 0 && (
+          <dl className="mt-6 lg:mt-10 mx-4 lg:mx-10 rounded-md overflow-hidden gap-px grid grid-cols-2 lg:grid-flow-col lg:auto-cols-fr [background-color:#2A3A45] max-lg:[&>div:last-child:nth-child(odd)]:col-span-2">
+            {facts.map((f) => (
+              <div key={f.label} className="bg-[#0F1923] text-white px-5 py-5 lg:px-7 lg:py-7">
+                <dt className="text-[12px] lg:text-[13px] text-white/60">{f.label}</dt>
+                <dd className="mt-1.5 font-display text-[20px] lg:text-[26px] leading-[1.1] font-semibold tracking-[-0.02em]">{f.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
 
-        {/* Aviso legal sobre TC referencial — al final del contenido principal. */}
-        <PriceDisclaimer />
+        {/* ── Índice de la ficha ── */}
+        {navItems.length > 1 && (
+          <nav aria-label={tV3('nav.aria')} className="mt-8 lg:mt-12 px-4 lg:px-10 border-b border-black/10">
+            <ul className="flex gap-6 lg:gap-9 overflow-x-auto [scrollbar-width:none]">
+              {navItems.map((n) => (
+                <li key={n.id} className="shrink-0">
+                  <a href={`#${n.id}`} className="block py-4 text-[15px] font-medium text-[#5B6B74] hover:text-[#13222C] transition-colors">{n.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
+        <div className="px-4 lg:px-10 pt-10 lg:pt-14 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-12 lg:gap-16 items-start">
+          <div className="min-w-0">
+            <section id="descripcion" className={sectionCls}>
+              {!hasEditorial && description && (
+                <div>
+                  <h2>{tV3('headings.description')}</h2>
+                  <div className="text-[16px] lg:text-[17px] leading-[1.65] text-[#2C3A42] max-w-[68ch]">
+                    <ExpandableText maxHeight={220} moreLabel={tProp('readMore')} lessLabel={tProp('readLess')}>
+                      <MarkdownContent markdown={description} />
+                    </ExpandableText>
+                  </div>
+                </div>
+              )}
+              {property.richContent && (
+                <div className="max-w-[68ch]">
+                  <RichContentSections richContent={property.richContent} locale={locale} moreLabel={tProp('readMore')} lessLabel={tProp('readLess')} />
+                </div>
+              )}
+            </section>
+
+            <section id="modelos" className={sectionCls}>
+              <UnitModelsTable units={units} mlEstimates={mlEstimates} locale={locale} />
+            </section>
+
+            {(property.virtual_tour_url || property.video_url) && (
+              <section id="recorrido" className={sectionCls}>
+                <h2>{tProp('exploreTitle')}</h2>
+                <div className={`grid gap-4 ${property.virtual_tour_url && property.video_url ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                  {property.virtual_tour_url && <VirtualTour url={property.virtual_tour_url} propertyName={property.name} />}
+                  {property.video_url && <VideoPlayer url={property.video_url} propertyName={property.name} thumbnail={property.images?.[0]} />}
+                </div>
+              </section>
+            )}
+
+            <section id="amenidades" className={sectionCls}>
+              <AmenityList locale={locale} amenities={property.amenities || undefined} />
+            </section>
+
+            {/* Regla 3: Documentos solo en exclusivos. */}
+            {safeBrochureUrl && (
+              <section className={sectionCls}>
+                <h2>{tProp('documentsTitle')}</h2>
+                <a href={safeBrochureUrl} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-4 py-5 border-y border-black/10 hover:text-[#0E7490] transition-colors">
+                  <FileText size={22} aria-hidden="true" className="shrink-0 text-[#5B6B74]" />
+                  <span className="flex-1 min-w-0">
+                    <span className="block font-semibold">{tProp('brochure')}</span>
+                    <span className="block text-[13px] text-[#5B6B74] truncate">{deriveFilenameFromUrl(safeBrochureUrl, 'brochure.pdf')}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold shrink-0"><Download size={16} aria-hidden="true" /> {tProp('download')}</span>
+                </a>
+              </section>
+            )}
+
+            {/* Regla 4: Desarrollador solo en exclusivos. */}
+            {isExclusive && developerDisplay.name && (
+              <section className={sectionCls}>
+                <h2>{tProp('developerTitle')}</h2>
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-md border border-black/10 flex items-center justify-center shrink-0 overflow-hidden bg-white">
+                    {developerDisplay.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={developerDisplay.logoUrl} alt={developerDisplay.name} className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="font-display text-xl font-semibold">{developerInitials}</span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-display text-[22px] font-semibold tracking-[-0.02em]">{developerDisplay.name}</p>
+                    <p className="text-[14px] text-[#5B6B74] mt-0.5">
+                      {[
+                        developerProjects > 0 ? tProp('projectsCount', { count: developerProjects }) : null,
+                        developerDisplay.yearsExperience ? `${developerDisplay.yearsExperience} ${tProp('yearsExperience')}` : null,
+                        developerDisplay.unitsDelivered ? `${developerDisplay.unitsDelivered.toLocaleString()} ${tProp('unitsDelivered')}` : null,
+                      ].filter(Boolean).join(' · ')}
+                    </p>
+                  </div>
+                </div>
+                {developerDisplay.description && (
+                  <p className="mt-5 text-[16px] leading-[1.6] text-[#2C3A42] max-w-[68ch]">{developerDisplay.description}</p>
+                )}
+              </section>
+            )}
+
+            {showGeo && (
+              <section id="ubicacion" className={sectionCls}>
+                <h2>{tV3('headings.location')}</h2>
+                <div className="space-y-8">
+                  <GeoAnalysis
+                    lat={property.lat ?? null}
+                    lng={property.lng ?? null}
+                    address={property.address || null}
+                    city={property.city}
+                    zone={property.zone || null}
+                    state={property.state || null}
+                    zoneScore={zoneScore}
+                    locale={locale}
+                  />
+                  {airdnaSummary && marketCode && <DataInsights data={airdnaSummary} locale={locale} market={marketCode} />}
+                </div>
+              </section>
+            )}
+
+            {showReturns && (
+              <section id="rentabilidad" className={sectionCls}>
+                <h2>{tV3('headings.returns')}</h2>
+                <div className="space-y-8">
+                  <MarketIndicator
+                    city={property.city}
+                    price={propertyPrice > 0 ? propertyPrice : 0}
+                    monthlyRent={rentalMedian ?? null}
+                    capRate={devFinancials?.cap_rate ?? null}
+                    airdnaOccupancy={airdnaOccupancy ?? null}
+                    locale={locale}
+                  />
+                  <RentalEstimate
+                    city={property.city}
+                    zone={property.zone}
+                    propertyType={mainType}
+                    bedrooms={null}
+                    locale={locale}
+                    areaM2={representativeArea}
+                    priceMin={propertyPrice > 0 ? propertyPrice : null}
+                    state={propertyState}
+                  />
+                  {devFinancials && (
+                    <InvestmentSummary
+                      financials={devFinancials}
+                      locale={locale}
+                      price={propertyPrice > 0 ? propertyPrice : null}
+                      state={propertyState}
+                      estimatedRent={rentalPerM2 && representativeArea ? Math.round(rentalPerM2 * representativeArea) : rentalMedian}
+                      estimatedRentVac={rentalMedianVac}
+                      airdnaOccupancy={airdnaOccupancy}
+                    />
+                  )}
+                  {sentimentIndicators.length > 0 && <MarketSentiment indicators={sentimentIndicators} locale={locale} />}
+                  {propertyPrice > 0 && (irr5y != null || irr10y != null) && (
+                    <CetesComparison initialInvestment={propertyPrice} irr5y={irr5y} irr10y={irr10y} locale={locale} />
+                  )}
+                </div>
+              </section>
+            )}
+          </div>
+
+          {/* ── Contacto ── */}
+          <aside id="contact-form" className="lg:sticky lg:top-28 scroll-mt-28 border-t lg:border-t-0 border-black/10 pt-10 lg:pt-0">
+            <div className="lg:border-l lg:border-black/10 lg:pl-10">
+              <h2 className="font-display text-[26px] lg:text-[30px] leading-[1.08] font-semibold tracking-[-0.03em]">
+                {tV3('contactTitle', { name: h1Title })}
+              </h2>
+              <p className="mt-3 text-[15px] text-[#5B6B74]">{tProp('getPricingDescription')}</p>
+              <div className="mt-6">
+                <ContactForm
+                  propertyId={property.id}
+                  propertyName={property.name}
+                  whatsappUrl={`https://wa.me/${waNumber}?text=${encodeURIComponent(tProp('whatsappInterestText', { name: property.name }))}`}
+                  whatsappLabel="WhatsApp"
+                />
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        {similar.length > 0 && (
+          <section aria-labelledby="similar-title" className="mt-20 lg:mt-32 px-4 lg:px-10 pt-12 lg:pt-16 border-t border-black/10">
+            <div className="flex items-end justify-between gap-6">
+              <h2 id="similar-title" className="font-display text-[32px] lg:text-[clamp(34px,4vw,56px)] leading-[1.02] font-semibold tracking-[-0.035em]">{tV3('similarTitle')}</h2>
+              <Link href={`/${locale}/desarrollos`} className="hidden sm:inline font-semibold text-[15px] whitespace-nowrap">{tV3('similarAll')} →</Link>
+            </div>
+            <div className="mt-8 lg:mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12">
+              {similar.slice(0, 3).map((d) => <DevCardV3 key={d.id} d={d} fromLabel={tProp('startingFrom')} />)}
+            </div>
+          </section>
+        )}
+
+        <div className="px-4 lg:px-10 pt-12 pb-16 lg:pb-24">
+          <PriceDisclaimer />
+        </div>
       </div>
 
       <MobileContactBar
@@ -940,19 +818,5 @@ export default async function DevelopmentDetailPage({ locale, slug }: Developmen
         roiPct={roiDisplay ?? undefined}
       />
     </>
-  );
-}
-
-// ── helpers ──
-
-function MetricCard({
-  icon, label, value,
-}: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="propyte-card-glass-light-sm p-4 text-center">
-      <span className="flex justify-center text-teal-a11y mb-2">{icon}</span>
-      <div className="text-sm font-bold text-gray-900 leading-tight truncate">{value}</div>
-      <div className="text-xs text-gray-600 mt-0.5">{label}</div>
-    </div>
   );
 }

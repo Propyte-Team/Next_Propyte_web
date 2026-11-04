@@ -57,19 +57,21 @@ interface BlogFilterBarProps {
   };
 }
 
+// v3: desplegables de texto con filete inferior (sin pastillas), como las
+// pestañas de ciudad del listado de desarrollos.
 const PILL_BASE =
-  'h-10 px-4 flex items-center gap-1.5 rounded-full text-sm font-semibold border transition-colors whitespace-nowrap cursor-pointer list-none';
-const PILL_ON = 'bg-propyte-cyan-100 border-propyte-brand text-[#0E7490]';
-const PILL_OFF = 'bg-white border-gray-300 text-[#2C2C2C] hover:border-gray-400';
-const ITEM_BASE = 'block w-full text-left px-3 py-2 rounded-lg text-sm transition-colors';
-const ITEM_ON = 'bg-propyte-cyan-100 text-[#0E7490] font-semibold';
-const ITEM_OFF = 'hover:bg-gray-50 text-[#2C2C2C]';
+  'h-12 flex items-center justify-between gap-2 border-b-2 text-[15px] font-medium transition-colors whitespace-nowrap cursor-pointer list-none [&::-webkit-details-marker]:hidden';
+const PILL_ON = 'border-[#0F1923] text-[#13222C]';
+const PILL_OFF = 'border-black/15 text-[#5B6B74] hover:text-[#13222C]';
+const ITEM_BASE = 'block w-full text-left px-3 py-2.5 rounded text-[15px] transition-colors';
+const ITEM_ON = 'bg-[#0F1923] text-white font-semibold';
+const ITEM_OFF = 'hover:bg-[#F4F6F8] text-[#13222C]';
 
 // +2ch de respiro sobre el label activo más largo entre ES/EN (pilares.json,
 // audiencias.json) — evita que el trigger (y el popover que cuelga de él)
 // salte de posición al pasar de "Tema"/"Público" a un pilar/audiencia activa.
-const TEMA_MIN_WIDTH_CH = 36; // "Beachfront and branded residences" (EN, 34)
-const PUBLICO_MIN_WIDTH_CH = 22; // "Para inversionistas" (ES, 20)
+const TEMA_MIN_WIDTH_CH = 34; // "Beachfront and branded residences" (EN, 34)
+const PUBLICO_MIN_WIDTH_CH = 20; // "Para inversionistas" (ES, 20)
 
 /**
  * Pill desplegable sin JS. `group` + `group-open:` mueve el chevron.
@@ -109,14 +111,14 @@ function PillDetails({
   return (
     <details name="blog-filter-group" data-blog-filter className="group relative flex-shrink-0">
       <summary
-        className={`${PILL_BASE} justify-center ${isActive ? PILL_ON : PILL_OFF}`}
+        className={`${PILL_BASE} ${isActive ? PILL_ON : PILL_OFF}`}
         style={{ minWidth: `${minWidthChars}ch` }}
         aria-label={label}
       >
         {activeLabel || label}
         <ChevronDown size={14} className="transition-transform group-open:rotate-180" />
       </summary>
-      <div className="absolute left-0 top-full z-40 mt-2 min-w-[240px] rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
+      <div className="absolute left-0 top-full z-40 mt-2 min-w-[260px] rounded-md border border-black/10 bg-white p-2 shadow-[0_18px_40px_-12px_rgba(15,25,35,0.25)]">
         <div className="max-h-72 space-y-1 overflow-y-auto">{children}</div>
       </div>
     </details>
@@ -165,15 +167,15 @@ export default function BlogFilterBar({
   const filtrosActivos = (pilarActivo ? 1 : 0) + (activeAudiencia ? 1 : 0) + (activeCategory ? 1 : 0);
 
   return (
-    <div className="border-y border-gray-200 bg-white">
+    <div className="border-y border-black/10 bg-white">
       {/* Client Component aparte — ver su comentario de cabecera. BlogFilterBar
           en sí sigue siendo Server Component: si este script no carga, los
           <details>/<a href> de abajo siguen siendo 100% funcionales y
           crawleables. */}
       <BlogFilterEnhancer />
-      <div className="mx-auto max-w-[1280px] px-4 py-3 md:px-6">
+      <div className="px-4 lg:px-10 py-2">
         <nav
-          className="flex flex-wrap items-center gap-2"
+          className="flex flex-wrap items-end gap-x-8 gap-y-2"
           aria-label={labels.filtersAriaLabel}
         >
           {/* Tema — los SIETE pilares del maestro, tengan piezas o no.
@@ -252,7 +254,7 @@ export default function BlogFilterBar({
 
           <div className="flex-1" />
 
-          <span className="flex-shrink-0 whitespace-nowrap text-sm text-gray-600">
+          <span className="flex-shrink-0 whitespace-nowrap text-[14px] text-[#5B6B74] pb-3.5">
             {labels.articleCount}
           </span>
         </nav>
@@ -264,7 +266,7 @@ export default function BlogFilterBar({
                 key={chip.key}
                 href={chip.href}
                 aria-label={`${labels.removeFilter}: ${chip.label}`}
-                className="inline-flex h-7 items-center gap-1 rounded-full border border-propyte-brand/40 bg-propyte-cyan-100 pl-3 pr-2 text-xs font-semibold text-[#0E7490] transition-colors hover:bg-propyte-cyan-200 hover:border-propyte-brand"
+                className="inline-flex h-8 items-center gap-1 rounded border border-black/15 pl-3 pr-2 text-[13px] font-semibold text-[#13222C] transition-colors hover:border-[#0F1923]"
               >
                 <span className="max-w-[180px] truncate">{chip.label}</span>
                 <X size={12} strokeWidth={2.5} aria-hidden="true" />
@@ -273,7 +275,7 @@ export default function BlogFilterBar({
             {filtrosActivos > 0 && (
               <Link
                 href={blogHref(locale)}
-                className="inline-flex h-7 items-center rounded-full px-3 text-xs font-semibold text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#1A2F3F]"
+                className="inline-flex h-8 items-center px-2 text-[13px] font-semibold text-[#5B6B74] transition-colors hover:text-[#13222C]"
               >
                 {labels.clearAll}
               </Link>

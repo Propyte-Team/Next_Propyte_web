@@ -3380,5 +3380,77 @@
       "faqLead": "What people ask us most before buying in the Riviera Maya and Yucatán.",
       "faqAll": "See all questions"
     }
+  },
+  "developmentsV3": {
+    "filters": "Filters",
+    "title": "Developments in the Riviera Maya and Yucatán",
+    "lead": "{count, plural, one {# listed development} other {# listed developments}} in {cities, plural, one {# city} other {# cities}}. Starting price, stage and available units come from each developer's inventory.",
+    "filtersAria": "Listing filters",
+    "citiesAria": "Cities",
+    "all": "All",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Name or area",
+    "stage": "Stage",
+    "stageAll": "Any stage",
+    "type": "Type",
+    "typeAll": "Any type",
+    "zone": "Area",
+    "zoneAll": "All areas",
+    "price": "Price",
+    "priceAll": "Any price",
+    "priceUpTo": "Up to {amount}",
+    "sort": "Sort",
+    "sortRelevance": "Recommended",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "sortDate": "Newest",
+    "results": "{count, plural, =0 {No developments} one {# development} other {# developments}}",
+    "clear": "Clear filters",
+    "empty": "No development matches those filters.",
+    "emptyBody": "Try another city, stage or price.",
+    "showing": "Showing {shown} of {total}",
+    "more": "Show {count} more",
+    "from": "From",
+    "available": "{count, plural, one {# available} other {# available}}",
+    "delivery": "Delivery {date}",
+    "stages": {
+      "preventa": "Pre-sale",
+      "construccion": "Under construction",
+      "entrega_inmediata": "Ready to move in"
+    },
+    "cityTitle": "Developments in {city}"
+  },
+  "developmentDetailV3": {
+    "gallery": {
+      "open": "Open photo {n} of {total}",
+      "all": "See all {count} photos",
+      "viewer": "Photos of {name}",
+      "close": "Close"
+    },
+    "facts": {
+      "from": "From",
+      "stage": "Stage",
+      "delivery": "Delivery",
+      "progress": "Construction progress",
+      "units": "Units",
+      "type": "Type",
+      "area": "Size from"
+    },
+    "nav": {
+      "aria": "Listing sections",
+      "description": "Description",
+      "models": "Models and prices",
+      "amenities": "Amenities",
+      "location": "Location",
+      "returns": "Returns"
+    },
+    "headings": {
+      "description": "About the development",
+      "location": "Location",
+      "returns": "Returns"
+    },
+    "contactTitle": "Interested in {name}?",
+    "similarTitle": "Similar developments",
+    "similarAll": "See all developments"
   }
 }

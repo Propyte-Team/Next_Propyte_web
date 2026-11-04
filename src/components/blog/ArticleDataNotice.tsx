@@ -32,7 +32,7 @@ export default function ArticleDataNotice({
   if (!showMethodology && !showDisclaimer) return null;
 
   return (
-    <aside className="mt-10 rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
+    <aside className="mt-10 border-y border-black/10 py-5 space-y-4">
       {showMethodology && (
         <div className="flex gap-3">
           <BarChart3 size={18} className="mt-0.5 flex-none text-[#0E7490]" />

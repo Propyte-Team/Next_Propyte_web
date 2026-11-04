@@ -62,13 +62,13 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
         <KpiCard
           icon={<DollarSign size={18} />}
           label={t('currentAdr')}
-          value={data.current_adr != null ? `$${data.current_adr.toLocaleString()}` : '—'}
+          value={data.current_adr != null ? `$${data.current_adr.toLocaleString('es-MX')}` : '—'}
           subtitle={`${t('perNight')} · MXN`}
         />
         <KpiCard
           icon={<Home size={18} />}
           label={t('activeListings')}
-          value={data.active_listings != null ? data.active_listings.toLocaleString() : '—'}
+          value={data.active_listings != null ? data.active_listings.toLocaleString('es-MX') : '—'}
           subtitle={t('inMarket')}
         />
         <KpiCard
@@ -76,7 +76,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
           label={t('projectedRevenue')}
           value={
             data.current_occupancy != null && data.current_adr != null
-              ? `$${Math.round((data.current_occupancy / 100) * data.current_adr * 30).toLocaleString()}`
+              ? `$${Math.round((data.current_occupancy / 100) * data.current_adr * 30).toLocaleString('es-MX')}`
               : '—'
           }
           subtitle={t('perMonthEst')}
@@ -144,7 +144,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
                 {adrByBedsEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
                     <span className="text-gray-600 capitalize">{formatBedsLabel(name, t)}</span>
-                    <span className="font-bold text-gray-900">${value.toLocaleString()}</span>
+                    <span className="font-bold text-gray-900">${value.toLocaleString('es-MX')}</span>
                   </div>
                 ))}
               </div>
@@ -157,7 +157,7 @@ export default function DataInsights({ data, locale, market }: DataInsightsProps
                 {rateTierEntries.map(([name, value]) => (
                   <div key={name} className="flex items-center justify-between text-xs">
                     <span className="text-gray-600 capitalize">{name.replace(/_/g, ' ')}</span>
-                    <span className="font-bold text-gray-900">${value.toLocaleString()}</span>
+                    <span className="font-bold text-gray-900">${value.toLocaleString('es-MX')}</span>
                   </div>
                 ))}
               </div>

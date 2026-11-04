@@ -3380,5 +3380,77 @@
       "faqLead": "Lo que más nos preguntan antes de comprar en la Riviera Maya y Yucatán.",
       "faqAll": "Ver todas las preguntas"
     }
+  },
+  "developmentsV3": {
+    "filters": "Filtros",
+    "title": "Desarrollos en la Riviera Maya y Yucatán",
+    "lead": "{count, plural, one {# desarrollo publicado} other {# desarrollos publicados}} en {cities, plural, one {# ciudad} other {# ciudades}}. Precio desde, etapa y unidades disponibles salen del inventario de cada desarrolladora.",
+    "filtersAria": "Filtros del listado",
+    "citiesAria": "Ciudades",
+    "all": "Todas",
+    "searchLabel": "Buscar",
+    "searchPlaceholder": "Nombre o zona",
+    "stage": "Etapa",
+    "stageAll": "Cualquier etapa",
+    "type": "Tipo",
+    "typeAll": "Cualquier tipo",
+    "zone": "Zona",
+    "zoneAll": "Todas las zonas",
+    "price": "Precio",
+    "priceAll": "Cualquier precio",
+    "priceUpTo": "Hasta {amount}",
+    "sort": "Ordenar",
+    "sortRelevance": "Recomendados",
+    "sortPriceAsc": "Precio: menor a mayor",
+    "sortPriceDesc": "Precio: mayor a menor",
+    "sortDate": "Más recientes",
+    "results": "{count, plural, =0 {Ningún desarrollo} one {# desarrollo} other {# desarrollos}}",
+    "clear": "Quitar filtros",
+    "empty": "Ningún desarrollo cumple esos filtros.",
+    "emptyBody": "Prueba con otra ciudad, etapa o precio.",
+    "showing": "Viendo {shown} de {total}",
+    "more": "Ver {count} más",
+    "from": "Desde",
+    "available": "{count, plural, one {# disponible} other {# disponibles}}",
+    "delivery": "Entrega {date}",
+    "stages": {
+      "preventa": "Preventa",
+      "construccion": "En obra",
+      "entrega_inmediata": "Entrega inmediata"
+    },
+    "cityTitle": "Desarrollos en {city}"
+  },
+  "developmentDetailV3": {
+    "gallery": {
+      "open": "Abrir foto {n} de {total}",
+      "all": "Ver las {count} fotos",
+      "viewer": "Fotos de {name}",
+      "close": "Cerrar"
+    },
+    "facts": {
+      "from": "Desde",
+      "stage": "Etapa",
+      "delivery": "Entrega",
+      "progress": "Avance de obra",
+      "units": "Unidades",
+      "type": "Tipo",
+      "area": "Superficie desde"
+    },
+    "nav": {
+      "aria": "Secciones de la ficha",
+      "description": "Descripción",
+      "models": "Modelos y precios",
+      "amenities": "Amenidades",
+      "location": "Ubicación",
+      "returns": "Rentabilidad"
+    },
+    "headings": {
+      "description": "Sobre el desarrollo",
+      "location": "Ubicación",
+      "returns": "Rentabilidad"
+    },
+    "contactTitle": "¿Te interesa {name}?",
+    "similarTitle": "Desarrollos parecidos",
+    "similarAll": "Ver todos los desarrollos"
   }
 }

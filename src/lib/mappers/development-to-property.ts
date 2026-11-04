@@ -140,7 +140,7 @@ export function buildRichContent(row: Record<string, unknown>): Property['richCo
  * "En construcción") que no existen como keys en messages/{es,en}.json y
  * crashean tStages() server-side con MISSING_MESSAGE. Mapeamos defensivamente.
  */
-function normalizeStage(raw: string | null | undefined): PropertyStage | null {
+export function normalizeStage(raw: string | null | undefined): PropertyStage | null {
   if (!raw) return null;
   const lower = raw.toLowerCase().trim();
   if (VALID_STAGES.includes(lower as PropertyStage)) return lower as PropertyStage;
